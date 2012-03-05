@@ -48,7 +48,7 @@ function drush_provision_provision_devshop_sync() {
   provision_backend_invoke($target, 'sql-cli < ' . $filepath);
   
   // Run provision-devshop-revert
-  if (drush_prompt(dt('Run provision-devshop-revert on &alias?', array('&alias' => $source)))) {
+  if (drush_get_option('revert')) {
     provision_backend_invoke($target, 'provision-devshop-revert');
   }
   
