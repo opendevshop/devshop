@@ -13,15 +13,14 @@ function devshop_provision_drush_command() {
     'description' => 'Pull from git, verify the site, update the database, revert the site\'s Features, and clear the cache.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
-      'sync' => 'sync from the source site, if there is one.'
     ),
     'aliases' => array('pdr'),
   );
   $items['provision-devshop-sync'] = array(
-    'description' => 'Sync database and files from a chosen source site.',
+    'description' => 'Sync database (and files, coming soon) from a chosen source site.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
-      'source-alias' => 'The alias of the site to sync from.'
+      'revert' => 'Call provision-devshop-revert when done.'
     ),
     'aliases' => array('pds'),
   );

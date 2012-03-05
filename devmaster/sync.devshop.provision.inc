@@ -36,5 +36,8 @@ function drush_provision_provision_devshop_sync() {
   if (drush_prompt(dt('Run provision-devshop-revert on &alias?', array('&alias' => $source)))) {
     provision_backend_invoke($target, 'provision-devshop-revert');
   }
+  
+  
+  //@TODO: Sync files
 }
 
