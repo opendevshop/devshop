@@ -40,7 +40,7 @@ function drush_provision_provision_devshop_sync() {
   provision_backend_invoke($source, 'sql-dump', array(), $data);
 
   // Prompt to drop database
-  if (drush_prompt(dt('Drop the database for &alias?  WARNING: "Drop" means Delete all data!', array('&alias' => $source)))) {
+  if (drush_confirm(dt('Drop the database for &alias?  WARNING: "Drop" means Delete all data!', array('&alias' => $source)))) {
     provision_backend_invoke($target, 'sql-drop');
   }
   
