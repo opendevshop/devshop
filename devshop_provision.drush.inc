@@ -22,6 +22,10 @@ function devshop_provision_drush_command() {
     'options' => array(
       'revert' => 'Call provision-devshop-revert when done.'
     ),
+    'arguments' => array(
+      'from' => 'Site alias to sync from.', 
+      'to' => 'Site alias to sync to.',
+    ), 
     'aliases' => array('pds'),
   );
   return $items;
