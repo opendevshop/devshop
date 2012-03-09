@@ -1,0 +1,40 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Queues.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_queue_schema() {
+  $schema['desvshop_queue'] = array(
+    'fields' => array(
+      'platform_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_pull' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('platform_nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function devshop_queue_install() {  
+  // Create tables.
+  drupal_install_schema('devshop_queue');
+}
