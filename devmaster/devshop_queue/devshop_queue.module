@@ -20,6 +20,32 @@ function devshop_queue_hosting_queues() {
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function devshop_queue_form_alter(&$form, &$form_status, $form_id){
+  if ($form_id == 'platform_node_form'){
+    drupal_set_message('node form');
+    $form['devshop'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop'),
+    );
+    $form['devshop']['pull'] = array(
+      '#title' => 'Enable Pull Queue',
+      '#type' => 'checkbox',
+      '#description' => t('Put this platform into the regular Git Pull queue.  See !link to configure the queue.', array(
+        '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
+      ),
+    );
+    $form['devshop']['pull_reset'] = array(
+      '#title' => 'Hard Reset on Pull',
+      '#type' => 'checkbox',
+      '#description' => t('Reset any changes to platform files. <em>WARNING: Any uncommitted changes to the platform files will be discarded.</em>', array(
+        '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
+      ),
+    );
+  }
+}
+/**
  * Implementation of hosting_QUEUE_TYPE_queue().
  */
 function hosting_pull_queue($count) {
@@ -36,29 +62,33 @@ function hosting_pull_queue($count) {
 }
 
 /**
- * Implementation of hook_nodeapi().
+ * hook_nodeapi()
  */
 function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'platform') {
     switch ($op) {
       case 'view':
-        if (!$a3) {
-          // @todo : turn it into x minutes ago
-          $node->content['info']['last_pull'] = array(
-            '#type' => 'item',
-            '#title' => t('Last pull'),
-            '#weight' => 20,
-            '#value' => 'COMING SOON', //hosting_format_interval($node->last_cron)
-          );
+        if (!$a3) { //!teaser
           $node->content['info']['pull_queue'] = array(
             '#type' => 'item',
             '#title' => t('Pull Queue'),
             '#weight' => 20,
             '#value' => $node->pull? t('Enabled'): t('Disabled'),
           );
+          $node->content['info']['last_pull'] = array(
+            '#type' => 'item',
+            '#title' => t('Last pull'),
+            '#weight' => 20,
+            '#value' => 'COMING SOON', //hosting_format_interval($node->last_cron)
+          );
         }
         break;
-    }
+    case 'insert':
+      dsm($node);
+      break;
+    case 'update':
+      //db_query('UPDATE {devshop_queue} SET ('));
+      break;
   }
 }
 
