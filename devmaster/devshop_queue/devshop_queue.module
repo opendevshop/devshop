@@ -20,7 +20,6 @@ function devshop_queue_hosting_queues() {
 }
 
 /**
-<<<<<<< HEAD
  * Implements hook_form_alter().
  */
 function devshop_queue_form_alter(&$form, &$form_status, $form_id){
@@ -103,5 +102,4 @@ function devshop_queue_get_sites($limit = 5) {
     $sites[$nid->nid] = node_load($nid->nid);
   }
   return $sites;
->>>>>>> aa8fd08523db61a693da8ed52ba26363beccc271
 }
