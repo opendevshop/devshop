@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * Implements hook_hosting_feature()
+ */
+function devshop_queue_hosting_feature() {
+  // From hosting_example_hosting_feature().
+  $features['devshop_queue'] = array(
+    'title' => t('DevShop Queue'),
+    'description' => t('Provides a queue for pulling a Git powered platform.'),
+    'status' => HOSTING_FEATURE_DISABLED,
+  );
+  return $features;
+}
+
+/**
+ * Implements hook_hosting_queues()
+ */
+function devshop_queue_hosting_queues() {
+  $items['pull'] = array(
+    'type' => 'batch', 
+    'name' => t('Pull queue'), 
+    'description' => t('Run git pull on platforms configured to do so.'), 
+    'total_items' => hosting_site_count(), 
+    'frequency' => strtotime("1 minute", 0), 
+    'min_threads' => 6, 
+    'max_threads' => 12, 
+    'threshold' => 100, 
+    'singular' => t('platform'), 
+    'plural' => t('platforms'),
+  );
+  return $items;
+}
+

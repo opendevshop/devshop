@@ -1,0 +1,4 @@
+name = DevShop Queue
+description = Provides a pull queue for a Git-powered platform.
+core = 6.x
+package = DevShop
