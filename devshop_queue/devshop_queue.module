@@ -32,3 +32,43 @@ function devshop_queue_hosting_queues() {
   return $items;
 }
 
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_queue_form_alter(&$form, &$form_status, $form_id){
+  if ($form_id == 'platform_node_form'){
+    drupal_set_message('node form');
+    $form['devshop'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop'),
+    );
+    $form['devshop']['pull'] = array(
+      '#title' => 'Enable Pull Queue',
+      '#type' => 'checkbox',
+      '#description' => t('Put this platform into the regular Git Pull queue.  See !link to configure the queue.', array(
+        '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
+      ),
+    );
+    $form['devshop']['pull_reset'] = array(
+      '#title' => 'Hard Reset on Pull',
+      '#type' => 'checkbox',
+      '#description' => t('Reset any changes to platform files. <em>WARNING: Any uncommitted changes to the platform files will be discarded.</em>', array(
+        '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
+      ),
+    );
+  }
+}
+
+/**
+ * hook_nodeapi()
+ */
+function devshop_queue_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch ($op) {
+    case 'insert':
+      dsm($op);
+      break;
+    case 'update':
+      db_query('UPDATE {devshop_queue} SET ('));
+      break;
+  }
+}
