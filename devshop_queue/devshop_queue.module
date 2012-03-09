@@ -110,7 +110,7 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
               '#type' => 'item',
               '#title' => t('Last pull status'),
               '#weight' => 23,
-              '#value' => $node->last_pull_status? t('OK'): t('Failed'),
+              '#value' => $node->last_pull_status == 1? t('OK'): t('Failed'),
             );
           }
         }
@@ -120,7 +120,7 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
       $node->pull = $data->pull;
       $node->pull_reset = $data->pull_reset;
       $node->last_pull = $data->last_pull;
-
+      $node->last_pull_status = $data->last_pull_status;
       break;
     case 'insert':
     case 'update':
