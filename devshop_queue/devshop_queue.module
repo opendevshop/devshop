@@ -39,7 +39,7 @@ function hosting_pull_queue($count) {
  * Implementation of hook_nodeapi().
  */
 function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
-  if ($node->type == 'site') {
+  if ($node->type == 'platform') {
     switch ($op) {
       case 'view':
         if (!$a3) {
@@ -49,6 +49,12 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
             '#title' => t('Last pull'),
             '#weight' => 20,
             '#value' => 'COMING SOON', //hosting_format_interval($node->last_cron)
+          );
+          $node->content['info']['pull_queue'] = array(
+            '#type' => 'item',
+            '#title' => t('Pull Queue'),
+            '#weight' => 20,
+            '#value' => $node->pull? t('Enabled'): t('Disabled'),
           );
         }
         break;
