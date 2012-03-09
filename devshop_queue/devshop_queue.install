@@ -8,7 +8,7 @@
  * Implementation of hook_schema().
  */
 function devshop_queue_schema() {
-  $schema['desvshop_queue'] = array(
+  $schema['devshop_queue_pull'] = array(
     'fields' => array(
       'platform_nid' => array(
         'type' => 'int',
@@ -20,9 +20,15 @@ function devshop_queue_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'pull_reset' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'last_pull' => array(
         'type' => 'int',
-        'not null' => FALSE,
+        'not null' => TRUE,
+        'default' => 0,
       ),
     ),
     'primary key' => array('platform_nid'),
@@ -37,4 +43,12 @@ function devshop_queue_schema() {
 function devshop_queue_install() {  
   // Create tables.
   drupal_install_schema('devshop_queue');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function devshop_queue_uninstall() {  
+  // Create tables.
+  drupal_uninstall_schema('devshop_queue');
 }
