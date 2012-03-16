@@ -117,10 +117,12 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
         break;
     case 'load':
       $data = db_fetch_object(db_query('SELECT * FROM {devshop_queue_pull} WHERE platform_nid =  %d', $node->nid));
-      $node->pull = $data->pull;
-      $node->pull_reset = $data->pull_reset;
-      $node->last_pull = $data->last_pull;
-      $node->last_pull_status = $data->last_pull_status;
+      if (!empty($data->nid)){
+        $node->pull = $data->pull;
+        $node->pull_reset = $data->pull_reset;
+        $node->last_pull = $data->last_pull;
+        $node->last_pull_status = $data->last_pull_status;
+      }
       break;
     case 'insert':
     case 'update':
@@ -144,7 +146,10 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
 function devshop_queue_get_sites($limit = 5) {
   $result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {hosting_platform} p ON n.nid=p.nid WHERE n.type='platform' and p.status = %d ORDER BY p.last_cron ASC, n.nid ASC limit %d", HOSTING_PLATFORM_ENABLED, $limit);
   while ($nid = db_fetch_object($result)) {
-    $sites[$nid->nid] = node_load($nid->nid);
+    $node = node_load($nid->nid);
+    if (!empty($node->nid)){
+      $sites[$nid->nid] = $node;
+    }
   }
   return $sites;
 }
