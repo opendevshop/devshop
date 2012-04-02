@@ -1,0 +1,112 @@
+<?php
+
+/**
+ * Implementation of hook_hosting_tasks()
+ *
+ * @TODO: Figure out how to hide this task from sites that don't have
+ * features.module enabled.
+ *
+ * See http://api.aegirproject.org/api/Hostmaster/modules--hosting--task--hosting_task.api.php/function/hook_hosting_tasks/7.x-2.x
+ */
+function devshop_tasks_hosting_tasks() {
+  $tasks = array();
+
+  $tasks['site']['commit'] = array(
+    'title' => t('Commit Features'),
+    'description' => t('Recreates all Features and commits the result.'),
+    'dialog' => TRUE,
+  );
+  $tasks['site']['pull'] = array(
+    'title' => t('Pull Code'),
+    'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
+    'dialog' => TRUE,
+  );
+  $tasks['site']['sync'] = array(
+    'title' => t('Sync Content'),
+    'description' => t('Sync content from another site and (optionally) run update.php, clear cache, and revert features.'),
+    'dialog' => TRUE,
+  );
+  return $tasks;
+}
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_tasks_perm() {
+  return array(
+    'create commit task',
+    'create pull task',
+    'create sync task',
+  );
+}
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Commit" task.
+ */
+function hosting_task_commit_form($node) {
+  $form['message'] = array(
+    '#title' => t('Commit Message'),
+    '#type' => 'textarea',
+    '#description' => 'A message describing this commit.'
+  );
+  // @TODO: Provide a DIFF display to give the user an idea of what has changed.
+  return $form;
+}
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Pull Code" task.
+ */
+function hosting_task_pull_form($node) {
+  // @TODO: Once there is some kind of site relationship system,
+  // determine if the site has a parent site to sync from, then show this checkbox.
+  /*
+  $form['sync'] = array(
+    '#title' => t('Sync content from live before code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  */
+  $form['update'] = array(
+    '#title' => t('Run update.php after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Revert all features after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['cache'] = array(
+    '#title' => t('Clear cache after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  return $form;
+}
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Sync Content" task.
+ */
+function hosting_task_sync_form($node) {
+  $form['update'] = array(
+    '#title' => t('Run update.php after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Revert all features after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['cache'] = array(
+    '#title' => t('Clear cache after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  return $form;
+}
