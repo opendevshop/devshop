@@ -18,7 +18,9 @@ function drush_provision_provision_devshop_revert() {
   $target = d()->name;
   
   //Pause Hostmaster (Mainly for the git pull task)
-  // @TODO
+  
+  
+  // @TODO: GET OPTIONS from the hostmaster tasks
 
   // Pull latest version of site
   provision_backend_invoke($target, 'provision-git-pull');
