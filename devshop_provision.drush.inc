@@ -34,5 +34,16 @@ function devshop_provision_drush_command() {
     ), 
     'aliases' => array('ps'),
   );
+  $items['provision-commit'] = array(
+    'description' => 'Export the site\'s Features and commit the result.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'options' => array(
+      'revert' => ' Force revert all features after exporting and committing.',
+    ),
+    'aliases' => array('pc'),
+    'arguments' => array(
+      'from' => 'Site alias to sync from.',
+    ),
+  );
   return $items;
 }
