@@ -103,18 +103,23 @@ function hosting_task_devshop_pull_form($node) {
  * For "Sync Content" task.
  */
 function hosting_task_devshop_sync_form($node) {
+  $form['pull'] = array(
+    '#title' => t('Pull code before content sync?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
   $form['update'] = array(
-    '#title' => t('Run update.php after code pull?'),
+    '#title' => t('Run update.php after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
   $form['revert'] = array(
-    '#title' => t('Revert all features after code pull?'),
+    '#title' => t('Revert all features after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
   $form['cache'] = array(
-    '#title' => t('Clear cache after code pull?'),
+    '#title' => t('Clear cache after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
