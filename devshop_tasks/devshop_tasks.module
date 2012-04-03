@@ -11,17 +11,17 @@
 function devshop_tasks_hosting_tasks() {
   $tasks = array();
 
-  $tasks['site']['commit'] = array(
+  $tasks['site']['devshop-commit'] = array(
     'title' => t('Commit Features'),
     'description' => t('Recreates all Features and commits the result.'),
     'dialog' => TRUE,
   );
-  $tasks['site']['pull'] = array(
+  $tasks['site']['devshop-pull'] = array(
     'title' => t('Pull Code'),
     'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
     'dialog' => TRUE,
   );
-  $tasks['site']['sync'] = array(
+  $tasks['site']['devshop-sync'] = array(
     'title' => t('Sync Content'),
     'description' => t('Sync content from another site and (optionally) run update.php, clear cache, and revert features.'),
     'dialog' => TRUE,
@@ -34,9 +34,9 @@ function devshop_tasks_hosting_tasks() {
  */
 function devshop_tasks_perm() {
   return array(
-    'create commit task',
-    'create pull task',
-    'create sync task',
+    'create devshop-commit task',
+    'create devshop-pull task',
+    'create devshop-sync task',
   );
 }
 
@@ -45,7 +45,7 @@ function devshop_tasks_perm() {
  *
  * For "Commit" task.
  */
-function hosting_task_commit_form($node) {
+function hosting_task_devshop_commit_form($node) {
   $form['message'] = array(
     '#title' => t('Commit Message'),
     '#type' => 'textarea',
@@ -59,7 +59,7 @@ function hosting_task_commit_form($node) {
  *
  * For "Pull Code" task.
  */
-function hosting_task_pull_form($node) {
+function hosting_task_devshop_pull_form($node) {
   // @TODO: Once there is some kind of site relationship system,
   // determine if the site has a parent site to sync from, then show this checkbox.
   /*
@@ -92,7 +92,7 @@ function hosting_task_pull_form($node) {
  *
  * For "Sync Content" task.
  */
-function hosting_task_sync_form($node) {
+function hosting_task_devshop_sync_form($node) {
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
