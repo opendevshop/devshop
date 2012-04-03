@@ -41,10 +41,14 @@ function drush_provision_provision_devshop_commit() {
   provision_backend_invoke($target, 'provision-git-commit', array(), $data);
   
   //Push, if the user wants.
-  //@TODO: Run this from hostmaster
-  //if (drush_get_option('push')){
+  if (drush_get_option('push')){
     provision_backend_invoke($target, 'provision-git-push');
-  //}
+  }
+  
+  //Revert, if the user wants.
+  if (drush_get_option('revert')){
+    provision_backend_invoke($target, 'provision-git-reset');
+  }
   
   //Resume cron
   // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()

@@ -50,9 +50,18 @@ function devshop_provision_drush_command() {
 
 function drush_devshop_provision_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
+  // Pull
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-pull') {
     $task->options['no-update'] = !$task->task_args['update'];
     $task->options['no-revert'] = !$task->task_args['revert'];
     $task->options['no-cache'] = !$task->task_args['cache'];
   }
+  
+  // Commit
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-commit') {
+    $task->options['message'] = $task->task_args['message'];
+    $task->options['push'] = $task->task_args['push'];
+    $task->options['revert'] = $task->task_args['revert'];
+  }
+  
 }
