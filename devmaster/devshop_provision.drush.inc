@@ -66,6 +66,7 @@ function drush_devshop_provision_pre_hosting_task() {
   
   // Sync
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-sync') {
+    $task->options['source'] = $task->task_args['source'];
     $task->options['pull'] = $task->task_args['pull'];
     $task->options['no-update'] = !$task->task_args['update'];
     $task->options['no-revert'] = !$task->task_args['revert'];
