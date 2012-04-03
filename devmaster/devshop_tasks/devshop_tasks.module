@@ -51,6 +51,16 @@ function hosting_task_devshop_commit_form($node) {
     '#type' => 'textarea',
     '#description' => 'A message describing this commit.'
   );
+  $form['push'] = array(
+    '#title' => t('Push code after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Force revert features after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
   // @TODO: Provide a DIFF display to give the user an idea of what has changed.
   return $form;
 }
