@@ -37,7 +37,7 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
   exec('crontab -r');
   
   //Drop the database
-  drush_log(dt('DevShop: Dropping tables for destination'));
+  drush_log(dt('DevShop: Dropping tables for destination'), 'ok');
   provision_backend_invoke($destination, 'sql-drop');
   
   // Run provision-devshop-pull if requested
@@ -47,23 +47,54 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
   
   // Sync the databases
   $timestamp = date("Ymd-His");
-  $filepath = drush_server_home() . "/backups/$source_name-$timestamp.sql";
+  //@TODO I know there is a better way...  Don't remember where to find it.
+  $file_path = drush_server_home() . "/backups/devshop-sync/";
+  $file_name = "$source_name-$timestamp.sql";
+  $file = $file_path . $file_name;
+  
+  //Create backup folder if does not exist
+  if (!file_exists($file_path)){
+    provision_file()->mkdir($file_path)
+      ->succeed('Created devshop-sync backups folder: ' . $file_path)
+     ->fail('Could not create the folder: ' . $file_path)
+     ->status();
+  }
+  
   $options = array(
-    'source-dump' => $filepath,
-    'target-dump' => $filepath,
-    'result-file' => $filepath,
+    'source-dump' => $file,
+    'target-dump' => $file,
+    'result-file' => $file,
+    //@TODO: get this working.  Have to figure out proper code to extract gz into SQL Import
+    //'gzip' => TRUE,  
   );
-  //Source and target dump options aren't working here... why?
+  
+  //Source and target dump options aren't working here... @TODO: figure out why!
   //provision_backend_invoke('@hostmaster', 'sql-sync', array($source, $destination), $options);
   //drush_invoke('sql-sync', $source, $destination);
   
   // SQL Dump
-  drush_log(dt('DevShop: Creating SQL dump from !source', array('!source' => $source)));
+  drush_log(dt('DevShop: Creating SQL dump from !source', array('!source' => $source)), 'ok');
   provision_backend_invoke($source, 'sql-dump', array(), $options);
 
+  // COPY SQL file if it doesn't exist (which means a remote source)
+  // @TODO: Determine if source is remote instead of just checking if file is there.
+  if (!file_exists($file)){
+    // Rsync to this machine.
+    drush_log('Copying backup from remote server', 'ok');
+    
+    provision_backend_invoke('server_master', 'rsync', array($source . ':' . $file_path, $file_path));
+
+    if (drush_core_rsync($source . ':' . $file, $file, array(), TRUE, FALSE)) {
+      drush_log('SQL transfered', 'ok');
+    } else {
+      return drush_log(dt('Failed to copy the backup from the remote server'), 'error');
+    }
+  }
+  
   // SQL Import
-  drush_log(dt('DevShop: Importing SQL into !destination', array('!destination' => $destination)));
-  exec("drush $destination sql-cli < $filepath");
+  // provision_backend_invoke() does not work here.  Doesn't like piping
+  drush_log(dt('DevShop: Importing SQL into !destination', array('!destination' => $destination)), 'ok');
+  exec("drush $destination sql-cli < $file");
 
   //@TODO: Sync files?  Or just use stage_file_proxy...
 
