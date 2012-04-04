@@ -1,7 +1,7 @@
-diff --git a/modules/hosting/task/hosting_task.module b/modules/hosting/task/hosting_task.module
+diff --git modules/hosting/task/hosting_task.module modules/hosting/task/hosting_task.module
 index 144aac0..88e27f9 100644
---- a/modules/hosting/task/hosting_task.module
-+++ b/modules/hosting/task/hosting_task.module
+--- modules/hosting/task/hosting_task.module
++++ modules/hosting/task/hosting_task.module
 @@ -368,7 +368,7 @@ function hosting_task_confirm_form($form_state, $node, $task) {
    $form['nid'] = array('#type' => 'value', '#value' => $node->nid);
    $form['task'] = array('#type' => 'value', '#value' => $task);
