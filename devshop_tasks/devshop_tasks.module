@@ -103,6 +103,11 @@ function hosting_task_devshop_pull_form($node) {
  * For "Sync Content" task.
  */
 function hosting_task_devshop_sync_form($node) {
+  $form['source'] = array(
+    '#title' => t('Source site alias'),
+    '#type' => 'textfield',
+    '#description' => t('Enter a site alias to sync from.  The alias must exist in the local system.'),
+  );
   $form['pull'] = array(
     '#title' => t('Pull code before content sync?'),
     '#type' => 'checkbox',
