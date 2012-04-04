@@ -85,9 +85,7 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
     // Rsync to this machine.
     drush_log('Copying backup from remote server', 'ok');
     
-    provision_backend_invoke('server_master', 'rsync', array($source . ':' . $file_path, $file_path));
-
-    if (drush_core_rsync($source . ':' . $file, $file, array(), TRUE, FALSE)) {
+    if (provision_backend_invoke('server_master', 'rsync', array($source . ':' . $file_path, $file_path))) {
       drush_log('SQL transfered', 'ok');
     } else {
       return drush_log(dt('Failed to copy the backup from the remote server'), 'error');
