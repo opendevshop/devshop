@@ -42,7 +42,9 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
   
   // Run provision-devshop-pull if requested
   if (drush_get_option('pull')) {
-    provision_backend_invoke($destination, 'provision-git-pull');
+    if (!provision_backend_invoke($destination, 'provision-git-pull')){
+      return;
+    }
   }
   
   // Sync the databases
@@ -53,6 +55,7 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
   $file = $file_path . $file_name;
   
   //Create backup folder if does not exist
+  //@TODO: DO THIS ON REMOTE AS WELL
   if (!file_exists($file_path)){
     provision_file()->mkdir($file_path)
       ->succeed('Created devshop-sync backups folder: ' . $file_path)
