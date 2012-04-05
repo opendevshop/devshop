@@ -33,7 +33,7 @@ function drush_provision_provision_devshop_pull() {
 
   // Verify the site.
   // @TODO: provision-git-pull should actually handle this. If the files change,
-  // tt should automatically verify.
+  // it should automatically verify.
   provision_backend_invoke($target, 'provision-verify');
   
   // update db, unless option is false.
