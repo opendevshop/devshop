@@ -31,6 +31,11 @@ function drush_provision_provision_devshop_pull() {
   // Pull latest version of site
   provision_backend_invoke($target, 'provision-git-pull');
 
+  // Verify the site.
+  // @TODO: provision-git-pull should actually handle this. If the files change,
+  // tt should automatically verify.
+  provision_backend_invoke($target, 'provision-verify');
+  
   // update db, unless option is false.
   if ($update){
     provision_backend_invoke($target, 'updb');
@@ -45,9 +50,6 @@ function drush_provision_provision_devshop_pull() {
   if ($cache){
     provision_backend_invoke($target, 'cc all');
   }
-  
-  // Verify the site.
-  provision_backend_invoke($target, 'provision-verify');
   
   //Resume cron
   // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()
