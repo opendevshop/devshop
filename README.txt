@@ -34,7 +34,7 @@ place because then you can update drush core without a hassle.
 -------------------------
 Install devshop_hosting
 
-Download devshop_provision into your @hostmaster site with drush:
+Download devshop_hosting into your @hostmaster site with drush:
   $ drush @hostmaster dl devshop_hosting
  
 Enable devshop_tasks with drush.  Unless you like visiting your admin pages.
