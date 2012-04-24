@@ -26,6 +26,18 @@ It will try to download it to /usr/share/drush/commands, but you can put it
 anywhere Drush command files can live.  /var/aegir/.drush/commands is a good
 place because then you can update drush core without a hassle.
 
+
+---------------
+NOTE about Sync
+---------------
+Currently the Sync command requires a special folder in the Aegir Backups directory on 
+BOTH servers:
+
+$ mkdir ~/backups/devshop-sync
+
+Unfortunately drush rsync cannot sync single files, as far as I know, so it syncs the 
+folder.
+
 -------------------------------------
 Provision Commands & Hostmaster Tasks
 -------------------------------------
