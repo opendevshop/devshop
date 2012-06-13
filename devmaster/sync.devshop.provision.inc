@@ -3,7 +3,7 @@
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
+function drush_provision_devshop_sync($source = NULL, $destination = NULL) {
   drush_log(dt('Provision DevShop Sync started...'));
   
   //Get source name
@@ -132,6 +132,6 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
 /**
  * drush_sql_sync_init() does what we want!
  */
-function drush_provision_provision_devshop_sync_init($source = NULL, $destination = NULL) {
+function drush_provision_devshop_sync_init($source = NULL, $destination = NULL) {
   return drush_sql_sync_init($source, $destination);
 }

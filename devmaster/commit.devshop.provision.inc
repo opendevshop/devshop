@@ -11,7 +11,7 @@ function drush_provision_pre_provision_devshop_commit(){
 /**
  * Implements the provision-git-pull command.
  */
-function drush_provision_provision_devshop_commit() {
+function drush_provision_devshop_commit() {
 
   $site_path = d()->platform->root;
   $target = d()->name;
@@ -22,6 +22,10 @@ function drush_provision_provision_devshop_commit() {
   
   // Update All Features
   provision_backend_invoke($target, 'features-update-all');
+
+  //Invoke provision-git-add to add any new files to the index
+  provision_backend_invoke($target, 'provision-git-add', 
+    array("sites/all/modules/features"), $data);
 
   //Execute git commit
   //Generate commit message
