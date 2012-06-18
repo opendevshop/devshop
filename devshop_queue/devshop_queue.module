@@ -83,7 +83,7 @@ function hosting_pull_queue($count) {
  * hook_nodeapi()
  */
 function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
-  if ($node->type == 'platform') {
+  if ($node->type == 'platform' || $node->type == 'site') {
     switch ($op) {
       case 'view':
         if (!$a3) { //!teaser
