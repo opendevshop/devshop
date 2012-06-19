@@ -87,47 +87,58 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
     switch ($op) {
       case 'view':
         if (!$a3) { //!teaser
+	  if($node->type == 'platform') {
+	    $pnode = $node;
+	  }
+	  else {
+	    $pnode = node_load($node->platform);
+	  }
+
           $node->content['info']['pull'] = array(
             '#type' => 'item',
             '#title' => t('Pull Queue'),
-            '#weight' => 20,
-            '#value' => $node->pull? t('Enabled'): t('Disabled'),
+            '#weight' => 30,
+            '#value' => $pnode->pull? t('Enabled'): t('Disabled'),
           );
-          if ($node->pull){
+          if ($pnode->pull){
             $node->content['info']['pull_reset'] = array(
               '#type' => 'item',
               '#title' => t('Reset on Pull'),
-              '#weight' => 21,
-              '#value' => $node->pull_reset? t('Enabled'): t('Disabled'),
+              '#weight' => 31,
+              '#value' => $pnode->pull_reset? t('Enabled'): t('Disabled'),
             );
             $node->content['info']['last_pull'] = array(
               '#type' => 'item',
               '#title' => t('Last pull'),
-              '#weight' => 22,
-              '#value' => hosting_format_interval($node->last_pull),
+              '#weight' => 32,
+              '#value' => hosting_format_interval($pnode->last_pull),
             );
             $node->content['info']['last_pull_status'] = array(
               '#type' => 'item',
               '#title' => t('Last pull status'),
-              '#weight' => 23,
-              '#value' => $node->last_pull_status == 1? t('OK'): ($node->last_pull? t('Failed'): t('Never Pulled')),
+              '#weight' => 33,
+              '#value' => $pnode->last_pull_status == 1? t('OK'): ($pnode->last_pull? t('Failed'): t('Never Pulled')),
             );
           }
         }
         break;
     case 'load':
-      $data = db_fetch_object(db_query('SELECT * FROM {devshop_queue_pull} WHERE platform_nid =  %d', $node->nid));
-      if (!empty($data->platform_nid)){
-        $node->pull = $data->pull;
-        $node->pull_reset = $data->pull_reset;
-        $node->last_pull = $data->last_pull;
-        $node->last_pull_status = $data->last_pull_status;
+      if ($node->type == 'platform') {
+	$data = db_fetch_object(db_query('SELECT * FROM {devshop_queue_pull} WHERE platform_nid =  %d', $node->nid));
+	if (!empty($data->platform_nid)){
+	  $node->pull = $data->pull;
+	  $node->pull_reset = $data->pull_reset;
+	  $node->last_pull = $data->last_pull;
+	  $node->last_pull_status = $data->last_pull_status;
+	}
       }
       break;
     case 'insert':
     case 'update':
-      db_query('DELETE FROM {devshop_queue_pull} WHERE platform_nid = %d', $node->nid);
-      db_query('INSERT INTO {devshop_queue_pull} (platform_nid, pull, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
+      if ($node->type == 'platform') {
+	db_query('DELETE FROM {devshop_queue_pull} WHERE platform_nid = %d', $node->nid);
+	db_query('INSERT INTO {devshop_queue_pull} (platform_nid, pull, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
+      }
       break;
     }
   }
