@@ -16,11 +16,23 @@ function devshop_tasks_hosting_tasks() {
     'description' => t('Recreates all Features and commits the result.'),
     'dialog' => TRUE,
   );
-  $tasks['site']['devshop-pull'] = array(
-    'title' => t('Pull Code'),
-    'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
-    'dialog' => TRUE,
-  );
+  $pull = false;
+
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    if ($node && $node->platform) {
+      $pnode = node_load($node->platform);
+      $pull = $pnode->pull;
+    }
+  }
+
+  if (!$pull) {
+    $tasks['site']['devshop-pull'] = array(
+      'title' => t('Pull Code'),
+      'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
+      'dialog' => TRUE,
+    );
+  }
   $tasks['site']['devshop-sync'] = array(
     'title' => t('Sync Content'),
     'description' => t('Sync content from another site and (optionally) run update.php, clear cache, and revert features.'),
@@ -79,6 +91,7 @@ function hosting_task_devshop_pull_form($node) {
     '#default_value' => 1,
   );
   */
+  print_r("kory");
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
