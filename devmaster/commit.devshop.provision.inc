@@ -11,7 +11,7 @@ function drush_provision_pre_provision_devshop_commit(){
 /**
  * Implements the provision-git-pull command.
  */
-function drush_provision_devshop_commit() {
+function drush_provision_provision_devshop_commit() {
 
   $site_path = d()->platform->root;
   $target = d()->name;
