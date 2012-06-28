@@ -1,5 +1,7 @@
 <?php
 
+require_once DRUSH_BASE_PATH . '/commands/sql/sync.sql.inc';
+
 /**
  * Implements the provision-devshop-deploy command.
  */
