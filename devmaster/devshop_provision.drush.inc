@@ -27,6 +27,7 @@ function devshop_provision_drush_command() {
       'update' => 'Run update.php after content sync.',
       'revert' => 'Revert all features after content sync.',
       'cache' => 'Clear all caches after content sync.',
+      'files' => 'Sync site files.',
     ),
     'arguments' => array(
       'from' => 'Site alias to sync from.', 

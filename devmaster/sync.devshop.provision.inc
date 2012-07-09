@@ -99,7 +99,11 @@ function drush_provision_provision_devshop_sync($source = NULL, $destination = N
   drush_log(dt('DevShop: Importing SQL into !destination', array('!destination' => $destination)), 'ok');
   exec("drush $destination sql-cli < $file");
 
-  //@TODO: Sync files?  Or just use stage_file_proxy...
+  // Sync files via rsync
+  if (drush_get_option('files')) {
+     drush_log(dt('DevShop: Syncing file contents to !destination', array('!destination' => $destination)), 'ok');
+     provision_backend_invoke('server_master', 'rsync', array("$source:%files", "$destination:%files"));
+  }
 
   //Get options
   $update = drush_get_option('no-update') == FALSE;
