@@ -116,11 +116,28 @@ function hosting_task_devshop_pull_form($node) {
  * For "Sync Content" task.
  */
 function hosting_task_devshop_sync_form($node) {
+/* Disabled until we add support for custom aliases
   $form['source'] = array(
     '#title' => t('Source site alias'),
     '#type' => 'textfield',
     '#description' => t('Enter a site alias to sync from.  The alias must exist in the local system.'),
   );
+*/
+
+  $sites = array();
+  $r = db_query("SELECT title FROM {node} WHERE type = 'site'");
+  while($sa = db_fetch_object($r)) {
+    $sites['@' . $sa->title] = '@' . $sa->title;
+  }
+
+  $form['source'] = array(
+    '#type' => 'select',
+    '#title' => t('Source site alias'),
+    '#options' => $sites,
+//    '#default_value' => $category['selected'],
+    '#description' => t('Select site alias to sync from.'),
+  );
+
   $form['pull'] = array(
     '#title' => t('Pull code before content sync?'),
     '#type' => 'checkbox',
