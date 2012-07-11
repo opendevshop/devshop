@@ -35,21 +35,33 @@ function devshop_github_post_receive_webhook($platform, $hash) {
     return;
   }
 
-  $nid = db_result(db_query(
+  $pnid = db_result(db_query(
     "SELECT nid FROM {hosting_context} WHERE name = '%s'", $platform));
 
-  if (!$node = node_load($nid)) {
+  if (!$pnode = node_load($pnid)) {
     print "node_load failed";
     return;
   }
 
- if (_devshop_github_hash_create($node) != $hash) {
-   print "hash check failed";
-   return;
- }
+  if (_devshop_github_hash_create($pnode) != $hash) {
+    print "hash check failed";
+    return;
+  }
 
- print_r($node);
+  // Iterate through all of the sites that use this platform
+  $r = db_query("SELECT nid FROM {hosting_site} " .
+                "WHERE platform = %d AND status = 1", $pnid);
 
+  $args = array(
+    'update' => 0,
+    'revert' => 0,
+    'cache'  => 1
+  );
+
+  while ($site = db_fetch_object($r)) {
+    print "<br>Queing a pull task for node id $site->nid<br>";
+    hosting_add_task($site->nid, 'devshop-pull', $args);
+  } 
 }
 
 /*
@@ -78,11 +90,12 @@ function devshop_github_nodeapi(&$node, $op, $a3 = null) {
     switch ($op) {
       case 'view':
         if (!$a3) { //!teaser
+	  $purl = _devshop_github_post_receive_url($node);
           $node->content['info']['github_webhook'] = array(
             '#type' => 'item',
-            '#title' => t('GitHub WebHook URLGitHub WebHook UR'),
+            '#title' => t('Pull Code URL'),
             '#weight' => 30,
-            '#value' => t(_devshop_github_post_receive_url($node)),
+            '#value' => l($purl, $purl),
           );
         }
         break;
