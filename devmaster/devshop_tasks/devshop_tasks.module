@@ -26,13 +26,13 @@ function devshop_tasks_hosting_tasks() {
     }
   }
 
-  if (!$pull) {
-    $tasks['site']['devshop-pull'] = array(
-      'title' => t('Pull Code'),
-      'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
-      'dialog' => TRUE,
-    );
-  }
+  $tasks['site']['devshop-pull'] = array(
+    'title' => t('Pull Code'),
+    'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
+    'dialog' => TRUE,
+    'hidden' => $pull,
+  );
+
   $tasks['site']['devshop-sync'] = array(
     'title' => t('Sync Content'),
     'description' => t('Sync content from another site and (optionally) run update.php, clear cache, and revert features.'),
