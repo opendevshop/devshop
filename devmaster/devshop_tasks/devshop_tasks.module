@@ -91,7 +91,6 @@ function hosting_task_devshop_pull_form($node) {
     '#default_value' => 1,
   );
   */
-  print_r("kory");
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
