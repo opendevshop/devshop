@@ -1,6 +1,6 @@
 <?php
 
-define('GITHUB_POST_RECIEVE_PATH', 'git/post-receive');
+define('GITHUB_POST_RECEIVE_PATH', 'git/post-receive');
 
 /**
  * Implementation of hook_perm()
@@ -16,7 +16,7 @@ function devshop_github_perm() {
  */
 function devshop_github_menu() {
 
-   $items[GITHUB_POST_RECIEVE_PATH] = array(
+   $items[GITHUB_POST_RECEIVE_PATH] = array(
     'page callback' => 'devshop_github_post_receive_webhook',
     'access callback' => TRUE,
   );
@@ -69,7 +69,7 @@ function devshop_github_post_receive_webhook($platform, $hash) {
  * and given to the GitHub WebHook to invoke a pull after a commit.
  */
 function _devshop_github_post_receive_url($node) {
-  return url(GITHUB_POST_RECIEVE_PATH .
+  return url(GITHUB_POST_RECEIVE_PATH .
 	'/' . $node->hosting_name .
 	'/' . _devshop_github_hash_create($node), 
 	array('absolute' => TRUE));
