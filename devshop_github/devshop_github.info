@@ -1,0 +1,4 @@
+name = DevShop GitHub
+description = A GitHub WebHook module for DevShop Drupal site development.
+core = 6.x
+package = DevShop
