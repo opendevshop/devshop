@@ -1,6 +1,7 @@
 <?php
 
 define('GITHUB_POST_RECEIVE_PATH', 'git/post-receive');
+define('DSGH_WD_TYPE', 'devshop_github');
 
 /**
  * Implementation of hook_perm()
@@ -16,6 +17,15 @@ function devshop_github_perm() {
  */
 function devshop_github_menu() {
 
+  $items['admin/hosting/github'] = array(
+    'title' => 'DevShop GitHub',
+    'description' => 'Configure GitHub post-receive ACL',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_github_settings'),
+    'type' => MENU_LOCAL_TASK,
+    'access arguments' => array('administer hosting settings'),
+  );
+
    $items[GITHUB_POST_RECEIVE_PATH] = array(
     'page callback' => 'devshop_github_post_receive_webhook',
     'access callback' => TRUE,
@@ -30,21 +40,48 @@ function devshop_github_menu() {
  */
 function devshop_github_post_receive_webhook($platform, $hash) {
 
-  if (strlen($platform) < 1 || strlen($hash) != 32) {
-    print "bad parrms";
+  // Get the access from list
+  $acl = explode("\n", trim(variable_get('devshop_github_ip_acl', '')));
+
+
+  // Make sure the client's IP address is on the list
+  if (!in_array(ip_address(), $acl)) {
+    $message = ip_address() . " is not authorized to invoke the GitHub " .
+               "poat-receive WebHook";
+    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    print "$message<br>";
     return;
   }
 
+  $message = "GitHub post-receive hook invoked by " . ip_address();
+  watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
+  print "$message<br>";
+
+
+  if (strlen($platform) < 1 || strlen($hash) != 32) {
+    $message = "Invalid/missing parameters in URL!";
+    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    print "$message<br>";
+    return;
+  }
+
+  // Based on the platform name, get the node ID for the platform node
   $pnid = db_result(db_query(
     "SELECT nid FROM {hosting_context} WHERE name = '%s'", $platform));
 
+  // Load the entire node
   if (!$pnode = node_load($pnid)) {
-    print "node_load failed";
+    $message = "Unable to load platform node!";
+    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    print "$message<br>";
     return;
   }
 
+  // Make sure the security code is valid
   if (_devshop_github_hash_create($pnode) != $hash) {
-    print "hash check failed";
+    $message = "Security code $hash is not valid!";
+    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    print "$message<br>";
     return;
   }
 
@@ -52,6 +89,8 @@ function devshop_github_post_receive_webhook($platform, $hash) {
   $r = db_query("SELECT nid FROM {hosting_site} " .
                 "WHERE platform = %d AND status = 1", $pnid);
 
+  // When doing the pull task, don't do a db update or revert. 
+  // Just clear all of the caches
   $args = array(
     'update' => 0,
     'revert' => 0,
@@ -59,7 +98,9 @@ function devshop_github_post_receive_webhook($platform, $hash) {
   );
 
   while ($site = db_fetch_object($r)) {
-    print "<br>Queing a pull task for node id $site->nid<br>";
+    $message = "Queing a pull task for node id $site->nid";
+    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
+    print "$message<br>";
     hosting_add_task($site->nid, 'devshop-pull', $args);
   } 
 }
@@ -102,3 +143,27 @@ function devshop_github_nodeapi(&$node, $op, $a3 = null) {
      }
   }
 }
+
+/**
+ * General settings form.
+ */
+function devshop_github_settings() {
+  $form['devsop_github'] = array(
+    '#type' => 'item',
+    '#title' => t('DevShop GitHub WekHook settings'),
+    '#value' => t('Here you may set a list of IP addresses that are allowed to invoke the GitHub WebHooks.'),
+    '#weight' => 0,
+  );
+  $form['devsop_github']['devshop_github_ip_acl'] = array(
+    '#type' => 'textarea',
+    '#title' => t('GitHub WekHook Access Control IP'),
+    '#default_value' => variable_get('devshop_github_ip_acl', 
+    		     "50.57.128.197\n108.171.174.178\n207.97.227.253\n"),
+    '#rows' => 6,
+    '#weight' => 1,
+    '#description' => t('Enter the IP addresses that are allowed to trigger a Pull.  GitHub post-receive callback servers are: 207.97.227.253, 50.57.128.197, and 108.171.174.178.')
+  );
+
+  return system_settings_form($form);
+}
+
