@@ -1,7 +1,7 @@
 <?php
 
 define('GITHUB_POST_RECEIVE_PATH', 'git/post-receive');
-define('DSGH_WD_TYPE', 'devshop_github');
+define('DSGH_WD_TYPE', 'devshop');
 
 /**
  * Implementation of hook_perm()
@@ -43,6 +43,10 @@ function devshop_github_post_receive_webhook($platform, $hash) {
   // Get the access from list
   $acl = explode("\n", trim(variable_get('devshop_github_ip_acl', '')));
 
+  // I wish I didn't have to do this
+  for($i = 0; $i < count($acl); $i++) {
+    $acl[i] = trim($acl[i]);
+  }
 
   // Make sure the client's IP address is on the list
   if (!in_array(ip_address(), $acl)) {
@@ -98,7 +102,7 @@ function devshop_github_post_receive_webhook($platform, $hash) {
   );
 
   while ($site = db_fetch_object($r)) {
-    $message = "Queing a pull task for node id $site->nid";
+    $message = "Queuing a pull task for node id $site->nid";
     watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
     print "$message<br>";
     hosting_add_task($site->nid, 'devshop-pull', $args);
@@ -158,10 +162,10 @@ function devshop_github_settings() {
     '#type' => 'textarea',
     '#title' => t('GitHub WekHook Access Control IP'),
     '#default_value' => variable_get('devshop_github_ip_acl', 
-    		     "50.57.128.197\n108.171.174.178\n207.97.227.253\n"),
+    		     "50.57.128.197\n50.74.68.114\n108.171.174.178\n207.97.227.253\n"),
     '#rows' => 6,
     '#weight' => 1,
-    '#description' => t('Enter the IP addresses that are allowed to trigger a Pull.  GitHub post-receive callback servers are: 207.97.227.253, 50.57.128.197, and 108.171.174.178.')
+    '#description' => t('Enter the IP addresses that are allowed to trigger a Pull.  GitHub post-receive callback servers are: 50.57.128.197, 50.74.68.114, 108.171.174.178, and 207.97.227.253.')
   );
 
   return system_settings_form($form);
