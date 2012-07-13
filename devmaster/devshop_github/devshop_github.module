@@ -45,7 +45,7 @@ function devshop_github_post_receive_webhook($platform, $hash) {
 
   // I wish I didn't have to do this
   for($i = 0; $i < count($acl); $i++) {
-    $acl[i] = trim($acl[i]);
+    $acl[$i] = trim($acl[$i]);
   }
 
   // Make sure the client's IP address is on the list
