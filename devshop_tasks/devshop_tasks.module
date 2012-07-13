@@ -124,7 +124,11 @@ function hosting_task_devshop_sync_form($node) {
 */
 
   $sites = array();
-  $r = db_query("SELECT title FROM {node} WHERE type = 'site'");
+  $r = db_query("SELECT n.title FROM {node} AS n " .
+       		"LEFT JOIN {hosting_site} AS h ON n.nid = h.nid " .
+		"WHERE n.type = 'site' AND h.status = 1 AND n.title <> '%s'",
+		$node->title);
+
   while($sa = db_fetch_object($r)) {
     $sites['@' . $sa->title] = '@' . $sa->title;
   }
