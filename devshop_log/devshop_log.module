@@ -37,6 +37,16 @@ function _devsop_log_access_callback($nid) {
  * Implementation of hook_menu()
  */
 function devshop_log_menu() {
+
+  $items['admin/hosting/gitlog'] = array(
+    'title' => 'DevShop Git Log',
+    'description' => 'Configure Git Commit Log View',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_git_log_settings'),
+    'type' => MENU_LOCAL_TASK,
+    'access arguments' => array('administer hosting settings'),
+  );
+
   $items['node/%/gitlog'] = array(
     'title' => 'Git Commit Log',
     'description' => 'View Git commit log entries',
@@ -73,6 +83,31 @@ function devshop_log_view_form($form, $nid) {
   return $form;
 }
 
+/**
+ * General settings form.
+ */
+function devshop_git_log_settings() {
+  $form['devsop_github'] = array(
+    '#type' => 'item',
+    '#title' => t('DevShop Git Commit Log View settings'),
+    '#value' => '',
+    '#weight' => 0,
+  );
+  $form['devsop_git_log']['devshop_git_log_count'] = array(
+    '#type' => 'textfield',
+    '#maxlength' => 5,
+    '#title' => t('Max log entries to display'),
+    '#default_value' => variable_get('devshop_git_log_count', 10), 
+    '#weight' => 1,
+    '#description' => t('Enter the maximum number of log entries to ' .
+    		        'display in the Git Commit Log View page. A ' .
+			'value of 0 will display all of the log entries.'),
+  );
+
+  return system_settings_form($form);
+}
+
+
 /*
  * This is a hack which loads the git commit log for the given
  * platform node. 
@@ -92,12 +127,20 @@ function _devshop_log_load($nid) {
   // at the shell prompt, but doesn't work when I call git from PHP. 
   // Something to fix one day.
 
+  $log_count = variable_get('devshop_git_log_count', 10);
+  $log_count_opt = '';
+  if($log_count > 0) {
+    $log_count_opt = "-$log_count";
+  }
+
+  $git_path = variable_get('devshop_git_path', 'git');
+
   // Get our current working directory
   $cwd = getcwd();
   // Switch to the repo directory
   chdir($node->publish_path);
   // Fetch the log
-  $output = shell_exec("git log 2>&1");
+  $output = shell_exec("$git_path log $log_count_opt 2>&1");
   // Change back to our original work directory
   chdir($cwd);
 
