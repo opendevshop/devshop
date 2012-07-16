@@ -14,18 +14,37 @@ function devshop_log_perm() {
   );
 }
 
+/*
+ * The access callback for the Git Log menu tab. Make sure
+ * user has perms to veiw and and also that the node we are
+ * viewing is a platform node.
+ */
+
+function _devsop_log_access_callback($nid) {
+
+  if (!user_access('view git commit logs')) {
+    return FALSE;
+  }
+
+  $node = node_load($nid);
+  if (!$node || $node->type != 'platform') {
+    return FALSE;
+  }
+  return TRUE;
+}
+
 /**
  * Implementation of hook_menu()
  */
 function devshop_log_menu() {
-
   $items['node/%/gitlog'] = array(
     'title' => 'Git Commit Log',
     'description' => 'View Git commit log entries',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_log_view_form', 1),
     'type' => MENU_LOCAL_TASK,
-    'access arguments' => array('view git commit logs'),
+    'access callback' => _devsop_log_access_callback,
+    'access arguments' => array(1),
     'weight' => 4,
   );
 
@@ -80,8 +99,8 @@ function _devshop_log_load($nid) {
   // Fetch the log
   $output = shell_exec("git log 2>&1");
   // Change back to our original work directory
-  chdir($cwd)
-;
+  chdir($cwd);
+
   // See if the command failed
   if ($output == NULL) {
     return "Unable to execute 'git log'. " .
