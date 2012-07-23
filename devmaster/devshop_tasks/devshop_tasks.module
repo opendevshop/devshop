@@ -61,7 +61,7 @@ function hosting_task_devshop_commit_form($node) {
   $form['message'] = array(
     '#title' => t('Commit Message'),
     '#type' => 'textarea',
-    '#description' => 'A message describing this commit. Too see a diff output off all of the features, click ' . l(t('here.'), 'diff/'. $node->hosting_name, array('absolute' => TRUE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.'
+    '#description' => 'A message describing this commit.',
   );
   $form['push'] = array(
     '#title' => t('Push code after commit?'),
@@ -126,7 +126,8 @@ function hosting_task_devshop_sync_form($node) {
   $sites = array();
   $r = db_query("SELECT n.title FROM {node} AS n " .
        		"LEFT JOIN {hosting_site} AS h ON n.nid = h.nid " .
-		"WHERE n.type = 'site' AND h.status = 1 AND n.title <> '%s'",
+		"WHERE n.type = 'site' AND h.status = 1 AND n.title <> '%s'" .
+		"ORDER BY n.title ASC",
 		$node->title);
 
   while($sa = db_fetch_object($r)) {
@@ -137,7 +138,6 @@ function hosting_task_devshop_sync_form($node) {
     '#type' => 'select',
     '#title' => t('Source site alias'),
     '#options' => $sites,
-//    '#default_value' => $category['selected'],
     '#description' => t('Select site alias to sync from.'),
   );
 
@@ -164,23 +164,3 @@ function hosting_task_devshop_sync_form($node) {
   return $form;
 }
 
-/**
- * Implementation of hook_menu()
- */
-function devshop_tasks_menu() {
-
-  $items['diff/%'] = array(
-    'title' => 'Features Diff All',
-    'description' => 'View the diff output for all of the features',
-    'page callback' => _devshop_tasks_features_diff_all_view,
-    'page arguments' => array(1),
-    'access callback' => TRUE,
-  );
-
-  return ($items);
-}
-
-function _devshop_tasks_features_diff_all_view($site_alias) {
-//  system("/usr/bin/drush @$site_alias status");
-  provision_backend_invoke($site_name, "status", array(), array());
-}
