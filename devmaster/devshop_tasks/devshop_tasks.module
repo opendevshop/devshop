@@ -61,7 +61,7 @@ function hosting_task_devshop_commit_form($node) {
   $form['message'] = array(
     '#title' => t('Commit Message'),
     '#type' => 'textarea',
-    '#description' => 'A message describing this commit.',
+    '#description' => 'A message describing this commit. Too see a diff output off all of the features, click ' . l(t('here.'), "http://$node->hosting_name/features/diff/all", array('absolute' => FALSE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.'
   );
   $form['push'] = array(
     '#title' => t('Push code after commit?'),
