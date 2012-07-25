@@ -53,15 +53,37 @@ function devshop_tasks_perm() {
 }
 
 /**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_tasks_site_has_features_diff($node) {
+  $param = array(
+    'rid' => $node->nid,
+    'p.short_name' => 'features_diff',
+  );
+  $package = hosting_package_instance_load($param);
+  return $package->status;
+}
+
+/**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
  * For "Commit" task.
  */
 function hosting_task_devshop_commit_form($node) {
+
+  $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
+
+  if (_devshop_tasks_site_has_features_diff($node)) {
+    $descr .= 'click ' . l(t('here.'), "http://$node->hosting_name/features/diff/all", array('absolute' => TRUE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.';
+  }
+  else {
+    $descr .= 'enable the Features Diff module for this site, Verify the site, and select this task again.';
+  }
+
   $form['message'] = array(
     '#title' => t('Commit Message'),
     '#type' => 'textarea',
-    '#description' => 'A message describing this commit. Too see a diff output off all of the features, click ' . l(t('here.'), "http://$node->hosting_name/features/diff/all", array('absolute' => FALSE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.'
+    '#description' => $descr,
   );
   $form['push'] = array(
     '#title' => t('Push code after commit?'),
