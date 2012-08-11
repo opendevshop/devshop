@@ -1,0 +1,6 @@
+name = DevShop Projects
+description = A DevShop module to sites/platforms together into projects.
+core = 6.x
+package = DevShop
+dependencies[] = og
+
