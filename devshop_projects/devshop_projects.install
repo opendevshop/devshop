@@ -1,0 +1,53 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Projects
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_projects_schema() {
+ $schema['devshop_projects'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project/Node ID.',
+      ),
+      'site_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Site NID.',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 10,
+        'default' => '',
+        'description' => 'Environment type: dev, test, live, or sandbox.',
+      ),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function devshop_projects_install() {  
+  // Create tables.
+  drupal_install_schema('devshop_projects');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function devshop_projects_uninstall() {  
+  // Create tables.
+  drupal_uninstall_schema('devshop_projects');
+}
