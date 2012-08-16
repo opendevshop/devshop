@@ -96,10 +96,6 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         break;
 
     case 'load':
-      $url = db_result(db_query("SELECT git_url " .
-				"FROM {hosting_platform_git} " .
-				"WHERE nid = %d", $node->nid));
-
       if (!empty($url)){
         $node->git_url = $url;
       }
@@ -107,12 +103,14 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     case 'insert':
     case 'update':
+/*
       db_query("DELETE FROM {hosting_platform_git} " .
       	       "WHERE nid = %d", $node->nid);
       db_query("INSERT INTO {hosting_platform_git} " .
                "(nid, git_url, cloned) " .
                "VALUES (%d, '%s', 0)", 
 	       $node->nid, $node->git_url);
+*/
       break;
     }
   }
@@ -165,6 +163,7 @@ function devshop_projects_form(&$node) {
     '#size' => 40,
     '#default_value' => $node->git_url,
     '#maxlength' => 255,
+    '#weight' => 1,
   );
 
   $form['code_path'] = array(
@@ -174,6 +173,7 @@ function devshop_projects_form(&$node) {
     '#size' => 40,
     '#default_value' => $node->code_path,
     '#maxlength' => 255,
+    '#weight' => 2,
   );
 
   return $form;
@@ -251,7 +251,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#type' => 'item',
     '#title' => t('Git URL'),
     '#value' => $node->git_url,
-    '#weight' => 1
+    '#weight' => -10
   );
 
   $node->content['info']['code_path'] = array(
@@ -262,4 +262,14 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
  
   return $node;
+}
+
+/**
+ * Hide the delete button on project nodes.
+ */
+function hosting_devshop_projects_form_alter(&$form, &$form_state, $form_id) {
+  // Remove delete button from the edit form
+  if ($form_id == 'devshop_project_node_form') {
+    $form['buttons']['delete']['#type'] = 'hidden'; 
+  }
 }
