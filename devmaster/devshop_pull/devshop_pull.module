@@ -105,6 +105,10 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 	  else {
 	    $pnode = node_load($node->platform);
 	  }
+	  
+	  // @TODO: PULL QUEUE must be enabled first!  Show a notice to the user if Pull Queue
+	  // is not enabled!
+	  
 	  $pull_method = ($pnode->pull_method == DEVSHOP_PULL_CALLBACK? t('URL Callback'):
 			  ($pnode->pull_method == DEVSHOP_PULL_QUEUE? t('Hosting Queue'):
 			   (t('Disabled'))));
