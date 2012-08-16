@@ -54,6 +54,14 @@ function devshop_pull_callback($platform, $hash) {
     print "$message<br>";
     return;
   }
+  
+  // Make sure the platform has pull callback enabled
+  if ($pnode->pull_method != DEVSHOP_PULL_CALLBACK){
+    $message = "Platform is NOT configured to use Pull Code URL callback!";
+    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    print "$message<br>";
+    return;
+  }
 
   // Iterate through all of the sites that use this platform
   $r = db_query("SELECT nid FROM {hosting_site} " .
