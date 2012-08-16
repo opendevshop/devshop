@@ -15,6 +15,26 @@ function devshop_projects_perm() {
 }
 
 /**
+ * Implementation of hook_node_info().
+ */
+function devshop_projects_node_info() {
+  #configuration
+  $types["devshop_project"] =  array(
+    "type" => 'devshop_project', 
+    "name" => 'DevShop Project',
+    "module" => 'devshop_projects',
+    "has_title" => TRUE, 
+    "title_label" => t('Project Codename'),
+    "description" => t('Create a project'),
+    "has_body" => 0, 
+    "body_label" => '', 
+    "min_word_count" => 0
+    );
+
+  return $types;
+}
+
+/**
  * Implementation of hook_menu()
  */
 function devshop_projects_menu() {
@@ -51,3 +71,73 @@ function devshop_projects_projects_list_form($form_state, $filter_by = NULL, $fi
  
   return array();
 } 
+
+/**
+ * hook_nodeapi()
+ */
+function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
+
+  $etype = array('dev' => 'Dev',
+  	   	 'test' => 'Test',
+		 'live' => 'Live');
+
+  if ($node->type == 'site') {
+    switch ($op) {
+      case 'view':
+        if (!$a3) { //!teaser
+          $node->content['info']['environment'] = array(
+	    '#type' => 'item',
+    	    '#title' => t('Environment Type'),
+            '#value' => t($etype[$node->environment]),
+    	    '#description' => t('')
+  	    );
+
+        }
+        break;
+
+    case 'load':
+      $url = db_result(db_query("SELECT git_url " .
+				"FROM {hosting_platform_git} " .
+				"WHERE nid = %d", $node->nid));
+
+      if (!empty($url)){
+        $node->git_url = $url;
+      }
+      break;
+
+    case 'insert':
+    case 'update':
+      db_query("DELETE FROM {hosting_platform_git} " .
+      	       "WHERE nid = %d", $node->nid);
+      db_query("INSERT INTO {hosting_platform_git} " .
+               "(nid, git_url, cloned) " .
+               "VALUES (%d, '%s', 0)", 
+	       $node->nid, $node->git_url);
+      break;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_projects_form_alter(&$form, &$form_state, $form_id){
+  if ($form_id == 'site_node_form'){
+    $node = $form['#node'];
+    $form['devshop'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop'),
+    );
+
+    $etype = array('dev' => 'Dev',
+    	           'test' => 'Test',
+		   'live' => 'Live');
+
+    $form['devshop']['environement'] = array(
+      '#title' => 'Environment Type',
+      '#type' => 'select',
+      '#description' => t('Select the environement type for this site'),
+      '#options' => $etype,
+    );
+  }
+}
