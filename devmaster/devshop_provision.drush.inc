@@ -9,14 +9,14 @@
  * Implementation of hook_drush_command().
  */
 function devshop_provision_drush_command() {
-  $items['provision-devshop-create'] = array(
+  $items['provision-devshop-start'] = array(
     'description' => 'Create a DevShop Project with three platforms and three sites for dev, test, and live.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
       'git-url' => 'The URL of a git repo to use to create the platforms.',
       'path' => 'Desired project path.',
     ),
-    'aliases' => array('pdc'),
+    'aliases' => array('start-project'),
   );
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify site code and (optionally) run update.php, clear cache, and revert features.',
