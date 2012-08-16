@@ -8,7 +8,29 @@
  * Implementation of hook_schema().
  */
 function devshop_projects_schema() {
- $schema['devshop_projects'] = array(
+ $schema['hosting_devshop_project'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project/Node ID.',
+      ),
+      'git_url' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'code_path' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+    ),
+  );
+
+ $schema['hosting_devshop_project_sites'] = array(
     'fields' => array(
       'nid' => array(
         'type' => 'int',
@@ -23,9 +45,15 @@ function devshop_projects_schema() {
         'default' => 0,
         'description' => 'Site NID.',
       ),
+      'platform_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The node ID of the platform.',
+      ),
       'type' => array(
         'type' => 'varchar',
-        'not null' => FALSE,
+        'not null' => TRUE,
         'length' => 10,
         'default' => '',
         'description' => 'Environment type: dev, test, live, or sandbox.',
@@ -48,6 +76,6 @@ function devshop_projects_install() {
  * Implementation of hook_uninstall().
  */
 function devshop_projects_uninstall() {  
-  // Create tables.
+  // Delete tables.
   drupal_uninstall_schema('devshop_projects');
 }
