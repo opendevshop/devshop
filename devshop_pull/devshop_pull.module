@@ -1,5 +1,10 @@
 <?php
 
+
+define(DEVSHOP_PULL_DISABLED, 0);
+define(DEVSHOP_PULL_QUEUE, 1);
+define(DEVSHOP_PULL_CALLBACK, 2);
+
 /**
  * Implements hook_hosting_queues()
  */
@@ -8,7 +13,7 @@ function devshop_pull_hosting_queues() {
     'type' => 'batch', 
     'name' => t('Pull queue'), 
     'description' => t('Run git pull on platforms configured to do so.'), 
-    'total_items' => hosting_site_count(), 
+    'total_items' => 'TODO',//hosting_site_count(), 
     'frequency' => strtotime("1 minute", 0), 
     'singular' => t('platform'), 
     'plural' => t('platforms'),
@@ -21,25 +26,32 @@ function devshop_pull_hosting_queues() {
  */
 function devshop_pull_form_alter(&$form, &$form_state, $form_id){
   if ($form_id == 'platform_node_form'){
+    // Get node
     $node = $form['#node'];
-    $form['devshop'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('DevShop'),
-    );
-    $form['devshop']['pull'] = array(
-      '#title' => 'Enable Pull Queue',
-      '#type' => 'checkbox',
-      '#description' => t('Put this platform into the regular Git Pull queue.  See !link to configure the queue.', array(
+    
+    // Get default value
+    if (is_null($node->pull)){
+      $node->pull = 0;
+    }
+    
+    $form['pull'] = array(
+      '#title' => 'Automatic Git Pull Method',
+      '#type' => 'radios',
+      '#description' => t('Choose the method of regularly calling "Pull Code".  See !link to configure the queue.  See GitHub WebHook documentation for URL Callback', array(
         '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
       ),
       '#default_value' => $node->pull,
+      '#options' => array(
+	DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
+	DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
+	DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
+	
+      ),
     );
-    $form['devshop']['pull_reset'] = array(
+    $form['pull_reset'] = array(
       '#title' => 'Hard Reset on Pull',
       '#type' => 'checkbox',
-      '#description' => t('Reset any changes to platform files. <em>WARNING: Any uncommitted changes to the platform files will be discarded.</em>', array(
-        '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
-      ),
+      '#description' => t('Reset any changes to platform files. <em>WARNING: Any uncommitted changes to the platform files will be discarded.</em>'),
       '#default_value' => $node->pull_reset,
     );
   }
@@ -69,12 +81,12 @@ function hosting_pull_queue($count) {
     if ($error){
       //@TODO: Set last_pull_status
       watchdog('devshop', 'Pull FAILED on platform: @alias', array('@alias' => $platform_name));
-      db_query('UPDATE {devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
+      db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
       
     } else {
       //@TODO: Set last_pull
       watchdog('devshop', 'Pull Successful on platform: @alias', array('@alias' => $platform_name));
-      db_query('UPDATE {devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 1, $platform->platform_nid);
+      db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 1, $platform->platform_nid);
     }
   }    
 }
@@ -82,7 +94,7 @@ function hosting_pull_queue($count) {
 /**
  * Implements hook_nodeapi()
  */
-function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
+function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'platform' || $node->type == 'site') {
     switch ($op) {
       case 'view':
@@ -93,12 +105,16 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
 	  else {
 	    $pnode = node_load($node->platform);
 	  }
+	  
+	  $pull_method = ($pnode->pull == DEVSHOP_PULL_CALLBACK? t('Callback Enabled'):
+			  ($pnode->pull == DEVSHOP_PULL_QUEUE? t('Queue Enabled'):
+			   (t('Disabled'))));
 
           $node->content['info']['pull'] = array(
             '#type' => 'item',
             '#title' => t('Pull Queue'),
             '#weight' => 30,
-            '#value' => $pnode->pull? t('Enabled'): t('Disabled'),
+            '#value' => $pull_method,
           );
           if ($pnode->pull){
             $node->content['info']['pull_reset'] = array(
@@ -124,7 +140,7 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
         break;
     case 'load':
       if ($node->type == 'platform') {
-	$data = db_fetch_object(db_query('SELECT * FROM {devshop_queue_pull} WHERE platform_nid =  %d', $node->nid));
+	$data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull} WHERE platform_nid =  %d', $node->nid));
 	if (!empty($data->platform_nid)){
 	  $node->pull = $data->pull;
 	  $node->pull_reset = $data->pull_reset;
@@ -136,8 +152,8 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
     case 'insert':
     case 'update':
       if ($node->type == 'platform') {
-	db_query('DELETE FROM {devshop_pull} WHERE platform_nid = %d', $node->nid);
-	db_query('INSERT INTO {devshop_pull} (platform_nid, pull, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
+	db_query('DELETE FROM {hosting_devshop_pull} WHERE platform_nid = %d', $node->nid);
+	db_query('INSERT INTO {hosting_devshop_pull} (platform_nid, pull_method, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
       }
       break;
     }
