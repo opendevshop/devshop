@@ -1,9 +1,9 @@
 <?php
 
 
-define(DEVSHOP_PULL_DISABLED, 0);
-define(DEVSHOP_PULL_QUEUE, 1);
-define(DEVSHOP_PULL_CALLBACK, 2);
+define('DEVSHOP_PULL_DISABLED', 0);
+define('DEVSHOP_PULL_QUEUE', 1);
+define('DEVSHOP_PULL_CALLBACK', 2);
 
 /**
  * Implements hook_hosting_queues()
