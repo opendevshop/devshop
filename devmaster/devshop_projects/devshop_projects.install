@@ -28,6 +28,7 @@ function devshop_projects_schema() {
         'not null' => FALSE,
       ),
     ),
+    'primary key' => array('nid'),
   );
 
  $schema['hosting_devshop_project_sites'] = array(
@@ -51,7 +52,7 @@ function devshop_projects_schema() {
         'default' => 0,
         'description' => 'The node ID of the platform.',
       ),
-      'type' => array(
+      'env_type' => array(
         'type' => 'varchar',
         'not null' => TRUE,
         'length' => 10,
@@ -59,6 +60,7 @@ function devshop_projects_schema() {
         'description' => 'Environment type: dev, test, live, or sandbox.',
       ),
     ),
+    'primary key' => array('nid', 'site_nid', 'platform_nid', 'env_type'),
   );
 
   return $schema;
