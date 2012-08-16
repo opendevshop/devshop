@@ -205,6 +205,10 @@ function devshop_projects_insert($node) {
   	   "VALUES (%d, '%s', '%s')",
     $node->nid, $node->git_url, $node->code_path);
   
+  //Save hosting context
+  db_query("INSERT INTO {hosting_context} (nid, name) VALUES (%d, '%s')", $node->nid, $node->title);
+
+  
   // Create hostmaster task
   $args = array();
   $args[] = $node->git_url;
