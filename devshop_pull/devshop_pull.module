@@ -6,7 +6,7 @@ define('DEVSHOP_PULL_QUEUE', 1);
 define('DEVSHOP_PULL_CALLBACK', 2);
 
 
-define('DEVSHOP_PULL_CALLBACK_URL', 'git/post-receive');
+define('DEVSHOP_PULL_CALLBACK_URL', 'devshop/pull');
 define('DSGH_WD_TYPE', 'devshop');
 
 /**
@@ -32,7 +32,7 @@ function devshop_pull_menu() {
     'access arguments' => array('administer hosting settings'),
     'file' => 'devshop_pull.settings.inc'
   );
-  $items['devshop/pull/%/%'] = array(
+  $items[DEVSHOP_PULL_CALLBACK_URL] = array(
     'page callback' => 'devshop_pull_callback',
     'access arguments' => array('access devshop pull callback'),
     'file' => 'devshop_pull.inc'
@@ -69,7 +69,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
       $node->pull_method = DEVSHOP_PULL_DISABLED;
     }
     
-    $form['pull'] = array(
+    $form['pull_method'] = array(
       '#title' => 'Automatic Git Pull Method',
       '#type' => 'radios',
       '#description' => t('Choose the method of regularly calling "Pull Code".  See !link to configure the queue.  See !link2 to configure URL Callback.', array(
@@ -148,6 +148,11 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 	  $pull_method = ($pnode->pull_method == DEVSHOP_PULL_CALLBACK? t('URL Callback'):
 			  ($pnode->pull_method == DEVSHOP_PULL_QUEUE? t('Hosting Queue'):
 			   (t('Disabled'))));
+	  
+	  if ($pnode->pull_method == DEVSHOP_PULL_CALLBACK){
+	    module_load_include('inc', 'devshop_pull');
+	    $pull_method .= '<br>' . _devshop_pull_callback_url($node);
+	  }
 
           if (isset($pnode) && $pnode->pull_method != DEVSHOP_PULL_DISABLED){
 	    $node->content['info']['pull'] = array(
@@ -192,7 +197,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
     case 'update':
       if ($node->type == 'platform') {
 	db_query('DELETE FROM {hosting_devshop_pull} WHERE platform_nid = %d', $node->nid);
-	db_query('INSERT INTO {hosting_devshop_pull} (platform_nid, pull_method, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
+	db_query('INSERT INTO {hosting_devshop_pull} (platform_nid, pull_method, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull_method, $node->pull_reset);
       }
       break;
     }
