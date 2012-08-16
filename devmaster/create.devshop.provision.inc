@@ -3,17 +3,13 @@
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_provision_provision_devshop_create() {
+function drush_provision_provision_devshop_create($git_url, $path) {
   drush_log(dt('Provision DevShop Create started...'));
   
   //Pause Hostmaster (Mainly for the git pull task)
   // @TODO Better way?  @see drush_hosting_pause()
   exec('crontab -r');
   
-  //Get options
-  $git_url = drush_get_option('git-url');
-  $path = drush_get_option('path');
-
   drush_print("cloning $git_url to $path");
   
   // Clone the git URL to DEV folder
