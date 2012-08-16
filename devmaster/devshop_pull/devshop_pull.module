@@ -98,7 +98,9 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
  */
 function hosting_pull_queue($count) {
 
-  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON  n.nid=s.nid LEFT JOIN {devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull = 1 ORDER BY d.last_pull ASC, n.nid ASC", HOSTING_PLATFORM_ENABLED);
+  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON  n.nid=s.nid LEFT JOIN {hosting_devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull_method = %d ORDER BY d.last_pull ASC, n.nid ASC", HOSTING_PLATFORM_ENABLED, DEVSHOP_PULL_QUEUE);
+  
+  //@TODO: Run same code as URL Callback!!  All sites on all platforms.  
   
   while ($platform = db_fetch_object($result)) {
     $platform_name = hosting_context_name($platform->platform_nid);
