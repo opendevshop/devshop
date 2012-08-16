@@ -5,6 +5,41 @@ define('DEVSHOP_PULL_DISABLED', 0);
 define('DEVSHOP_PULL_QUEUE', 1);
 define('DEVSHOP_PULL_CALLBACK', 2);
 
+
+define('DEVSHOP_PULL_CALLBACK_URL', 'git/post-receive');
+define('DSGH_WD_TYPE', 'devshop');
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_pull_perm() {
+  return array(
+    'access devshop pull callback',
+    'configure devshop pull',
+  );
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function devshop_pull_menu() {
+  $items['admin/hosting/devshop_pull'] = array(
+    'title' => 'DevShop Pull Settings',
+    'description' => 'Configure Pull Code URL callback ',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_pull_settings'),
+    'type' => MENU_LOCAL_TASK,
+    'access arguments' => array('administer hosting settings'),
+    'file' => 'devshop_pull.settings.inc'
+  );
+  $items['devshop/pull/%/%'] = array(
+    'page callback' => 'devshop_pull_callback',
+    'access arguments' => array('access devshop pull callback'),
+    'file' => 'devshop_pull.inc'
+  );
+  return $items;
+}
+
 /**
  * Implements hook_hosting_queues()
  */
@@ -37,9 +72,10 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
     $form['pull'] = array(
       '#title' => 'Automatic Git Pull Method',
       '#type' => 'radios',
-      '#description' => t('Choose the method of regularly calling "Pull Code".  See !link to configure the queue.  See GitHub WebHook documentation for URL Callback', array(
-        '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
-      ),
+      '#description' => t('Choose the method of regularly calling "Pull Code".  See !link to configure the queue.  See !link2 to configure URL Callback.', array(
+        '!link' => l(t('Hosting > Queues'), 'admin/hosting/queues'),
+        '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop_pull')
+      )),
       '#default_value' => $node->pull_method,
       '#options' => array(
 	DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
