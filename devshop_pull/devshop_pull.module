@@ -3,7 +3,7 @@
 /**
  * Implements hook_hosting_queues()
  */
-function devshop_queue_hosting_queues() {
+function devshop_pull_hosting_queues() {
   $items['pull'] = array(
     'type' => 'batch', 
     'name' => t('Pull queue'), 
@@ -19,7 +19,7 @@ function devshop_queue_hosting_queues() {
 /**
  * Implements hook_form_alter().
  */
-function devshop_queue_form_alter(&$form, &$form_state, $form_id){
+function devshop_pull_form_alter(&$form, &$form_state, $form_id){
   if ($form_id == 'platform_node_form'){
     $node = $form['#node'];
     $form['devshop'] = array(
@@ -50,7 +50,7 @@ function devshop_queue_form_alter(&$form, &$form_state, $form_id){
  */
 function hosting_pull_queue($count) {
 
-  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON  n.nid=s.nid LEFT JOIN {devshop_queue_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull = 1 ORDER BY d.last_pull ASC, n.nid ASC", HOSTING_PLATFORM_ENABLED);
+  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON  n.nid=s.nid LEFT JOIN {devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull = 1 ORDER BY d.last_pull ASC, n.nid ASC", HOSTING_PLATFORM_ENABLED);
   
   while ($platform = db_fetch_object($result)) {
     $platform_name = hosting_context_name($platform->platform_nid);
@@ -69,18 +69,18 @@ function hosting_pull_queue($count) {
     if ($error){
       //@TODO: Set last_pull_status
       watchdog('devshop', 'Pull FAILED on platform: @alias', array('@alias' => $platform_name));
-      db_query('UPDATE {devshop_queue_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
+      db_query('UPDATE {devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
       
     } else {
       //@TODO: Set last_pull
       watchdog('devshop', 'Pull Successful on platform: @alias', array('@alias' => $platform_name));
-      db_query('UPDATE {devshop_queue_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 1, $platform->platform_nid);
+      db_query('UPDATE {devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 1, $platform->platform_nid);
     }
   }    
 }
 
 /**
- * hook_nodeapi()
+ * Implements hook_nodeapi()
  */
 function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'platform' || $node->type == 'site') {
@@ -136,8 +136,8 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
     case 'insert':
     case 'update':
       if ($node->type == 'platform') {
-	db_query('DELETE FROM {devshop_queue_pull} WHERE platform_nid = %d', $node->nid);
-	db_query('INSERT INTO {devshop_queue_pull} (platform_nid, pull, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
+	db_query('DELETE FROM {devshop_pull} WHERE platform_nid = %d', $node->nid);
+	db_query('INSERT INTO {devshop_pull} (platform_nid, pull, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull, $node->pull_reset);
       }
       break;
     }
@@ -145,22 +145,22 @@ function devshop_queue_nodeapi(&$node, $op, $a3 = null) {
 }
 
 /**
- * Get a number of sites that need to have cron executed.
- *
+ * Get a number of sites that have their pull queue enabled.
+ * 
  * @param $limit
  *   Limit to a maximum of this number of sites.
  * @return
- *   An array of site nodes that need to have cron executed.
+ *   An array of site nodes that have a pull queue enabled.
  *
- * @deprecated function unused
+ * @TODO Convert to check pull queue sites.
  */
-function devshop_queue_get_sites($limit = 5) {
-  $result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {hosting_platform} p ON n.nid=p.nid WHERE n.type='platform' and p.status = %d ORDER BY p.last_cron ASC, n.nid ASC limit %d", HOSTING_PLATFORM_ENABLED, $limit);
-  while ($nid = db_fetch_object($result)) {
-    $node = node_load($nid->nid);
-    if (!empty($node->nid)){
-      $sites[$nid->nid] = $node;
-    }
-  }
-  return $sites;
+function devshop_pull_get_sites($limit = 5) {
+  //$result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {hosting_platform} p ON n.nid=p.nid WHERE n.type='platform' and p.status = %d ORDER BY p.last_cron ASC, n.nid ASC limit %d", HOSTING_PLATFORM_ENABLED, $limit);
+  //while ($nid = db_fetch_object($result)) {
+  //  $node = node_load($nid->nid);
+  //  if (!empty($node->nid)){
+  //    $sites[$nid->nid] = $node;
+  //  }
+  //}
+  //return $sites;
 }

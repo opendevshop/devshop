@@ -1,4 +1,4 @@
-name = DevShop Queue
-description = Provides a pull queue for a Git-powered platform.
+name = DevShop Pull
+description = Provides a variety of methods to trigger a Pull Code task on DevShop platforms.
 core = 6.x
 package = DevShop
