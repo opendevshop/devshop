@@ -7,15 +7,15 @@
 /**
  * Implementation of hook_schema().
  */
-function devshop_queue_schema() {
-  $schema['devshop_queue_pull'] = array(
+function devshop_pull_schema() {
+  $schema['hosting_devshop_pull'] = array(
     'fields' => array(
       'platform_nid' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
       ),
-      'pull' => array(
+      'pull_method' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -45,15 +45,15 @@ function devshop_queue_schema() {
 /**
  * Implementation of hook_install().
  */
-function devshop_queue_install() {  
+function devshop_pull_install() {  
   // Create tables.
-  drupal_install_schema('devshop_queue');
+  drupal_install_schema('devshop_pull');
 }
 
 /**
  * Implementation of hook_uninstall().
  */
-function devshop_queue_uninstall() {  
+function devshop_pull_uninstall() {  
   // Create tables.
-  drupal_uninstall_schema('devshop_queue');
+  drupal_uninstall_schema('devshop_pull');
 }
