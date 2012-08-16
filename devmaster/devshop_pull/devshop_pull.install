@@ -15,7 +15,7 @@ function devshop_pull_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
-      'pull' => array(
+      'pull_method' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
