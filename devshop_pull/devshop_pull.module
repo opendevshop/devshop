@@ -30,8 +30,8 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
     $node = $form['#node'];
     
     // Get default value
-    if (is_null($node->pull)){
-      $node->pull = 0;
+    if (is_null($node->pull_method)){
+      $node->pull_method = DEVSHOP_PULL_DISABLED;
     }
     
     $form['pull'] = array(
@@ -40,7 +40,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
       '#description' => t('Choose the method of regularly calling "Pull Code".  See !link to configure the queue.  See GitHub WebHook documentation for URL Callback', array(
         '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'))
       ),
-      '#default_value' => $node->pull,
+      '#default_value' => $node->pull_method,
       '#options' => array(
 	DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
 	DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
@@ -105,18 +105,17 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 	  else {
 	    $pnode = node_load($node->platform);
 	  }
-	  
-	  $pull_method = ($pnode->pull == DEVSHOP_PULL_CALLBACK? t('Callback Enabled'):
-			  ($pnode->pull == DEVSHOP_PULL_QUEUE? t('Queue Enabled'):
+	  $pull_method = ($pnode->pull_method == DEVSHOP_PULL_CALLBACK? t('URL Callback'):
+			  ($pnode->pull_method == DEVSHOP_PULL_QUEUE? t('Hosting Queue'):
 			   (t('Disabled'))));
 
-          $node->content['info']['pull'] = array(
-            '#type' => 'item',
-            '#title' => t('Pull Queue'),
-            '#weight' => 30,
-            '#value' => $pull_method,
-          );
-          if ($pnode->pull){
+          if (isset($pnode) && $pnode->pull_method != DEVSHOP_PULL_DISABLED){
+	    $node->content['info']['pull'] = array(
+	      '#type' => 'item',
+	      '#title' => t('Pull Method'),
+	      '#weight' => 30,
+	      '#value' => $pull_method,
+	    );
             $node->content['info']['pull_reset'] = array(
               '#type' => 'item',
               '#title' => t('Reset on Pull'),
@@ -142,7 +141,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       if ($node->type == 'platform') {
 	$data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull} WHERE platform_nid =  %d', $node->nid));
 	if (!empty($data->platform_nid)){
-	  $node->pull = $data->pull;
+	  $node->pull_method = $data->pull_method;
 	  $node->pull_reset = $data->pull_reset;
 	  $node->last_pull = $data->last_pull;
 	  $node->last_pull_status = $data->last_pull_status;
