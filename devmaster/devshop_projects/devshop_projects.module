@@ -6,6 +6,23 @@
  */
 
 /**
+ * Implementation of hook_hosting_tasks()
+ *
+ * @TODO: Figure out how to hide this task from sites that don't have
+ * features.module enabled.
+ *
+ * See http://api.aegirproject.org/api/Hostmaster/modules--hosting--task--hosting_task.api.php/function/hook_hosting_tasks/7.x-2.x
+ */
+function devshop_projects_hosting_tasks() {
+  $tasks = array();
+  $tasks['devshop_project']['devshop-create'] = array(
+    'title' => t('Create Project'),
+    'description' => t('Clones the repo, and creates the platforms.'),
+  );
+  return $tasks;
+}
+
+/**
  * Implementation of hook_perm()
  */
 function devshop_projects_perm() {
@@ -187,6 +204,12 @@ function devshop_projects_insert($node) {
   db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path) ".
   	   "VALUES (%d, '%s', '%s')",
     $node->nid, $node->git_url, $node->code_path);
+  
+  // Create hostmaster task
+  $args = array();
+  $args[] = $node->git_url;
+  $args[] = $node->code_path;
+  hosting_add_task($node->nid, 'devshop-create', $args);
 }
 
 /**
