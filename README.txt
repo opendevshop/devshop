@@ -41,8 +41,8 @@ Enable devshop_tasks with drush.  Unless you like visiting your admin pages.
   $ drush @hostmaster en devshop_tasks
   
 If you need a pull queue (ie. this is hosting a shared Dev site that must always
-have the latest commits) enabled devshop_queue
-  $ drush @hostmaster en devshop_queue
+have the latest commits) enabled devshop_pull
+  $ drush @hostmaster en devshop_pull
 
 
 
