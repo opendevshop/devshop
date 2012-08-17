@@ -153,7 +153,8 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 	  
 	  if ($pnode->pull_method == DEVSHOP_PULL_CALLBACK){
 	    module_load_include('inc', 'devshop_pull');
-	    $pull_method .= '<br>' . _devshop_pull_callback_url($node);
+	    $url = _devshop_pull_callback_url($pnode);
+	    $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
 	  }
 
           if (isset($pnode) && $pnode->pull_method != DEVSHOP_PULL_DISABLED){
