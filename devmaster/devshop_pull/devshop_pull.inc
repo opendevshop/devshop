@@ -1,9 +1,11 @@
 <?php
 
 
-/*
- * Callback that is invoked by GitHub WebHook facility to create
+/**
+ * Menu callback that is invoked by GitHub WebHook facility to create
  * a code pull task.
+ *
+ * @TODO: Save "Last Pull" and "Last Pull Status" when git pull task is complete.
  */
 function devshop_pull_callback($platform, $hash) {
   
