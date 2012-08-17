@@ -8,7 +8,7 @@ function devshop_pull_hosting_feature() {
   $features['pull'] = array(
     'title' => t('DevShop Pull Queue'),
     'description' => t('Provides a queue for pulling a Git powered platform.'),
-    'status' => HOSTING_FEATURE_DISABLED,
+    'status' => HOSTING_FEATURE_ENABLED,
   );
   return $features;
 }

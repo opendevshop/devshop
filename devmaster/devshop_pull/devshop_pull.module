@@ -48,7 +48,7 @@ function devshop_pull_hosting_queues() {
     'type' => 'batch', 
     'name' => t('Pull queue'), 
     'description' => t('Run git pull on platforms configured to do so.'), 
-    'total_items' => 'TODO',//hosting_site_count(), 
+    'total_items' => devshop_pull_get_sites(10),
     'frequency' => strtotime("1 minute", 0), 
     'singular' => t('platform'), 
     'plural' => t('platforms'),
@@ -91,42 +91,6 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
       '#default_value' => $node->pull_reset,
     );
   }
-}
-
-/**
- * Implementation of hosting_QUEUE_TYPE_queue().
- */
-function hosting_pull_queue($count) {
-
-  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON  n.nid=s.nid LEFT JOIN {hosting_devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull_method = %d ORDER BY d.last_pull ASC, n.nid ASC", HOSTING_PLATFORM_ENABLED, DEVSHOP_PULL_QUEUE);
-  
-  //@TODO: Run same code as URL Callback!!  All sites on all platforms.  
-  
-  while ($platform = db_fetch_object($result)) {
-    $platform_name = hosting_context_name($platform->platform_nid);
-    if ($platform->pull_reset){
-      //Set reset option.
-      $options = array(
-        'reset' => TRUE,
-      );
-    } else {
-      $options = array();
-    }
-    
-    //@TODO
-    provision_backend_invoke($platform_name, "pull", array(), $options);
-    $error = drush_get_error();
-    if ($error){
-      //@TODO: Set last_pull_status
-      watchdog('devshop', 'Pull FAILED on platform: @alias', array('@alias' => $platform_name));
-      db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
-      
-    } else {
-      //@TODO: Set last_pull
-      watchdog('devshop', 'Pull Successful on platform: @alias', array('@alias' => $platform_name));
-      db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 1, $platform->platform_nid);
-    }
-  }    
 }
 
 /**
@@ -218,12 +182,57 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
  * @TODO Convert to check pull queue sites.
  */
 function devshop_pull_get_sites($limit = 5) {
-  //$result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {hosting_platform} p ON n.nid=p.nid WHERE n.type='platform' and p.status = %d ORDER BY p.last_cron ASC, n.nid ASC limit %d", HOSTING_PLATFORM_ENABLED, $limit);
-  //while ($nid = db_fetch_object($result)) {
-  //  $node = node_load($nid->nid);
-  //  if (!empty($node->nid)){
-  //    $sites[$nid->nid] = $node;
-  //  }
-  //}
-  //return $sites;
+  $result = db_query("SELECT COUNT(n.nid) FROM {node} n LEFT JOIN {hosting_platform} s ON n.nid=s.nid LEFT JOIN {hosting_devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull_method = %d ORDER BY d.last_pull ASC, n.nid ASC", array(HOSTING_PLATFORM_ENABLED, DEVSHOP_PULL_QUEUE));
+  
+  return db_result($result);
+}
+
+/**
+ * Implementation of hosting_QUEUE_TYPE_queue().
+ */
+function hosting_pull_queue($count) {
+
+  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON n.nid=s.nid LEFT JOIN {hosting_devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull_method = %d ORDER BY d.last_pull ASC, n.nid ASC", array(HOSTING_PLATFORM_ENABLED, DEVSHOP_PULL_QUEUE));
+  
+  while ($platform = db_fetch_object($result)) {
+    
+    devshop_pull_task($platform->platform_nid);
+    
+    //@TODO: Set last_pull_status
+    //  watchdog('devshop', 'Pull FAILED on platform: @alias', array('@alias' => $platform_name));
+    //  db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
+    
+  }
+}
+
+
+/**
+ * Helper for creating the pull code tasks
+ */
+function devshop_pull_task($nid){
+  
+  $node = node_load($nid);
+  
+  $nids = array();
+  if ($node->type == 'site'){
+    $nids[] = $node->nid;
+  } else {
+    $r = db_query("SELECT nid FROM {hosting_site} " .
+                "WHERE platform = %d AND status = 1", $node->nid);
+    while ($site = db_fetch_object($r)) {
+      $nids[] = $site->nid;
+    }
+  }
+  
+  // When doing the pull task, don't do a db update or revert. 
+  // Just clear all of the caches
+  $args = array(
+    'update' => 0,
+    'revert' => 0,
+    'cache'  => 1
+  );
+  
+  foreach ($nids as $nid){
+    hosting_add_task($nid, 'devshop-pull', $args);
+  }
 }
