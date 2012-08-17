@@ -157,15 +157,24 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
  */
 function devshop_projects_form(&$node) {
 
-  $form['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Project Code Name'),
-    '#required' => TRUE,
-    '#description' => t('Choose a unique name for your project.'),
-    '#size' => 40,
-    '#default_value' => $node->title,
-    '#maxlength' => 255,
-  );
+  if(!$node->nid) {
+    $form['title'] = array(
+      '#type' => 'textfield',
+       '#title' => t('Project Code Name'),
+       '#required' => TRUE,
+       '#description' => t('Choose a unique name for your project.'),
+       '#size' => 40,
+       '#default_value' => $node->title,
+       '#maxlength' => 255,
+       );
+  }
+  else {
+    $form['title'] = array(
+      '#type' => 'item',
+      '#title' => t('Project Code Name'),
+      '#value' => $node->title
+      );
+  }
 
   $form['git_url'] = array(
     '#type' => 'textfield',
@@ -179,16 +188,25 @@ function devshop_projects_form(&$node) {
     '#weight' => 1,
   );
 
-  $form['code_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Code path'),
-    '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
-    '#required' => TRUE,
-    '#size' => 40,
-    '#default_value' => $node->code_path,
-    '#maxlength' => 255,
-    '#weight' => 2,
-  );
+  if(!$node->nid) {
+    $form['code_path'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Code path'),
+      '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+      '#required' => TRUE,
+      '#size' => 40,
+      '#default_value' => $node->code_path,
+      '#maxlength' => 255,
+      '#weight' => 2,
+      );
+  }
+  else {
+    $form['code_path'] = array(
+      '#type' => 'item',
+      '#title' => t('Code path'),
+      '#value' => $node->code_path
+      );
+  }
 
   $sites = array(0 => 'None');
   $r = db_query("SELECT n.nid, n.title FROM {node} AS n " .
@@ -206,6 +224,7 @@ function devshop_projects_form(&$node) {
     '#options' => $sites,
     '#description' => t('Select site that is going to be your development site.'),
     '#default_value' => $node->dev_site,
+    '#weight' => 20,
   );
 
   $form['test_site'] = array(
@@ -214,6 +233,7 @@ function devshop_projects_form(&$node) {
     '#options' => $sites,
     '#description' => t('Select site that is going to be your test site.'),
     '#default_value' => $node->test_site,
+    '#weight' => 21,
   );
 
   $form['live_site'] = array(
@@ -222,6 +242,7 @@ function devshop_projects_form(&$node) {
     '#options' => $sites,
     '#description' => t('Select site that is going to be your live site.'),
     '#default_value' => $node->live_site,
+    '#weight' => 22,
   );
 
   return $form;
@@ -252,7 +273,7 @@ function devshop_projects_insert($node) {
 
   db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path) ".
   	   "VALUES (%d, '%s', '%s')",
-	   $node->nid, $node->git_url, $node->code_path);
+	   $node->nid, $node->git_url, hosting_path_normalize($node->code_path));
   _devshop_projects_insert_sites($node);
 
   // Save hosting context
@@ -282,7 +303,7 @@ function devshop_projects_update($node) {
   else {
     db_query("UPDATE {hosting_devshop_project} " .
              "SET git_url = '%s', code_path = '%s' WHERE nid=%d",
-              $node->git_url, $node->code_path);
+              $node->git_url, hosting_path_normalize($node->code_path));
     db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
     _devshop_projects_insert_sites($node);
   }
@@ -300,7 +321,55 @@ function devshop_projects_delete($node) {
  * Implementation of hook_validate().
  */
 function devshop_projects_validate($node, &$form) {
-// TODO
+  // No validation if op == Delete
+  if ($node->op == t('Delete')) {
+    return;
+  }
+
+  // Full validation on when a creating a new node
+  $add = (arg(1) == 'add' ? TRUE : FALSE);
+
+  // Title (project code) must not have any spaces
+  if(strpos($node->title, ' ') != FALSE) {
+    form_set_error('title', t('Project code name must not contain any white spaces.'));
+  }
+
+  // The project code name must not be in the hosting_context table
+  if ($result = db_fetch_object(db_query("SELECT name FROM {hosting_context} WHERE name = '%s'", $node->title))) {
+    form_set_error('title', t('Project code name existing in hosting context table.'));
+  }
+
+  // The project code name must be unique
+  if ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND	nid <> %d", $node->title, $node->nid))) {
+    form_set_error('title', t('Project code name is already is use by another project'));
+  }
+
+  // Make sure the path is unique. 
+  $cp = hosting_path_normalize($node->code_path);
+  if ($add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
+    form_set_error('code_path', t('Code path is already in use by another project'));
+  }
+
+  // Directory must not exist
+  if ($add && file_exists($cp)) {
+    form_set_error('code_path', t('Code path directory already exists.'));
+  }
+
+  // Sites may not be used in more than one environement
+  if($node->dev_site != 0 && $node->dev_site == $node->test_site) {
+    form_set_error('dev_site', t('Site used more than once.'));
+    form_set_error('test_site', t('Site used more than once.'));
+  }
+
+  if($node->dev_site != 0 && $node->dev_site == $node->live_site) {
+    form_set_error('dev_site', t('Site used more than once.'));
+    form_set_error('live_site', t('Site used more than once.'));
+  }
+
+  if($node->test_site != 0 && $node->test_site == $node->live_site) {
+    form_set_error('test_site', t('Site used more than once.'));
+    form_set_error('live_site', t('Site used more than once.'));
+  }
 }
 
 /**
