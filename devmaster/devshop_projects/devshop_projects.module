@@ -58,6 +58,13 @@ function devshop_projects_menu() {
     'access arguments' => array('view projects'),
   );
 
+  $items['hosting/projects/detail/%'] = array(
+    'title' => 'Projects Details',
+    'description' => 'Display details of a projects',
+    'page callback' => 'devshop_projects_project_detail',
+    'access arguments' => array('view projects'),
+  );
+
   return ($items);
 }
 
@@ -68,12 +75,25 @@ function devshop_projects_menu() {
  */
 
 function devshop_projects_projects_view() {
-  if ($list = drupal_get_form('devshop_projects_projects_list_form')) {
-    return $list;
+
+  $header = array('Projects', 'Sites');
+
+  $r = db_query("SELECT * FROM {hosting_devshop_project}");
+  $rows = array();
+
+  while(($proj = db_fetch_object($r))) {
+    $node = node_load($proj->nid);
+    $row = array();
+    $row[] = $node->title;
+    $row[] = db_result(db_query("SELECT COUNT(*) " .
+				"FROM {hosting_devshop_project_sites} " .
+				 "WHERE nid = %d", $node->nid));
+    $rows[] = $row;
   }
-  $create_project_link = l(t('Create a site now?'), 'node/add/project');
-  return t("No projects have been created yet. !link", array(
-    '!link' => $create_project_link));
+
+  $output = theme('table', $header, $rows, array('class' => 'hosting-table'));
+  $output .= l(t('Create a new project?'), 'node/add/devshop-project');
+  return $output;
 }
 
 /**
@@ -457,4 +477,14 @@ function hosting_devshop_projects_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'devshop_project_node_form') {
     $form['buttons']['delete']['#type'] = 'hidden'; 
   }
+}
+
+function devshop_projects_project_detail() {
+
+  $nid = arg(3); // ok, I'm cheating
+  if(!($node = node_load($nid)) || $node->type != 'devshop_project') {
+    return t('Project not found!');
+  }
+
+  return "hello";
 }
