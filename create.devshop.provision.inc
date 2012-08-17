@@ -4,6 +4,19 @@
  * Implements the provision-devshop-deploy command.
  */
 function drush_provision_provision_devshop_create($git_url, $path) {
+  
+  // Validate
+  if (empty($git_url)){
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git URL not valid.'));
+  }
+  if (!file_exists($path)){
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path does not exist.'));
+  }
+  
+  // @TODO: SAVE THE ALIAS
+  $target = d()->name;
+  drush_invoke('provision-save', $target);
+  
   drush_log(dt('Provision DevShop Create started...'));
   
   //Pause Hostmaster (Mainly for the git pull task)
