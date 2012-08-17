@@ -314,7 +314,7 @@ function devshop_projects_load($node) {
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
-  if (is_array($hosting_name)) {
+  if (is_array($hosting_name) && is_array($additions)) {
     $additions += $hosting_name;
   }
   $env =   array('dev'  => 'dev_site', 
