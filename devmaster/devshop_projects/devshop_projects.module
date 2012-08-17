@@ -172,6 +172,7 @@ function devshop_projects_form(&$node) {
     '#title' => t('Git URL'),
     '#required' => TRUE,
     '#description' => t(''),
+    '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $node->git_url,
     '#maxlength' => 255,
@@ -182,6 +183,7 @@ function devshop_projects_form(&$node) {
     '#type' => 'textfield',
     '#title' => t('Code path'),
     '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+    '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $node->code_path,
     '#maxlength' => 255,
@@ -226,13 +228,9 @@ function devshop_projects_form(&$node) {
 }
 
 /**
- * Implementation of hook_insert().
+ * Insert the sites into the sites table
  */
-function devshop_projects_insert($node) {
-
-  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path) ".
-  	   "VALUES (%d, '%s', '%s')",
-	   $node->nid, $node->git_url, $node->code_path);
+function _devshop_projects_insert_sites($node) {
 
   foreach(array('dev_site' => 'dev', 
                 'test_site' => 'test', 
@@ -245,7 +243,18 @@ function devshop_projects_insert($node) {
 	       $node->nid, $node->$k, $snode->platform, $v);
     }
   }
-  
+}
+
+/**
+ * Implementation of hook_insert().
+ */
+function devshop_projects_insert($node) {
+
+  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path) ".
+  	   "VALUES (%d, '%s', '%s')",
+	   $node->nid, $node->git_url, $node->code_path);
+  _devshop_projects_insert_sites($node);
+
   // Save hosting context
   if ((!$node->old_vid)) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
@@ -274,6 +283,8 @@ function devshop_projects_update($node) {
     db_query("UPDATE {hosting_devshop_project} " .
              "SET git_url = '%s', code_path = '%s' WHERE nid=%d",
               $node->git_url, $node->code_path);
+    db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
+    _devshop_projects_insert_sites($node);
   }
 }
 
@@ -282,7 +293,7 @@ function devshop_projects_update($node) {
  */
 function devshop_projects_delete($node) {
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
-  db_query('DELETE FROM {hosting_devshop_project_sties} WHERE nid = %d', $node->nid);
+  db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
 }
 
 /**
@@ -305,6 +316,18 @@ function devshop_projects_load($node) {
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
   if (is_array($hosting_name)) {
     $additions += $hosting_name;
+  }
+  $env =   array('dev'  => 'dev_site', 
+                 'test' => 'test_site', 
+                 'live' => 'live_site');
+
+  $r = db_query("SELECT * FROM {hosting_devshop_project_sites} " .
+                "WHERE nid = %d", $node->nid);
+
+  while(($e = db_fetch_object($r))) {
+    if(!empty($env[$e->env_type])) {
+      $additions[$env[$e->env_type]] = $e->site_nid;
+    }
   }
   return $additions;
 }
@@ -332,6 +355,26 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#title' => t('Code path'),
     '#value' => filter_xss($node->code_path),
     '#weight' => -8
+  );
+
+  $header = array('Environement', 'Site');
+  $rows = array();
+  foreach(array('dev_site' => 'DEV Site', 
+                'test_site' => 'TEST Site', 
+                'live_site' => 'LIVE Site') as $k => $v) {
+
+    $row = array($v, $node->$k ? node_load($node->$k)->title :
+       	 	      "Not assigned yet");
+    $rows[] = $row;
+  }
+
+  $table = theme('table', $header, $rows);
+
+  $node->content['info']['sites'] = array(
+    '#type' => 'item',
+    '#title' => t('Project Members'),
+    '#value' => $table,
+    '#weight' => -7
   );
  
   return $node;
