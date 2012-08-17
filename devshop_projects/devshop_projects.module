@@ -193,6 +193,40 @@ function devshop_projects_form(&$node) {
     '#weight' => 2,
   );
 
+  $sites = array(0 => 'None');
+  $r = db_query("SELECT n.nid, n.title FROM {node} AS n " .
+       		"LEFT JOIN {hosting_site} AS h ON n.nid = h.nid " .
+		"WHERE n.type = 'site' AND h.status = 1 " .
+		"ORDER BY n.title ASC");
+
+  while($sa = db_fetch_object($r)) {
+    $sites[$sa->nid] = $sa->title;
+  }
+
+  $form['dev_site'] = array(
+    '#type' => 'select',
+    '#title' => t('DEV Site'),
+    '#options' => $sites,
+    '#description' => t('Select site that is going to be your development site.'),
+    '#default_value' => $node->dev_site,
+  );
+
+  $form['test_site'] = array(
+    '#type' => 'select',
+    '#title' => t('TEST Site'),
+    '#options' => $sites,
+    '#description' => t('Select site that is going to be your test site.'),
+    '#default_value' => $node->test_site,
+  );
+
+  $form['live_site'] = array(
+    '#type' => 'select',
+    '#title' => t('LIVE Site'),
+    '#options' => $sites,
+    '#description' => t('Select site that is going to be your live site.'),
+    '#default_value' => $node->live_site,
+  );
+
   return $form;
 }
 
@@ -203,7 +237,19 @@ function devshop_projects_insert($node) {
 
   db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path) ".
   	   "VALUES (%d, '%s', '%s')",
-    $node->nid, $node->git_url, $node->code_path);
+	   $node->nid, $node->git_url, $node->code_path);
+
+  foreach(array('dev_site' => 'dev', 
+                'test_site' => 'test', 
+                'live_site' => 'live') as $k => $v) {
+    if($node->$k) {
+      $snode = node_load($node->$k);
+      db_query("INSERT INTO {hosting_devshop_project_sites} " .
+               "(nid, site_nid, platform_nid, env_type) " .
+	       "VALUES (%d, %d, %d, '%s')",
+	       $node->nid, $node->$k, $snode->platform, $v);
+    }
+  }
   
   //Save hosting context
   db_query("INSERT INTO {hosting_context} (nid, name) VALUES (%d, '%s')", $node->nid, $node->title);
