@@ -1,17 +1,12 @@
 <?php
-/*
- * @file devshop_projects.module: a module in the DevShop module group 
- * which enables the user to create proects and group sites/platforms
- * into project groups.
+/**
+ * @file devshop_projects.module
+ * a module in the DevShop module group which enables the user to create proects and group
+ * sites/platforms into project groups.
  */
 
 /**
  * Implementation of hook_hosting_tasks()
- *
- * @TODO: Figure out how to hide this task from sites that don't have
- * features.module enabled.
- *
- * See http://api.aegirproject.org/api/Hostmaster/modules--hosting--task--hosting_task.api.php/function/hook_hosting_tasks/7.x-2.x
  */
 function devshop_projects_hosting_tasks() {
   $tasks = array();
@@ -251,11 +246,13 @@ function devshop_projects_insert($node) {
     }
   }
   
-  //Save hosting context
-  db_query("INSERT INTO {hosting_context} (nid, name) VALUES (%d, '%s')", $node->nid, $node->title);
-
+  // Save hosting context
+  if ((!$node->old_vid)) {
+    hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
+  }
   
   // Create hostmaster task
+  // @TODO: This fails because there is no alias being saved for this node...
   $args = array();
   $args[] = $node->git_url;
   $args[] = $node->code_path;
@@ -302,10 +299,13 @@ function devshop_projects_validate($node, &$form) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_object(db_query('SELECT git_url, code_path ' .
+  $additions = db_fetch_array(db_query('SELECT git_url, code_path ' .
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
-
+  $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
+  if (is_array($hosting_name)) {
+    $additions += $hosting_name;
+  }
   return $additions;
 }
 
