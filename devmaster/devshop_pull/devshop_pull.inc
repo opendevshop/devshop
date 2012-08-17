@@ -69,19 +69,11 @@ function devshop_pull_callback($platform, $hash) {
   $r = db_query("SELECT nid FROM {hosting_site} " .
                 "WHERE platform = %d AND status = 1", $pnid);
 
-  // When doing the pull task, don't do a db update or revert. 
-  // Just clear all of the caches
-  $args = array(
-    'update' => 0,
-    'revert' => 0,
-    'cache'  => 1
-  );
-
   while ($site = db_fetch_object($r)) {
     $message = "Queuing a pull task for node id $site->nid";
     watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
     print "$message<br>";
-    hosting_add_task($site->nid, 'devshop-pull', $args);
+    devshop_pull_task($site->nid);
   } 
 }
 
