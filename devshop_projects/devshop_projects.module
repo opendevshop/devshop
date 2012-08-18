@@ -121,7 +121,7 @@ function devshop_projects_projects_view() {
     $row = array();
     $row[] = $node->title;
     $row[] = db_result(db_query("SELECT COUNT(*) " .
-				"FROM {hosting_devshop_project_sites} " .
+				"FROM {hosting_devshop_project_object}" .
 				 "WHERE nid = %d", $node->nid));
     $rows[] = $row;
   }
@@ -340,17 +340,7 @@ function devshop_projects_insert($node) {
  * database updates.
  */
 function devshop_projects_update($node) {
-  // if this is a new node or we're adding a new revision,
-  if (!empty($node->revision)) {
-    //hosting_devshop_project_insert($node);
-  }
-  else {
-    //db_query("UPDATE {hosting_devshop_project} " .
-    //         "SET git_url = '%s', code_path = '%s' WHERE nid=%d",
-    //          $node->git_url, hosting_path_normalize($node->code_path));
-    //db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
-    //_devshop_projects_insert_sites($node);
-  }
+  db_query("UPDATE {hosting_devshop_project} SET git_url = '%s', code_path = '%s' WHERE nid=%d", $node->git_url, hosting_path_normalize($node->code_path));
 }
 
 /**
@@ -358,7 +348,7 @@ function devshop_projects_update($node) {
  */
 function devshop_projects_delete($node) {
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
-  db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
+  db_query('DELETE FROM {hosting_devshop_project_object} WHERE nid = %d', $node->nid);
 }
 
 /**
@@ -435,8 +425,8 @@ function devshop_projects_load($node) {
                  'test' => 'test_site', 
                  'live' => 'live_site');
 
-  $r = db_query("SELECT * FROM {hosting_devshop_project_sites} " .
-                "WHERE nid = %d", $node->nid);
+  $r = db_query("SELECT * FROM {hosting_devshop_project_object} " .
+                "WHERE project_nid = %d", $node->nid);
 
   while(($e = db_fetch_object($r))) {
     if(!empty($env[$e->env_type])) {
