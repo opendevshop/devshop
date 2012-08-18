@@ -11,6 +11,7 @@ class provisionContext_project extends provisionContext {
       '--project_name' => 'Project: The codename for this project.',
       '--code_path' => 'Project: The path to the project codebases.  (NOT the Drupal root)',
       '--git_url' => 'Project: The Git URL for this project.',
+      '--base_url' => 'Project: the base URL that the dev/test/live subdomains will be attached to.',
       '--server' => 'Project: The server hosting this project.  (Default is @server_master)',
     );
   }
@@ -19,5 +20,6 @@ class provisionContext_project extends provisionContext {
     $this->setProperty('project_name');
     $this->setProperty('code_path');
     $this->setProperty('git_url');
+    $this->setProperty('base_url');
   }
 }
