@@ -88,12 +88,3 @@ function drush_devshop_provision_pre_hosting_task() {
   }
   
 }
-
-
-function hosting_hosting_project_context_options(&$task) {
-  $task->context_options['server'] = '@server_master';
-  $task->context_options['web_server'] = hosting_context_name($task->ref->web_server);
-  // Trim the path so we dont pass extra spaces.
-  $task->context_options['path'] = trim($task->ref->path, " ");
-  $task->context_options['git_url'] = trim($task->ref->git_url, " ");
-}
