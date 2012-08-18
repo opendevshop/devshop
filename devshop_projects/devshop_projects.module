@@ -469,25 +469,26 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -10
   );
   
-  
-  
-  $header = array('Object', 'Type');
-  $rows = array();
-  foreach($node->project_objects as $nid => $object) {
-    $object = node_load($nid);
-    $row = array(l($object->title, $object->nid), $object->type);
-    $rows[] = $row;
+  foreach($node->project_objects as $type => $objects) {
+    $header = array($type ."s");
+    $rows = array();
+    foreach($objects as $nid => $object) {
+      $object = node_load($nid);
+      $row = array(l($object->title, $object->nid));
+      $rows[] = $row;
+      
+    }
+    $table = theme('table', $header, $rows);
+
+    $node->content['info'][$type] = array(
+      '#type' => 'item',
+      '#value' => $table,
+    );
+ 
+    
   }
 
-  $table = theme('table', $header, $rows);
-
-  $node->content['info']['sites'] = array(
-    '#type' => 'item',
-    '#title' => t('Status'),
-    '#value' => devshop_projects_project_status($node),
-    '#weight' => -7
-  );
- 
+    
   return $node;
 }
 
