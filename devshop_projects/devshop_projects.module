@@ -142,8 +142,8 @@ function devshop_projects_projects_list_form($form_state, $filter_by = NULL, $fi
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  // On insert of a platform, determine project and save to hosting_devshop_project_objects
   if ($node->type == 'platform'){
+    // On insert of a platform, determine project and save to hosting_devshop_project_objects
     if ($op == 'insert') {
       $path = explode('/', $node->publish_path); 
       $environment = array_pop($path);
@@ -152,17 +152,16 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       $project = devshop_project_load_by_path($project_path);
   
       // Save to table
-      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $project->type, $environment);
-     // dsm("INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES ($project->nid, $node->nid, $project->type, $environment");
+      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $node->type, $environment);
     }
     
-    // Load Project
+    // Load Platform
     if ($op == 'load'){
       $data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid));
       return $data;
     }
     
-     // Load Project
+    // View Platform
     if ($op == 'view'){
       $project = node_load($node->project_nid);
       $node->content['info']['project'] = array(
@@ -427,18 +426,14 @@ function devshop_projects_load($node) {
     $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
     $additions += $hosting_name;
   }
-  $env =   array('dev'  => 'dev_site', 
-                 'test' => 'test_site', 
-                 'live' => 'live_site');
+  
+  $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
-  $r = db_query("SELECT * FROM {hosting_devshop_project_object} " .
-                "WHERE project_nid = %d", $node->nid);
-
-  while(($e = db_fetch_object($r))) {
-    if(!empty($env[$e->env_type])) {
-      $additions[$env[$e->env_type]] = $e->site_nid;
-    }
+  $objects = array();
+  while($project_object = db_fetch_object($query)) {
+    $objects[$project_object->object_type][$project_object->object_nid] = $project_object->env_type;
   }
+  $additions['project_objects'] = $objects;
   return $additions;
 }
 
@@ -473,14 +468,14 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#value' => l($url, $url),
     '#weight' => -10
   );
-  $header = array('Environment', 'Site');
+  
+  
+  
+  $header = array('Object', 'Type');
   $rows = array();
-  foreach(array('dev_site' => 'DEV Site', 
-                'test_site' => 'TEST Site', 
-                'live_site' => 'LIVE Site') as $k => $v) {
-
-    $row = array($v, $node->$k ? node_load($node->$k)->title :
-       	 	      "Not assigned yet");
+  foreach($node->project_objects as $nid => $object) {
+    $object = node_load($nid);
+    $row = array(l($object->title, $object->nid), $object->type);
     $rows[] = $row;
   }
 
