@@ -1,9 +1,12 @@
 <?php
-
 /**
  * @file
  * Provision/Drush hooks for git commands.
  */
+
+// @TODO:  HOW the hell do I include provision from another drush command??
+include_once('/var/aegir/.drush/commands/provision/provision.inc');
+include_once('devshop_provision.context.project.inc');
 
 /**
  * Implementation of hook_drush_command().
@@ -84,4 +87,13 @@ function drush_devshop_provision_pre_hosting_task() {
     $task->options['no-cache'] = !$task->task_args['cache'];
   }
   
+}
+
+
+function hosting_hosting_project_context_options(&$task) {
+  $task->context_options['server'] = '@server_master';
+  $task->context_options['web_server'] = hosting_context_name($task->ref->web_server);
+  // Trim the path so we dont pass extra spaces.
+  $task->context_options['path'] = trim($task->ref->path, " ");
+  $task->context_options['git_url'] = trim($task->ref->git_url, " ");
 }
