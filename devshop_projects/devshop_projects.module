@@ -462,8 +462,14 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#value' => filter_xss($node->code_path),
     '#weight' => -8
   );
-
-  $header = array('Environement', 'Site');
+  $url = 'http://' . $node->base_url;
+  $node->content['info']['base_url'] = array(
+    '#type' => 'item',
+    '#title' => t('Base URL'),
+    '#value' => l($url, $url),
+    '#weight' => -10
+  );
+  $header = array('Environment', 'Site');
   $rows = array();
   foreach(array('dev_site' => 'DEV Site', 
                 'test_site' => 'TEST Site', 
