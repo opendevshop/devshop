@@ -37,6 +37,7 @@ function drush_provision_provision_devshop_create() {
     // Save aegir context
     $platform_hosting_name = "@platform_{$project}_{$env}";
     $options = array();
+    $options['project'] = d()->name;
     $options['context_type'] = "platform";
     $options['root'] = "{$path}/{$env}";
     $output .= drush_backend_invoke_args('provision-save', array($platform_hosting_name), $options);
