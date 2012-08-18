@@ -10,11 +10,22 @@
  */
 function devshop_projects_hosting_tasks() {
   $tasks = array();
-  $tasks['devshop_project']['devshop-create'] = array(
+  $tasks['project']['devshop-create'] = array(
     'title' => t('Create Project'),
     'description' => t('Clones the repo, and creates the platforms.'),
   );
   return $tasks;
+}
+
+/**
+ * Implements hook_hosting_CONTEXTTYPE_context_options()
+ */
+function devshop_projects_hosting_project_context_options(&$task) {
+  $task->context_options['server'] = '@server_master';
+  $task->context_options['path'] = trim($task->ref->code_path, " ");
+  if ($task->ref->git_url) {
+    $task->context_options['git_url'] = $task->ref->git_url;
+  }
 }
 
 /**
@@ -31,7 +42,7 @@ function devshop_projects_perm() {
  */
 function devshop_projects_node_info() {
   #configuration
-  $types["devshop_project"] =  array(
+  $types["project"] =  array(
     "type" => 'devshop_project', 
     "name" => 'DevShop Project',
     "module" => 'devshop_projects',
@@ -304,8 +315,8 @@ function devshop_projects_insert($node) {
   // Create hostmaster task
   // @TODO: This fails because there is no alias being saved for this node...
   $args = array();
-  $args[] = $node->git_url;
-  $args[] = $node->code_path;
+  $args['git-url'] = $node->git_url;
+  $args['path'] = $node->code_path;
   hosting_add_task($node->nid, 'devshop-create', $args);
 }
 
@@ -404,6 +415,7 @@ function devshop_projects_load($node) {
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
   if (is_array($hosting_name) && is_array($additions)) {
+    $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
     $additions += $hosting_name;
   }
   $env =   array('dev'  => 'dev_site', 
