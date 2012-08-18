@@ -26,6 +26,7 @@ function devshop_projects_hosting_tasks() {
 function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['server'] = '@server_master';
   $task->context_options['project_name'] = $task->ref->title;
+  $task->context_options['install_profile'] = $task->ref->install_profile;
   $task->context_options['code_path'] = trim($task->ref->code_path, " ");
   if ($task->ref->git_url) {
     $task->context_options['git_url'] = $task->ref->git_url;
@@ -418,7 +419,7 @@ function devshop_projects_validate($node, &$form) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url ' .
+  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url, install_profile ' .
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
