@@ -338,16 +338,6 @@ function devshop_projects_insert($node) {
 }
 
 /**
- * Implementation of hook_update().
- *
- * As an existing node is being updated in the database, we need to do our own
- * database updates.
- */
-function devshop_projects_update($node) {
-  db_query("UPDATE {hosting_devshop_project} SET git_url = '%s', code_path = '%s' WHERE nid=%d", $node->git_url, hosting_path_normalize($node->code_path));
-}
-
-/**
  * Implementation of hook_delete().
  */
 function devshop_projects_delete($node) {
@@ -470,6 +460,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -10
   );
   
+
+  $node->content['info']['install_profile'] = array(
+    '#type' => 'item',
+    '#title' => t('Install profile'),
+    '#value' => ($node->install_profile),
+    '#weight' => -8
+  );
   foreach($node->project_objects as $type => $objects) {
     $header = array($type ."s");
     $rows = array();
@@ -488,13 +485,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   }
   
   // MAIN DISPLAY
+  
+  //If there are no sites yet, we must display the install form.
   if (!isset($node->project_objects['site'])){
-    $node->content['ready'] = array(
-      '#type' => 'item',
-      '#value' => t("Your project's code is ready!  Now you must create your sites."),
-    );
     
-    // @TODO:  Only show once the platforms have been verified!
+    // Site install form
     $node->content['install'] =array(
       '#type' => 'item',
       '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
@@ -511,12 +506,29 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
  *  Form for site installation
  */
 function devshop_projects_install_sites_form($form_state, $project_node) {
+  
+    $form = array();
+    
+    //Bail if no platforms yet.
+    if (!isset($project_node->project_objects['platform'])){
+      $form['note'] = array(
+	'#type' => 'item',
+	'#title' => t('Clone & Verify'),
+	'#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+      );
+      return $form;
+    }
+    
     // Load all install profiles found on dev platform
     $platform_nid = key($project_node->project_objects['platform']);
     
-    $profiles = array_combine(hosting_get_profiles($platform_nid, 'short_name'), hosting_get_profiles($platform_nid));
+    $form['ready'] = array(
+      '#type' => 'item',
+      '#value' => t("Your project's code is ready!  Now you must create your sites."),
+    );
     
-    $form = array();
+    $profiles = array_combine(hosting_get_profiles($platform_nid, 'short_name'), hosting_get_profiles($platform_nid));
+
     $form['install_profile'] = array(
       '#type' => 'radios',
       '#title' => t('Choose your install profile'),
@@ -536,7 +548,7 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
 /**
  * Validates for site installation
  */
-function devshop_projects_install_sites_form_validate(&$form_state){
+function devshop_projects_install_sites_form_validate(&$form, &$form_state){
   if (empty($form_state['values']['install_profile'])){
     form_set_error('install_profile', t('You must choose an install profile'));
   }
@@ -553,7 +565,12 @@ function devshop_projects_install_sites_form_validate(&$form_state){
  * If we save the install_profile in the project context,
  * the task could easily create the new sites.
  */
-function devshop_projects_install_sites_form_submit(&$form_state){
+function devshop_projects_install_sites_form_submit(&$form, &$form_state){
+  $node = node_load($form_state['values']['nid']);
+
+  // Save installation profile to database
+  db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $node->nid);
+  
   // @TODO: Save a "save-project" task that saves the installation
   // profile to the project context.
   // hostmaster_add_task($form_state['values']['nid'], 'devshop-save-project', )
