@@ -460,13 +460,14 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -10
   );
   
-
-  $node->content['info']['install_profile'] = array(
-    '#type' => 'item',
-    '#title' => t('Install profile'),
-    '#value' => ($node->install_profile),
-    '#weight' => -8
-  );
+  if (!empty($node->install_profile)){
+    $node->content['info']['install_profile'] = array(
+      '#type' => 'item',
+      '#title' => t('Install profile'),
+      '#value' => ($node->install_profile),
+      '#weight' => -8
+    );
+  }
   foreach($node->project_objects as $type => $objects) {
     $header = array($type ."s");
     $rows = array();
@@ -515,6 +516,15 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
 	'#type' => 'item',
 	'#title' => t('Clone & Verify'),
 	'#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+      );
+      return $form;
+    }
+    // Bail if project doesn't have sites and already has install profile
+    if (!isset($project_node->project_objects['site']) && isset($project_node->install_profile)){
+      $form['note'] = array(
+	'#type' => 'item',
+	'#title' => t('Sites Install'),
+	'#value' => t('Your Live, Dev, and Test sites are being installed.'),
       );
       return $form;
     }
