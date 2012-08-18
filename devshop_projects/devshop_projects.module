@@ -187,6 +187,8 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
  * Implements hook_form_alter().
  */
 function devshop_projects_form_alter(&$form, &$form_state, $form_id){
+  
+  // Removing unneccesary fieldgroups
   if ($form_id == 'project_node_form'){
     unset($form['menu']);
     unset($form['revision_information']);
