@@ -144,45 +144,31 @@ function devshop_projects_projects_list_form($form_state, $filter_by = NULL, $fi
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  $etype = array('dev' => 'Dev',
-  	   	 'test' => 'Test',
-		 'live' => 'Live');
-
-  if ($node->type == 'site') {
-    switch ($op) {
-      case 'view':
-        if (!$a3) { //!teaser
-          $node->content['info']['environment'] = array(
-	    '#type' => 'item',
-    	    '#title' => t('Environment Type'),
-            '#value' => t($etype[$node->environment]),
-    	    '#description' => t('')
-  	    );
-
-        }
-        break;
-
-    case 'load':
-      if (!empty($url)){
-        $node->git_url = $url;
-      }
-      break;
-
-    case 'insert':
-    case 'update':
-/*
-      db_query("DELETE FROM {hosting_platform_git} " .
-      	       "WHERE nid = %d", $node->nid);
-      db_query("INSERT INTO {hosting_platform_git} " .
-               "(nid, git_url, cloned) " .
-               "VALUES (%d, '%s', 0)", 
-	       $node->nid, $node->git_url);
-*/
-      break;
+  // On insert of a platform, determine project and save to hosting_devshop_project_objects
+  if ($node->type == 'platform'){
+    if ($op == 'insert') {
+      $path = explode('/', $node->publish_path); 
+      $environment = array_pop($path);
+      $project_path = implode('/', $path);
+      
+      $project = devshop_project_load_by_path($project_path);
+  
+      // Save to table
+      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $project->type, $environment);
+     // dsm("INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES ($project->nid, $node->nid, $project->type, $environment");
     }
   }
 }
 
+/**
+ * Helper to load a project node by path
+ */
+function devshop_project_load_by_path($project_path){
+  $nid = db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s"', array($project_path)));
+  return node_load($nid);
+}
+ 
+ 
 /**
  * Implements hook_form_alter().
  */
