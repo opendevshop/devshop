@@ -22,6 +22,7 @@ function devshop_projects_hosting_tasks() {
  */
 function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['server'] = '@server_master';
+  $task->context_options['project_name'] = $task->ref->title;
   $task->context_options['code_path'] = trim($task->ref->code_path, " ");
   if ($task->ref->git_url) {
     $task->context_options['git_url'] = $task->ref->git_url;
