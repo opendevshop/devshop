@@ -32,6 +32,11 @@ function devshop_projects_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
+      'install_profile' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
     ),
     'primary key' => array('nid'),
   );
