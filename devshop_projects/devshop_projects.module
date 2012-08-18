@@ -164,23 +164,11 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
  * Implements hook_form_alter().
  */
 function devshop_projects_form_alter(&$form, &$form_state, $form_id){
-  if ($form_id == 'site_node_form'){
-    $node = $form['#node'];
-    $form['devshop'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('DevShop'),
-    );
-//  @TODO: Remove.  This will be done automatically.
-//    $etype = array('dev' => 'Dev',
-//    	           'test' => 'Test',
-//		   'live' => 'Live');
-//
-//    $form['devshop']['environement'] = array(
-//      '#title' => 'Environment Type',
-//      '#type' => 'select',
-//      '#description' => t('Select the environement type for this site'),
-//      '#options' => $etype,
-//    );
+  if ($form_id == 'project_node_form'){
+    unset($form['menu']);
+    unset($form['revision_information']);
+    unset($form['author']);
+    unset($form['options']);
   }
 }
 
