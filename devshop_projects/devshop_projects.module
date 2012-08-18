@@ -70,7 +70,7 @@ function devshop_projects_node_info() {
     "type" => 'devshop_project', 
     "name" => 'DevShop Project',
     "module" => 'devshop_projects',
-    "has_title" => TRUE, 
+    "has_title" => TRUE,
     "title_label" => t('Project Codename'),
     "description" => t('Create a project'),
     "has_body" => 0, 
@@ -353,6 +353,8 @@ function devshop_projects_update($node) {
 function devshop_projects_delete($node) {
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
   db_query('DELETE FROM {hosting_devshop_project_object} WHERE project_nid = %d', $node->nid);
+  
+  hosting_context_delete($node->nid);
 }
 
 /**
