@@ -476,8 +476,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   $node->content['info']['sites'] = array(
     '#type' => 'item',
-    '#title' => t('Project Members'),
-    '#value' => $table,
+    '#title' => t('Status'),
+    '#value' => devshop_projects_project_status($node),
     '#weight' => -7
   );
  
@@ -485,14 +485,24 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 }
 
 /**
- * Hide the delete button on project nodes.
+ * Status display
  */
-function hosting_devshop_projects_form_alter(&$form, &$form_state, $form_id) {
-  // Remove delete button from the edit form
-  if ($form_id == 'devshop_project_node_form') {
-    $form['buttons']['delete']['#type'] = 'hidden'; 
+function devshop_projects_project_status(){
+  
+  if ($create_task_exists) {
+    $msg = t('Git Cloning...');
+  } elseif ($platforms_exist) {
+    $msg = t('Verifying Platforms...');
+  } elseif ($platforms_verified) {
+    $msg = t('Platforms Verified!');
+    $msg .= drupal_get_form('devshop_projects_project_site_install');
+  } else {
+    $msg = t('@TODO');
   }
+  
+  return $msg;
 }
+
 
 function devshop_projects_project_detail() {
 
