@@ -474,7 +474,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $rows = array();
     foreach($objects as $nid => $object) {
       $object = node_load($nid);
-      $row = array(l($object->title, $object->nid));
+      $row = array(l($object->title, "node/$object->nid"));
       $rows[] = $row;
       
     }
