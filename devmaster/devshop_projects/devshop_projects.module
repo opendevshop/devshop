@@ -163,6 +163,18 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       $data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid));
       return $data;
     }
+    
+     // Load Project
+    if ($op == 'view'){
+      $project = node_load($node->project_nid);
+      $node->content['info']['project'] = array(
+	'#type' => 'item',
+	'#title' => t('Project'),
+	'#value' => l($project->title, "node/$project->nid"),
+	'#weight' => -10
+      );
+      return $data;
+    }
   }
 }
 
