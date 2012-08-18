@@ -119,10 +119,8 @@ function devshop_projects_projects_view() {
   while(($proj = db_fetch_object($r))) {
     $node = node_load($proj->nid);
     $row = array();
-    $row[] = $node->title;
-    $row[] = db_result(db_query("SELECT COUNT(*) " .
-				"FROM {hosting_devshop_project_object}" .
-				 "WHERE project_nid = %d", $node->nid));
+    $row[] = l($node->title, "node/$proj->nid");
+    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid));
     $rows[] = $row;
   }
 
