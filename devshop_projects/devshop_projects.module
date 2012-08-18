@@ -207,13 +207,13 @@ function devshop_projects_form(&$node) {
     '#maxlength' => 255,
     '#weight' => 2,
   );
-  $form['domain'] = array(
+  $form['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Primary Domain'),
     '#description' => t('The domain name all sites will be built under.'),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->domain,
+    '#default_value' => $node->base_url,
     '#maxlength' => 255,
     '#weight' => 2,
   );
