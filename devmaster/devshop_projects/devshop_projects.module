@@ -170,17 +170,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       '#type' => 'fieldset',
       '#title' => t('DevShop'),
     );
-
-    $etype = array('dev' => 'Dev',
-    	           'test' => 'Test',
-		   'live' => 'Live');
-
-    $form['devshop']['environement'] = array(
-      '#title' => 'Environment Type',
-      '#type' => 'select',
-      '#description' => t('Select the environement type for this site'),
-      '#options' => $etype,
-    );
+//  @TODO: Remove.  This will be done automatically.
+//    $etype = array('dev' => 'Dev',
+//    	           'test' => 'Test',
+//		   'live' => 'Live');
+//
+//    $form['devshop']['environement'] = array(
+//      '#title' => 'Environment Type',
+//      '#type' => 'select',
+//      '#description' => t('Select the environement type for this site'),
+//      '#options' => $etype,
+//    );
   }
 }
 
