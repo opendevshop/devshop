@@ -36,7 +36,7 @@ function devshop_projects_schema() {
     'primary key' => array('nid'),
   );
 
- $schema['hosting_devshop_project_sites'] = array(
+ $schema['hosting_devshop_project_object'] = array(
     'fields' => array(
       'project_nid' => array(
         'type' => 'int',
