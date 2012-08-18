@@ -127,7 +127,7 @@ function devshop_projects_projects_view() {
   }
 
   $output = theme('table', $header, $rows, array('class' => 'hosting-table'));
-  $output .= l(t('Create a new project?'), 'node/add/devshop-project');
+  $output .= l(t('Create a new project?'), 'node/add/project');
   return $output;
 }
 
