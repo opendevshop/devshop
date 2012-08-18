@@ -3,14 +3,19 @@
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_provision_provision_devshop_create($git_url, $path) {
+function drush_provision_provision_devshop_create() {
+  
+  $project = d();
+  
+  $git_url = $project->git_url;
+  $path = $project->code_path;
   
   // Validate
   if (empty($git_url)){
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git URL not valid.'));
   }
-  if (!file_exists($path)){
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path does not exist.'));
+  if (file_exists($path)){
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path already exists!'));
   }
   
   //Pause Hostmaster (Mainly for the git pull task)
