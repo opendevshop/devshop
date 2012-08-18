@@ -157,6 +157,12 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $project->type, $environment);
      // dsm("INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES ($project->nid, $node->nid, $project->type, $environment");
     }
+    
+    // Load Project
+    if ($op == 'load'){
+      $data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid));
+      return $data;
+    }
   }
 }
 
