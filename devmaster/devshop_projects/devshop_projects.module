@@ -18,7 +18,10 @@ function devshop_projects_hosting_tasks() {
 }
 
 /**
- * Implements hook_hosting_CONTEXTTYPE_context_options()
+ * Implements hook_hosting_project_context_options()
+ * 
+ * This transfers data from the node to the aegir context object (the alias!)
+ * For project entities.
  */
 function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['server'] = '@server_master';
@@ -27,6 +30,26 @@ function devshop_projects_hosting_project_context_options(&$task) {
   if ($task->ref->git_url) {
     $task->context_options['git_url'] = $task->ref->git_url;
   }
+}
+
+/**
+ * Implements hook_hosting_site_context_options()
+ * 
+ * This transfers data from the node to the aegir context object (the alias!)
+ * For site entities.
+ */
+function devshop_projects_hosting_site_context_options(&$task) {
+  $task->context_options['project'] = $task->ref->git_url;
+}
+
+/**
+ * Implements hook_hosting_site_context_options()
+ * 
+ * This transfers data from the node to the aegir context object (the alias!)
+ * For site entities.
+ */
+function devshop_projects_hosting_platform_context_options(&$task) {
+  $task->context_options['project'] = $task->ref->project;
 }
 
 /**
