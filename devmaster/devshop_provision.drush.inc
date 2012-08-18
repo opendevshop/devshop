@@ -12,6 +12,10 @@ include_once('devshop_provision.context.project.inc');
  * Implementation of hook_drush_command().
  */
 function devshop_provision_drush_command() {
+  $items['provision-devshop-install'] = array(
+    'description' => 'Install the three sites needed for a project.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
   $items['provision-devshop-create'] = array(
     'description' => 'Create a DevShop Project with three platforms and three sites for dev, test, and live.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
