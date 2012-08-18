@@ -296,9 +296,9 @@ function devshop_projects_form(&$node) {
  */
 function devshop_projects_insert($node) {
 
-  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path) ".
-  	   "VALUES (%d, '%s', '%s')",
-	   $node->nid, $node->git_url, hosting_path_normalize($node->code_path));
+  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path, base_url) ".
+  	   "VALUES (%d, '%s', '%s', '%s')",
+	   $node->nid, $node->git_url, hosting_path_normalize($node->code_path), $node->base_url);
 //  _devshop_projects_insert_sites($node);
 
   // Save hosting context
@@ -307,10 +307,7 @@ function devshop_projects_insert($node) {
   }
   
   // Create hostmaster task
-  $args = array();
-  $args['git-url'] = $node->git_url;
-  $args['path'] = $node->code_path;
-  hosting_add_task($node->nid, 'devshop-create', $args);
+  hosting_add_task($node->nid, 'devshop-create');
 }
 
 /**
@@ -322,14 +319,14 @@ function devshop_projects_insert($node) {
 function devshop_projects_update($node) {
   // if this is a new node or we're adding a new revision,
   if (!empty($node->revision)) {
-    hosting_devshop_project_insert($node);
+    //hosting_devshop_project_insert($node);
   }
   else {
-    db_query("UPDATE {hosting_devshop_project} " .
-             "SET git_url = '%s', code_path = '%s' WHERE nid=%d",
-              $node->git_url, hosting_path_normalize($node->code_path));
-    db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
-    _devshop_projects_insert_sites($node);
+    //db_query("UPDATE {hosting_devshop_project} " .
+    //         "SET git_url = '%s', code_path = '%s' WHERE nid=%d",
+    //          $node->git_url, hosting_path_normalize($node->code_path));
+    //db_query('DELETE FROM {hosting_devshop_project_sites} WHERE nid = %d', $node->nid);
+    //_devshop_projects_insert_sites($node);
   }
 }
 
@@ -403,7 +400,7 @@ function devshop_projects_validate($node, &$form) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT git_url, code_path ' .
+  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url ' .
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
