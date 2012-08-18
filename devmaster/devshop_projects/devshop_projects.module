@@ -14,6 +14,10 @@ function devshop_projects_hosting_tasks() {
     'title' => t('Create Project'),
     'description' => t('Clones the repo, and creates the platforms.'),
   );
+  $tasks['project']['devshop-install'] = array(
+    'title' => t('Install Sites'),
+    'description' => t('Runs drupal installation on each of the three platforms.'),
+  );
   return $tasks;
 }
 
