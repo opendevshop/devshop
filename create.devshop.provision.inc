@@ -13,12 +13,6 @@ function drush_provision_provision_devshop_create($git_url, $path) {
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path does not exist.'));
   }
   
-  // @TODO: SAVE THE ALIAS
-  $target = d()->name;
-  drush_invoke('provision-save', $target);
-  
-  drush_log(dt('Provision DevShop Create started...'));
-  
   //Pause Hostmaster (Mainly for the git pull task)
   // @TODO Better way?  @see drush_hosting_pause()
   exec('crontab -r');
