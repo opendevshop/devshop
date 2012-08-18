@@ -483,13 +483,77 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $node->content['info'][$type] = array(
       '#type' => 'item',
       '#value' => $table,
+    );    
+  }
+  
+  // MAIN DISPLAY
+  if (!isset($node->project_objects['site'])){
+    $node->content['ready'] = array(
+      '#type' => 'item',
+      '#value' => t("Your project's code is ready!  Now you must create your sites."),
     );
- 
+    $node->content['install'] =array(
+      '#type' => 'item',
+      '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
+    );
+    
     
   }
 
     
   return $node;
+}
+
+/**
+ *  Form for site installation
+ */
+function devshop_projects_install_sites_form($form_state, $project_node) {
+    // Load all install profiles found on dev platform
+    $platform_nid = key($project_node->project_objects['platform']);
+    
+    $profiles = array_combine(hosting_get_profiles($platform_nid, 'short_name'), hosting_get_profiles($platform_nid));
+    
+    $form = array();
+    $form['install_profile'] = array(
+      '#type' => 'radios',
+      '#title' => t('Choose your install profile'),
+      '#options' => $profiles,
+    );
+    $form['nid'] = array(
+      '#type' => 'value',
+      '#value' => $project_node->nid,  
+    );
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Create dev, test, and live sites'),  
+    );
+    return $form;
+}
+
+/**
+ * Validates for site installation
+ */
+function devshop_projects_install_sites_form_validate(&$form_state){
+  if (empty($form_state['values']['install_profile'])){
+    form_set_error('install_profile', t('You must choose an install profile'));
+  }
+  
+  
+}
+/**
+ * Submit for site installation
+ *
+ * I believe, based on the fact that provision has to create
+ * the site aliases before it runs provision-install, we have
+ * to have a new hostmaster task here.
+ *
+ * If we save the install_profile in the project context,
+ * the task could easily create the new sites.
+ */
+function devshop_projects_install_sites_form_submit(&$form_state){
+  // @TODO: Save a "save-project" task that saves the installation
+  // profile to the project context.
+  // hostmaster_add_task($form_state['values']['nid'], 'devshop-save-project', )
 }
 
 /**
