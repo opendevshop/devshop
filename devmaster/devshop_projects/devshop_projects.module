@@ -493,6 +493,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#type' => 'item',
       '#value' => t("Your project's code is ready!  Now you must create your sites."),
     );
+    
+    // @TODO:  Only show once the platforms have been verified!
     $node->content['install'] =array(
       '#type' => 'item',
       '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
