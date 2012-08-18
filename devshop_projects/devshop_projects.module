@@ -188,45 +188,42 @@ function devshop_projects_form(&$node) {
     '#maxlength' => 255,
     '#weight' => 1,
   );
+  $form['title'] = array(
+    '#type' => 'textfield',
+     '#title' => t('Project Code Name'),
+     '#required' => TRUE,
+     '#description' => t('Choose a unique name for your project.'),
+     '#size' => 40,
+     '#default_value' => $node->title,
+     '#maxlength' => 255,
+  );
+  $form['code_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Code path'),
+    '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $node->code_path,
+    '#maxlength' => 255,
+    '#weight' => 2,
+  );
+  $form['domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Primary Domain'),
+    '#description' => t('The domain name all sites will be built under.'),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $node->domain,
+    '#maxlength' => 255,
+    '#weight' => 2,
+  );
   
-  if(!$node->nid) {
-    $form['title'] = array(
-      '#type' => 'textfield',
-       '#title' => t('Project Code Name'),
-       '#required' => TRUE,
-       '#description' => t('Choose a unique name for your project.'),
-       '#size' => 40,
-       '#default_value' => $node->title,
-       '#maxlength' => 255,
-       );
-  }
-  else {
-    $form['title'] = array(
-      '#type' => 'item',
-      '#title' => t('Project Code Name'),
-      '#value' => $node->title
-      );
-  }
-
-
-  if(!$node->nid) {
-    $form['code_path'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Code path'),
-      '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
-      '#required' => TRUE,
-      '#size' => 40,
-      '#default_value' => $node->code_path,
-      '#maxlength' => 255,
-      '#weight' => 2,
-      );
-  }
-  else {
-    $form['code_path'] = array(
-      '#type' => 'item',
-      '#title' => t('Code path'),
-      '#value' => $node->code_path
-      );
+  // Don't allow editing
+  if ($node->nid) {
+    $form['code_path']['#type'] = $form['title']['#type'] = $form['git_url']['#type'] = 'item';
+    $form['code_path']['#value'] = $form['code_path']['#default_value'];
+    $form['title']['#value'] = $form['title']['#default_value'];
+    $form['git_url']['#value'] = $form['git_url']['#default_value'];
   }
   
   //@TODO: Remove.  I think that instead, we should let the script create the platforms.
