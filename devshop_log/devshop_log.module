@@ -39,8 +39,8 @@ function _devsop_log_access_callback($nid) {
 function devshop_log_menu() {
 
   $items['admin/hosting/gitlog'] = array(
-    'title' => 'DevShop Git Log',
-    'description' => 'Configure Git Commit Log View',
+    'title' => 'DevShop Commit Log',
+    'description' => 'Configure Commit Log View',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_git_log_settings'),
     'type' => MENU_LOCAL_TASK,
@@ -48,8 +48,8 @@ function devshop_log_menu() {
   );
 
   $items['node/%/gitlog'] = array(
-    'title' => 'Git Commit Log',
-    'description' => 'View Git commit log entries',
+    'title' => 'Commit Log',
+    'description' => 'View commit log entries',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_log_view_form', 1),
     'type' => MENU_LOCAL_TASK,
