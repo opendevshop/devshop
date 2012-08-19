@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file devshop_projects.module
  * a module in the DevShop module group which enables the user to create proects and group
@@ -523,7 +524,7 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       return $form;
     }
     // Bail if project doesn't have sites and already has install profile
-    if (!isset($project_node->project_objects['site']) && isset($project_node->install_profile)){
+    if (!empty($project->install_profile) || isset($project_node->project_objects['site'])){
       $form['note'] = array(
 	'#type' => 'item',
 	'#title' => t('Sites Install'),
@@ -540,7 +541,7 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       '#value' => t("Your project's code is ready!  Now you must create your sites."),
     );
     
-    $profiles = array_combine(hosting_get_profiles($platform_nid, 'short_name'), hosting_get_profiles($platform_nid));
+    $profiles = array_combine((array) hosting_get_profiles($platform_nid, 'short_name'), (array) hosting_get_profiles($platform_nid));
 
     $form['install_profile'] = array(
       '#type' => 'radios',
@@ -568,6 +569,7 @@ function devshop_projects_install_sites_form_validate(&$form, &$form_state){
   
   
 }
+
 /**
  * Submit for site installation
  *
@@ -579,13 +581,43 @@ function devshop_projects_install_sites_form_validate(&$form, &$form_state){
  * the task could easily create the new sites.
  */
 function devshop_projects_install_sites_form_submit(&$form, &$form_state){
-  $node = node_load($form_state['values']['nid']);
 
+  global $user;
+  $project_node = node_load($form_state['values']['nid']);
+    
   // Save installation profile to database
-  db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $node->nid);
-  
-  // Create a "devshop-install" task
-  hosting_add_task($node->nid, 'devshop-install');
+  db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
+    
+  // Create the site nodes
+  foreach ($project_node->project_objects['platform'] as $nid => $env){
+    $node = new stdClass();
+    $node->type = 'site';
+    $node->status = 1;
+    $node->uid = $user->uid;
+    $node->title = $env .'.'. $project_node->base_url;
+
+    // Aegir properties
+    // @TODO: better client support
+    $node->client = HOSTING_DEFAULT_CLIENT;  
+    $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
+    
+    $node->platform = $nid;
+    $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $form_state['values']['install_profile']));
+    
+    //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
+    
+    // @TODO: Improve site language handling?
+    $node->site_language = !empty($user->language)? $user->language: 'en';
+    
+    // Save the node
+    if ($node = node_submit($node)) {
+      node_save($node);
+      
+      //And save the association to the project
+      //INSERT INTO `tesla`.`hosting_devshop_project_object` (`project_nid`, `object_nid`, `object_type`, `env_type`) VALUES ('123', '434', 'ag', 'ag');
+      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
+    }
+  }
 }
 
 /**
