@@ -4,10 +4,6 @@
  * Provision/Drush hooks for git commands.
  */
 
-// @TODO:  HOW the hell do I include provision from another drush command??
-include_once('/var/aegir/.drush/commands/provision/provision.inc');
-include_once('devshop_provision.context.project.inc');
-
 /**
  * Implementation of hook_drush_command().
  */
