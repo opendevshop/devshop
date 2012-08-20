@@ -98,13 +98,6 @@ function devshop_projects_menu() {
     'access arguments' => array('view projects'),
   );
 
-  $items['hosting/projects/detail/%'] = array(
-    'title' => 'Projects Details',
-    'description' => 'Display details of a projects',
-    'page callback' => 'devshop_projects_project_detail',
-    'access arguments' => array('view projects'),
-  );
-
   return ($items);
 }
 
@@ -133,14 +126,6 @@ function devshop_projects_projects_view() {
   $output .= l(t('Create a new project?'), 'node/add/project');
   return $output;
 }
-
-/**
- * Create a form for building a list of projects.
- */
-function devshop_projects_projects_list_form($form_state, $filter_by = NULL, $filter_value = NULL) {
- 
-  return array();
-} 
 
 /**
  * hook_nodeapi()
@@ -269,70 +254,8 @@ function devshop_projects_form(&$node) {
     $form['git_url']['#value'] = $form['git_url']['#default_value'];
   }
   
-  //@TODO: Remove.  I think that instead, we should let the script create the platforms.
-  //  We have to pause at that point anyway, so the user can choose the available install profiles for their three sites.
-  //  Lets let provision-devshop-create import all three platforms and verify, then let the users MIGRATE their existing
-  //  sites ONTO the new platforms, IF they wish.  In my opinion, migration of the old sites to our automatically built
-  //  platforms is a better way to go.
-  //
-//
-//  $sites = array(0 => 'None');
-//  $r = db_query("SELECT n.nid, n.title FROM {node} AS n " .
-//       		"LEFT JOIN {hosting_site} AS h ON n.nid = h.nid " .
-//		"WHERE n.type = 'site' AND h.status = 1 " .
-//		"ORDER BY n.title ASC");
-//
-//  while($sa = db_fetch_object($r)) {
-//    $sites[$sa->nid] = $sa->title;
-//  }
-//
-//  $form['dev_site'] = array(
-//    '#type' => 'select',
-//    '#title' => t('DEV Site'),
-//    '#options' => $sites,
-//    '#description' => t('Select site that is going to be your development site.'),
-//    '#default_value' => $node->dev_site,
-//    '#weight' => 20,
-//  );
-//
-//  $form['test_site'] = array(
-//    '#type' => 'select',
-//    '#title' => t('TEST Site'),
-//    '#options' => $sites,
-//    '#description' => t('Select site that is going to be your test site.'),
-//    '#default_value' => $node->test_site,
-//    '#weight' => 21,
-//  );
-//
-//  $form['live_site'] = array(
-//    '#type' => 'select',
-//    '#title' => t('LIVE Site'),
-//    '#options' => $sites,
-//    '#description' => t('Select site that is going to be your live site.'),
-//    '#default_value' => $node->live_site,
-//    '#weight' => 22,
-//  );
-
   return $form;
 }
-//
-///**
-// * Insert the sites into the sites table
-// */
-//function _devshop_projects_insert_sites($node) {
-//
-//  foreach(array('dev_site' => 'dev', 
-//                'test_site' => 'test', 
-//                'live_site' => 'live') as $k => $v) {
-//    if($node->$k) {
-//      $snode = node_load($node->$k);
-//      db_query("INSERT INTO {hosting_devshop_project_sites} " .
-//               "(nid, site_nid, platform_nid, env_type) " .
-//	       "VALUES (%d, %d, %d, '%s')",
-//	       $node->nid, $node->$k, $snode->platform, $v);
-//    }
-//  }
-//}
 
 /**
  * Implementation of hook_insert().
@@ -651,13 +574,3 @@ function devshop_projects_project_status(){
   return $msg;
 }
 
-
-function devshop_projects_project_detail() {
-
-  $nid = arg(3); // ok, I'm cheating
-  if(!($node = node_load($nid)) || $node->type != 'devshop_project') {
-    return t('Project not found!');
-  }
-
-  return "hello";
-}
