@@ -12,6 +12,7 @@ function devshop_projects_hosting_tasks() {
   $tasks['project']['devshop-create'] = array(
     'title' => t('Create Project'),
     'description' => t('Clones the repo, and creates the platforms.'),
+    'provision_save' => TRUE,
   );
   $tasks['project']['devshop-install'] = array(
     'title' => t('Install Sites'),
