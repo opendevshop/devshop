@@ -1,0 +1,98 @@
+diff --git a/modules/hosting/platform/hosting_platform.module b/modules/hosting/platform/hosting_platform.module
+index 91d4319..a4cb8ed 100644
+--- a/modules/hosting/platform/hosting_platform.module
++++ b/modules/hosting/platform/hosting_platform.module
+@@ -63,6 +63,7 @@ function hosting_platform_hosting_tasks() {
+     'title' => t('Verify'),
+     'description' => t('Verify that the platform is correctly installed and working.'),
+     'weight' => 10,
++    'provision_save' => TRUE,
+   );
+   $tasks['platform']['delete'] = array(
+     'title' => t('Delete'),
+diff --git a/modules/hosting/server/hosting_server.module b/modules/hosting/server/hosting_server.module
+index 5edddf7..b879054 100644
+--- a/modules/hosting/server/hosting_server.module
++++ b/modules/hosting/server/hosting_server.module
+@@ -53,6 +53,7 @@ function hosting_server_hosting_tasks() {
+     'title' => t('Verify'),
+     'description' => t('Verify that the server is correctly installed and working.'),
+     'weight' => 10,
++    'provision_save' => TRUE,
+   );
+ 
+   /**
+diff --git a/modules/hosting/site/hosting_site.module b/modules/hosting/site/hosting_site.module
+index bd77390..c30b8af 100644
+--- a/modules/hosting/site/hosting_site.module
++++ b/modules/hosting/site/hosting_site.module
+@@ -208,6 +208,7 @@ function hosting_site_hosting_tasks() {
+   $tasks['site']['verify'] = array(
+     'title' => t('Verify'),
+     'description' => t('Confirm that the site has been correctly installed and regenerate all configuration files to match the hosting front end.'),
++    'provision_save' => TRUE,
+   );
+ 
+   $tasks['site']['disable'] = array(
+@@ -243,14 +244,16 @@ function hosting_site_hosting_tasks() {
+   $tasks['site']['install'] = array(
+     'title' => t('Install'), 
+     'description' => t('Install a site'), 
+-    'hidden' => TRUE 
++    'hidden' => TRUE,
++    'provision_save' => TRUE, 
+   );
+ 
+   $tasks['site']['import'] = array(
+     'title' => t('Import'), 
+     'description' => t('Import an existing site into Aegir'), 
+-    'hidden' => TRUE
+-  );
++    'hidden' => TRUE,
++    'provision_save' => TRUE,
++);
+ 
+   return $tasks;
+ }
+diff --git a/modules/hosting/task.hosting.inc b/modules/hosting/task.hosting.inc
+index 31dd56f..0d0fa5c 100644
+--- a/modules/hosting/task.hosting.inc
++++ b/modules/hosting/task.hosting.inc
+@@ -72,6 +72,14 @@ function drush_hosting_task_validate($id, $type = null) {
+   else {
+     drush_set_error('HOSTING_INVALID_TASK', t("This task is not valid"));
+   }
++
++  // Load Task Info  
++  $tasks_info = hosting_available_tasks($task->ref->type);
++
++  // Find task type and pass through if it needs provision_save
++  if (isset($tasks_info[$task->task_type])){
++    $task->task_info = $tasks_info[$task->task_type];
++  }
+ }
+ 
+ /**
+@@ -90,9 +98,8 @@ function drush_hosting_task() {
+ 
+   // Make sure argument order is correct
+   ksort($task->args);
+-
+   // On install/verify, save the named context
+-  if ($task->task_type === 'install' || $task->task_type === 'verify' || $task->task_type === 'import') {
++  if (!empty($task->task_info['provision_save'])) {
+     // XXX: we copy module_invoke_all() here because it doesn't pass by
+     // reference and it breaks under PHP 5.3
+     $hook = 'hosting_' . $task->ref->type . '_context_options';
+diff --git a/modules/hosting/task/hosting_task.module b/modules/hosting/task/hosting_task.module
+index f698fe3..ca3c863 100644
+--- a/modules/hosting/task/hosting_task.module
++++ b/modules/hosting/task/hosting_task.module
+@@ -1149,7 +1149,6 @@ function hosting_task_fetch_tasks($rid) {
+ 
+     $return[$type] = $task;
+   }
+-
+   return $return;
+ }
+ 

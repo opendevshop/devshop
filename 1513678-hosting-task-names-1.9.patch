@@ -1,0 +1,13 @@
+diff --git a/modules/hosting/task/hosting_task.module b/modules/hosting/task/hosting_task.module
+index f698fe3..b037ab5 100644
+--- a/modules/hosting/task/hosting_task.module
++++ b/modules/hosting/task/hosting_task.module
+@@ -388,7 +388,7 @@ function hosting_task_confirm_form($form_state, $node, $task) {
+   $form['nid'] = array('#type' => 'value', '#value' => $node->nid);
+   $form['task'] = array('#type' => 'value', '#value' => $task);
+   $form['parameters'] = array('#tree' => TRUE);
+-  $func = 'hosting_task_' . $task . '_form';
++  $func = 'hosting_task_' . str_replace('-', '_', $task) . '_form';
+   if (function_exists($func)) {
+     $form['parameters'] += $func($node);
+   }
