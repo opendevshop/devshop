@@ -7,7 +7,7 @@
  *
  * @TODO: Save "Last Pull" and "Last Pull Status" when git pull task is complete.
  */
-function devshop_pull_callback($platform, $hash) {
+function devshop_pull_callback($project, $hash) {
   
   // Get the access from list
   $acl = explode("\n", trim(variable_get('devshop_pull_ip_acl', '')));
@@ -30,20 +30,21 @@ function devshop_pull_callback($platform, $hash) {
   print "$message<br>";
 
 
-  if (strlen($platform) < 1 || strlen($hash) != 32) {
+  if (strlen($project) < 1 || strlen($hash) != 32) {
     $message = "Invalid/missing parameters in URL!";
     watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
 
-  // Based on the platform name, get the node ID for the platform node
+  // Based on the project name, get the node ID for the project node.
+  // Is need remove the prefix for find the nid.
   $pnid = db_result(db_query(
-    "SELECT nid FROM {hosting_context} WHERE name = '%s'", $platform));
+    "SELECT nid FROM {hosting_context} WHERE name = '%s'", str_replace('project_', '', $project)));
 
   // Load the entire node
   if (!$pnode = node_load($pnid)) {
-    $message = "Unable to load platform node!";
+    $message = "Unable to load project node!";
     watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
@@ -59,15 +60,20 @@ function devshop_pull_callback($platform, $hash) {
   
   // Make sure the platform has pull callback enabled
   if ($pnode->pull_method != DEVSHOP_PULL_CALLBACK){
-    $message = "Platform is NOT configured to use Pull Code URL callback!";
+    $message = "Project is NOT configured to use Pull Code URL callback!";
     watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
 
-  // Iterate through all of the sites that use this platform
+  //Search dev platform of this project
+  $platforms = $pnode->project_objects['platform'];
+
+  $platform = array_search('dev', $platforms);
+
+  // Iterate through all of the sites that use platform dev
   $r = db_query("SELECT nid FROM {hosting_site} " .
-                "WHERE platform = %d AND status = 1", $pnid);
+                "WHERE platform = %d AND status = 1", $platform);
 
   while ($site = db_fetch_object($r)) {
     $message = "Queuing a pull task for node id $site->nid";
@@ -78,7 +84,7 @@ function devshop_pull_callback($platform, $hash) {
 }
 
 /**
- * Create the full URL that is displayed in the platform node view
+ * Create the full URL that is displayed in the project node view
  * and given to the GitHub WebHook to invoke a pull after a commit.
  */
 function _devshop_pull_callback_url($node) {

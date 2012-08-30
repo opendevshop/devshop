@@ -10,7 +10,7 @@
 function devshop_pull_schema() {
   $schema['hosting_devshop_pull'] = array(
     'fields' => array(
-      'platform_nid' => array(
+      'project_nid' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -36,7 +36,7 @@ function devshop_pull_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('platform_nid'),
+    'primary key' => array('project_nid'),
   );
 
   return $schema;
