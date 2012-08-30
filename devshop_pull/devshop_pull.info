@@ -1,4 +1,4 @@
 name = DevShop Pull
-description = Provides a variety of methods to trigger a Pull Code task on DevShop platforms.
+description = Provides a variety of methods to trigger a Pull Code task on DevShop projects.
 core = 6.x
 package = DevShop

@@ -47,11 +47,11 @@ function devshop_pull_hosting_queues() {
   $items['pull'] = array(
     'type' => 'batch', 
     'name' => t('Pull queue'), 
-    'description' => t('Run git pull on platforms configured to do so.'), 
+    'description' => t('Run git pull on projects configured to do so.'), 
     'total_items' => devshop_pull_get_sites(10),
     'frequency' => strtotime("1 minute", 0), 
-    'singular' => t('platform'), 
-    'plural' => t('platforms'),
+    'singular' => t('project'), 
+    'plural' => t('projects'),
   );
   return $items;
 }
@@ -60,7 +60,7 @@ function devshop_pull_hosting_queues() {
  * Implements hook_form_alter().
  */
 function devshop_pull_form_alter(&$form, &$form_state, $form_id){
-  if ($form_id == 'platform_node_form'){
+  if ($form_id == 'project_node_form'){
     // Get node
     $node = $form['#node'];
     
@@ -87,7 +87,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
     $form['pull_reset'] = array(
       '#title' => 'Hard Reset on Pull',
       '#type' => 'checkbox',
-      '#description' => t('Reset any changes to platform files. <em>WARNING: Any uncommitted changes to the platform files will be discarded.</em>'),
+      '#description' => t('Reset any changes to project files. <em>WARNING: Any uncommitted changes to the project files will be discarded.</em>'),
       '#default_value' => $node->pull_reset,
     );
   }
@@ -97,15 +97,15 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
  * Implements hook_nodeapi()
  */
 function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
-  if ($node->type == 'platform' || $node->type == 'site') {
+  if ($node->type == 'project' || $node->type == 'site') {
     switch ($op) {
       case 'view':
         if (!$a3) { //!teaser
-	  if($node->type == 'platform') {
+	  if($node->type == 'project') {
 	    $pnode = $node;
 	  }
 	  else {
-	    $pnode = node_load($node->platform);
+	    $pnode = node_load($node->project_nid);
 	  }
 	  
 	  // @TODO: PULL QUEUE must be enabled first!  Show a notice to the user if Pull Queue
@@ -150,9 +150,9 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
         }
         break;
     case 'load':
-      if ($node->type == 'platform') {
-	$data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull} WHERE platform_nid =  %d', $node->nid));
-	if (!empty($data->platform_nid)){
+      if ($node->type == 'project') {
+	$data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull} WHERE project_nid =  %d', $node->nid));
+	if (!empty($data->project_nid)){
 	  $node->pull_method = $data->pull_method;
 	  $node->pull_reset = $data->pull_reset;
 	  $node->last_pull = $data->last_pull;
@@ -162,9 +162,9 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       break;
     case 'insert':
     case 'update':
-      if ($node->type == 'platform') {
-	db_query('DELETE FROM {hosting_devshop_pull} WHERE platform_nid = %d', $node->nid);
-	db_query('INSERT INTO {hosting_devshop_pull} (platform_nid, pull_method, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull_method, $node->pull_reset);
+      if ($node->type == 'project') {
+	db_query('DELETE FROM {hosting_devshop_pull} WHERE project_nid = %d', $node->nid);
+	db_query('INSERT INTO {hosting_devshop_pull} (project_nid, pull_method, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull_method, $node->pull_reset);
       }
       break;
     }
@@ -182,7 +182,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
  * @TODO Convert to check pull queue sites.
  */
 function devshop_pull_get_sites($limit = 5) {
-  $result = db_query("SELECT COUNT(n.nid) FROM {node} n LEFT JOIN {hosting_platform} s ON n.nid=s.nid LEFT JOIN {hosting_devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull_method = %d ORDER BY d.last_pull ASC, n.nid ASC", array(HOSTING_PLATFORM_ENABLED, DEVSHOP_PULL_QUEUE));
+  $result = db_query("SELECT COUNT(dpo.object_nid) FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.env_type = 'dev' AND dpo.object_type='site' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
   
   return db_result($result);
 }
@@ -192,15 +192,16 @@ function devshop_pull_get_sites($limit = 5) {
  */
 function hosting_pull_queue($count) {
 
-  $result = db_query("SELECT d.* FROM {node} n LEFT JOIN {hosting_platform} s ON n.nid=s.nid LEFT JOIN {hosting_devshop_pull} d ON n.nid = d.platform_nid WHERE s.status = %d AND d.pull_method = %d ORDER BY d.last_pull ASC, n.nid ASC", array(HOSTING_PLATFORM_ENABLED, DEVSHOP_PULL_QUEUE));
+  $result = db_query("SELECT d.*  FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.env_type = 'dev' AND dpo.object_type='site' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
   
-  while ($platform = db_fetch_object($result)) {
+  while ($project = db_fetch_object($result)) {
     
-    devshop_pull_task($platform->platform_nid);
+    devshop_pull_task($project->project_nid);
+    module_invoke_all('devshop_pull', $project); 
     
     //@TODO: Set last_pull_status
     //  watchdog('devshop', 'Pull FAILED on platform: @alias', array('@alias' => $platform_name));
-    //  db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE platform_nid = %d', time(), 0, $platform->platform_nid);
+    //  db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $platform->project_nid);
     
   }
 }
@@ -216,9 +217,15 @@ function devshop_pull_task($nid){
   $nids = array();
   if ($node->type == 'site'){
     $nids[] = $node->nid;
-  } else {
+  }
+  else {
+    //Search dev platform of this project
+    $platforms = $node->project_objects['platform'];
+
+    $platform = array_search('dev', $platforms);
+
     $r = db_query("SELECT nid FROM {hosting_site} " .
-                "WHERE platform = %d AND status = 1", $node->nid);
+                "WHERE platform = %d AND status = 1", $platform);
     while ($site = db_fetch_object($r)) {
       $nids[] = $site->nid;
     }
