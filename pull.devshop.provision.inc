@@ -22,6 +22,7 @@ function drush_provision_provision_devshop_pull() {
   
   //Get site target
   $target = d()->name;
+  $site_path = d()->platform->root? d()->platform->root: d()->root;
   
   //Get options
   $update = drush_get_option('no-update') == FALSE;
@@ -29,8 +30,20 @@ function drush_provision_provision_devshop_pull() {
   $cache = drush_get_option('no-cache') == FALSE;
 
   // Pull latest version of site
-  provision_backend_invoke($target, 'provision-git-pull');
+  //Execute git pull --rebase
+  if (drush_shell_cd_and_exec($site_path, 'git pull --rebase')) {
+    drush_log(dt('Git repository pulled.', array('!path' => $site_path)), 'ok');
+    $output = drush_shell_exec_output();
+    drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+  }
+  else {
+    return drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $site_path, '!errors' => implode("\n", drush_shell_exec_output()))));
+  }
 
+  if(count($output) == 1) {
+    drush_log('Nothing else needs to be done', 'ok');
+    return;
+  }
   // Verify the site.
   // @TODO: provision-git-pull should actually handle this. If the files change,
   // it should automatically verify.
