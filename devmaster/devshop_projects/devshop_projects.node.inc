@@ -178,6 +178,16 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#weight' => -8
     );
   }
+
+  if (isset($node->project_objects['platform'])){
+    $node->content['info']['add_platform'] = array(
+      '#type' => 'item',
+      '#value' => l(t('Create and add additional platforms'), 
+      	       	      "hosting/projects/platform/create/$node->nid"),
+    );
+  }
+
+
   foreach($node->project_objects as $type => $objects) {
     $header = array($type ."s");
     $rows = array();
@@ -193,6 +203,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#type' => 'item',
       '#value' => $table,
     );    
+
   }
   
   // MAIN DISPLAY

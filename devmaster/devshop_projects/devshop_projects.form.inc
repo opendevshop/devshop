@@ -277,3 +277,124 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
     }
   }
 }
+
+/**
+ *  Form for platform creation
+ */
+function devshop_projects_platform_create_form($form_state, $project_nid) {
+  
+  $project_node = node_load($project_nid);
+
+  $form = array();
+    
+  //Bail if no platforms yet.
+  if (!isset($project_node->project_objects['platform'])){
+    $form['note'] = array(
+      '#type' => 'item',
+      '#title' => t('Clone & Verify'),
+      '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+      );
+    return $form;
+  }
+    // ZZZ
+  $form['platform_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Platform Name'),
+    '#required' => TRUE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => '',
+    '#maxlength' => 255,
+  );
+  $form['git_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Git URL'),
+    '#required' => FALSE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => '',
+    '#maxlength' => 255,
+  );
+  $form['branch'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Branch'),
+    '#required' => TRUE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => 'master',
+    '#maxlength' => 255,
+  );
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_node->nid,  
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create platform'),
+  );
+  return $form;
+}
+
+/**
+ * Validates for platform create
+ */
+function devshop_projects_platform_create_form_validate(&$form, &$form_state){
+  if (empty($form_state['values']['platform_name'])){
+    form_set_error('install_profile', t('You must include a platform name'));
+  }
+  
+  
+}
+
+/**
+ * Submit for site installation
+ *
+ * I believe, based on the fact that provision has to create
+ * the site aliases before it runs provision-install, we have
+ * to have a new hostmaster task here.
+ *
+ * If we save the install_profile in the project context,
+ * the task could easily create the new sites.
+ */
+function devshop_projects_platform_create_form_submit(&$form, &$form_state){
+
+  global $user;
+  $project_node = node_load($form_state['values']['nid']);
+    
+  // Save installation profile to database
+  db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
+    
+  // Create the site nodes
+  foreach ($project_node->project_objects['platform'] as $nid => $env){
+    $node = new stdClass();
+    $node->type = 'site';
+    $node->status = 1;
+    $node->uid = $user->uid;
+    $node->title = $env .'.'. $project_node->base_url;
+
+    // Aegir properties
+    // @TODO: better client support
+    $node->client = HOSTING_DEFAULT_CLIENT;  
+    $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
+    
+    $node->platform = $nid;
+    $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $form_state['values']['install_profile']));
+    
+    //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
+    
+    // @TODO: Improve site language handling?
+    $node->site_language = !empty($user->language)? $user->language: 'en';
+    
+    // Save the node
+    if ($node = node_submit($node)) {
+      node_save($node);
+      
+      //And save the association to the project
+      //INSERT INTO `tesla`.`hosting_devshop_project_object` (`project_nid`, `object_nid`, `object_type`, `env_type`) VALUES ('123', '434', 'ag', 'ag');
+      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
+    }
+  }
+}
