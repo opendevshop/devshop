@@ -31,6 +31,15 @@ function devshop_projects_menu() {
     'access arguments' => array('view projects'),
   );
 
+  $items['hosting/projects/platform/create/%'] = array(
+    'title' => 'Create and add a platform',
+    'description' => 'Create and add a platform to an existing project',
+    //'page callback' => 'devshop_projects_platform_create',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_projects_platform_create_form', 4),
+    'access arguments' => array('view projects'),
+  );
+
   return ($items);
 }
 
