@@ -198,6 +198,7 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
     } else {
       $sites_ready = FALSE;
     }
+    
     // OUTPUT
     if ($platforms_ready == FALSE){
       $form['note'] = array(
@@ -213,6 +214,8 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
         '#value' => t('Your Live, Dev, and Test sites are being installed!'),
       );
       return $form;
+    } elseif ($sites_ready) {
+      return;
     }
     
     // Load all install profiles found on dev platform
