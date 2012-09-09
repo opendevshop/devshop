@@ -56,3 +56,54 @@ function devshop_projects_hosting_platform_context_options(&$task) {
   $task->context_options['project'] = $task->ref->project;
 }
 
+/**
+ * A replacement for hosting_task_table, to allow us to add
+ * tasks from other nodes.
+ */
+function devshop_projects_hosting_task_table($node) {
+  $output = '';
+
+
+  $headers[] = t('Task');
+  $headers[] = array(
+    'data' => t('Actions'),
+    'class' => 'hosting-actions',
+  );
+
+  $tasklist = hosting_task_fetch_tasks($node->nid);
+
+  foreach ($tasklist as $task => $info) {
+    $row = array();
+
+    if (!isset($info['nid']) && !$info['task_permitted']) {
+      // just don't show those tasks, since we'll not be able to run them
+      continue;
+    }
+
+    $row['type'] = array(
+      'data' => $info['title'],
+      'class' => 'hosting-status',
+    );
+    $actions = array();
+
+    if (isset($info['task_status']) && ($info['task_status'] == 0)) {
+      $actions['cancel'] = _hosting_task_button(t('Cancel'), sprintf("hosting/tasks/%d/cancel", $info['nid']), t("Cancel the task and remove it from the queue"), 'hosting-button-stop', !$info['task_permitted']);
+    }
+    else {
+      $actions['run'] = _hosting_task_button(t('Run'), sprintf("node/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
+    }
+
+    $actions['log'] = _hosting_task_button(t('View'), 'node/' . $info['nid'], t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
+    $row['actions'] = array(
+      'data' => implode('', $actions), 
+      'class' => 'hosting-actions',
+    );
+
+    $rows[] = array(
+      'data' => $row,
+      'class' => $info['class'],
+    );
+  }
+  $output .= theme('table', $headers, $rows, array('class' => 'hosting-table'));
+  return $output;
+}
