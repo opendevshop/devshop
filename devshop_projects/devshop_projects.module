@@ -47,7 +47,7 @@ function devshop_projects_menu() {
  * Implementation of hook_menu_alter()
  */
 function devshop_projects_menu_alter(&$items) {
-  //$items['hosting/js']['page callback'] = 'devshop_projects_hosting_js_page';
+  $items['hosting/js']['page callback'] = 'devshop_projects_hosting_js_page';
 }
 
 /**
