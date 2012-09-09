@@ -72,6 +72,27 @@ function devshop_projects_hosting_task_table($node) {
 
   $tasklist = hosting_task_fetch_tasks($node->nid);
 
+  // Get tasklists for all sites
+  $tasks = array();
+  $site_nids = array_flip($node->project_objects['site']);
+  foreach ($node->project_objects['site'] as $nid => $env){
+    $tasks[$env] = hosting_task_fetch_tasks($nid);
+    $site_nodes[$env] = node_load($nid);
+  }
+  // Add our own specific tasks
+  $tasklist['devshop-commit'] = $tasks['dev']['devshop-commit'];
+  $tasklist['devshop-sync'] = $tasks['test']['devshop-sync'];
+  $tasklist['devshop-pull'] = $tasks['live']['devshop-pull'];
+
+  // Enhance titles
+  $tasklist['devshop-commit']['title'] .= ' on ' . l($site_nodes['dev']->title, "node/" . $site_nids['dev']);
+  $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, "node/" . $site_nids['test']);
+  $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, "node/" . $site_nids['live']);
+
+  // Override some
+  unset($tasklist['devshop-create']['task_permitted']);
+  unset($tasklist['devshop-create']['nid']);
+  
   foreach ($tasklist as $task => $info) {
     $row = array();
 
