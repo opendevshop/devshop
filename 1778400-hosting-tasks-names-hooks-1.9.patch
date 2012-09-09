@@ -7,7 +7,7 @@ index 31dd56f..6c95989 100644
  function drush_hosting_hosting_task_rollback() {
    $task =& drush_get_context('HOSTING_TASK');
 -  module_invoke_all(sprintf("hosting_%s_task_rollback", $task->task_type), $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
-+  module_invoke_all(sprintf("hosting_%s_task_rollback", str_replace('-', '_', $task->task_type))), $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
++  module_invoke_all(sprintf("hosting_%s_task_rollback", str_replace('-', '_', $task->task_type)), $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
  }
  
  /**
