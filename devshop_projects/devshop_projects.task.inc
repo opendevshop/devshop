@@ -74,11 +74,10 @@ function devshop_projects_hosting_task_table($node) {
 
   // Get tasklists for all sites
   $tasks = array();
-  $site_nids = array_flip($node->project_objects['site']);
-  foreach ($node->project_objects['site'] as $nid => $env){
-    $tasks[$env] = hosting_task_fetch_tasks($nid);
-    $site_nodes[$env] = node_load($nid);
+  if ($node->project_status != 'sites_installed'){
+    return;
   }
+  
   // Add our own specific tasks
   $tasklist['devshop-commit'] = $tasks['dev']['devshop-commit'];
   $tasklist['devshop-sync'] = $tasks['test']['devshop-sync'];
