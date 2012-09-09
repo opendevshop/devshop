@@ -47,7 +47,23 @@ function devshop_projects_menu() {
  * Implementation of hook_menu_alter()
  */
 function devshop_projects_menu_alter(&$items) {
+  $items['hosting/tasks/%node/list']['page callback'] = 'devshop_projects_hosting_task_ajax_list';
   $items['hosting/js']['page callback'] = 'devshop_projects_hosting_js_page';
+}
+
+/**
+ * Replacement menu callback for hosting_task_ajax_list
+ */
+function devshop_projects_hosting_task_ajax_list($node) {
+  if ($node->type == 'project') {
+    module_load_include('tasks.inc', 'devshop_projects');
+    $return['markup'] = devshop_projects_hosting_task_table($node);
+    $return['changed'] = $node->changed;
+    drupal_json($return);
+    exit();
+  } else {
+    hosting_task_ajax_list($node);
+  }
 }
 
 /**
