@@ -16,41 +16,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     unset($form['author']);
     unset($form['options']);
   }
-
-  if ($form_id == 'hosting_task_confirm_form'){
-    // Get nid
-    $nid = $form['nid']['#value'];
-
-    // See if this site is already in a project
-    $query = db_query("SELECT project_nid " .
-		      "FROM {hosting_devshop_project_object} " .
-                      "WHERE object_nid = %d " .
-                            "AND object_type = 'site'", $nid);
-
-    if($proj = db_fetch_object($query)) {
-
-      // Only make sites in this project a source for content
-      $query = db_query("SELECT object_nid " .
-			"FROM {hosting_devshop_project_object} " .
-			"WHERE project_nid = %d " .
-			"AND object_type = 'site' " .
-			"AND object_nid <> %d", $proj->project_nid, $nid);
-
-      $options = array();
-      while($s = db_fetch_object($query)) {
-	$node = node_load($s->object_nid);
-	$options['@' . $node->title] = '@' . $node->title;
-      }
-
-      $form['parameters']['source'] = array(
-        '#type' => 'radios',
-	'#title' => t('Source site alias'),
-	'#options' => $options,
-	'#description' => t('Select site alias to sync from.'),
-	);
-    }
-  }
-
 }
 
 /**
