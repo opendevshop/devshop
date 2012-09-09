@@ -5,7 +5,7 @@ projects[drupal][type] = "core"
 projects[drupal][version] = "6.26"
 
 ; DevShop modules
-projects[devshop_hosting][version] = "1.x"
+projects[devshop_hosting][version] = "1.9-alpha1"
 
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
