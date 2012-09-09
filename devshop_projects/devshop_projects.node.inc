@@ -217,14 +217,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
-  if (isset($node->project_objects['platform'])){
-    $node->content['info']['add_platform'] = array(
-      '#type' => 'item',
-      '#value' => l(t('Create and add additional platforms'), 
-      	       	      "hosting/projects/platform/create/$node->nid"),
-    );
-  }
-
   $rows = array();
   foreach($node->project_objects['site'] as $nid => $env) {
     $site = node_load($nid);
@@ -239,10 +231,23 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $table = theme('table', $header, $rows);
 
   $node->content['sites'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Project Environments'),
+    '#weight' => 12,
+  );
+  $node->content['sites']['table'] = array(
     '#type' => 'item',
     '#value' => $table,
-    '#weight' => 11,
-  );    
+  );
+  
+  if ($node->project_status == 'sites_ready'){
+    $node->content['sites']['add_platform'] = array(
+      '#type' => 'item',
+      '#value' => l(t('Create and add additional platforms'), 
+      	       	      "hosting/projects/platform/create/$node->nid"),
+    );
+  }
+
 
   //Tasks    
   $node->content['tasks_view'] = array(
