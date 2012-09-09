@@ -13,7 +13,7 @@ function devshop_tasks_hosting_tasks() {
   
   // If on a node page...  Hide innapropriate tasks
   if (arg(0) == 'node' && is_numeric(arg(1))) {
-    $noded = node_load(arg(1));
+    $node = node_load(arg(1));
     if ($node && $node->project) {
       $pull = $node->pull;
     }
