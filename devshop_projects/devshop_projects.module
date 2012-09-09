@@ -83,7 +83,6 @@ function devshop_projects_hosting_js_page(){
     }
   }
   
-  $output .= kpr($args);
   $output .= call_user_func_array('hosting_js_page', $args);
   return $output;
 }
