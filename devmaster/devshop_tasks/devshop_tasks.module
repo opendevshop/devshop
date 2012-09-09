@@ -10,21 +10,22 @@
  */
 function devshop_tasks_hosting_tasks() {
   $tasks = array();
+  
+  // If on a node page...  Hide innapropriate tasks
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $noded = node_load(arg(1));
+    if ($node && $node->project) {
+      $pull = $node->pull;
+    }
+  }
 
   $tasks['site']['devshop-commit'] = array(
     'title' => t('Commit Features'),
     'description' => t('Recreates all Features and commits the result.'),
     'dialog' => TRUE,
+    'hidden' => !_devshop_tasks_site_has_module($node, 'features'),
   );
   $pull = false;
-
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
-    $node = node_load(arg(1));
-    if ($node && $node->platform) {
-      $pnode = node_load($node->platform);
-      $pull = $pnode->pull;
-    }
-  }
 
   $tasks['site']['devshop-pull'] = array(
     'title' => t('Pull Code'),
@@ -55,10 +56,10 @@ function devshop_tasks_perm() {
 /**
  * Check if a site has features diff enabled.
  */
-function _devshop_tasks_site_has_features_diff($node) {
+function _devshop_tasks_site_has_module($node, $module) {
   $param = array(
     'rid' => $node->nid,
-    'p.short_name' => 'features_diff',
+    'p.short_name' => $module,
   );
   $package = hosting_package_instance_load($param);
   return $package->status;
@@ -73,7 +74,7 @@ function hosting_task_devshop_commit_form($node) {
 
   $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
 
-  if (_devshop_tasks_site_has_features_diff($node)) {
+  if (_devshop_tasks_site_has_module($node, 'features_diff')) {
     $descr .= 'click ' . l(t('here.'), "http://$node->hosting_name/features/diff/all", array('absolute' => TRUE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.';
   }
   else {
