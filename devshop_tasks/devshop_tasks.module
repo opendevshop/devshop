@@ -123,6 +123,7 @@ function hosting_task_devshop_pull_form($node) {
     '#title' => t('Revert all features after code pull?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#access' => _devshop_tasks_site_has_module($node, 'features'),
   );
   $form['cache'] = array(
     '#title' => t('Clear cache after code pull?'),
@@ -198,6 +199,7 @@ function hosting_task_devshop_sync_form($node) {
     '#title' => t('Revert all features after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#access' => _devshop_tasks_site_has_module($site_node, 'features'),
   );
   $form['cache'] = array(
     '#title' => t('Clear cache after content sync?'),
