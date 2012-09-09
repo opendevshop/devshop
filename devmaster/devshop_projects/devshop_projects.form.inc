@@ -171,22 +171,46 @@ function devshop_projects_validate($node, &$form) {
 function devshop_projects_install_sites_form($form_state, $project_node) {
   
     $form = array();
+    $platforms_ready = TRUE;
+    $sites_ready = TRUE;
+    $sites_installing = FALSE;
     
-    //Bail if no platforms yet.
-    if (!isset($project_node->project_objects['platform'])){
+    // PLATFORMS STATUS: Determine if all platforms are verified.
+    if (isset($project_node->project_objects['platform'])){
+      foreach ($project_node->project_objects['platform'] as $nid => $env){
+        $platform_nodes[$env] = node_load($nid);
+        if ($platform_nodes[$env]->platform_status == 0){
+          $platforms_ready = FALSE;
+        }
+      }
+    } else {
+      $platforms_ready = FALSE;
+    }
+    // SITES STATUS: Determine if sites exist and are enabled
+    if ($platforms_ready && isset($project_node->project_objects['site'])){
+      foreach ($project_node->project_objects['site'] as $nid => $env){
+        $site_nodes[$env] = node_load($nid);
+        if ($site_nodes[$env]->site_status == 0){
+          $sites_ready = FALSE;
+          $sites_installing = TRUE;
+        }
+      }
+    } else {
+      $sites_ready = FALSE;
+    }
+    // OUTPUT
+    if ($platforms_ready == FALSE){
       $form['note'] = array(
-	'#type' => 'item',
-	'#title' => t('Clone & Verify'),
-	'#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+        '#type' => 'item',
+        '#title' => t('Clone & Verify'),
+        '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
       );
       return $form;
-    }
-    // Bail if project doesn't have sites and already has install profile
-    if (!empty($project->install_profile) || isset($project_node->project_objects['site'])){
+    } elseif ($sites_installing) {
       $form['note'] = array(
-	'#type' => 'item',
-	'#title' => t('Sites Install'),
-	'#value' => t('Your Live, Dev, and Test sites are being installed.'),
+        '#type' => 'item',
+        '#title' => t('Sites Installing'),
+        '#value' => t('Your Live, Dev, and Test sites are being installed!'),
       );
       return $form;
     }
@@ -196,15 +220,25 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
     
     $form['ready'] = array(
       '#type' => 'item',
-      '#value' => t("Your project's code is ready!  Now you must create your sites."),
+      '#value' => t("Drupal Code has been verified! Now you must create your sites by choosing your installation profile!"),
     );
     
     $profiles = array_combine((array) hosting_get_profiles($platform_nid, 'short_name'), (array) hosting_get_profiles($platform_nid));
-
+    
+    // Sensible default?
+    // Lets go with standard for now... we can update later.
+    if (isset($profiles['standard'])) {
+      $default_profile = 'standard';
+    }
+    // If 'drupal' profile exists, it is likely drupal6!    
+    elseif (isset($profiles['drupal'])) {
+      $default_profile = 'drupal';
+    } 
     $form['install_profile'] = array(
       '#type' => 'radios',
       '#title' => t('Choose your install profile'),
       '#options' => $profiles,
+      '#default_value' => $default_profile,
     );
     $form['nid'] = array(
       '#type' => 'value',

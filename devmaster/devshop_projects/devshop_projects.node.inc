@@ -70,6 +70,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 	'#value' => $node->project_environment,
 	'#weight' => -11
       );
+    
       return $data;
     }
   }
@@ -206,19 +207,33 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   }
   
-  // MAIN DISPLAY
-  
-  //If there are no sites yet, we must display the install form.
-  if (!isset($node->project_objects['site'])){
-    
-    // Site install form
-    $node->content['install'] =array(
-      '#type' => 'item',
-      '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
-    );
-    
-  }
 
+    
+  //Tasks    
+  $node->content['tasks_view'] = array(
+    '#type' => 'item',
+    '#value' => devshop_projects_hosting_task_table($node),
+    '#prefix' => '<div id="hosting-task-list">',
+    '#suffix' => '</div>',
+    '#weight' => 10
+  );
+  $settings['hostingTaskRefresh'] = array(
+    'nid' => $node->nid,
+    'changed' => $node->changed,
+  );
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');  
+
+  // MAIN DISPLAY
+  $node->content['devshop'] = array(
+    '#type' => 'fieldset',
+    '#weight' => 100,
+  );
+  // Site install form
+  $node->content['devshop']['install'] = array(
+    '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
+    '#type' => 'markup',
+  );
   return $node;
 }
 
@@ -227,7 +242,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
  * hosting/projects. It displays a nice tabulated list of projects
  * and cool thing you can do with them.
  */
-
 function devshop_projects_projects_view() {
 
   $header = array('Projects', 'Sites');
