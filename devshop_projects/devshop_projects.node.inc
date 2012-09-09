@@ -225,27 +225,25 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
-
-  foreach($node->project_objects as $type => $objects) {
-    $header = array($type ."s");
-    $rows = array();
-    foreach($objects as $nid => $object) {
-      $object = node_load($nid);
-      $row = array(l($object->title, "node/$object->nid"));
-      $rows[] = $row;
-      
-    }
-    $table = theme('table', $header, $rows);
-
-    $node->content['info'][$type] = array(
-      '#type' => 'item',
-      '#value' => $table,
-    );    
-
+  $rows = array();
+  foreach($node->project_objects['site'] as $nid => $env) {
+    $site = node_load($nid);
+    $row = array();
+    $url = "http://$site->title";
+    $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+    $row[] = l('Site', "node/$site->nid");
+    $row[] = l('Platform', "node/$site->platform");
+    $row[] = l('Download Database', "$url/admin/status/");
+    $rows[] = $row;
   }
-  
+  $table = theme('table', $header, $rows);
 
-    
+  $node->content['sites'] = array(
+    '#type' => 'item',
+    '#value' => $table,
+    '#weight' => 11,
+  );    
+
   //Tasks    
   $node->content['tasks_view'] = array(
     '#type' => 'item',
