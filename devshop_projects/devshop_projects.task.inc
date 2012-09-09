@@ -89,9 +89,9 @@ function devshop_projects_hosting_task_table($node) {
   $tasklist['devshop-pull'] = $tasks['live']['devshop-pull'];
 
   // Enhance titles
-  $tasklist['devshop-commit']['title'] .= ' on ' . l($site_nodes['dev']->title, "node/" . $site_nids['dev']);
-  $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, "node/" . $site_nids['test']);
-  $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, "node/" . $site_nids['live']);
+  $tasklist['devshop-commit']['title'] .= ' on ' . l($site_nodes['dev']->title, 'http://'. $site_nodes['dev']->title, array('attributes' => array('target' => '_blank')));
+  $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, 'http://'. $site_nodes['test']->title, array('attributes' => array('target' => '_blank')));
+  $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, 'http://'. $site_nodes['live']->title, array('attributes' => array('target' => '_blank')));
 
   // Override some
   unset($tasklist['devshop-create']['task_permitted']);
