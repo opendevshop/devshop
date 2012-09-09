@@ -63,7 +63,6 @@ function devshop_projects_hosting_platform_context_options(&$task) {
 function devshop_projects_hosting_task_table($node) {
   $output = '';
 
-
   $headers[] = t('Task');
   $headers[] = array(
     'data' => t('Actions'),
@@ -72,10 +71,16 @@ function devshop_projects_hosting_task_table($node) {
 
   $tasklist = hosting_task_fetch_tasks($node->nid);
 
+  if ($node->project_status != 'sites_ready'){
+    return;
+  }
+  
+  
   // Get tasklists for all sites
   $tasks = array();
-  if ($node->project_status != 'sites_installed'){
-    return;
+  foreach ($node->project_objects['site'] as $nid => $env){
+    $site_nodes[$env] = node_load($nid);
+    $tasks[$env] = hosting_task_fetch_tasks($nid);
   }
   
   // Add our own specific tasks
