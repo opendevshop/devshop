@@ -188,6 +188,23 @@ function devshop_pull_get_sites($limit = 5) {
 }
 
 /**
+ * Implementation of hook_hosting_TASK_TYPE_task_rollback().
+ */
+function devshop_pull_hosting_devshop_pull_task_rollback($task, $data) {
+  $project = node_load($task->ref->project_nid);
+  watchdog('devshop', 'Pull FAILED on project: @alias', array('@alias' => $project->title));
+  db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 1, $task->ref->project_nid);
+}
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task().
+ */
+function devshop_pull_post_hosting_devshop_pull_task($task, $data) {
+  $project = node_load($task->ref->project_nid);
+  watchdog('devshop', 'Pull SUCCESS on project: @alias', array('@alias' => $project->title));
+}
+
+/**
  * Implementation of hosting_QUEUE_TYPE_queue().
  */
 function hosting_pull_queue($count) {
@@ -198,11 +215,6 @@ function hosting_pull_queue($count) {
     
     devshop_pull_task($project->project_nid);
     module_invoke_all('devshop_pull', $project); 
-    
-    //@TODO: Set last_pull_status
-    //  watchdog('devshop', 'Pull FAILED on platform: @alias', array('@alias' => $platform_name));
-    //  db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $platform->project_nid);
-    
   }
 }
 

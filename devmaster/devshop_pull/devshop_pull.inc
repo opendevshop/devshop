@@ -75,6 +75,9 @@ function devshop_pull_callback($project, $hash) {
   $r = db_query("SELECT nid FROM {hosting_site} " .
                 "WHERE platform = %d AND status = 1", $platform);
 
+  //Put timestamp
+  db_query('UPDATE {hosting_devshop_pull} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $pnid);
+
   while ($site = db_fetch_object($r)) {
     $message = "Queuing a pull task for node id $site->nid";
     watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
