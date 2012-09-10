@@ -10,20 +10,11 @@
  */
 function devshop_tasks_hosting_tasks() {
   $tasks = array();
-  
-  // If on a node page...  Hide innapropriate tasks
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
-    $node = node_load(arg(1));
-    if ($node && $node->project) {
-      $pull = $node->pull;
-    }
-  }
 
   $tasks['site']['devshop-commit'] = array(
     'title' => t('Commit Features'),
     'description' => t('Recreates all Features and commits the result.'),
     'dialog' => TRUE,
-    'hidden' => !_devshop_tasks_site_has_module($node, 'features'),
   );
   $pull = false;
 
@@ -31,7 +22,6 @@ function devshop_tasks_hosting_tasks() {
     'title' => t('Pull Code'),
     'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
     'dialog' => TRUE,
-    'hidden' => $pull,
   );
 
   $tasks['site']['devshop-sync'] = array(
