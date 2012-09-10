@@ -5,11 +5,12 @@ projects[drupal][type] = "core"
 projects[drupal][version] = "6.26"
 
 ; DevShop modules
-projects[devshop_hosting][version] = "1.9-alpha1"
+projects[devshop_hosting][version] = "1.9-alpha2"
 
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
 projects[hostmaster][version] = "1.9"
+projects[hostmaster][type] = "profile"
 
 ; Patch: Issue #1760962: Any Hosting Task can call provision save.
 projects[hostmaster][patch][] = "http://drupalcode.org/project/devshop_hosting.git/blob_plain/HEAD:/1760962-hosting-task-provision-save-1.9.patch"
