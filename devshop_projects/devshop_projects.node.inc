@@ -66,10 +66,11 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       );
        $node->content['info']['env'] = array(
 	'#type' => 'item',
-	'#title' => t('Environement Type'),
+	'#title' => t('Environment Type'),
 	'#value' => $node->project_environment,
 	'#weight' => -11
       );
+    
       return $data;
     }
   }
@@ -135,6 +136,43 @@ function devshop_projects_load($node) {
     $objects[$project_object->object_type][$project_object->object_nid] = $project_object->env_type;
   }
   $additions['project_objects'] = $objects;
+  
+  //Project status
+  $platforms_ready = TRUE;
+  $sites_ready = TRUE;
+  $sites_installing = FALSE;
+  
+  // PLATFORMS STATUS: Determine if all platforms are verified.
+  if (isset($additions['project_objects']['platform'])){
+    foreach ($additions['project_objects']['platform'] as $nid => $env){
+      $platform_nodes[$env] = node_load($nid);
+      if ($platform_nodes[$env]->platform_status == 0){
+        $platforms_ready = FALSE;
+      }
+    }
+  } else {
+    $platforms_ready = FALSE;
+  }
+  // SITES STATUS: Determine if sites exist and are enabled
+  if ($platforms_ready && isset($additions['project_objects']['site'])){
+    foreach ($additions['project_objects']['site'] as $nid => $env){
+      $site_nodes[$env] = node_load($nid);
+      if ($site_nodes[$env]->site_status == 0){
+        $sites_ready = FALSE;
+        $sites_installing = TRUE;
+      }
+    }
+  } else {
+    $sites_ready = FALSE;
+  }
+  
+  // Set status
+  $additions['project_status'] = $sites_ready? 'sites_ready': (
+    $sites_installing? 'sites_installing': (
+      $platforms_ready? 'platforms_ready': 'platforms_verifying'
+    )  
+  );
+  
   return $additions;
 }
 
@@ -178,36 +216,64 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#weight' => -8
     );
   }
-  foreach($node->project_objects as $type => $objects) {
-    $header = array($type ."s");
-    $rows = array();
-    foreach($objects as $nid => $object) {
-      $object = node_load($nid);
-      $row = array(l($object->title, "node/$object->nid"));
-      $rows[] = $row;
-      
-    }
-    $table = theme('table', $header, $rows);
 
-    $node->content['info'][$type] = array(
-      '#type' => 'item',
-      '#value' => $table,
-    );    
+  $rows = array();
+  foreach($node->project_objects['site'] as $nid => $env) {
+    $site = node_load($nid);
+    $row = array();
+    $url = "http://$site->title";
+    $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+    $row[] = l('Site', "node/$site->nid");
+    $row[] = l('Platform', "node/$site->platform");
+    $row[] = l('Download Database', "$url/admin/status/");
+    $rows[] = $row;
   }
+  $table = theme('table', $header, $rows);
+
+  $node->content['sites'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Project Environments'),
+    '#weight' => 12,
+  );
+  $node->content['sites']['table'] = array(
+    '#type' => 'item',
+    '#value' => $table,
+  );
   
-  // MAIN DISPLAY
-  
-  //If there are no sites yet, we must display the install form.
-  if (!isset($node->project_objects['site'])){
-    
-    // Site install form
-    $node->content['install'] =array(
+  if ($node->project_status == 'sites_ready'){
+    $node->content['sites']['add_platform'] = array(
       '#type' => 'item',
-      '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
+      '#value' => l(t('Create and add additional platforms'), 
+      	       	      "hosting/projects/platform/create/$node->nid"),
     );
-    
   }
 
+
+  //Tasks    
+  $node->content['tasks_view'] = array(
+    '#type' => 'item',
+    '#value' => devshop_projects_hosting_task_table($node),
+    '#prefix' => '<div id="hosting-task-list">',
+    '#suffix' => '</div>',
+    '#weight' => 10
+  );
+  $settings['hostingTaskRefresh'] = array(
+    'nid' => $node->nid,
+    'changed' => $node->changed,
+  );
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');  
+
+  // MAIN DISPLAY
+  $node->content['devshop'] = array(
+    '#type' => 'fieldset',
+    '#weight' => 100,
+  );
+  // Site install form
+  $node->content['devshop']['install'] = array(
+    '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
+    '#type' => 'markup',
+  );
   return $node;
 }
 
@@ -216,7 +282,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
  * hosting/projects. It displays a nice tabulated list of projects
  * and cool thing you can do with them.
  */
-
 function devshop_projects_projects_view() {
 
   $header = array('Projects', 'Sites');
