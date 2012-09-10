@@ -118,7 +118,7 @@ function devshop_projects_hosting_task_table($node) {
       $actions['run'] = _hosting_task_button(t('Run'), sprintf("node/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
     }
 
-    $actions['log'] = _hosting_task_button(t('View Log'), 'node/' . $info['nid'], t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
+    $actions['log'] = _hosting_task_button(t('Log'), 'node/' . $info['nid'], t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
     $row['actions'] = array(
       'data' => implode('', $actions), 
       'class' => 'hosting-actions',
