@@ -19,6 +19,4 @@ projects[hostmaster][patch][] = "http://drupalcode.org/project/devshop_hosting.g
 projects[hostmaster][patch][] = "http://drupalcode.org/project/devshop_hosting.git/blob_plain/HEAD:/1513678-hosting-task-names-1.9.patch"
 
 ; Patch: Issue #1778400: Hosting Task Names cannot use dashes and use pre and post hooks
-projects[hostmaster][patch][] = "http://drupalcode.org/project/devshop_hosting.git/blob_plain/HEAD:/1778400-hosting-tasks-names-hooks-1.9.patch"
-
-
+projects[hostmaster][patch][] = "http://drupalcode.org/project/devshop_hosting.git/blob_plain/HEAD:/1778400-hosting-tasks-names-hooks-1.9.patch" 
