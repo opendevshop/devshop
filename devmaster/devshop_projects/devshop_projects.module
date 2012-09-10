@@ -31,7 +31,76 @@ function devshop_projects_menu() {
     'access arguments' => array('view projects'),
   );
 
+  $items['hosting/projects/platform/create/%'] = array(
+    'title' => 'Create and add a platform',
+    'description' => 'Create and add a platform to an existing project',
+    //'page callback' => 'devshop_projects_platform_create',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_projects_platform_create_form', 4),
+    'access arguments' => array('view projects'),
+  );
+
   return ($items);
+}
+
+/**
+ * Implementation of hook_menu_alter()
+ */
+function devshop_projects_menu_alter(&$items) {
+  $items['hosting/tasks/%node/list']['page callback'] = 'devshop_projects_hosting_task_ajax_list';
+  $items['hosting/js']['page callback'] = 'devshop_projects_hosting_js_page';
+}
+
+/**
+ * Replacement menu callback for hosting_task_ajax_list
+ */
+function devshop_projects_hosting_task_ajax_list($node) {
+  if ($node->type == 'project') {
+    module_load_include('tasks.inc', 'devshop_projects');
+    $return['markup'] = devshop_projects_hosting_task_table($node);
+    $return['changed'] = $node->changed;
+    drupal_json($return);
+    exit();
+  } else {
+    hosting_task_ajax_list($node);
+  }
+}
+
+/**
+ * Replacement menu callback for hosting_js_page().
+ *
+ * This is used for Project Tasks.  Since the tasks are really tasks on the site nodes,
+ * we have to modify the JS call to modify what node gets passed in.
+ */
+function devshop_projects_hosting_js_page(){
+  $args = func_get_args();
+  $nid = &$args[1];
+  $task = &$args[2];
+  
+  // Get task type from $task argument... For whatver reason, they don't make it an argument
+  list($aegir_context, $task_type) = explode('_', $task);
+  
+  // If this is coming from a project page:
+  if ($aegir_context == 'project'){
+    // Change the task object from project to site
+    $task = str_replace('project', 'site', $task);
+    
+    // Load the project
+    $project = node_load($nid);
+    $sites = array_flip($project->project_objects['site']);
+    
+    // Change the NID based on the task type
+    if ($task_type == 'devshop-commit') {
+      $nid = $sites['dev'];
+    } elseif ($task_type == 'devshop-sync') {
+      $nid = $sites['test'];
+    } elseif ($task_type == 'devshop-pull') {
+      $nid = $sites['live'];
+    }
+  }
+  
+  $output .= call_user_func_array('hosting_js_page', $args);
+  return $output;
 }
 
 /**
