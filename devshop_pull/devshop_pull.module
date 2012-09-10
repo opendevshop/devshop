@@ -101,46 +101,51 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
     switch ($op) {
       case 'view':
         if (!$a3) { //!teaser
-	  if($node->type == 'project') {
-	    $pnode = $node;
-	  }
-	  else {
-	    $pnode = node_load($node->project_nid);
-	  }
-	  
-	  // @TODO: PULL QUEUE must be enabled first!  Show a notice to the user if Pull Queue
-	  // is not enabled!
-	  
-	  $pull_method = ($pnode->pull_method == DEVSHOP_PULL_CALLBACK? t('URL Callback'):
-			  ($pnode->pull_method == DEVSHOP_PULL_QUEUE? t('Hosting Queue'):
-			   (t('Disabled'))));
-	  
-	  if ($pnode->pull_method == DEVSHOP_PULL_CALLBACK){
-	    module_load_include('inc', 'devshop_pull');
-	    $url = _devshop_pull_callback_url($pnode);
-	    $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
-	  }
+          if($node->type == 'project') {
+            $pnode = $node;
+          }
+          else {
+            $pnode = node_load($node->project_nid);
+          }
+          
+          // @TODO: PULL QUEUE must be enabled first!  Show a notice to the user if Pull Queue
+          // is not enabled!
+          
+          $pull_method = ($pnode->pull_method == DEVSHOP_PULL_CALLBACK? t('URL Callback'):
+              ($pnode->pull_method == DEVSHOP_PULL_QUEUE? t('Hosting Queue'):
+               (t('Disabled'))));
+          
+          if ($pnode->pull_method == DEVSHOP_PULL_CALLBACK){
+            module_load_include('inc', 'devshop_pull');
+            $url = _devshop_pull_callback_url($pnode);
+            $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
+          }
 
           if (isset($pnode) && $pnode->pull_method != DEVSHOP_PULL_DISABLED){
-	    $node->content['info']['pull'] = array(
-	      '#type' => 'item',
-	      '#title' => t('Pull Method'),
-	      '#weight' => 30,
-	      '#value' => $pull_method,
-	    );
-            $node->content['info']['pull_reset'] = array(
+            $node->content['devshop_pull'] = array(
+              '#type' => 'fieldset',
+              '#title' => t('Pull Configuration'),
+              '#weight' => 12,
+            );
+            $node->content['devshop_pull']['pull'] = array(
+              '#type' => 'item',
+              '#title' => t('Pull Method'),
+              '#weight' => 30,
+              '#value' => $pull_method,
+            );
+            $node->content['devshop_pull']['pull_reset'] = array(
               '#type' => 'item',
               '#title' => t('Reset on Pull'),
               '#weight' => 31,
               '#value' => $pnode->pull_reset? t('Enabled'): t('Disabled'),
             );
-            $node->content['info']['last_pull'] = array(
+            $node->content['devshop_pull']['last_pull'] = array(
               '#type' => 'item',
               '#title' => t('Last pull'),
               '#weight' => 32,
               '#value' => hosting_format_interval($pnode->last_pull),
             );
-            $node->content['info']['last_pull_status'] = array(
+            $node->content['devshop_pull']['last_pull_status'] = array(
               '#type' => 'item',
               '#title' => t('Last pull status'),
               '#weight' => 33,

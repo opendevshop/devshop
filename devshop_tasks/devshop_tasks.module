@@ -18,19 +18,10 @@ function devshop_tasks_hosting_tasks() {
   );
   $pull = false;
 
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
-    $node = node_load(arg(1));
-    if ($node && $node->platform) {
-      $pnode = node_load($node->platform);
-      $pull = $pnode->pull;
-    }
-  }
-
   $tasks['site']['devshop-pull'] = array(
     'title' => t('Pull Code'),
     'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
     'dialog' => TRUE,
-    'hidden' => $pull,
   );
 
   $tasks['site']['devshop-sync'] = array(
@@ -55,10 +46,10 @@ function devshop_tasks_perm() {
 /**
  * Check if a site has features diff enabled.
  */
-function _devshop_tasks_site_has_features_diff($node) {
+function _devshop_tasks_site_has_module($node, $module) {
   $param = array(
     'rid' => $node->nid,
-    'p.short_name' => 'features_diff',
+    'p.short_name' => $module,
   );
   $package = hosting_package_instance_load($param);
   return $package->status;
@@ -73,7 +64,7 @@ function hosting_task_devshop_commit_form($node) {
 
   $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
 
-  if (_devshop_tasks_site_has_features_diff($node)) {
+  if (_devshop_tasks_site_has_module($node, 'features_diff')) {
     $descr .= 'click ' . l(t('here.'), "http://$node->hosting_name/features/diff/all", array('absolute' => TRUE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.';
   }
   else {
@@ -122,6 +113,7 @@ function hosting_task_devshop_pull_form($node) {
     '#title' => t('Revert all features after code pull?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#access' => _devshop_tasks_site_has_module($node, 'features'),
   );
   $form['cache'] = array(
     '#title' => t('Clear cache after code pull?'),
@@ -143,26 +135,46 @@ function hosting_task_devshop_sync_form($node) {
     '#type' => 'textfield',
     '#description' => t('Enter a site alias to sync from.  The alias must exist in the local system.'),
   );
-*/
-
-  $sites = array();
-  $r = db_query("SELECT n.title FROM {node} AS n " .
-       		"LEFT JOIN {hosting_site} AS h ON n.nid = h.nid " .
-		"WHERE n.type = 'site' AND h.status = 1 AND n.title <> '%s'" .
-		"ORDER BY n.title ASC",
-		$node->title);
-
-  while($sa = db_fetch_object($r)) {
-    $sites['@' . $sa->title] = '@' . $sa->title;
+  */
+  // Get nid
+  $nid = $node->nid;
+  
+  // See if this site is already in a project
+  $query = db_query("SELECT project_nid " .
+    "FROM {hosting_devshop_project_object} " .
+    "WHERE object_nid = %d " .
+    "AND object_type = 'site'", $nid);
+  
+  if($proj = db_fetch_object($query)) {
+  
+    // Only make sites in this project a source for content
+    $query = db_query("SELECT object_nid " .
+      "FROM {hosting_devshop_project_object} " .
+      "WHERE project_nid = %d " .
+      "AND object_type = 'site' " .
+      "AND object_nid <> %d", $proj->project_nid, $nid);
+  
+    $options = array();
+    while($s = db_fetch_object($query)) {
+      $site_node = node_load($s->object_nid);
+      $options['@' . $site_node->title] = '@' . $site_node->title;
+    }
+    
+    $form['note'] = array(
+      '#value' => '<p>'. t('This will DESTROY the database for !site and replace it with the database for the selected <strong>Source Site</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
+      '#type' => 'markup',
+      '#weight' => 100,
+    );
+  
+    $form['source'] = array(
+      '#type' => 'radios',
+      '#title' => t('Source Site'),
+      '#options' => $options,
+      '#default_value' => key($options),
+      '#description' => t('Select site to sync from.'),
+    );
   }
-
-  $form['source'] = array(
-    '#type' => 'select',
-    '#title' => t('Source site alias'),
-    '#options' => $sites,
-    '#description' => t('Select site alias to sync from.'),
-  );
-
+  
   $form['pull'] = array(
     '#title' => t('Pull code before content sync?'),
     '#type' => 'checkbox',
@@ -177,6 +189,7 @@ function hosting_task_devshop_sync_form($node) {
     '#title' => t('Revert all features after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#access' => _devshop_tasks_site_has_module($site_node, 'features'),
   );
   $form['cache'] = array(
     '#title' => t('Clear cache after content sync?'),
