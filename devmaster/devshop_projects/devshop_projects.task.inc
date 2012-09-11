@@ -18,6 +18,11 @@ function devshop_projects_hosting_tasks() {
     'title' => t('Install Sites'),
     'description' => t('Runs drupal installation on each of the three platforms.'),
   );
+  $tasks['project']['devshop-platform-create'] = array(
+    'title' => t('Create Platform'),
+    'description' => t('Create a new platform to add to an existin project.'),
+  );
+
   return $tasks;
 }
 
@@ -56,6 +61,7 @@ function devshop_projects_hosting_platform_context_options(&$task) {
   $task->context_options['project'] = $task->ref->project;
 }
 
+
 /**
  * A replacement for hosting_task_table, to allow us to add
  * tasks from other nodes.
@@ -70,7 +76,7 @@ function devshop_projects_hosting_task_table($node) {
   );
 
   $tasklist = hosting_task_fetch_tasks($node->nid);
-
+  print_r($tasklist);
   if ($node->project_status != 'sites_ready'){
     return;
   }
@@ -93,6 +99,12 @@ function devshop_projects_hosting_task_table($node) {
   $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, 'http://'. $site_nodes['test']->title, array('attributes' => array('target' => '_blank')));
   $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, 'http://'. $site_nodes['live']->title, array('attributes' => array('target' => '_blank')));
 
+  $tasklist['devshop-platform-create']['nid'] = $node->nid;
+  $tasklist['devshop-platform-create']['task_status'] = 1;
+  $tasklist['devshop-platform-create']['exists'] = 1;
+
+
+
   // Override some
   unset($tasklist['devshop-create']['task_permitted']);
   unset($tasklist['devshop-create']['nid']);
@@ -100,7 +112,8 @@ function devshop_projects_hosting_task_table($node) {
   foreach ($tasklist as $task => $info) {
     $row = array();
 
-    if (!isset($info['nid']) && !$info['task_permitted']) {
+    if (!isset($info['nid']) && !$info['task_permitted'] &&
+        $task != 'devshop-platform-create') {
       // just don't show those tasks, since we'll not be able to run them
       continue;
     }
@@ -132,3 +145,64 @@ function devshop_projects_hosting_task_table($node) {
   $output .= theme('table', $headers, $rows, array('class' => 'hosting-table'));
   return $output;
 }
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Commit" task.
+ */
+function hosting_task_devshop_platform_create_form($project_node) {
+  $form = array();
+    
+  //Bail if no platforms yet.
+  if (!isset($project_node->project_objects['platform'])){
+    $form['note'] = array(
+      '#type' => 'item',
+      '#title' => t('Clone & Verify'),
+      '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+      );
+    return $form;
+  }
+
+  $form['platform_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Platform Name'),
+    '#required' => TRUE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => '',
+    '#maxlength' => 255,
+  );
+  $form['git_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Git URL'),
+    '#required' => FALSE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => '',
+    '#maxlength' => 255,
+  );
+  $form['branch'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Branch'),
+
+    '#required' => TRUE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => 'master',
+    '#maxlength' => 255,
+  );
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_node->nid,  
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create platform'),
+  );
+  return $form;
+}
+
