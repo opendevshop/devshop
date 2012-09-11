@@ -284,7 +284,7 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
  *  Form for platform creation
  */
 function devshop_projects_platform_create_form($form_state, $project_nid) {
-  
+  //print_r(hosting_task_fetch_tasks($project_nid));
   $project_node = node_load($project_nid);
 
   $form = array();
@@ -352,14 +352,8 @@ function devshop_projects_platform_create_form_validate(&$form, &$form_state){
 }
 
 /**
- * Submit for site installation
+ * Submit for platform create
  *
- * I believe, based on the fact that provision has to create
- * the site aliases before it runs provision-install, we have
- * to have a new hostmaster task here.
- *
- * If we save the install_profile in the project context,
- * the task could easily create the new sites.
  */
 function devshop_projects_platform_create_form_submit(&$form, &$form_state){
 
