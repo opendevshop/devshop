@@ -218,28 +218,29 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   }
 
   $rows = array();
-  foreach($node->project_objects['site'] as $nid => $env) {
-    $site = node_load($nid);
-    $row = array();
-    $url = "http://$site->title";
-    $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
-    $row[] = l('Site', "node/$site->nid");
-    $row[] = l('Platform', "node/$site->platform");
-    $row[] = l('Download Database', "$url/admin/status/");
-    $rows[] = $row;
-  }
-  $table = theme('table', $header, $rows);
+  if (isset($node->project_objects['site'])) {
+    foreach($node->project_objects['site'] as $nid => $env) {
+      $site = node_load($nid);
+      $row = array();
+      $url = "http://$site->title";
+      $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+      $row[] = l('Site', "node/$site->nid");
+      $row[] = l('Platform', "node/$site->platform");
+      $row[] = l('Download Database', "$url/admin/status/");
+      $rows[] = $row;
+    }
+    $table = theme('table', $header, $rows);
 
-  $node->content['sites'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Project Environments'),
-    '#weight' => 12,
-  );
-  $node->content['sites']['table'] = array(
-    '#type' => 'item',
-    '#value' => $table,
-  );
-  
+    $node->content['sites'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Project Environments'),
+      '#weight' => 12,
+    );
+    $node->content['sites']['table'] = array(
+      '#type' => 'item',
+      '#value' => $table,
+    );
+  }
   if ($node->project_status == 'sites_ready'){
     $node->content['sites']['add_platform'] = array(
       '#type' => 'item',
