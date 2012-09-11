@@ -76,7 +76,7 @@ function devshop_projects_hosting_task_table($node) {
   );
 
   $tasklist = hosting_task_fetch_tasks($node->nid);
-  print_r($tasklist);
+  //print_r($tasklist);
   if ($node->project_status != 'sites_ready'){
     return;
   }
