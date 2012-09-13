@@ -51,7 +51,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     
     // Load Project info
     if ($op == 'load'){
-      $data = db_fetch_array(db_query('SELECT project_nid, env_type AS project_environment FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid));
+      $data = db_fetch_array(db_query('SELECT project_nid, env_type AS project_environment, n.title as project_name FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
     
