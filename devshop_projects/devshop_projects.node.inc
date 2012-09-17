@@ -294,7 +294,7 @@ function devshop_projects_projects_view() {
     $node = node_load($proj->nid);
     $row = array();
     $row[] = l($node->title, "node/$proj->nid");
-    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid));
+    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
     $rows[] = $row;
   }
 
