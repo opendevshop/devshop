@@ -42,6 +42,16 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('create-project'),
   );
+  $items['provision-devshop-platform-create'] = array(
+    'description' => 'Create a new platform and add it to an existing DevShop Project.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'git-url' => 'The URL of a git repo to use to create the platforms.',
+      'branch' => 'Branch (not yet implemented!)',
+    ),
+    'aliases' => array('create-platform'),
+  );
+
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify site code and (optionally) run update.php, clear cache, and revert features.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -105,6 +115,11 @@ function drush_devshop_provision_pre_hosting_task() {
     $task->options['no-update'] = !$task->task_args['update'];
     $task->options['no-revert'] = !$task->task_args['revert'];
     $task->options['no-cache'] = !$task->task_args['cache'];
+  }
+
+  // Platform Create
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-platform-create') {
+    $task->options['platform-name'] = $task->task_args['platform-name'];
   }
   
 }
