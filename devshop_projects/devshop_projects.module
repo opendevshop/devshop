@@ -122,3 +122,11 @@ function devshop_projects_project_status(){
   return $msg;
 }
 
+/**
+ * Implements hook_hosting_drush_aliases_name()
+ */
+function devshop_projects_hosting_drush_aliases_name($node) {
+  if (isset($node->project_name)){
+    return $node->project_name .".". $node->project_environment;
+  }
+}
