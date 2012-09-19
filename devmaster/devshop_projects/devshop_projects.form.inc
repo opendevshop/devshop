@@ -314,7 +314,6 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
     '#title' => t('Git URL'),
     '#required' => FALSE,
     '#description' => t(''),
-    '#required' => TRUE,
     '#size' => 40,
     '#default_value' => '',
     '#maxlength' => 255,
@@ -322,9 +321,7 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
   $form['branch'] = array(
     '#type' => 'textfield',
     '#title' => t('Branch'),
-    '#required' => TRUE,
     '#description' => t(''),
-    '#required' => TRUE,
     '#size' => 40,
     '#default_value' => 'master',
     '#maxlength' => 255,
@@ -358,18 +355,6 @@ function devshop_projects_platform_create_form_validate(&$form, &$form_state){
 function devshop_projects_platform_create_form_submit(&$form, &$form_state){
 
   $project_node = node_load($form_state['values']['nid']);
-  print_r($project_node);
-  print_r($form_state);
-
-/*    
-  $args = array(
-    'update' => 0,
-    'revert' => 0,
-    'cache'  => 1
-  );
-*/
-
-  $args = array($form_state['values']['platform_name']);
-
-//  hosting_add_task($project_nid, 'devshop-platform-create', $args);
+  $args = array('platform-name' => $form_state['values']['platform_name']);
+  hosting_add_task($project_node->nid, 'devshop-platform-create', $args);
 }
