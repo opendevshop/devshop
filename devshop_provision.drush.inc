@@ -3,23 +3,14 @@
  * @file
  * Provision/Drush hooks for git commands.
  */
-//print drush_get_option('path_to_provision_inc');
-// @TODO:  HOW the hell do I include provision from another drush command??
 
 /**
  * Implements hook_drush_init()
- *
- * This is a horrible workaround for including provision.inc BEFORE our devshop_provision.context.project.inc file...
- *
- * I don't know what to do here to fix it, at the moment.
  */
 function devshop_provision_drush_init(){
-  $path_to_provision = drush_get_option('path_to_provision_inc');
-  if (!file_exists($path_to_provision)){
-    return drush_set_error(dt('Provision not found.  This is a known bug.  Please place the following in your drushrc.php file:') ."\n". '$options["path_to_provision_inc"] = "/var/aegir/.drush/provision/provision.inc";');
-  }
-
-  include_once($path_to_provision);
+  $list = drush_commandfile_list();
+  $provision_drush_inc = $list['provision'];
+  include_once($provision_drush_inc);  
   include_once('devshop_provision.context.project.inc');
 }
 
