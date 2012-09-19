@@ -285,7 +285,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
  */
 function devshop_projects_projects_view() {
 
-  $header = array('Projects', 'Sites');
+  $header = array('Projects', 'Platforms', 'Sites');
 
   $r = db_query("SELECT * FROM {hosting_devshop_project}");
   $rows = array();
@@ -294,6 +294,7 @@ function devshop_projects_projects_view() {
     $node = node_load($proj->nid);
     $row = array();
     $row[] = l($node->title, "node/$proj->nid");
+    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='platform'", $node->nid));
     $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
     $rows[] = $row;
   }
