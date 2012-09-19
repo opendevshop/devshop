@@ -51,7 +51,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     
     // Load Project info
     if ($op == 'load'){
-      $data = db_fetch_array(db_query('SELECT project_nid, env_type AS project_environment FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid));
+      $data = db_fetch_array(db_query('SELECT project_nid, env_type AS project_environment, n.title as project_name FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
     
@@ -294,7 +294,7 @@ function devshop_projects_projects_view() {
     $node = node_load($proj->nid);
     $row = array();
     $row[] = l($node->title, "node/$proj->nid");
-    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid));
+    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
     $rows[] = $row;
   }
 
