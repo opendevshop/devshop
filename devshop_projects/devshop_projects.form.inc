@@ -357,40 +357,19 @@ function devshop_projects_platform_create_form_validate(&$form, &$form_state){
  */
 function devshop_projects_platform_create_form_submit(&$form, &$form_state){
 
-  global $user;
   $project_node = node_load($form_state['values']['nid']);
-    
-  // Save installation profile to database
-  db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
-    
-  // Create the site nodes
-  foreach ($project_node->project_objects['platform'] as $nid => $env){
-    $node = new stdClass();
-    $node->type = 'site';
-    $node->status = 1;
-    $node->uid = $user->uid;
-    $node->title = $env .'.'. $project_node->base_url;
+  print_r($project_node);
+  print_r($form_state);
 
-    // Aegir properties
-    // @TODO: better client support
-    $node->client = HOSTING_DEFAULT_CLIENT;  
-    $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
-    
-    $node->platform = $nid;
-    $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $form_state['values']['install_profile']));
-    
-    //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
-    
-    // @TODO: Improve site language handling?
-    $node->site_language = !empty($user->language)? $user->language: 'en';
-    
-    // Save the node
-    if ($node = node_submit($node)) {
-      node_save($node);
-      
-      //And save the association to the project
-      //INSERT INTO `tesla`.`hosting_devshop_project_object` (`project_nid`, `object_nid`, `object_type`, `env_type`) VALUES ('123', '434', 'ag', 'ag');
-      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
-    }
-  }
+/*    
+  $args = array(
+    'update' => 0,
+    'revert' => 0,
+    'cache'  => 1
+  );
+*/
+
+  $args = array($form_state['values']['platform_name']);
+
+//  hosting_add_task($project_nid, 'devshop-platform-create', $args);
 }

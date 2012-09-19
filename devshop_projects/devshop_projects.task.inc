@@ -21,9 +21,14 @@ function devshop_projects_hosting_tasks() {
   $tasks['project']['devshop-platform-create'] = array(
     'title' => t('Create Platform'),
     'description' => t('Create a new platform to add to an existin project.'),
+    'access callback' => _cp_access_callback,
   );
 
   return $tasks;
+}
+
+function _cp_access_callback() {
+  return TRUE;
 }
 
 /**
@@ -99,12 +104,6 @@ function devshop_projects_hosting_task_table($node) {
   $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, 'http://'. $site_nodes['test']->title, array('attributes' => array('target' => '_blank')));
   $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, 'http://'. $site_nodes['live']->title, array('attributes' => array('target' => '_blank')));
 
-  $tasklist['devshop-platform-create']['nid'] = $node->nid;
-  $tasklist['devshop-platform-create']['task_status'] = 1;
-  $tasklist['devshop-platform-create']['exists'] = 1;
-
-
-
   // Override some
   unset($tasklist['devshop-create']['task_permitted']);
   unset($tasklist['devshop-create']['nid']);
@@ -112,8 +111,7 @@ function devshop_projects_hosting_task_table($node) {
   foreach ($tasklist as $task => $info) {
     $row = array();
 
-    if (!isset($info['nid']) && !$info['task_permitted'] &&
-        $task != 'devshop-platform-create') {
+    if (!isset($info['nid']) && !$info['task_permitted']) {
       // just don't show those tasks, since we'll not be able to run them
       continue;
     }
