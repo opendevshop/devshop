@@ -21,7 +21,7 @@ function devshop_projects_hosting_tasks() {
   $tasks['project']['devshop-platform-create'] = array(
     'title' => t('Create Platform'),
     'description' => t('Create a new platform to add to an existin project.'),
-    'access callback' => _cp_access_callback,
+//    'access callback' => _cp_access_callback,
   );
 
   return $tasks;
@@ -81,11 +81,9 @@ function devshop_projects_hosting_task_table($node) {
   );
 
   $tasklist = hosting_task_fetch_tasks($node->nid);
-  //print_r($tasklist);
   if ($node->project_status != 'sites_ready'){
     return;
   }
-  
   
   // Get tasklists for all sites
   $tasks = array();
@@ -107,6 +105,9 @@ function devshop_projects_hosting_task_table($node) {
   // Override some
   unset($tasklist['devshop-create']['task_permitted']);
   unset($tasklist['devshop-create']['nid']);
+
+  unset($tasklist['devshop-platform-create']['task_permitted']);
+  unset($tasklist['devshop-platform-create']['nid']);
   
   foreach ($tasklist as $task => $info) {
     $row = array();
@@ -142,65 +143,5 @@ function devshop_projects_hosting_task_table($node) {
   }
   $output .= theme('table', $headers, $rows, array('class' => 'hosting-table'));
   return $output;
-}
-
-/**
- * Implementation of hook_hosting_task_TASK_TYPE_form().
- *
- * For "Commit" task.
- */
-function hosting_task_devshop_platform_create_form($project_node) {
-  $form = array();
-    
-  //Bail if no platforms yet.
-  if (!isset($project_node->project_objects['platform'])){
-    $form['note'] = array(
-      '#type' => 'item',
-      '#title' => t('Clone & Verify'),
-      '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
-      );
-    return $form;
-  }
-
-  $form['platform_name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Platform Name'),
-    '#required' => TRUE,
-    '#description' => t(''),
-    '#required' => TRUE,
-    '#size' => 40,
-    '#default_value' => '',
-    '#maxlength' => 255,
-  );
-  $form['git_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Git URL'),
-    '#required' => FALSE,
-    '#description' => t(''),
-    '#required' => TRUE,
-    '#size' => 40,
-    '#default_value' => '',
-    '#maxlength' => 255,
-  );
-  $form['branch'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Branch'),
-
-    '#required' => TRUE,
-    '#description' => t(''),
-    '#required' => TRUE,
-    '#size' => 40,
-    '#default_value' => 'master',
-    '#maxlength' => 255,
-  );
-  $form['nid'] = array(
-    '#type' => 'value',
-    '#value' => $project_node->nid,  
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Create platform'),
-  );
-  return $form;
 }
 
