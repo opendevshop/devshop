@@ -76,7 +76,7 @@ function devshop_projects_hosting_js_page(){
   $args = func_get_args();
   $nid = &$args[1];
   $task = &$args[2];
-  
+
   // Get task type from $task argument... For whatver reason, they don't make it an argument
   list($aegir_context, $task_type) = explode('_', $task);
   
