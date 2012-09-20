@@ -20,11 +20,17 @@ function drush_provision_provision_devshop_platform_create() {
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path does not exist!'));
   }
 
-  if (count($args) <2) {
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Missing platform name!'));
-  }
+  $platform = drush_get_option('platform-name');
 
-  $platform = $args[1];
+  if (!$platform) {
+    // Try to get it from the command line
+    if (count($args) < 2) {
+      return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Missing platform name!'));
+    }
+    else { 
+       $platform = $args[1];
+    }
+  }
 
   // Pause Hostmaster (Mainly for the git pull task)
   // @TODO Better way?  @see drush_hosting_pause()
