@@ -258,7 +258,6 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
  *  Form for platform creation
  */
 function devshop_projects_platform_create_form($form_state, $project_nid) {
-  //print_r(hosting_task_fetch_tasks($project_nid));
   $project_node = node_load($project_nid);
 
   $form = array();
@@ -277,12 +276,14 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
     '#type' => 'textfield',
     '#title' => t('Platform Name'),
     '#required' => TRUE,
-    '#description' => t(''),
+    '#description' => t('Enter the name of the platform to be added to project ' . $project_node->title . '. Once the platform is created and verified, a site will be automatically created and added to this project.'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => '',
     '#maxlength' => 255,
   );
+/*
+  Not needed for initial phase
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Git URL'),
@@ -300,6 +301,7 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
     '#default_value' => 'master',
     '#maxlength' => 255,
   );
+*/
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project_node->nid,  
