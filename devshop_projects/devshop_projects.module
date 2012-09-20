@@ -130,3 +130,40 @@ function devshop_projects_hosting_drush_aliases_name($node) {
     return $node->project_name .".". $node->project_environment;
   }
 }
+
+/*
+ * Helper function to create a site in a project
+ */
+
+function devshop_projects_create_site($project_node, $platform_node, $env) {
+
+  global $user;
+    
+  // Create the site nodes
+  $node = new stdClass();
+  $node->type = 'site';
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->title = $env .'.'. $project_node->base_url;
+
+  // Aegir properties
+  // @TODO: better client support
+  $node->client = HOSTING_DEFAULT_CLIENT;  
+  $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
+    
+  $node->platform = $platform_node->nid;
+  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
+    
+  //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
+    
+  // @TODO: Improve site language handling?
+  $node->site_language = !empty($user->language)? $user->language: 'en';
+    
+  // Save the node
+  if ($node = node_submit($node)) {
+    node_save($node);
+      
+    //And save the association to the project
+    db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
+  }
+}
