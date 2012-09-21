@@ -97,6 +97,7 @@ function hosting_task_devshop_commit_form($node) {
 function hosting_task_devshop_pull_form($node) {
   // @TODO: Once there is some kind of site relationship system,
   // determine if the site has a parent site to sync from, then show this checkbox.
+  $has_features = _devshop_tasks_site_has_module($node, 'features');
   /*
   $form['sync'] = array(
     '#title' => t('Sync content from live before code pull?'),
@@ -112,8 +113,8 @@ function hosting_task_devshop_pull_form($node) {
   $form['revert'] = array(
     '#title' => t('Revert all features after code pull?'),
     '#type' => 'checkbox',
-    '#default_value' => 1,
-    '#access' => _devshop_tasks_site_has_module($node, 'features'),
+    '#default_value' => $has_features,
+    '#access' => $has_features, 
   );
   $form['cache'] = array(
     '#title' => t('Clear cache after code pull?'),
