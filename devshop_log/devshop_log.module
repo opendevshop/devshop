@@ -27,7 +27,7 @@ function _devsop_log_access_callback($nid) {
   }
 
   $node = node_load($nid);
-  if (!$node || $node->type != 'project') {
+  if (!$node || ($node->type != 'site' && $node->type != 'platform')) {
     return FALSE;
   }
   return TRUE;
@@ -114,13 +114,10 @@ function devshop_git_log_settings() {
  */
 
 function _devshop_log_load($nid) {
-  
-  $project_node = node_load($nid);
-  $project_platforms = array_flip($project_node->project_objects['platform']);
-  
-  // load the platform node  
-  if (!($node = node_load($project_platforms['dev']))) {
-    return "Unable to load platform node!";
+
+  $node = node_load($nid);
+  if($node->type == 'site') {
+    $node = node_load($node->platform);
   }
 
   // Run "git log" and capture the output. We need to chdir to the repo
