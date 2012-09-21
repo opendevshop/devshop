@@ -227,6 +227,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $row[] = l('Site', "node/$site->nid");
       $row[] = l('Platform', "node/$site->platform");
       $row[] = l('Download Database', "$url/admin/status/");
+      $row[] = l('Commit Log', "node/$site->platform/gitlog");
       $rows[] = $row;
     }
     $table = theme('table', $header, $rows);
