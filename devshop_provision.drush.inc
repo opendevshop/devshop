@@ -139,6 +139,10 @@ function devshop_provision_drush_pm_post_download($project, $release) {
     return;    
   } else {
     if (drush_confirm(dt('Add to git repo and push?'))){
+      
+      // TODO: $target == 'self' when using over a remote drush alias.
+      // This causes fail.  It would be pretty damn impressive to be
+      // be able to drush dl module via remote alias to a devshop box.
       $target = d()->name;
       
       //Generate commit message
