@@ -80,6 +80,14 @@ function devshop_provision_drush_command() {
       'from' => 'Site alias to sync from.',
     ),
   );
+  $items['provision-devshop-dl'] = array(
+    'description' => 'Download modules.  This is just a wrapper for dl, it is here for hostmaster.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'options' => array(
+      'modules' => 'The list of modules to DL.',
+    ),
+    'aliases' => array('pdl'),
+  );
   return $items;
 }
 
@@ -111,6 +119,11 @@ function drush_devshop_provision_pre_hosting_task() {
   // Platform Create
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-platform-create') {
     $task->options['platform-name'] = $task->task_args['platform-name'];
+  }
+  
+  // Download
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-dl') {
+    $task->options['modules'] = $task->task_args['modules'];
   }
 }
 
