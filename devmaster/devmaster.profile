@@ -12,6 +12,10 @@ function devmaster_profile_modules() {
     /* core */ 'block', 'color', 'filter', 'help', 'menu', 'node', 'system', 'user',
     /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate',
     /* other contrib */ 'install_profile_api' /* needs >= 2.1 */, 'jquery_ui', 'modalframe', 'admin_menu',
+
+    /* DEVSHOP */
+    'devshop_tasks', 'devshop_projects', 'devshop_log', 'devshop_pull', 
+
   );
 }
 
@@ -65,6 +69,7 @@ function devmaster_bootstrap() {
   $client_id = $node->nid;
 
   /* Default server */
+  // @TODO: Create new Rackspace cloud server
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'server';
@@ -127,6 +132,7 @@ function devmaster_bootstrap() {
   node_save($node);
   $package_id = $node->nid;
 
+/*
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'platform';
@@ -137,7 +143,6 @@ function devmaster_bootstrap() {
   node_save($node);
   $platform_id = $node->nid;
   variable_set('hosting_own_platform', $node->nid);
-
 
   $instance = new stdClass();
   $instance->rid = $node->nid;
@@ -172,8 +177,13 @@ function devmaster_bootstrap() {
   $node->hosting_name = 'devmaster';
   $node->status = 1;
   node_save($node);
+*/
 
-  variable_set('site_frontpage', 'hosting/sites');
+  // Set the frontpage
+  variable_set('site_frontpage', 'hosting/projects');
+
+  // Set the sitename
+  variable_set('site_name', 'DEVSHOP');
 
   // do not allow user registration: the signup form will do that
   variable_set('user_register', 0);
@@ -190,21 +200,21 @@ function devmaster_task_finalize() {
   $menu_name = variable_get('menu_primary_links_source', 'primary-links');
 
   // @TODO - seriously need to simplify this, but in our own code i think, not install profile api
-  $items = install_menu_get_items('hosting/servers');
+  $items = install_menu_get_items('hosting/projects');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
-  $items = install_menu_get_items('hosting/sites');
+  $items = install_menu_get_items('user');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
-  $items = install_menu_get_items('hosting/platforms');
+  $items = install_menu_get_items('logout');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
@@ -231,10 +241,11 @@ function devmaster_task_finalize() {
   install_add_permissions(install_get_rid('anonymous user'), array('access disabled sites'));
   install_add_permissions(install_get_rid('authenticated user'), array('access disabled sites'));
   install_add_role('aegir client');
+  
   // @todo we may need to have a hook here to consider plugins
-  install_add_permissions(install_get_rid('aegir client'), array('access content', 'access all views', 'edit own client', 'view client', 'create site', 'delete site', 'view site', 'create backup task', 'create delete task', 'create disable task', 'create enable task', 'create restore task', 'view own tasks', 'view task', 'cancel own tasks'));
-  install_add_role('aegir account manager');
-  install_add_permissions(install_get_rid('aegir account manager'), array('create client', 'edit client users', 'view client'));
+  // install_add_permissions(install_get_rid('aegir client'), array('access content', 'access all views', 'edit own client', 'view client', 'create site', 'delete site', 'view site', 'create backup task', 'create delete task', 'create disable task', 'create enable task', 'create restore task', 'view own tasks', 'view task', 'cancel own tasks'));
+  // install_add_role('aegir account manager');
+  // install_add_permissions(install_get_rid('aegir account manager'), array('create client', 'edit client users', 'view client'));
 
   node_access_rebuild();
 }
