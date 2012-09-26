@@ -23,13 +23,37 @@ function drush_provision_provision_devshop_create() {
   
   // Change to $path and copy dev to test and live.
   // @TODO: Is better way to do with provision?
-  drush_shell_exec("mkdir $path -p");
+  if(drush_shell_exec("mkdir $path -p")) {
+    drush_log(dt('Created directory !path.', array('!path' => $path)), 'ok');
+  }
+  else {
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to create directory !path', array('!path' => $path)));
+  }
+
   // @TODO: Would this be good in provision git?  I feel like its just a wrapper, is it worth it?
   // Maybe it would be better, because of provision_backend_invoke()
   //provision_backend_invoke($target, 'provision-git-clone', array($git_url, $path));
-  drush_shell_cd_and_exec($path, "git clone $git_url dev");
-  drush_shell_cd_and_exec($path, "cp dev test -rf");
-  drush_shell_cd_and_exec($path, "cp dev live -rf");
+  if (drush_shell_cd_and_exec($path, "git clone $git_url dev")) {
+    drush_log(dt('Git repository cloned.', array('!path' => $path)), 'ok');
+    drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+  }
+  else {
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git clone failed!'));
+  }
+
+  if(drush_shell_cd_and_exec($path, "cp dev test -rf")) {
+    drush_log(dt('Repo copied to test.', array()), 'ok');
+  }
+  else {
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to test!'));
+  }
+
+  if(drush_shell_cd_and_exec($path, "cp dev live -rf")) {
+    drush_log(dt('Repo copied to live.', array()), 'ok');
+  }
+  else {
+    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to live!'));
+  }
   
   // @TODO: Create Platforms and Sites, and import into Aegir!
   foreach (array('dev', 'test', 'live') as $env){
