@@ -44,6 +44,7 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['base_url'] = $task->ref->base_url;
   $task->context_options['code_path'] = trim($task->ref->code_path, " ");
   $task->context_options['git_url'] = $task->ref->git_url;
+  $task->context_options['retry'] = $task->ref->retry;
 }
 
 /**
@@ -196,3 +197,22 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
   devshop_projects_create_site($project, $platform, $p_obj->env_type);
 }
+
+/*
+ * Returns TRUE is the project create task for the given node failed.
+ */
+
+function devshop_project_project_create_failed($nid, &$task) {
+
+  if ($nid) {
+    $task = hosting_get_most_recent_task($nid, 'devshop-create');
+    if ($task && $task->task_status != 1) {
+      // Project Create failed.
+      return TRUE;
+    }
+  }
+
+  // No task found OR it is successful
+  return FALSE;
+}
+
