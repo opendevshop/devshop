@@ -30,6 +30,7 @@ function devshop_provision_drush_command() {
       'git-url' => 'The URL of a git repo to use to create the platforms.',
       'path' => 'Desired project path.',
       'branch' => 'Branch (not yet implemented!)',
+      'retry' => 'Retry the create.',
     ),
     'aliases' => array('create-project'),
   );
@@ -116,6 +117,11 @@ function drush_devshop_provision_pre_hosting_task() {
     $task->options['no-cache'] = !$task->task_args['cache'];
   }
 
+  // Projectt Create
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-create') {
+    $task->options['retry'] = $task->task_args['retry'];
+  }
+  
   // Platform Create
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-platform-create') {
     $task->options['platform-name'] = $task->task_args['platform-name'];
