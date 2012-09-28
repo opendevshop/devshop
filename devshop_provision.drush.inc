@@ -34,6 +34,13 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('create-project'),
   );
+  $items['provision-devshop-delete'] = array(
+    'description' => 'Delete a DevShop Project and all associated sites and platforms.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+    ),
+    'aliases' => array('delete-project'),
+  );
   $items['provision-devshop-platform-create'] = array(
     'description' => 'Create a new platform and add it to an existing DevShop Project.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -43,7 +50,6 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('create-platform'),
   );
-
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify site code and (optionally) run update.php, clear cache, and revert features.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
