@@ -14,6 +14,13 @@ function devshop_projects_hosting_tasks() {
     'description' => t('Clones the repo, and creates the platforms.'),
     'provision_save' => TRUE,
   );
+  $tasks['project']['devshop-delete'] = array(
+    'title' => t('Delete Project'),
+    'description' => t('Delete a project and all associated sites and platforms.'),
+//    'provision_save' => TRUE,
+    'access callback' => _cp_access_callback,
+
+  );
   $tasks['project']['devshop-install'] = array(
     'title' => t('Install Sites'),
     'description' => t('Runs drupal installation on each of the three platforms.'),
@@ -21,7 +28,6 @@ function devshop_projects_hosting_tasks() {
   $tasks['project']['devshop-platform-create'] = array(
     'title' => t('Create Platform'),
     'description' => t('Create a new platform to add to an existin project.'),
-//    'access callback' => _cp_access_callback,
   );
 
   return $tasks;
