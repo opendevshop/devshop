@@ -15,6 +15,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     unset($form['revision_information']);
     unset($form['author']);
     unset($form['options']);
+    unset($form['buttons']['delete']);
+    unset($form['buttons']['preview']);
+    if ($form['retry']['#value']) {
+      $form['buttons']['submit']['#value'] = t('Save and Retry');
+    }
   }
 }
 
@@ -22,6 +27,16 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
  * Implementation of hook_form().
  */
 function devshop_projects_form(&$node) {
+
+  $retry = devshop_project_project_create_failed($node->nid, $task);
+  if ($retry) {
+    $form['notice'] = array(
+      '#type' => 'item',
+      '#title' => t('NOTICE!'),
+      '#description' => t('Project Create failed! You can view the task log ' . l('here.', "node/$task->nid") . ' Please make any necessary corrections below and resubmit the form to try again.'),
+      '#weight' => -1,
+    );
+  }
 
   $form['git_url'] = array(
     '#type' => 'textfield',
@@ -63,15 +78,27 @@ function devshop_projects_form(&$node) {
     '#maxlength' => 255,
     '#weight' => 2,
   );
-  
+  $form['retry'] = array(
+    '#type' => 'value',
+    '#value' => $retry,
+  );
+
   // Don't allow editing
   if ($node->nid) {
-    $form['code_path']['#type'] = $form['title']['#type'] = $form['git_url']['#type'] = 'item';
+//    $form['code_path']['#type'] = $form['title']['#type'] = 'item';
     $form['code_path']['#value'] = $form['code_path']['#default_value'];
     $form['title']['#value'] = $form['title']['#default_value'];
-    $form['git_url']['#value'] = $form['git_url']['#default_value'];
+
+    $form['code_path']['#attributes'] = array('readonly' => 'readonly');
+    $form['title']['#attributes'] = array('readonly' => 'readonly');
+
+    if (!$retry) {
+//      $form['git_url']['#type'] = 'item';
+      $form['git_url']['#attributes'] = array('readonly' => 'readonly');
+      $form['git_url']['#value'] = $form['git_url']['#default_value'];
+    }
   }
-  
+
   return $form;
 }
 
@@ -79,6 +106,7 @@ function devshop_projects_form(&$node) {
  * Implementation of hook_validate().
  */
 function devshop_projects_validate($node, &$form) {
+
   // No validation if op == Delete
   if ($node->op == t('Delete')) {
     return;
@@ -93,40 +121,24 @@ function devshop_projects_validate($node, &$form) {
   }
 
   // The project code name must not be in the hosting_context table
-  if ($result = db_fetch_object(db_query("SELECT name FROM {hosting_context} WHERE name = '%s'", $node->title))) {
+  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT name FROM {hosting_context} WHERE name = '%s'", $node->title)))) {
     form_set_error('title', t('Project code name existing in hosting context table.'));
   }
 
   // The project code name must be unique
-  if ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND	nid <> %d", $node->title, $node->nid))) {
+  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND	nid <> %d", $node->title, $node->nid)))) {
     form_set_error('title', t('Project code name is already is use by another project'));
   }
 
   // Make sure the path is unique. 
   $cp = hosting_path_normalize($node->code_path);
-  if ($add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
+  if (!$node->retry && $add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
     form_set_error('code_path', t('Code path is already in use by another project'));
   }
 
   // Directory must not exist
-  if ($add && file_exists($cp)) {
+  if (!$node->retry && $add && file_exists($cp)) {
     form_set_error('code_path', t('Code path directory already exists.'));
-  }
-
-  // Sites may not be used in more than one environement
-  if($node->dev_site != 0 && $node->dev_site == $node->test_site) {
-    form_set_error('dev_site', t('Site used more than once.'));
-    form_set_error('test_site', t('Site used more than once.'));
-  }
-
-  if($node->dev_site != 0 && $node->dev_site == $node->live_site) {
-    form_set_error('dev_site', t('Site used more than once.'));
-    form_set_error('live_site', t('Site used more than once.'));
-  }
-
-  if($node->test_site != 0 && $node->test_site == $node->live_site) {
-    form_set_error('test_site', t('Site used more than once.'));
-    form_set_error('live_site', t('Site used more than once.'));
   }
 }
 
@@ -166,11 +178,22 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
     
     // OUTPUT
     if ($platforms_ready == FALSE){
-      $form['note'] = array(
-        '#type' => 'item',
-        '#title' => t('Clone & Verify'),
-        '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
-      );
+      $retry = devshop_project_project_create_failed($project_node->nid, $task);
+      if ($retry) {
+	$form['note'] = array(
+	  '#type' => 'item',
+	  '#title' => t('NOTICE!'),
+	  '#description' => t('Project Create failed! You can ' . l('view the task log here.', "node/$task->nid") . ' Please ' . l('edit the project settings', "node/$project_node->nid/edit") . ' and make any necessary corrections and resubmit the form to try again.'),
+	  '#weight' => -1,
+	);
+      }
+      else {
+	$form['note'] = array(
+          '#type' => 'item',
+	  '#title' => t('Clone & Verify'),
+	  '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+        );
+      }
       return $form;
     } elseif ($sites_installing) {
       $form['note'] = array(
@@ -264,14 +287,25 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
     
   //Bail if no platforms yet.
   if (!isset($project_node->project_objects['platform'])){
-    $form['note'] = array(
-      '#type' => 'item',
-      '#title' => t('Clone & Verify'),
-      '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+    $retry = devshop_project_project_create_failed($project_nid, $task);
+    if ($retry) {
+      $form['note'] = array(
+	'#type' => 'item',
+	'#title' => t('NOTICE!'),
+	'#description' => t('Project Create failed! You can ' . l('view the task log here.', "node/$task->nid") . ' Please ' . l('edit the project settings', "node/$project_nid/edit") . ' and make any necessary corrections and resubmit the form to try again.'),
+	'#weight' => -1,
       );
+    }
+    else {
+      $form['note'] = array(
+        '#type' => 'item',
+	'#title' => t('Clone & Verify'),
+	'#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
+        );
+    }
     return $form;
   }
-    // ZZZ
+
   $form['platform_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Platform Name'),

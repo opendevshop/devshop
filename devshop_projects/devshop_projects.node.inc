@@ -104,6 +104,24 @@ function devshop_projects_insert($node) {
 }
 
 /**
+ * Implementation of hook_update().
+ */
+function devshop_projects_update($node) {
+
+  db_query("UPDATE {hosting_devshop_project} " .
+           "SET git_url = '%s', code_path = '%s', base_url = '%s' " .
+  	   "WHERE nid = %d",
+	   $node->git_url, hosting_path_normalize($node->code_path), 
+	   $node->base_url, $node->nid);
+
+  // Pass retry flag
+  $args = array('retry' => $node->retry ? "1" : "0");
+  
+  // Create hostmaster task
+  hosting_add_task($node->nid, 'devshop-create', $args);
+}
+
+/**
  * Implementation of hook_delete().
  */
 function devshop_projects_delete($node) {
