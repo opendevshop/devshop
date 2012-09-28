@@ -8,12 +8,13 @@ function drush_provision_provision_devshop_create() {
   $git_url = d()->git_url;
   $path = d()->code_path;
   $project = d()->project_name;
-  
+  $retry = drush_get_option('retry');
+
   // Validate
-  if (empty($git_url)){
+  if (empty($git_url)) {
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git URL not valid.'));
   }
-  if (file_exists($path)){
+  if (file_exists($path) && !$retry) {
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path already exists!'));
   }
   
@@ -27,7 +28,12 @@ function drush_provision_provision_devshop_create() {
     drush_log(dt('Created directory !path.', array('!path' => $path)), 'ok');
   }
   else {
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to create directory !path', array('!path' => $path)));
+    // Mksie failed. If this is a retry and the directory exist, then it's
+    // OK, otherwise PANIC!!
+    if (!$retry || !is_dir($path)) {
+      drush_log(implode("\n", drush_shell_exec_output()), 'error');
+      return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to create directory !path', array('!path' => $path)));
+    }
   }
 
   // @TODO: Would this be good in provision git?  I feel like its just a wrapper, is it worth it?
@@ -38,6 +44,7 @@ function drush_provision_provision_devshop_create() {
     drush_log(implode("\n", drush_shell_exec_output()), 'ok');
   }
   else {
+    drush_log(implode("\n", drush_shell_exec_output()), 'error');
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git clone failed!'));
   }
 
@@ -45,6 +52,7 @@ function drush_provision_provision_devshop_create() {
     drush_log(dt('Repo copied to test.', array()), 'ok');
   }
   else {
+    drush_log(implode("\n", drush_shell_exec_output()), 'error');
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to test!'));
   }
 
@@ -52,6 +60,7 @@ function drush_provision_provision_devshop_create() {
     drush_log(dt('Repo copied to live.', array()), 'ok');
   }
   else {
+    drush_log(implode("\n", drush_shell_exec_output()), 'error');
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to live!'));
   }
   
@@ -69,8 +78,6 @@ function drush_provision_provision_devshop_create() {
     // Import platform
     provision_backend_invoke('@hostmaster', 'hosting-import', array($platform_hosting_name));
   }
-  
-  
   
   //Resume cron
   // @TODO Better way?  @see drush_hosting_pause()
