@@ -206,6 +206,60 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 }
 
 /*
+ * Implementation of hook_post_hosting_TASK_TYPE_task
+ *
+ * This hook is invoked when a project is deleted. We then:
+ *
+ * 1) Disable all sites
+ * 2) Delete all sites
+ * 3) Delete all platforms
+ * 4) Set project node status to 0
+ *
+ */
+
+function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
+
+  // We only case about projects.  
+  if ($task->ref->type != 'project') {
+    watchdog('devshop', "Project delete post task hook called, but type is $task->ref->type");
+    return;
+  }
+
+  // Get project nid.
+  $nid = $task->ref->nid;
+
+  // Make sure it's a real project
+  $p_info = db_fetch_object(db_query("SELECT * " .
+                                     "FROM {hosting_devshop_project} " .
+                                     "WHERE nid = %d", $nid));
+  if (!$p_info) {
+    watchdog('devshop', "Project delete post task hook: project nid $nid not fund");
+    return;
+  }
+
+  // First disable and delete all of the sites
+
+  $query = db_query("SELECT * " .
+		    "FROM {hosting_devshop_project_object} " .
+		    "WHERE project_nid = %d AND object_type = 'site'", $nid);
+
+  while ($site = db_fetch_object($query)) {
+    hosting_add_task($site->nid, 'disable');
+    hosting_add_task($site->nid, 'delete');
+  }
+
+  // Now delete all of the platforms
+  $query = db_query("SELECT * " .
+		    "FROM {hosting_devshop_project_object} " .
+		    "WHERE project_nid = %d AND object_type = 'platform'", 
+		    $nid);
+
+  while ($site = db_fetch_object($query)) {
+    hosting_add_task($site->nid, 'delete');
+  }
+}
+
+/*
  * Returns TRUE is the project create task for the given node failed.
  */
 
