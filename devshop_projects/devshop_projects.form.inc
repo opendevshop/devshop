@@ -267,7 +267,9 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
 
   global $user;
   $project_node = node_load($form_state['values']['nid']);
-    
+
+  $project_node->install_profile = $form_state['values']['install_profile'];
+
   // Save installation profile to database
   db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
     
@@ -368,3 +370,60 @@ function devshop_projects_platform_create_form_submit(&$form, &$form_state){
   $args = array('platform-name' => $form_state['values']['platform_name']);
   hosting_add_task($project_node->nid, 'devshop-platform-create', $args);
 }
+
+/**
+ *  Form for project delete
+ */
+function devshop_projects_project_delete_form($form_state, $project_nid) {
+  $project_node = node_load($project_nid);
+
+  $form = devshop_projects_view($project_node)->content;
+
+  unset($form['sites']['add_platform']);
+  unset($form['tasks_view']);
+  unset($form['devshop']);
+  unset($form['info']['#prefix']);
+  unset($form['info']['#suffix']);
+
+  $form['message'] = array(
+    '#type' => 'item',
+    '#value' => t('Are you sure you want to delete this project and all of its associated sites and platforms?'),
+    '#weight' => 31,
+  );
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_nid,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete Project'),
+    '#weight' => 32,
+  );
+
+  $form['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),  
+    '#weight' => 33,
+  );
+
+  return $form;
+}
+
+/**
+ *  Form for project delete submit handler
+ */
+function devshop_projects_project_delete_form_submit(&$form, &$form_state){
+
+  // Make sure the user really wants to delete the project
+  if ($form_state['clicked_button']['#value'] == t('Delete Project')) {
+    hosting_add_task($form['nid']['#value'], 'delete');
+  }
+  $form_state['redirect'] = 'hosting/projects';
+  drupal_goto('hosting/projects');
+}
+
+
+
+

@@ -92,7 +92,6 @@ function devshop_projects_insert($node) {
   db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path, base_url) ".
   	   "VALUES (%d, '%s', '%s', '%s')",
 	   $node->nid, $node->git_url, hosting_path_normalize($node->code_path), $node->base_url);
-//  _devshop_projects_insert_sites($node);
 
   // Save hosting context
   if ((!$node->old_vid)) {
@@ -108,6 +107,8 @@ function devshop_projects_insert($node) {
  */
 function devshop_projects_update($node) {
 
+dpm("Update hook called");
+dpm($node);
   db_query("UPDATE {hosting_devshop_project} " .
            "SET git_url = '%s', code_path = '%s', base_url = '%s' " .
   	   "WHERE nid = %d",
@@ -118,13 +119,15 @@ function devshop_projects_update($node) {
   $args = array('retry' => $node->retry ? "1" : "0");
   
   // Create hostmaster task
-  hosting_add_task($node->nid, 'devshop-create', $args);
+  //hosting_add_task($node->nid, 'devshop-create', $args);
 }
 
 /**
  * Implementation of hook_delete().
  */
 function devshop_projects_delete($node) {
+dpm("Delete hook called");
+dpm($node);
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
   db_query('DELETE FROM {hosting_devshop_project_object} WHERE project_nid = %d', $node->nid);
   
@@ -315,7 +318,7 @@ function devshop_projects_projects_view() {
     $row[] = l($node->title, "node/$proj->nid");
     $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='platform'", $node->nid));
     $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
-    $row[] = l("Delete Project", "hosting/project/delete/$proj->nid");
+    $row[] = l("Delete Project", "hosting/projects/delete/$proj->nid");
     $rows[] = $row;
   }
 
