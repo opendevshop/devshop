@@ -14,7 +14,7 @@ function devshop_projects_hosting_tasks() {
     'description' => t('Clones the repo, and creates the platforms.'),
     'provision_save' => TRUE,
   );
-  $tasks['project']['devshop-delete'] = array(
+  $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
 //    'provision_save' => TRUE,
@@ -217,8 +217,9 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  *
  */
 
-function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
+function devshop_projects_post_hosting_delete_task($task, $data) {
 
+  watchdog('devshop', "Project delete post task hook called");
   // We only case about projects.  
   if ($task->ref->type != 'project') {
     watchdog('devshop', "Project delete post task hook called, but type is $task->ref->type");
@@ -244,8 +245,8 @@ function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
 		    "WHERE project_nid = %d AND object_type = 'site'", $nid);
 
   while ($site = db_fetch_object($query)) {
-    hosting_add_task($site->nid, 'disable');
-    hosting_add_task($site->nid, 'delete');
+    hosting_add_task($site->object_nid, 'disable');
+    hosting_add_task($site->object_nid, 'delete');
   }
 
   // Now delete all of the platforms
@@ -254,8 +255,8 @@ function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
 		    "WHERE project_nid = %d AND object_type = 'platform'", 
 		    $nid);
 
-  while ($site = db_fetch_object($query)) {
-    hosting_add_task($site->nid, 'delete');
+  while ($platform = db_fetch_object($query)) {
+    hosting_add_task($platform->object_nid, 'delete');
   }
 }
 
