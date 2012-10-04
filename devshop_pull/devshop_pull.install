@@ -1,0 +1,74 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Queues.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_pull_schema() {
+  $schema['hosting_devshop_pull_projects'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull_method' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_pull' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_pull_status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('project_nid'),
+  );
+  $schema['hosting_devshop_pull_sites'] = array(
+    'fields' => array(
+      'site_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull_enabled' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull_reset' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('site_nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function devshop_pull_install() {  
+  // Create tables.
+  drupal_install_schema('devshop_pull');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function devshop_pull_uninstall() {  
+  // Create tables.
+  drupal_uninstall_schema('devshop_pull');
+}

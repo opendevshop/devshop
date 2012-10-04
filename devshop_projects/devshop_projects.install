@@ -1,0 +1,94 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Projects
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_projects_schema() {
+ $schema['hosting_devshop_project'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project/Node ID.',
+      ),
+      'git_url' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'code_path' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'base_url' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'install_profile' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+
+ $schema['hosting_devshop_project_object'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project/Node ID.',
+      ),
+      'object_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Site NID.',
+      ),
+      'object_type' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 10,
+        'default' => '',
+        'description' => 'The node ID of the platform.',
+      ),
+      'env_type' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 10,
+        'default' => '',
+        'description' => 'Environment type: dev, test, live, or sandbox.',
+      ),
+    ),
+    'primary key' => array('object_nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function devshop_projects_install() {  
+  // Create tables.
+  drupal_install_schema('devshop_projects');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function devshop_projects_uninstall() {  
+  // Delete tables.
+  drupal_uninstall_schema('devshop_projects');
+}
