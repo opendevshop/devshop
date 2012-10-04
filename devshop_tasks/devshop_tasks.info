@@ -1,0 +1,4 @@
+name = DevShop Tasks
+description = Provides common tasks needed to manage Drupal site development.
+core = 6.x
+package = DevShop
