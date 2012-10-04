@@ -8,7 +8,7 @@
  * Implementation of hook_schema().
  */
 function devshop_pull_schema() {
-  $schema['hosting_devshop_pull'] = array(
+  $schema['hosting_devshop_pull_projects'] = array(
     'fields' => array(
       'project_nid' => array(
         'type' => 'int',
@@ -16,11 +16,6 @@ function devshop_pull_schema() {
         'default' => 0,
       ),
       'pull_method' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'pull_reset' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -37,6 +32,26 @@ function devshop_pull_schema() {
       ),
     ),
     'primary key' => array('project_nid'),
+  );
+  $schema['hosting_devshop_pull_sites'] = array(
+    'fields' => array(
+      'site_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull_enabled' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull_reset' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('site_nid'),
   );
 
   return $schema;
