@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 DevShop Provision
 ------------------------------------
 Tools for Aegir-powered development.
 
 This module provides the backend commands needed to 
+=======
+DevShop Hosting
+------------------------------------
+Tools for Aegir-powered development.
+
+This module provides the front-end commands needed to 
+>>>>>>> 68b63fe095343116ce462210c57825971a58b7f1
 deploy and manage sites using the DevShop git and features 
 based development workflow.
 
@@ -18,14 +26,26 @@ for a fast way to install aegir.
 
 There is also a Vagrant project at http://drupal.org/project/aegir_up
 
+<<<<<<< HEAD
 Download devshop_provision with drush:
 
 $ drush dl devshop_provision
+=======
+
+-------------------------
+Install devshop_provision
+
+Much like hosting depends on provision, devshop_hosting depends on devshop_provision.
+
+Download devshop_provision with drush:
+  $ drush dl devshop_provision
+>>>>>>> 68b63fe095343116ce462210c57825971a58b7f1
 
 It will try to download it to /usr/share/drush/commands, but you can put it
 anywhere Drush command files can live.  /var/aegir/.drush/commands is a good
 place because then you can update drush core without a hassle.
 
+<<<<<<< HEAD
 
 ---------------
 NOTE about Sync
@@ -37,11 +57,38 @@ $ mkdir ~/backups/devshop-sync
 
 Unfortunately drush rsync cannot sync single files, as far as I know, so it syncs the 
 folder.
+=======
+-------------------------
+Install devshop_hosting
+
+Download devshop_hosting into your @hostmaster site with drush:
+  $ drush @hostmaster dl devshop_hosting
+ 
+Enable devshop_tasks with drush.  Unless you like visiting your admin pages.
+  $ drush @hostmaster en devshop_tasks
+  
+If you need a pull queue (ie. this is hosting a shared Dev site that must always
+have the latest commits) enabled devshop_pull
+  $ drush @hostmaster en devshop_pull
+
+
+>>>>>>> 68b63fe095343116ce462210c57825971a58b7f1
 
 -------------------------------------
 Provision Commands & Hostmaster Tasks
 -------------------------------------
 
+<<<<<<< HEAD
+=======
+Once enabled, Aegir Sites will have 3 new Tasks available to them.
+
+NOTE: Not all tasks should be run on certain sites.  It is up to YOU to decide
+where and when to run these tasks.  DevShop is NOT aware of which site is live,
+staging, testing, or development.  Use these commands with caution.
+
+All tasks have specific permissions, so you can grant roles individual tasks.
+
+>>>>>>> 68b63fe095343116ce462210c57825971a58b7f1
 1. Pull Code | drush @alias provision-devshop-pull | drush @alias pdp
   This task pulls your code, runs new updates, reverts features, and clears
   caches.  It can be used as a Deployment task, for test sites
@@ -79,4 +126,8 @@ Provision Commands & Hostmaster Tasks
   - Imports the SQL dump into @destination database.
   - (optionally) Runs update.php.
   - (optionally) Runs features-revert-all.
+<<<<<<< HEAD
   - (optionally) Clears all caches.
+=======
+  - (optionally) Clears all caches.
+>>>>>>> 68b63fe095343116ce462210c57825971a58b7f1
