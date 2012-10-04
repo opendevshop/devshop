@@ -16,6 +16,7 @@ include_once('devshop_projects.task.inc');
 function devshop_projects_perm() {
   return array(
     'view projects',
+    'delete project'
   );
 }
 
@@ -34,7 +35,6 @@ function devshop_projects_menu() {
   $items['hosting/projects/platform/create/%'] = array(
     'title' => 'Create and add a platform',
     'description' => 'Create and add a platform to an existing project',
-    //'page callback' => 'devshop_projects_platform_create',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_projects_platform_create_form', 4),
     'access arguments' => array('view projects'),
@@ -43,9 +43,8 @@ function devshop_projects_menu() {
   $items['hosting/projects/delete/%'] = array(
     'title' => t('Delete Project'),
     'description' => 'Delete a project and all of it\'s associated sites and platforms', 
-    //'page callback' => 'devshop_projects_platform_create',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_projects_delete_form', 3),
+    'page arguments' => array('devshop_projects_project_delete_form', 3),
     'access arguments' => array('delete projects'),
   );
 
@@ -167,7 +166,7 @@ function devshop_projects_create_site($project_node, $platform_node, $env) {
     
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
-    
+
   // Save the node
   if ($node = node_submit($node)) {
     node_save($node);
