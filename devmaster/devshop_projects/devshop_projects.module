@@ -175,3 +175,4 @@ function devshop_projects_create_site($project_node, $platform_node, $env) {
     db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
   }
 }
+
