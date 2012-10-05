@@ -418,8 +418,62 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
 
   // Make sure the user really wants to delete the project
   if ($form_state['clicked_button']['#value'] == t('Delete Project')) {
+    $node = node_load($form['nid']['#value']);
+    if ($node->data) {
+      $data = $node->data;
+    }
+    else {
+      $data = array();
+    }
+    
+    // First get a list of all of the objects for this project
+    $query = db_query("SELECT * " .
+		      "FROM {hosting_devshop_project_object} " .
+		      "WHERE project_nid = %d", $node->nid);
+    
+    $snid = array();
+    $pnid = array();
+    
+    while ($obj = db_fetch_object($query)) {
+      if ($obj->object_type == 'site') {
+	$snid[] = $obj->object_nid;
+      }
+      else if ($obj->object_type == 'platform') {
+	$pnid[] = $obj->object_nid;
+      }
+    }
+    
+    if (count($snid) > 0) {
+      $data['project_delete_site_disable'] = $snid;
+      $data['project_delete_site_delete'] = $snid;
+    }
+    else {
+      unset($data['project_delete_sites_disable']);
+      unset($data['project_delete_sites_delete']);
+    }
+    
+    if (count($pnid) > 0) {
+      $data['project_delete_platform_delete'] = $snid;
+    }
+    else {
+      unset($data['project_delete_platform_delete']);
+    }
+    
+    if ($data['project_delete_platform_delete'] ||
+	$data['project_delete_site_disable']   ||
+	$data['project_delete_site_delete'] ) {
+      $data['deleting_project'] = TRUE;
+    }
+    else {
+      unset($data['deleting_project']);
+    }
+    
+    $node->data = $data;
+    node_save($node);
     hosting_add_task($form['nid']['#value'], 'delete');
   }
+
+  // Go back to the main project list page
   $form_state['redirect'] = 'hosting/projects';
   drupal_goto('hosting/projects');
 }
