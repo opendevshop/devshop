@@ -115,11 +115,13 @@ dpm($node);
 	   $node->git_url, hosting_path_normalize($node->code_path), 
 	   $node->base_url, $node->nid);
 
-  // Pass retry flag
-  $args = array('retry' => $node->retry ? "1" : "0");
+  // If this is a rerry, kick start another devshop-create
+  if ($node->retry) {
+    $args = array('retry' => 1);
   
-  // Create hostmaster task
-  //hosting_add_task($node->nid, 'devshop-create', $args);
+    // Create hostmaster task
+    hosting_add_task($node->nid, 'devshop-create', $args);
+  }
 }
 
 /**
