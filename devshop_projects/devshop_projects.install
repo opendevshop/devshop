@@ -92,3 +92,10 @@ function devshop_projects_uninstall() {
   // Delete tables.
   drupal_uninstall_schema('devshop_projects');
 }
+
+function devshop_projects_update_1() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project} " .
+		      "ADD COLUMN data longtext NOT NULL default ''");
+  return $ret;
+}
