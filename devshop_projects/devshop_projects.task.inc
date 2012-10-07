@@ -205,10 +205,18 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
   devshop_projects_create_site($project, $platform, $p_obj->env_type);
 }
 
+function watchcat($m, $l) {
+  $f = fopen("/tmp/{$m}.catlog", "a+");
+  $cr = ($l[strlen($l) - 1] == '\n') ? true : false;
+  fwrite($f, sprintf("%s %s%s", date('Y-m-d H:i:s'), $l, $cr ? "" : "\n"));
+  fclose($f);
+}
+
+
 /*
  * This function checks to see if there if there are any more objects
  * to disable or delete during the 'project delete' task. The list of
- * tasks that need to be done are kept in $project_node->data. See the
+ * tasks that need to be done are kept in the project data field. See the
  * following two function for more detail on those arrays:
  *
  *   devshop_projects_project_delete_form_submit
@@ -220,41 +228,39 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  */
 
 function   devshop_projects_project_delete_queue_next_task($pnode) {
-
   // Assume all done
-  $node_updated = FALSE;
+  $updated = FALSE;
   $nid = FALSE;
+  $data = devshop_projects_project_data_get($pnode->nid);
 
   // Keys to tasks to be performed. Objects must be processed in this
   // order due to task dependencies.
-  $keys = array('site' => 'disable',
-		'site' => 'delete',
-		'platform' => 'delete');
+  $keys = array(array('type' => 'site',
+		      'task' => 'disable'),
+		array('type' => 'site',
+		      'task' => 'delete'),
+		array('type' => 'platform',
+		      'task' => 'delete'));
 
   // Iterate through arrays of tasks => nids and queue one tasks that
   // is left to do
 
-  foreach ($keys as $type => $task) {
-    $key1 = 'project_delete_{$type}_{$task}';
-    watchdog('devshop', "key1 = $key1"); //zzz
+  foreach ($keys as $oper) {
+    $key1 = "project_delete_{$oper['type']}_{$oper['task']}";
 
-    if (isset($pnode->data[$key1])) {
-      if (count($pnode->data[$key1]) > 0) {
+    if (isset($data[$key1])) {
+      if (count($data[$key1]) > 0) {
 	// Use the first nid in the list and stop looking for any more work
-	$nid = $pnode->data[$key1][0];
+	$nid = $data[$key1][0];
 	break;
       }
       else {
-	watchdog('devshop', "key1 = $key1 COUNT IS ZERO!"); //zzz
+	// Array is empty, delete it
+	unset($data[$key1]);
       }
+      $updated = TRUE;
+    }
 
-    }
-    else {
-      watchdog('devshop', "key1 = $key1 is NOT SET!"); //zzz
-    }
-    watchdog('devshop', "unsetting key $key1 XXX"); //zzz
-    unset($pnode->data[$key1]);
-    $node_updated = TRUE;
   }
 
   // If $nid != FALSE, then we need to act on that node. If it is FALSE,
@@ -263,30 +269,31 @@ function   devshop_projects_project_delete_queue_next_task($pnode) {
   // table
 
   if ($nid) {
-    watchdog('devshop', "Project delete: scheduling taskk '%s' for nid $nid");
-    hosting_add_task($nid, $task);
+    hosting_add_task($nid, $oper['task']);
   }
 
-  // If we changed the project node in any way, we need to save the changes
-  if ($node_updated) {
-    watchdog('devshop', "updating node. status = {$node->status}"); //zzz
-    //    watchdog('devshop', "updating node. status = ${node->status}"); //zzz
-    node_save($pnode);
+  // If we changed the project data array in any way, we need to save it
+  if ($updated) {
+    devshop_projects_project_data_set($pnode->nid, $data);
   }
 
   if (!$nid) {
-    watchdog('devshop', "Project delete: complete!");
     $pnode->status = 0;
 
     //$pnode->rid = 0;
-    $node_updated = TRUE;
+    node_save($pnode);
+
+    // Check to see if the user wanted the project directory removed.
+    // If so, make sure the directory path is valid and isn't "/"!!
+    if ($data['deleting_project_remove_dir'] && 
+	strlen($pnode->code_path) > 1) {
+      @exec("rm -rf {$pnode->code_path}");
+    }
 
     // delete this project
-    watchdog('devshop', "deleting project from hosting_devshop_project"); //zzz
     db_query("DELETE FROM {hosting_devshop_project} WHERE nid = %d",
 	     $pnode->nid);
   }
-
 }
 
 /*
@@ -300,13 +307,13 @@ function   devshop_projects_project_delete_queue_next_task($pnode) {
  * $node->data field. There are four elements in that array:
  *
  *
- *  $project_node->  data['deleting_project']: if TRUE, we are in the process
+ *  project data['deleting_project']: if TRUE, we are in the process
  *      of delete this project and all sites & platforms. 
- *  $project_node->data['project_delete_site_disable']: array of site NID's
+ *  project data['project_delete_site_disable']: array of site NID's
  *      that are to be disabled.
- *  $project_node->data['project_delete_site_delete']: an array of site NID's
+ *  project data['project_delete_site_delete']: an array of site NID's
  *     that are to be deleted once they are disabled.
- *  $project_node->data['project_delete_platform_delete']: an array of platform
+ *  project data['project_delete_platform_delete']: an array of platform
  *      NID's that are to be deleted once the sites based on these platforms
  *      are disabled and deleted. 
  *
@@ -325,8 +332,12 @@ function   devshop_projects_project_delete_queue_next_task($pnode) {
  *    The operation (task type) that just complted. Will be one of:
  *    'project delete', 'site disable', 'site delete', or
  *    'platform delete'.
+ * @param $failed
+ *    If TRUE, this task did not complete succesfully. We know this 
+ *    the 'rollback' hook was invoked rather then the 'post task' 
+ *    hook. There isn't much we can do but log it and carry on.
  */
-function devshop_projects_project_delete_continue($nid, $op) {
+function devshop_projects_project_delete_continue($nid, $op, $failed = FALSE) {
 
   if (!($node = node_load($nid))) {
     watchdog('devshop', "Delete continue: nid $nid not found");
@@ -334,14 +345,18 @@ function devshop_projects_project_delete_continue($nid, $op) {
   }
 
   if ($node->type == 'project') {
+    // First step complete: project deleted. Now we need to
+    // disable all of the sites, delete them. And then delete 
+    // all of the platforms.
     devshop_projects_project_delete_queue_next_task($node);
     return;
   }
   else if (($node->type != 'site') &&
-	   ($node->type == 'platform')) {
+	   ($node->type != 'platform')) {
     // We only care about sites and platforms
     return;
   }
+
 
   // Does this object belong to a devshop project? If not,
   // then just ignore it.
@@ -350,33 +365,38 @@ function devshop_projects_project_delete_continue($nid, $op) {
   }
 
   // load project node
-  if (!($project_node = node_load($node->project_id))) {
+  if (!($project_node = node_load($node->project_nid))) {
     watchdog('devshop', 
 	     "Delete continue: can't load project nid $node->project_nid");
     return;
   }
 
-  if (!$project_node->data['deleting_project']) {
-    watchdog('devshop', 
-	     "Delete continue: delete_project flag not TRUE");
+  $data = devshop_projects_project_data_get($project_node->nid);
+
+  if (!$data['deleting_project']) {
     return;
   }
 
-  // delete this object
-  db_query("DELETE FROM {hosting_devshop_project_object} " .
-	   "WHERE project_nid = %d AND object_nid = %d",
-	   $project_node->nid, $node->nid);
+  if ($op == 'delete') {
+    // delete this object if the task just complete was a delete
+    db_query("DELETE FROM {hosting_devshop_project_object} " .
+	     "WHERE project_nid = %d AND object_nid = %d",
+	     $project_node->nid, $node->nid);
+  }
 
   // Remove this nid from our array of things to do
-  $key1 = 'project_delete_{$node->type}_{$op}';
-  $key2 = array_search($node->nid, $project_node->data[$key1]);
+  $key1 = "project_delete_{$node->type}_{$op}";
+  $key2 = array_search($node->nid, $data[$key1]);
 
-  if ($key2 != FALSE) {
-    unset($project_node->data[$key1][$key2]);
-    if (count($project_node->data[$key1][$key2]) == 0) {
-      unset($project_node->data[$key1]);
+  if ($key2 === FALSE) {
+    watchdog('devshop', "search for nid {$node->nid} failed, key = $key2");
+  }
+  else {
+    array_shift($data[$key1]);
+    if (count($data[$key1]) == 0) {
+      unset($data[$key1]);
     }
-    node_save($project_node);
+    devshop_projects_project_data_set($project_node->nid, $data);
   }
 
   // do the next delete task
@@ -394,15 +414,38 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
 
 }
 
+/**
+ * Implementation of hook_hosting_TASK_TYPE_task_rollback().
+ *
+ * This hook is invoked when the delete task fails. 
+ * Carry on my wayward son. There will be peace when you are done. 
+ * Lay your weary head to rest. Don't you cry no more.
+ */
+function devshop_projects_hosting_delete_task_rollback($task, $data) {
+  watchdog('devshop', "Delete task rollback hook called");
+  devshop_projects_project_delete_continue($task->ref->nid, 'disable', TRUE);
+}
+
 /*
  * Implementation of hook_post_hosting_TASK_TYPE_task
  *
  */
 
 function devshop_projects_post_hosting_disable_task($task, $data) {
-  watchdog('devshop', "Disablw post task hook called");
+  watchdog('devshop', "Disable post task hook called");
   devshop_projects_project_delete_continue($task->ref->nid, 'disable');
 }
+
+/**
+ * Implementation of hook_hosting_TASK_TYPE_task_rollback().
+ *
+ * This hook is invoked when the disable task fails. But we must carry on!
+ */
+function devshop_projects_hosting_disable_task_rollback($task, $data) {
+  watchdog('devshop', "Disable task rollback hook called");
+  devshop_projects_project_delete_continue($task->ref->nid, 'disable', TRUE);
+}
+
 
 /*
  * Returns TRUE is the project create task for the given node failed.
