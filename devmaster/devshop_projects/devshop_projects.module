@@ -176,3 +176,32 @@ function devshop_projects_create_site($project_node, $platform_node, $env) {
   }
 }
 
+/*
+ * Helper function which writes a serialize array in the project file
+ */
+
+function devshop_projects_project_data_set($nid, $data) {
+  db_query("UPDATE {hosting_devshop_project} SET data = '%s' WHERE nid = %d",
+	   serialize($data), $nid);
+}
+
+/*
+ * Helper function which reads the serialize array in the project file
+ */
+
+function devshop_projects_project_data_get($nid) {
+
+  $sdata = db_result(db_query("SELECT data FROM {hosting_devshop_project} " .
+			     "WHERE nid = %d", $nid));
+
+  if (!$sdata || strlen($sdata) < 1) {
+    $data = array();
+  }
+  else {
+    $data = unserialize($sdata);
+  }
+
+  return $data;
+}
+
+

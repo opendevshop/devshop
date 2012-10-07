@@ -8,7 +8,7 @@
  * Implements hook_form_alter().
  */
 function devshop_projects_form_alter(&$form, &$form_state, $form_id){
-  
+
   // Removing unneccesary fieldgroups
   if ($form_id == 'project_node_form'){
     unset($form['menu']);
@@ -385,9 +385,17 @@ function devshop_projects_project_delete_form($form_state, $project_nid) {
   unset($form['info']['#prefix']);
   unset($form['info']['#suffix']);
 
+  $form['remove_dir'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Remove all project files and directories.'),
+    '#description' => t("Note that the platform & site directories are removed regardless of this option. By choosing this option, everything else in the directory '{$project_node->code_path}', including the directory itself, will be removed."),
+    '#default_value' => FALSE,
+    '#weight' => 30,
+  );
+
   $form['message'] = array(
     '#type' => 'item',
-    '#value' => t('Are you sure you want to delete this project and all of its associated sites and platforms?'),
+    '#value' => t("Are you sure you want to delete project '{$project_node->title}' and all of its associated sites and platforms?"),
     '#weight' => 31,
   );
 
@@ -418,18 +426,13 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
 
   // Make sure the user really wants to delete the project
   if ($form_state['clicked_button']['#value'] == t('Delete Project')) {
-    $node = node_load($form['nid']['#value']);
-    if ($node->data) {
-      $data = $node->data;
-    }
-    else {
-      $data = array();
-    }
+    $nid = $form['nid']['#value'];
+    $data = devshop_projects_project_data_get($nid);
     
     // First get a list of all of the objects for this project
     $query = db_query("SELECT * " .
 		      "FROM {hosting_devshop_project_object} " .
-		      "WHERE project_nid = %d", $node->nid);
+		      "WHERE project_nid = %d", $nid);
     
     $snid = array();
     $pnid = array();
@@ -448,12 +451,12 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
       $data['project_delete_site_delete'] = $snid;
     }
     else {
-      unset($data['project_delete_sites_disable']);
-      unset($data['project_delete_sites_delete']);
+      unset($data['project_delete_site_disable']);
+      unset($data['project_delete_site_delete']);
     }
     
     if (count($pnid) > 0) {
-      $data['project_delete_platform_delete'] = $snid;
+      $data['project_delete_platform_delete'] = $pnid;
     }
     else {
       unset($data['project_delete_platform_delete']);
@@ -463,14 +466,20 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
 	$data['project_delete_site_disable']   ||
 	$data['project_delete_site_delete'] ) {
       $data['deleting_project'] = TRUE;
+      if($form_state['values']['remove_dir']) {
+	$data['deleting_project_remove_dir'] = TRUE;
+      }
     }
     else {
       unset($data['deleting_project']);
     }
-    
-    $node->data = $data;
-    node_save($node);
-    hosting_add_task($form['nid']['#value'], 'delete');
+
+    // Save the delete task and nid lists. We're going to need them
+    // when the hosting post task hook gets invoked
+    devshop_projects_project_data_set($nid, $data);
+
+    // Kick the whole thing off by deleting the project first
+    hosting_add_task($nid, 'delete');
   }
 
   // Go back to the main project list page
