@@ -318,26 +318,6 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
     '#default_value' => '',
     '#maxlength' => 255,
   );
-/*
-  Not needed for initial phase
-  $form['git_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Git URL'),
-    '#required' => FALSE,
-    '#description' => t(''),
-    '#size' => 40,
-    '#default_value' => '',
-    '#maxlength' => 255,
-  );
-  $form['branch'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Branch'),
-    '#description' => t(''),
-    '#size' => 40,
-    '#default_value' => 'master',
-    '#maxlength' => 255,
-  );
-*/
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project_node->nid,  
@@ -345,6 +325,7 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Create platform'),
+    '#weight' => 32,
   );
   return $form;
 }
