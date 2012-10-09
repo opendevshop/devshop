@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file devshop_projects.module
+ * a module in the DevShop module group which enables the user to create 
+ * proects and group sites/platforms into project groups.
+ */
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_projects_platform_perm() {
+  return array(
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_projects_platform_form_alter(&$form, &$form_state, $form_id){
+
+  if ($form_id == 'devshop_projects_platform_create_form'){
+    $form['git_url'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Git URL'),
+      '#required' => FALSE,
+      '#description' => t(''),
+      '#size' => 40,
+      '#default_value' => '',
+      '#maxlength' => 255,
+    );
+    $form['branch'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Branch'),
+      '#description' => t(''),
+      '#size' => 40,
+      '#default_value' => 'master',
+      '#maxlength' => 255,
+    );
+  }
+}
