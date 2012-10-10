@@ -21,6 +21,15 @@ function drush_provision_provision_devshop_platform_create() {
   }
 
   $platform = drush_get_option('platform-name');
+  if (drush_get_option('git-url')) {
+    $git_url = drush_get_option('git-url');
+  }
+  if (drush_get_option('branch')) {
+    $branch = "--branch " . drush_get_option('branch');
+  }
+  else {
+    $branch = "";
+  }
 
   if (!$platform) {
     // Try to get it from the command line
@@ -37,7 +46,7 @@ function drush_provision_provision_devshop_platform_create() {
   exec('crontab -r');
 
   // Clone repo
-  drush_shell_cd_and_exec($path, "git clone $git_url $platform");
+  drush_shell_cd_and_exec($path, "git clone $branch $git_url $platform");
 
   $platform_hosting_name = "@platform_{$project}_{$platform}";
   $options = array();
