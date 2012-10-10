@@ -17,11 +17,19 @@ function devshop_projects_platform_schema() {
         'default' => 0,
         'description' => 'Project/Node ID.',
       ),
-      'object_nid' => array(
-        'type' => 'int',
+      'platform_name' => array(
+        'type' => 'varchar',
         'not null' => TRUE,
-        'default' => 0,
-        'description' => 'Site NID.',
+        'length' => 255,
+        'default' => '',
+        'description' => 'The name this platform',
+      ),
+      'git_url' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+        'description' => 'The git URL of this platform',
       ),
       'branch' => array(
         'type' => 'varchar',
@@ -31,7 +39,7 @@ function devshop_projects_platform_schema() {
         'description' => 'The git branch for this platform',
       ),
     ),
-    'primary key' => array('object_nid'),
+    'primary key' => array('platform_name'),
   );
 
   return $schema;
