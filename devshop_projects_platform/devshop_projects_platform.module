@@ -19,14 +19,16 @@ function devshop_projects_platform_perm() {
  */
 function devshop_projects_platform_form_alter(&$form, &$form_state, $form_id){
 
-  if ($form_id == 'devshop_projects_platform_create_form'){
+  if ($form_id == 'devshop_projects_platform_create_form') {
+    $project_node = node_load($form['nid']['#value']);
+
     $form['git_url'] = array(
       '#type' => 'textfield',
       '#title' => t('Git URL'),
       '#required' => FALSE,
       '#description' => t(''),
       '#size' => 40,
-      '#default_value' => '',
+      '#default_value' => $project_node->git_url,
       '#maxlength' => 255,
     );
     $form['branch'] = array(
@@ -38,4 +40,75 @@ function devshop_projects_platform_form_alter(&$form, &$form_state, $form_id){
       '#maxlength' => 255,
     );
   }
+
+  // Setup a call back when this form is submitted
+  array_unshift($form['#submit'], 
+                devshop_projects_platform_platform_create_save);	
 }
+
+/*
+ * This is a pseudo form sibmit function that gets invoked when the
+ * project platform create form is submitted.
+ */
+
+function devshop_projects_platform_platform_create_save($form, &$form_state) {
+
+  $project_node = node_load($form_state['values']['nid']);
+  $pname = $form_state['values']['platform_name'];
+  $pname = "{$project_node->title}_{$pname}";
+  db_query("INSERT INTO {hosting_devshop_project_platform} " .
+	   "(project_nid, platform_name, git_url, branch) " .
+	   "VALUES (%d, '%s', '%s', '%s')",
+	   $project_node->nid, 
+	   $pname,
+	   $form_state['values']['git_url'],
+	   $form_state['values']['branch']);
+}
+
+/**
+ * Implements hook_nodeapi()
+ */
+function devshop_projects_platform_nodeapi(&$node, $op, $a3 = null) {
+  //Platforms and Sites
+  if ($node->type == 'platform' || $node->type == 'site'){
+
+    if ($node->type == 'platform') {
+      $pname = $node->title;
+    }
+    else {
+      $pname = node_load($node->platform)->title;
+    }
+    
+    // Load Project info
+    if ($op == 'load') {
+      $data = db_fetch_array(db_query("SELECT git_url, branch " .
+				      "FROM {hosting_devshop_project_platform} " .
+				      "WHERE platform_name = '%s'", 
+				      $pname));
+      return $data;
+    }
+    
+    // Display Project info
+    if ($op == 'view') {
+      if($node->git_url) {
+	$node->content['info']['git_url'] = array(
+          '#type' => 'item',
+	  '#title' => t('Git URL'),
+	  '#value' => $node->git_url,
+	  '#weight' => 0
+        );
+      }
+
+      if($node->branch) {
+	$node->content['info']['branch'] = array(
+          '#type' => 'item',
+	  '#title' => t('Git Branch'),
+	  '#value' => $node->branch,
+	  '#weight' => 0
+        );
+      }
+    }
+  }
+}
+
+
