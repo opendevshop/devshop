@@ -348,8 +348,21 @@ function devshop_projects_platform_create_form_validate(&$form, &$form_state){
 function devshop_projects_platform_create_form_submit(&$form, &$form_state){
 
   $project_node = node_load($form_state['values']['nid']);
-  $args = array('platform-name' => $form_state['values']['platform_name']);
+  $args = array();
+  if ($form_state['values']['git_url']) {
+    $args['git-url'] = $form_state['values']['git-url'];
+  }
+
+  if ($form_state['values']['branch']) {
+    $args['branch'] = $form_state['values']['branch'];
+  }
+
+  $args['platform-name'] = $form_state['values']['platform_name'];
+
   hosting_add_task($project_node->nid, 'devshop-platform-create', $args);
+
+  $form_state['redirect'] = "node/{$project_node->nid}";
+  drupal_goto("node/{$project_node->nid}");
 }
 
 /**
