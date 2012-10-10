@@ -131,6 +131,8 @@ function drush_devshop_provision_pre_hosting_task() {
   // Platform Create
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-platform-create') {
     $task->options['platform-name'] = $task->task_args['platform-name'];
+    $task->options['git-url'] = $task->task_args['git-url'];
+    $task->options['branch'] = $task->task_args['branch'];
   }
   
   // Download
