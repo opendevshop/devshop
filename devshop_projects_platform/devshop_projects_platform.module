@@ -47,7 +47,7 @@ function devshop_projects_platform_form_alter(&$form, &$form_state, $form_id){
 }
 
 /*
- * This is a pseudo form sibmit function that gets invoked when the
+ * This is a pseudo form submit function that gets invoked when the
  * project platform create form is submitted.
  */
 
@@ -108,6 +108,12 @@ function devshop_projects_platform_nodeapi(&$node, $op, $a3 = null) {
         );
       }
     }
+  }
+
+  if ($node->type == 'platform' && $op == 'delete') {
+    db_query("DELETE FROM {hosting_devshop_project_platform} " .
+	     "WHERE platform_name = '%s'", $pname);
+    return;
   }
 }
 
