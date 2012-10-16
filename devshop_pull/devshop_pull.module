@@ -275,10 +275,10 @@ function devshop_pull_task($nid){
   }
   else {
     //Search site with pull enabled of this project
-    $platforms = $node->project_objects['platform'];
+    $sites = $node->project_objects['site'];
 
 
-    foreach ($platforms as $site_nid => $platform) {
+    foreach ($sites as $site_nid => $site) {
       //If pull enabled then add to task
       $data = db_fetch_object(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_sites} WHERE site_nid=%d", $site_nid));
       if ($data->pull_enabled) {
