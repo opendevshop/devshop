@@ -99,3 +99,25 @@ function devshop_projects_update_1() {
 		      "ADD COLUMN data longtext NOT NULL default ''");
   return $ret;
 }
+
+/*
+ * Update 2: Delete rows in the hosting_devshop_project_objects table
+ * that the node pointed to by object nid no longer exists.
+ */
+
+function devshop_projects_update_2() {
+  $ret = array();
+  $query = db_query("SELECT object_nid " .
+		    "FROM {hosting_devshop_project_object}");
+
+  while($proj = db_fetch_object($query)) {
+    $count = db_result(db_query("SELECT COUNT(*) FROM {node} " .
+				"WHERE nid = %d", $proj->object_nid));
+    if ($count != 1) {
+      $ret[] = update_sql('DELETE FROM {hosting_devshop_project_object} ' .
+			  'WHERE object_nid = %d', $proj->object_nid);
+    }
+  }
+
+  return $ret;
+}
