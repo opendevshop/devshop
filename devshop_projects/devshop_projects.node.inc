@@ -270,6 +270,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
+  $node->content['sites']['delete_project'] = array(
+    '#type' => 'item',
+    '#value' => l("Delete this project", "hosting/projects/delete/$node->nid")
+  );
 
   //Tasks    
   $node->content['tasks_view'] = array(
