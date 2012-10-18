@@ -70,8 +70,12 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 	'#value' => $node->project_environment,
 	'#weight' => -11
       );
-    
-      return $data;
+    }
+
+    // The NODE is being deleted. Remove the nid from the objects table
+    if ($op == 'delete'){
+      db_query('DELETE FROM {hosting_devshop_project_object} ' .
+	       'WHERE object_nid = %d', $node->nid);
     }
   }
 }
@@ -241,12 +245,28 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   if (isset($node->project_objects['site'])) {
     foreach($node->project_objects['site'] as $nid => $env) {
       $site = node_load($nid);
+      $platform = node_load($site->platform);
+      if ($site->site_status == -2 && $platform->platform_status == -2) {
+        continue;
+      }
       $row = array();
-      $url = "http://$site->title";
-      $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
-      $row[] = l('Site', "node/$site->nid");
+      if ($site->site_status != -2) {
+	$url = "http://$site->title";
+	$row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+	$row[] = l('Site', "node/$site->nid");
+      }
+      else {
+	// Site if deleted, just show the platform name
+	$row[] = $platform->title;
+	$row[] = '';
+      }
       $row[] = l('Platform', "node/$site->platform");
-      $row[] = l('Download Database', "$url/admin/status/");
+      if ($site->site_status != -2) {
+	$row[] = l('Download Database', "$url/admin/status/");
+      }
+      else {
+	$row[] = '';
+      }
       $row[] = l('Commit Log', "node/$site->platform/gitlog");
       $rows[] = $row;
     }
