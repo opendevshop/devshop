@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file devshop_projects.module
+ * a module in the DevShop module group which enables the user to create 
+ * proects and group sites/platforms into project groups.
+ */
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_projects_testing_perm() {
+  return array(
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id){
+}
+
+/**
+ * Implements hook_nodeapi()
+ */
+function devshop_projects_platform_nodeapi(&$node, $op, $a3 = null) {
+
+}
+
+
