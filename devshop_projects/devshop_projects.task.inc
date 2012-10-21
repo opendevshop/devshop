@@ -17,10 +17,6 @@ function devshop_projects_hosting_tasks() {
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
-//    'provision_save' => TRUE,
-   'dialog' => TRUE,
-   'access callback' => _cp_access_callback,
-
   );
   $tasks['project']['devshop-install'] = array(
     'title' => t('Install Sites'),
@@ -32,10 +28,6 @@ function devshop_projects_hosting_tasks() {
   );
 
   return $tasks;
-}
-
-function _cp_access_callback() {
-  return TRUE;
 }
 
 /**
