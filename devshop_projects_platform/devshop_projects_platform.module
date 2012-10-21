@@ -39,11 +39,11 @@ function devshop_projects_platform_form_alter(&$form, &$form_state, $form_id){
       '#default_value' => 'master',
       '#maxlength' => 255,
     );
-  }
 
-  // Setup a call back when this form is submitted
-  array_unshift($form['#submit'], 
-                devshop_projects_platform_platform_create_save);	
+    // Setup a call back when this form is submitted
+    array_unshift($form['#submit'], 
+                  devshop_projects_platform_platform_create_save);	
+  }
 }
 
 /*
