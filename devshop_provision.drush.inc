@@ -45,8 +45,9 @@ function devshop_provision_drush_command() {
     'description' => 'Create a new platform and add it to an existing DevShop Project.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'arguments' => array(
+      'platform-name' => 'The name of the platform to be created.',
       'git-url' => 'The URL of a git repo to use to create the platforms.',
-      'branch' => 'Branch (not yet implemented!)',
+      'branch' => 'Git branch to clone.',
     ),
     'aliases' => array('create-platform'),
   );
