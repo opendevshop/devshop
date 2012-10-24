@@ -1,5 +1,0 @@
-name = "DevShop Provision"
-description = "Provides the backend tools needed by DevShop."
-version = 7.x-1.x
-dependencies[] = provision_git
-dependencies[] = provision_git_features
