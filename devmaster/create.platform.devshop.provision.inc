@@ -4,7 +4,7 @@
  * Implements the provision-devshop-deploy command.
  */
 function drush_provision_provision_devshop_platform_create() {
-  
+ 
   $git_url = d()->git_url;
   $branch = d()->branch;
   $project = d()->project_name;
@@ -25,10 +25,11 @@ function drush_provision_provision_devshop_platform_create() {
     $git_url = drush_get_option('git-url');
   }
   if (drush_get_option('branch')) {
-    $branch = "--branch " . drush_get_option('branch');
+    $bname = drush_get_option('branch');
+    $branch = "--branch $bname";
   }
   else {
-    $branch = "";
+    $branch = $bname = "";
   }
 
   if (!$platform) {
@@ -41,12 +42,33 @@ function drush_provision_provision_devshop_platform_create() {
     }
   }
 
+  drush_log("Platform name: $platform", 'ok');
+  drush_log("Git URL: $git_url", 'ok');
+  if ($bname != "") {
+    drush_log("Branch: $bname", 'ok');
+  }
+
   // Pause Hostmaster (Mainly for the git pull task)
   // @TODO Better way?  @see drush_hosting_pause()
   exec('crontab -r');
 
   // Clone repo
-  drush_shell_cd_and_exec($path, "git clone $branch $git_url $platform");
+  if (!drush_shell_cd_and_exec($path, 
+			       "git clone $branch $git_url $platform")) {
+    return drush_set_error('DRUSH_PROVISION_GIT_CLONE_FAILED', dt("Git clone failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $path, '!errors' => implode("\n", drush_shell_exec_output()))));
+  }
+
+  // Get a list of branches to see if the branch we wanted was selected
+  if (strlen($bname) > 0) {
+    if (!drush_shell_cd_and_exec("$path/$platform", "git branch")) { 
+      return drush_set_error('DRUSH_PROVISION_GIT_BRANCH_FAILED', dt("Git branch failed in !path.\nThe specific errors are below:\n!errors", array('!path' => "$path/$platform", '!errors' => implode("\n", drush_shell_exec_output()))));
+    }
+    if (!in_array("* $bname", drush_shell_exec_output())) {
+      // Branch not found! Delete local repo directory and abort
+      drush_shell_cd_and_exec("$path", "rm -rf $platform");
+      return drush_set_error('DRUSH_PROVISION_INVALID_BRANCH', dt("Branch !branch does not exist. Aborting.", array('!branch' => $bname)));
+    }
+  }
 
   $platform_hosting_name = "@platform_{$project}_{$platform}";
   $options = array();
