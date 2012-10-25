@@ -67,12 +67,12 @@ function devshop_pull_callback($project, $hash) {
   }
 
   //Search site with pull enable of this project
-  $platforms = $pnode->project_objects['platform'];
- 
+  $sites = $pnode->project_objects['site']; 
+
   //Put timestamp
   db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $pnid);
 
-  foreach ($platforms as $site_nid => $platform) {
+  foreach ($sites as $site_nid => $site) {
     //If pull enabled then add to task
     if (db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_sites} WHERE site_nid=%d", $site_nid))) {
       $message = "Queuing a pull task for node id $site_nid";
