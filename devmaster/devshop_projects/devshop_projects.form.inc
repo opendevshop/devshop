@@ -350,7 +350,7 @@ function devshop_projects_platform_create_form_submit(&$form, &$form_state){
   $project_node = node_load($form_state['values']['nid']);
   $args = array();
   if ($form_state['values']['git_url']) {
-    $args['git-url'] = $form_state['values']['git-url'];
+    $args['git-url'] = $form_state['values']['git_url'];
   }
 
   if ($form_state['values']['branch']) {
