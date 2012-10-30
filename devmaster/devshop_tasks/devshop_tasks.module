@@ -16,12 +16,14 @@ function devshop_tasks_hosting_tasks() {
     'description' => t('Recreates all Features and commits the result.'),
     'dialog' => TRUE,
   );
-  $pull = false;
 
-  $tasks['site']['devshop-pull'] = array(
+  $tasks['platform']['devshop-pull'] = array(
     'title' => t('Pull Code'),
-    'description' => t('Pull & verify site code and (optionally) run update.php, clear cache, and revert features.'),
+    'description' => t('Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.'),
     'dialog' => TRUE,
+    'task_permitted' => TRUE,
+    'access callback' => 'user_access',
+    'access arguments' => array('create devshop-pull task'),
   );
 
   $tasks['site']['devshop-sync'] = array(
@@ -89,6 +91,18 @@ function hosting_task_devshop_commit_form($node) {
   // @TODO: Provide a DIFF display to give the user an idea of what has changed.
   return $form;
 }
+
+function hosting_task_devshop_pull_form_validate($form, &$form_state) {
+  $sites = array();
+
+  foreach ($form_state['values']['parameters']['sites'] as $key => $value) {
+    if ($value) {
+      $sites[] = $value;
+    }
+  }
+  $form_state['values']['parameters']['sites'] = implode('|', $sites);
+}
+
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
@@ -113,14 +127,19 @@ function hosting_task_devshop_pull_form($node) {
   $form['revert'] = array(
     '#title' => t('Revert all features after code pull?'),
     '#type' => 'checkbox',
-    '#default_value' => $has_features,
-    '#access' => $has_features, 
+    '#default_value' => 1,
   );
   $form['cache'] = array(
     '#title' => t('Clear cache after code pull?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
+  $form['sites'] = array(
+    '#title' => t('Sites to update'),
+    '#type' => 'checkboxes',
+    '#options' => devshop_pull_get_all_sites($node->nid),
+  );
+
   return $form;
 }
 
