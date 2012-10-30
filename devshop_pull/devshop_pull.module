@@ -48,7 +48,7 @@ function devshop_pull_hosting_queues() {
     'type' => 'batch', 
     'name' => t('Pull queue'), 
     'description' => t('Run git pull on projects configured to do so.'), 
-    'total_items' => devshop_pull_get_sites(10),
+    'total_items' => devshop_pull_get_platforms(10),
     'frequency' => strtotime("1 minute", 0), 
     'singular' => t('project'), 
     'plural' => t('projects'),
@@ -85,15 +85,11 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
       ),
     );
   }
-  if ($form_id == 'site_node_form') {
-    $site = $form['#node'];
-    if (isset($site->project_nid)) {
-      if ($site->nid) {
-        $default_value = $site->pull_enabled;
-      }
-      else {
-        $default_value = in_array($site->project_environment, array('live', 'test')) ? TRUE : FALSE;
-      }
+  if ($form_id == 'platform_node_form') {
+    $platform = $form['#node'];
+    if (isset($platform->project_nid)) {
+      $default_value = $platform->nid ? $platform->pull_enabled : FALSE;
+
       $form['pull_enabled'] = array(
         '#title' => t('Pull on Commit'),
         '#description' => t('If enabled. When detecting new code changes will be updated automatically.'),
@@ -104,7 +100,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
         '#title' => 'Hard Reset on Pull',
         '#type' => 'checkbox',
         '#description' => t('Reset any changes to project files. <em>WARNING: Any uncommitted changes to the project files will be discarded.</em>'),
-        '#default_value' => $site->pull_reset,
+        '#default_value' => $platform->pull_reset,
       );
     }
   }
@@ -114,7 +110,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id){
  * Implements hook_nodeapi()
  */
 function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
-  if ($node->type == 'project' || $node->type == 'site') {
+  if ($node->type == 'project' || $node->type == 'platform') {
     switch ($op) {
       case 'view':
         if (!$a3) { //!teaser
@@ -183,10 +179,10 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 	  $node->last_pull_status = $data->last_pull_status;
 	}
       }
-  elseif ($node->type == 'site') {
+  elseif ($node->type == 'platform') {
           $data_project = db_fetch_array(db_query('SELECT project_nid, env_type AS project_environment, n.title as project_name FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid WHERE object_nid = %d', $node->nid));
     if (isset($data_project['project_nid'])) {
-        $data = db_fetch_array(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_sites} WHERE site_nid = %d", $node->nid));
+        $data = db_fetch_array(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
         return $data;
       }
     }
@@ -194,12 +190,12 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
     case 'insert':
     case 'update':
       if ($node->type == 'project') {
-	db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
-	db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
+    	  db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
+	      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
       }
-      elseif ($node->type == 'site') {
-        db_query('DELETE FROM {hosting_devshop_pull_sites} WHERE site_nid = %d', $node->nid);
-        db_query('INSERT INTO {hosting_devshop_pull_sites} (site_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull_enabled, $node->pull_reset);
+      elseif ($node->type == 'platform') {
+        db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
+        db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull_enabled, $node->pull_reset);
       }
       break;
     }
@@ -207,17 +203,17 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 }
 
 /**
- * Get a number of sites that have their pull queue enabled.
+ * Get a number of platforms that have their pull queue enabled.
  * 
  * @param $limit
- *   Limit to a maximum of this number of sites.
+ *   Limit to a maximum of this number of platforms.
  * @return
  *   An array of site nodes that have a pull queue enabled.
  *
  * @TODO Convert to check pull queue sites.
  */
-function devshop_pull_get_sites($limit = 5) {
-  $result = db_query("SELECT COUNT(dpo.object_nid) FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.env_type = 'dev' AND dpo.object_type='site' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
+function devshop_pull_get_platforms($limit = 5) {
+  $result = db_query("SELECT COUNT(dpo.object_nid) FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d  AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
   
   return db_result($result);
 }
@@ -244,7 +240,7 @@ function devshop_pull_post_hosting_devshop_pull_task($task, $data) {
  */
 function hosting_pull_queue($count) {
 
-  $result = db_query("SELECT d.*  FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.env_type = 'dev' AND dpo.object_type='site' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
+  $result = db_query("SELECT d.*  FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
   
   while ($project = db_fetch_object($result)) {
     
@@ -253,6 +249,21 @@ function hosting_pull_queue($count) {
   }
 }
 
+
+/**
+ * Helper for get all sites of one platform
+ */
+function devshop_pull_get_all_sites($nid_platform) {
+  $names = array();
+
+  $result = db_query("SELECT distinct nid FROM {hosting_site} WHERE platform=%d", $nid_platform);
+  while ($nid = db_fetch_object($result)) {
+    $name = db_result(db_query("SELECT title FROM {node} WHERE nid=%d", $nid->nid));
+    $names[$name] = $name;
+  }
+
+  return $names;
+}
 
 /**
  * Helper for creating the pull code tasks
@@ -264,7 +275,7 @@ function devshop_pull_task($nid){
   $nids = array();
   $args = array();
 
-  if ($node->type == 'site'){
+  if ($node->type == 'platform'){
     $nids[] = $node->nid;
 
     // When doing the pull task, don't do a db update or revert. 
@@ -272,25 +283,27 @@ function devshop_pull_task($nid){
     $args[$node->nid] = array(
       'reset' => $node->pull_reset,
       'update' => 0,
-      'rever' => 0,
-       'cache' => 1
+      'revert' => 0,
+      'cache' => 1,
+      'sites' => devshop_pull_get_all_sites($node->nid),
     );
   }
   else {
-    //Search site with pull enabled of this project
-    $sites = $node->project_objects['site'];
+    //Search platform with pull enabled of this project
+    $platforms = $node->project_objects['platform'];
 
 
-    foreach ($sites as $site_nid => $site) {
+    foreach ($platforms as $platform_nid => $platform) {
       //If pull enabled then add to task
-      $data = db_fetch_object(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_sites} WHERE site_nid=%d", $site_nid));
+      $data = db_fetch_object(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $platform_nid));
       if ($data->pull_enabled) {
-        $nids[] = $site_nid;
-        $args[$node->nid] = array(
+        $nids[] = $platform_nid;
+        $args[$platform_nid] = array(
           'reset' => $data->pull_reset,
           'update' => 0,
-          'rever' => 0,
-          'cache' => 1
+          'revert' => 0,
+          'cache' => 1,
+          'sites' => devshop_pull_get_all_sites($platform_nid),
         );
       }
     }
