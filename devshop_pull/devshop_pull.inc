@@ -66,19 +66,19 @@ function devshop_pull_callback($project, $hash) {
     return;
   }
 
-  //Search site with pull enable of this project
-  $sites = $pnode->project_objects['site']; 
+  //Search platforms with pull enable of this project
+  $platforms = $pnode->project_objects['platform']; 
 
   //Put timestamp
   db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $pnid);
 
-  foreach ($sites as $site_nid => $site) {
+  foreach ($platforms as $platform_nid => $site) {
     //If pull enabled then add to task
-    if (db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_sites} WHERE site_nid=%d", $site_nid))) {
-      $message = "Queuing a pull task for node id $site_nid";
+    if (db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $site_nid))) {
+      $message = "Queuing a pull task for node id $platform_nid";
       watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
       print "$message<br>";
-      devshop_pull_task($site_nid);
+      devshop_pull_task($platform_nid);
     }
   }
 }

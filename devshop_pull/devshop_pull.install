@@ -33,9 +33,9 @@ function devshop_pull_schema() {
     ),
     'primary key' => array('project_nid'),
   );
-  $schema['hosting_devshop_pull_sites'] = array(
+  $schema['hosting_devshop_pull_platforms'] = array(
     'fields' => array(
-      'site_nid' => array(
+      'platform_nid' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -51,7 +51,7 @@ function devshop_pull_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('site_nid'),
+    'primary key' => array('platform_nid'),
   );
 
   return $schema;
@@ -63,6 +63,13 @@ function devshop_pull_schema() {
 function devshop_pull_install() {  
   // Create tables.
   drupal_install_schema('devshop_pull');
+
+  //Enable pull for dev platform
+  $result = db_query("SELECT DISTINCT object_nid FROM  {hosting_devshop_project_object} WHERE env_type='dev' AND object_type='platform'");
+
+  while ($item = db_fetch_object($result)) {
+    db_query("INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, pull_enabled, pull_reset) VALUES(%d, 1, 0)", $result->object_nid);
+  }
 }
 
 /**
