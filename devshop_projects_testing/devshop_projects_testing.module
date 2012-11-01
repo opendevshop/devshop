@@ -11,20 +11,125 @@
  */
 function devshop_projects_testing_perm() {
   return array(
+    'run project tests',
   );
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function devshop_projects_testing_menu() {
+
+  $items['hosting/projects/testing/%'] = array(
+    'title' => t('Run Tests'),
+    'description' => 'Run a sequence of tests configured for this project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_projects_testing_run_tests_form', 3),
+    'access arguments' => array('run project tests'),
+  );
+
+  return ($items);
 }
 
 /**
  * Implements hook_form_alter().
  */
-function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id){
+function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'project_node_form') {
+    $form['tests_to_run'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Tests To Run'),
+      '#default_value' => $form['#node']->tests_to_run,
+      '#rows' => 6,
+      '#description' => t('Enter the names of the simpletests to run when this project receives a commit, one per line.'),
+      '#weight' => 20,
+    );
+  }
+  else if ($form_id == 'devshop_projects_install_sites_form') {
+    $node = $form['#parameters'][2];
+    $form['tests_to_run'] = array(
+      '#type' => 'item',
+      '#value' => l(t('Run Tests'), 
+      	       	      "hosting/projects/testing/$node->nid"),
+    );
+
+  }
 }
 
 /**
  * Implements hook_nodeapi()
  */
-function devshop_projects_platform_nodeapi(&$node, $op, $a3 = null) {
+function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
+
+  if ($node->type != 'project' || $a3 != null) {
+    return;
+  }
+
+  switch ($op) {
+  case 'load':
+    $data = db_fetch_array(db_query("SELECT tests_to_run " .
+				     "FROM {hosting_devshop_project_testing} ".
+				     "WHERE project_nid = %d", $node->nid));
+    return $data;
+
+  case 'view':
+
+    break;
+
+
+  case 'insert':
+  case 'update':
+    db_query("DELETE FROM {hosting_devshop_project_testing} " .
+	     "WHERE project_nid = %d", $node->nid);
+
+    db_query("INSERT INTO {hosting_devshop_project_testing} " .
+	     "(project_nid, tests_to_run) " .
+	     "VALUES(%d, '%s')", $node->nid, $node->tests_to_run);
+    break;
+
+  case 'delete':
+    db_query("DELETE FROM {hosting_devshop_project_testing} " .
+	     "WHERE project_nid = %d", $node->nid);
+    break;
+
+  default:
+    break;
+  }
 
 }
 
+function devshop_projects_testing_run_tests_form($form_state, $project_nid) {
+  $project_node = node_load($project_nid);
 
+    $form['tests_to_run'] = array(
+      '#type' => 'item',
+      '#title' => t('Tests To Run'),
+      '#value' => str_replace("\n", "<br>", $project_node->tests_to_run),
+    );
+
+  $form['sync'] = array(
+    '#type' => 'checkbox',
+    '#title' => t("Sync from Live before testing?"),
+    '#default_value' => FALSE,
+  );
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_nid,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Run Tests'),
+    '#weight' => 32,
+  );
+
+  $form['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),  
+    '#weight' => 33,
+  );
+
+  return $form;
+}
