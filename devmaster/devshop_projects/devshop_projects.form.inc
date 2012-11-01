@@ -107,8 +107,16 @@ function devshop_projects_form(&$node) {
  */
 function devshop_projects_validate($node, &$form) {
 
-  // No validation if op == Delete
-  if ($node->op == t('Delete')) {
+  // It may look find of strange that we are doing a node load when the
+  // exact node we want is passed in here. But if this is an edit of an
+  // existing node, not all of the node fields (like project_status) have
+  // been initialized yet.
+
+  $pnode = node_load($node->nid);
+
+  // No validation if op == Delete or project_status == site_ready. The
+  // latter case happens when the user is editing the tests to run fied.
+  if ($node->op == t('Delete') || $pnode->project_status == 'sites_ready') {
     return;
   }
 
