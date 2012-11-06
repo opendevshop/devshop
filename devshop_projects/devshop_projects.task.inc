@@ -172,16 +172,19 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     return;
   }
 
+/*
   if (in_array($p_obj->env_type, array('dev', 'test', 'live'))) {
     return;
   }
+*/
 
   // Make sure we don't already have a site
   $s_obj = db_fetch_object(db_query("SELECT * " .
                                     "FROM {hosting_devshop_project_object} " .
                                     "WHERE object_type = 'site' AND " .
-                                    "      env_type = '%s'", 
-                                    $p_obj->env_type));
+                                    "      env_type = '%s' AND " .
+                                    "      project_nid = %d", 
+                                    $p_obj->env_type, $p_obj->project_nid));
 
   // See if site exists
   if ($s_obj) {
