@@ -87,9 +87,40 @@ function devshop_projects_testing_hosting_tasks() {
     'description' => t('Run a group of previousely defined SimpleTest tests.'),
     'dialog' => TRUE,
     'task_permitted' => TRUE,
+    'access callback' => devshop_projects_testing_access,
   );
 
   return $tasks;
+}
+
+/*
+ * Task access callback hook
+ *
+ * Returne TRUE is this is a site node and qualifies to run tests.
+ * To qualify, it much be part of a devshop project group and must
+ * be either the 'test' site or one of the branch sites.
+ */
+
+function devshop_projects_testing_access($node, $type) {
+
+  if ($node->type != 'site' || !$node->project_nid) {
+    return FALSE;
+  }
+
+  $query = db_query("SELECT * FROM {hosting_devshop_project_object} " .
+		    "WHERE object_nid = %d", $node->nid);
+
+  if (!($obj = db_fetch_object($query))) {
+    // This should not happen, but let's check for it anyway
+    return FALSE;
+  }
+
+  if ($obj->env_type == 'live' || $obj->env_type == 'dev') {
+    return FALSE;
+  }
+
+  // Everything else is OK
+  return TRUE;
 }
 
 /**
