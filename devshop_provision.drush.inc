@@ -96,7 +96,17 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('pdl'),
   );
+
+  $items['provision-devshop-run-tests'] = array(
+    'description' => 'Run a group of SimpleTest tests.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'options' => array(
+      'tests-to-run' => 'The list of tests to run.',
+    ),
+    'aliases' => array('pdrt'),
+  );
   return $items;
+
 }
 
 function drush_devshop_provision_pre_hosting_task() {
@@ -140,6 +150,13 @@ function drush_devshop_provision_pre_hosting_task() {
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-dl') {
     $task->options['modules'] = $task->task_args['modules'];
   }
+
+  // Run tests
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-run-tests') {
+    $task->options['tests-to-run'] = str_replace("\n", ",", 
+						 rtrim($task->task_args['tests_to_run'], "\n"));
+  }
+
 }
 
 /**
