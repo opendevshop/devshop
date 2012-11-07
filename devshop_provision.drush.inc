@@ -52,13 +52,14 @@ function devshop_provision_drush_command() {
     'aliases' => array('create-platform'),
   );
   $items['provision-devshop-pull'] = array(
-    'description' => 'Pull & verify site code and (optionally) run update.php, clear cache, and revert features.',
+    'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
       //'sync' => 'Sync content from default source site before code pull.',
       'no-update' => 'Run update.php after code pull.',
       'no-revert' => 'Revert all features after code pull.',
       'no-cache' => 'Clear all caches after code pull.',
+      'sites' => 'List the sites to update, revert or clear cache.',
     ),
     'aliases' => array('pdp'),
   );
@@ -112,10 +113,11 @@ function devshop_provision_drush_command() {
 function drush_devshop_provision_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
   // Pull
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-pull') {
+  if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
     $task->options['no-update'] = !$task->task_args['update'];
     $task->options['no-revert'] = !$task->task_args['revert'];
     $task->options['no-cache'] = !$task->task_args['cache'];
+    $task->options['sites'] = explode('|', $task->task_args['sites']);
   }
   
   // Commit
