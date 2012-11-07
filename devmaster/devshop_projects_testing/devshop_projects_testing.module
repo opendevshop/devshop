@@ -16,22 +16,6 @@ function devshop_projects_testing_perm() {
 }
 
 /**
- * Implementation of hook_menu()
- */
-function devshop_projects_testing_menu() {
-
-  $items['hosting/projects/testing/%'] = array(
-    'title' => t('Run Tests'),
-    'description' => 'Run a sequence of tests configured for this project',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_projects_testing_run_tests_form', 3),
-    'access arguments' => array('run project tests'),
-  );
-
-  return ($items);
-}
-
-/**
  * Implements hook_form_alter().
  */
 function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
@@ -45,15 +29,6 @@ function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Enter the names of the simpletests to run when this project receives a commit, one per line.'),
       '#weight' => 20,
     );
-  }
-  else if ($form_id == 'devshop_projects_install_sites_form') {
-    $node = $form['#parameters'][2];
-    $form['tests_to_run'] = array(
-      '#type' => 'item',
-      '#value' => l(t('Run Tests'), 
-      	       	      "hosting/projects/testing/$node->nid"),
-    );
-
   }
 }
 
@@ -99,36 +74,53 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
 
 }
 
-function devshop_projects_testing_run_tests_form($form_state, $project_nid) {
-  $project_node = node_load($project_nid);
+/**
+ * Implementation of hook_hosting_tasks()
+ *
+ */
 
-    $form['tests_to_run'] = array(
-      '#type' => 'item',
-      '#title' => t('Tests To Run'),
-      '#value' => str_replace("\n", "<br>", $project_node->tests_to_run),
+function devshop_projects_testing_hosting_tasks() {
+  $tasks = array();
+
+  $tasks['site']['devshop-run-tests'] = array(
+    'title' => t('Run Tests'),
+    'description' => t('Run a group of previousely defined SimpleTest tests.'),
+    'dialog' => TRUE,
+    'task_permitted' => TRUE,
+  );
+
+  return $tasks;
+}
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Commit" task.
+ */
+
+function hosting_task_devshop_run_tests_form($node) {
+
+  if ($node->project_nid) {
+    $project_node = node_load($node->project_nid);
+    $tests = $project_node->tests_to_run;
+  }
+  else {
+    $tests = "";
+  }
+
+  $form['tests_to_run'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Tests To Run'),
+    '#value' => $tests,
+    '#default_value' => $tests,
+    '#rows' => 6,
+    '#description' => t('Enter the names of the simpletests to run when this project receives a commit, one per line.'),
     );
 
   $form['sync'] = array(
     '#type' => 'checkbox',
     '#title' => t("Sync from Live before testing?"),
     '#default_value' => FALSE,
-  );
-
-  $form['nid'] = array(
-    '#type' => 'value',
-    '#value' => $project_nid,
-  );
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Run Tests'),
-    '#weight' => 32,
-  );
-
-  $form['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),  
-    '#weight' => 33,
   );
 
   return $form;
