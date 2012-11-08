@@ -155,8 +155,15 @@ function drush_devshop_provision_pre_hosting_task() {
 
   // Run tests
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-run-tests') {
-    $task->options['tests-to-run'] = str_replace("\n", ",", 
-						 rtrim($task->task_args['tests_to_run'], "\n"));
+    $tests = array();
+
+    foreach(explode("\n", $task->task_args['tests_to_run']) as $test) {
+      $test = trim($test);
+      if (strlen($test) > 0) {
+	$tests[] = $test;
+      }
+    }
+    $task->options['tests-to-run'] = implode($tests, ",");
   }
 
 }

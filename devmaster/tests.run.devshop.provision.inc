@@ -25,10 +25,9 @@ function drush_provision_provision_devshop_run_tests() {
   
   //Get options
   $tests = drush_get_option('tests-to-run');
-  foreach (explode(",", $tests) as $test) {
-    $test = trim($test);
-    drush_log(dt("Running test $test"), 'ok');
-  }
+  drush_log(dt("Running tests $tests"), 'ok');
+
+  provision_backend_invoke(substr($target, 1), 'test-run', array($tests));
 
   //Resume cron
   // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()
