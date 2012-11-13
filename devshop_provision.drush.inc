@@ -103,8 +103,9 @@ function devshop_provision_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
       'tests-to-run' => 'The list of tests to run.',
+      'sync-from-live' => 'Sync contents from Live before running tests.',
     ),
-    'aliases' => array('pdrt'),
+    'aliases' => array('pdt'),
   );
   return $items;
 
@@ -164,6 +165,7 @@ function drush_devshop_provision_pre_hosting_task() {
       }
     }
     $task->options['tests-to-run'] = implode($tests, ",");
+    $task->options['sync-from-live'] = $task->task_args['sync'];
   }
 
 }
