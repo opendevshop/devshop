@@ -82,7 +82,7 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
 function devshop_projects_testing_hosting_tasks() {
   $tasks = array();
 
-  $tasks['site']['devshop-run-tests'] = array(
+  $tasks['site']['devshop-test'] = array(
     'title' => t('Run Tests'),
     'description' => t('Run a group of previousely defined SimpleTest tests.'),
     'dialog' => TRUE,
@@ -126,10 +126,9 @@ function devshop_projects_testing_access($node, $type) {
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
- * For "Commit" task.
  */
 
-function hosting_task_devshop_run_tests_form($node) {
+function hosting_task_devshop_test_form($node) {
 
   if ($node->project_nid) {
     $project_node = node_load($node->project_nid);
@@ -142,7 +141,6 @@ function hosting_task_devshop_run_tests_form($node) {
   $form['tests_to_run'] = array(
     '#type' => 'textarea',
     '#title' => t('Tests To Run'),
-    '#value' => $tests,
     '#default_value' => $tests,
     '#rows' => 6,
     '#description' => t('Enter the names of the simpletests to run when this project receives a commit, one per line.'),
@@ -156,3 +154,21 @@ function hosting_task_devshop_run_tests_form($node) {
 
   return $form;
 }
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form_validate().
+ *
+ */
+
+function hosting_task_devshop_test_form_validate($form, &$form_state) {
+
+  $tests = $form_state['values']['parameters']['tests_to_run'];
+  $t = trim(str_replace("\n", "", $tests));
+
+  if (empty($tests) || empty($t) || $tests == "" || $t == ""){
+    form_set_error('tests_to_run', t('You must include at least one test.'));
+  }
+
+
+}
+
