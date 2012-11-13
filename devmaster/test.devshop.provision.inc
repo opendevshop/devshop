@@ -22,12 +22,26 @@ function drush_provision_provision_devshop_test() {
   //Get site target
   $target = d()->name;
   $site_path = d()->platform->root? d()->platform->root: d()->root;
+  $destination = substr($target, 1);
   
   //Get options
+  if (drush_get_option('sync-from-live')) {
+    drush_log(dt("Syncing from Live"), 'ok');
+    $p = strstr($destination, ".");
+    if ($p) {
+      $source = "live" . $p;
+      $args = array('source' => $source, 'destination' => $destination);
+      provision_backend_invoke($destination, 'provision-devshop-sync', $args);
+    }
+    else {
+      return drush_set_error('DRUSH_FRAMEWORK_ERROR', 
+			     dt('Unable to build source address.'));
+    }
+  }
   $tests = drush_get_option('tests-to-run');
   drush_log(dt("Running tests $tests"), 'ok');
 
-  provision_backend_invoke(substr($target, 1), 'test-run', array($tests));
+  provision_backend_invoke($destination, 'test-run', array($tests));
 
   //Resume cron
   // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()
