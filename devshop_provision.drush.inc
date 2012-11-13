@@ -98,7 +98,7 @@ function devshop_provision_drush_command() {
     'aliases' => array('pdl'),
   );
 
-  $items['provision-devshop-run-tests'] = array(
+  $items['provision-devshop-test'] = array(
     'description' => 'Run a group of SimpleTest tests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
@@ -154,7 +154,7 @@ function drush_devshop_provision_pre_hosting_task() {
   }
 
   // Run tests
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-run-tests') {
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-test') {
     $tests = array();
 
     foreach(explode("\n", $task->task_args['tests_to_run']) as $test) {
