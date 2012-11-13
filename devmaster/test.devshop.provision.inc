@@ -12,7 +12,7 @@ function drush_provision_pre_provision_devshop_run_tests(){
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_provision_provision_devshop_run_tests() {
+function drush_provision_provision_devshop_test() {
   drush_log(dt('Provision DevShop Run Tests started...'));
   
   //Pause Hostmaster (Mainly for the git pull task)
