@@ -149,9 +149,13 @@ function devshop_projects_hosting_task_table($node) {
  * Implementation of hook_post_hosting_TASK_TYPE_task
  *
  * If a new platform has been added to a project and the env
- * is not dev, test, or live, auto-create a site.
+ * is not dev, test, or live, auto-create a site....
+ *
+ *
+ * @TODO: This is used only for creating the new site when a "branch platform" 
+ * is created... we should save something in the task or platform node so we 
+ * don't have to use this logic.
  */
-
 function devshop_projects_post_hosting_verify_task($task, $data) {
 
   // We only case about platforms.  
@@ -159,39 +163,32 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     return;
   }
 
-  // Get platform nid.
+  // Get objects
   $nid = $task->ref->nid;
+  $platform = node_load($nid);
 
-  // Get project object information about this platform
-  $p_obj = db_fetch_object(db_query("SELECT * " .
-                                    "FROM {hosting_devshop_project_object} " .
-                                    "WHERE object_nid = %d", $nid));
-
-  // Not in a project
-  if (!$p_obj) {
+  // If this platform isn't in a project, bail.
+  if (empty($platform->project_nid)){
+    return;
+  }
+  
+  // Get the project
+  $project = node_load($platform->project_nid);
+  
+  // If the project doesn't have an install profile chosen yet, bail.
+  if (empty($project->install_profile)){
     return;
   }
 
-  // Make sure we don't already have a site
-  $s_obj = db_fetch_object(db_query("SELECT * " .
-                                    "FROM {hosting_devshop_project_object} " .
-                                    "WHERE object_type = 'site' AND " .
-                                    "      env_type = '%s' AND " .
-                                    "      project_nid = %d", 
-                                    $p_obj->env_type. $p_obj->project_nid));
-
-  // See if site exists
-  if ($s_obj) {
+  // If the project has a site already
+  $sites = array_flip($project->project_objects['site']);
+  if (isset($sites[$platform->project_environment])){
     return;
   }
 
   // So this is a platform which is in a project and it not dev, test, or
   // live. Let's create a site based off of this platform.
-
-  $platform = node_load($nid);
-  $project = node_load($p_obj->project_nid);
-
-  devshop_projects_create_site($project, $platform, $p_obj->env_type);
+  devshop_projects_create_site($project, $platform, $platform->project_environment);  
 }
 
 function watchcat($m, $l) {
