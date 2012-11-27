@@ -10,6 +10,9 @@ function drush_provision_provision_devshop_create() {
   $project = d()->project_name;
   $retry = drush_get_option('retry');
 
+  // Get the hostmaster alias.  This is so we can use something other than "@hostmaster"
+  $hostmaster = drush_get_option('hostmaster_alias', 'hostmaster');
+
   // Validate
   if (empty($git_url)) {
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git URL not valid.'));
@@ -64,7 +67,8 @@ function drush_provision_provision_devshop_create() {
     return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to live!'));
   }
   
-  // @TODO: Create Platforms and Sites, and import into Aegir!
+  // For each needed environment type, create a new aegir platform.
+  // @TODO: Allow users to choose what platforms they want.
   foreach (array('dev', 'test', 'live') as $env){
     
     // Save aegir context
@@ -76,11 +80,10 @@ function drush_provision_provision_devshop_create() {
     $output .= drush_backend_invoke_args('provision-save', array($platform_hosting_name), $options);
     
     // Import platform
-    provision_backend_invoke('@hostmaster', 'hosting-import', array($platform_hosting_name));
+    provision_backend_invoke($hostmaster, 'hosting-import', array($platform_hosting_name));
   }
   
-  //Resume cron
-  // @TODO Better way?  @see drush_hosting_pause()
-  provision_backend_invoke('hostmaster', 'hosting-setup');
+  // Resume cron
+  provision_backend_invoke($hostmaster, 'hosting-setup');
 }
 
