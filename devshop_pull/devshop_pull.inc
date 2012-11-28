@@ -74,8 +74,9 @@ function devshop_pull_callback($project, $hash) {
 
   foreach ($platforms as $platform_nid => $site) {
     //If pull enabled then add to task
-    if (db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $site_nid))) {
-      $message = "Queuing a pull task for node id $platform_nid";
+    $enabled = db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $platform_nid));
+    if ($enabled) {
+      $message = "devshop_pull_task($platform_nid)";
       watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
       print "$message<br>";
       devshop_pull_task($platform_nid);
