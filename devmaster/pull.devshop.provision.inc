@@ -40,6 +40,7 @@ function drush_provision_provision_devshop_pull() {
     return drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $platform_path, '!errors' => implode("\n", drush_shell_exec_output()))));
   }
   
+  // @TODO:  Lookup all other sites on this site's platform, and update them as well
   //if (!empty($sites)) {
   //  foreach ($sites as $key => $target) {
       // Verify the site.
