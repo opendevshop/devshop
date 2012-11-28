@@ -254,13 +254,10 @@ function hosting_pull_queue($count) {
  */
 function devshop_pull_get_all_sites($nid_platform) {
   $names = array();
-
-  $result = db_query("SELECT distinct nid FROM {hosting_site} WHERE platform=%d", $nid_platform);
-  while ($nid = db_fetch_object($result)) {
-    $name = db_result(db_query("SELECT title FROM {node} WHERE nid=%d", $nid->nid));
-    $names[$name] = $name;
+  $result = db_query("SELECT title, hs.nid FROM {hosting_site} hs LEFT JOIN {node} n ON hs.nid = n.nid WHERE platform=%d", $nid_platform);
+  while ($node = db_fetch_object($result)) {
+    $names[$node->nid] = $node->title;
   }
-
   return $names;
 }
 
@@ -273,19 +270,21 @@ function devshop_pull_task($nid){
   
   $nids = array();
   $args = array();
-
   if ($node->type == 'platform'){
-    $nids[] = $node->nid;
+    $sites = devshop_pull_get_all_sites($node->nid);
+print_r($sites);
+    foreach ($sites as $nid => $site){
+      $nids[] = $nid;
 
-    // When doing the pull task, don't do a db update or revert. 
-    // Just clear all of the caches
-    $args[$node->nid] = array(
-      'reset' => $node->pull_reset,
-      'update' => 0,
-      'revert' => 0,
-      'cache' => 1,
-      'sites' => devshop_pull_get_all_sites($node->nid),
-    );
+      // When doing the pull task, don't do a db update or revert. 
+      // Just clear all of the caches
+      $args[$nid] = array(
+        'reset' => $node->pull_reset,
+        'update' => 0,
+        'revert' => 0,
+        'cache' => 1,
+      );
+    }
   }
   else {
     //Search platform with pull enabled of this project
