@@ -56,10 +56,9 @@ function devshop_provision_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
       //'sync' => 'Sync content from default source site before code pull.',
-      'no-update' => 'Run update.php after code pull.',
-      'no-revert' => 'Revert all features after code pull.',
-      'no-cache' => 'Clear all caches after code pull.',
-      'sites' => 'List the sites to update, revert or clear cache.',
+      'update' => 'Run update.php after code pull.',
+      'revert' => 'Revert all features after code pull.',
+      'cache' => 'Clear all caches after code pull.',
     ),
     'aliases' => array('pdp'),
   );
