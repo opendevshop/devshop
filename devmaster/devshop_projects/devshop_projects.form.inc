@@ -85,10 +85,14 @@ function devshop_projects_form(&$node) {
 
   // Don't allow editing
   if ($node->nid) {
+    $form['code_path']['#value'] = $form['code_path']['#default_value'];
     $form['code_path']['#disabled'] = TRUE;
+    
+    $form['title']['#value'] = $form['title']['#default_value'];
     $form['title']['#disabled'] = TRUE;
 
     if (!$retry) {
+      $form['git_url']['#value'] = $form['git_url']['#default_value'];
       $form['git_url']['#disabled'] = TRUE;
     }
   }
