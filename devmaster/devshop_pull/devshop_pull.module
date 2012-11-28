@@ -26,8 +26,7 @@ function devshop_pull_menu() {
   $items['admin/hosting/devshop_pull'] = array(
     'title' => 'DevShop Pull Settings',
     'description' => 'Configure Pull Code URL callback ',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_pull_settings'),
+    'page callback' => 'devshop_pull_settings_page',
     'type' => MENU_LOCAL_TASK,
     'access arguments' => array('administer hosting settings'),
     'file' => 'devshop_pull.settings.inc'
