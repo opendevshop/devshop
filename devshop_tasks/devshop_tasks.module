@@ -17,7 +17,7 @@ function devshop_tasks_hosting_tasks() {
     'dialog' => TRUE,
   );
 
-  $tasks['platform']['devshop-pull'] = array(
+  $tasks['site']['devshop-pull'] = array(
     'title' => t('Pull Code'),
     'description' => t('Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.'),
     'dialog' => TRUE,
@@ -92,17 +92,6 @@ function hosting_task_devshop_commit_form($node) {
   return $form;
 }
 
-function hosting_task_devshop_pull_form_validate($form, &$form_state) {
-  $sites = array();
-
-  foreach ($form_state['values']['parameters']['sites'] as $key => $value) {
-    if ($value) {
-      $sites[] = $value;
-    }
-  }
-  $form_state['values']['parameters']['sites'] = implode('|', $sites);
-}
-
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
@@ -134,12 +123,6 @@ function hosting_task_devshop_pull_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  $form['sites'] = array(
-    '#title' => t('Sites to update'),
-    '#type' => 'checkboxes',
-    '#options' => devshop_pull_get_all_sites($node->nid),
-  );
-
   return $form;
 }
 
