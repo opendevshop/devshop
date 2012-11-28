@@ -25,9 +25,9 @@ function drush_provision_provision_devshop_pull() {
   $repo_path = drush_get_option('repo_path');
   
   //Get options
-  $update = drush_get_option('no-update') == FALSE;
-  $revert = drush_get_option('no-revert') == FALSE;
-  $cache = drush_get_option('no-cache') == FALSE;
+  $update = drush_get_option('update');
+  $revert = drush_get_option('revert');
+  $cache = drush_get_option('cache');
 
   // Pull latest version of site
   //Execute git pull --rebase
@@ -46,7 +46,6 @@ function drush_provision_provision_devshop_pull() {
       // Verify the site.
       // @TODO: provision-git-pull should actually handle this. If the files change,
       // it should automatically verify.
-      $target = '@' . d()->name;
       drush_log("TARGET: $target");
        
        
