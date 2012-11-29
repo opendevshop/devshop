@@ -38,6 +38,10 @@ $ mkdir ~/backups/devshop-sync
 Unfortunately drush rsync cannot sync single files, as far as I know, so it syncs the 
 folder.
 
+NOTE: The reason we don't use sql-sync yet is because I had some trouble getting it
+to work when the source was a remote server.  I would love some input from some
+drush sql sync experts if there are any out there.
+
 -------------------------------------
 Provision Commands & Hostmaster Tasks
 -------------------------------------
