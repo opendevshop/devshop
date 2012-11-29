@@ -3,7 +3,7 @@
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_provision_provision_devshop_platform_create() {
+function drush_devshop_provision_provision_devshop_platform_create() {
  
   $git_url = d()->git_url;
   $branch = d()->branch;
