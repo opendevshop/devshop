@@ -26,7 +26,7 @@ function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
       '#title' => t('Tests To Run'),
       '#default_value' => $form['#node']->tests_to_run,
       '#rows' => 6,
-      '#description' => t('Enter the names of the simpletests to run when this project receives a commit, one per line.'),
+      '#description' => t('Enter the names of the simpletests to trigger when "Run Tests" task is started, one per line.  See the !link for examples.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/DrupalWebTestCase/7'))),
       '#weight' => 20,
     );
   }

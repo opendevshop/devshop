@@ -30,6 +30,8 @@ function devshop_projects_menu() {
     'description' => 'Display a list of all projects',
     'page callback' => 'devshop_projects_projects_view',
     'access arguments' => array('view projects'),
+    'menu_name' => 'primary-links',
+    'weight' => 1,
   );
 
   $items['hosting/projects/platform/create/%'] = array(
@@ -113,6 +115,8 @@ function devshop_projects_hosting_js_page(){
 
 /**
  * Status display
+ *
+ * @TODO: All of it!
  */
 function devshop_projects_project_status(){
   
@@ -142,7 +146,6 @@ function devshop_projects_hosting_drush_aliases_name($node) {
 /*
  * Helper function to create a site in a project
  */
-
 function devshop_projects_create_site($project_node, $platform_node, $env) {
 
   global $user;
@@ -176,19 +179,17 @@ function devshop_projects_create_site($project_node, $platform_node, $env) {
   }
 }
 
-/*
+/**
  * Helper function which writes a serialize array in the project file
  */
-
 function devshop_projects_project_data_set($nid, $data) {
   db_query("UPDATE {hosting_devshop_project} SET data = '%s' WHERE nid = %d",
 	   serialize($data), $nid);
 }
 
-/*
+/**
  * Helper function which reads the serialize array in the project file
  */
-
 function devshop_projects_project_data_get($nid) {
 
   $sdata = db_result(db_query("SELECT data FROM {hosting_devshop_project} " .
