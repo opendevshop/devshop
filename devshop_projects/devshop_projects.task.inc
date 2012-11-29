@@ -212,7 +212,6 @@ function watchcat($m, $l) {
  *    The project node that is to be deleted.
  *
  */
-
 function   devshop_projects_project_delete_queue_next_task($pnode) {
   // Assume all done
   $updated = FALSE;
@@ -393,7 +392,6 @@ function devshop_projects_project_delete_continue($nid, $op, $failed = FALSE) {
  * Implementation of hook_post_hosting_TASK_TYPE_task
  *
  */
-
 function devshop_projects_post_hosting_delete_task($task, $data) {
   watchdog('devshop', "Delete post task hook called");
   devshop_projects_project_delete_continue($task->ref->nid, 'delete');
@@ -412,11 +410,10 @@ function devshop_projects_hosting_delete_task_rollback($task, $data) {
   devshop_projects_project_delete_continue($task->ref->nid, 'disable', TRUE);
 }
 
-/*
+/**
  * Implementation of hook_post_hosting_TASK_TYPE_task
  *
  */
-
 function devshop_projects_post_hosting_disable_task($task, $data) {
   watchdog('devshop', "Disable post task hook called");
   devshop_projects_project_delete_continue($task->ref->nid, 'disable');
@@ -433,10 +430,9 @@ function devshop_projects_hosting_disable_task_rollback($task, $data) {
 }
 
 
-/*
+/**
  * Returns TRUE is the project create task for the given node failed.
  */
-
 function devshop_project_project_create_failed($nid, &$task) {
 
   if ($nid) {
