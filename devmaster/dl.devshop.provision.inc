@@ -3,7 +3,7 @@
 /**
  * Pre provision-git-features-update-commit hook
  */
-function drush_provision_pre_provision_devshop_dl(){
+function drush_devshop_provision_pre_provision_devshop_dl(){
   provision_git_is_repo();
 }
 
