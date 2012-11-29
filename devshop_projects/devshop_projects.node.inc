@@ -58,18 +58,20 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     // Display Project info
     if ($op == 'view'){
       $project = node_load($node->project_nid);
-      $node->content['info']['project'] = array(
-	'#type' => 'item',
-	'#title' => t('Project'),
-	'#value' => l($project->title, "node/$project->nid"),
-	'#weight' => -12
-      );
-       $node->content['info']['env'] = array(
-	'#type' => 'item',
-	'#title' => t('Environment Type'),
-	'#value' => $node->project_environment,
-	'#weight' => -11
-      );
+      if (!empty($project)){
+        $node->content['info']['project'] = array(
+  	'#type' => 'item',
+  	'#title' => t('Project'),
+  	'#value' => l($project->title, "node/$project->nid"),
+  	'#weight' => -12
+        );
+         $node->content['info']['env'] = array(
+  	'#type' => 'item',
+  	'#title' => t('Environment Type'),
+  	'#value' => $node->project_environment,
+  	'#weight' => -11
+        );
+      }
     }
 
     // The NODE is being deleted. Remove the nid from the objects table

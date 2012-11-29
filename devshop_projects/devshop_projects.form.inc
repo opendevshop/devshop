@@ -110,14 +110,15 @@ function devshop_projects_validate($node, &$form) {
   // existing node, not all of the node fields (like project_status) have
   // been initialized yet.
 
-  $pnode = node_load($node->nid);
-
+  $node = node_load($node->nid);
+  
   // No validation if op == Delete or project_status == site_ready. The
   // latter case happens when the user is editing the tests to run fied.
-  if ($node->op == t('Delete') || $pnode->project_status == 'sites_ready') {
+  if ($node->op == t('Delete') || $node->project_status == 'sites_ready') {
     return;
   }
 
+  
   // Full validation on when a creating a new node
   $add = (arg(1) == 'add' ? TRUE : FALSE);
 
@@ -127,8 +128,11 @@ function devshop_projects_validate($node, &$form) {
   }
 
   // The project code name must not be in the hosting_context table
-  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT name FROM {hosting_context} WHERE name = '%s'", $node->title)))) {
-    form_set_error('title', t('Project code name existing in hosting context table.'));
+  if (!$node->retry){
+    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
+    if ($node->nid != $result->nid){
+      form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
+    }
   }
 
   // The project code name must be unique
