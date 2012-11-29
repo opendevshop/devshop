@@ -5,7 +5,7 @@ require_once DRUSH_BASE_PATH . '/commands/sql/sync.sql.inc';
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
+function drush_devshop_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
   drush_log(dt('Provision DevShop Sync started...'));
   
   //Get source name
