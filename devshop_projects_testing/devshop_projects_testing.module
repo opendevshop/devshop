@@ -87,7 +87,7 @@ function devshop_projects_testing_hosting_tasks() {
     'description' => t('Run a group of previousely defined SimpleTest tests.'),
     'dialog' => TRUE,
     'task_permitted' => TRUE,
-    'access callback' => devshop_projects_testing_access,
+    'access callback' => 'devshop_projects_testing_access',
   );
 
   return $tasks;
