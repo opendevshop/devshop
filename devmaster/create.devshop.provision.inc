@@ -87,3 +87,17 @@ function drush_devshop_provision_provision_devshop_create() {
   provision_backend_invoke($hostmaster, 'hosting-setup');
 }
 
+
+/**
+ * Implements drush_hook_COMMAND_rollback
+ */
+function drush_devshop_provision_provision_devshop_create_rollback() {
+  drush_log(dt('Something went wrong!'), 'warning');
+
+  // Delete the folder we made.
+  $path = d()->code_path;
+  if (drush_shell_exec("rm -rf $path")) {
+    drush_log(dt('Removed directory !path.', array('!path' => $path)), 'warning');
+  }
+
+}
