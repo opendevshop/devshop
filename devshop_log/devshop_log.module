@@ -20,7 +20,7 @@ function devshop_log_perm() {
  * viewing is a platform node.
  */
 
-function _devsop_log_access_callback($nid) {
+function _devshop_log_access_callback($nid) {
 
   if (!user_access('view git commit logs')) {
     return FALSE;
@@ -53,7 +53,7 @@ function devshop_log_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_log_view_form', 1),
     'type' => MENU_LOCAL_TASK,
-    'access callback' => _devsop_log_access_callback,
+    'access callback' => '_devshop_log_access_callback',
     'access arguments' => array(1),
     'weight' => 4,
   );
