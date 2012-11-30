@@ -253,21 +253,21 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       }
       $row = array();
       if ($site->site_status != -2) {
-	$url = "http://$site->title";
-	$row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
-	$row[] = l('Site', "node/$site->nid");
+        $url = "http://$site->title";
+        $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+        $row[] = l('Site', "node/$site->nid");
       }
       else {
-	// Site if deleted, just show the platform name
-	$row[] = $platform->title;
-	$row[] = '';
+        // Site if deleted, just show the platform name
+        $row[] = $platform->title;
+        $row[] = '';
       }
       $row[] = l('Platform', "node/$site->platform");
       if ($site->site_status != -2) {
-	$row[] = l('Download Database', "$url/admin/status/");
+  $row[] = l('Download Database', "$url/admin/status/");
       }
       else {
-	$row[] = '';
+        $row[] = '';
       }
       $row[] = l('Commit Log', "node/$site->platform/gitlog");
       $rows[] = $row;
