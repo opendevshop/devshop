@@ -272,6 +272,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $row[] = l('Commit Log', "node/$site->platform/gitlog");
       $rows[] = $row;
     }
+    $header = array();
     $table = theme('table', $header, $rows);
 
     $node->content['sites'] = array(
