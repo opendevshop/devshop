@@ -59,6 +59,12 @@ function devshop_projects_menu() {
 function devshop_projects_menu_alter(&$items) {
   $items['hosting/tasks/%node/list']['page callback'] = 'devshop_projects_hosting_task_ajax_list';
   $items['hosting/js']['page callback'] = 'devshop_projects_hosting_js_page';
+  
+  
+  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
+  $items['node/add/project']['page arguments'] = array(3);
+  $items['node/add/project']['file'] = 'devshop_projects.wizard.inc';
+  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects');
 }
 
 /**
