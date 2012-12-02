@@ -137,7 +137,6 @@ function devshop_project_create_step_1_git_submit(&$from, &$form_state) {
  */
 function devshop_project_create_step_2_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
-  dsm($project);
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
   
   $branch_options = array(t('Choose a branch...'));
