@@ -105,7 +105,7 @@ function devshop_projects_insert($node) {
   }
   
   // Create hostmaster task
-  hosting_add_task($node->nid, 'devshop-create');
+  hosting_add_task($node->nid, 'verify');
 }
 
 /**
@@ -118,14 +118,14 @@ function devshop_projects_update($node) {
   	   "WHERE nid = %d",
 	   $node->git_url, hosting_path_normalize($node->code_path), 
 	   $node->base_url, $node->nid);
-
-  // If this is a rerry, kick start another devshop-create
-  if ($node->retry) {
-    $args = array('retry' => 1);
-  
-    // Create hostmaster task
-    hosting_add_task($node->nid, 'devshop-create', $args);
-  }
+  //
+  //// If this is a rerry, kick start another devshop-create
+  //if (isset($node->retry)) {
+  //  $args = array('retry' => 1);
+  //
+  //  // Create hostmaster task
+  //  hosting_add_task($node->nid, 'devshop-create', $args);
+  //}
 }
 
 /**
