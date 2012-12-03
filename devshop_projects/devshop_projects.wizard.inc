@@ -141,7 +141,8 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   
   // Extract the project name from the git url
   // @TODO: Regex?
-  $project_name = array_pop(explode("/", $project->git_url));
+  $u = explode("/", $project->git_url);
+  $project_name = array_pop($u);
   $project_name = str_replace('.git', '', $project_name);
   
   $project->title = $project_name;
