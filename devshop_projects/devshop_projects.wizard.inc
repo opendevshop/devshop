@@ -1,14 +1,60 @@
 <?php
 
 /**
- * Project Create Wizard definition form.
+ * Project Create Wizard Page
  */
 function devshop_projects_create_wizard($step = NULL){
   // required includes for wizard
   ctools_include('wizard');
   ctools_include('object-cache');
   
-  $form_info = array(
+  // Setup form info
+  $form_info = devshop_projects_create_wizard_info();
+  $form_state = array(
+    'cache name' => NULL,
+  );
+  
+  // Setup project
+  $project = ctools_object_cache_get('project', NULL);
+  
+  // Setup Step.
+  if ($step == NULL){
+    
+    // We are on the first step.  If there is a last_step in the session other
+    // than here, redirect to it.
+    if (isset($project->last_step) && $project->last_step != 'git_url'){
+      drupal_goto('node/add/project/' . $project->last_step);
+      return;
+    } else {
+      $step = 'git_url';
+    }
+  }
+  
+  
+  if (empty($project)){
+    // set form to first step -- we have no data
+    $step = current(array_keys($form_info['order']));
+    $project = new stdClass();
+    $project->git_url = '';
+
+    // ** set the storage object so its ready for whatever comes next
+    ctools_object_cache_set('project', $form_state['cache name'], $project);
+  }
+  
+  //THIS IS WHERE WILL STORE ALL FORM DATA
+  $form_state['project'] = $project;
+  
+  // and this is the witchcraft that makes it work
+  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  
+  return $output;
+}
+
+/**
+ * The form_info for the ctools wizard
+ */
+function devshop_projects_create_wizard_info(){
+  return array(
     'id' => 'devshop_project_create',
     'path' => "node/add/project/%step",
     'show trail' => TRUE,
@@ -18,7 +64,6 @@ function devshop_projects_create_wizard($step = NULL){
     'next text' => 'Next',
     'next callback' =>  'devshop_projects_create_wizard_next',
     'finish callback' => 'devshop_projects_create_wizard_finish',
-    'return callback' => 'devshop_projects_create_wizard_return',
     'cancel callback' => 'devshop_projects_create_wizard_cancel',
     'order' => array(
       'git_url' => t('Step 1: Git'),
@@ -41,32 +86,52 @@ function devshop_projects_create_wizard($step = NULL){
       ),
     ),
   );
-  
-  $form_state = array(
-    'cache name' => NULL,
-  );
-  $project = devshop_project_create_get_cache(NULL);
-  if ($step == NULL){
-    $step = 'git_url';
-  }
-  if (empty($project)){
-    // set form to first step -- we have no data
-    $step = current(array_keys($form_info['order']));
-    $project = new stdClass();
-    $project->git_url = '';
-
-    // ** set the storage object so its ready for whatever comes next
-    ctools_object_cache_set('project', $form_state['cache name'], $project);
-  }
-  
-  //THIS IS WHERE WILL STORE ALL FORM DATA
-  $form_state['project'] = $project;
-  
-  // and this is the witchcraft that makes it work
-  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
-  
-  return $output;
 }
+
+/**
+ * WIZARD TOOLS
+ */
+
+/**
+ * NEXT callback
+ * Saves anything in $form_state['project'] to ctools cache.
+ *
+ * The form submit callbacks are responsible for putting data into
+ * $form_state['project'].
+ */
+function devshop_projects_create_wizard_next(&$form_state) {
+  $project = &$form_state['project'];
+  $cache = ctools_object_cache_set('project', $form_state['cache name'], $project);
+}
+
+
+/**
+ * FINISH callback
+ * Callback generated when the add page process is finished.
+ * this is where you'd normally save.
+ */
+function devshop_projects_create_wizard_finish(&$form_state) {
+  $project = &$form_state['project'];
+  ctools_object_cache_clear('project', $form_state['cache name']);
+  $form_state['redirect'] = 'hosting/projects';
+}
+
+
+/**
+ * CANCEL callback
+ * Callback generated when the 'cancel' button is clicked.
+ * Remove the project data cache and send back to projects page.
+ */
+function devshop_projects_create_wizard_cancel(&$form_state) {
+  // Update the cache with changes.
+  ctools_object_cache_clear('project', $form_state['cache name']);
+  $form_state['redirect'] = 'hosting/projects';
+}
+
+/**
+ * WIZARD STEPS
+ */
+ 
 
 /**********
  * STEP 1
@@ -123,6 +188,10 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project->title = $project_name;
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
   $project->base_url = strtr(variable_get('devshop_project_default_base_url', "@name.localhost"), array('@name' => $project_name));
+
+
+  // Save next step (for session use)
+  $project->next_step = 'settings';
 }
 
 /**********
@@ -201,6 +270,9 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
         $project->nid;
     }
   }
+  
+  // Save next step (for session use)
+  $project->next_step = 'environments';
 }
  
  
@@ -305,59 +377,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Set Values
   $project->default_platforms = $values['default_platforms'];
   $project->branch_platforms = $values['branch_platforms'];
+  
+  
+  // Save next step (for session use)
+  $project->next_step = 'install';
 }
 
-
-
-/**
- * NEXT callback
- * Saves anything in $form_state['project'] to ctools cache.
- *
- * The form submit callback is responsible for putting data into $form_state['project'].
- */
-function devshop_projects_create_wizard_next(&$form_state) {
-  $project = &$form_state['project'];
-  $cache = ctools_object_cache_set('project', $form_state['cache name'], $project);
-}
-
-
-/*----PART 3 CTOOLS CALLBACKS -- these usually don't have to be very unique  ---------------------- */
-
-/**
- * Callback generated when the add page process is finished.
- * this is where you'd normally save.
- */
-function devshop_projects_create_wizard_finish(&$form_state) {
-  $project = &$form_state['project'];
-  ctools_object_cache_clear('project', $form_state['cache name']);
-  $form_state['redirect'] = 'hosting/projects';
-}
-
-
-/**
- * Callback generated when the 'cancel' button is clicked.
- *
- * All we do here is clear the cache.
- */
-function devshop_projects_create_wizard_cancel(&$form_state) {
-  // Update the cache with changes.
-  ctools_object_cache_clear('project', $form_state['cache name']);
-  $form_state['redirect'] = 'hosting/projects';
-}
-
-/*----PART 4 CTOOLS FORM STORAGE HANDLERS -- these usually don't have to be very unique  ---------------------- */
-
-/**
- * Remove an item from the object cache.
- */
-function  devshop_project_create_clear_cache($name) {
-  ctools_object_cache_clear('project', $name);
-}
-
-/**
- * Get the cached changes to a given task handler.
- */
-function devshop_project_create_get_cache($name) {
-  $cache = ctools_object_cache_get('project', $name);
-  return $cache;
-}
