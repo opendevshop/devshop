@@ -53,6 +53,10 @@ function devshop_projects_hosting_project_context_options(&$task) {
   
   $branches = getBranchesAndTags($task->ref->git_url);
   
+  $task->ref->git_branches = $branches['branches'];
+  $task->ref->git_tags = $branches['tags'];
+  node_save($task->ref);
+  
   $task->context_options['git_branches'] = $branches['branches'];
   $task->context_options['git_tags'] = $branches['tags'];
 }
