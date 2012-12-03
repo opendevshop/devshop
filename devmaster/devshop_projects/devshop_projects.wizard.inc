@@ -63,6 +63,7 @@ function devshop_projects_create_wizard($step = NULL){
   
   // and this is the witchcraft that makes it work
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  
   return $output;
 }
 
@@ -171,35 +172,6 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
  */
 function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
-  
-  $command = "git ls-remote {$project->git_url}";
-  $remote_list = explode("\n", shell_exec($command));
-  
-  // If remote list is empty, we have either a typo or a connection error.
-  if (count($remote_list) == 1 && empty($remote_list[0])){
-    form_set_error('git_url', t('This server was not able to connect to that Git URL.  Please check the URL, and make sure www-data and aegir user has SSH keys setup to connect to your repos.'));
-    return;
-  }
-  
-  // Build tag and branch list
-  $project->branches = array();
-  $project->tags= array();
-  
-  foreach ($remote_list AS $line_string){
-    // @TODO: Would love some regex love here
-    // Example remote line:
-    // 9fc5727c0823d8d3300ba5aae3328d5998033e45	refs/heads/3-00
-    $line = explode("	", $line_string);
-    $ref = explode("/", $line[1]);
-    
-    $branch = array_pop($ref);
-    
-    if ($ref[1] == 'heads') {
-      $project->branches[] = $branch;
-    } else if ($ref[1] == 'tags') {
-      $project->tags[] = $branch;
-    }
-  }
 }
 
 /**
@@ -243,7 +215,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
-dsm($project);  
+
   $branch_options = array(t('Choose a branch...'));
   $branch_options += array_combine($project->branches, $project->branches);
   
