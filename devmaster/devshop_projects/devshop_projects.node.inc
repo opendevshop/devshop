@@ -300,7 +300,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //Tasks    
   $node->content['tasks_view'] = array(
     '#type' => 'item',
-    '#value' => devshop_projects_hosting_task_table($node),
+    //'#value' => devshop_projects_hosting_task_table($node),
+    '#value' => hosting_task_table($node),
     '#prefix' => '<div id="hosting-task-list">',
     '#suffix' => '</div>',
     '#weight' => 10
