@@ -22,20 +22,24 @@ function devshop_projects_create_wizard($step = NULL){
     
     // We are on the first step.  If there is a last_step in the session other
     // than here, redirect to it.
-    if (isset($project->last_step) && $project->last_step != 'git_url'){
-      drupal_goto('node/add/project/' . $project->last_step);
-      return;
+    $first_step = current(array_keys($form_info['order']));
+    if (isset($project->next_step) && $project->next_step != $first_step){
+      // @TODO: This fails when you hit the back button, of course...
+      // drupal_goto('node/add/project/' . $project->next_step);
+      //return;
+      $step = $first_step;
     } else {
-      $step = 'git_url';
+      $step = $first_step;
     }
   }
   
-  
+  // Create default project object
   if (empty($project)){
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
     $project->git_url = '';
+    $project->title = '';
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
@@ -126,6 +130,10 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   // Update the cache with changes.
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'hosting/projects';
+  
+  // @TODO: If step 1 has been completed, we should run Delete on Project node.
+  // to get rid of drush alias context, files, everything that this form
+  // may have created.
 }
 
 /**
@@ -153,6 +161,15 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#description' => t('Enter the Git URL for your drupal project.  The root of the repo must contain Drupal\'s index.php.  A clone of !link is a good place to start.', array('!link' => l('http://git.drupal.org/project/drupal.git', 'http://git.drupal.org/project/drupal.git'))),
     '#default_value' => $project->git_url,
   );
+  $form['title'] = array(
+    '#type' => 'textfield',
+     '#title' => t('Project Code Name'),
+     '#required' => TRUE,
+     '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository.'),
+     '#size' => 40,
+     '#default_value' => $project->title,
+     '#maxlength' => 255,
+  );
 }
 
 /**
@@ -170,25 +187,40 @@ function devshop_project_create_step_git_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
   $project->git_url = $form_state['values']['git_url'];
   
+  // @TODO: Check for duplicate project name here.
+  
 }
 
 /**
  * STEP 1: Submit
  */
 function devshop_project_create_step_git_submit(&$from, &$form_state) {
+  global $user;
+  
   $project = &$form_state['project'];
   $project->git_url = $form_state['values']['git_url'];
+  $project->title = $project_name = $form_state['values']['title'];
+
+  if (empty($project->nid)){
+    // Create the project node now.  We will update it with the chosen path.
+    // This is so we can check for branches and save the hosting_context as soon
+    // as possible.
+    $node = $project;
+    $node->type = 'project';
+    $node->status = 1;
+    $node->uid = $user->uid;
+    $node->name = $user->name;
+    if ($node = node_submit($node)) {
+      node_save($node);
+    }
+    if ($node->nid){
+      $project->nid;
+    }
+  }
   
-  // Extract the project name from the git url
-  // @TODO: Regex?
-  $u = explode("/", $project->git_url);
-  $project_name = array_pop($u);
-  $project_name = str_replace('.git', '', $project_name);
-  
-  $project->title = $project_name;
+  // Saving the project node now, with these defaults based on the name.
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
   $project->base_url = strtr(variable_get('devshop_project_default_base_url', "@name.localhost"), array('@name' => $project_name));
-
 
   // Save next step (for session use)
   $project->next_step = 'settings';
@@ -205,15 +237,6 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
 function devshop_project_create_step_settings(&$form, &$form_state) {
   $project = &$form_state['project'];
   
-  $form['title'] = array(
-    '#type' => 'textfield',
-     '#title' => t('Project Code Name'),
-     '#required' => TRUE,
-     '#description' => t('Choose a unique name for your project.'),
-     '#size' => 40,
-     '#default_value' => $project->title,
-     '#maxlength' => 255,
-  );
   $form['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
@@ -235,6 +258,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#weight' => 2,
   );
   
+  // @TODO: Put Pull Code settings here
 }
 
 /**
@@ -251,25 +275,10 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   global $user;
   $project = &$form_state['project'];
   
-  $project->title = $form_state['values']['title'];
+  // For this step, we just save code path and base url for later saving and
+  // verification.
   $project->code_path = $form_state['values']['code_path'];
   $project->base_url = $form_state['values']['base_url'];
-  
-  $node = $project;
-  // If the node hasn't been saved yet...
-  if (empty($project->nid)){
-    $node = $project;
-    $node->type = 'project';
-    $node->status = 1;
-    $node->uid = $user->uid;
-    if ($node = node_submit($node)) {
-      node_save($node);
-    }
-    
-    if ($node->nid){
-        $project->nid;
-    }
-  }
   
   // Save next step (for session use)
   $project->next_step = 'environments';
