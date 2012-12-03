@@ -118,7 +118,7 @@ function devshop_projects_hosting_site_context_options(&$task) {
 }
 
 /**
- * Implements hook_hosting_site_context_options()
+ * Implements hook_hosting_platform_context_options()
  * 
  * This transfers data from the node to the aegir context object (the alias!)
  * For site entities.
