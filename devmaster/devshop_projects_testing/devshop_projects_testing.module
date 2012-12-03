@@ -78,7 +78,6 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
  * Implementation of hook_hosting_tasks()
  *
  */
-
 function devshop_projects_testing_hosting_tasks() {
   $tasks = array();
 
@@ -87,7 +86,7 @@ function devshop_projects_testing_hosting_tasks() {
     'description' => t('Run a group of previousely defined SimpleTest tests.'),
     'dialog' => TRUE,
     'task_permitted' => TRUE,
-    'access callback' => devshop_projects_testing_access,
+    'access callback' => 'devshop_projects_testing_access',
   );
 
   return $tasks;
@@ -100,7 +99,6 @@ function devshop_projects_testing_hosting_tasks() {
  * To qualify, it much be part of a devshop project group and must
  * be either the 'test' site or one of the branch sites.
  */
-
 function devshop_projects_testing_access($node, $type) {
 
   if ($node->type != 'site' || !$node->project_nid) {
@@ -127,7 +125,6 @@ function devshop_projects_testing_access($node, $type) {
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
  */
-
 function hosting_task_devshop_test_form($node) {
 
   if ($node->project_nid) {
@@ -159,7 +156,6 @@ function hosting_task_devshop_test_form($node) {
  * Implementation of hook_hosting_task_TASK_TYPE_form_validate().
  *
  */
-
 function hosting_task_devshop_test_form_validate($form, &$form_state) {
 
   $tests = $form_state['values']['parameters']['tests_to_run'];
