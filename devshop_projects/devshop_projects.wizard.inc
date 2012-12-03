@@ -305,8 +305,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     return;
   }
   
-  $branch_options = array(t('Choose a branch...'));
-  $branch_options += array_combine($project_node->git_branches, $project_node->git_branches);
+  $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
   
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
@@ -327,7 +326,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     $form['default_platforms'][$env]['branch'] = array(
         '#type' => 'select',
         '#default_value' => isset($project->default_platforms[$env])? $project->default_platforms[$env]: NULL,
-        '#options' => $branch_options
+        '#options' => array(t('Choose a branch...')) + $branch_options
       );
   }
   
@@ -344,14 +343,14 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
 
 /**
- * STEP 2: SUBMIT
+ * STEP 3: Validate
  */
 function devshop_project_create_step_environments_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
   
   // Not ready
-  if ($values['not_ready']) {
+  if (isset($values['not_ready'])) {
     form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
     return;
   }
@@ -383,8 +382,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   form_set_value($form['branch_platforms'], array_filter($values['branch_platforms']), $form_state);
   
 }
+
 /**
- * STEP 2: SUBMIT
+ * STEP 3: SUBMIT
  */
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..  
@@ -394,5 +394,23 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Set Values
   $project->default_platforms = $values['default_platforms'];
   $project->branch_platforms = $values['branch_platforms'];
+  
+  // Run a "Create Platform" task for the chosen platforms.
+  
+  
 }
 
+
+/**********
+ * STEP 4
+ * Project Environments
+ *********/
+
+/**
+ * STEP 4: Form
+ */
+function devshop_project_create_step_install(&$form, &$form_state) {
+  $project = &$form_state['project'];
+  
+  
+}
