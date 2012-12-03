@@ -113,11 +113,15 @@ function devshop_projects_insert($node) {
  */
 function devshop_projects_update($node) {
 
+  $data = array();
+  $data['git_branches'] = $node->git_branches;
+  $data['git_tags'] = $node->git_tags;
+
   db_query("UPDATE {hosting_devshop_project} " .
-           "SET git_url = '%s', code_path = '%s', base_url = '%s' " .
+           "SET git_url = '%s', code_path = '%s', base_url = '%s', data='%s' " .
   	   "WHERE nid = %d",
 	   $node->git_url, hosting_path_normalize($node->code_path), 
-	   $node->base_url, $node->nid);
+	   $node->base_url, serialize($data), $node->nid);
   //
   //// If this is a rerry, kick start another devshop-create
   //if (isset($node->retry)) {
@@ -146,7 +150,7 @@ function devshop_projects_delete($node) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url, install_profile ' .
+  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url, install_profile, data ' .
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
@@ -154,6 +158,9 @@ function devshop_projects_load($node) {
     $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
     $additions += $hosting_name;
   }
+  $data = unserialize($additions['data']);
+  $additions['git_branches'] = $data['git_branches'];
+  $additions['git_tags'] = $data['git_tags'];
   
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
