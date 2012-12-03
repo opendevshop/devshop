@@ -21,9 +21,9 @@ function devshop_projects_create_wizard($step = NULL){
     'return callback' => 'devshop_projects_create_wizard_return',
     'cancel callback' => 'devshop_projects_create_wizard_cancel',
     'order' => array(
-      'git_url' => t('Step 1: Git URL'),
-      'settings' => t('Step 2: Project Settings'),
-      'environments' => t('Step 3: Configure Platforms'),
+      'git_url' => t('Step 1: Git'),
+      'settings' => t('Step 2: Settings'),
+      'environments' => t('Step 3: Platforms'),
       'install' => t('Step 4: Install Drupal'),
     ),
     'forms' => array(
@@ -53,6 +53,7 @@ function devshop_projects_create_wizard($step = NULL){
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
+    $project->git_url = '';
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
