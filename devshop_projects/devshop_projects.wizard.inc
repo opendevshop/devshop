@@ -222,7 +222,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   }
   
   $branch_options = array(t('Choose a branch...'));
-  $branch_options += array_combine($project->branches, $project->branches);
+  $branch_options += array_combine($project_node->git_branches, $project_node->git_branches);
   
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
