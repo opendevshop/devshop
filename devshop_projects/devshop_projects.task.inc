@@ -9,6 +9,11 @@
  */
 function devshop_projects_hosting_tasks() {
   $tasks = array();
+  $tasks['project']['verify'] = array(
+    'title' => t('Verify Project'),
+    'description' => t('Verifies access to the git repository, downloads branch and tag information.'),
+    'provision_save' => TRUE,
+  );
   $tasks['project']['devshop-create'] = array(
     'title' => t('Create Project'),
     'description' => t('Clones the repo, and creates the platforms.'),
