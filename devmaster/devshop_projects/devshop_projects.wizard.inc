@@ -186,7 +186,6 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project->base_url = $form_state['values']['base_url'];
   
   $node = $project;
-  
   // If the node hasn't been saved yet...
   if (empty($project->nid)){
     $node = $project;
@@ -215,9 +214,10 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
-
-  if (empty($project->branches)){
-    drupal_set_message('Please wait while we connect to your repo.');
+    
+  $project_node = node_load($project->nid);
+  if (empty($project_node->git_branches)){
+    drupal_set_message('Please wait while we connect to your repo and find out what branches you have.');
     return;
   }
   
