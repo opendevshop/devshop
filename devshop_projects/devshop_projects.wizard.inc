@@ -19,18 +19,7 @@ function devshop_projects_create_wizard($step = NULL){
   
   // Setup Step.
   if ($step == NULL){
-    
-    // We are on the first step.  If there is a last_step in the session other
-    // than here, redirect to it.
-    $first_step = current(array_keys($form_info['order']));
-    if (isset($project->next_step) && $project->next_step != $first_step){
-      // @TODO: This fails when you hit the back button, of course...
-      // drupal_goto('node/add/project/' . $project->next_step);
-      //return;
-      $step = $first_step;
-    } else {
-      $step = $first_step;
-    }
+    $step = current(array_keys($form_info['order']));
   }
   
   // Create default project object
@@ -40,6 +29,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project = new stdClass();
     $project->git_url = '';
     $project->title = '';
+    $project->default_platforms = array();
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
@@ -222,8 +212,6 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
   $project->base_url = strtr(variable_get('devshop_project_default_base_url', "@name.localhost"), array('@name' => $project_name));
 
-  // Save next step (for session use)
-  $project->next_step = 'settings';
 }
 
 /**********
@@ -280,8 +268,6 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project->code_path = $form_state['values']['code_path'];
   $project->base_url = $form_state['values']['base_url'];
   
-  // Save next step (for session use)
-  $project->next_step = 'environments';
 }
  
  
@@ -324,7 +310,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
     $form['default_platforms'][$env]['branch'] = array(
         '#type' => 'select',
-        '#default_value' => $project->default_platforms[$env],
+        '#default_value' => $project->default_platforms[$env]? $project->default_platforms[$env]: NULL,
         '#options' => $branch_options
       );
   }
@@ -387,8 +373,5 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project->default_platforms = $values['default_platforms'];
   $project->branch_platforms = $values['branch_platforms'];
   
-  
-  // Save next step (for session use)
-  $project->next_step = 'install';
 }
 
