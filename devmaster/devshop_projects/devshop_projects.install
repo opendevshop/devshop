@@ -37,6 +37,18 @@ function devshop_projects_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
+      'git_branches' => array(
+        'type' => 'longtext',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Serialized data.',
+      ),
+      'git_tags' => array(
+        'type' => 'longtext',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Serialized data.',
+      ),
     ),
     'primary key' => array('nid'),
   );
@@ -69,6 +81,12 @@ function devshop_projects_schema() {
         'length' => 10,
         'default' => '',
         'description' => 'Environment type: dev, test, live, or sandbox.',
+      ),
+      'data' => array(
+        'type' => 'longtext',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Serialized data.',
       ),
     ),
     'primary key' => array('object_nid'),
