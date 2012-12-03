@@ -35,12 +35,19 @@ function devshop_projects_create_wizard($step = NULL){
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
   
-  //THIS IS WHERE WILL STORE ALL FORM DATA
+  // All forms can access $form_state['project'];
   $form_state['project'] = $project;
   
-  // and this is the witchcraft that makes it work
-  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  // Particular overrides
+  if ($step == 'environments' && isset($project->nid)){
+    $project_node = node_load($project->nid);
+    if (empty($project_node->git_branches)){
+      //$form_info['show back'] = FALSE;
+    }
+  }
   
+  // Generate our ctools form and output
+  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
 }
 
@@ -211,7 +218,6 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   // Saving the project node now, with these defaults based on the name.
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
   $project->base_url = strtr(variable_get('devshop_project_default_base_url', "@name.localhost"), array('@name' => $project_name));
-
 }
 
 /**********
@@ -267,7 +273,6 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   // verification.
   $project->code_path = $form_state['values']['code_path'];
   $project->base_url = $form_state['values']['base_url'];
-  
 }
  
  
@@ -284,8 +289,18 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
     
   $project_node = node_load($project->nid);
+  
   if (empty($project_node->git_branches)){
-    drupal_set_message('Please wait while we connect to your repo and find out what branches you have.');
+    
+    // @TODO: Detect and show errors when they occur.
+    $form['note'] = array(
+      '#type' => 'markup',
+      '#value' => t('Please wait while we connect to your repository and determine any branches. For now you must reload the page to continue.'),
+    );
+    $form['not_ready'] = array(
+      '#type' => 'value',
+      '#value' => TRUE,
+    );
     return;
   }
   
@@ -334,6 +349,12 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   $project = &$form_state['project'];
   $values = $form_state['values'];
   
+  // Not ready
+  if ($values['not_ready']) {
+    form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
+    return;
+  }
+  
   // At least one platform is required  
   $none_chosen = TRUE;
   foreach ($values['default_platforms'] as $env => $data) {
@@ -372,6 +393,5 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Set Values
   $project->default_platforms = $values['default_platforms'];
   $project->branch_platforms = $values['branch_platforms'];
-  
 }
 
