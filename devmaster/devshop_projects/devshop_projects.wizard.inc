@@ -30,6 +30,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project->git_url = '';
     $project->title = '';
     $project->default_platforms = array();
+    $project->branch_platforms = array();
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
@@ -325,7 +326,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
     $form['default_platforms'][$env]['branch'] = array(
         '#type' => 'select',
-        '#default_value' => $project->default_platforms[$env]? $project->default_platforms[$env]: NULL,
+        '#default_value' => isset($project->default_platforms[$env])? $project->default_platforms[$env]: NULL,
         '#options' => $branch_options
       );
   }
