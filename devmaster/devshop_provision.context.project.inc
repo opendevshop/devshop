@@ -27,10 +27,6 @@ class provisionContext_project extends provisionContext {
     $this->setProperty('git_branches');
     $this->setProperty('git_tags');
     $this->setProperty('base_url');
-    
-    drush_log('[DEVSHOP] init_project()', 'ok');
-    
-    // @TODO: Save 
   }
   
   function verify() {
