@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Project Create Wizard definition form.
+ */
 function devshop_projects_create_wizard($step = NULL){
   // required includes for wizard
   ctools_include('wizard');
@@ -14,28 +17,31 @@ function devshop_projects_create_wizard($step = NULL){
     'show return' => FALSE,
     'next text' => 'Next',
     'next callback' =>  'devshop_projects_create_wizard_next',
-    'finish callback' => 'wombat_basic_add_subtask_finish',
-    'return callback' => 'wombat_basic_add_subtask_finish',
-    'cancel callback' => 'wombat_basic_add_subtask_cancel',
+    'finish callback' => 'devshop_projects_create_wizard_finish',
+    'return callback' => 'devshop_projects_create_wizard_return',
+    'cancel callback' => 'devshop_projects_create_wizard_cancel',
     'order' => array(
-      'git_url' => t('Step 1: Get Code'),
-      'environments' => t('Step 2: Choose Branches'),
-      'install' => t('Step 2: Install Drupal'),
+      'git_url' => t('Step 1: Git URL'),
+      'settings' => t('Step 2: Project Settings'),
+      'environments' => t('Step 3: Configure Platforms'),
+      'install' => t('Step 4: Install Drupal'),
     ),
     'forms' => array(
       'git_url' => array(
-        'form id' => 'devshop_project_create_step_1_git'
+        'form id' => 'devshop_project_create_step_git'
+      ),
+      'settings' => array(
+        'form id' => 'devshop_project_create_step_settings'
       ),
       'environments' => array(
-        'form id' => 'devshop_project_create_step_2_environments'
+        'form id' => 'devshop_project_create_step_environments'
       ),
       'install' => array(
-        'form id' => 'devshop_project_create_step_3_install'
+        'form id' => 'devshop_project_create_step_install'
       ),
     ),
   );
   
-  // *** SETTING THE FORM UP FOR MULTISTEP *** //
   $form_state = array(
     'cache name' => NULL,
   );
@@ -60,13 +66,18 @@ function devshop_projects_create_wizard($step = NULL){
   return $output;
 }
 
+/**********
+ * STEP 1
+ * Git URL
+ **********/
+
 
 /**
  * STEP 1: Form
- *
+ * 
  * Just get the Git URL.  If we can't access the code, all else should fail.
  */
-function devshop_project_create_step_1_git(&$form, &$form_state) {
+function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
   $form['git_url'] = array(
     '#type' => 'textfield',
@@ -78,8 +89,8 @@ function devshop_project_create_step_1_git(&$form, &$form_state) {
 }
 
 /**
- * STEP 1: Validator.
- *
+ * STEP 1: Validate
+ * 
  * This is where we try and connect to the remote branches.
  *
  * As long as the SSH for www-data is setup right, this will work for private repos.
@@ -88,7 +99,7 @@ function devshop_project_create_step_1_git(&$form, &$form_state) {
  *
  *  This is also where we get all the tags and branches.
  */
-function devshop_project_create_step_1_git_validate(&$from, &$form_state) {
+function devshop_project_create_step_git_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
   $project->git_url = $form_state['values']['git_url'];
   
@@ -122,20 +133,93 @@ function devshop_project_create_step_1_git_validate(&$from, &$form_state) {
 }
 
 /**
- * KEY CONCEPT: generally, you will never save data here -- you will simply add values to the 
- * yet to be saved ctools_cache object. 
- * 
- * Saving happens at the end, within the $form_info['finish callback'];
+ * STEP 1: Submit
  */
-function devshop_project_create_step_1_git_submit(&$from, &$form_state) {
+function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project = &$form_state['project'];
   $project->git_url = $form_state['values']['git_url'];
+  
+  // Extract the project name from the git url
+  // @TODO: Regex?
+  $project_name = array_pop(explode("/", $project->git_url));
+  $project_name = str_replace('.git', '', $project_name);
+  
+  $project->title = $project_name;
+  $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
+  $project->base_url = strtr(variable_get('devshop_project_default_base_url', "@name.localhost"), array('@name' => $project_name));
+}
+
+/**********
+ * STEP 2
+ * Project Settings
+ *********/
+
+/**
+ * STEP 2: Form
+ */
+function devshop_project_create_step_settings(&$form, &$form_state) {
+  $project = &$form_state['project'];
+  
+  $form['title'] = array(
+    '#type' => 'textfield',
+     '#title' => t('Project Code Name'),
+     '#required' => TRUE,
+     '#description' => t('Choose a unique name for your project.'),
+     '#size' => 40,
+     '#default_value' => $project->title,
+     '#maxlength' => 255,
+  );
+  $form['code_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Code path'),
+    '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $project->code_path,
+    '#maxlength' => 255,
+    '#weight' => 2,
+  );
+  $form['base_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Primary Domain'),
+    '#description' => t('The domain name all sites will be built under.'),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $project->base_url,
+    '#maxlength' => 255,
+    '#weight' => 2,
+  );
+  
 }
 
 /**
- * STEP 2: Choose environments
+ * STEP 2: Validate
  */
-function devshop_project_create_step_2_environments(&$form, &$form_state) {
+function devshop_project_create_step_settings_validate(&$from, &$form_state) {
+  $project = &$form_state['project'];
+}
+
+/**
+ * STEP 2: Submit
+ */
+function devshop_project_create_step_settings_submit(&$from, &$form_state) {
+  $project = &$form_state['project'];
+  
+  $project->title = $form_state['values']['title'];
+  $project->code_path = $form_state['values']['code_path'];
+  $project->base_url = $form_state['values']['base_url'];
+}
+ 
+ 
+/**********
+ * STEP 3
+ * Project Environments
+ *********/
+
+/**
+ * STEP 3: Form
+ */
+function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
   
@@ -180,7 +264,7 @@ function devshop_project_create_step_2_environments(&$form, &$form_state) {
 /**
  * STEP 2: SUBMIT
  */
-function devshop_project_create_step_2_environments_validate(&$form, &$form_state) {
+function devshop_project_create_step_environments_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
   
@@ -214,7 +298,7 @@ function devshop_project_create_step_2_environments_validate(&$form, &$form_stat
 /**
  * STEP 2: SUBMIT
  */
-function devshop_project_create_step_2_environments_submit(&$form, &$form_state) {
+function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..  
   $project = &$form_state['project'];
   $values = $form_state['values'];
@@ -244,12 +328,10 @@ function devshop_projects_create_wizard_next(&$form_state) {
  * Callback generated when the add page process is finished.
  * this is where you'd normally save.
  */
-function wombat_basic_add_subtask_finish(&$form_state) {
-  $wombat = &$form_state['wombat_obj'];
-  drupal_set_message('Wombat '.$wombat->name.' successfully deployed. Wombat will be assigned the following duties: '.implode(",", $wombat->duties)).'.';
-  // Clear the cache
-  ctools_object_cache_clear('wombat_basic', $form_state['cache name']);
-  $form_state['redirect'] = 'wombat';
+function devshop_projects_create_wizard_finish(&$form_state) {
+  $project = &$form_state['project'];
+  ctools_object_cache_clear('project', $form_state['cache name']);
+  $form_state['redirect'] = 'hosting/projects';
 }
 
 
@@ -258,11 +340,10 @@ function wombat_basic_add_subtask_finish(&$form_state) {
  *
  * All we do here is clear the cache.
  */
-function wombat_basic_add_subtask_cancel(&$form_state) {
+function devshop_projects_create_wizard_cancel(&$form_state) {
   // Update the cache with changes.
-  ctools_object_cache_clear('wombat_basic', $form_state['cache name']);
-  $form_state['redirect'] = 'wombat';
-  drupal_set_message('Coward.');
+  ctools_object_cache_clear('project', $form_state['cache name']);
+  $form_state['redirect'] = 'hosting/projects';
 }
 
 /*----PART 4 CTOOLS FORM STORAGE HANDLERS -- these usually don't have to be very unique  ---------------------- */
@@ -280,13 +361,4 @@ function  devshop_project_create_clear_cache($name) {
 function devshop_project_create_get_cache($name) {
   $cache = ctools_object_cache_get('project', $name);
   return $cache;
-}
-
-
-
-
-function d($in) {
-  print '<pre>';
-  print_r($in);
-  print '</pre>'; 
 }
