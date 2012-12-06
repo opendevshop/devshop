@@ -218,7 +218,11 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   
   // Saving the project node now, with these defaults based on the name.
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
-  $project->base_url = strtr(variable_get('devshop_project_default_base_url', "@name.localhost"), array('@name' => $project_name));
+  
+  // Setup project url.
+  $hostmaster_site = hosting_context_load('hostmaster');
+  $server = variable_get('devshop_project_default_base_url', $hostmaster_site->title);
+  $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@name.@server"), array('@name' => $project_name, '@server' => $server));
 }
 
 /**********
@@ -231,7 +235,6 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
  */
 function devshop_project_create_step_settings(&$form, &$form_state) {
   $project = &$form_state['project'];
-  
   $form['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
@@ -240,7 +243,6 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#size' => 40,
     '#default_value' => $project->code_path,
     '#maxlength' => 255,
-    '#weight' => 2,
   );
   $form['base_url'] = array(
     '#type' => 'textfield',
@@ -250,7 +252,6 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#size' => 40,
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
-    '#weight' => 2,
   );
   
   // @TODO: Put Pull Code settings here
