@@ -24,38 +24,27 @@ function devshop_projects_node_info() {
   return $types;
 }
 
-
+ 
 /**
- * hook_nodeapi()
+ * Implements hook_nodeapi()
+ *
+ * For Platforms and Sites:
+ *   $node->project : The context name of the project.
+ *   $node->environment: The type of environment this platform or site is:
+ *	can be dev, test, or live.
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  if ($node->type == 'platform'){
-    // On insert of a platform, determine project and save to hosting_devshop_project_objects
-    // @TODO: This is how we save the project path at the moment because
-    //  the platform node is coming from hosting-import...
-    if ($op == 'insert') {
-      $path = explode('/', $node->publish_path); 
-      $environment = array_pop($path);
-      $project_path = implode('/', $path);
-      
-      $project = devshop_project_load_by_path($project_path);
-  
-      // Save to table
-      db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $node->type, $environment);
-    }
-  }
-  
-  //Platforms and Sites
+  // Project-enabled platforms get
   if ($node->type == 'platform' || $node->type == 'site'){
     
-    // Load Project info
+    // On Load: load this object's project and environment type
     if ($op == 'load'){
       $data = db_fetch_array(db_query('SELECT project_nid, env_type AS project_environment, n.title as project_name FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
     
-    // Display Project info
+     // Display Project info
     if ($op == 'view'){
       $project = node_load($node->project_nid);
       if (!empty($project)){
@@ -73,11 +62,21 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         );
       }
     }
-
-    // The NODE is being deleted. Remove the nid from the objects table
-    if ($op == 'delete'){
-      db_query('DELETE FROM {hosting_devshop_project_object} ' .
-	       'WHERE object_nid = %d', $node->nid);
+    
+    // On update or delete, delete the existing records.  We will replace below.
+    if ($op = 'update' || $op = 'delete') {
+      db_query('DELETE FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid);
+    }
+    
+    // On insert or update, insert records saving this objects project and environment
+    if ($op = 'update' || $op = 'delete') {
+      if (!empty($node->project) && !empty($node->environment)) {
+	// Get the project node by name.
+	$project = hosting_context_load($node->project);
+	
+	// Save to table
+	db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment);
+      }
     }
   }
 }
