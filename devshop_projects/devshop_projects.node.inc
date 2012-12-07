@@ -51,7 +51,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         $node->content['info']['project'] = array(
 	  '#type' => 'item',
 	  '#title' => t('Project'),
-	  '#value' => l($node->project, "node/$project->project_nid"),
+	  '#value' => l($node->project, "node/{$node->project_nid}"),
 	  '#weight' => -12,
 	);
          $node->content['info']['env'] = array(
@@ -213,6 +213,14 @@ function devshop_projects_load($node) {
  * Implementation of hook_view().
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
+  
+  // If not ready yet:
+  if (!$node->status){
+    // Go back to the wizard.
+    drupal_goto('node/add/project');
+  }
+
+  
   modalframe_parent_js();
 
   $node->content['info'] = array(
