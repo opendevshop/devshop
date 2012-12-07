@@ -455,7 +455,8 @@ function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
   $completed = TRUE;
   
-
+  $profiles = array();
+  
   // Display the platforms
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Status'));
@@ -470,6 +471,15 @@ function devshop_project_create_step_install(&$form, &$form_state) {
     if (!$platform->verified){
       $completed = FALSE;
     }
+    
+    // Collect install profiles
+    $profiles[$name] = hosting_get_profiles($platform->nid);
+    
+    if (!isset($available_profiles)){
+      $available_profiles = $profiles[$name];
+    } else {
+      $available_profiles = array_intersect_key($profiles[$name]);
+    }
   }
   
   if ($completed){
@@ -478,6 +488,17 @@ function devshop_project_create_step_install(&$form, &$form_state) {
       '#value' => 'Now you have to choose your install profile.',
     );
   }
+  
+  
+  // Install Profile
+  // @TODO: Handle no available profiles
+  $form['install_profile'] = array(
+    '#type' => 'radios',
+    '#options' => $available_profiles,
+    '#title' => t('Project Install Profile'),
+    '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.'),
+  );
+
   
   $form['platforms'] = array(
     '#type' => 'markup',
