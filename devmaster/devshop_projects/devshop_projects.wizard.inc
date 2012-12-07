@@ -46,7 +46,9 @@ function devshop_projects_create_wizard($step = NULL){
       //$form_info['show back'] = FALSE;
     }
   }
+
   dsm($project, 'project');
+
   // Generate our ctools form and output
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
@@ -310,6 +312,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   if (empty($project_node->git_branches)){
     
     // @TODO: Detect and show errors when they occur.
+    // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $form['note'] = array(
       '#type' => 'markup',
       '#value' => t('Please wait while we connect to your repository and determine any branches. For now you must reload the page to continue.'),
@@ -415,20 +418,28 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project->branch_platforms = array_filter($values['branch_platforms']);
   
   // Create these platforms
-  if (empty($project->platforms)){
-    $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
-    foreach ($all_platforms as $platform_name => $branch) {
+  $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
+  foreach ($all_platforms as $platform_name => $branch) {
+
+    if (empty($project->platforms[$platform_name])){
       // Save the damn platform nodes
       $platform = new stdClass;
-      $platform->title = $project->name . '_' . $platform_name;
-      $platform->project = $project->name;
-      $platform->git_branch = $branch;
+      
+      // hosting_platform fields
+      $platform->title = $project->title . '_' . $platform_name;
+      $platform->publish_path = $project->code_path . '/' . $platform_name;
 
-      $platform_node = _devshop_projects_node_create('platform', $project);
-      dsm($platform_node, $platform_node->title);
+      $servers = hosting_get_servers('http');
+      $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));
+ 
+      $platform->git_branch = $branch;
+      $platform->project = $project->title;
+      $platform->environment = $platform_name;
+      
+      $platform_node = _devshop_projects_node_create('platform', $platform);
+      $project->platforms[$platform_name] = $platform_node;
     }
   }
-  
 }
 
 
@@ -442,6 +453,4 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
  */
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
-  dsm($project);
-  
 }
