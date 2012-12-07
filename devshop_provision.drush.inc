@@ -133,13 +133,14 @@ function drush_devshop_provision_pre_hosting_task() {
     $git_remote = $platform->git_url;
     $git_branch = $platform->git_branch;
     
-    if (!$platform->verified){
-      drush_log(dt("[DEVSHOP] First verification: cloning from !git", array('!git' => $platform->git_url)));
+    // Check if a repo exists
+    if (!provision_git_is_repo($root)){
+      drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
       
       // Build the command string
-      $cmd = "git clone $git_remote $root";
+      $command = "git clone $git_remote $root";
       if ($git_branch) {
-        $cmd .= " --branch $git_branch";
+        $command .= " --branch $git_branch";
       }
     }
     // If the platform has been verified and has a branch and git url
@@ -149,13 +150,26 @@ function drush_devshop_provision_pre_hosting_task() {
       $git_branch = $platform->git_branch;
       
       // Build the command string
-      $cmd = "git checkout --branch $git_branch";
+      $command = "git checkout $git_branch";
     }
     
     // Execute
-    if (!empty($cmd)){
-       drush_log('[DEVSHOP] Running: ' . $cmd);
-       d()->server->shell_exec($cmd);
+    if (!empty($command)){
+       drush_log('[DEVSHOP] Running: ' . $command);
+       
+      // @TODO: Create a d()->server->shell_cd_and_exec() function
+      //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
+      // So instead, this is the code from d()->server->shell_exec
+      // d()->server->shell_exec($cmd);
+      if (provision_is_local_host(d()->server->remote_host)) {
+        return drush_shell_cd_and_exec($root, escapeshellcmd($command));
+      }
+      else {
+        return drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
+      }
+       
+       $output = drush_shell_exec_output();
+       drush_log('Shell Output: ' . implode("\n", $output) , 'notice');
     }
     
   }
