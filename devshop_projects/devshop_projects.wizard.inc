@@ -46,12 +46,28 @@ function devshop_projects_create_wizard($step = NULL){
       //$form_info['show back'] = FALSE;
     }
   }
-  
+  dsm($project, 'project');
   // Generate our ctools form and output
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
 }
 
+/**
+ * Nodemaker
+ */
+function _devshop_projects_node_create($type, $node = stdClass){
+  global $user;
+  
+  // @TODO: Validate type
+  $node->type = $type;
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->name = $user->name;
+  if ($node = node_submit($node)) {
+    node_save($node);
+  }
+  return $node;
+}
 /**
  * The form_info for the ctools wizard
  */
@@ -183,10 +199,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
  */
 function devshop_project_create_step_git_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
-  $project->git_url = $form_state['values']['git_url'];
-  
   // @TODO: Check for duplicate project name here.
-  
 }
 
 /**
@@ -199,11 +212,13 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project->git_url = $form_state['values']['git_url'];
   $project->title = $project_name = $form_state['values']['title'];
 
-  if (empty($project->nid)){
+  if (empty($project->project_nid)){
     // Create the project node now.  We will update it with the chosen path.
     // This is so we can check for branches and save the hosting_context as soon
     // as possible.
-    $node = $project;
+    $node = new stdClass;
+    $node->title = $project->title;
+    $node->git_url = $project->git_url;
     $node->type = 'project';
     $node->status = 1;
     $node->uid = $user->uid;
@@ -212,11 +227,11 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
       node_save($node);
     }
     if ($node->nid){
-      $project->nid;
+      $project->project_nid;
     }
   }
   
-  // Saving the project node now, with these defaults based on the name.
+  // Now that we have the project name, set the defaults for code path and project URL
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
   
   // Setup project url.
@@ -314,7 +329,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     '#theme' => 'devshop_project_create_platforms_table',
     '#tree' => TRUE,
   );
-  
   foreach ($default_platforms as $env) {
     $form['default_platforms'][$env] = array(
       '#tree' => TRUE,
@@ -322,7 +336,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     $form['default_platforms'][$env]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => $env,
-      '#default_value' => isset($project->default_platforms[$env]),
+      '#default_value' => !empty($project->default_platforms[$env]),
     );
     $form['default_platforms'][$env]['branch'] = array(
         '#type' => 'select',
@@ -368,8 +382,12 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
         // If you chose a default platform, you must choose a branch
         form_set_error("default_platforms][$env][branch", t('You must choose a branch to create a platform.'));
       }
+    } else {
+      // Set a null value.  Otherwise this comes through as an array.
+      form_set_value($form['default_platforms'][$env], NULL, $form_state);
     }
   }
+  
   $branch_platforms = array_filter($values['branch_platforms']);
   if (!empty($branch_platforms)){
     $none_chosen = FALSE;
@@ -392,12 +410,24 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
 
-  // Set Values
-  $project->default_platforms = $values['default_platforms'];
-  $project->branch_platforms = $values['branch_platforms'];
+  // Get platforms from form values and save into our object
+  $project->default_platforms = array_filter($values['default_platforms']);
+  $project->branch_platforms = array_filter($values['branch_platforms']);
   
-  // Run a "Create Platform" task for the chosen platforms.
-  
+  // Create these platforms
+  if (empty($project->platforms)){
+    $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
+    foreach ($all_platforms as $platform_name => $branch) {
+      // Save the damn platform nodes
+      $platform = new stdClass;
+      $platform->title = $project->name . '_' . $platform_name;
+      $platform->project = $project->name;
+      $platform->git_branch = $branch;
+
+      $platform_node = _devshop_projects_node_create('platform', $project);
+      dsm($platform_node, $platform_node->title);
+    }
+  }
   
 }
 
@@ -412,6 +442,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
  */
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
-  
+  dsm($project);
   
 }
