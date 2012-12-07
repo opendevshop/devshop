@@ -32,6 +32,7 @@ function devshop_projects_node_info() {
  *   $node->project : The context name of the project.
  *   $node->environment: The type of environment this platform or site is:
  *	can be dev, test, or live.
+ *   $node->git_branch: The current git branch the project lives on.
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
@@ -44,7 +45,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       return $data;
     }
     
-     // Display Project info
+    // Display Project info
     if ($op == 'view'){
       $project = node_load($node->project_nid);
       if (!empty($project)){
