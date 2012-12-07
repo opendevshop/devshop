@@ -453,4 +453,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
  */
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
+  
+  
+  
 }
