@@ -23,17 +23,17 @@ function devshop_provision_drush_exit(){
  * Implementation of hook_drush_command().
  */
 function devshop_provision_drush_command() {
-  $items['provision-devshop-create'] = array(
-    'description' => 'Create a DevShop Project with three platforms and three sites for dev, test, and live.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'arguments' => array(
-      'git-url' => 'The URL of a git repo to use to create the platforms.',
-      'path' => 'Desired project path.',
-      'branch' => 'Branch (not yet implemented!)',
-      'retry' => 'Retry the create.',
-    ),
-    'aliases' => array('create-project'),
-  );
+  //$items['provision-devshop-create'] = array(
+  //  'description' => 'Create a DevShop Project with three platforms and three sites for dev, test, and live.',
+  //  'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  //  'arguments' => array(
+  //    'git-url' => 'The URL of a git repo to use to create the platforms.',
+  //    'path' => 'Desired project path.',
+  //    'branch' => 'Branch (not yet implemented!)',
+  //    'retry' => 'Retry the create.',
+  //  ),
+  //  'aliases' => array('create-project'),
+  //);
   $items['provision-devshop-delete'] = array(
     'description' => 'Delete a DevShop Project and all associated sites and platforms.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -110,8 +110,56 @@ function devshop_provision_drush_command() {
 
 }
 
+/**
+ * Implements drush_HOOK_pre_COMMAND()
+ *
+ * This runs for each tasks during the command
+ *    drush @hostmaster hosting-tasks
+ *
+ * NOTE: This ONLY runs when being called this way.
+ * This hook should ONLY be used to pass Options from a hostmaster task form to 
+ * the $task object.
+ */
 function drush_devshop_provision_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
+
+  // Verify Platform
+  // For our platforms, we have to clone it if it has a git_remote
+  // If it has a git branch, we should checkout as well.
+  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->git_url)) {
+    
+    $platform = $task->ref;
+    $root = $platform->publish_path;
+    $git_remote = $platform->git_url;
+    $git_branch = $platform->git_branch;
+    
+    if (!$platform->verified){
+      drush_log(dt("[DEVSHOP] First verification: cloning from !git", array('!git' => $platform->git_url)));
+      
+      // Build the command string
+      $cmd = "git clone $git_remote $root";
+      if ($git_branch) {
+        $cmd .= " --branch $git_branch";
+      }
+    }
+    // If the platform has been verified and has a branch and git url
+    else {
+      $root = $platform->publish_path;
+      $git_remote = $platform->git_url;
+      $git_branch = $platform->git_branch;
+      
+      // Build the command string
+      $cmd = "git checkout --branch $git_branch";
+    }
+    
+    // Execute
+    if (!empty($cmd)){
+       drush_log('[DEVSHOP] Running: ' . $cmd);
+       d()->server->shell_exec($cmd);
+    }
+    
+  }
+  
   // Pull
   if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
     $task->options['no-update'] = !$task->task_args['update'];
