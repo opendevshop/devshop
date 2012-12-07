@@ -76,7 +76,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 	
 	// Save to table
 	// @TODO: start saving branch here too
-	db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment);
+	db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type, git_branch) VALUES (%d, %d, "%s", "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment, $node->git_branch);
       }
     }
   }
