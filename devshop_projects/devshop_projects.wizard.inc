@@ -453,7 +453,35 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
  */
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
+  $completed = TRUE;
   
+
+  // Display the platforms
+  $rows = array();
+  $header = array(t('Name'), t('Status'));
+  foreach ($project->platforms as $name => $node){
+    $row = array();
+    $row[] = $name;
+    $row[] = $name->verified? t('Verified'): t('Verification Pending');
+    $rows[] = $row;
+    
+    if (!$name->verified){
+      $completed = FALSE;
+    }
+  }
+  
+  if ($completed){
+    $form['help'] = array(
+      '#type' => 'markup',
+      '#value' => 'Now you have to choose your install profile.',
+    );
+  }
+  
+  $form['platforms'] = array(
+    '#type' => 'markup',
+    '#value' => theme('table', $header, $rows),
+  );
+
   
   
 }
