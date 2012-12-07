@@ -49,16 +49,16 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     if ($op == 'view'){
       if (!empty($node->project)){
         $node->content['info']['project'] = array(
-					'#type' => 'item',
-					'#title' => t('Project'),
-					'#value' => l($node->project, "node/$project->project_nid"),
-					'#weight' => -12
-        );
+	  '#type' => 'item',
+	  '#title' => t('Project'),
+	  '#value' => l($node->project, "node/$project->project_nid"),
+	  '#weight' => -12,
+	);
          $node->content['info']['env'] = array(
-					'#type' => 'item',
-					'#title' => t('Environment Type'),
-					'#value' => $node->environment,
-					'#weight' => -11
+	  '#type' => 'item',
+	  '#title' => t('Environment Type'),
+	  '#value' => $node->environment,
+	  '#weight' => -11,
         );
       }
     }
@@ -71,12 +71,12 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     // On insert or update, insert records saving this objects project and environment
     if ($op = 'update' || $op = 'insert') {
       if (!empty($node->project) && !empty($node->environment)) {
-				// Get the project node by name.
-				$project = hosting_context_load($node->project);
-				
-				// Save to table
-				// @TODO: start saving branch here too
-				db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment);
+	// Get the project node by name.
+	$project = hosting_context_load($node->project);
+	
+	// Save to table
+	// @TODO: start saving branch here too
+	db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment);
       }
     }
   }
