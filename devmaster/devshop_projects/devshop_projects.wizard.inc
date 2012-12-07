@@ -227,7 +227,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
       node_save($node);
     }
     if ($node->nid){
-      $project->project_nid;
+      $project->project_nid = $node->nid;
     }
   }
   
@@ -305,7 +305,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
     
-  $project_node = node_load($project->nid);
+  $project_node = node_load($project->project_nid);
   
   if (empty($project_node->git_branches)){
     
