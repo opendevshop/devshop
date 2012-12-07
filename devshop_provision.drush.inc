@@ -134,7 +134,7 @@ function drush_devshop_provision_pre_hosting_task() {
     $git_branch = $platform->git_branch;
     
     // Check if a repo exists
-    if (!provision_git_is_repo($root)){
+    if (!drush_shell_cd_and_exec($repo_path, 'git status')){
       drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
       
       // Build the command string
