@@ -474,37 +474,36 @@ function devshop_project_create_step_install(&$form, &$form_state) {
     
     // Collect install profiles
     $profiles[$name] = hosting_get_profiles($platform->nid);
-    
     if (!isset($available_profiles)){
       $available_profiles = $profiles[$name];
     } else {
-      $available_profiles = array_intersect_key($profiles[$name]);
+      $available_profiles = array_intersect_key($profiles[$name], $available_profiles);
     }
   }
   
-  if ($completed){
+  // Provide something for people while they wait.
+  if (!$completed){
     $form['help'] = array(
       '#type' => 'markup',
-      '#value' => 'Now you have to choose your install profile.',
+      '#value' => t('Please wait while we download and verify your drupal code.'),
+    );
+    
+  } else {
+    // Install Profile
+    // @TODO: Handle no available profiles
+    $form['install_profile'] = array(
+      '#type' => 'radios',
+      '#options' => $available_profiles,
+      '#title' => t('Project Install Profile'),
+      '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.'),
     );
   }
   
-  
-  // Install Profile
-  // @TODO: Handle no available profiles
-  $form['install_profile'] = array(
-    '#type' => 'radios',
-    '#options' => $available_profiles,
-    '#title' => t('Project Install Profile'),
-    '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.'),
-  );
-
-  
+   // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
   $form['platforms'] = array(
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
 
-  
   
 }
