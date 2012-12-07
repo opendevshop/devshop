@@ -222,7 +222,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $node->title = $project->title;
     $node->git_url = $project->git_url;
     $node->type = 'project';
-    $node->status = 1;
+    $node->status = 0;
     $node->uid = $user->uid;
     $node->name = $user->name;
     if ($node = node_submit($node)) {
@@ -437,7 +437,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform->environment = $platform_name;
       
       $platform_node = _devshop_projects_node_create('platform', $platform);
-      $project->platforms[$platform_name] = $platform_node;
+      $project->platforms[$platform_name] = $platform_node->nid;
     }
   }
 }
@@ -458,14 +458,16 @@ function devshop_project_create_step_install(&$form, &$form_state) {
 
   // Display the platforms
   $rows = array();
-  $header = array(t('Name'), t('Status'));
-  foreach ($project->platforms as $name => $node){
+  $header = array(t('Name'), t('Branch'), t('Status'));
+  foreach ($project->platforms as $name => $nid){
+    $platform = node_load($nid);
     $row = array();
     $row[] = $name;
-    $row[] = $name->verified? t('Verified'): t('Verification Pending');
+    $row[] = $platform->git_branch;
+    $row[] = $platform->verified? t('Verified'): t('Verification Pending');
     $rows[] = $row;
     
-    if (!$name->verified){
+    if (!$platform->verified){
       $completed = FALSE;
     }
   }
