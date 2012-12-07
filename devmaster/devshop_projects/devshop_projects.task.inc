@@ -34,12 +34,11 @@ function devshop_projects_hosting_tasks() {
 
   return $tasks;
 }
-
 /**
  * Implements hook_hosting_project_context_options()
  * 
- * This transfers data from the node to the aegir context object (the alias!)
- * For project entities.
+ * This transfers data from the node to thes aegir context object (the alias!)
+ * For project entities.  This is where we find the branches and tags on the remote.
  */
 function devshop_projects_hosting_project_context_options(&$task) {
   
@@ -61,6 +60,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['git_tags'] = $branches['tags'];
 }
 
+/**
+ * Helpfer for getting branches and tags from a git URL
+ */
 function getBranchesAndTags($git_url = NULL){
   if (is_null($git_url)){
     $git_url = drush_get_option('git_url');
@@ -114,7 +116,8 @@ function getBranchesAndTags($git_url = NULL){
  * For site entities.
  */
 function devshop_projects_hosting_site_context_options(&$task) {
-  $task->context_options['project'] = $task->ref->git_url;
+  $task->context_options['project'] = $task->ref->project;
+  $task->context_options['nerd'] = 'vision';
 }
 
 /**
@@ -124,7 +127,13 @@ function devshop_projects_hosting_site_context_options(&$task) {
  * For site entities.
  */
 function devshop_projects_hosting_platform_context_options(&$task) {
-  $task->context_options['project'] = $task->ref->project;
+  if (!empty($task->ref->project)){
+    $task->context_options['project'] = $task->ref->project;
+    $task->properties['task properties'] = 'works';
+    $task->ref->properties['task ref properties'] = 'works';
+    
+    d()->setProperty('setProperty', 'works');
+  }
 }
 
 /*
