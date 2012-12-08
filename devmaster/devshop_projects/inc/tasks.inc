@@ -13,27 +13,50 @@ function devshop_projects_hosting_tasks() {
     'title' => t('Verify Project'),
     'description' => t('Verifies access to the git repository, downloads branch and tag information.'),
     'provision_save' => TRUE,
+    'access callback' => 'devshop_hosting_task_menu_access',
   );
-  $tasks['project']['devshop-create'] = array(
-    'title' => t('Create Project'),
-    'description' => t('Clones the repo, and creates the platforms.'),
-    'provision_save' => TRUE,
+  $tasks['project']['create'] = array(
+    'title' => t('Create New Platform'),
+    'description' => t('Creates a new platform within this project.'),
+    'access callback' => 'devshop_hosting_task_menu_access',
+    'dialog' => TRUE,
   );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
+    'access callback' => 'devshop_hosting_task_menu_access',
+    'dialog' => TRUE,
   );
-  $tasks['project']['devshop-install'] = array(
-    'title' => t('Install Sites'),
-    'description' => t('Runs drupal installation on each of the three platforms.'),
-  );
-  $tasks['project']['devshop-platform-create'] = array(
-    'title' => t('Create Platform'),
-    'description' => t('Create a new platform to add to an existin project.'),
-  );
-
   return $tasks;
 }
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Commit" task.
+ */
+function devshop_hosting_hosting_task_create_form($node) {
+
+  $form['message'] = array(
+    '#title' => t('Commit Message'),
+    '#type' => 'textarea',
+    '#description' => $descr,
+  );
+  $form['push'] = array(
+    '#title' => t('Push code after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Force revert features after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  // @TODO: Provide a DIFF display to give the user an idea of what has changed.
+  return $form;
+}
+
+
 /**
  * Implements hook_hosting_project_context_options()
  * 
