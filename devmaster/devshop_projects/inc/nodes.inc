@@ -183,7 +183,7 @@ function devshop_projects_load($node) {
   $additions['project_objects'] = $objects;
 
   // Set status
-  $additions['project_status'] = devshop_project_status((object) $additions); 
+  $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)); 
   return $additions;
 }
 
