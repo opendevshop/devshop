@@ -2,8 +2,8 @@
 
 /**
  * @file devshop_projects.module
- * a module in the DevShop module group which enables the user to create 
- * proects and group sites/platforms into project groups.
+ *
+ * Provides Node Type, UI, and tools for DevShop Projects.
  */
 
 include_once('devshop_projects.form.inc');
@@ -12,6 +12,9 @@ include_once('devshop_projects.task.inc');
 
 /**
  * Implementation of hook_perm()
+ *
+ * Since we have a node type, "create project content permission is
+ * automatically added by Drupal
  */
 function devshop_projects_perm() {
   return array(
@@ -33,90 +36,35 @@ function devshop_projects_menu() {
     'menu_name' => 'primary-links',
     'weight' => 1,
   );
-
-  $items['hosting/projects/platform/create/%'] = array(
-    'title' => 'Create and add a platform',
-    'description' => 'Create and add a platform to an existing project',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_projects_platform_create_form', 4),
-    'access arguments' => array('view projects'),
-  );
-
-  $items['hosting/projects/delete/%'] = array(
-    'title' => t('Delete Project'),
-    'description' => 'Delete a project and all of it\'s associated sites and platforms', 
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_projects_project_delete_form', 3),
-    'access arguments' => array('delete project'),
-  );
-
+  //
+  //$items['hosting/projects/platform/create/%'] = array(
+  //  'title' => 'Create and add a platform',
+  //  'description' => 'Create and add a platform to an existing project',
+  //  'page callback' => 'drupal_get_form',
+  //  'page arguments' => array('devshop_projects_platform_create_form', 4),
+  //  'access arguments' => array('view projects'),
+  //);
+  //
+  //$items['hosting/projects/delete/%'] = array(
+  //  'title' => t('Delete Project'),
+  //  'description' => 'Delete a project and all of it\'s associated sites and platforms', 
+  //  'page callback' => 'drupal_get_form',
+  //  'page arguments' => array('devshop_projects_project_delete_form', 3),
+  //  'access arguments' => array('delete project'),
+  //);
   return ($items);
 }
 
 /**
  * Implementation of hook_menu_alter()
+ *
+ * Replaces node/add/project with a ctools wizard.
  */
 function devshop_projects_menu_alter(&$items) {
-  //$items['hosting/tasks/%node/list']['page callback'] = 'devshop_projects_hosting_task_ajax_list';
-  //$items['hosting/js']['page callback'] = 'devshop_projects_hosting_js_page';
-  
-  
   $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
   $items['node/add/project']['page arguments'] = array(3);
   $items['node/add/project']['file'] = 'devshop_projects.wizard.inc';
   $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects');
-}
-
-/**
- * Replacement menu callback for hosting_task_ajax_list
- */
-function devshop_projects_hosting_task_ajax_list($node) {
-  if ($node->type == 'project') {
-    module_load_include('tasks.inc', 'devshop_projects');
-    $return['markup'] = devshop_projects_hosting_task_table($node);
-    $return['changed'] = $node->changed;
-    drupal_json($return);
-    exit();
-  } else {
-    hosting_task_ajax_list($node);
-  }
-}
-
-/**
- * Replacement menu callback for hosting_js_page().
- *
- * This is used for Project Tasks.  Since the tasks are really tasks on the site nodes,
- * we have to modify the JS call to modify what node gets passed in.
- */
-function devshop_projects_hosting_js_page(){
-  $args = func_get_args();
-  $nid = &$args[1];
-  $task = &$args[2];
-
-  // Get task type from $task argument... For whatver reason, they don't make it an argument
-  list($aegir_context, $task_type) = explode('_', $task);
-  
-  // If this is coming from a project page:
-  if ($aegir_context == 'project'){
-    // Change the task object from project to site
-    $task = str_replace('project', 'site', $task);
-    
-    // Load the project
-    $project = node_load($nid);
-    $sites = array_flip($project->project_objects['site']);
-    
-    // Change the NID based on the task type
-    if ($task_type == 'devshop-commit') {
-      $nid = $sites['dev'];
-    } elseif ($task_type == 'devshop-sync') {
-      $nid = $sites['test'];
-    } elseif ($task_type == 'devshop-pull') {
-      $nid = $sites['live'];
-    }
-  }
-  
-  $output .= call_user_func_array('hosting_js_page', $args);
-  return $output;
 }
 
 /**
@@ -142,150 +90,76 @@ function devshop_projects_project_status(){
 
 /**
  * Implements hook_hosting_drush_aliases_name()
+ *
+ * See http://drupal.org/project/hosting_drush_aliases
  */
 function devshop_projects_hosting_drush_aliases_name($node) {
   if (isset($node->project_name)){
     return $node->project_name .".". $node->project_environment;
   }
 }
+//
+///*
+// * Helper function to create a site in a project
+// */
+//function devshop_projects_create_site($project_node, $platform_node, $env) {
+//
+//  global $user;
+//    
+//  // Create the site nodes
+//  $node = new stdClass();
+//  $node->type = 'site';
+//  $node->status = 1;
+//  $node->uid = $user->uid;
+//  $node->title = $env .'.'. $project_node->base_url;
+//
+//  // Aegir properties
+//  // @TODO: better client support
+//  $node->client = HOSTING_DEFAULT_CLIENT;  
+//  $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
+//    
+//  $node->platform = $platform_node->nid;
+//  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
+//    
+//  //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
+//    
+//  // @TODO: Improve site language handling?
+//  $node->site_language = !empty($user->language)? $user->language: 'en';
+//
+//  // Save the node
+//  if ($node = node_submit($node)) {
+//    node_save($node);
+//      
+//    //And save the association to the project
+//    db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
+//  }
+//}
 
-/*
- * Helper function to create a site in a project
- */
-function devshop_projects_create_site($project_node, $platform_node, $env) {
-
-  global $user;
-    
-  // Create the site nodes
-  $node = new stdClass();
-  $node->type = 'site';
-  $node->status = 1;
-  $node->uid = $user->uid;
-  $node->title = $env .'.'. $project_node->base_url;
-
-  // Aegir properties
-  // @TODO: better client support
-  $node->client = HOSTING_DEFAULT_CLIENT;  
-  $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
-    
-  $node->platform = $platform_node->nid;
-  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
-    
-  //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
-    
-  // @TODO: Improve site language handling?
-  $node->site_language = !empty($user->language)? $user->language: 'en';
-
-  // Save the node
-  if ($node = node_submit($node)) {
-    node_save($node);
-      
-    //And save the association to the project
-    db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type) VALUES (%d, %d, "%s", "%s")', $project_node->nid, $node->nid, $node->type, $env);
-  }
-}
-
-/**
- * Helper function which writes a serialize array in the project file
- */
-function devshop_projects_project_data_set($nid, $data) {
-  db_query("UPDATE {hosting_devshop_project} SET data = '%s' WHERE nid = %d",
-	   serialize($data), $nid);
-}
-
-/**
- * Helper function which reads the serialize array in the project file
- */
-function devshop_projects_project_data_get($nid) {
-
-  $sdata = db_result(db_query("SELECT data FROM {hosting_devshop_project} " .
-			     "WHERE nid = %d", $nid));
-
-  if (!$sdata || strlen($sdata) < 1) {
-    $data = array();
-  }
-  else {
-    $data = unserialize($sdata);
-  }
-
-  return $data;
-}
+///**
+// * Helper function which writes a serialize array in the project file
+// */
+//function devshop_projects_project_data_set($nid, $data) {
+//  db_query("UPDATE {hosting_devshop_project} SET data = '%s' WHERE nid = %d",
+//	   serialize($data), $nid);
+//}
+//
+///**
+// * Helper function which reads the serialize array in the project file
+// */
+//function devshop_projects_project_data_get($nid) {
+//
+//  $sdata = db_result(db_query("SELECT data FROM {hosting_devshop_project} " .
+//			     "WHERE nid = %d", $nid));
+//
+//  if (!$sdata || strlen($sdata) < 1) {
+//    $data = array();
+//  }
+//  else {
+//    $data = unserialize($sdata);
+//  }
+//
+//  return $data;
+//}
 
 
-/**
- * A replacement for hosting_task_table, to allow us to add
- * tasks from other nodes.
- */
-function devshop_projects_hosting_task_table($node) {
-  $output = '';
 
-  $headers[] = t('Task');
-  $headers[] = array(
-    'data' => t('Actions'),
-    'class' => 'hosting-actions',
-  );
-
-  $tasklist = hosting_task_fetch_tasks($node->nid);
-  if ($node->project_status != 'sites_ready'){
-    return;
-  }
-  
-  // Get tasklists for all sites
-  $tasks = array();
-  foreach ($node->project_objects['site'] as $nid => $env){
-    $site_nodes[$env] = node_load($nid);
-    $tasks[$env] = hosting_task_fetch_tasks($nid);
-  }
-  
-  // Add our own specific tasks
-  $tasklist['devshop-commit'] = $tasks['dev']['devshop-commit'];
-  $tasklist['devshop-sync'] = $tasks['test']['devshop-sync'];
-  $tasklist['devshop-pull'] = $tasks['live']['devshop-pull'];
-
-  // Enhance titles
-  $tasklist['devshop-commit']['title'] .= ' on ' . l($site_nodes['dev']->title, 'http://'. $site_nodes['dev']->title, array('attributes' => array('target' => '_blank')));
-  $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, 'http://'. $site_nodes['test']->title, array('attributes' => array('target' => '_blank')));
-  $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, 'http://'. $site_nodes['live']->title, array('attributes' => array('target' => '_blank')));
-
-  // Override some
-  unset($tasklist['devshop-create']['task_permitted']);
-  unset($tasklist['devshop-create']['nid']);
-
-  unset($tasklist['devshop-platform-create']['task_permitted']);
-  unset($tasklist['devshop-platform-create']['nid']);
-  
-  foreach ($tasklist as $task => $info) {
-    $row = array();
-
-    if (!isset($info['nid']) && !$info['task_permitted']) {
-      // just don't show those tasks, since we'll not be able to run them
-      continue;
-    }
-
-    $row['type'] = array(
-      'data' => $info['title'],
-      'class' => 'hosting-status',
-    );
-    $actions = array();
-
-    if (isset($info['task_status']) && ($info['task_status'] == 0)) {
-      $actions['cancel'] = _hosting_task_button(t('Cancel'), sprintf("hosting/tasks/%d/cancel", $info['nid']), t("Cancel the task and remove it from the queue"), 'hosting-button-stop', !$info['task_permitted']);
-    }
-    else {
-      $actions['run'] = _hosting_task_button(t('Run'), sprintf("node/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
-    }
-
-    $actions['log'] = _hosting_task_button(t('Log'), 'node/' . $info['nid'], t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
-    $row['actions'] = array(
-      'data' => implode('', $actions), 
-      'class' => 'hosting-actions',
-    );
-
-    $rows[] = array(
-      'data' => $row,
-      'class' => $info['class'],
-    );
-  }
-  $output .= theme('table', $headers, $rows, array('class' => 'hosting-table'));
-  return $output;
-}
