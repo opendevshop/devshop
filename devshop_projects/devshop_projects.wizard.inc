@@ -47,8 +47,6 @@ function devshop_projects_create_wizard($step = NULL){
     }
   }
 
-  dsm($project, 'project');
-
   // Generate our ctools form and output
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
@@ -409,7 +407,6 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 
   // Filter out branch platforms forms_api so we can keep the submit clean.
   form_set_value($form['branch_platforms'], array_filter($values['branch_platforms']), $form_state);
-
 }
 
 /**
@@ -426,6 +423,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Create these platforms
   $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
+
   foreach ($all_platforms as $platform_name => $branch) {
 
     if (empty($project->platforms[$platform_name])){
