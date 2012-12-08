@@ -113,6 +113,12 @@ function devshop_project_status($node){
   $platforms_ready = TRUE;
   $sites_ready = TRUE;
   $sites_installing = FALSE;
+  
+  // PROJECT STATUS
+  if (empty($node->project_objects) || empty($node->git_branches)){
+    return 'preparing-project';
+  }
+  
   // PLATFORMS STATUS: Determine if all platforms are verified.
   if (isset($node->project_objects['platform'])){
     foreach ($node->project_objects['platform'] as $nid => $env){
