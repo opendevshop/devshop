@@ -44,12 +44,12 @@ function devshop_projects_menu() {
   // hosting tasks ajax pages.
   // @TODO: This doesn't work and is making me very angry!
   foreach (hosting_available_tasks('project') as $task => $info){
-    $path = 'node/%devshop_project_node/project_' . $task;
+    $path = 'node/%/project_' . $task;
     $items[$path] = array(
       'title' => $info['title'],
       'description' => $info['description'],
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('hosting_task_confirm_form', 1, $task),
+      'page callback' => 'devshop_projects_hosting_task_confirm_form_page',
+      'page arguments' => array(1, $task),
       'access callback' => 'hosting_task_menu_access_csrf',
       'access arguments' => array(1, $task),
       'type' => MENU_CALLBACK,
@@ -59,6 +59,10 @@ function devshop_projects_menu() {
   return ($items);
 }
 
+function devshop_projects_hosting_task_confirm_form_page($nid, $task){
+  $node = node_load($nid);
+  return drupal_get_form('hosting_task_confirm_form', $node, $task);
+}
 /**
  * Implementation of hook_menu_alter()
  *
@@ -87,7 +91,7 @@ function devshop_projects_menu_alter(&$items) {
  * @see hosting_task_menu()
  */
 function devshop_hosting_task_menu_access($node, $task) {
-  if (!isset($node->nid) && is_int($node)){
+  if (!isset($node->nid)){
     $node = node_load($node);
   }
   if (user_access("create " . $task . " task")) {
