@@ -113,7 +113,6 @@ function devshop_project_status($node){
   $platforms_ready = TRUE;
   $sites_ready = TRUE;
   $sites_installing = FALSE;
-
   // PLATFORMS STATUS: Determine if all platforms are verified.
   if (isset($node->project_objects['platform'])){
     foreach ($node->project_objects['platform'] as $nid => $env){
@@ -127,6 +126,7 @@ function devshop_project_status($node){
   }
   // SITES STATUS: Determine if sites exist and are enabled
   if ($platforms_ready && isset($node->project_objects['site'])){
+
     foreach ($node->project_objects['site'] as $nid => $env){
       $site_nodes[$env] = node_load($nid);
       if ($site_nodes[$env]->site_status == 0){
@@ -137,7 +137,6 @@ function devshop_project_status($node){
   } else {
     $sites_ready = FALSE;
   }
-
   return $sites_ready? 'sites_ready': (
     $sites_installing? 'sites_installing': (
       $platforms_ready? 'platforms_ready': 'platforms_verifying'
@@ -177,9 +176,10 @@ function devshop_projects_create_site($project_node, $platform_node, $env) {
     
   $node->platform = $platform_node->nid;
   $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
-    
-  //$node->port  = db_result(db_query("SELECT ports FROM {hosting_platform} p WHERE p.nid = %d", $nid));
-    
+  
+  $node->environment = $env;
+  $node->project = $project_node->title;
+  
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
 
