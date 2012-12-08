@@ -157,37 +157,8 @@ function devshop_projects_validate($node, &$form) {
  */
 function devshop_projects_install_sites_form($form_state, $project_node) {
 
-    $form = array();
-    $platforms_ready = TRUE;
-    $sites_ready = TRUE;
-    $sites_installing = FALSE;
-
-    // PLATFORMS STATUS: Determine if all platforms are verified.
-    if (isset($project_node->project_objects['platform'])){
-      foreach ($project_node->project_objects['platform'] as $nid => $env){
-        $platform_nodes[$env] = node_load($nid);
-        if ($platform_nodes[$env]->platform_status == 0){
-          $platforms_ready = FALSE;
-        }
-      }
-    } else {
-      $platforms_ready = FALSE;
-    }
-    // SITES STATUS: Determine if sites exist and are enabled
-    if ($platforms_ready && isset($project_node->project_objects['site'])){
-      foreach ($project_node->project_objects['site'] as $nid => $env){
-        $site_nodes[$env] = node_load($nid);
-        if ($site_nodes[$env]->site_status == 0){
-          $sites_ready = FALSE;
-          $sites_installing = TRUE;
-        }
-      }
-    } else {
-      $sites_ready = FALSE;
-    }
-
     // OUTPUT
-    if ($sites_installing) {
+    if ($project_node->project_status == 'sites_installing') {
       $form['note'] = array(
         '#type' => 'item',
         '#title' => t('Sites Installing'),
