@@ -6,12 +6,12 @@
  * Provides Node Type, UI, and tools for DevShop Projects.
  */
 
-include_once('devshop_projects.form.inc');
-include_once('devshop_projects.node.inc');
-include_once('devshop_projects.task.inc');
+include_once('inc/forms.inc');
+include_once('inc/nodes.inc');
+include_once('inc/tasks.inc');
 
 // Lets keep front end code here.
-include_once('inc/devshop_projects.ui.inc');
+include_once('inc/ui.inc');
 
 /**
  * Implementation of hook_perm()
@@ -66,8 +66,8 @@ function devshop_projects_menu() {
 function devshop_projects_menu_alter(&$items) {
   $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
   $items['node/add/project']['page arguments'] = array(3);
-  $items['node/add/project']['file'] = 'devshop_projects.wizard.inc';
-  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects');
+  $items['node/add/project']['file'] = 'create-wizard.inc';
+  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
 }
 
 /**
