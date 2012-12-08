@@ -39,22 +39,23 @@ function devshop_projects_menu() {
     'menu_name' => 'primary-links',
     'weight' => 1,
   );
-  //
-  //$items['hosting/projects/platform/create/%'] = array(
-  //  'title' => 'Create and add a platform',
-  //  'description' => 'Create and add a platform to an existing project',
-  //  'page callback' => 'drupal_get_form',
-  //  'page arguments' => array('devshop_projects_platform_create_form', 4),
-  //  'access arguments' => array('view projects'),
-  //);
-  //
-  //$items['hosting/projects/delete/%'] = array(
-  //  'title' => t('Delete Project'),
-  //  'description' => 'Delete a project and all of it\'s associated sites and platforms', 
-  //  'page callback' => 'drupal_get_form',
-  //  'page arguments' => array('devshop_projects_project_delete_form', 3),
-  //  'access arguments' => array('delete project'),
-  //);
+  
+  
+  // hosting tasks ajax pages.
+  // @TODO: This doesn't work and is making me very angry!
+  foreach (hosting_available_tasks('project') as $task => $info){
+    $path = 'node/%devshop_project_node/project_' . $task;
+    $items[$path] = array(
+      'title' => $info['title'],
+      'description' => $info['description'],
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('hosting_task_confirm_form', 1, $task),
+      'access callback' => 'hosting_task_menu_access_csrf',
+      'access arguments' => array(1, $task),
+      'type' => MENU_CALLBACK,
+    );
+    $items[$path] = array_merge($items[$path], $info);
+  }
   return ($items);
 }
 
