@@ -211,10 +211,6 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
     $header = array(t('Name'), t('Branch'), t('Status'));
     foreach ($project_node->project_objects['platform'] as $nid => $name){
 
-      //@TODO: Something is saving records in devshop_project_objects with object_nid = 0.
-      if (!$nid){
-        continue;
-      }
       $platform = node_load($nid);
       $row = array();
       $row[] = $name;
