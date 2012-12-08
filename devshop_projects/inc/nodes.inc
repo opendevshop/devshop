@@ -63,12 +63,12 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     }
 
     // On update or delete, delete the existing records.  We will replace below.
-    if ($op = 'update' || $op = 'delete') {
+    if ($op == 'update' || $op == 'delete') {
       db_query('DELETE FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid);
     }
 
     // On insert or update, insert records saving this objects project and environment
-    if ($op = 'update' || $op = 'insert') {
+    if ($op == 'update' || $op == 'insert') {
       if (!empty($node->project) && !empty($node->environment)) {
         // Get the project node by name.
         $project = hosting_context_load($node->project);
