@@ -450,6 +450,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
 /**
  * STEP 4: Form
+ * @TODO: MOVE TO PROJECT NODE FORM!
  */
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
