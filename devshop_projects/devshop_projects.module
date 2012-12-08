@@ -102,24 +102,47 @@ function devshop_hosting_task_menu_access($node, $task) {
 }
 
 /**
- * Status display
+ * Status of Project
  *
- * @TODO: All of it!
+ * @param $node
+ *   a project node
  */
-function devshop_projects_project_status(){
+function devshop_project_status($node){
   
-  if ($create_task_exists) {
-    $msg = t('Git Cloning...');
-  } elseif ($platforms_exist) {
-    $msg = t('Verifying Platforms...');
-  } elseif ($platforms_verified) {
-    $msg = t('Platforms Verified!');
-    $msg .= drupal_get_form('devshop_projects_project_site_install');
+  //Project status
+  $platforms_ready = TRUE;
+  $sites_ready = TRUE;
+  $sites_installing = FALSE;
+
+  // PLATFORMS STATUS: Determine if all platforms are verified.
+  if (isset($node->project_objects['platform'])){
+    foreach ($node->project_objects['platform'] as $nid => $env){
+      $platform_nodes[$env] = node_load($nid);
+      if (!empty($platform_nodes[$env]) && $platform_nodes[$env]->platform_status == 0){
+        $platforms_ready = FALSE;
+      }
+    }
   } else {
-    $msg = t('@TODO');
+    $platforms_ready = FALSE;
   }
-  
-  return $msg;
+  // SITES STATUS: Determine if sites exist and are enabled
+  if ($platforms_ready && isset($node->project_objects['site'])){
+    foreach ($node->project_objects['site'] as $nid => $env){
+      $site_nodes[$env] = node_load($nid);
+      if ($site_nodes[$env]->site_status == 0){
+        $sites_ready = FALSE;
+        $sites_installing = TRUE;
+      }
+    }
+  } else {
+    $sites_ready = FALSE;
+  }
+
+  return $sites_ready? 'sites_ready': (
+    $sites_installing? 'sites_installing': (
+      $platforms_ready? 'platforms_ready': 'platforms_verifying'
+    )
+  );
 }
 
 /**
