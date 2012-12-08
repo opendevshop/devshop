@@ -194,7 +194,7 @@ function devshop_projects_load($node) {
   if (isset($additions['project_objects']['platform'])){
     foreach ($additions['project_objects']['platform'] as $nid => $env){
       $platform_nodes[$env] = node_load($nid);
-      if ($platform_nodes[$env]->platform_status == 0){
+      if (!empty($platform_nodes[$env]) && $platform_nodes[$env]->platform_status == 0){
         $platforms_ready = FALSE;
       }
     }
