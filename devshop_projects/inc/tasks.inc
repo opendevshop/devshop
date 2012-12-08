@@ -15,7 +15,7 @@ function devshop_projects_hosting_tasks() {
     'provision_save' => TRUE,
     'access callback' => 'devshop_hosting_task_menu_access',
   );
-  $tasks['project']['create'] = array(
+  $tasks['project']['devshop-create'] = array(
     'title' => t('Create New Platform'),
     'description' => t('Creates a new platform within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
@@ -35,26 +35,30 @@ function devshop_projects_hosting_tasks() {
  *
  * For "Commit" task.
  */
-function hosting_task_create_form($node) {
+function hosting_task_devshop_create_form($node) {
 
-  $form['message'] = array(
-    '#title' => t('Commit Message'),
-    '#type' => 'textarea',
-    '#description' => $descr,
+  $form['branch'] = array(
+    '#title' => t('Branch'),
+    '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, re-verify your project.</em>'),
+    '#type' => 'select',
+    '#options' => $node->git_branches,
   );
-  $form['push'] = array(
-    '#title' => t('Push code after commit?'),
+  // @TODO: Add "create branch" functionality.
+  $form['platform_name'] = array(
+    '#title' => t('Platform Name'),
+    '#type' => 'textfield',
+    '#description' => t('Enter the system name of your platform.  For consistency, you should make this match the branch name.'),
+  );
+  $form['pull'] = array(
+    '#title' => t('Enable Pull on Commit'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  $form['revert'] = array(
-    '#title' => t('Force revert features after commit?'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
-  );
-  // @TODO: Provide a DIFF display to give the user an idea of what has changed.
+  
   return $form;
 }
+
+// @TODO: Validate platform name
 
 
 /**
