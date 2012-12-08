@@ -70,6 +70,32 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
 }
 
+
+/**
+ * Task access controls
+ *
+ * This function defines which tasks should be showed to the user but
+ * especially which will be accessible to him, in the permissions system.
+ *
+ * @arg $node object
+ *   the node object we're trying to access
+ *
+ * @arg $task string
+ *   the task type we're trying to do on the $node
+ *
+ * @see hosting_task_menu()
+ */
+function devshop_hosting_task_menu_access($node, $task) {
+  if (!isset($node->nid) && is_int($node)){
+    $node = node_load($node);
+  }
+  if (user_access("create " . $task . " task")) {
+    if ($node->type == 'project') {
+      return TRUE;
+    }
+  }
+}
+
 /**
  * Status display
  *
