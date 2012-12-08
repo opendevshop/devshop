@@ -219,8 +219,12 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // If not ready yet:
   if (!$node->status){
-    // Go back to the wizard.
-    //drupal_goto('node/add/project');
+    // Site install form
+    $node->content['devshop']['install'] = array(
+      '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
+      '#type' => 'markup',
+    );
+    return $node;
   }
 
 
@@ -336,11 +340,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $node->content['devshop'] = array(
     '#type' => 'fieldset',
     '#weight' => 100,
-  );
-  // Site install form
-  $node->content['devshop']['install'] = array(
-    '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
-    '#type' => 'markup',
   );
   return $node;
 }
