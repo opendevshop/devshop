@@ -1,8 +1,8 @@
 <?php
-/*
- * devshop_log.module: a module in the DevShop project which displays
- * the Git commit log for each platform. This is currently a very simple
- * minded module. It assumes the operator knows what he/she is doing.
+/**
+ * @file devshop_log.module
+ *
+ * Simply displays a git commit log for each platform.
  */
 
 /**
@@ -14,12 +14,12 @@ function devshop_log_perm() {
   );
 }
 
-/*
- * The access callback for the Git Log menu tab. Make sure
- * user has perms to veiw and and also that the node we are
+/**
+ * The access callback for the Git Log menu tab.
+ *
+ * Make sure user has perms to veiw and and also that the node we are
  * viewing is a platform node.
  */
-
 function _devshop_log_access_callback($nid) {
 
   if (!user_access('view git commit logs')) {
@@ -63,7 +63,7 @@ function devshop_log_menu() {
 
 
 /**
- * View log form
+ * View Log Page
  */
 function devshop_log_view_form($form, $nid) {
   $form['devsop_log'] = array(
@@ -112,7 +112,6 @@ function devshop_git_log_settings() {
  * This is a hack which loads the git commit log for the given
  * platform node. 
  */
-
 function _devshop_log_load($nid) {
 
   $node = node_load($nid);
