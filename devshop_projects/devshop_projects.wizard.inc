@@ -534,6 +534,7 @@ function devshop_project_create_step_install(&$form, &$form_state) {
       '#type' => 'radios',
       '#options' => $available_profiles,
       '#title' => t('Project Install Profile'),
+      '#required' => 1,
       '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.'),
     );
   }
@@ -543,6 +544,21 @@ function devshop_project_create_step_install(&$form, &$form_state) {
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
+}
 
+/**
+ * STEP 4: VALIDATE
+ */
+function devshop_project_create_step_install_validate(&$form, &$form_state) {
+
+}
+
+/**
+ * STEP 4: SUBMIT
+ */
+function devshop_project_create_step_install_submit(&$form, &$form_state) {
+
+  // @TODO: Save install profile, base_url, etc to project node.
+  // @TODO: Save site nodes to the chosen platforms
 
 }
