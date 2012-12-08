@@ -423,10 +423,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Create these platforms
   $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
-
   foreach ($all_platforms as $platform_name => $branch) {
-
-    if (empty($project->platforms[$platform_name])){
+    // If platform hasn't been created yet, do so now!
+    if (!empty($branch) && empty($project->platforms[$platform_name])){
       // Save the damn platform nodes
       $platform = new stdClass;
 
