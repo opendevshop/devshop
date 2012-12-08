@@ -1,14 +1,15 @@
 <?php
 /**
- * @file devshop_project.node.inc DevShop Project Node related hooks and
- * support function include file.
+ * @file devshop_project.node.inc
+ *
+ * DevShop Project Node related hooks and support functions.
+ * 
  */
 
 /**
  * Implementation of hook_node_info().
  */
 function devshop_projects_node_info() {
-  #configuration
   $types["project"] =  array(
     "type" => 'devshop_project',
     "name" => 'DevShop Project',
@@ -19,16 +20,14 @@ function devshop_projects_node_info() {
     "has_body" => 0,
     "body_label" => '',
     "min_word_count" => 0
-    );
-
+  );
   return $types;
 }
 
-
 /**
- * Implements hook_nodeapi()
+ * Implementation of hook_nodeapi()
  *
- * For Platforms and Sites:
+ * Handle project information for Platforms and Sites:
  *   $node->project : The context name of the project.
  *   $node->environment: The type of environment this platform or site is:
  *	can be dev, test, or live.
@@ -82,7 +81,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 }
 
 /**
- * Helper to load a project node by path
+ * Helper to load a project node by code path.
  */
 function devshop_project_load_by_path($project_path){
   $nid = db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s"', array($project_path)));
@@ -91,6 +90,12 @@ function devshop_project_load_by_path($project_path){
 
 /**
  * Implementation of hook_insert().
+ *
+ *   1. Saves data into our table.
+ *   2. Saves a hosting context name.
+ *   3. Adds a "Verify" task for this project.
+ *
+ *  @see hosting_platform_insert()
  */
 function devshop_projects_insert($node) {
   if (!isset($node->no_verify)) {
@@ -112,6 +117,10 @@ function devshop_projects_insert($node) {
 
 /**
  * Implementation of hook_update().
+ *
+ *  1. Updates our table.
+ *  2. Adds a "Verify" task for this project.
+ *  
  */
 function devshop_projects_update($node) {
 
@@ -124,6 +133,10 @@ function devshop_projects_update($node) {
   	   "WHERE nid = %d",
 	   $node->git_url, hosting_path_normalize($node->code_path),
 	   $node->base_url, serialize($data), $node->nid);
+
+  // Create hostmaster task
+  hosting_add_task($node->nid, 'verify');
+
   //
   //// If this is a rerry, kick start another devshop-create
   //if (isset($node->retry)) {
@@ -211,160 +224,3 @@ function devshop_projects_load($node) {
   return $additions;
 }
 
-/**
- * Implementation of hook_view().
- */
-function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
-
-  // If not ready yet:
-  if (!$node->status){
-    // Site install form
-    $node->content['devshop']['install'] = array(
-      '#value' => drupal_get_form('devshop_projects_install_sites_form', $node),
-      '#type' => 'markup',
-    );
-    return $node;
-  }
-
-
-  modalframe_parent_js();
-
-  $node->content['info'] = array(
-    '#prefix' => '<div id="hosting-platform-info">',
-    '#suffix' => '</div>'
-  );
-
-  $node->content['info']['git_url'] = array(
-    '#type' => 'item',
-    '#title' => t('Git URL'),
-    '#value' => $node->git_url,
-    '#weight' => -10
-  );
-
-  $node->content['info']['code_path'] = array(
-    '#type' => 'item',
-    '#title' => t('Code path'),
-    '#value' => filter_xss($node->code_path),
-    '#weight' => -8
-  );
-  $url = 'http://' . $node->base_url;
-  $node->content['info']['base_url'] = array(
-    '#type' => 'item',
-    '#title' => t('Base URL'),
-    '#value' => l($url, $url),
-    '#weight' => -10
-  );
-
-  if (!empty($node->install_profile)){
-    $node->content['info']['install_profile'] = array(
-      '#type' => 'item',
-      '#title' => t('Install profile'),
-      '#value' => ($node->install_profile),
-      '#weight' => -8
-    );
-  }
-
-  $rows = array();
-  if (isset($node->project_objects['site'])) {
-    foreach($node->project_objects['site'] as $nid => $env) {
-      $site = node_load($nid);
-      $platform = node_load($site->platform);
-      if ($site->site_status == -2 && $platform->platform_status == -2) {
-        continue;
-      }
-      $row = array();
-      if ($site->site_status != -2) {
-        $url = "http://$site->title";
-        $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
-        $row[] = l('Site', "node/$site->nid");
-      }
-      else {
-        // Site if deleted, just show the platform name
-        $row[] = $platform->title;
-        $row[] = '';
-      }
-      $row[] = l('Platform', "node/$site->platform");
-      if ($site->site_status != -2) {
-  $row[] = l('Download Database', "$url/admin/status/");
-      }
-      else {
-        $row[] = '';
-      }
-      $row[] = l('Commit Log', "node/$site->platform/gitlog");
-      $rows[] = $row;
-    }
-    $header = array();
-    $table = theme('table', $header, $rows);
-
-    $node->content['sites'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Project Environments'),
-      '#weight' => 12,
-    );
-    $node->content['sites']['table'] = array(
-      '#type' => 'item',
-      '#value' => $table,
-    );
-  }
-  if ($node->project_status == 'sites_ready'){
-    $node->content['sites']['add_platform'] = array(
-      '#type' => 'item',
-      '#value' => l(t('Create and add additional platforms'),
-      	       	      "hosting/projects/platform/create/$node->nid"),
-    );
-  }
-
-  $node->content['sites']['delete_project'] = array(
-    '#type' => 'item',
-    '#value' => l("Delete this project", "hosting/projects/delete/$node->nid")
-  );
-
-  //Tasks
-  $node->content['tasks_view'] = array(
-    '#type' => 'item',
-    //'#value' => devshop_projects_hosting_task_table($node),
-    '#value' => hosting_task_table($node),
-    '#prefix' => '<div id="hosting-task-list">',
-    '#suffix' => '</div>',
-    '#weight' => 10
-  );
-  $settings['hostingTaskRefresh'] = array(
-    'nid' => $node->nid,
-    'changed' => $node->changed,
-  );
-  drupal_add_js($settings, 'setting');
-  drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
-
-  // MAIN DISPLAY
-  $node->content['devshop'] = array(
-    '#type' => 'fieldset',
-    '#weight' => 100,
-  );
-  return $node;
-}
-
-/*
- * Callback that is invoked when the user points the brower to
- * hosting/projects. It displays a nice tabulated list of projects
- * and cool thing you can do with them.
- */
-function devshop_projects_projects_view() {
-
-  $header = array('Projects', 'Platforms', 'Sites');
-
-  $r = db_query("SELECT * FROM {hosting_devshop_project}");
-  $rows = array();
-
-  while(($proj = db_fetch_object($r))) {
-    $node = node_load($proj->nid);
-    $row = array();
-    $row[] = l($node->title, "node/$proj->nid");
-    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='platform'", $node->nid));
-    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
-    $rows[] = $row;
-  }
-
-  $output = theme('table', $header, $rows, array('class' => 'hosting-table'));
-  $output .= l(t('Create a new project?'), 'node/add/project');
-  return $output;
-}
