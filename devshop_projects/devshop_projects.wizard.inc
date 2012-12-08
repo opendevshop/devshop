@@ -55,22 +55,6 @@ function devshop_projects_create_wizard($step = NULL){
 }
 
 /**
- * Nodemaker
- */
-function _devshop_projects_node_create($type, $node = stdClass){
-  global $user;
-
-  // @TODO: Validate type
-  $node->type = $type;
-  $node->status = 1;
-  $node->uid = $user->uid;
-  $node->name = $user->name;
-  if ($node = node_submit($node)) {
-    node_save($node);
-  }
-  return $node;
-}
-/**
  * The form_info for the ctools wizard
  */
 function devshop_projects_create_wizard_info(){
@@ -113,6 +97,23 @@ function devshop_projects_create_wizard_info(){
  */
 
 /**
+ * Nodemaker
+ */
+function _devshop_projects_node_create($type, $node = stdClass){
+  global $user;
+
+  // @TODO: Validate type
+  $node->type = $type;
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->name = $user->name;
+  if ($node = node_submit($node)) {
+    node_save($node);
+  }
+  return $node;
+}
+
+/**
  * NEXT callback
  * Saves anything in $form_state['project'] to ctools cache.
  *
@@ -132,6 +133,16 @@ function devshop_projects_create_wizard_next(&$form_state) {
  */
 function devshop_projects_create_wizard_finish(&$form_state) {
   $project = &$form_state['project'];
+
+  // Save the extra options to the project
+  $node = node_load($project->project_nid);
+  $node->code_path = $project->code_path;
+  $node->base_url = $project->base_url;
+
+  // Everything else is done on the Node Page.  We will fake the last step on
+  // the node page.
+  node_save($node);
+
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'hosting/projects';
 }
@@ -455,7 +466,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
   $completed = TRUE;
-
+/*
   $profiles = array();
 
   // Display the platforms
@@ -525,6 +536,7 @@ function devshop_project_create_step_install(&$form, &$form_state) {
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
+  */
 }
 
 /**
