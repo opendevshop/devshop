@@ -185,42 +185,8 @@ function devshop_projects_load($node) {
   }
   $additions['project_objects'] = $objects;
 
-  //Project status
-  $platforms_ready = TRUE;
-  $sites_ready = TRUE;
-  $sites_installing = FALSE;
-
-  // PLATFORMS STATUS: Determine if all platforms are verified.
-  if (isset($additions['project_objects']['platform'])){
-    foreach ($additions['project_objects']['platform'] as $nid => $env){
-      $platform_nodes[$env] = node_load($nid);
-      if (!empty($platform_nodes[$env]) && $platform_nodes[$env]->platform_status == 0){
-        $platforms_ready = FALSE;
-      }
-    }
-  } else {
-    $platforms_ready = FALSE;
-  }
-  // SITES STATUS: Determine if sites exist and are enabled
-  if ($platforms_ready && isset($additions['project_objects']['site'])){
-    foreach ($additions['project_objects']['site'] as $nid => $env){
-      $site_nodes[$env] = node_load($nid);
-      if ($site_nodes[$env]->site_status == 0){
-        $sites_ready = FALSE;
-        $sites_installing = TRUE;
-      }
-    }
-  } else {
-    $sites_ready = FALSE;
-  }
-
   // Set status
-  $additions['project_status'] = $sites_ready? 'sites_ready': (
-    $sites_installing? 'sites_installing': (
-      $platforms_ready? 'platforms_ready': 'platforms_verifying'
-    )
-  );
-
+  $additions['project_status'] = devshop_project_status((object) $additions); 
   return $additions;
 }
 
