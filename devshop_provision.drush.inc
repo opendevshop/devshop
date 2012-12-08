@@ -10,7 +10,7 @@
 function devshop_provision_drush_init(){
   $list = drush_commandfile_list();
   $provision_drush_inc = $list['provision'];
-  include_once($provision_drush_inc);  
+  include_once($provision_drush_inc);
   include_once('devshop_provision.context.project.inc');
 }
 
@@ -72,9 +72,9 @@ function devshop_provision_drush_command() {
       'files' => 'Sync site files.',
     ),
     'arguments' => array(
-      'from' => 'Site alias to sync from.', 
+      'from' => 'Site alias to sync from.',
       'to' => 'Site alias to sync to.',
-    ), 
+    ),
     'aliases' => array('pds'),
   );
   $items['provision-devshop-commit'] = array(
@@ -117,7 +117,7 @@ function devshop_provision_drush_command() {
  *    drush @hostmaster hosting-tasks
  *
  * NOTE: This ONLY runs when being called this way.
- * This hook should ONLY be used to pass Options from a hostmaster task form to 
+ * This hook should ONLY be used to pass Options from a hostmaster task form to
  * the $task object.
  */
 function drush_devshop_provision_pre_hosting_task() {
@@ -127,16 +127,16 @@ function drush_devshop_provision_pre_hosting_task() {
   // For our platforms, we have to clone it if it has a git_remote
   // If it has a git branch, we should checkout as well.
   if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->git_url)) {
-    
+
     $platform = $task->ref;
     $root = $platform->publish_path;
     $git_remote = $platform->git_url;
     $git_branch = $platform->git_branch;
-    
+
     // Check if a repo exists
     if (!is_dir($root) || !drush_shell_cd_and_exec($root, 'git status')){
       drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
-      
+
       // Build the command string
       $command = "git clone $git_remote $root";
       if ($git_branch) {
@@ -148,15 +148,15 @@ function drush_devshop_provision_pre_hosting_task() {
       $root = $platform->publish_path;
       $git_remote = $platform->git_url;
       $git_branch = $platform->git_branch;
-      
+
       // Build the command string
       $command = "git checkout $git_branch";
     }
-    
+
     // Execute
     if (!empty($command)){
        drush_log('[DEVSHOP] Running: ' . $command);
-       
+
       // @TODO: Create a d()->server->shell_cd_and_exec() function
       //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
       // So instead, this is the code from d()->server->shell_exec
@@ -167,13 +167,13 @@ function drush_devshop_provision_pre_hosting_task() {
       else {
         return drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
       }
-       
+
        $output = drush_shell_exec_output();
        drush_log('Shell Output: ' . implode("\n", $output) , 'notice');
     }
-    
+
   }
-  
+
   // Pull
   if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
     $task->options['no-update'] = !$task->task_args['update'];
@@ -181,14 +181,14 @@ function drush_devshop_provision_pre_hosting_task() {
     $task->options['no-cache'] = !$task->task_args['cache'];
     $task->options['sites'] = explode('|', $task->task_args['sites']);
   }
-  
+
   // Commit
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-commit') {
     $task->options['message'] = $task->task_args['message'];
     $task->options['push'] = $task->task_args['push'];
     $task->options['revert'] = $task->task_args['revert'];
   }
-  
+
   // Sync
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-sync') {
     $task->options['source'] = $task->task_args['source'];
@@ -202,14 +202,14 @@ function drush_devshop_provision_pre_hosting_task() {
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-create') {
     $task->options['retry'] = $task->task_args['retry'];
   }
-  
+
   // Platform Create
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-platform-create') {
     $task->options['platform-name'] = $task->task_args['platform-name'];
     $task->options['git-url'] = $task->task_args['git-url'];
     $task->options['branch'] = $task->task_args['branch'];
   }
-  
+
   // Download
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-dl') {
     $task->options['modules'] = $task->task_args['modules'];
@@ -228,52 +228,4 @@ function drush_devshop_provision_pre_hosting_task() {
     $task->options['tests-to-run'] = implode($tests, ",");
     $task->options['sync-from-live'] = $task->task_args['sync'];
   }
-
-}
-
-/**
- * Implements hook_drush_pm_post_download() 
- *
- * Offers to git add and push the recently downloaded project.
- */ 
-function devshop_provision_drush_pm_post_download($project, $release) {
-
-  // Only act if in a provision controlled repo.
-  if (!provision_git_is_repo(NULL, TRUE)){
-    return;    
-  } else {
-    if (drush_confirm(dt('Add to git repo and push?'))){
-      
-      // TODO: $target == 'self' when using over a remote drush alias.
-      // This causes fail.  It would be pretty damn impressive to be
-      // be able to drush dl module via remote alias to a devshop box.
-      $target = d()->name;
-      
-      //Generate commit message
-      $message = array();
-      $message[] = "Project Added: " . $release['name'];
-      $message[] = str_repeat('-', strlen($message[0]));
-      $message[] = "This commit was generated by drush dl " . $project['name'];
-      $message[] = str_repeat('-', strlen($message[0]));
-      if (drush_get_option('message')){
-        $message[] = drush_get_option('message');
-      }
-      $message = implode("\n", $message);
-    
-      $data = array(
-        'message' => $message,
-      );
-     
-      //Invoke provision-git-add to add any new files to the index
-      provision_backend_invoke($target, 'provision-git-add', 
-        array($project['full_project_path']), $data);
-    
-      //Invoke provision-git-commit
-      provision_backend_invoke($target, 'provision-git-commit', array(), $data);
-      
-      // Push!
-      provision_backend_invoke($target, 'provision-git-push');
-    }
-  }
-
 }
