@@ -110,9 +110,6 @@ function devshop_projects_insert($node) {
   if ((!$node->old_vid)) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
   }
-
-  // Create hostmaster task
-  hosting_add_task($node->nid, 'verify');
 }
 
 /**
