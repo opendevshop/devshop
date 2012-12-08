@@ -198,45 +198,23 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       return;
     }
 
-    // Load all install profiles found on dev platform
-    /*
-    $platform_nid = key($project_node->project_objects['platform']);
+    $profiles = array();
+    $completed = TRUE;
 
-    $form['ready'] = array(
-      '#type' => 'item',
-      '#value' => t("Drupal Code has been verified! Now you must create your sites by choosing your installation profile!"),
-    );
-
-    $profiles = array_combine((array) hosting_get_profiles($platform_nid, 'short_name'), (array) hosting_get_profiles($platform_nid));
-
-    // Sensible default?
-    // Lets go with standard for now... we can update later.
-    if (isset($profiles['standard'])) {
-      $default_profile = 'standard';
-    }
-    // If 'drupal' profile exists, it is likely drupal6!
-    elseif (isset($profiles['drupal'])) {
-      $default_profile = 'drupal';
-    }
-    $form['install_profile'] = array(
-      '#type' => 'radios',
-      '#title' => t('Choose your install profile'),
-      '#options' => $profiles,
-      '#default_value' => $default_profile,
-    );
     $form['nid'] = array(
       '#type' => 'value',
       '#value' => $project_node->nid,
     );
-    */
-    $project = $project_node;
-    $profiles = array();
-    $completed = TRUE;
 
     // Display the platforms
     $rows = array();
     $header = array(t('Name'), t('Branch'), t('Status'));
-    foreach ($project->project_objects['platform'] as $nid => $name){
+    foreach ($project_node->project_objects['platform'] as $nid => $name){
+
+      //@TODO: Something is saving records in devshop_project_objects with object_nid = 0.
+      if (!$nid){
+        continue;
+      }
       $platform = node_load($nid);
       $row = array();
       $row[] = $name;
@@ -309,7 +287,7 @@ dsm($profiles);
     );
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Create Platforms'),
+      '#value' => t('Create Sites'),
     );
     return $form;
 }
@@ -321,8 +299,6 @@ function devshop_projects_install_sites_form_validate(&$form, &$form_state){
   if (empty($form_state['values']['install_profile'])){
     form_set_error('install_profile', t('You must choose an install profile'));
   }
-
-
 }
 
 /**
@@ -339,7 +315,6 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
 
   global $user;
   $project_node = node_load($form_state['values']['nid']);
-
   $project_node->install_profile = $form_state['values']['install_profile'];
 
   // Save installation profile to database

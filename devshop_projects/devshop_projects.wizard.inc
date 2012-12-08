@@ -73,7 +73,6 @@ function devshop_projects_create_wizard_info(){
       'git_url' => t('Step 1: Git'),
       'settings' => t('Step 2: Settings'),
       'environments' => t('Step 3: Platforms'),
-      'install' => t('Step 4: Install Drupal'),
     ),
     'forms' => array(
       'git_url' => array(
@@ -84,9 +83,6 @@ function devshop_projects_create_wizard_info(){
       ),
       'environments' => array(
         'form id' => 'devshop_project_create_step_environments'
-      ),
-      'install' => array(
-        'form id' => 'devshop_project_create_step_install'
       ),
     ),
   );
@@ -144,7 +140,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   node_save($node);
 
   ctools_object_cache_clear('project', $form_state['cache name']);
-  $form_state['redirect'] = 'hosting/projects';
+  $form_state['redirect'] = 'node/' . $node->nid;
 }
 
 
@@ -451,107 +447,4 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $project->platforms[$platform_name] = $platform_node->nid;
     }
   }
-}
-
-
-/**********
- * STEP 4
- * Project Environments
- *********/
-
-/**
- * STEP 4: Form
- * @TODO: MOVE TO PROJECT NODE FORM!
- */
-function devshop_project_create_step_install(&$form, &$form_state) {
-  $project = &$form_state['project'];
-  $completed = TRUE;
-/*
-  $profiles = array();
-
-  // Display the platforms
-  $rows = array();
-  $header = array(t('Name'), t('Branch'), t('Status'));
-  foreach ($project->platforms as $name => $nid){
-    $platform = node_load($nid);
-    $row = array();
-    $row[] = $name;
-    $row[] = $platform->git_branch;
-    $row[] = $platform->verified? t('Verified'): t('Verification Pending');
-    $rows[] = $row;
-
-    if (!$platform->verified){
-      $completed = FALSE;
-    }
-
-    // Collect install profiles
-    $profiles[$name] = hosting_get_profiles($platform->nid);
-    if (!isset($available_profiles)){
-      $available_profiles = $profiles[$name];
-    } else {
-      $available_profiles = array_intersect_key($profiles[$name], $available_profiles);
-    }
-
-    // Build site options
-    $defaults = array();
-    $defaults['dev']['pull'] = 1;
-    $defaults['dev']['dev_modules'] = 1;
-    $defaults['test']['run_tests'] = 1;
-    $defaults['live']['live_modules'] = 1;
-
-    // @TODO: Would be fun to use hooks to do this stuff...
-    $form['site_options'][$name] = array(
-      '#type' => 'fieldset',
-      '#title' => $name,
-    );
-    $form['site_options'][$name]['branch'] = array(
-      '#type' => 'item',
-      '#title' => t('Branch'),
-      '#description' => t('This can be changed later.'),
-      '#value' => $platform->git_branch,
-    );
-  }
-
-  // Provide something for people while they wait.
-  if (!$completed){
-    $form['help'] = array(
-      '#type' => 'markup',
-      '#value' => t('Please wait while we download and verify your drupal code.'),
-    );
-
-  } else {
-    // Install Profile
-    // @TODO: Handle no available profiles
-    $form['install_profile'] = array(
-      '#type' => 'radios',
-      '#options' => $available_profiles,
-      '#title' => t('Project Install Profile'),
-      '#required' => 1,
-      '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.'),
-    );
-  }
-
-   // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
-  $form['platforms'] = array(
-    '#type' => 'markup',
-    '#value' => theme('table', $header, $rows),
-  );
-  */
-}
-
-/**
- * STEP 4: VALIDATE
- */
-function devshop_project_create_step_install_validate(&$form, &$form_state) {
-
-}
-
-/**
- * STEP 4: SUBMIT
- */
-function devshop_project_create_step_install_submit(&$form, &$form_state) {
-
-  // @TODO: Save install profile, base_url, etc to project node.
-  // @TODO: Save site nodes to the chosen platforms
-
 }
