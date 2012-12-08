@@ -35,7 +35,7 @@ function devshop_projects_hosting_tasks() {
  *
  * For "Commit" task.
  */
-function devshop_hosting_hosting_task_create_form($node) {
+function hosting_task_create_form($node) {
 
   $form['message'] = array(
     '#title' => t('Commit Message'),
