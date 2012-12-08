@@ -1,6 +1,6 @@
 <?php
 /**
- * @file devshop_project.node.inc DevShop Project Node related hooks and 
+ * @file devshop_project.node.inc DevShop Project Node related hooks and
  * support function include file.
  */
 
@@ -10,21 +10,21 @@
 function devshop_projects_node_info() {
   #configuration
   $types["project"] =  array(
-    "type" => 'devshop_project', 
+    "type" => 'devshop_project',
     "name" => 'DevShop Project',
     "module" => 'devshop_projects',
     "has_title" => TRUE,
     "title_label" => t('Project Codename'),
     "description" => t('Create a project'),
-    "has_body" => 0, 
-    "body_label" => '', 
+    "has_body" => 0,
+    "body_label" => '',
     "min_word_count" => 0
     );
 
   return $types;
 }
 
- 
+
 /**
  * Implements hook_nodeapi()
  *
@@ -38,13 +38,13 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
   // Project-enabled platforms get
   if ($node->type == 'platform' || $node->type == 'site'){
-    
+
     // On Load: load this object's project and environment type
     if ($op == 'load'){
       $data = db_fetch_array(db_query('SELECT project_nid, env_type AS environment, n.title as project, git_url, git_branch FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
-    
+
     // Display Project info
     if ($op == 'view'){
       if (!empty($node->project)){
@@ -62,18 +62,18 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         );
       }
     }
-    
+
     // On update or delete, delete the existing records.  We will replace below.
     if ($op = 'update' || $op = 'delete') {
       db_query('DELETE FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid);
     }
-    
+
     // On insert or update, insert records saving this objects project and environment
     if ($op = 'update' || $op = 'insert') {
       if (!empty($node->project) && !empty($node->environment)) {
 	// Get the project node by name.
 	$project = hosting_context_load($node->project);
-	
+
 	// Save to table
 	// @TODO: start saving branch here too
 	db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type, git_branch) VALUES (%d, %d, "%s", "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment, $node->git_branch);
@@ -94,6 +94,9 @@ function devshop_project_load_by_path($project_path){
  * Implementation of hook_insert().
  */
 function devshop_projects_insert($node) {
+  if (!isset($node->no_verify)) {
+    hosting_add_task($node->nid, 'verify');
+  }
 
   db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path, base_url) ".
   	   "VALUES (%d, '%s', '%s', '%s')",
@@ -103,7 +106,7 @@ function devshop_projects_insert($node) {
   if ((!$node->old_vid)) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
   }
-  
+
   // Create hostmaster task
   hosting_add_task($node->nid, 'verify');
 }
@@ -120,7 +123,7 @@ function devshop_projects_update($node) {
   db_query("UPDATE {hosting_devshop_project} " .
            "SET git_url = '%s', code_path = '%s', base_url = '%s', data='%s' " .
   	   "WHERE nid = %d",
-	   $node->git_url, hosting_path_normalize($node->code_path), 
+	   $node->git_url, hosting_path_normalize($node->code_path),
 	   $node->base_url, serialize($data), $node->nid);
   //
   //// If this is a rerry, kick start another devshop-create
@@ -139,7 +142,7 @@ function devshop_projects_delete($node) {
 
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
   db_query('DELETE FROM {hosting_devshop_project_object} WHERE project_nid = %d', $node->nid);
-  
+
   hosting_context_delete($node->nid);
 }
 
@@ -161,7 +164,7 @@ function devshop_projects_load($node) {
   $data = unserialize($additions['data']);
   $additions['git_branches'] = $data['git_branches'];
   $additions['git_tags'] = $data['git_tags'];
-  
+
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
   $objects = array();
@@ -169,12 +172,12 @@ function devshop_projects_load($node) {
     $objects[$project_object->object_type][$project_object->object_nid] = $project_object->env_type;
   }
   $additions['project_objects'] = $objects;
-  
+
   //Project status
   $platforms_ready = TRUE;
   $sites_ready = TRUE;
   $sites_installing = FALSE;
-  
+
   // PLATFORMS STATUS: Determine if all platforms are verified.
   if (isset($additions['project_objects']['platform'])){
     foreach ($additions['project_objects']['platform'] as $nid => $env){
@@ -198,14 +201,14 @@ function devshop_projects_load($node) {
   } else {
     $sites_ready = FALSE;
   }
-  
+
   // Set status
   $additions['project_status'] = $sites_ready? 'sites_ready': (
     $sites_installing? 'sites_installing': (
       $platforms_ready? 'platforms_ready': 'platforms_verifying'
-    )  
+    )
   );
-  
+
   return $additions;
 }
 
@@ -213,14 +216,14 @@ function devshop_projects_load($node) {
  * Implementation of hook_view().
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
-  
+
   // If not ready yet:
   if (!$node->status){
     // Go back to the wizard.
-    drupal_goto('node/add/project');
+    //drupal_goto('node/add/project');
   }
 
-  
+
   modalframe_parent_js();
 
   $node->content['info'] = array(
@@ -248,7 +251,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#value' => l($url, $url),
     '#weight' => -10
   );
-  
+
   if (!empty($node->install_profile)){
     $node->content['info']['install_profile'] = array(
       '#type' => 'item',
@@ -303,7 +306,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   if ($node->project_status == 'sites_ready'){
     $node->content['sites']['add_platform'] = array(
       '#type' => 'item',
-      '#value' => l(t('Create and add additional platforms'), 
+      '#value' => l(t('Create and add additional platforms'),
       	       	      "hosting/projects/platform/create/$node->nid"),
     );
   }
@@ -313,7 +316,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#value' => l("Delete this project", "hosting/projects/delete/$node->nid")
   );
 
-  //Tasks    
+  //Tasks
   $node->content['tasks_view'] = array(
     '#type' => 'item',
     //'#value' => devshop_projects_hosting_task_table($node),
@@ -327,7 +330,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     'changed' => $node->changed,
   );
   drupal_add_js($settings, 'setting');
-  drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');  
+  drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
 
   // MAIN DISPLAY
   $node->content['devshop'] = array(
