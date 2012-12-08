@@ -130,18 +130,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#value' => $table,
     );
   }
-  if ($node->project_status == 'sites_ready'){
-    $node->content['sites']['add_platform'] = array(
-      '#type' => 'item',
-      '#value' => l(t('Create and add additional platforms'),
-      	       	      "hosting/projects/platform/create/$node->nid"),
-    );
-  }
-
-  $node->content['sites']['delete_project'] = array(
-    '#type' => 'item',
-    '#value' => l("Delete this project", "hosting/projects/delete/$node->nid")
-  );
 
   //Tasks
   $node->content['tasks_view'] = array(
