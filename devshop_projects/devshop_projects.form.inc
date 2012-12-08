@@ -244,7 +244,7 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       $defaults['test']['run_tests'] = 1;
       $defaults['live']['live_modules'] = 1;
     }
-dsm($profiles);
+
     // Provide something for people while they wait.
     if (!$completed){
       $form['help'] = array(
