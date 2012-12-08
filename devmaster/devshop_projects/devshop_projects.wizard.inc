@@ -7,21 +7,21 @@ function devshop_projects_create_wizard($step = NULL){
   // required includes for wizard
   ctools_include('wizard');
   ctools_include('object-cache');
-  
+
   // Setup form info
   $form_info = devshop_projects_create_wizard_info();
   $form_state = array(
     'cache name' => NULL,
   );
-  
+
   // Setup project
   $project = ctools_object_cache_get('project', NULL);
-  
+
   // Setup Step.
   if ($step == NULL){
     $step = current(array_keys($form_info['order']));
   }
-  
+
   // Create default project object
   if (empty($project)){
     // set form to first step -- we have no data
@@ -35,10 +35,10 @@ function devshop_projects_create_wizard($step = NULL){
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
-  
+
   // All forms can access $form_state['project'];
   $form_state['project'] = $project;
-  
+
   // Particular overrides
   if ($step == 'environments' && isset($project->nid)){
     $project_node = node_load($project->nid);
@@ -59,7 +59,7 @@ function devshop_projects_create_wizard($step = NULL){
  */
 function _devshop_projects_node_create($type, $node = stdClass){
   global $user;
-  
+
   // @TODO: Validate type
   $node->type = $type;
   $node->status = 1;
@@ -146,7 +146,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   // Update the cache with changes.
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'hosting/projects';
-  
+
   // @TODO: If step 1 has been completed, we should run Delete on Project node.
   // to get rid of drush alias context, files, everything that this form
   // may have created.
@@ -155,7 +155,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
 /**
  * WIZARD STEPS
  */
- 
+
 
 /**********
  * STEP 1
@@ -165,7 +165,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
 
 /**
  * STEP 1: Form
- * 
+ *
  * Just get the Git URL.  If we can't access the code, all else should fail.
  */
 function devshop_project_create_step_git(&$form, &$form_state) {
@@ -190,7 +190,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
 
 /**
  * STEP 1: Validate
- * 
+ *
  * This is where we try and connect to the remote branches.
  *
  * As long as the SSH for www-data is setup right, this will work for private repos.
@@ -209,7 +209,7 @@ function devshop_project_create_step_git_validate(&$from, &$form_state) {
  */
 function devshop_project_create_step_git_submit(&$from, &$form_state) {
   global $user;
-  
+
   $project = &$form_state['project'];
   $project->git_url = $form_state['values']['git_url'];
   $project->title = $project_name = $form_state['values']['title'];
@@ -232,10 +232,10 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
       $project->project_nid = $node->nid;
     }
   }
-  
+
   // Now that we have the project name, set the defaults for code path and project URL
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
-  
+
   // Setup project url.
   $hostmaster_site = hosting_context_load('hostmaster');
   $server = variable_get('devshop_project_default_base_url', $hostmaster_site->title);
@@ -270,7 +270,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
   );
-  
+
   // @TODO: Put Pull Code settings here
 }
 
@@ -287,14 +287,14 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
 function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   global $user;
   $project = &$form_state['project'];
-  
+
   // For this step, we just save code path and base url for later saving and
   // verification.
   $project->code_path = $form_state['values']['code_path'];
   $project->base_url = $form_state['values']['base_url'];
 }
- 
- 
+
+
 /**********
  * STEP 3
  * Project Environments
@@ -306,11 +306,11 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
-    
+
   $project_node = node_load($project->project_nid);
-  
+
   if (empty($project_node->git_branches)){
-    
+
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $form['note'] = array(
@@ -323,9 +323,9 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
     return;
   }
-  
+
   $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
-  
+
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
     '#title' => t('Default Platforms'),
@@ -347,7 +347,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#options' => array(t('Choose a branch...')) + $branch_options
       );
   }
-  
+
   $form['branch_platforms'] = array(
     '#type' => 'checkboxes',
     '#multiple' => 'true',
@@ -356,7 +356,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     '#default_value' => $project->branch_platforms,
     '#options' => $branch_options
   );
-  $form_state['no buttons'] = TRUE; 
+  $form_state['no buttons'] = TRUE;
 }
 
 
@@ -366,14 +366,14 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 function devshop_project_create_step_environments_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
-  
+
   // Not ready
   if (isset($values['not_ready'])) {
     form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
     return;
   }
-  
-  // At least one platform is required  
+
+  // At least one platform is required
   $none_chosen = TRUE;
   foreach ($values['default_platforms'] as $env => $data) {
     if ($data['enabled']){
@@ -390,33 +390,33 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       form_set_value($form['default_platforms'][$env], NULL, $form_state);
     }
   }
-  
+
   $branch_platforms = array_filter($values['branch_platforms']);
   if (!empty($branch_platforms)){
     $none_chosen = FALSE;
   }
-  
+
   if ($none_chosen){
     form_set_error('form', t('You must choose to build at least one platform.'));
   }
-  
+
   // Filter out branch platforms forms_api so we can keep the submit clean.
   form_set_value($form['branch_platforms'], array_filter($values['branch_platforms']), $form_state);
-  
+
 }
 
 /**
  * STEP 3: SUBMIT
  */
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
-  // Get project and reset properties..  
+  // Get project and reset properties..
   $project = &$form_state['project'];
   $values = $form_state['values'];
 
   // Get platforms from form values and save into our object
   $project->default_platforms = array_filter($values['default_platforms']);
   $project->branch_platforms = array_filter($values['branch_platforms']);
-  
+
   // Create these platforms
   $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
   foreach ($all_platforms as $platform_name => $branch) {
@@ -424,18 +424,18 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     if (empty($project->platforms[$platform_name])){
       // Save the damn platform nodes
       $platform = new stdClass;
-      
+
       // hosting_platform fields
       $platform->title = $project->title . '_' . $platform_name;
       $platform->publish_path = $project->code_path . '/' . $platform_name;
 
       $servers = hosting_get_servers('http');
       $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));
- 
+
       $platform->git_branch = $branch;
       $platform->project = $project->title;
       $platform->environment = $platform_name;
-      
+
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $project->platforms[$platform_name] = $platform_node->nid;
     }
@@ -454,9 +454,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 function devshop_project_create_step_install(&$form, &$form_state) {
   $project = &$form_state['project'];
   $completed = TRUE;
-  
+
   $profiles = array();
-  
+
   // Display the platforms
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Status'));
@@ -467,11 +467,11 @@ function devshop_project_create_step_install(&$form, &$form_state) {
     $row[] = $platform->git_branch;
     $row[] = $platform->verified? t('Verified'): t('Verification Pending');
     $rows[] = $row;
-    
+
     if (!$platform->verified){
       $completed = FALSE;
     }
-    
+
     // Collect install profiles
     $profiles[$name] = hosting_get_profiles($platform->nid);
     if (!isset($available_profiles)){
@@ -479,15 +479,54 @@ function devshop_project_create_step_install(&$form, &$form_state) {
     } else {
       $available_profiles = array_intersect_key($profiles[$name], $available_profiles);
     }
+
+    // Build site options
+    $defaults = array();
+    $defaults['dev']['pull'] = 1;
+    $defaults['dev']['dev_modules'] = 1;
+    $defaults['test']['run_tests'] = 1;
+    $defaults['live']['live_modules'] = 1;
+
+    // @TODO: Would be fun to use hooks to do this stuff...
+    $form['site_options'][$name] = array(
+      '#type' => 'fieldset',
+      '#title' => $name,
+    );
+    $form['site_options'][$name]['branch'] = array(
+      '#type' => 'item',
+      '#title' => t('Branch'),
+      '#description' => t('This can be changed later.'),
+      '#value' => $platform->git_branch,
+    );
+    $form['site_options'][$name]['pull'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Pull on Commit'),
+      '#default_value' => $defaults[$name]['pull'],
+    );
+    $form['site_options'][$name]['dev_modules'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable dev modules'),
+      '#default_value' => $defaults[$name]['dev_modules'],
+    );
+    $form['site_options'][$name]['run_tests'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Allow Run Tests'),
+      '#default_value' => $defaults[$name]['run_tests'],
+    );
+    $form['site_options'][$name]['live_modules'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable live modules'),
+      '#default_value' => $defaults[$name]['live_modules'],
+    );
   }
-  
+
   // Provide something for people while they wait.
   if (!$completed){
     $form['help'] = array(
       '#type' => 'markup',
       '#value' => t('Please wait while we download and verify your drupal code.'),
     );
-    
+
   } else {
     // Install Profile
     // @TODO: Handle no available profiles
@@ -498,12 +537,12 @@ function devshop_project_create_step_install(&$form, &$form_state) {
       '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.'),
     );
   }
-  
+
    // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
   $form['platforms'] = array(
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
 
-  
+
 }
