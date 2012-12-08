@@ -13,8 +13,11 @@ function devmaster_profile_modules() {
     /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate',
     /* other contrib */ 'install_profile_api' /* needs >= 2.1 */, 'jquery_ui', 'modalframe', 'admin_menu',
 
+    /* DEVSHOP DEPENDENCIES */
+    'ctools',
+
     /* DEVSHOP */
-    'devshop_tasks', 'devshop_projects', 'devshop_log', 'devshop_pull', 
+    'devshop_tasks', 'devshop_projects', 'devshop_log', 'devshop_pull',
 
   );
 }
@@ -241,7 +244,7 @@ function devmaster_task_finalize() {
   install_add_permissions(install_get_rid('anonymous user'), array('access disabled sites'));
   install_add_permissions(install_get_rid('authenticated user'), array('access disabled sites'));
   install_add_role('aegir client');
-  
+
   // @todo we may need to have a hook here to consider plugins
   // install_add_permissions(install_get_rid('aegir client'), array('access content', 'access all views', 'edit own client', 'view client', 'create site', 'delete site', 'view site', 'create backup task', 'create delete task', 'create disable task', 'create enable task', 'create restore task', 'view own tasks', 'view task', 'cancel own tasks'));
   // install_add_role('aegir account manager');
