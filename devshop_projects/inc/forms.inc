@@ -165,7 +165,11 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
         '#value' => t('Your sites are being installed!'),
       );
       return $form;
-    } elseif ($sites_ready) {
+    }
+    elseif ($project_node->project_status == 'preparing-project') {
+      drupal_goto('node/add/project');
+    }
+    elseif ($project_node->project_status == 'sites-installed') {
       return;
     }
 
