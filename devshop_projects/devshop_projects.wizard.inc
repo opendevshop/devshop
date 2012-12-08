@@ -498,26 +498,6 @@ function devshop_project_create_step_install(&$form, &$form_state) {
       '#description' => t('This can be changed later.'),
       '#value' => $platform->git_branch,
     );
-    $form['site_options'][$name]['pull'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Pull on Commit'),
-      '#default_value' => $defaults[$name]['pull'],
-    );
-    $form['site_options'][$name]['dev_modules'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable dev modules'),
-      '#default_value' => $defaults[$name]['dev_modules'],
-    );
-    $form['site_options'][$name]['run_tests'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Allow Run Tests'),
-      '#default_value' => $defaults[$name]['run_tests'],
-    );
-    $form['site_options'][$name]['live_modules'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable live modules'),
-      '#default_value' => $defaults[$name]['live_modules'],
-    );
   }
 
   // Provide something for people while they wait.
