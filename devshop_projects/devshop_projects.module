@@ -10,6 +10,9 @@ include_once('devshop_projects.form.inc');
 include_once('devshop_projects.node.inc');
 include_once('devshop_projects.task.inc');
 
+// Lets keep front end code here.
+include_once('inc/devshop_projects.ui.inc');
+
 /**
  * Implementation of hook_perm()
  *
