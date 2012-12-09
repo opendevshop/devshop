@@ -26,11 +26,10 @@ function devshop_provision_drush_command() {
   $items['provision-devshop-create'] = array(
     'description' => 'Create a DevShop platform and site.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'arguments' => array(
+    'options' => array(
       'platform-name' => 'The name of the platform to be created.',
       'branch' => 'Branch',
-      'git-url' => 'The URL of a git repo to use to create the platforms.',
-      'path' => 'Desired project path.',
+      'pull' => 'Pull on Commit',
     ),
   );
   $items['provision-devshop-delete'] = array(
@@ -186,16 +185,11 @@ function drush_devshop_provision_pre_hosting_task() {
     $task->options['no-cache'] = !$task->task_args['cache'];
   }
 
-  // Projectt Create
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-create') {
-    $task->options['retry'] = $task->task_args['retry'];
-  }
-
   // Platform Create
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-platform-create') {
-    $task->options['platform-name'] = $task->task_args['platform-name'];
-    $task->options['git-url'] = $task->task_args['git-url'];
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-create') {
+    $task->options['platform-name'] = $task->task_args['platform_name'];
     $task->options['branch'] = $task->task_args['branch'];
+    $task->options['pull'] = $task->task_args['pull'];
   }
 
   // Download
