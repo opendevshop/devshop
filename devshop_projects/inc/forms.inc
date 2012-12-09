@@ -1,9 +1,9 @@
 <?php
 /**
- * @file devshop_project.form.inc DevShop Project forms related hooks and 
+ * @file devshop_project.form.inc DevShop Project forms related hooks and
  * support function include file.
  */
- 
+
 /**
  * Implements hook_form_alter().
  */
@@ -87,7 +87,7 @@ function devshop_projects_form(&$node) {
   if ($node->nid) {
     $form['code_path']['#value'] = $form['code_path']['#default_value'];
     $form['code_path']['#disabled'] = TRUE;
-    
+
     $form['title']['#value'] = $form['title']['#default_value'];
     $form['title']['#disabled'] = TRUE;
 
@@ -111,14 +111,14 @@ function devshop_projects_validate($node, &$form) {
   // been initialized yet.
 
   $node = node_load($node->nid);
-  
+
   // No validation if op == Delete or project_status == site_ready. The
   // latter case happens when the user is editing the tests to run fied.
   if ($node->op == t('Delete') || $node->project_status == 'sites_ready') {
     return;
   }
 
-  
+
   // Full validation on when a creating a new node
   $add = (arg(1) == 'add' ? TRUE : FALSE);
 
@@ -140,7 +140,7 @@ function devshop_projects_validate($node, &$form) {
     form_set_error('title', t('Project code name is already is use by another project'));
   }
 
-  // Make sure the path is unique. 
+  // Make sure the path is unique.
   $cp = hosting_path_normalize($node->code_path);
   if (!$node->retry && $add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
     form_set_error('code_path', t('Code path is already in use by another project'));
@@ -156,98 +156,109 @@ function devshop_projects_validate($node, &$form) {
  *  Form for site installation
  */
 function devshop_projects_install_sites_form($form_state, $project_node) {
-  
-    $form = array();
-    $platforms_ready = TRUE;
-    $sites_ready = TRUE;
-    $sites_installing = FALSE;
-    
-    // PLATFORMS STATUS: Determine if all platforms are verified.
-    if (isset($project_node->project_objects['platform'])){
-      foreach ($project_node->project_objects['platform'] as $nid => $env){
-        $platform_nodes[$env] = node_load($nid);
-        if ($platform_nodes[$env]->platform_status == 0){
-          $platforms_ready = FALSE;
-        }
-      }
-    } else {
-      $platforms_ready = FALSE;
-    }
-    // SITES STATUS: Determine if sites exist and are enabled
-    if ($platforms_ready && isset($project_node->project_objects['site'])){
-      foreach ($project_node->project_objects['site'] as $nid => $env){
-        $site_nodes[$env] = node_load($nid);
-        if ($site_nodes[$env]->site_status == 0){
-          $sites_ready = FALSE;
-          $sites_installing = TRUE;
-        }
-      }
-    } else {
-      $sites_ready = FALSE;
-    }
-    
+
     // OUTPUT
-    if ($platforms_ready == FALSE){
-      $retry = devshop_project_project_create_failed($project_node->nid, $task);
-      if ($retry) {
-	$form['note'] = array(
-	  '#type' => 'item',
-	  '#title' => t('NOTICE!'),
-	  '#description' => t('Project Create failed! You can ' . l('view the task log here.', "node/$task->nid") . ' Please ' . l('edit the project settings', "node/$project_node->nid/edit") . ' and make any necessary corrections and resubmit the form to try again.'),
-	  '#weight' => -1,
-	);
-      }
-      else {
-	$form['note'] = array(
-          '#type' => 'item',
-	  '#title' => t('Clone & Verify'),
-	  '#value' => t('Your code is on its way to the server.  Once the platforms verify, you can choose an installation profile.'),
-        );
-      }
-      return $form;
-    } elseif ($sites_installing) {
+    if ($project_node->project_status == 'sites_installing') {
       $form['note'] = array(
         '#type' => 'item',
         '#title' => t('Sites Installing'),
-        '#value' => t('Your Live, Dev, and Test sites are being installed!'),
+        '#value' => t('Your sites are being installed!'),
       );
       return $form;
-    } elseif ($sites_ready) {
+    }
+    elseif ($project_node->project_status == 'preparing-project') {
+      drupal_goto('node/add/project');
+    }
+    elseif ($project_node->project_status == 'sites-installed') {
       return;
     }
-    
-    // Load all install profiles found on dev platform
-    $platform_nid = key($project_node->project_objects['platform']);
-    
-    $form['ready'] = array(
-      '#type' => 'item',
-      '#value' => t("Drupal Code has been verified! Now you must create your sites by choosing your installation profile!"),
-    );
-    
-    $profiles = array_combine((array) hosting_get_profiles($platform_nid, 'short_name'), (array) hosting_get_profiles($platform_nid));
-    
-    // Sensible default?
-    // Lets go with standard for now... we can update later.
-    if (isset($profiles['standard'])) {
-      $default_profile = 'standard';
-    }
-    // If 'drupal' profile exists, it is likely drupal6!    
-    elseif (isset($profiles['drupal'])) {
-      $default_profile = 'drupal';
-    } 
-    $form['install_profile'] = array(
-      '#type' => 'radios',
-      '#title' => t('Choose your install profile'),
-      '#options' => $profiles,
-      '#default_value' => $default_profile,
-    );
+
+    $profiles = array();
+    $completed = TRUE;
+
     $form['nid'] = array(
       '#type' => 'value',
-      '#value' => $project_node->nid,  
+      '#value' => $project_node->nid,
+    );
+
+    // Display the platforms
+    $rows = array();
+    $header = array(t('Name'), t('Branch'), t('Status'));
+    foreach ($project_node->project_objects['platform'] as $nid => $name){
+
+      $platform = node_load($nid);
+      $row = array();
+      $row[] = $name;
+      $row[] = $platform->git_branch;
+      $row[] = $platform->verified? t('Verified'): t('Verification Pending');
+      $rows[] = $row;
+
+      if (!$platform->verified){
+        $completed = FALSE;
+      }
+
+      // Collect install profiles
+      // This fancy footwork gives us an array with items like 'shortname' => 'Name'
+      $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
+
+      if (!isset($available_profiles)){
+        $available_profiles = $profiles[$name];
+      } else {
+        // @TODO: This joins profiles by name, not profile name.
+        $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+      }
+
+      // Build site options
+      $defaults = array();
+      $defaults['dev']['pull'] = 1;
+      $defaults['dev']['dev_modules'] = 1;
+      $defaults['test']['run_tests'] = 1;
+      $defaults['live']['live_modules'] = 1;
+    }
+
+    // Provide something for people while they wait.
+    if (!$completed){
+      $form['help'] = array(
+        '#type' => 'markup',
+        '#value' => t('Please wait while we download and verify your drupal code.'),
+      );
+
+    } elseif (count($available_profiles) == 0) {
+      $form['error'] = array(
+        '#type' => 'markup',
+        '#value' => t('WARNING: No profile was found in all of your platforms.  Please check your branches and code and try again.'),
+      );
+    } else {
+      // Install Profile
+      // Sensible default?
+      // Lets go with standard for now... we can update later.
+      if (isset($available_profiles['standard'])) {
+        $default_profile = 'standard';
+      }
+      // If 'drupal' profile exists, it is likely drupal6!
+      elseif (isset($available_profiles['drupal'])) {
+        $default_profile = 'drupal';
+      }
+
+      // @TODO: Handle no available profiles
+      $form['install_profile'] = array(
+        '#type' => 'radios',
+        '#options' => $available_profiles,
+        '#title' => t('Project Install Profile'),
+        '#required' => 1,
+        '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.  Choose the installation profile for this project.'),
+        '#default_value' => $default_profile,
+      );
+    }
+
+     // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
+    $form['platforms'] = array(
+      '#type' => 'markup',
+      '#value' => theme('table', $header, $rows),
     );
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Create dev, test, and live sites'),  
+      '#value' => t('Create Sites'),
     );
     return $form;
 }
@@ -259,8 +270,6 @@ function devshop_projects_install_sites_form_validate(&$form, &$form_state){
   if (empty($form_state['values']['install_profile'])){
     form_set_error('install_profile', t('You must choose an install profile'));
   }
-  
-  
 }
 
 /**
@@ -277,12 +286,11 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
 
   global $user;
   $project_node = node_load($form_state['values']['nid']);
-
   $project_node->install_profile = $form_state['values']['install_profile'];
 
   // Save installation profile to database
   db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
-    
+
   // Create the site nodes
   foreach ($project_node->project_objects['platform'] as $nid => $env){
     devshop_projects_create_site($project_node, node_load($nid), $env);
@@ -296,7 +304,7 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
   $project_node = node_load($project_nid);
 
   $form = array();
-    
+
   //Bail if no platforms yet.
   if (!isset($project_node->project_objects['platform'])){
     $retry = devshop_project_project_create_failed($project_nid, $task);
@@ -330,7 +338,7 @@ function devshop_projects_platform_create_form($form_state, $project_nid) {
   );
   $form['nid'] = array(
     '#type' => 'value',
-    '#value' => $project_node->nid,  
+    '#value' => $project_node->nid,
   );
   $form['submit'] = array(
     '#type' => 'submit',
@@ -347,8 +355,8 @@ function devshop_projects_platform_create_form_validate(&$form, &$form_state){
   if (empty($form_state['values']['platform_name'])){
     form_set_error('install_profile', t('You must include a platform name'));
   }
-  
-  
+
+
 }
 
 /**
@@ -416,7 +424,7 @@ function devshop_projects_project_delete_form($form_state, $project_nid) {
 
   $form['cancel'] = array(
     '#type' => 'submit',
-    '#value' => t('Cancel'),  
+    '#value' => t('Cancel'),
     '#weight' => 33,
   );
 
@@ -432,15 +440,15 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
   if ($form_state['clicked_button']['#value'] == t('Delete Project')) {
     $nid = $form['nid']['#value'];
     $data = devshop_projects_project_data_get($nid);
-    
+
     // First get a list of all of the objects for this project
     $query = db_query("SELECT * " .
 		      "FROM {hosting_devshop_project_object} " .
 		      "WHERE project_nid = %d", $nid);
-    
+
     $snid = array();
     $pnid = array();
-    
+
     while ($obj = db_fetch_object($query)) {
       if ($obj->object_type == 'site') {
 	$snid[] = $obj->object_nid;
@@ -449,7 +457,7 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
 	$pnid[] = $obj->object_nid;
       }
     }
-    
+
     if (count($snid) > 0) {
       $data['project_delete_site_disable'] = $snid;
       $data['project_delete_site_delete'] = $snid;
@@ -458,14 +466,14 @@ function devshop_projects_project_delete_form_submit(&$form, &$form_state){
       unset($data['project_delete_site_disable']);
       unset($data['project_delete_site_delete']);
     }
-    
+
     if (count($pnid) > 0) {
       $data['project_delete_platform_delete'] = $pnid;
     }
     else {
       unset($data['project_delete_platform_delete']);
     }
-    
+
     if ($data['project_delete_platform_delete'] ||
 	$data['project_delete_site_disable']   ||
 	$data['project_delete_site_delete'] ) {

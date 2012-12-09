@@ -13,33 +13,55 @@ function devshop_projects_hosting_tasks() {
     'title' => t('Verify Project'),
     'description' => t('Verifies access to the git repository, downloads branch and tag information.'),
     'provision_save' => TRUE,
+    'access callback' => 'devshop_hosting_task_menu_access',
   );
-  $tasks['project']['devshop-create'] = array(
-    'title' => t('Create Project'),
-    'description' => t('Clones the repo, and creates the platforms.'),
-    'provision_save' => TRUE,
+  $tasks['project']['create'] = array(
+    'title' => t('Create New Platform'),
+    'description' => t('Creates a new platform within this project.'),
+    'access callback' => 'devshop_hosting_task_menu_access',
+    'dialog' => TRUE,
   );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
+    'access callback' => 'devshop_hosting_task_menu_access',
+    'dialog' => TRUE,
   );
-  $tasks['project']['devshop-install'] = array(
-    'title' => t('Install Sites'),
-    'description' => t('Runs drupal installation on each of the three platforms.'),
-  );
-  $tasks['project']['devshop-platform-create'] = array(
-    'title' => t('Create Platform'),
-    'description' => t('Create a new platform to add to an existin project.'),
-  );
-
   return $tasks;
 }
 
 /**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Commit" task.
+ */
+function devshop_hosting_hosting_task_create_form($node) {
+
+  $form['message'] = array(
+    '#title' => t('Commit Message'),
+    '#type' => 'textarea',
+    '#description' => $descr,
+  );
+  $form['push'] = array(
+    '#title' => t('Push code after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Force revert features after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  // @TODO: Provide a DIFF display to give the user an idea of what has changed.
+  return $form;
+}
+
+
+/**
  * Implements hook_hosting_project_context_options()
  * 
- * This transfers data from the node to the aegir context object (the alias!)
- * For project entities.
+ * This transfers data from the node to thes aegir context object (the alias!)
+ * For project entities.  This is where we find the branches and tags on the remote.
  */
 function devshop_projects_hosting_project_context_options(&$task) {
   
@@ -61,6 +83,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['git_tags'] = $branches['tags'];
 }
 
+/**
+ * Helpfer for getting branches and tags from a git URL
+ */
 function getBranchesAndTags($git_url = NULL){
   if (is_null($git_url)){
     $git_url = drush_get_option('git_url');
@@ -114,7 +139,8 @@ function getBranchesAndTags($git_url = NULL){
  * For site entities.
  */
 function devshop_projects_hosting_site_context_options(&$task) {
-  $task->context_options['project'] = $task->ref->git_url;
+  $task->context_options['project'] = $task->ref->project;
+  $task->context_options['nerd'] = 'vision';
 }
 
 /**
@@ -124,86 +150,13 @@ function devshop_projects_hosting_site_context_options(&$task) {
  * For site entities.
  */
 function devshop_projects_hosting_platform_context_options(&$task) {
-  $task->context_options['project'] = $task->ref->project;
-}
-
-
-/**
- * A replacement for hosting_task_table, to allow us to add
- * tasks from other nodes.
- */
-function devshop_projects_hosting_task_table($node) {
-  $output = '';
-
-  $headers[] = t('Task');
-  $headers[] = array(
-    'data' => t('Actions'),
-    'class' => 'hosting-actions',
-  );
-
-  $tasklist = hosting_task_fetch_tasks($node->nid);
-  if ($node->project_status != 'sites_ready'){
-    return;
+  if (!empty($task->ref->project)){
+    $task->context_options['project'] = $task->ref->project;
+    $task->properties['task properties'] = 'works';
+    $task->ref->properties['task ref properties'] = 'works';
+    
+    d()->setProperty('setProperty', 'works');
   }
-  
-  // Get tasklists for all sites
-  $tasks = array();
-  foreach ($node->project_objects['site'] as $nid => $env){
-    $site_nodes[$env] = node_load($nid);
-    $tasks[$env] = hosting_task_fetch_tasks($nid);
-  }
-  
-  // Add our own specific tasks
-  $tasklist['devshop-commit'] = $tasks['dev']['devshop-commit'];
-  $tasklist['devshop-sync'] = $tasks['test']['devshop-sync'];
-  $tasklist['devshop-pull'] = $tasks['live']['devshop-pull'];
-
-  // Enhance titles
-  $tasklist['devshop-commit']['title'] .= ' on ' . l($site_nodes['dev']->title, 'http://'. $site_nodes['dev']->title, array('attributes' => array('target' => '_blank')));
-  $tasklist['devshop-sync']['title'] .= ' on ' . l($site_nodes['test']->title, 'http://'. $site_nodes['test']->title, array('attributes' => array('target' => '_blank')));
-  $tasklist['devshop-pull']['title'] .= ' on ' . l($site_nodes['live']->title, 'http://'. $site_nodes['live']->title, array('attributes' => array('target' => '_blank')));
-
-  // Override some
-  unset($tasklist['devshop-create']['task_permitted']);
-  unset($tasklist['devshop-create']['nid']);
-
-  unset($tasklist['devshop-platform-create']['task_permitted']);
-  unset($tasklist['devshop-platform-create']['nid']);
-  
-  foreach ($tasklist as $task => $info) {
-    $row = array();
-
-    if (!isset($info['nid']) && !$info['task_permitted']) {
-      // just don't show those tasks, since we'll not be able to run them
-      continue;
-    }
-
-    $row['type'] = array(
-      'data' => $info['title'],
-      'class' => 'hosting-status',
-    );
-    $actions = array();
-
-    if (isset($info['task_status']) && ($info['task_status'] == 0)) {
-      $actions['cancel'] = _hosting_task_button(t('Cancel'), sprintf("hosting/tasks/%d/cancel", $info['nid']), t("Cancel the task and remove it from the queue"), 'hosting-button-stop', !$info['task_permitted']);
-    }
-    else {
-      $actions['run'] = _hosting_task_button(t('Run'), sprintf("node/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
-    }
-
-    $actions['log'] = _hosting_task_button(t('Log'), 'node/' . $info['nid'], t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
-    $row['actions'] = array(
-      'data' => implode('', $actions), 
-      'class' => 'hosting-actions',
-    );
-
-    $rows[] = array(
-      'data' => $row,
-      'class' => $info['class'],
-    );
-  }
-  $output .= theme('table', $headers, $rows, array('class' => 'hosting-table'));
-  return $output;
 }
 
 /*
