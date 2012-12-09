@@ -1,89 +1,47 @@
 <?php
 
 /**
- * Implements the provision-devshop-deploy command.
+ * Implements the provision-devshop-create command.
  */
 function drush_devshop_provision_provision_devshop_create() {
-  
+  // Remember, d() is for the PROJECT
   $git_url = d()->git_url;
   $path = d()->code_path;
   $project = d()->project_name;
-  $retry = drush_get_option('retry');
+  
+  $branch = drush_get_option('branch');
+  $platform = drush_get_option('platform-name');
 
-  // Get the hostmaster alias.  This is so we can use something other than "@hostmaster"
-  $hostmaster = drush_get_option('hostmaster_alias', 'hostmaster');
-
-  // Validate
-  if (empty($git_url)) {
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git URL not valid.'));
-  }
-  if (file_exists($path) && !$retry) {
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Path already exists!'));
-  }
+  drush_log("PLATFORM: $platform", 'notice');
+  drush_log("Branch: $branch", 'notice');
   
   // Pause Hostmaster (Mainly for the git pull task)
   // @TODO Better way?  @see drush_hosting_pause()
   exec('crontab -r');
   
-  // Change to $path and copy dev to test and live.
-  // @TODO: Is better way to do with provision?
-  if(drush_shell_exec("mkdir $path -p")) {
-    drush_log(dt('Created directory !path.', array('!path' => $path)), 'ok');
-  }
-  else {
-    // Mksie failed. If this is a retry and the directory exist, then it's
-    // OK, otherwise PANIC!!
-    if (!$retry || !is_dir($path)) {
-      drush_log(implode("\n", drush_shell_exec_output()), 'error');
-      return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to create directory !path', array('!path' => $path)));
-    }
+  // Clone repo
+  $command = "git clone $branch $git_url $platform";
+  if (!drush_shell_cd_and_exec($path, $command)) {
+    return drush_set_error('DRUSH_PROVISION_GIT_CLONE_FAILED', dt("Git clone failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $path, '!errors' => implode("\n", drush_shell_exec_output()))));
   }
 
-  // @TODO: Would this be good in provision git?  I feel like its just a wrapper, is it worth it?
-  // Maybe it would be better, because of provision_backend_invoke()
-  //provision_backend_invoke($target, 'provision-git-clone', array($git_url, $path));
-  if (drush_shell_cd_and_exec($path, "git clone $git_url dev")) {
-    drush_log(dt('Git repository cloned.', array('!path' => $path)), 'ok');
-    drush_log(implode("\n", drush_shell_exec_output()), 'ok');
-  }
-  else {
-    drush_log(implode("\n", drush_shell_exec_output()), 'error');
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Git clone failed!'));
-  }
-
-  if(drush_shell_cd_and_exec($path, "cp dev test -rf")) {
-    drush_log(dt('Repo copied to test.', array()), 'ok');
-  }
-  else {
-    drush_log(implode("\n", drush_shell_exec_output()), 'error');
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to test!'));
-  }
-
-  if(drush_shell_cd_and_exec($path, "cp dev live -rf")) {
-    drush_log(dt('Repo copied to live.', array()), 'ok');
-  }
-  else {
-    drush_log(implode("\n", drush_shell_exec_output()), 'error');
-    return drush_set_error('DRUSH_FRAMEWORK_ERROR', dt('Unable to copy repo to live!'));
-  }
+  drush_log(dt('Git repository cloned:', array('!path' => $path)), 'ok');
+  drush_log(implode("\n", drush_shell_exec_output()), 'ok');
   
-  // For each needed environment type, create a new aegir platform.
-  // @TODO: Allow users to choose what platforms they want.
-  foreach (array('dev', 'test', 'live') as $env){
-    
-    // Save aegir context
-    $platform_hosting_name = "@platform_{$project}_{$env}";
-    $options = array();
-    $options['project'] = d()->name;
-    $options['context_type'] = "platform";
-    $options['root'] = "{$path}/{$env}";
-    $output .= drush_backend_invoke_args('provision-save', array($platform_hosting_name), $options);
-    
-    // Import platform
-    provision_backend_invoke($hostmaster, 'hosting-import', array($platform_hosting_name));
-  }
+  // Save aegir context
+  $platform_hosting_name = "@platform_{$project}_{$platform}";
+  $options = array();
+  $options['project'] = d()->name;
+  $options['context_type'] = "platform";
+  $options['root'] = "{$path}/{$platform}";
+  $options['needs_site'] = TRUE;
+
+  $output .= drush_backend_invoke_args('provision-save', array($platform_hosting_name), $options);
+  
+  // Import platform
+  provision_backend_invoke('@hostmaster', 'hosting-import', array($platform_hosting_name));
   
   // Resume cron
-  provision_backend_invoke($hostmaster, 'hosting-setup');
+  provision_backend_invoke('@hostmaster', 'hosting-setup');
 }
 
