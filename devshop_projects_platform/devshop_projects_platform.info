@@ -1,5 +1,0 @@
-name = DevShop Projects Platform
-description = A DevShop Projects module that allows the user to create platforms with different git repo and branch than the original project setting.
-core = 6.x
-package = DevShop
-
