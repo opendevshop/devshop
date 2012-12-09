@@ -32,6 +32,7 @@ function drush_devshop_provision_provision_devshop_create() {
   $platform_hosting_name = "@platform_{$project}_{$platform}";
   $options = array();
   $options['project'] = d()->name;
+  $options['environment'] = $platform;
   $options['context_type'] = "platform";
   $options['root'] = "{$path}/{$platform}";
   $options['needs_site'] = TRUE;
