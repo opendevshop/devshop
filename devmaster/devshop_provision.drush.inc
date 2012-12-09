@@ -23,33 +23,21 @@ function devshop_provision_drush_exit(){
  * Implementation of hook_drush_command().
  */
 function devshop_provision_drush_command() {
-  //$items['provision-devshop-create'] = array(
-  //  'description' => 'Create a DevShop Project with three platforms and three sites for dev, test, and live.',
-  //  'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-  //  'arguments' => array(
-  //    'git-url' => 'The URL of a git repo to use to create the platforms.',
-  //    'path' => 'Desired project path.',
-  //    'branch' => 'Branch (not yet implemented!)',
-  //    'retry' => 'Retry the create.',
-  //  ),
-  //  'aliases' => array('create-project'),
-  //);
+  $items['provision-devshop-create'] = array(
+    'description' => 'Create a DevShop platform and site.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'platform-name' => 'The name of the platform to be created.',
+      'branch' => 'Branch',
+      'git-url' => 'The URL of a git repo to use to create the platforms.',
+      'path' => 'Desired project path.',
+    ),
+  );
   $items['provision-devshop-delete'] = array(
     'description' => 'Delete a DevShop Project and all associated sites and platforms.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'arguments' => array(
     ),
-    'aliases' => array('delete-project'),
-  );
-  $items['provision-devshop-platform-create'] = array(
-    'description' => 'Create a new platform and add it to an existing DevShop Project.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'arguments' => array(
-      'platform-name' => 'The name of the platform to be created.',
-      'git-url' => 'The URL of a git repo to use to create the platforms.',
-      'branch' => 'Git branch to clone.',
-    ),
-    'aliases' => array('create-platform'),
   );
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
