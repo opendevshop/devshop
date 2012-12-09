@@ -36,12 +36,12 @@ function devshop_projects_hosting_tasks() {
  * For "Commit" task.
  */
 function hosting_task_devshop_create_form($node) {
-
+  $branch_options = array_combine($node->git_branches, $node->git_branches);
   $form['branch'] = array(
     '#title' => t('Branch'),
     '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, re-verify your project.</em>'),
     '#type' => 'select',
-    '#options' => $node->git_branches,
+    '#options' => $branch_options,
   );
   // @TODO: Add "create branch" functionality.
   $form['platform_name'] = array(
