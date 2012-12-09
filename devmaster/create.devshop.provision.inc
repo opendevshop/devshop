@@ -20,7 +20,7 @@ function drush_devshop_provision_provision_devshop_create() {
   exec('crontab -r');
   
   // Clone repo
-  $command = "git clone $branch $git_url $platform";
+  $command = "git clone --branch $branch $git_url $platform";
   if (!drush_shell_cd_and_exec($path, $command)) {
     return drush_set_error('DRUSH_PROVISION_GIT_CLONE_FAILED', dt("Git clone failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $path, '!errors' => implode("\n", drush_shell_exec_output()))));
   }
