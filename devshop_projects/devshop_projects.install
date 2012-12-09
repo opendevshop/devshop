@@ -76,6 +76,12 @@ function devshop_projects_schema() {
         'default' => '',
         'description' => 'Environment type: dev, test, live, or sandbox.',
       ),
+      'git_branch' => array(
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => FALSE,
+        'description' => 'The current branch of this site or platform.',
+      ),
     ),
     'primary key' => array('object_nid'),
   );
@@ -125,5 +131,14 @@ function devshop_projects_update_2() {
     }
   }
 
+  return $ret;
+}
+
+/**
+ * Adds git_branch column to hosting_devshop_project_objects table.
+ */
+function devshop_projects_update_3() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} ADD COLUMN git_branch VARCHAR(16) NULL");
   return $ret;
 }
