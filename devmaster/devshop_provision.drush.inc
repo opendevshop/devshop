@@ -103,9 +103,10 @@ function devshop_provision_drush_command() {
  * This runs for each tasks during the command
  *    drush @hostmaster hosting-tasks
  *
- * NOTE: This ONLY runs when being called this way.
+ * NOTE: This ONLY runs when being called from a hostmaster task.
  * This hook should ONLY be used to pass Options from a hostmaster task form to
- * the $task object.
+ * the $task object, or if you don't need this functionality from the command
+ * line.
  */
 function drush_devshop_provision_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
