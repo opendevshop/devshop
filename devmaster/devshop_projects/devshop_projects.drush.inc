@@ -134,7 +134,6 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  */
 function devshop_projects_hosting_project_context_options(&$task) {
 
-  drush_log('[DEVSHOP] devshop_projects_hosting_project_context_options()', 'ok');
   $task->context_options['server'] = '@server_master';
   $task->context_options['project_name'] = $task->ref->title;
   $task->context_options['install_profile'] = $task->ref->install_profile;
@@ -147,8 +146,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->ref->git_branches = $branches['branches'];
   $task->ref->git_tags = $branches['tags'];
 
-  // @TODO: Fix this infinite verification!
-  // node_save($task->ref);
+  // Save the project node now that we have branches and tags.
+  drush_log('[DEVSHOP] Trying to node save ' . $task->ref->title);
+  node_save($task->ref);
 
   $task->context_options['git_branches'] = $branches['branches'];
   $task->context_options['git_tags'] = $branches['tags'];
@@ -172,6 +172,7 @@ function getBranchesAndTags($git_url = NULL){
   // @TODO: Provide link to the Public key for the server.
   if ('Permission denied' == substr($exec_output[0], 0, 17)){
     drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] Error:'). implode("\n", $exec_output), 'error');
+    return;
   }
 
   // If remote list is empty, something else went wrong.
@@ -185,12 +186,12 @@ function getBranchesAndTags($git_url = NULL){
   $tags = array();
 
   foreach ($exec_output AS $line_string){
+
     // @TODO: Would love some regex love here
     // Example remote line:
     // 9fc5727c0823d8d3300ba5aae3328d5998033e45 refs/heads/3-00
-    $line = explode(" ", $line_string);
-    $ref = explode("/", $line[1]);
-
+    $line = trim(substr($line_string, 40));
+    $ref = explode("/", $line);
     $branch = array_pop($ref);
 
     if ($ref[1] == 'heads') {
