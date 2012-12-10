@@ -111,57 +111,6 @@ function devshop_provision_drush_command() {
 function drush_devshop_provision_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
 
-  // Verify Platform
-  // For our platforms, we have to clone it if it has a git_remote
-  // If it has a git branch, we should checkout as well.
-  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->git_url)) {
-
-    $platform = $task->ref;
-    $root = $platform->publish_path;
-    $git_remote = $platform->git_url;
-    $git_branch = $platform->git_branch;
-
-    // Check if a repo exists
-    if (!is_dir($root) && !drush_shell_cd_and_exec($root, 'git status')){
-      drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
-
-      // Build the command string
-      $command = "git clone $git_remote $root";
-      if ($git_branch) {
-        $command .= " --branch $git_branch";
-      }
-    }
-    // If the platform has been verified and has a branch and git url
-    else {
-      $root = $platform->publish_path;
-      $git_remote = $platform->git_url;
-      $git_branch = $platform->git_branch;
-
-      // Build the command string
-      $command = "git checkout $git_branch";
-    }
-
-    // Execute
-    if (!empty($command)){
-       drush_log('[DEVSHOP] Running: ' . $command);
-
-      // @TODO: Create a d()->server->shell_cd_and_exec() function
-      //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
-      // So instead, this is the code from d()->server->shell_exec
-      // d()->server->shell_exec($cmd);
-      if (provision_is_local_host(d()->server->remote_host)) {
-        return drush_shell_cd_and_exec($root, escapeshellcmd($command));
-      }
-      else {
-        return drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
-      }
-
-       $output = drush_shell_exec_output();
-       drush_log('Shell Output: ' . implode("\n", $output) , 'notice');
-    }
-
-  }
-
   // Pull
   if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
     $task->options['no-update'] = !$task->task_args['update'];
