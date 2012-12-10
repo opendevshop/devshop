@@ -41,7 +41,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     // On Load: load this object's project and environment type
     if ($op == 'load'){
-      $data = db_fetch_array(db_query('SELECT project_nid, env_type AS environment, n.title as project, git_url, git_branch FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
+      $data = db_fetch_array(db_query('SELECT project_nid, environment, n.title as project, git_url, git_branch FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
 
@@ -75,7 +75,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         $project = hosting_context_load($node->project);
 
         // Save to table
-        db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, env_type, git_branch) VALUES (%d, %d, "%s", "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment, $node->git_branch);
+        db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, environment, git_branch) VALUES (%d, %d, "%s", "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment, $node->git_branch);
       }
     }
   }
@@ -179,7 +179,7 @@ function devshop_projects_load($node) {
 
   $objects = array();
   while($project_object = db_fetch_object($query)) {
-    $objects[$project_object->object_type][$project_object->object_nid] = $project_object->env_type;
+    $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
   }
   $additions['project_objects'] = $objects;
 
