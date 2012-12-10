@@ -21,12 +21,15 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
+  /*
+  @TODO: Refactor custom forms to work with hosting_confirm_form()
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
+  */
   return $tasks;
 }
 
