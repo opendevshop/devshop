@@ -39,8 +39,8 @@ function devshop_projects_menu() {
     'menu_name' => 'primary-links',
     'weight' => 1,
   );
-  
-  
+
+
   // hosting tasks ajax pages.
   // @TODO: This doesn't work and is making me very angry!
   foreach (hosting_available_tasks('project') as $task => $info){
@@ -104,21 +104,24 @@ function devshop_hosting_task_menu_access($node, $task) {
 /**
  * Status of Project
  *
+ * @TODO: When creating a new platform for an existing project, the status
+ * goes back to "platforms not-verified"
+ *
  * @param $node
  *   a project node
  */
 function devshop_project_status($node){
-  
+
   //Project status
   $platforms_ready = TRUE;
   $sites_ready = TRUE;
   $sites_installing = FALSE;
-  
+
   // PROJECT STATUS
   if (empty($node->project_objects) || empty($node->git_branches)){
     return 'preparing-project';
   }
-  
+
   // PLATFORMS STATUS: Determine if all platforms are verified.
   if (isset($node->project_objects['platform'])){
     foreach ($node->project_objects['platform'] as $nid => $env){
@@ -161,31 +164,36 @@ function devshop_projects_hosting_drush_aliases_name($node) {
   }
 }
 
-/*
- * Helper function to create a site in a project
+/**
+ * Helper function to create a site in a project.
+ * Used by Wizard & "Create Platform" > Post Verify
  */
-function devshop_projects_create_site($project_node, $platform_node, $env) {
+function devshop_projects_create_site($project_node, $platform_node, $platform_name) {
 
   global $user;
-    
+
   // Create the site nodes
   $node = new stdClass();
   $node->type = 'site';
   $node->status = 1;
   $node->uid = $user->uid;
-  $node->title = $env .'.'. $project_node->base_url;
+  $node->title = $platform_name .'.'. $project_node->base_url;
 
   // Aegir properties
-  // @TODO: better client support
-  $node->client = HOSTING_DEFAULT_CLIENT;  
-  $node->db_server = db_result(db_query('SELECT nid FROM {hosting_db_server}'));
-    
+  // @TODO: better client & DB support
+  $node->client = HOSTING_DEFAULT_CLIENT;
+  $servers = hosting_get_servers('db');
+  $node->db_server = key($servers);
+
   $node->platform = $platform_node->nid;
+
+  // Lookup this platforms install profile
   $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
-  
-  $node->environment = $env;
+
+  $node->environment = $platform_name;
+  $node->git_branch = $platform_node->git_branch;
   $node->project = $project_node->title;
-  
+
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
 
@@ -193,33 +201,23 @@ function devshop_projects_create_site($project_node, $platform_node, $env) {
   if ($node = node_submit($node)) {
     node_save($node);
   }
+  return $node;
 }
 
-///**
-// * Helper function which writes a serialize array in the project file
-// */
-//function devshop_projects_project_data_set($nid, $data) {
-//  db_query("UPDATE {hosting_devshop_project} SET data = '%s' WHERE nid = %d",
-//	   serialize($data), $nid);
-//}
-//
-///**
-// * Helper function which reads the serialize array in the project file
-// */
-//function devshop_projects_project_data_get($nid) {
-//
-//  $sdata = db_result(db_query("SELECT data FROM {hosting_devshop_project} " .
-//			     "WHERE nid = %d", $nid));
-//
-//  if (!$sdata || strlen($sdata) < 1) {
-//    $data = array();
-//  }
-//  else {
-//    $data = unserialize($sdata);
-//  }
-//
-//  return $data;
-//}
+/**
+ * Nodemaker
+ */
+function _devshop_projects_node_create($type, $node = stdClass){
+  global $user;
 
-
+  // @TODO: Validate type
+  $node->type = $type;
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->name = $user->name;
+  if ($node = node_submit($node)) {
+    node_save($node);
+  }
+  return $node;
+}
 

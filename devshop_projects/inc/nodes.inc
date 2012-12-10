@@ -3,7 +3,8 @@
  * @file devshop_project.node.inc
  *
  * DevShop Project Node related hooks and support functions.
- * 
+ *
+ * @TODO: Add default http and db servers to project nodes.
  */
 
 /**
@@ -117,7 +118,7 @@ function devshop_projects_insert($node) {
  *
  *  1. Updates our table.
  *  2. Adds a "Verify" task for this project.
- *  
+ *
  */
 function devshop_projects_update($node) {
 
@@ -183,7 +184,7 @@ function devshop_projects_load($node) {
   $additions['project_objects'] = $objects;
 
   // Set status
-  $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node))); 
+  $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)));
   return $additions;
 }
 

@@ -21,6 +21,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       $form['buttons']['submit']['#value'] = t('Save and Retry');
     }
   }
+
+  // On Hosting Task form
+  if ($form_id == 'hosting_task_confirm_form'){
+    array_unshift($form['#submit'], 'hosting_task_devshop_create_form_submit');
+  }
 }
 
 /**
@@ -153,7 +158,10 @@ function devshop_projects_validate($node, &$form) {
 }
 
 /**
- *  Form for site installation
+ * Form for site installation
+ *
+ * Displayed on a PROJECT node page.  This is only used once per project,
+ * during the "new project" process.
  */
 function devshop_projects_install_sites_form($form_state, $project_node) {
 
@@ -288,7 +296,7 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
   $project_node = node_load($form_state['values']['nid']);
   $project_node->install_profile = $form_state['values']['install_profile'];
 
-  // Save installation profile to database
+  // Save project installation profile to database
   db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
 
   // Create the site nodes
