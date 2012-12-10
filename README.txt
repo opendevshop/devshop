@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-DevShop Provision
-------------------------------------
-Tools for Aegir-powered development.
-
-This module provides the backend commands needed to 
-=======
 DevShop Hosting
 ------------------------------------
 Tools for Aegir-powered development.
 
 This module provides the front-end commands needed to 
->>>>>>> 68b63fe095343116ce462210c57825971a58b7f1
 deploy and manage sites using the DevShop git and features 
 based development workflow.
 
