@@ -62,12 +62,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -8
   );
 
-  $url = 'http://' . $node->base_url;
+  $url = 'http://dev.' . $node->base_url;
   $node->content['info']['base_url'] = array(
     '#type' => 'item',
-    '#title' => t('Base URL'),
+    '#title' => t('Dev Site'),
     '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
-    '#description' => t('A link to this page.  @TODO!'),
     '#weight' => -10
   );
 
