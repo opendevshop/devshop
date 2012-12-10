@@ -82,7 +82,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $platform->web_server = $server;
   $platform->git_branch = $branch;
   $platform->project = $project->title;
-  $platform->environment = $branch;
+  $platform->environment = $platform_name;
 
   watchdog('debug', 'Form state: ' . print_r($form_state['values'],1));
 
