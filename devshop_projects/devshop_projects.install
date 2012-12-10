@@ -69,12 +69,12 @@ function devshop_projects_schema() {
         'default' => '',
         'description' => 'The node ID of the platform.',
       ),
-      'env_type' => array(
+      'environment' => array(
         'type' => 'varchar',
         'not null' => TRUE,
         'length' => 10,
         'default' => '',
-        'description' => 'Environment type: dev, test, live, or sandbox.',
+        'description' => 'Environment name.  Either dev test live or platform name.',
       ),
       'git_branch' => array(
         'type' => 'varchar',
@@ -92,7 +92,7 @@ function devshop_projects_schema() {
 /**
  * Implementation of hook_install().
  */
-function devshop_projects_install() {  
+function devshop_projects_install() {
   // Create tables.
   drupal_install_schema('devshop_projects');
 }
@@ -100,7 +100,7 @@ function devshop_projects_install() {
 /**
  * Implementation of hook_uninstall().
  */
-function devshop_projects_uninstall() {  
+function devshop_projects_uninstall() {
   // Delete tables.
   drupal_uninstall_schema('devshop_projects');
 }
@@ -140,5 +140,16 @@ function devshop_projects_update_2() {
 function devshop_projects_update_3() {
   $ret = array();
   $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} ADD COLUMN git_branch VARCHAR(16) NULL");
+  return $ret;
+}
+
+/**
+ * Changes env_type to environment in {hosting_devshop_project_object}.
+ */
+function devshop_projects_update_4() {
+  $ret = array();
+  $schema = devshop_projects_schema();
+  $spec = $schema['hosting_devshop_project_object']['fields']['environment'];
+  db_change_field($ret, 'hosting_devshop_project_object', 'env_type', 'environment', $spec);
   return $ret;
 }
