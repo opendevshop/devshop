@@ -28,7 +28,7 @@ class provisionContext_project extends provisionContext {
     $this->setProperty('git_tags');
     $this->setProperty('base_url');
   }
-  
+
   function verify() {
     $this->type_invoke('verify');
     drush_log('[DEVSHOP] verify()', 'ok');
