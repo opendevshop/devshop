@@ -39,7 +39,6 @@ function devshop_projects_projects_view() {
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // If not ready yet:
-  
   if ($node->project_status != 'sites_ready'){
     // Site install form
     $node->content['devshop']['install'] = array(
@@ -62,7 +61,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#value' => filter_xss($node->code_path),
     '#weight' => -8
   );
-  
+
   $url = 'http://' . $node->base_url;
   $node->content['info']['base_url'] = array(
     '#type' => 'item',
@@ -78,7 +77,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#value' => strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url)),
     '#weight' => -10
   );
-  
+
   if (!empty($node->install_profile)){
     $node->content['info']['install_profile'] = array(
       '#type' => 'item',

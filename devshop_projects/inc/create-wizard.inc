@@ -90,22 +90,6 @@ function devshop_projects_create_wizard_info(){
  * WIZARD TOOLS
  */
 
-/**
- * Nodemaker
- */
-function _devshop_projects_node_create($type, $node = stdClass){
-  global $user;
-
-  // @TODO: Validate type
-  $node->type = $type;
-  $node->status = 1;
-  $node->uid = $user->uid;
-  $node->name = $user->name;
-  if ($node = node_submit($node)) {
-    node_save($node);
-  }
-  return $node;
-}
 
 /**
  * NEXT callback
