@@ -131,18 +131,6 @@ function devshop_projects_update($node) {
   	   "WHERE nid = %d",
 	   $node->git_url, hosting_path_normalize($node->code_path),
 	   $node->base_url, serialize($data), $node->nid);
-
-  // Create hostmaster task
-  hosting_add_task($node->nid, 'verify');
-
-  //
-  //// If this is a rerry, kick start another devshop-create
-  //if (isset($node->retry)) {
-  //  $args = array('retry' => 1);
-  //
-  //  // Create hostmaster task
-  //  hosting_add_task($node->nid, 'devshop-create', $args);
-  //}
 }
 
 /**
