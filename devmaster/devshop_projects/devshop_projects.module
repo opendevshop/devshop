@@ -34,7 +34,7 @@ function devshop_projects_menu() {
   $items['hosting/projects'] = array(
     'title' => 'Projects',
     'description' => 'Display a list of all projects',
-    'page callback' => 'devshop_projects_projects_view',
+    'page callback' => 'devshop_projects_projects_page',
     'access arguments' => array('view projects'),
     'menu_name' => 'primary-links',
     'weight' => 1,
