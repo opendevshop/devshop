@@ -231,24 +231,23 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
 
   $project = &$form_state['project'];
 
-  // If the project already exists, and name or git url has changed...
-  // we should delete the old placeholder project and create a new one.
-  if ($project->project_nid && $project->git_url != $form_state['values']['git_url'] || $project->title != $project_name = $form_state['values']['title']) {
-
-    // Create "delete" task
-    hosting_add_task($project->project_nid, 'delete');
-
-    // Reset project nid
-    $project->project_nid = NULL;
+  // If the project already exists, and git url has changed...
+  if ($project->project_nid && $project->git_url != $form_state['values']['git_url']) {
+    drupal_set_message(t('You have changed the git URL.  Please wait while we verify your remote and branches.'));
+    // Change the git url and save the node.  Verification SHOULD run again.
+    $node = node_load($project->project_nid);
+    $node->git_url = $form_state['values']['git_url'];
+    node_save($node);
   }
+
+  // Now that we've compared old and new, set $project properties.
+  $project->git_url = $form_state['values']['git_url'];
+  $project->title = $project_name = $form_state['values']['title'];
 
   if (empty($project->project_nid)){
     // Create the project node now.  We will update it with the chosen path.
     // This is so we can check for branches and save the hosting_context as soon
     // as possible.
-    $project->git_url = $form_state['values']['git_url'];
-    $project->title = $project_name = $form_state['values']['title'];
-
     $node = new stdClass;
     $node->title = $project->title;
     $node->git_url = $project->git_url;
