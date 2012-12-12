@@ -163,11 +163,16 @@ function getBranchesAndTags($git_url = NULL){
     $git_url = drush_get_option('git_url');
   }
   $command = "git ls-remote {$git_url}";
-  drush_shell_exec($command);
-  $exec_output = drush_shell_exec_output();
-
   drush_log('[DEVSHOP] running '.$command, 'ok');
-  drush_log('[DEVSHOP] ' . implode("\n", $exec_output), 'ok');
+
+  if (drush_shell_exec($command)){
+    $exec_output = drush_shell_exec_output();
+  } else {
+    $exec_output = drush_shell_exec_output();
+    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] Error retrieving remote information: ') . implode("\n", $exec_output), 'error');
+    return;
+  }
+
 
   // Check for Permission Denied
   // @TODO: Provide link to the Public key for the server.
