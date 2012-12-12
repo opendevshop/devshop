@@ -98,21 +98,18 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($site->site_status != -2) {
         $url = "http://$site->title";
         $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
-        $row[] = l('Site', "node/$site->nid");
+        $row[] = l('Site Dashboard', "node/$site->nid");
       }
       else {
         // Site if deleted, just show the platform name
         $row[] = $platform->title;
         $row[] = '';
       }
-      $row[] = l('Platform', "node/$site->platform");
-      if ($site->site_status != -2) {
-  $row[] = l('Download Database', "$url/admin/status/");
+      $row[] = l('Platform Dashboard', "node/$site->platform");
+
+      if (module_exists('devshop_log')){
+        $row[] = l('Commit Log', "node/$site->platform/gitlog");
       }
-      else {
-        $row[] = '';
-      }
-      $row[] = l('Commit Log', "node/$site->platform/gitlog");
       $rows[] = $row;
     }
     $header = array();
