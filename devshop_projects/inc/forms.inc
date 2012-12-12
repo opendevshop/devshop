@@ -301,6 +301,8 @@ function devshop_projects_install_sites_form_submit(&$form, &$form_state){
   db_query('UPDATE {hosting_devshop_project} SET install_profile = "%s" WHERE nid = %d', $form_state['values']['install_profile'], $project_node->nid);
 
   // Create the site nodes
+  // @TODO: Can we speed things up here by only running install for the first,
+  // then  "Cloning" to create the rest?
   foreach ($project_node->project_objects['platform'] as $nid => $env){
     devshop_projects_create_site($project_node, node_load($nid), $env);
   }
