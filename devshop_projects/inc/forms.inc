@@ -180,7 +180,7 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
 
     // Display the platforms
     $rows = array();
-    $header = array(t('Name'), t('Branch'), t('Status'));
+    $header = array(t('Name'), t('Branch'), t('Status'), t('Installation Profiles'));
     foreach ($project_node->project_objects['platform'] as $nid => $name){
 
       $platform = node_load($nid);
@@ -188,7 +188,6 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       $row[] = $name;
       $row[] = $platform->git_branch;
       $row[] = $platform->verified? t('Verified'): t('Verification Pending');
-      $rows[] = $row;
 
       if (!$platform->verified){
         $completed = FALSE;
@@ -197,6 +196,8 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       // Collect install profiles
       // This fancy footwork gives us an array with items like 'shortname' => 'Name'
       $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
+
+      $row[] = implode(', ', $profiles[$name]);
 
       if (!isset($available_profiles)){
         $available_profiles = $profiles[$name];
@@ -211,7 +212,16 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       $defaults['dev']['dev_modules'] = 1;
       $defaults['test']['run_tests'] = 1;
       $defaults['live']['live_modules'] = 1;
+
+      // Store rows for display
+      $rows[] = $row;
     }
+
+     // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
+    $form['platforms'] = array(
+      '#type' => 'markup',
+      '#value' => theme('table', $header, $rows),
+    );
 
     // Provide something for people while they wait.
     if (!$completed){
@@ -220,11 +230,14 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
         '#value' => t('Please wait while we download and verify your drupal code.'),
       );
 
+      return $form;
+
     } elseif (count($available_profiles) == 0) {
       $form['error'] = array(
         '#type' => 'markup',
-        '#value' => t('WARNING: No profile was found in all of your platforms.  Please check your branches and code and try again.'),
+        '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  This can happen if you chose branches with two different versions of Drupal.  Please edit codebase so that your desired install profile is in all branches.'),
       );
+      return $form;
     } else {
       // Install Profile
       // Sensible default?
@@ -248,11 +261,6 @@ function devshop_projects_install_sites_form($form_state, $project_node) {
       );
     }
 
-     // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
-    $form['platforms'] = array(
-      '#type' => 'markup',
-      '#value' => theme('table', $header, $rows),
-    );
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Create Sites'),
