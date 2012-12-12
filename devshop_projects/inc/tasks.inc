@@ -16,8 +16,8 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
   );
   $tasks['project']['devshop-create'] = array(
-    'title' => t('Create New Platform'),
-    'description' => t('Creates a new platform within this project.'),
+    'title' => t('Create New Site'),
+    'description' => t('Creates a new site & platform within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
