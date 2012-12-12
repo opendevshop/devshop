@@ -40,10 +40,21 @@ function devshop_projects_create_wizard($step = NULL){
   $form_state['project'] = $project;
 
   // Particular overrides
-  if ($step == 'environments' && isset($project->nid)){
-    $project_node = node_load($project->nid);
+  if ($step == 'environments' && isset($project->project_nid)){
+    $project_node = node_load($project->project_nid);
     if (empty($project_node->git_branches)){
       //$form_info['show back'] = FALSE;
+    }
+  }
+
+  // If project node is active... make sure it was verified.
+  $project_node = node_load($project->project_nid);
+  $tasks = hosting_task_fetch_tasks($project_node->nid);
+  if ($tasks['verify']['task_status'] === HOSTING_TASK_ERROR){
+    drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
+    // If not on the first step, go to it.
+    if ($step != current(array_keys($form_info['order']))){
+      drupal_goto('node/add/project');
     }
   }
 
