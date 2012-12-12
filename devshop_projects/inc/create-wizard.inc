@@ -200,13 +200,25 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   global $user;
 
   $project = &$form_state['project'];
-  $project->git_url = $form_state['values']['git_url'];
-  $project->title = $project_name = $form_state['values']['title'];
+
+  // If the project already exists, and name or git url has changed...
+  // we should delete the old placeholder project and create a new one.
+  if ($project->project_nid && $project->git_url != $form_state['values']['git_url'] || $project->title != $project_name = $form_state['values']['title']) {
+
+    // Create "delete" task
+    hosting_add_task($project->project_nid, 'delete');
+
+    // Reset project nid
+    $project->project_nid = NULL;
+  }
 
   if (empty($project->project_nid)){
     // Create the project node now.  We will update it with the chosen path.
     // This is so we can check for branches and save the hosting_context as soon
     // as possible.
+    $project->git_url = $form_state['values']['git_url'];
+    $project->title = $project_name = $form_state['values']['title'];
+
     $node = new stdClass;
     $node->title = $project->title;
     $node->git_url = $project->git_url;
