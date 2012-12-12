@@ -31,6 +31,7 @@ function devshop_projects_projects_page() {
     }
 
     $row = array();
+    $link_options = array('attributes' => array('target' => '_blank'));
 
     // Link to Project page
     $row[] = '<strong>' . l($node->title, "node/$proj->nid") . '</strong>';
@@ -52,7 +53,7 @@ function devshop_projects_projects_page() {
 
     // Link to Dev Site
     $dev_site_url = url("http://dev." . $node->base_url, array('absolute' => TRUE));
-    $row[] = l($dev_site_url, $dev_site_url);
+    $row[] = l($dev_site_url, $dev_site_url, $link_options);
 
 
     $rows[] = $row;
@@ -109,6 +110,15 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -10
   );
 
+  if (!empty($node->git_branches)){
+    $node->content['info']['git_branches'] = array(
+      '#type' => 'item',
+      '#title' => t('Remote Branches'),
+      '#value' => theme('item_list', $node->git_branches),
+      '#weight' => -8
+    );
+  }
+
   if (!empty($node->install_profile)){
     $node->content['info']['install_profile'] = array(
       '#type' => 'item',
@@ -117,6 +127,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#weight' => -8
     );
   }
+
+
 
   $rows = array();
   if (isset($node->project_objects['site'])) {
