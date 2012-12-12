@@ -56,8 +56,14 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         );
         $node->content['info']['env'] = array(
           '#type' => 'item',
-          '#title' => t('Environment Type'),
+          '#title' => t('Environment'),
           '#value' => $node->environment,
+          '#weight' => -11,
+        );
+        $node->content['info']['branch'] = array(
+          '#type' => 'item',
+          '#title' => t('Branch'),
+          '#value' => $node->git_branch,
           '#weight' => -11,
         );
       }
