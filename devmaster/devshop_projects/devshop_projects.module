@@ -42,7 +42,6 @@ function devshop_projects_menu() {
 
 
   // hosting tasks ajax pages.
-  // @TODO: This doesn't work and is making me very angry!
   foreach (hosting_available_tasks('project') as $task => $info){
     $path = 'node/%/project_' . $task;
     $items[$path] = array(
@@ -63,6 +62,7 @@ function devshop_projects_hosting_task_confirm_form_page($nid, $task){
   $node = node_load($nid);
   return drupal_get_form('hosting_task_confirm_form', $node, $task);
 }
+
 /**
  * Implementation of hook_menu_alter()
  *
