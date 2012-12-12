@@ -121,7 +121,6 @@ function devshop_projects_insert($node) {
  *
  */
 function devshop_projects_update($node) {
-
   $data = array();
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
@@ -131,6 +130,10 @@ function devshop_projects_update($node) {
   	   "WHERE nid = %d",
 	   $node->git_url, hosting_path_normalize($node->code_path),
 	   $node->base_url, serialize($data), $node->nid);
+
+   if (!$node->no_verify) {
+    hosting_add_task($node->nid, 'verify');
+  }
 }
 
 /**
