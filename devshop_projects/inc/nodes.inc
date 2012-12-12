@@ -49,16 +49,16 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     if ($op == 'view'){
       if (!empty($node->project)){
         $node->content['info']['project'] = array(
-	  '#type' => 'item',
-	  '#title' => t('Project'),
-	  '#value' => l($node->project, "node/{$node->project_nid}"),
-	  '#weight' => -12,
-	);
-         $node->content['info']['env'] = array(
-	  '#type' => 'item',
-	  '#title' => t('Environment Type'),
-	  '#value' => $node->environment,
-	  '#weight' => -11,
+          '#type' => 'item',
+          '#title' => t('Project'),
+          '#value' => l($node->project, "node/{$node->project_nid}"),
+          '#weight' => -12,
+        );
+        $node->content['info']['env'] = array(
+          '#type' => 'item',
+          '#title' => t('Environment Type'),
+          '#value' => $node->environment,
+          '#weight' => -11,
         );
       }
     }
