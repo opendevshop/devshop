@@ -10,19 +10,51 @@
  * @TODO: Should we make this a list of teasers?  Hard to cram everything in
  * a table.
  */
-function devshop_projects_projects_view() {
+function devshop_projects_projects_page() {
 
-  $header = array('Projects', 'Platforms', 'Sites');
+  $header = array(
+    'Name',
+    'Profile',
+    'Version',
+    '',
+    'Git URL',
+    'Dev Site',
+  );
 
   $r = db_query("SELECT * FROM {hosting_devshop_project}");
   $rows = array();
 
   while(($proj = db_fetch_object($r))) {
     $node = node_load($proj->nid);
+    if (!empty($node->project_objects['platform'])){
+      $platform_node = node_load(key($node->project_objects['platform']));
+    }
+
     $row = array();
-    $row[] = l($node->title, "node/$proj->nid");
-    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='platform'", $node->nid));
-    $row[] = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
+
+    // Link to Project page
+    $row[] = '<strong>' . l($node->title, "node/$proj->nid") . '</strong>';
+
+    // Install Profile
+    $row[] = $node->install_profile;
+
+    // Drupal Version
+    $row[] = $platform_node->release->version;
+
+    // Number of environments
+    $num = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
+    $row[] = format_plural($num, t('1 site'), t('!num sites', array('!num' => $num)));
+
+
+
+    // Git URL
+    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url));
+
+    // Link to Dev Site
+    $dev_site_url = url("http://dev." . $node->base_url, array('absolute' => TRUE));
+    $row[] = l($dev_site_url, $dev_site_url);
+
+
     $rows[] = $row;
   }
 
