@@ -50,8 +50,8 @@ function devshop_log_menu() {
   $items['node/%/gitlog'] = array(
     'title' => 'Commit Log',
     'description' => 'View commit log entries',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_log_view_form', 1),
+    'page callback' => 'devshop_log_page',
+    'page arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
     'access callback' => '_devshop_log_access_callback',
     'access arguments' => array(1),
@@ -65,22 +65,8 @@ function devshop_log_menu() {
 /**
  * View Log Page
  */
-function devshop_log_view_form($form, $nid) {
-  $form['devsop_log'] = array(
-    '#type'   => 'item',
-    '#title'  => '',
-    '#value'  => t(''),
-    '#weight' => 0,
-  );
-  $form['devsop_log']['commit_log'] = array(
-    '#type'          => 'textarea',
-    '#title'         => t('Git Commit Log'),
-    '#default_value' => t(_devshop_log_load($nid)),
-    '#attributes'    => array('readonly' => 'readonly'),
-    '#rows'          => 25,
-  );
-
-  return $form;
+function devshop_log_page($nid) {
+  return check_markup(_devshop_log_load($nid));
 }
 
 /**
@@ -97,7 +83,7 @@ function devshop_git_log_settings() {
     '#type' => 'textfield',
     '#maxlength' => 5,
     '#title' => t('Max log entries to display'),
-    '#default_value' => variable_get('devshop_git_log_count', 10), 
+    '#default_value' => variable_get('devshop_git_log_count', 10),
     '#weight' => 1,
     '#description' => t('Enter the maximum number of log entries to ' .
     		        'display in the Git Commit Log View page. A ' .
@@ -110,7 +96,7 @@ function devshop_git_log_settings() {
 
 /*
  * This is a hack which loads the git commit log for the given
- * platform node. 
+ * platform node.
  */
 function _devshop_log_load($nid) {
 
@@ -123,7 +109,7 @@ function _devshop_log_load($nid) {
   // directory before we fetch the log. Technically, I should be able to
   // use git's --work-tree option and not have to chdir, but for some
   // reason, it doesn't work. It works when I run the exact same command
-  // at the shell prompt, but doesn't work when I call git from PHP. 
+  // at the shell prompt, but doesn't work when I call git from PHP.
   // Something to fix one day.
 
   $log_count = variable_get('devshop_git_log_count', 10);
