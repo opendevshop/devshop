@@ -345,8 +345,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $project_node = node_load($project->project_nid);
 
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
-
-  if ($project->verify_task_status = HOSTING_TASK_QUEUED || $project->verify_task_status = HOSTING_TASK_PROCESSING){
+  if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING){
 
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
