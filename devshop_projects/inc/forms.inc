@@ -33,16 +33,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
  */
 function devshop_projects_form(&$node) {
 
-  $retry = devshop_project_project_create_failed($node->nid, $task);
-  if ($retry) {
-    $form['notice'] = array(
-      '#type' => 'item',
-      '#title' => t('NOTICE!'),
-      '#description' => t('Project Create failed! You can view the task log ' . l('here.', "node/$task->nid") . ' Please make any necessary corrections below and resubmit the form to try again.'),
-      '#weight' => -1,
-    );
-  }
-
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Git URL'),
@@ -90,18 +80,16 @@ function devshop_projects_form(&$node) {
 
   // Don't allow editing
   if ($node->nid) {
-    $form['code_path']['#value'] = $form['code_path']['#default_value'];
-    $form['code_path']['#disabled'] = TRUE;
+    $locked = array('title', 'git_url', 'code_path', 'base_url');
+    foreach ($locked as $field){
+      $form[$field]['#value'] = $form[$field]['#default_value'];
+      $form[$field]['#type'] = 'value';
 
-    $form['title']['#value'] = $form['title']['#default_value'];
-    $form['title']['#disabled'] = TRUE;
-
-    if (!$retry) {
-      $form['git_url']['#value'] = $form['git_url']['#default_value'];
-      $form['git_url']['#disabled'] = TRUE;
+      // Be nice and show it.
+      $form["{$field}_display"] = $form[$field];
+      $form["{$field}_display"]['#type'] = 'item';
     }
   }
-
   return $form;
 }
 
