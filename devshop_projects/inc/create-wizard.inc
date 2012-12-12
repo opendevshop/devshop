@@ -144,12 +144,16 @@ function devshop_projects_create_wizard_finish(&$form_state) {
  */
 function devshop_projects_create_wizard_cancel(&$form_state) {
   // Update the cache with changes.
+  $project = &$form_state['project'];
   ctools_object_cache_clear('project', $form_state['cache name']);
+
+  // Redirect to projects list
   $form_state['redirect'] = 'hosting/projects';
 
-  // @TODO: If step 1 has been completed, we should run Delete on Project node.
-  // to get rid of drush alias context, files, everything that this form
-  // may have created.
+  // If we have a project node, create a "delete" hosting task
+  if (!empty($project->project_nid)){
+    hosting_add_task($project->project_nid, 'delete');
+  }
 }
 
 /**
@@ -177,15 +181,30 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#description' => t('Enter the Git URL for your drupal project.  The root of the repo must contain Drupal\'s index.php.  A clone of !link is a good place to start.', array('!link' => l('http://git.drupal.org/project/drupal.git', 'http://git.drupal.org/project/drupal.git'))),
     '#default_value' => $project->git_url,
   );
+
   $form['title'] = array(
     '#type' => 'textfield',
-     '#title' => t('Project Code Name'),
-     '#required' => TRUE,
-     '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository.'),
-     '#size' => 40,
-     '#default_value' => $project->title,
-     '#maxlength' => 255,
+    '#title' => t('Project Code Name'),
+    '#required' => TRUE,
+    '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
+    '#size' => 40,
+    '#default_value' => $project->title,
+    '#maxlength' => 255,
   );
+
+  // If there is already a title, make this an item.
+  // @TODO: Can we allow "renaming" of projects?  (probably only at this stage).
+  if (!empty($project->title)) {
+    // Force title
+    $form['title']['#value'] = $form['title']['#default_value'];
+    $form['title']['#type'] = 'value';
+    $form['title']['#description'] = t('You cannot change the name of your project once it has been created.  If you must, click the "Cancel" button to delete this project, then create a new one.');
+
+    // Be nice and show it.
+    $form['title_display'] = $form['title'];
+    $form['title_display']['#type'] = 'item';
+
+    }
 }
 
 /**
