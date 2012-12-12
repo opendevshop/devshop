@@ -31,6 +31,7 @@ function devshop_projects_projects_page() {
     }
 
     $row = array();
+    $link_options = array('attributes' => array('target' => '_blank'));
 
     // Link to Project page
     $row[] = '<strong>' . l($node->title, "node/$proj->nid") . '</strong>';
@@ -52,7 +53,7 @@ function devshop_projects_projects_page() {
 
     // Link to Dev Site
     $dev_site_url = url("http://dev." . $node->base_url, array('absolute' => TRUE));
-    $row[] = l($dev_site_url, $dev_site_url);
+    $row[] = l($dev_site_url, $dev_site_url, $link_options);
 
 
     $rows[] = $row;
