@@ -24,7 +24,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
   // On Hosting Task form
   if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-create'){
-    array_unshift($form['#submit'], 'hosting_task_devshop_create_form_submit');
+    $form['#submit'] = array('hosting_task_devshop_create_form_submit');
   }
 }
 

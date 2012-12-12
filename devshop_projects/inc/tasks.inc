@@ -61,7 +61,6 @@ function hosting_task_devshop_create_form($node) {
     '#default_value' => 1,
   );
   */
-  $form['#submit'][] = 'hosting_task_devshop_create_form_submit';
   return $form;
 }
 
@@ -91,7 +90,12 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
 
   watchdog('debug', 'Attempting to create: ' . print_r($platform,1));
 
+  // Create the platform node
   $platform_node = _devshop_projects_node_create('platform', $platform);
 
-
+  // We are replacing hosting_confirm_form_submit here, so just do what it does,
+  // minus the hosting task creation!
+  $values = $form_state['values'];
+  $form_state['redirect'] = 'node/' . $values['nid'];
+  modalframe_close_dialog();
 }
