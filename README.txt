@@ -1,51 +1,85 @@
-DevShop Hosting
-------------------------------------
-Tools for Aegir-powered development.
 
-This module provides the front-end commands needed to 
-deploy and manage sites using the DevShop git and features 
+DevShop Hosting
+===============
+Drupal development infrastructure made easy.
+
+
+This module provides the front-end commands needed to
+deploy and manage sites using the DevShop git and features
 based development workflow.
 
--------------------------------------
+
 Installation
--------------------------------------
+------------
 
-DevShop assumes a base Aegir installation.
-See http://community.aegirproject.org/handbook to learn about Aegir.
+1. Install Aegir
 
-Visit http://community.aegirproject.org/content/installing/automatic-installation-ubuntu-1104-quickstart
-for a fast way to install aegir.
+  DevShop assumes a base Aegir installation.
+  See http://community.aegirproject.org/handbook to learn about Aegir.
 
-There is also a Vagrant project at http://drupal.org/project/aegir_up
+  The most reliable and generally supported way to install aegir is with
+  the Debian packages.
+
+  See http://community.aegirproject.org/installing/debian for instructions on
+  installing in debian based systems like Ubuntu.  Pay close attention to
+
+2. Install provision_git and devshop provision
+
+  $ drush dl devshop_provision provision_git
+
+  In a typical debian environment, it will try to download it to
+  /usr/share/drush/commands, but you can put it anywhere Drush command files can live.
+
+3. Install devshop_hosting and enable desired modules.
+
+  Download devshop_hosting and ctools into your @hostmaster site with drush:
+  $ drush @hostmaster dl devshop_hosting ctools
+
+  Enable devshop_projects, devshop_tasks, devshop_log, and optionally,
+  devshop_tasks and devshop_tests:
+
+  $ drush @hostmaster en devshop_projects devshop_tasks devshop_log devshop_tests
+
+NOTE: The project creation wizard requires
+certain Hosting Tasks to run before later steps can be completed. For this
+reason, it really helps to have a very fast Hosting Queue, or to install the Hosting Queue Runner project (http://drupal.org/project/hosting_queue_runner) so that tasks fire as quickly as possible.
+
+Usage
+-----
+
+DevShop functionality centers around "Projects". Aegir Project nodes store a Git URL, the code path, the "base url", and the branches of the remote repository.
+
+DevShop allows multiple platforms and sites (for dev, test, or live purposes)
+to be created very easily.  Platforms can be easily created from existing
+branches of your git repositories.
+
+To create a new project, visit either the Projects page or click "Create Content" > "DevShop Project".
+
+### Step 1: Git URL and project name.
+
+Enter your project's Git URL and Project Name.
+
+NOTE: Your project's git repo must be a complete drupal core file set.  It
+should match the structure of Drupal core's git repository, and can be a clone
+of http://git.drupalcode.org/project/drupal.git
+
+### Step 2: File Path and Base URL
+
+Enter the base path to the Project's code. Recommended is /var/aegir/projects
+
+Enter the base URL for the project.  All Project Sites will be on a subdomain of this base URL.
+
+### Step 3: Choose Platforms
+
+To complete this step, the Verify Project task must finish.
+
+On this page, you choose if you want dev, test, or live platforms and what branches each should live on.  You can also choose the branches of your git repository you wish to create platforms and sites for.
 
 
--------------------------
-Install devshop_provision
-
-Much like hosting depends on provision, devshop_hosting depends on devshop_provision.
-
-Download devshop_provision with drush:
-  $ drush dl devshop_provision
-
-It will try to download it to /usr/share/drush/commands, but you can put it
-anywhere Drush command files can live.  /var/aegir/.drush/commands is a good
-place because then you can update drush core without a hassle.
-
--------------------------
-Install devshop_hosting
-
-Download devshop_hosting into your @hostmaster site with drush:
-  $ drush @hostmaster dl devshop_hosting
- 
-Enable devshop_tasks with drush.  Unless you like visiting your admin pages.
-  $ drush @hostmaster en devshop_tasks
-  
-If you need a pull queue (ie. this is hosting a shared Dev site that must always
-have the latest commits) enabled devshop_pull
-  $ drush @hostmaster en devshop_pull
 
 
--------------------------------------
+
+
 Provision Commands & Hostmaster Tasks
 -------------------------------------
 
@@ -55,12 +89,14 @@ NOTE: Not all tasks should be run on certain sites.  It is up to YOU to decide
 where and when to run these tasks.  DevShop is NOT aware of which site is live,
 staging, testing, or development.  Use these commands with caution.
 
+@TODO: More constrained tasks are being created as tasks on projects.
+
 All tasks have specific permissions, so you can grant roles individual tasks.
 
 1. Pull Code | drush @alias provision-devshop-pull | drush @alias pdp
   This task pulls your code, runs new updates, reverts features, and clears
   caches.  It can be used as a Deployment task, for test sites
-  
+
   - Git Pull the code for your site's platform.
   - Then, all optionally:
     - Run update.php.
@@ -70,22 +106,22 @@ All tasks have specific permissions, so you can grant roles individual tasks.
 2. Commit Features | drush @alias provision-devshop-commit | drush @alias pdc
   This task integrates with Features.module to make it very easy to recreate and
   commit your features
-  
+
   - Calls drush features-update-all
   - Commits the result, with a part automated and part customized commit message.
   - (Optionally) pushes the commits.
   - (Optionally) force-reverts after a commit.
-  
+
 3. Sync Content | drush provision-devshop-sync @source @destination | drush pds @source @destination
   This task pulls content down from a site that has a drush alias on the current
   system. Currently any alias can be entered when Syncing content.  Eventually,
   the site will store its default "source" site.
-  
+
   WARNING: This command is built as a backend command.  There are NO PROMPTS
   before the scripts will sql-drop the @destination database.  It should NEVER
   be used on a production site.  Once "DevShop Environments" is in place, we can
   prevent this command from even being called on a "live" environment.
-  
+
   This task:
   - (optionally) Pulls code
   - Drops the @destination database.
