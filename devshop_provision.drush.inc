@@ -26,23 +26,28 @@ function devshop_provision_drush_command() {
     'options' => array(
       'platform-name' => 'The name of the platform to be created.',
       'branch' => 'Branch',
-      'pull' => 'Pull on Commit',
     ),
   );
+  // @TODO: This task is now just the "delete" task, so we should use pre and
+  // post hooks to delete all platforms and sites properly.
+  /*
   $items['provision-devshop-delete'] = array(
     'description' => 'Delete a DevShop Project and all associated sites and platforms.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'arguments' => array(
     ),
   );
+  */
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
-      //'sync' => 'Sync content from default source site before code pull.',
       'update' => 'Run update.php after code pull.',
       'revert' => 'Revert all features after code pull.',
       'cache' => 'Clear all caches after code pull.',
+    ),
+    'arguments' => array(
+      'environment' => 'The name of the environment to Pull Code to.',
     ),
     'aliases' => array('pdp'),
   );
@@ -56,22 +61,27 @@ function devshop_provision_drush_command() {
       'files' => 'Sync site files.',
     ),
     'arguments' => array(
-      'from' => 'Site alias to sync from.',
-      'to' => 'Site alias to sync to.',
+      'from' => 'Environment to sync from.',
+      'to' => 'Environment to sync to.',
     ),
+    'examples' => array(
+      'drush @project_mysite provision-devshop-sync live dev' => 'Syncs the database from for project_mysite\'s live to  project_mysite\'s dev server.', 
+    ), 
     'aliases' => array('pds'),
   );
   $items['provision-devshop-commit'] = array(
     'description' => 'Export the site\'s Features and commit the result.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
-      'revert' => ' Force revert all features after exporting and committing.',
+      'message' => 'Add a commit message',
+      'revert' => 'Force revert all features after exporting and committing.',
     ),
     'aliases' => array('pdc'),
     'arguments' => array(
-      'from' => 'Site alias to sync from.',
+      'environment' => 'The name of the environment to commit from.',
     ),
   );
+  /* @TODO: Make devshop dl an addon module.
   $items['provision-devshop-dl'] = array(
     'description' => 'Download modules.  This is just a wrapper for dl, it is here for hostmaster.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -80,6 +90,7 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('pdl'),
   );
+  */
   $items['provision-devshop-test'] = array(
     'description' => 'Run a group of SimpleTest tests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -88,6 +99,9 @@ function devshop_provision_drush_command() {
       'sync-from-live' => 'Sync contents from Live before running tests.',
     ),
     'aliases' => array('pdt'),
+    'arguments' => array(
+      'environment' => 'The name of the environment to run tests on.',
+    ),
   );
   return $items;
 }
