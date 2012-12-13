@@ -22,7 +22,10 @@ include_once('inc/ui.inc');
 function devshop_projects_perm() {
   return array(
     'view projects',
-    'delete project'
+    'create devshop-create task',
+    'create devshop-commit task',
+    'create devshop-pull task',
+    'create devshop-sync task',
   );
 }
 
