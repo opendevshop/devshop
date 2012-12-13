@@ -57,8 +57,16 @@ function devshop_projects_hosting_tasks() {
 /**
  * Helper to provide a select list of environments for this project
  */
-function devshop_projects_environment_options($node){
-  return array_combine($node->project_objects['site'], $node->project_objects['site']);
+function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description) {
+  // @TODO: Add a check here.  Sometimes we want to limit this list.
+  $options = array_combine($node->project_objects['site'], $node->project_objects['site']);
+  $form['environment'] = array(
+    '#type' => 'radios',
+    '#title' => t('Environment'),
+    '#options' => $options,
+    '#default_value' => key($options),
+    '#description' => $description,
+  );
 }
 
 /**
@@ -136,6 +144,9 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  */
 function hosting_task_devshop_commit_form($node) {
 
+  $form = array();
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to commit features from.'));
+  
   $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
 
   if (_devshop_projects_site_has_module($node, 'features_diff')) {
@@ -170,15 +181,10 @@ function hosting_task_devshop_commit_form($node) {
  * For "Pull Code" task.
  */
 function hosting_task_devshop_pull_form($node) {
-  $env_options = devshop_projects_environment_options($node);
-  $form['environment'] = array(
-    '#type' => 'radios',
-    '#title' => t('Environment'),
-    '#options' => $env_options,
-    '#default_value' => key($env_options),
-    '#description' => t('Select platform to Pull Code to.'),
-  );
-
+  
+  $form = array();
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to pull code to.'));
+  
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
