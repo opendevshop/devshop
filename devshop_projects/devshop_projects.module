@@ -235,3 +235,12 @@ function _devshop_projects_site_has_module($node, $module) {
   $package = hosting_package_instance_load($param);
   return $package->status;
 }
+
+/**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_projects_project_has_module($node, $module) {
+  $sites = array_flip($node->project_objects['site']);
+  return _devshop_projects_site_has_module(node_load($sites['dev']), $module);
+}
+ 
