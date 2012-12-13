@@ -53,6 +53,14 @@ function devshop_projects_hosting_tasks() {
   return $tasks;
 }
 
+
+/**
+ * Helper to provide a select list of environments for this project
+ */
+function devshop_projects_environment_options($node){
+  return array_combine($node->project_objects['site'], $node->project_objects['site']);
+}
+
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
@@ -162,26 +170,29 @@ function hosting_task_devshop_commit_form($node) {
  * For "Pull Code" task.
  */
 function hosting_task_devshop_pull_form($node) {
-  // @TODO: Once there is some kind of site relationship system,
-  // determine if the site has a parent site to sync from, then show this checkbox.
-  $has_features = _devshop_projects_site_has_module($node, 'features');
-  /*
-  $form['sync'] = array(
-    '#title' => t('Sync content from live before code pull?'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
+  $env_options = devshop_projects_environment_options($node);
+  $form['environment'] = array(
+    '#type' => 'radios',
+    '#title' => t('Environment'),
+    '#options' => $env_options,
+    '#default_value' => key($env_options),
+    '#description' => t('Select platform to Pull Code to.'),
   );
-  */
+
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  $form['revert'] = array(
-    '#title' => t('Revert all features after code pull?'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
-  );
+  
+  $has_features = _devshop_projects_site_has_module($node, 'features');
+  if ($has_features){
+    $form['revert'] = array(
+      '#title' => t('Revert all features after code pull?'),
+      '#type' => 'checkbox',
+      '#default_value' => 1,
+    );
+  }
   $form['cache'] = array(
     '#title' => t('Clear cache after code pull?'),
     '#type' => 'checkbox',
