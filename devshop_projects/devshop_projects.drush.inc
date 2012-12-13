@@ -27,7 +27,8 @@ function drush_devshop_projects_pre_hosting_task() {
   }
   
   // Pull
-  if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
+    $task->args['environment'] = $task->task_args['environment'];
     $task->options['update'] = $task->task_args['update'];
     $task->options['revert'] = $task->task_args['revert'];
     $task->options['cache'] = $task->task_args['cache'];
