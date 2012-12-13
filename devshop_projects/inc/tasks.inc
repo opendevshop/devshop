@@ -57,10 +57,10 @@ function devshop_projects_hosting_tasks() {
 /**
  * Helper to provide a select list of environments for this project
  */
-function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description) {
+function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description, $key = 'environment') {
   // @TODO: Add a check here.  Sometimes we want to limit this list.
   $options = array_combine($node->project_objects['site'], $node->project_objects['site']);
-  $form['environment'] = array(
+  $form[$key] = array(
     '#type' => 'radios',
     '#title' => t('Environment'),
     '#options' => $options,
