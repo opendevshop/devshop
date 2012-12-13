@@ -21,19 +21,19 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-  $tasks['site']['devshop-commit'] = array(
+  $tasks['project']['devshop-commit'] = array(
     'title' => t('Commit Features'),
     'description' => t('Recreates all Features and commits the result.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-  $tasks['site']['devshop-pull'] = array(
+  $tasks['project']['devshop-pull'] = array(
     'title' => t('Pull Code'),
     'description' => t('Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-  $tasks['site']['devshop-sync'] = array(
+  $tasks['project']['devshop-sync'] = array(
     'title' => t('Sync Content'),
     'description' => t('Sync content from another site and (optionally) run update.php, clear cache, and revert features.'),
     'access callback' => 'devshop_hosting_task_menu_access',
