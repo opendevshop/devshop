@@ -191,8 +191,7 @@ function hosting_task_devshop_pull_form($node) {
     '#default_value' => 1,
   );
   
-  $has_features = _devshop_projects_site_has_module($node, 'features');
-  if ($has_features){
+  if (_devshop_projects_project_has_module($node, 'features')){
     $form['revert'] = array(
       '#title' => t('Revert all features after code pull?'),
       '#type' => 'checkbox',
@@ -242,7 +241,7 @@ function hosting_task_devshop_sync_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  if (_devshop_projects_site_has_module($node, 'features')){
+  if (_devshop_projects_project_has_module($node, 'features')){
     $form['revert'] = array(
       '#title' => t('Revert all features on Destination after content sync?'),
       '#type' => 'checkbox',
