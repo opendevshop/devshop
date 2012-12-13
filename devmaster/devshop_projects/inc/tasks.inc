@@ -57,12 +57,12 @@ function devshop_projects_hosting_tasks() {
 /**
  * Helper to provide a select list of environments for this project
  */
-function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description, $key = 'environment') {
+function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description, $key = 'environment', $title = 'Environment') {
   // @TODO: Add a check here.  Sometimes we want to limit this list.
   $options = array_combine($node->project_objects['site'], $node->project_objects['site']);
   $form[$key] = array(
     '#type' => 'radios',
-    '#title' => t('Environment'),
+    '#title' => t($title),
     '#options' => $options,
     '#default_value' => key($options),
     '#description' => $description,
@@ -222,62 +222,36 @@ function hosting_task_devshop_sync_form($node) {
   */
   // Get nid
   $nid = $node->nid;
-  $has_features = _devshop_projects_site_has_module($node, 'features');
 
-  // See if this site is already in a project
-  $query = db_query("SELECT project_nid " .
-    "FROM {hosting_devshop_project_object} " .
-    "WHERE object_nid = %d " .
-    "AND object_type = 'site'", $nid);
-  
-  if($proj = db_fetch_object($query)) {
-  
-    // Only make sites in this project a source for content
-    $query = db_query("SELECT object_nid " .
-      "FROM {hosting_devshop_project_object} " .
-      "WHERE project_nid = %d " .
-      "AND object_type = 'site' " .
-      "AND object_nid <> %d", $proj->project_nid, $nid);
-  
-    $options = array();
-    while($s = db_fetch_object($query)) {
-      $site_node = node_load($s->object_nid);
-      $options['@' . $site_node->title] = '@' . $site_node->title;
-    }
+  $form = array();
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the source environment.'), 'source', 'Source');
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the destination environment.'), 'destination', 'Destination');
     
-    $form['note'] = array(
-      '#value' => '<p>'. t('This will DESTROY the database for !site and replace it with the database for the selected <strong>Source Site</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
-      '#type' => 'markup',
-      '#weight' => 100,
-    );
-  
-    $form['source'] = array(
-      '#type' => 'radios',
-      '#title' => t('Source Site'),
-      '#options' => $options,
-      '#default_value' => key($options),
-      '#description' => t('Select site to sync from.'),
-    );
-  }
-  
+  $form['note'] = array(
+    '#value' => '<p>'. t('This will DESTROY the database for <strong>Destination</strong> and replace it with the database for the selected <strong>Source</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
+    '#type' => 'markup',
+    '#weight' => 100,
+  );
   $form['pull'] = array(
-    '#title' => t('Pull code before content sync?'),
+    '#title' => t('Pull code on Destination before content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
   $form['update'] = array(
-    '#title' => t('Run update.php after content sync?'),
+    '#title' => t('Run update.php on Destination after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  $form['revert'] = array(
-    '#title' => t('Revert all features after content sync?'),
-    '#type' => 'checkbox',
-    '#default_value' => $has_features,
-    '#access' => $has_features,
-  );
+  if (_devshop_projects_site_has_module($node, 'features')){
+    $form['revert'] = array(
+      '#title' => t('Revert all features on Destination after content sync?'),
+      '#type' => 'checkbox',
+      '#default_value' => $has_features,
+      '#access' => $has_features,
+    );
+  }
   $form['cache'] = array(
-    '#title' => t('Clear cache after content sync?'),
+    '#title' => t('Clear cache on Destination after content sync?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
