@@ -28,9 +28,9 @@ function drush_devshop_projects_pre_hosting_task() {
   
   // Pull
   if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
-    $task->options['no-update'] = !$task->task_args['update'];
-    $task->options['no-revert'] = !$task->task_args['revert'];
-    $task->options['no-cache'] = !$task->task_args['cache'];
+    $task->options['update'] = $task->task_args['update'];
+    $task->options['revert'] = $task->task_args['revert'];
+    $task->options['cache'] = $task->task_args['cache'];
     $task->options['sites'] = explode('|', $task->task_args['sites']);
   }
 
@@ -45,16 +45,9 @@ function drush_devshop_projects_pre_hosting_task() {
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-sync') {
     $task->options['source'] = $task->task_args['source'];
     $task->options['pull'] = $task->task_args['pull'];
-    $task->options['no-update'] = !$task->task_args['update'];
-    $task->options['no-revert'] = !$task->task_args['revert'];
-    $task->options['no-cache'] = !$task->task_args['cache'];
-  }
-
-  // Platform Create
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-create') {
-    $task->options['platform-name'] = $task->task_args['platform_name'];
-    $task->options['branch'] = $task->task_args['branch'];
-    $task->options['pull'] = $task->task_args['pull'];
+    $task->options['update'] = $task->task_args['update'];
+    $task->options['revert'] = $task->task_args['revert'];
+    $task->options['cache'] = $task->task_args['cache'];
   }
 
   // Download
