@@ -8,6 +8,16 @@ deploy and manage sites using the DevShop git and features
 based development workflow.
 
 
+About
+-----
+
+The goals of DevShop are...
+
+1. to simplify management of multiple environments for multiple Drupal projects.
+2. to provide web-based tools that streamline the Drupal site building workflow.
+3. to provide a common, open-source infrastructure for Drupal development shops.
+
+
 Installation
 ------------
 For installation instructions, see INSTALL.txt.
