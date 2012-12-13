@@ -49,6 +49,9 @@ function devshop_provision_drush_command() {
     'arguments' => array(
       'environment' => 'The name of the environment to Pull Code to.',
     ),
+    'examples' => array(
+      'drush @project_mysite provision-devshop-pull dev --cache' => 'Triggers a git pull and a clear cache command on @project_mysite\'s dev environment.', 
+    ), 
     'aliases' => array('pdp'),
   );
   $items['provision-devshop-sync'] = array(
@@ -76,10 +79,13 @@ function devshop_provision_drush_command() {
       'message' => 'Add a commit message',
       'revert' => 'Force revert all features after exporting and committing.',
     ),
-    'aliases' => array('pdc'),
     'arguments' => array(
       'environment' => 'The name of the environment to commit from.',
     ),
+    'examples' => array(
+      'drush @project_mysite provision-devshop-commit dev --message="changed some settings"' => 'Recreates and Commits all features from the dev environment of @project_mysite with an additional commit message.', 
+    ), 
+    'aliases' => array('pdc'),
   );
   /* @TODO: Make devshop dl an addon module.
   $items['provision-devshop-dl'] = array(
