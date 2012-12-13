@@ -4,24 +4,37 @@
  * Pre provision-git-features-update-commit hook
  */
 function drush_devshop_provision_pre_provision_devshop_commit(){
-  provision_git_is_repo();
+  devshop_provision_pre_flight();
 }
 
 
 /**
  * Implements the provision-git-pull command.
  */
-function drush_devshop_provision_provision_devshop_commit() {
+function drush_devshop_provision_provision_devshop_commit($platform_name = NULL) {
 
-  $site_path = d()->platform->root;
-  $target = d()->name;
+  // Must specify environment to pull
+  if (empty($platform_name)){
+    return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify an environment to commit from.');
+  }
   
-  //Pause Hostmaster (Mainly for the git pull task)
-  // @TODO Better way?  @see drush_hosting_pause()
-  exec('crontab -r');
+  drush_log(dt('[DEVSHOP] Provision DevShop Commit started...'), 'ok');
+
+  
+  // Get platform & site object
+  $project_name = d()->project_name;
+  $site_alias = '@' . $platform_name . '.' . d()->base_url;
+  $platform = d();
+  
+  $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
+  $platform = d($platform_alias);
+  
+  // Ensure it's a git repo.
+  provision_git_is_repo($platform->root);
   
   // Update All Features
-  provision_backend_invoke($target, 'features-update-all');
+  drush_log(dt('[DEVSHOP] Recreating all features...'), 'ok');
+  provision_backend_invoke($site_alias, 'features-update-all');
 
   //Execute git commit
   //Generate commit message
@@ -36,27 +49,24 @@ function drush_devshop_provision_provision_devshop_commit() {
   $data = array(
     'message' => $message,
   );
+
+  drush_log(dt('[DEVSHOP] Committing all features...'), 'ok');
  
-  //Invoke provision-git-add to add any new files to the index
-  provision_backend_invoke($target, 'provision-git-add', 
+  // @TODO: Add "path_to_commit option in each project?
+  // Invoke provision-git-add to add any new files to the index
+  provision_backend_invoke($site_alias, 'provision-git-add', 
     array("sites/all/modules/features"), $data);
 
-  //Invoke provision-git-commit
-  provision_backend_invoke($target, 'provision-git-commit', array(), $data);
+  // Invoke provision-git-commit
+  provision_backend_invoke($site_alias, 'provision-git-commit', array(), $data);
   
-  //Push, if the user wants.
-  if (drush_get_option('push')){
-    provision_backend_invoke($target, 'provision-git-push');
+  //Push, unless the user doesn't want to.
+  if (drush_get_option('push', TRUE)){
+    provision_backend_invoke($site_alias, 'provision-git-push');
   }
   
   //Revert, if the user wants.
   if (drush_get_option('revert')){
-    provision_backend_invoke($target, 'provision-git-reset');
+    provision_backend_invoke($site_alias, 'provision-git-reset');
   }
-  
-  //Resume cron
-  // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()
-  // they use drush_get_option('site_name')
-  // @TODO Better way?  @see drush_hosting_pause()
-  provision_backend_invoke('hostmaster', 'hosting-setup');
 }

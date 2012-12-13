@@ -28,7 +28,7 @@ function drush_devshop_provision_provision_devshop_pull($platform_name = NULL) {
   $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
   $platform = d($platform_alias);
   
-  $site_alias = '@' . $project_name . '.' . d()->base_url;
+  $site_alias = '@' . $platform_name . '.' . d()->base_url;
   $site = d($site_alias);
 
   // Find repo path
