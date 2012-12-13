@@ -1,11 +1,12 @@
 <?php
 /**
  * @file
- * Provision/Drush hooks for git commands.
+ * Drush commands for DevShop Provision
  */
 
 /**
  * Implements hook_drush_init()
+ * - Ensures that provision is loaded before devshop_provision
  */
 function devshop_provision_drush_init(){
   $list = drush_commandfile_list();
@@ -14,13 +15,9 @@ function devshop_provision_drush_init(){
   include_once('devshop_provision.context.project.inc');
 }
 
-function devshop_provision_drush_exit(){
-}
-
-//include_once('devshop_provision.context.project.inc');
-
 /**
  * Implementation of hook_drush_command().
+ * Provides provision commands for all devshop tasks.
  */
 function devshop_provision_drush_command() {
   $items['provision-devshop-create'] = array(
@@ -83,7 +80,6 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('pdl'),
   );
-
   $items['provision-devshop-test'] = array(
     'description' => 'Run a group of SimpleTest tests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -94,6 +90,4 @@ function devshop_provision_drush_command() {
     'aliases' => array('pdt'),
   );
   return $items;
-
 }
-
