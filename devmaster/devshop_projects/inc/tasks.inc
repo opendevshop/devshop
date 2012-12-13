@@ -119,3 +119,150 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'node/' . $values['nid'];
   modalframe_close_dialog();
 }
+
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Commit" task.
+ */
+function hosting_task_devshop_commit_form($node) {
+
+  $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
+
+  if (_devshop_projects_site_has_module($node, 'features_diff')) {
+    $descr .= 'click ' . l(t('here.'), "http://$node->hosting_name/features/diff/all", array('absolute' => TRUE, 'attributes' => array('target' => '_blank'))) . ' Be patient. It takes a few moments for the diffs to be generatred.';
+  }
+  else {
+    $descr .= 'enable the Features Diff module for this site, Verify the site, and select this task again.';
+  }
+
+  $form['message'] = array(
+    '#title' => t('Commit Message'),
+    '#type' => 'textarea',
+    '#description' => $descr,
+  );
+  $form['push'] = array(
+    '#title' => t('Push code after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Force revert features after commit?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  // @TODO: Provide a DIFF display to give the user an idea of what has changed.
+  return $form;
+}
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Pull Code" task.
+ */
+function hosting_task_devshop_pull_form($node) {
+  // @TODO: Once there is some kind of site relationship system,
+  // determine if the site has a parent site to sync from, then show this checkbox.
+  $has_features = _devshop_projects_site_has_module($node, 'features');
+  /*
+  $form['sync'] = array(
+    '#title' => t('Sync content from live before code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  */
+  $form['update'] = array(
+    '#title' => t('Run update.php after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Revert all features after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['cache'] = array(
+    '#title' => t('Clear cache after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  return $form;
+}
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Sync Content" task.
+ */
+function hosting_task_devshop_sync_form($node) {
+/* Disabled until we add support for custom aliases
+  $form['source'] = array(
+    '#title' => t('Source site alias'),
+    '#type' => 'textfield',
+    '#description' => t('Enter a site alias to sync from.  The alias must exist in the local system.'),
+  );
+  */
+  // Get nid
+  $nid = $node->nid;
+  $has_features = _devshop_projects_site_has_module($node, 'features');
+
+  // See if this site is already in a project
+  $query = db_query("SELECT project_nid " .
+    "FROM {hosting_devshop_project_object} " .
+    "WHERE object_nid = %d " .
+    "AND object_type = 'site'", $nid);
+  
+  if($proj = db_fetch_object($query)) {
+  
+    // Only make sites in this project a source for content
+    $query = db_query("SELECT object_nid " .
+      "FROM {hosting_devshop_project_object} " .
+      "WHERE project_nid = %d " .
+      "AND object_type = 'site' " .
+      "AND object_nid <> %d", $proj->project_nid, $nid);
+  
+    $options = array();
+    while($s = db_fetch_object($query)) {
+      $site_node = node_load($s->object_nid);
+      $options['@' . $site_node->title] = '@' . $site_node->title;
+    }
+    
+    $form['note'] = array(
+      '#value' => '<p>'. t('This will DESTROY the database for !site and replace it with the database for the selected <strong>Source Site</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
+      '#type' => 'markup',
+      '#weight' => 100,
+    );
+  
+    $form['source'] = array(
+      '#type' => 'radios',
+      '#title' => t('Source Site'),
+      '#options' => $options,
+      '#default_value' => key($options),
+      '#description' => t('Select site to sync from.'),
+    );
+  }
+  
+  $form['pull'] = array(
+    '#title' => t('Pull code before content sync?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['update'] = array(
+    '#title' => t('Run update.php after content sync?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  $form['revert'] = array(
+    '#title' => t('Revert all features after content sync?'),
+    '#type' => 'checkbox',
+    '#default_value' => $has_features,
+    '#access' => $has_features,
+  );
+  $form['cache'] = array(
+    '#title' => t('Clear cache after content sync?'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+  return $form;
+}

@@ -224,3 +224,14 @@ function _devshop_projects_node_create($type, $node = stdClass){
   return $node;
 }
 
+/**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_projects_site_has_module($node, $module) {
+  $param = array(
+    'rid' => $node->nid,
+    'p.short_name' => $module,
+  );
+  $package = hosting_package_instance_load($param);
+  return $package->status;
+}
