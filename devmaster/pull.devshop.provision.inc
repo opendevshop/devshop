@@ -1,27 +1,45 @@
 <?php
-
-
+/**
+ * @file pull.devshop.provision.inc
+ * Contains code for the provision-devshop-pull command.
+ */
 
 /**
  * Pre provision-devshop-pull
  */
 function drush_devshop_provision_pre_provision_devshop_pull(){
-  provision_git_is_repo();
+  devshop_provision_pre_flight();
 }
 
 /**
  * Implements the provision-devshop-pull command.
  */
-function drush_devshop_provision_provision_devshop_pull() {
+function drush_devshop_provision_provision_devshop_pull($platform_name = NULL) {
+  
+  // Must specify environment to pull
+  if (empty($platform_name)){
+    return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify an environment to pull.');
+  }
+  
   drush_log(dt('[DEVSHOP] Provision DevShop Pull started...'));
   
   //Pause Hostmaster (Mainly for the git pull task)
   // @TODO Better way?  @see drush_hosting_pause()
   exec('crontab -r');
+
+  // Get platform & site object
+  $project_name = d()->project_name;
+  $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
+  $platform = d($platform_alias);
   
-  //Get site target
-  $target = d()->name;
-  $repo_path = drush_get_option('repo_path');
+  $site_alias = '@' . $project_name . '.' . d()->base_url;
+  $site = d($site_alias);
+
+  // Find repo path
+  $repo_path = $platform->root;
+  
+  // Ensure it's a git repo.
+  provision_git_is_repo($repo_path);
   
   //Get options
   $update = drush_get_option('update');
@@ -36,37 +54,40 @@ function drush_devshop_provision_provision_devshop_pull() {
     drush_log(implode("\n", drush_shell_exec_output()), 'ok');
   }
   else {
-    return drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $platform_path, '!errors' => implode("\n", drush_shell_exec_output()))));
+    return drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $repo_path, '!errors' => implode("\n", drush_shell_exec_output()))));
   }
   
-  // @TODO:  Lookup all other sites on this site's platform, and update them as well
-  //if (!empty($sites)) {
-  //  foreach ($sites as $key => $target) {
-      // Verify the site.
-      // @TODO: provision-git-pull should actually handle this. If the files change,
-      // it should automatically verify.
-      drush_log("TARGET: $target");
-       
-       
-      _drush_sitealias_load_alias($target);
-      provision_backend_invoke($target, 'provision-verify');
-      
-      // update db, unless option is false.
-      if ($update){
-        provision_backend_invoke($target, 'updb');
-      }
-      
-      // Revert All Features, unless option is false
-      if ($revert){
-        provision_backend_invoke($target, 'features-revert-all');
-      }
+  // Verify the platform.     
+  provision_backend_invoke($platform_alias, 'provision-verify');
   
-      // Clear the whole cache, unless option is false
-      if ($cache){
-        provision_backend_invoke($target, 'cc all');
-      }
-  //  }
-  //} 
+  // update db, unless option is false.
+  if ($update){
+    drush_log(dt('[DEVSHOP] Updating database...'), 'notice');
+    provision_backend_invoke($site_alias, 'updb');
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped updating database...', 'notice'));
+  }
+  
+  // Revert All Features, unless option is false
+  if ($revert){
+    drush_log(dt('[DEVSHOP] Reverting all features...', 'notice'));
+    provision_backend_invoke($site_alias, 'features-revert-all');
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped reverting all features...', 'notice'));
+  }
+  
+  // Clear the whole cache, unless option is false
+  // Seriously, lets do this twice.  Go Drupal!
+  if ($cache){
+    drush_log(dt('[DEVSHOP] Clearing all caches...', 'notice'));
+    provision_backend_invoke($site_alias, 'cc all');
+    provision_backend_invoke($site_alias, 'cc all');
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped clearing all caches...', 'notice'));
+  }
 
   //Resume cron
   // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()
@@ -74,8 +95,8 @@ function drush_devshop_provision_provision_devshop_pull() {
   // @TODO Better way?  @see drush_hosting_pause()
   provision_backend_invoke('hostmaster', 'hosting-setup');
 
-  if(count($output) == 1) {
-    drush_log('Nothing else needs to be done', 'ok');
+  if (count($output) == 1) {
+    drush_log('No changes detected. Nothing else needs to be done', 'ok');
     return;
   }
 }
