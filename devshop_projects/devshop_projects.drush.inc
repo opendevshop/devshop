@@ -36,7 +36,7 @@ function drush_devshop_projects_pre_hosting_task() {
   }
 
   // Commit
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-commit') {
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-commit') {
     $task->args['environment'] = $task->task_args['environment'];
     $task->options['message'] = $task->task_args['message'];
     $task->options['push'] = $task->task_args['push'];
@@ -44,7 +44,7 @@ function drush_devshop_projects_pre_hosting_task() {
   }
 
   // Sync
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-sync') {
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-sync') {
     $task->args['source'] = $task->task_args['source'];
     $task->args['destination'] = $task->task_args['destination'];
     $task->options['pull'] = $task->task_args['pull'];
@@ -54,12 +54,12 @@ function drush_devshop_projects_pre_hosting_task() {
   }
 
   // Download
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-dl') {
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-dl') {
     $task->options['modules'] = $task->task_args['modules'];
   }
 
   // Run tests
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-test') {
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-test') {
     $tests = array();
 
     foreach(explode("\n", $task->task_args['tests_to_run']) as $test) {
