@@ -5,7 +5,6 @@
  * will go here.
  */
 
-
 /**
  * Implements drush_HOOK_pre_COMMAND()
  *
@@ -19,57 +18,115 @@
  */
 function drush_devshop_projects_pre_hosting_task() {
 
-  // Verify Platform
   $task =& drush_get_context('HOSTING_TASK');
-
   // Verify Platform
   // For our platforms, we have to clone it if it has a git_remote
   // If it has a git branch, we should checkout as well.
   if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->git_url)) {
+    drush_devshop_provision_pre_hosting_task_platform_verify();
+  }
+  
+  // Pull
+  if ($task->ref->type == 'platform' && $task->task_type == 'devshop-pull') {
+    $task->options['no-update'] = !$task->task_args['update'];
+    $task->options['no-revert'] = !$task->task_args['revert'];
+    $task->options['no-cache'] = !$task->task_args['cache'];
+    $task->options['sites'] = explode('|', $task->task_args['sites']);
+  }
 
-    $platform = $task->ref;
+  // Commit
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-commit') {
+    $task->options['message'] = $task->task_args['message'];
+    $task->options['push'] = $task->task_args['push'];
+    $task->options['revert'] = $task->task_args['revert'];
+  }
+
+  // Sync
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-sync') {
+    $task->options['source'] = $task->task_args['source'];
+    $task->options['pull'] = $task->task_args['pull'];
+    $task->options['no-update'] = !$task->task_args['update'];
+    $task->options['no-revert'] = !$task->task_args['revert'];
+    $task->options['no-cache'] = !$task->task_args['cache'];
+  }
+
+  // Platform Create
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-create') {
+    $task->options['platform-name'] = $task->task_args['platform_name'];
+    $task->options['branch'] = $task->task_args['branch'];
+    $task->options['pull'] = $task->task_args['pull'];
+  }
+
+  // Download
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-dl') {
+    $task->options['modules'] = $task->task_args['modules'];
+  }
+
+  // Run tests
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-test') {
+    $tests = array();
+
+    foreach(explode("\n", $task->task_args['tests_to_run']) as $test) {
+      $test = trim($test);
+      if (strlen($test) > 0) {
+	$tests[] = $test;
+      }
+    }
+    $task->options['tests-to-run'] = implode($tests, ",");
+    $task->options['sync-from-live'] = $task->task_args['sync'];
+  }
+}
+
+/**
+ * Pre hosting task hook for "verify platform" task.
+ *  - Clones the repository on first run, checks out the selected after that.
+ */
+function drush_devshop_provision_pre_hosting_task_platform_verify(){
+  // Verify Platform
+  $task =& drush_get_context('HOSTING_TASK');
+
+  $platform = $task->ref;
+  $root = $platform->publish_path;
+  $git_remote = $platform->git_url;
+  $git_branch = $platform->git_branch;
+
+  // Check if a repo exists
+  if (!is_dir($root) && !drush_shell_cd_and_exec($root, 'git status')){
+    drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
+
+    // Build the command string
+    $command = "git clone $git_remote $root";
+    if ($git_branch) {
+      $command .= " --branch $git_branch";
+    }
+  }
+  // If the platform has been verified and has a branch and git url
+  else {
     $root = $platform->publish_path;
     $git_remote = $platform->git_url;
     $git_branch = $platform->git_branch;
 
-    // Check if a repo exists
-    if (!is_dir($root) && !drush_shell_cd_and_exec($root, 'git status')){
-      drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
+    // Build the command string
+    $command = "git checkout $git_branch";
+  }
 
-      // Build the command string
-      $command = "git clone $git_remote $root";
-      if ($git_branch) {
-        $command .= " --branch $git_branch";
-      }
+  // Execute
+  if (!empty($command)){
+     drush_log('[DEVSHOP] Running: ' . $command);
+
+    // @TODO: Create a d()->server->shell_cd_and_exec() function
+    //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
+    // So instead, this is the code from d()->server->shell_exec
+    // d()->server->shell_exec($cmd);
+    if (provision_is_local_host(d()->server->remote_host)) {
+      return drush_shell_cd_and_exec($root, escapeshellcmd($command));
     }
-    // If the platform has been verified and has a branch and git url
     else {
-      $root = $platform->publish_path;
-      $git_remote = $platform->git_url;
-      $git_branch = $platform->git_branch;
-
-      // Build the command string
-      $command = "git checkout $git_branch";
+      return drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
     }
 
-    // Execute
-    if (!empty($command)){
-       drush_log('[DEVSHOP] Running: ' . $command);
-
-      // @TODO: Create a d()->server->shell_cd_and_exec() function
-      //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
-      // So instead, this is the code from d()->server->shell_exec
-      // d()->server->shell_exec($cmd);
-      if (provision_is_local_host(d()->server->remote_host)) {
-        return drush_shell_cd_and_exec($root, escapeshellcmd($command));
-      }
-      else {
-        return drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
-      }
-
-       $output = drush_shell_exec_output();
-       drush_log('Shell Output: ' . implode("\n", $output) , 'notice');
-    }
+     $output = drush_shell_exec_output();
+     drush_log('Shell Output: ' . implode("\n", $output) , 'notice');
   }
 }
 
