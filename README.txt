@@ -1,33 +1,27 @@
+
 DevShop Provision
-------------------------------------
-Tools for Aegir-powered development.
+=================
 
-This module provides the backend commands needed to 
-deploy and manage sites using the DevShop git and features 
-based development workflow.
+Drupal development infrastructure made easy.
 
--------------------------------------
+This module provides the backend commands needed to manage projects, platforms,
+and sites with DevShop Hosting.
+
+About DevShop
+-------------
+
+The goals of DevShop are...
+
+1. to simplify management of multiple environments for multiple Drupal projects.
+2. to provide web-based tools that streamline the Drupal site building workflow.
+3. to provide a common, open-source infrastructure for Drupal development shops.
+
+
 Installation
--------------------------------------
-
-DevShop assumes a base Aegir installation.
-See http://community.aegirproject.org/handbook to learn about Aegir.
-
-Visit http://community.aegirproject.org/content/installing/automatic-installation-ubuntu-1104-quickstart
-for a fast way to install aegir.
-
-There is also a Vagrant project at http://drupal.org/project/aegir_up
-
-Download devshop_provision with drush:
-
-$ drush dl devshop_provision
-
-It will try to download it to /usr/share/drush/commands, but you can put it
-anywhere Drush command files can live.  /var/aegir/.drush/commands is a good
-place because then you can update drush core without a hassle.
+------------
+For installation instructions, see INSTALL.txt.
 
 
----------------
 NOTE about Sync
 ---------------
 Currently the Sync command requires a special folder in the Aegir Backups directory on 
@@ -42,7 +36,7 @@ NOTE: The reason we don't use sql-sync yet is because I had some trouble getting
 to work when the source was a remote server.  I would love some input from some
 drush sql sync experts if there are any out there.
 
--------------------------------------
+
 Provision Commands & Hostmaster Tasks
 -------------------------------------
 
