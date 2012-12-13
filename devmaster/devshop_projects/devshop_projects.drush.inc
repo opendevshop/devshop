@@ -37,6 +37,7 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Commit
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-commit') {
+    $task->args['environment'] = $task->task_args['environment'];
     $task->options['message'] = $task->task_args['message'];
     $task->options['push'] = $task->task_args['push'];
     $task->options['revert'] = $task->task_args['revert'];
@@ -44,7 +45,8 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Sync
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-sync') {
-    $task->options['source'] = $task->task_args['source'];
+    $task->args['source'] = $task->task_args['source'];
+    $task->args['destination'] = $task->task_args['destination'];
     $task->options['pull'] = $task->task_args['pull'];
     $task->options['update'] = $task->task_args['update'];
     $task->options['revert'] = $task->task_args['revert'];
@@ -66,6 +68,7 @@ function drush_devshop_projects_pre_hosting_task() {
 	$tests[] = $test;
       }
     }
+    $task->args['environment'] = $task->task_args['environment'];
     $task->options['tests-to-run'] = implode($tests, ",");
     $task->options['sync-from-live'] = $task->task_args['sync'];
   }
