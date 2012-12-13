@@ -21,12 +21,8 @@ function drush_devshop_provision_provision_devshop_pull($platform_name = NULL) {
     return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify an environment to pull.');
   }
   
-  drush_log(dt('[DEVSHOP] Provision DevShop Pull started...'));
+  drush_log(dt('[DEVSHOP] Provision DevShop Pull started...'), 'ok');
   
-  //Pause Hostmaster (Mainly for the git pull task)
-  // @TODO Better way?  @see drush_hosting_pause()
-  exec('crontab -r');
-
   // Get platform & site object
   $project_name = d()->project_name;
   $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
@@ -49,7 +45,7 @@ function drush_devshop_provision_provision_devshop_pull($platform_name = NULL) {
   // Pull latest version of site
   //Execute git pull --rebase
   if (drush_shell_cd_and_exec($repo_path, 'git pull --rebase')) {
-    drush_log(dt('Git repository pulled.', array('!path' => $repo_path)), 'ok');
+    drush_log(dt('[DEVSHOP] Git repository pulled.', array('!path' => $repo_path)), 'ok');
     $output = drush_shell_exec_output();
     drush_log(implode("\n", drush_shell_exec_output()), 'ok');
   }
@@ -57,47 +53,42 @@ function drush_devshop_provision_provision_devshop_pull($platform_name = NULL) {
     return drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $repo_path, '!errors' => implode("\n", drush_shell_exec_output()))));
   }
   
+  // If no new files were detected... skip out.
+  if (count($output) == 1) {
+    drush_log('[DEVSHOP] No changes detected. Nothing else needs to be done', 'ok');
+    return;
+  }
+  
   // Verify the platform.     
   provision_backend_invoke($platform_alias, 'provision-verify');
   
   // update db, unless option is false.
   if ($update){
-    drush_log(dt('[DEVSHOP] Updating database...'), 'notice');
+    drush_log(dt('[DEVSHOP] Updating database...'), 'ok');
     provision_backend_invoke($site_alias, 'updb');
   }
   else {
-    drush_log(dt('[DEVSHOP] Skipped updating database...', 'notice'));
+    drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
   }
   
   // Revert All Features, unless option is false
   if ($revert){
-    drush_log(dt('[DEVSHOP] Reverting all features...', 'notice'));
+    drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
     provision_backend_invoke($site_alias, 'features-revert-all');
   }
   else {
-    drush_log(dt('[DEVSHOP] Skipped reverting all features...', 'notice'));
+    drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
   }
   
   // Clear the whole cache, unless option is false
   // Seriously, lets do this twice.  Go Drupal!
   if ($cache){
-    drush_log(dt('[DEVSHOP] Clearing all caches...', 'notice'));
+    drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
     provision_backend_invoke($site_alias, 'cc all');
     provision_backend_invoke($site_alias, 'cc all');
   }
   else {
-    drush_log(dt('[DEVSHOP] Skipped clearing all caches...', 'notice'));
-  }
-
-  //Resume cron
-  // @TODO: how to get hostmaster site name?  @see drush_provision_post_hostmaster_migrate()
-  // they use drush_get_option('site_name')
-  // @TODO Better way?  @see drush_hosting_pause()
-  provision_backend_invoke('hostmaster', 'hosting-setup');
-
-  if (count($output) == 1) {
-    drush_log('No changes detected. Nothing else needs to be done', 'ok');
-    return;
+    drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
   }
 }
 
