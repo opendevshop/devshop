@@ -22,9 +22,41 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     }
   }
 
-  // On Hosting Task form
+  // On Hosting Task: Create Project form, do our own submission.
   if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-create'){
     $form['#submit'] = array('hosting_task_devshop_create_form_submit');
+  }
+
+  // If not a part of a project, bail out.
+  if (empty($form['#node']->nid)){
+    return;
+  }
+
+  // On Platform node forms, allow changing branch.
+  if ($form_id == 'platform_node_form'){
+    $node = $form['#node'];
+    $project_node = node_load($node->project_nid);
+
+    $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
+    $form['git_branch'] = array(
+      '#type' => 'select',
+      '#title' => t('Branch'),
+      '#default_value' => isset($node->git_branch)? $node->git_branch: NULL,
+      '#options' => $branch_options,
+      '#description' => t('Choose the branch that this platform should track.'),
+    );
+  }
+
+  // Save values that need to be saved.
+  if ($form_id == 'platform_node_form' || $form_id == 'site_node_form'){
+    $form['project'] = array(
+      '#type' => 'value',
+      '#value' => $node->project,
+    );
+    $form['environment'] = array(
+      '#type' => 'value',
+      '#value' => $node->environment,
+    );
   }
 }
 
@@ -72,10 +104,6 @@ function devshop_projects_form(&$node) {
     '#default_value' => $node->base_url,
     '#maxlength' => 255,
     '#weight' => 2,
-  );
-  $form['retry'] = array(
-    '#type' => 'value',
-    '#value' => $retry,
   );
 
   // Don't allow editing
