@@ -13,8 +13,8 @@ Installation
 For installation instructions, see INSTALL.txt.
 
 
-Usage
------
+DevShop Projects
+----------------
 
 DevShop functionality centers around "Projects". Aegir Project nodes store a 
 Git URL, the code path, the "base url", and the branches of the remote 
@@ -24,9 +24,12 @@ DevShop allows multiple platforms and sites (for dev, test, or live purposes)
 to be created very easily.  Platforms can be easily created from existing
 branches of your git repositories.
 
+
+Creating Projects
+-----------------
+
 To create a new project, visit either the Projects page or click 
 "Create Content" > "DevShop Project".
-
 
 ### Step 1: Git URL and project name.
 
