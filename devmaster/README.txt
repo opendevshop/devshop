@@ -3,57 +3,30 @@ DevShop Hosting
 ===============
 Drupal development infrastructure made easy.
 
-
-This module provides the front-end commands needed to
+This module provides the front-end interface needed to
 deploy and manage sites using the DevShop git and features
 based development workflow.
 
 
 Installation
 ------------
+For installation instructions, see INSTALL.txt.
 
-1. Install Aegir
-
-  DevShop assumes a base Aegir installation.
-  See http://community.aegirproject.org/handbook to learn about Aegir.
-
-  The most reliable and generally supported way to install aegir is with
-  the Debian packages.
-
-  See http://community.aegirproject.org/installing/debian for instructions on
-  installing in debian based systems like Ubuntu.  Pay close attention to
-
-2. Install provision_git and devshop provision
-
-  $ drush dl devshop_provision provision_git
-
-  In a typical debian environment, it will try to download it to
-  /usr/share/drush/commands, but you can put it anywhere Drush command files can live.
-
-3. Install devshop_hosting and enable desired modules.
-
-  Download devshop_hosting and ctools into your @hostmaster site with drush:
-  $ drush @hostmaster dl devshop_hosting ctools
-
-  Enable devshop_projects, devshop_tasks, devshop_log, and optionally,
-  devshop_tasks and devshop_tests:
-
-  $ drush @hostmaster en devshop_projects devshop_tasks devshop_log devshop_tests
-
-NOTE: The project creation wizard requires
-certain Hosting Tasks to run before later steps can be completed. For this
-reason, it really helps to have a very fast Hosting Queue, or to install the Hosting Queue Runner project (http://drupal.org/project/hosting_queue_runner) so that tasks fire as quickly as possible.
 
 Usage
 -----
 
-DevShop functionality centers around "Projects". Aegir Project nodes store a Git URL, the code path, the "base url", and the branches of the remote repository.
+DevShop functionality centers around "Projects". Aegir Project nodes store a 
+Git URL, the code path, the "base url", and the branches of the remote 
+repository.
 
 DevShop allows multiple platforms and sites (for dev, test, or live purposes)
 to be created very easily.  Platforms can be easily created from existing
 branches of your git repositories.
 
-To create a new project, visit either the Projects page or click "Create Content" > "DevShop Project".
+To create a new project, visit either the Projects page or click 
+"Create Content" > "DevShop Project".
+
 
 ### Step 1: Git URL and project name.
 
