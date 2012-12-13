@@ -7,9 +7,8 @@ This module provides the front-end interface needed to
 deploy and manage sites using the DevShop git and features
 based development workflow.
 
-
-About
------
+About DevShop
+-------------
 
 The goals of DevShop are...
 
