@@ -20,14 +20,6 @@ function devshop_provision_drush_init(){
  * Provides provision commands for all devshop tasks.
  */
 function devshop_provision_drush_command() {
-  $items['provision-devshop-create'] = array(
-    'description' => 'Create a DevShop platform and site.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'platform-name' => 'The name of the platform to be created.',
-      'branch' => 'Branch',
-    ),
-  );
   // @TODO: This task is now just the "delete" task, so we should use pre and
   // post hooks to delete all platforms and sites properly.
   /*
@@ -110,4 +102,15 @@ function devshop_provision_drush_command() {
     ),
   );
   return $items;
+}
+
+/**
+ * Function for checking if this is a project and we have a repo.
+ *
+ * Used in pre drush command hooks
+ */
+function devshop_provision_pre_flight($platform_name = NULL){
+  if (d()->type != 'project'){
+    return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, 'All provision-devshop-* commands must be run on a project alias.');
+  }
 }
