@@ -9,7 +9,6 @@ based development workflow.
 
 About DevShop
 -------------
-
 The goals of DevShop are...
 
 1. to simplify management of multiple environments for multiple Drupal projects.
@@ -24,7 +23,6 @@ For installation instructions, see INSTALL.txt.
 
 DevShop Projects
 ----------------
-
 DevShop functionality centers around "Projects". Aegir Project nodes store a 
 Git URL, the code path, the "base url", and the branches of the remote 
 repository.
@@ -61,22 +59,12 @@ To complete this step, the Verify Project task must finish.
 On this page, you choose if you want dev, test, or live platforms and what branches each should live on.  You can also choose the branches of your git repository you wish to create platforms and sites for.
 
 
-
-
-
-
 Provision Commands & Hostmaster Tasks
 -------------------------------------
+DevShop contains a set of features that make Drupal site building within a
+version-controlled code workflow quick and easy.
 
-Once enabled, Aegir Sites will have 3 new Tasks available to them.
-
-NOTE: Not all tasks should be run on certain sites.  It is up to YOU to decide
-where and when to run these tasks.  DevShop is NOT aware of which site is live,
-staging, testing, or development.  Use these commands with caution.
-
-@TODO: More constrained tasks are being created as tasks on projects.
-
-All tasks have specific permissions, so you can grant roles individual tasks.
+All tasks are run on project nodes, and all tasks have specific permissions, so you can grant roles the permission to fire specific tasks.
 
 1. Pull Code
   $ drush @project_NAME provision-devshop-pull ENVIRONMENT
