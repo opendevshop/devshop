@@ -43,6 +43,50 @@ can create a project alias with provision-save, for project NAME:
 
 Commands
 --------
+DevShop contains a set of features that make Drupal site building within a
+version-controlled code workflow quick and easy.
 
 Currently you must create new platforms within a project in hostmaster.  Once created, you can execute the following commands:
 
+1. Pull Code
+  $ drush @project_NAME provision-devshop-pull ENVIRONMENT
+   
+  This task runs on the dev platform for this project. It runs git pull, and
+  optionally runs new updates, reverts features, and clears caches.  It is used
+  to keep the dev server up to date on every commit via the devshop_pull module,
+  and can be used as the deployment task.
+
+  - Git Pull the code for your site's platform.
+  - Then, all optionally:
+    - Run update.php.
+    - Revert all Features modules
+    - Clear caches
+
+2. Commit Features
+  $ drush @project_NAME provision-devshop-commit ENVIRONMENT --message="My Commit"
+  
+  This task integrates with Features.module to make it very easy to commit
+  your changes to your features.
+
+  - Calls drush features-update-all
+  - Commits the result, with a part automated and part customized commit message.
+  - (Optionally) pushes the commits.
+  - (Optionally) force-reverts after a commit.
+
+3. Sync Content
+  $ drush @project_NAME provision-devshop-sync SOURCE_ENVIRONMENT DESTINATION_ENVIRONMENT
+  
+  This task makes it easy to syncronize the database and filesdown from other
+  environments within the project.
+
+  WARNING: This will DESTROY the destination site's database!
+
+  This task:
+  - (optionally) Pulls code
+  - Drops the @destination database.
+  - Creates an SQL dump from @source.
+  - Copies the SQL dump to the local system (if @source is a remote).
+  - Imports the SQL dump into @destination database.
+  - (optionally) Runs update.php.
+  - (optionally) Runs features-revert-all.
+  - (optionally) Clears all caches.
