@@ -254,5 +254,16 @@ function hosting_task_devshop_sync_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
+  $form['#validate'][] = 'hosting_task_devshop_sync_form_validate';
   return $form;
+}
+
+/**
+ * Validation for hosting_task_devshop_sync_form()
+ */
+function hosting_task_devshop_sync_form_validate(&$form, &$form_state){
+  // Can't sync to self
+  if ($form_state['values']['parameters']['source'] == $form_state['values']['parameters']['destination']){
+    form_set_error('source', t('The source cannot be the same as the destination.'));
+  }
 }
