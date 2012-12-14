@@ -1,4 +1,7 @@
 <?php
+/**
+ * @TODO: This is an experimental feature that is temporarily on hold.
+ */
 
 /**
  * Pre provision-git-features-update-commit hook
