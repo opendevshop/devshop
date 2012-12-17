@@ -57,14 +57,15 @@ function devshop_projects_hosting_tasks() {
 /**
  * Helper to provide a select list of environments for this project
  */
-function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description, $key = 'environment', $title = 'Environment') {
+function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description, $key = 'environment', $title = 'Environment', $type = 'radios') {
   // @TODO: Add a check here.  Sometimes we want to limit this list.
   $options = array_combine($node->project_objects['site'], $node->project_objects['site']);
   $form[$key] = array(
-    '#type' => 'radios',
+    '#type' => $type,
     '#title' => t($title),
     '#options' => $options,
-    '#default_value' => key($options),
+    '#default_value' => $type == 'radios'? key($options): array(key($options)),
+    '#required' => $type == 'checkboxes',
     '#description' => $description,
   );
 }
@@ -183,7 +184,16 @@ function hosting_task_devshop_commit_form($node) {
 function hosting_task_devshop_pull_form($node) {
   
   $form = array();
-  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to pull code to.'));
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to.'), 'environments', 'Environments', 'checkboxes');
+  
+  /*
+   *$form['environments'] = array(
+    '#title' => t('list of environments'),
+    '#type' => 'textfield',
+    '#default_value' => 'dev test',
+  );
+  
+  */
   
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
@@ -203,8 +213,22 @@ function hosting_task_devshop_pull_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
+  
+  // Add validator for environments
+  //$form['#validate'] = array('hosting_task_devshop_pull_form');
   return $form;
 }
+
+/**
+ * Extra submit function for hosting_task_confirm_form()
+ *
+ * @see devshop_projects_form_alter().  We had to add the submit hadler there.
+ */
+function hosting_task_devshop_pull_form_validate($form, &$form_state) {
+  $value = implode(' ', array_filter($form_state['values']['parameters']['environments']));
+  form_set_value($form['parameters']['environments'], $value, $form_state);
+}
+
 
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().

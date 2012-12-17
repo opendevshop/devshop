@@ -270,18 +270,22 @@ function hosting_pull_queue($count) {
  */
 function devshop_pull_project($project_nid) {
   // Search platforms with pull enabled for this project
-  $results = db_queryd("SELECT pull_reset, environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND project_nid = %d", $project_nid);
+  $results = db_query("SELECT environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND project_nid = %d", $project_nid);
+  
+  $args = array('environments' => '');
   
   while ($info = db_fetch_object($results)){
-      $args = array(
-        'environment' => $info->environment,
-        'reset' => $info->pull_reset,
-        'update' => 0,
-        'revert' => 0,
-        'cache' => 1,
-      );
-      hosting_add_task($project_nid, 'devshop-pull', $args);
+    $args['environments'] .= $info->environment .', ';
   }
+  //$args += array(
+  //  'update' => 0,
+  //  'revert' => 0,
+  //  'cache' => 1,
+  //);
+  
+  print "[DEBUG] Adding pull task with args:";
+  print_r($args);
+  hosting_add_task($project_nid, 'devshop-pull', $args);
   
   // Put timestamp
   db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 1, $project_nid);
