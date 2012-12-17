@@ -275,7 +275,14 @@ function devshop_pull_get_all_sites($nid_platform) {
 }
 
 /**
- * Helper for creating the pull code tasks
+ * Helper for creating the pull code tasks.
+ *
+ * We have to set options here for automated Pull Code tasks.
+ *
+ * @TODO: Clarify this code...  are we calling it on projects or platforms?
+ *
+ * @param $nid
+ *   A project OR platform node.
  */
 function devshop_pull_task($nid) {
   
@@ -285,7 +292,6 @@ function devshop_pull_task($nid) {
   $args = array();
   if ($node->type == 'platform') {
     $sites = devshop_pull_get_all_sites($node->nid);
-print_r($sites);
     foreach ($sites as $nid => $site) {
       $nids[] = $nid;
 

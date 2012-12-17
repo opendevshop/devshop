@@ -71,6 +71,11 @@ function devshop_pull_callback($project, $hash) {
   $platforms = $pnode->project_objects['platform']; 
 
   // @TODO: Lets provide much better messaging here.
+  // @TODO: Check for existing Pull Code tasks.  We don't want to fire a task
+  //   if one is already running.  (Is this true? What if the second commit
+  //   doesn't get pulled by the first Pull Code Task?  server might get out of
+  //   date.)
+  
   // Go through each platform that is pull enabled and add a "pull code" task.
   foreach ($platforms as $platform_nid => $site) {
     //If pull enabled then add to task
