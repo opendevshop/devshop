@@ -1,20 +1,26 @@
 <?php
-
+/**
+ * @file devshop_pull.module
+ * Provides a Hosting Queue and a URL callback for remote services to ping, in
+ * order to trigger a Pull Code task.
+ *
+ * Used to keep a dev server up to date with the commits of projects.
+ *
+ * @TODO: This module needs some re-architecting, because there are a few things
+ * we might want to do "on-commit".  Also, we should be able to handle
+ * integrations with any system, not just github.
+ *
+ */
 
 define('DEVSHOP_PULL_DISABLED', 0);
 define('DEVSHOP_PULL_QUEUE', 1);
 define('DEVSHOP_PULL_CALLBACK', 2);
-
-
-define('DEVSHOP_PULL_CALLBACK_URL', 'devshop/pull');
-define('DSGH_WD_TYPE', 'devshop');
 
 /**
  * Implementation of hook_perm()
  */
 function devshop_pull_perm() {
   return array(
-    'access devshop pull callback',
     'configure devshop pull',
   );
 }
@@ -31,9 +37,8 @@ function devshop_pull_menu() {
     'access arguments' => array('administer hosting settings'),
     'file' => 'devshop_pull.settings.inc',
   );
-  $items[DEVSHOP_PULL_CALLBACK_URL] = array(
+  $items['devshop/pull'] = array(
     'page callback' => 'devshop_pull_callback',
-    'access arguments' => array('access devshop pull callback'),
     'file' => 'devshop_pull.inc',
     'type' => MENU_CALLBACK,
   );
@@ -60,6 +65,8 @@ function devshop_pull_hosting_queues() {
  * Implements hook_form_alter().
  */
 function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
+  
+  // On Projects, add "Choose Pull Method"
   if ($form_id == 'project_node_form') {
     // Get node
     $node = $form['#node'];
@@ -84,6 +91,8 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       ),
     );
   }
+  // On Projects, choose if Pull on Commit is enabled, and if "reset --hard"
+  // should be used to keep the codebase clean.
   if ($form_id == 'platform_node_form') {
     $platform = $form['#node'];
     if (isset($platform->project_nid)) {

@@ -20,19 +20,19 @@ function devshop_pull_callback($project, $hash) {
   // Make sure the client's IP address is on the list
   if (!in_array(ip_address(), $acl)) {
     $message = ip_address() . " is not authorized to invoke a Pull Code request.";
-    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
 
   $message = "GitHub post-receive hook invoked by " . ip_address();
-  watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
+  watchdog('devshop', $message, array(), WATCHDOG_INFO);
   print "$message<br>";
 
 
   if (strlen($project) < 1 || strlen($hash) != 32) {
     $message = "Invalid/missing parameters in URL!";
-    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
@@ -45,7 +45,7 @@ function devshop_pull_callback($project, $hash) {
   // Load the entire node
   if (!$pnode = node_load($pnid)) {
     $message = "Unable to load project node!";
-    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
@@ -53,7 +53,7 @@ function devshop_pull_callback($project, $hash) {
   // Make sure the security code is valid
   if (_devshop_pull_hash_create($pnode) != $hash) {
     $message = "Security code $hash is not valid!";
-    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
@@ -61,7 +61,7 @@ function devshop_pull_callback($project, $hash) {
   // Make sure the platform has pull callback enabled
   if ($pnode->pull_method != DEVSHOP_PULL_CALLBACK){
     $message = "Project is NOT configured to use Pull Code URL callback!";
-    watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_ERROR);
+    watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
@@ -77,7 +77,7 @@ function devshop_pull_callback($project, $hash) {
     $enabled = db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $platform_nid));
     if ($enabled) {
       $message = "devshop_pull_task($platform_nid)";
-      watchdog(DSGH_WD_TYPE, $message, array(), WATCHDOG_INFO);
+      watchdog('devshop', $message, array(), WATCHDOG_INFO);
       print "$message<br>";
       devshop_pull_task($platform_nid);
     }
