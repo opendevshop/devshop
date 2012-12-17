@@ -236,19 +236,18 @@ function hosting_task_devshop_pull_form_validate($form, &$form_state) {
  * For "Sync Content" task.
  */
 function hosting_task_devshop_sync_form($node) {
-/* Disabled until we add support for custom aliases
-  $form['source'] = array(
-    '#title' => t('Source site alias'),
-    '#type' => 'textfield',
-    '#description' => t('Enter a site alias to sync from.  The alias must exist in the local system.'),
-  );
-  */
   // Get nid
   $nid = $node->nid;
 
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the source environment.'), 'source', 'Source');
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the destination environment.'), 'destination', 'Destination');
+    
+  $form['files'] = array(
+    '#title' => t('Sync files folder from destination to source.'),
+    '#type' => 'checkbox',
+    '#default_value' => 0,
+  );
     
   $form['note'] = array(
     '#value' => '<p>'. t('This will DESTROY the database for <strong>Destination</strong> and replace it with the database for the selected <strong>Source</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
