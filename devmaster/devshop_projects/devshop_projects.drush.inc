@@ -98,6 +98,8 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   }
   // If the platform has been verified and has a branch and git url
   else {
+    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $platform->git_branch, '!root' => $root)));
+    
     $root = $platform->publish_path;
     $git_remote = $platform->git_url;
     $git_branch = $platform->git_branch;
@@ -115,14 +117,15 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
     // So instead, this is the code from d()->server->shell_exec
     // d()->server->shell_exec($cmd);
     if (provision_is_local_host(d()->server->remote_host)) {
-      return drush_shell_cd_and_exec($root, escapeshellcmd($command));
+      drush_shell_cd_and_exec($root, escapeshellcmd($command));
     }
     else {
-      return drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
+      drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
     }
 
-     $output = drush_shell_exec_output();
-     drush_log('Shell Output: ' . implode("\n", $output) , 'notice');
+    $output = drush_shell_exec_output();
+    drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
+    return $output;
   }
 }
 
