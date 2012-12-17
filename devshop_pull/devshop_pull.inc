@@ -25,7 +25,8 @@ function devshop_pull_callback($project, $hash) {
     return;
   }
 
-  $message = "GitHub post-receive hook invoked by " . ip_address();
+  // Log It
+  $message = "[DEVSHOP] Commit Received! invoked by " . ip_address();
   watchdog('devshop', $message, array(), WATCHDOG_INFO);
   print "$message<br>";
 
@@ -72,6 +73,8 @@ function devshop_pull_callback($project, $hash) {
   // Put timestamp
   db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $pnid);
 
+  // @TODO: Lets provide much better messaging here.
+  // Go through each platform that is pull enabled and add a "pull code" task.
   foreach ($platforms as $platform_nid => $site) {
     //If pull enabled then add to task
     $enabled = db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $platform_nid));
