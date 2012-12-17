@@ -59,29 +59,28 @@ function devshop_pull_hosting_queues() {
 /**
  * Implements hook_form_alter().
  */
-function devshop_pull_form_alter(&$form, &$form_state, $form_id){
-  if ($form_id == 'project_node_form'){
+function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'project_node_form') {
     // Get node
     $node = $form['#node'];
     
     // Get default value
-    if (is_null($node->pull_method)){
+    if (is_null($node->pull_method)) {
       $node->pull_method = DEVSHOP_PULL_DISABLED;
     }
     
     $form['pull_method'] = array(
       '#title' => 'Automatic Git Pull Method',
       '#type' => 'radios',
-      '#description' => t('Choose the method of regularly calling "Pull Code".  See !link to configure the queue.  See !link2 to configure URL Callback.', array(
+      '#description' => t('Choose the method of regularly calling "Pull Code". See !link to configure the queue. See !link2 to configure URL Callback.', array(
         '!link' => l(t('Hosting > Queues'), 'admin/hosting/queues'),
         '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop_pull')
       )),
       '#default_value' => $node->pull_method,
       '#options' => array(
-	DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
-	DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
-	DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
-	
+        DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
+        DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
+        DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
       ),
     );
   }
@@ -131,13 +130,13 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
               ($pnode->pull_method == DEVSHOP_PULL_QUEUE? t('Hosting Queue'):
                (t('Disabled'))));
           
-          if ($pnode->pull_method == DEVSHOP_PULL_CALLBACK){
+          if ($pnode->pull_method == DEVSHOP_PULL_CALLBACK) {
             module_load_include('inc', 'devshop_pull');
             $url = _devshop_pull_callback_url($pnode);
             $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
           }
 
-          if (isset($pnode) && $pnode->pull_method != DEVSHOP_PULL_DISABLED){
+          if (isset($pnode) && $pnode->pull_method != DEVSHOP_PULL_DISABLED) {
             $node->content['devshop_pull'] = array(
               '#type' => 'fieldset',
               '#title' => t('Pull Configuration'),
@@ -153,7 +152,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
               '#type' => 'item',
               '#title' => t('Reset on Pull'),
               '#weight' => 31,
-              '#value' => $node->pull_reset? t('Enabled'): t('Disabled'),
+              '#value' => $node->pull_reset ? t('Enabled') : t('Disabled'),
             );
             $node->content['devshop_pull']['last_pull'] = array(
               '#type' => 'item',
@@ -165,19 +164,19 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
               '#type' => 'item',
               '#title' => t('Last pull status'),
               '#weight' => 33,
-              '#value' => $pnode->last_pull_status == 1? t('OK'): ($pnode->last_pull? t('Failed'): t('Never Pulled')),
+              '#value' => $pnode->last_pull_status == 1 ? t('OK') : ($pnode->last_pull ? t('Failed') : t('Never Pulled')),
             );
           }
         }
         break;
     case 'load':
       if ($node->type == 'project') {
-	$data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
-	if (!empty($data->project_nid)){
-	  $node->pull_method = $data->pull_method;
-	  $node->last_pull = $data->last_pull;
-	  $node->last_pull_status = $data->last_pull_status;
-	}
+        $data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
+        if (!empty($data->project_nid)) {
+          $node->pull_method = $data->pull_method;
+          $node->last_pull = $data->last_pull;
+          $node->last_pull_status = $data->last_pull_status;
+        }
       }
   elseif ($node->type == 'platform') {
           $data_project = db_fetch_array(db_query('SELECT project_nid, environment AS project_environment, n.title as project_name FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid WHERE object_nid = %d', $node->nid));
@@ -190,8 +189,8 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
     case 'insert':
     case 'update':
       if ($node->type == 'project') {
-    	  db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
-	      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
+        db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
+        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
       }
       elseif ($node->type == 'platform') {
         db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
@@ -265,16 +264,16 @@ function devshop_pull_get_all_sites($nid_platform) {
 /**
  * Helper for creating the pull code tasks
  */
-function devshop_pull_task($nid){
+function devshop_pull_task($nid) {
   
   $node = node_load($nid);
   
   $nids = array();
   $args = array();
-  if ($node->type == 'platform'){
+  if ($node->type == 'platform') {
     $sites = devshop_pull_get_all_sites($node->nid);
 print_r($sites);
-    foreach ($sites as $nid => $site){
+    foreach ($sites as $nid => $site) {
       $nids[] = $nid;
 
       // When doing the pull task, don't do a db update or revert. 
@@ -309,7 +308,7 @@ print_r($sites);
   }
   
   
-  foreach ($nids as $nid){
+  foreach ($nids as $nid) {
     hosting_add_task($nid, 'devshop-pull', $args[$nid]);
   }
 }
