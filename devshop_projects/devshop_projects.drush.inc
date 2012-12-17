@@ -200,8 +200,6 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->ref->git_tags = $branches['tags'];
 
   // Save the project node now that we have branches and tags.
-  drush_log('[DEBUG] $task->ref =  ' . print_r($task->ref, 1));
-  drush_log('[DEVSHOP] Trying to node save ' . $task->ref->title);
   node_save($task->ref);
 
   $task->context_options['git_branches'] = $branches['branches'];
