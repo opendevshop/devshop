@@ -226,7 +226,6 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
  */
 function devshop_pull_get_platforms($limit = 5) {
   $result = db_query("SELECT COUNT(dpo.object_nid) FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d  AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
-  
   return db_result($result);
 }
 
@@ -236,7 +235,7 @@ function devshop_pull_get_platforms($limit = 5) {
 function devshop_pull_hosting_devshop_pull_task_rollback($task, $data) {
   $project = node_load($task->ref->project_nid);
   watchdog('devshop', 'Pull FAILED on project: @alias', array('@alias' => $project->title));
-  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 1, $task->ref->project_nid);
+  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $task->ref->project_nid);
 }
 
 /**
@@ -256,78 +255,34 @@ function hosting_pull_queue($count) {
   
   while ($project = db_fetch_object($result)) {
     
-    devshop_pull_task($project->project_nid);
+    devshop_pull_project($project->project_nid);
     module_invoke_all('devshop_pull', $project); 
   }
 }
 
-
 /**
- * Helper for get all sites of one platform
+ * Prepares a "Pull Code" task for a project.
+ * 
+ * @param $project_nid
+ *   A project nid.
+ *
+ * Platforms in a project must be enabled to have this command run on them.
  */
-function devshop_pull_get_all_sites($nid_platform) {
-  $names = array();
-  $result = db_query("SELECT title, hs.nid FROM {hosting_site} hs LEFT JOIN {node} n ON hs.nid = n.nid WHERE platform=%d", $nid_platform);
-  while ($node = db_fetch_object($result)) {
-    $names[$node->nid] = $node->title;
-  }
-  return $names;
-}
-
-/**
- * Helper for creating the pull code tasks.
- *
- * We have to set options here for automated Pull Code tasks.
- *
- * @TODO: Clarify this code...  are we calling it on projects or platforms?
- *
- * @param $nid
- *   A project OR platform node.
- */
-function devshop_pull_task($nid) {
+function devshop_pull_project($project_nid) {
+  // Search platforms with pull enabled for this project
+  $results = db_queryd("SELECT pull_reset, environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND project_nid = %d", $project_nid);
   
-  $node = node_load($nid);
-  
-  $nids = array();
-  $args = array();
-  if ($node->type == 'platform') {
-    $sites = devshop_pull_get_all_sites($node->nid);
-    foreach ($sites as $nid => $site) {
-      $nids[] = $nid;
-
-      // When doing the pull task, don't do a db update or revert. 
-      // Just clear all of the caches
-      $args[$nid] = array(
-        'reset' => $node->pull_reset,
+  while ($info = db_fetch_object($results)){
+      $args = array(
+        'environment' => $info->environment,
+        'reset' => $info->pull_reset,
         'update' => 0,
         'revert' => 0,
         'cache' => 1,
       );
-    }
-  }
-  else {
-    //Search platform with pull enabled of this project
-    $platforms = $node->project_objects['platform'];
-
-
-    foreach ($platforms as $platform_nid => $platform) {
-      //If pull enabled then add to task
-      $data = db_fetch_object(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $platform_nid));
-      if ($data->pull_enabled) {
-        $nids[] = $platform_nid;
-        $args[$platform_nid] = array(
-          'reset' => $data->pull_reset,
-          'update' => 0,
-          'revert' => 0,
-          'cache' => 1,
-          'sites' => devshop_pull_get_all_sites($platform_nid),
-        );
-      }
-    }
+      hosting_add_task($project_nid, 'devshop-pull', $args);
   }
   
-  
-  foreach ($nids as $nid) {
-    hosting_add_task($nid, 'devshop-pull', $args[$nid]);
-  }
+  // Put timestamp
+  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 1, $project_nid);
 }
