@@ -33,7 +33,7 @@ function drush_devshop_provision_provision_devshop_sync_validate($source = NULL,
  * Implements the provision-devshop-deploy command.
  */
 function drush_devshop_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
-  drush_log(dt('Provision DevShop Sync started...'));
+  drush_log(dt('[DEVSHOP] Provision DevShop Sync started...'));
   
   //Get source name
   if ($source){
@@ -45,7 +45,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   
   //Fail if no source
   if (!$source_name){
-    return drush_log(dt('Source not found.  You must enter a source alias to sync from'), 'error');
+    return drush_log(dt('[DEVSHOP] Source not found.  You must enter a source alias to sync from'), 'error');
   } else {
     $source_site_alias = $source .'.'. d()->base_url;
   }
@@ -61,13 +61,13 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   
   //Fail if no destination
   if (!$destination_name){
-    return drush_log(dt('Destination not found.  You must enter a destination alias to sync from'), 'error');
+    return drush_log(dt('[DEVSHOP] Destination not found.  You must enter a destination alias to sync from'), 'error');
   } else {
     $destination_site_alias = $destination .'.'. d()->base_url;
   }
   
   //Drop the database
-  drush_log(dt('DevShop: Dropping tables for destination'), 'ok');
+  drush_log(dt('[DEVSHOP] Dropping tables for destination'), 'ok');
   provision_backend_invoke($destination_site_alias, 'sql-drop');
   
   // Run provision-devshop-pull if requested
@@ -106,7 +106,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   //drush_invoke('sql-sync', $source, $destination);
   
   // SQL Dump
-  drush_log(dt('DevShop: Creating SQL dump from !source', array('!source' => $source_site_alias)), 'ok');
+  drush_log(dt('[DEVSHOP] Creating SQL dump from !source', array('!source' => $source_site_alias)), 'ok');
   provision_backend_invoke($source_site_alias, 'sql-dump', array(), $options);
 
   // COPY SQL file if it doesn't exist (which means a remote source)
@@ -118,19 +118,19 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     if (provision_backend_invoke('server_master', 'rsync', array($source_site_alias . ':' . $file_path, $file_path))) {
       drush_log('SQL transfered', 'ok');
     } else {
-      return drush_log(dt('Failed to copy the backup from the remote server'), 'error');
+      return drush_log(dt('[DEVSHOP] Failed to copy the backup from the remote server'), 'error');
     }
   }
   
   // SQL Import
   // provision_backend_invoke() does not work here.  Doesn't like piping
-  drush_log(dt('DevShop: Importing SQL into !destination', array('!destination' => $destination_site_alias)), 'ok');
-  exec("drush $destination_site_alias sql-cli < $file");
+  drush_log(dt('[DEVSHOP] Importing SQL into !destination', array('!destination' => $destination_site_alias)), 'ok');
+  exec("drush @$destination_site_alias sql-cli < $file");
 
   // Sync files via rsync
   if (drush_get_option('files')) {
-     drush_log(dt('DevShop: Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
-     provision_backend_invoke('server_master', 'rsync', array("$source_site_alias:%files", "$destination_site_alias:%files"));
+     drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
+     provision_backend_invoke('server_master', 'rsync', array("@$source_site_alias:%files", "@$destination_site_alias:%files"));
   }
 
   // @TODO: Put these in a POST command hook.  The other tasks use them too.
