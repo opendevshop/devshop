@@ -121,7 +121,7 @@ function devshop_project_status($node){
   $sites_installing = FALSE;
 
   // PROJECT STATUS
-  if (empty($node->project_objects) || empty($node->git_branches)){
+  if (empty($node->project_objects) && empty($node->git_branches)){
     return 'preparing-project';
   }
 
@@ -149,6 +149,9 @@ function devshop_project_status($node){
   } else {
     $sites_ready = FALSE;
   }
+  
+  
+  // @TODO: This is so rough!  We can do better.
   return $sites_ready? 'sites_ready': (
     $sites_installing? 'sites_installing': (
       $platforms_ready? 'platforms_ready': 'platforms_verifying'
