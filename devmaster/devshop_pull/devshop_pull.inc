@@ -70,9 +70,6 @@ function devshop_pull_callback($project, $hash) {
   // Search platforms with pull enable of this project
   $platforms = $pnode->project_objects['platform']; 
 
-  // Put timestamp
-  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $pnid);
-
   // @TODO: Lets provide much better messaging here.
   // Go through each platform that is pull enabled and add a "pull code" task.
   foreach ($platforms as $platform_nid => $site) {
@@ -85,6 +82,9 @@ function devshop_pull_callback($project, $hash) {
       devshop_pull_task($platform_nid);
     }
   }
+  
+  // Put timestamp
+  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 1, $pnid);
 }
 
 /**
