@@ -39,10 +39,10 @@ function devshop_provision_drush_command() {
       'cache' => 'Clear all caches after code pull.',
     ),
     'arguments' => array(
-      'environment' => 'The name of the environment to Pull Code to.',
+      'environments' => 'A list of environment names to Pull Code to.',
     ),
     'examples' => array(
-      'drush @project_mysite provision-devshop-pull dev --cache' => 'Triggers a git pull and a clear cache command on @project_mysite\'s dev environment.', 
+      'drush @project_mysite provision-devshop-pull dev test --cache' => 'Triggers a git pull and a clear cache command on @project_mysite\'s dev and test environments.', 
     ), 
     'aliases' => array('pdp'),
   );
