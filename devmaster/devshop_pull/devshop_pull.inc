@@ -40,11 +40,11 @@ function devshop_pull_callback($project, $hash) {
 
   // Based on the project name, get the node ID for the project node.
   // Is need remove the prefix for find the nid.
-  $pnid = db_result(db_query(
+  $project_nid = db_result(db_query(
     "SELECT nid FROM {hosting_context} WHERE name = '%s'", str_replace('project_', '', $project)));
 
   // Load the entire node
-  if (!$pnode = node_load($pnid)) {
+  if (!$project_node = node_load($project_nid)) {
     $message = "Unable to load project node!";
     watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
@@ -52,7 +52,7 @@ function devshop_pull_callback($project, $hash) {
   }
 
   // Make sure the security code is valid
-  if (_devshop_pull_hash_create($pnode) != $hash) {
+  if (_devshop_pull_hash_create($project_node) != $hash) {
     $message = "Security code $hash is not valid!";
     watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
@@ -60,36 +60,16 @@ function devshop_pull_callback($project, $hash) {
   }
   
   // Make sure the platform has pull callback enabled
-  if ($pnode->pull_method != DEVSHOP_PULL_CALLBACK){
+  if ($project_node->pull_method != DEVSHOP_PULL_CALLBACK){
     $message = "Project is NOT configured to use Pull Code URL callback!";
     watchdog('devshop', $message, array(), WATCHDOG_ERROR);
     print "$message<br>";
     return;
   }
-
-  // Search platforms with pull enable of this project
-  $platforms = $pnode->project_objects['platform']; 
-
-  // @TODO: Lets provide much better messaging here.
-  // @TODO: Check for existing Pull Code tasks.  We don't want to fire a task
-  //   if one is already running.  (Is this true? What if the second commit
-  //   doesn't get pulled by the first Pull Code Task?  server might get out of
-  //   date.)
   
-  // Go through each platform that is pull enabled and add a "pull code" task.
-  foreach ($platforms as $platform_nid => $site) {
-    //If pull enabled then add to task
-    $enabled = db_result(db_query("SELECT pull_enabled FROM {hosting_devshop_pull_platforms} WHERE platform_nid=%d", $platform_nid));
-    if ($enabled) {
-      $message = "Platform $site Pull on Commit is enabled.  Creating Pull Code task. (NID: $platform_nid)";
-      watchdog('devshop', $message, array(), WATCHDOG_INFO);
-      print "$message<br>";
-      devshop_pull_task($platform_nid);
-    }
-  }
+  // This does the hard work of figuring out what tasks to create.
+  devshop_pull_project($project_node->nid);
   
-  // Put timestamp
-  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 1, $pnid);
 }
 
 /**
