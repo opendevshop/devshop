@@ -130,7 +130,9 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // Sync files via rsync
   if (drush_get_option('files')) {
      drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
-     provision_backend_invoke('server_master', 'rsync', array("@$source_site_alias:%files", "@$destination_site_alias:%files"));
+     
+    // @TODO: Better way?? %files stopped working for me :(
+    provision_backend_invoke(d()->server->name, 'rsync', array("@$source_site_alias:sites/$source_site_alias/files/", "@$destination_site_alias:sites/$destination_site_alias/files/"));
   }
 
   // @TODO: Put these in a POST command hook.  The other tasks use them too.
@@ -139,10 +141,12 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   $revert = drush_get_option('revert');
   $cache = drush_get_option('cache');
 
+  $site = "@$destination_site_alias";
+   
   // update db, unless option is false.
   if ($update){
     drush_log(dt('[DEVSHOP] Updating database...'), 'ok');
-    provision_backend_invoke($destination_site_alias, 'updb');
+    provision_backend_invoke($site, 'updb');
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
@@ -151,7 +155,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // Revert All Features, unless option is false
   if ($revert){
     drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
-    provision_backend_invoke($destination_site_alias, 'features-revert-all');
+    provision_backend_invoke($site, 'features-revert-all');
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
@@ -161,8 +165,8 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // Seriously, lets do this twice.  Go Drupal!
   if ($cache){
     drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
-    provision_backend_invoke($destination_site_alias, 'cc all');
-    provision_backend_invoke($destination_site_alias, 'cc all');
+    provision_backend_invoke($site, 'cc all');
+    provision_backend_invoke($site, 'cc all');
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
