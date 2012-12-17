@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Pre provision-git-features-update-commit hook
+ * Pre provision-devshop-commit hook
+ *
+ * Implements drush_hook_pre_COMMAND() hook.
  */
 function drush_devshop_provision_pre_provision_devshop_commit(){
   devshop_provision_pre_flight();
@@ -9,7 +11,7 @@ function drush_devshop_provision_pre_provision_devshop_commit(){
 
 
 /**
- * Implements the provision-git-pull command.
+ * Implements the provision-devshop-commit command.
  */
 function drush_devshop_provision_provision_devshop_commit($platform_name = NULL) {
 
@@ -36,8 +38,7 @@ function drush_devshop_provision_provision_devshop_commit($platform_name = NULL)
   drush_log(dt('[DEVSHOP] Recreating all features...'), 'ok');
   provision_backend_invoke($site_alias, 'features-update-all');
 
-  //Execute git commit
-  //Generate commit message
+  // Generate commit message.
   $message = array();
   $message[] = "Exported from: $target";
   $message[] = str_repeat('-', strlen($message[0]));
@@ -60,12 +61,12 @@ function drush_devshop_provision_provision_devshop_commit($platform_name = NULL)
   // Invoke provision-git-commit
   provision_backend_invoke($site_alias, 'provision-git-commit', array(), $data);
   
-  //Push, unless the user doesn't want to.
+  // Push, unless the user doesn't want to.
   if (drush_get_option('push', TRUE)){
     provision_backend_invoke($site_alias, 'provision-git-push');
   }
   
-  //Revert, if the user wants.
+  // Revert, if the user wants.
   if (drush_get_option('revert')){
     provision_backend_invoke($site_alias, 'provision-git-reset');
   }

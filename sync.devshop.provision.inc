@@ -35,38 +35,38 @@ function drush_devshop_provision_provision_devshop_sync_validate($source = NULL,
 function drush_devshop_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
   drush_log(dt('[DEVSHOP] Provision DevShop Sync started...'));
   
-  //Get source name
+  // Get source name
   if ($source){
-    $source_name = substr($source, 1);  //Without @
+    $source_name = substr($source, 1);  // Without @
   } else {
     $source = drush_get_option('source');
-    $source_name = substr($source, 1); //Without @
+    $source_name = substr($source, 1); // Without @
   }
   
-  //Fail if no source
+  // Fail if no source
   if (!$source_name){
     return drush_log(dt('[DEVSHOP] Source not found.  You must enter a source alias to sync from'), 'error');
   } else {
     $source_site_alias = $source .'.'. d()->base_url;
   }
   
-  //Get destination name
+  // Get destination name
   if ($destination){
-    $destination_name = substr($destination, 1);  //Without @
+    $destination_name = substr($destination, 1); // Without @
   } else {
     //If $destination as an argument is not present it is the target name
     $destination = drush_get_option('destination');
-    $destination_name = substr($destination, 1); //Without @
+    $destination_name = substr($destination, 1); // Without @
   }
   
-  //Fail if no destination
+  // Fail if no destination
   if (!$destination_name){
     return drush_log(dt('[DEVSHOP] Destination not found.  You must enter a destination alias to sync from'), 'error');
   } else {
     $destination_site_alias = $destination .'.'. d()->base_url;
   }
   
-  //Drop the database
+  // Drop the database
   drush_log(dt('[DEVSHOP] Dropping tables for destination'), 'ok');
   provision_backend_invoke($destination_site_alias, 'sql-drop');
   
@@ -84,8 +84,8 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   $file_name = "$source_name-$timestamp.sql";
   $file = $file_path . $file_name;
   
-  //Create backup folder if does not exist
-  //@TODO: DO THIS ON REMOTE AS WELL
+  // Create backup folder if does not exist
+  // @TODO: DO THIS ON REMOTE AS WELL
   if (!file_exists($file_path)){
     provision_file()->mkdir($file_path)
       ->succeed('[DEVSHOP] Created devshop-sync backups folder: ' . $file_path)
@@ -101,7 +101,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     //'gzip' => TRUE,  
   );
   
-  //Source and target dump options aren't working here... @TODO: figure out why!
+  // Source and target dump options aren't working here... @TODO: figure out why!
   //provision_backend_invoke('@hostmaster', 'sql-sync', array($source, $destination), $options);
   //drush_invoke('sql-sync', $source, $destination);
   
