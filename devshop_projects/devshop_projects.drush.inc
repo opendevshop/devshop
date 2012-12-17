@@ -28,11 +28,10 @@ function drush_devshop_projects_pre_hosting_task() {
   
   // Pull
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
-    $task->args['environment'] = $task->task_args['environment'];
+    $task->args['environments'] = $task->task_args['environments'];
     $task->options['update'] = $task->task_args['update'];
-    $task->options['revert'] = $task->task_args['revert'];
+    $task->options['revert'] = !empty($task->task_args['revert']);
     $task->options['cache'] = $task->task_args['cache'];
-    $task->options['sites'] = explode('|', $task->task_args['sites']);
   }
 
   // Commit
