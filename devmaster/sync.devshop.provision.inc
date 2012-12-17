@@ -130,7 +130,9 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // Sync files via rsync
   if (drush_get_option('files')) {
      drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
-     provision_backend_invoke('server_master', 'rsync', array("@$source_site_alias:%files", "@$destination_site_alias:%files"));
+     
+    // @TODO: Better way?? %files stopped working for me :(
+    provision_backend_invoke(d()->server->name, 'rsync', array("@$source_site_alias:sites/$source_site_alias/files/", "@$destination_site_alias:sites/$destination_site_alias/files/"));
   }
 
   // @TODO: Put these in a POST command hook.  The other tasks use them too.
