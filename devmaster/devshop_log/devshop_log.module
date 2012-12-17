@@ -122,10 +122,13 @@ function _devshop_log_load($nid) {
 
   // Get our current working directory
   $cwd = getcwd();
+
   // Switch to the repo directory
   chdir($node->publish_path);
+
   // Fetch the log
   $output = shell_exec("$git_path log $log_count_opt 2>&1");
+
   // Change back to our original work directory
   chdir($cwd);
 

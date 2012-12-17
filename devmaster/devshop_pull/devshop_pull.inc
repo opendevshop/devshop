@@ -5,7 +5,7 @@
  * Menu callback that is invoked by GitHub WebHook facility to create
  * a code pull task.
  *
- * @TODO: Save "Last Pull" and "Last Pull Status" when git pull task is complete.
+ * @TODO: Save "Last Pull" and "Last Pull Status" when git pull task is complete. ... DONE?? seems to be in place
  */
 function devshop_pull_callback($project, $hash) {
   
@@ -66,10 +66,10 @@ function devshop_pull_callback($project, $hash) {
     return;
   }
 
-  //Search platforms with pull enable of this project
+  // Search platforms with pull enable of this project
   $platforms = $pnode->project_objects['platform']; 
 
-  //Put timestamp
+  // Put timestamp
   db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $pnid);
 
   foreach ($platforms as $platform_nid => $site) {
@@ -89,10 +89,10 @@ function devshop_pull_callback($project, $hash) {
  * and given to the GitHub WebHook to invoke a pull after a commit.
  */
 function _devshop_pull_callback_url($node) {
-  return url(DEVSHOP_PULL_CALLBACK_URL .
-	'/' . $node->hosting_name .
-	'/' . _devshop_pull_hash_create($node), 
-	array('absolute' => TRUE));
+  return url(DEVSHOP_PULL_CALLBACK_URL
+    . '/' . $node->hosting_name
+    . '/' . _devshop_pull_hash_create($node),
+    array('absolute' => TRUE));
 }
 
 /**
