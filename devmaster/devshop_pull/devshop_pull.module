@@ -275,16 +275,8 @@ function devshop_pull_project($project_nid) {
   $args = array('environments' => '');
   
   while ($info = db_fetch_object($results)){
-    $args['environments'] .= $info->environment .', ';
+    $args['environments'] .= $info->environment .' ';
   }
-  //$args += array(
-  //  'update' => 0,
-  //  'revert' => 0,
-  //  'cache' => 1,
-  //);
-  
-  print "[DEBUG] Adding pull task with args:";
-  print_r($args);
   hosting_add_task($project_nid, 'devshop-pull', $args);
   
   // Put timestamp
