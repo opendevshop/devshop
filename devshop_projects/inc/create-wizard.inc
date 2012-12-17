@@ -28,6 +28,7 @@ function devshop_projects_create_wizard($step = NULL){
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
     $project->git_url = '';
+    $project->project_nid = NULL;
     $project->title = '';
     $project->default_platforms = array();
     $project->branch_platforms = array();
@@ -46,8 +47,10 @@ function devshop_projects_create_wizard($step = NULL){
 
   // Check verification status
   $project_node = node_load($project->project_nid);
-  $tasks = hosting_task_fetch_tasks($project_node->nid);
-  $project->verify_task_status = $tasks['verify']['task_status'];
+  if (!empty($project_node->nid)){
+    $tasks = hosting_task_fetch_tasks($project_node->nid);
+  }
+  $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
 
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status === HOSTING_TASK_ERROR){
