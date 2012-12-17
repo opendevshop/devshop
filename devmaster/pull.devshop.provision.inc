@@ -15,20 +15,31 @@ function drush_devshop_provision_pre_provision_devshop_pull(){
  * Implements the provision-devshop-pull command.
  */
 function drush_devshop_provision_provision_devshop_pull() {
+  $args = func_get_args();
+  
+  // Detect the string argument and change it into the list of args.
+  // @TODO: Aegir, why do we need this?  When run from drush, $args contain all
+  //  arguments.
+  // Detect spaces
+  if (strpos($args[0], ' ') !== FALSE){
+    // if there is a list of environments, break it up and add it to a new $args
+    $args = explode(' ', $args[0]);
+  }
   
   // Get environments from argument (Inspired by function drush_pm_download())
-  if (!$environments = _convert_csv_to_array(func_get_args())) {
+  if (!$environments = _convert_csv_to_array($args)) {
     return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify at least one environment to pull.');
   }
   
   foreach($environments as $platform_name){
+    drush_log(dt('[DEVSHOP] Provision DevShop Pull on: ' . $platform_name), 'ok');
+  
     // Must specify environment to pull
     if (empty($platform_name)){
       drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify an environment to pull.');
       continue;
     }
     
-    drush_log(dt('[DEVSHOP] Provision DevShop Pull started...'), 'ok');
     
     // Get platform & site object
     $project_name = d()->project_name;
