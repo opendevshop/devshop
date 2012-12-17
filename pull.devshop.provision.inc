@@ -55,13 +55,13 @@ function drush_devshop_provision_provision_devshop_pull() {
     // Ensure it's a git repo.
     provision_git_is_repo($repo_path);
     
-    //Get options
+    // Get options
     $update = drush_get_option('update');
     $revert = drush_get_option('revert');
     $cache = drush_get_option('cache');
   
     // Pull latest version of site
-    //Execute git pull --rebase
+    // Execute git pull --rebase
     if (drush_shell_cd_and_exec($repo_path, 'git pull --rebase')) {
       drush_log(dt('[DEVSHOP] Git repository pulled.', array('!path' => $repo_path)), 'ok');
       $output = drush_shell_exec_output();
