@@ -88,8 +88,8 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   //@TODO: DO THIS ON REMOTE AS WELL
   if (!file_exists($file_path)){
     provision_file()->mkdir($file_path)
-      ->succeed('Created devshop-sync backups folder: ' . $file_path)
-     ->fail('Could not create the folder: ' . $file_path)
+      ->succeed('[DEVSHOP] Created devshop-sync backups folder: ' . $file_path)
+     ->fail('[DEVSHOP] Could not create the folder: ' . $file_path)
      ->status();
   }
   
