@@ -113,7 +113,7 @@ function devshop_projects_testing_access($node, $type) {
     return FALSE;
   }
 
-  if ($obj->env_type == 'live' || $obj->env_type == 'dev') {
+  if ($obj->environment == 'live' || $obj->environment == 'dev') {
     return FALSE;
   }
 
