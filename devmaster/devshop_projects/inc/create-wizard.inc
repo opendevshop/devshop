@@ -337,6 +337,15 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
  */
 function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
+  
+  // Code path and domain must be unique
+  if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s";', $form_state['values']['code_path']))){
+    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
+  }
+  if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE base_url = "%s";', $form_state['values']['base_url']))){
+    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
+  }
+  
 }
 
 /**
