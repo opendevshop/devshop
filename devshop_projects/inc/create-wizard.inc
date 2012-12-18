@@ -511,6 +511,13 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $project->platforms[$platform_name] = $platform_node->nid;
     }
+    // If the platform already exists, change the platform node branch and save it.
+    // @TODO: only re-save the node if the chosen branch changed.
+    else {
+      $platform_node = node_load($project->platforms[$platform_name]);
+      $platform_node->git_branch = $branch;
+      node_save($platform_node);
+    }
   }
 }
 
