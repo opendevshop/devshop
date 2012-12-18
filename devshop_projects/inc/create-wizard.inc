@@ -560,11 +560,10 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Display the platforms
   $rows = array();
-  $header = array(t('Name'), t('Branch'), t('Status'), t('Installation Profiles'));
+  $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
   foreach ($project_node->project_objects['platform'] as $nid => $name){
     
     // Figure out status
-    
     $task = hosting_get_most_recent_task($nid, 'verify');
     $status =  _hosting_parse_error_code($task->task_status);
 
@@ -572,14 +571,16 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $row = array();
     $row[] = $name;
     $row[] = $platform->git_branch;
+    $row[] = $platform->release->version;
     $row[] =  _hosting_parse_error_code($task->task_status);
 
-    if (!$platform->verified){
+    if (!$platform->verified || $task->task_status != HOSTING_TASK_SUCCESS) {
       $completed = FALSE;
     }
 
     // Collect install profiles
     // This fancy footwork gives us an array with items like 'shortname' => 'Name'
+    // @TODO: If a branch is changed, the old profiles still exist! Make sure the form
     $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
 
     if ($task->task_status == HOSTING_TASK_ERROR) {
