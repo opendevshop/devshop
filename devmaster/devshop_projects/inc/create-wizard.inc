@@ -555,12 +555,17 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Status'), t('Installation Profiles'));
   foreach ($project_node->project_objects['platform'] as $nid => $name){
+    
+    // Figure out status
+    
+    $task = hosting_get_most_recent_task($nid, 'verify');
+    $status =  _hosting_parse_error_code($task->task_status);
 
     $platform = node_load($nid);
     $row = array();
     $row[] = $name;
     $row[] = $platform->git_branch;
-    $row[] = $platform->verified? t('Verified'): t('Verification Pending');
+    $row[] =  _hosting_parse_error_code($task->task_status);
 
     if (!$platform->verified){
       $completed = FALSE;
@@ -570,8 +575,12 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // This fancy footwork gives us an array with items like 'shortname' => 'Name'
     $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
 
-    $row[] = implode(', ', $profiles[$name]);
-
+    if ($task->task_status == HOSTING_TASK_ERROR) {
+      $row[] = t('Platform verification failed!  Check the task log for more details.');
+    } else {
+      $row[] = implode(', ', $profiles[$name]);
+    }
+    
     if (!isset($available_profiles)){
       $available_profiles = $profiles[$name];
     } else {
