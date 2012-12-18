@@ -385,9 +385,18 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'value',
       '#value' => TRUE,
     );
+    
+    // Add JS that reloads the page when tasks finish.
+    $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js'; 
+    drupal_add_js($path);
     return;
   }
 
+
+  // Add JS that reloads the page when tasks finish.
+  $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js'; 
+  drupal_add_js($path);
+    
   $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
 
   $form['default_platforms'] = array(
