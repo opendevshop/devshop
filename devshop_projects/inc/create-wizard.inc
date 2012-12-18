@@ -86,9 +86,10 @@ function devshop_projects_create_wizard_info(){
     'finish callback' => 'devshop_projects_create_wizard_finish',
     'cancel callback' => 'devshop_projects_create_wizard_cancel',
     'order' => array(
-      'git_url' => t('Step 1: Git'),
+      'git_url' => t('Step 1: Source'),
       'settings' => t('Step 2: Settings'),
       'environments' => t('Step 3: Platforms'),
+      'sites' => t('Step 4: Sites'),
     ),
     'forms' => array(
       'git_url' => array(
@@ -99,6 +100,9 @@ function devshop_projects_create_wizard_info(){
       ),
       'environments' => array(
         'form id' => 'devshop_project_create_step_environments'
+      ),
+      'sites' => array(
+        'form id' => 'devshop_project_create_step_sites'
       ),
     ),
   );
@@ -130,15 +134,20 @@ function devshop_projects_create_wizard_next(&$form_state) {
 function devshop_projects_create_wizard_finish(&$form_state) {
   $project = &$form_state['project'];
 
-  // Save the extra options to the project
+  // Save the extra options to the project node.
   $node = node_load($project->project_nid);
   $node->code_path = $project->code_path;
   $node->base_url = $project->base_url;
-
-  // Everything else is done on the Node Page.  We will fake the last step on
-  // the node page.
+  $node->install_profile = $project->install_profile;
   node_save($node);
 
+  // Create the site nodes
+  // @TODO: Can we speed things up here by only running install for the first,
+  // then  "Cloning" to create the rest?
+  foreach ($node->project_objects['platform'] as $nid => $env){
+    devshop_projects_create_site($node, node_load($nid), $env);
+  }
+  
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'node/' . $node->nid;
 }
@@ -478,4 +487,147 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $project->platforms[$platform_name] = $platform_node->nid;
     }
   }
+}
+
+/**********
+ * STEP 4
+ * Project Settings
+ *********/
+
+/**
+ * STEP 4: Form
+ */
+function devshop_project_create_step_sites(&$form, &$form_state) {
+  $project = &$form_state['project'];
+  $project_node = node_load($project->project_nid);
+
+  // OUTPUT
+  if ($project_node->project_status == 'sites_installing') {
+    $form['note'] = array(
+      '#type' => 'item',
+      '#title' => t('Sites Installing'),
+      '#value' => t('Your sites are being installed!'),
+    );
+    return $form;
+  }
+  elseif ($project_node->project_status == 'preparing-project') {
+    // @TODO: Not yet, needs more logic
+    // drupal_goto('node/add/project');
+  }
+  elseif ($project_node->project_status == 'sites-installed') {
+    return;
+  }
+
+  $profiles = array();
+  $completed = TRUE;
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_node->nid,
+  );
+
+  // Display the platforms
+  $rows = array();
+  $header = array(t('Name'), t('Branch'), t('Status'), t('Installation Profiles'));
+  foreach ($project_node->project_objects['platform'] as $nid => $name){
+
+    $platform = node_load($nid);
+    $row = array();
+    $row[] = $name;
+    $row[] = $platform->git_branch;
+    $row[] = $platform->verified? t('Verified'): t('Verification Pending');
+
+    if (!$platform->verified){
+      $completed = FALSE;
+    }
+
+    // Collect install profiles
+    // This fancy footwork gives us an array with items like 'shortname' => 'Name'
+    $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
+
+    $row[] = implode(', ', $profiles[$name]);
+
+    if (!isset($available_profiles)){
+      $available_profiles = $profiles[$name];
+    } else {
+      // @TODO: This joins profiles by name, not profile name.
+      $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+    }
+
+    // Build site options
+    $defaults = array();
+    $defaults['dev']['pull'] = 1;
+    $defaults['dev']['dev_modules'] = 1;
+    $defaults['test']['run_tests'] = 1;
+    $defaults['live']['live_modules'] = 1;
+
+    // Store rows for display
+    $rows[] = $row;
+  }
+
+   // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
+  $form['platforms'] = array(
+    '#type' => 'markup',
+    '#value' => theme('table', $header, $rows),
+  );
+
+  // Provide something for people while they wait.
+  if (!$completed){
+    $form['help'] = array(
+      '#type' => 'markup',
+      '#value' => t('Please wait while we download and verify your drupal code.'),
+    );
+
+    return $form;
+
+  } elseif (count($available_profiles) == 0) {
+    $form['error'] = array(
+      '#type' => 'markup',
+      '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  This can happen if you chose branches with two different versions of Drupal.  Please edit codebase so that your desired install profile is in all branches.'),
+    );
+    return $form;
+  } else {
+    // Install Profile
+    // Sensible default?
+    // Lets go with standard for now... we can update later.
+    if (isset($available_profiles['standard'])) {
+      $default_profile = 'standard';
+    }
+    // If 'drupal' profile exists, it is likely drupal6!
+    elseif (isset($available_profiles['drupal'])) {
+      $default_profile = 'drupal';
+    }
+
+    // @TODO: Handle no available profiles
+    $form['install_profile'] = array(
+      '#type' => 'radios',
+      '#options' => $available_profiles,
+      '#title' => t('Project Install Profile'),
+      '#required' => 1,
+      '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.  Choose the installation profile for this project.'),
+      '#default_value' => $default_profile,
+    );
+  }
+}
+
+/**
+ * STEP 4: Validate
+ */
+function devshop_project_create_step_sites_validate(&$from, &$form_state) {
+  $project = &$form_state['project'];
+  
+  if (empty($form_state['values']['install_profile'])){
+    form_set_error('install_profile', t('You must choose an install profile'));
+  }
+}
+
+/**
+ * STEP 4: Submit
+ *
+ * Save install profile to the project object (project and site node creation
+ * happens on wizard finish.)
+ */
+function devshop_project_create_step_sites_submit(&$from, &$form_state) {
+  $project = &$form_state['project'];
+  $project->install_profile = $form_state['values']['install_profile'];
 }
