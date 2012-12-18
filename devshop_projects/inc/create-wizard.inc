@@ -313,7 +313,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $form['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
-    '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+    '#description' => t('The absolute path on the filesystem that will be used to create all platforms within this project.'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->code_path,
@@ -322,14 +322,12 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $form['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Primary Domain'),
-    '#description' => t('The domain name all sites will be built under.'),
+    '#description' => t('All sites will be under a subdomain of this domain.'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
   );
-
-  // @TODO: Put Pull Code settings here
 }
 
 /**
