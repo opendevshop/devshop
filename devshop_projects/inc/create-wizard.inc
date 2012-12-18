@@ -61,10 +61,12 @@ function devshop_projects_create_wizard($step = NULL){
     }
   }
 
-
   // All forms can access $form_state['project'];
   $form_state['project'] = $project;
 
+  // Saving the last visited step for redirects from node
+  $_SESSION['last_step'] = $step;
+  
   // Generate our ctools form and output
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
@@ -150,6 +152,9 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'node/' . $node->nid;
+  
+  // Removing last step session variable.
+  unset($_SESSION['last_step']);
 }
 
 
@@ -170,6 +175,10 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   if (!empty($project->project_nid)){
     hosting_add_task($project->project_nid, 'delete');
   }
+  
+  // Removing last step session variable.
+  unset($_SESSION['last_step']);
+  
 }
 
 /**
