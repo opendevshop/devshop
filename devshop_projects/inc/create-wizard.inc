@@ -583,7 +583,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
 
     if ($task->task_status == HOSTING_TASK_ERROR) {
-      $row[] = t('Platform verification failed!  Check the task log for more details.');
+      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
     } else {
       $row[] = implode(', ', $profiles[$name]);
     }
@@ -624,7 +624,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   } elseif (count($available_profiles) == 0) {
     $form['error'] = array(
       '#type' => 'markup',
-      '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  This can happen if you chose branches with two different versions of Drupal.  Please edit codebase so that your desired install profile is in all branches.'),
+      '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'node/add/project/environments')))
     );
     return $form;
   } else {
