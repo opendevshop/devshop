@@ -552,7 +552,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   $profiles = array();
   $completed = TRUE;
-
+  
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project_node->nid,
@@ -563,55 +563,49 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
   foreach ($project_node->project_objects['platform'] as $nid => $name){
     
-    // Figure out status
+    // Get verification task for this platform.
     $task = hosting_get_most_recent_task($nid, 'verify');
-    $status =  _hosting_parse_error_code($task->task_status);
-
     $platform = node_load($nid);
+    
     $row = array();
     $row[] = $name;
     $row[] = $platform->git_branch;
     $row[] = $platform->release->version;
     $row[] =  _hosting_parse_error_code($task->task_status);
+    
+    // If platform verified successfully:
+    if ($task->task_status == HOSTING_TASK_SUCCESS) {
 
-    if (!$platform->verified || $task->task_status != HOSTING_TASK_SUCCESS) {
-      $completed = FALSE;
-    }
-
-    // Collect install profiles
-    $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
-
-    // This fancy footwork gives us an array with items like 'shortname' => 'Name'
-    // @TODO: If a branch is changed, the old profiles still exist! Make sure the form
-    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-      $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-
-      if ($task->task_status == HOSTING_TASK_ERROR) {
-        $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
-      } else {
+      // Collect install profiles
+      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+        $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
         $row[] = implode(', ', $profiles[$name]);
       }
+      
+      if (!isset($available_profiles)){
+        $available_profiles = $profiles[$name];
+      } else {
+        // @TODO: This joins profiles by name, not profile name.
+        $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+      }      
     }
+    // If platform verification failed:
+    elseif ($task->task_status == HOSTING_TASK_ERROR) {
+      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
+    } 
     
-    if (!isset($available_profiles)){
-      $available_profiles = $profiles[$name];
-    } else {
-      // @TODO: This joins profiles by name, not profile name.
-      $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+    // If platform has NOT verified successfully, mark process not complete.
+    else {
+      $completed = FALSE;
+      $row[] = t('Pending');
     }
-
-    // Build site options
-    $defaults = array();
-    $defaults['dev']['pull'] = 1;
-    $defaults['dev']['dev_modules'] = 1;
-    $defaults['test']['run_tests'] = 1;
-    $defaults['live']['live_modules'] = 1;
 
     // Store rows for display
     $rows[] = $row;
-  }
-
-   // @TODO: Make a table with checkboxes for each platform for "Pull on Commit", "Allow Commit Features", "Allow Run Tests", "Allow Sync"
+  } // end foreach platform
+  
+  // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
@@ -619,14 +613,16 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Provide something for people while they wait.
   if (!$completed){
+    $project->no_submit = TRUE;
     $form['help'] = array(
       '#type' => 'markup',
-      '#value' => t('Please wait while we download and verify your drupal code.'),
+      '#value' => t('Please wait while we download and verify your drupal code.  NOTE: You will have to manually reload the page after the tasks complete to continue.'),
     );
-
     return $form;
-
-  } elseif (count($available_profiles) == 0) {
+  }
+  // If no available profiles:
+  elseif (count($available_profiles) == 0) {
+    $project->no_submit = TRUE;
     $form['error'] = array(
       '#type' => 'markup',
       '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'node/add/project/environments')))
