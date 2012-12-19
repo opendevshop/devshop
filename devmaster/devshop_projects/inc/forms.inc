@@ -23,9 +23,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   }
 
   // Create Project Wizard
-  if ($form_id == 'devshop_project_create_step_sites'){
-    if ($form_state['project']->no_submit){
+  if ($form_id == 'devshop_project_create_step_sites' || $form_id == 'devshop_project_create_step_settings'){
+    if ($form_state['project']->no_finish){
       unset($form['buttons']['return']);
+    }
+     if ($form_state['project']->no_next){
+      unset($form['buttons']['next']);
     }
   }
   
