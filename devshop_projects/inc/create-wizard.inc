@@ -579,14 +579,18 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     }
 
     // Collect install profiles
+    $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+
     // This fancy footwork gives us an array with items like 'shortname' => 'Name'
     // @TODO: If a branch is changed, the old profiles still exist! Make sure the form
-    $profiles[$name] = array_combine((array) hosting_get_profiles($platform->nid, 'short_name'), (array) hosting_get_profiles($platform->nid));
+    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+      $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
 
-    if ($task->task_status == HOSTING_TASK_ERROR) {
-      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
-    } else {
-      $row[] = implode(', ', $profiles[$name]);
+      if ($task->task_status == HOSTING_TASK_ERROR) {
+        $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
+      } else {
+        $row[] = implode(', ', $profiles[$name]);
+      }
     }
     
     if (!isset($available_profiles)){
