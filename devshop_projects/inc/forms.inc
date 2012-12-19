@@ -22,6 +22,13 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     }
   }
 
+  // Create Project Wizard
+  if ($form_id == 'devshop_project_create_step_sites'){
+    if ($form_state['project']->no_submit){
+      unset($form['buttons']['return']);
+    }
+  }
+  
   // On Hosting Task: Create Project form, do our own submission.
   if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-create'){
     $form['#submit'] = array('hosting_task_devshop_create_form_submit');
