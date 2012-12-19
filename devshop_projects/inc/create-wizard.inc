@@ -476,7 +476,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project = &$form_state['project'];
   $values = $form_state['values'];
-
+  
+  // Get last platforms, in case this form is re-submitted
+  $old_platforms = array_merge($project->default_platforms, $project->branch_platforms);
+  
   // Get platforms from form values and save into our object
   $project->default_platforms = array_filter($values['default_platforms']);
   $project->branch_platforms = array_filter($values['branch_platforms']);
@@ -510,6 +513,21 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform_node->git_branch = $branch;
       node_save($platform_node);
     }
+  }
+  
+  // For all removed platforms, trigger a delete task
+  $removed_platforms  = array_diff_key($old_platforms, $all_platforms);
+  foreach ($removed_platforms as $platform_name => $branch) {
+    
+    // @TODO: Determine what to do here based on task status...
+    // if verify task hasn't even run yet (and has never run) we can just delete
+    // the platform node.
+    
+    // Create 'delete' task for this project
+    hosting_add_task($project->platforms[$platform_name], 'delete');
+    
+    // Remove from project object
+    unset($project->platforms[$platform_name]);
   }
 }
 
@@ -554,6 +572,12 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
   foreach ($project_node->project_objects['platform'] as $nid => $name){
+    
+    // If this platform is no longer in the $project object, we shouldn't show
+    // it here.
+    if (!isset($project->platforms[$name])){
+      continue;
+    }
     
     // Get verification task for this platform.
     $task = hosting_get_most_recent_task($nid, 'verify');
