@@ -611,7 +611,11 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
       $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
-    } 
+    }
+    // If platform verified successfully:
+    elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
+      $row[] = t('Platform download & verification in process.');
+    }
     
     // If platform has NOT verified successfully, mark process not complete.
     else {
