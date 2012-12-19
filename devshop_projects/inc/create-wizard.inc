@@ -238,6 +238,12 @@ function devshop_project_create_step_git(&$form, &$form_state) {
 function devshop_project_create_step_git_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
 
+  // No spaces or special characters allowed.
+  $url = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
+  if (!_hosting_valid_fqdn($url)) {
+    form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
+  }
+
   // Check for duplicate project name here.
   $node = hosting_context_load($form_state['values']['title']);
   if ($node->nid != $project->project_nid){
