@@ -381,6 +381,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // Add JS that reloads the page when tasks finish.
     $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js'; 
     drupal_add_js($path);
+    
+    $project->no_next = TRUE;
     return;
   }
 
@@ -629,7 +631,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Provide something for people while they wait.
   if (!$completed){
-    $project->no_submit = TRUE;
+    $project->no_finish = TRUE;
     $form['help'] = array(
       '#type' => 'markup',
       '#value' => t('Please wait while we download and verify your drupal code.  NOTE: You will have to manually reload the page after the tasks complete to continue.'),
@@ -638,13 +640,15 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   }
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
-    $project->no_submit = TRUE;
+    $project->no_finish = TRUE;
     $form['error'] = array(
       '#type' => 'markup',
       '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'node/add/project/environments')))
     );
     return $form;
   } else {
+   $project->no_finish = FALSE;
+
     // Install Profile
     // Sensible default?
     // Lets go with standard for now... we can update later.
