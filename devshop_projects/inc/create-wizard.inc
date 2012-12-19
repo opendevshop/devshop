@@ -37,14 +37,6 @@ function devshop_projects_create_wizard($step = NULL){
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
 
-  // Particular overrides
-  if ($step == 'environments' && isset($project->project_nid)){
-    $project_node = node_load($project->project_nid);
-    if (empty($project_node->git_branches)){
-      //$form_info['show back'] = FALSE;
-    }
-  }
-
   // Check verification status
   $project_node = node_load($project->project_nid);
   if (!empty($project_node->nid)){
