@@ -382,7 +382,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $form['note'] = array(
       '#type' => 'markup',
-      '#value' => t('Please wait while we connect to your repository and determine any branches. For now you must reload the page to continue.'),
+      '#value' => t('Please wait while we connect to your repository and determine any branches.  NOTE: You must reload the page when the tasks complete to continue.'),
     );
     $form['not_ready'] = array(
       '#type' => 'value',
