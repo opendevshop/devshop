@@ -563,6 +563,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   }
 
   $profiles = array();
+  $available_profiles = array();
   $completed = TRUE;
   
   $form['nid'] = array(
@@ -599,14 +600,19 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
         $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
         $row[] = implode(', ', $profiles[$name]);
+      } else {
+        $profiles[$name] = array();
       }
       
-      if (!isset($available_profiles)){
+      // If no available profiles found yet, this becomes the available list.
+      if (empty($available_profiles)){
         $available_profiles = $profiles[$name];
-      } else {
+      }
+      // If we have available profiles, only keep the ones we found again.
+      else {
         // @TODO: This joins profiles by name, not profile name.
         $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
-      }      
+      }
     }
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
