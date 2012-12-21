@@ -47,7 +47,7 @@ function devshop_log_menu() {
     'access arguments' => array('administer hosting settings'),
   );
 
-  $items['node/%/gitlog'] = array(
+  $items['node/%/logs/commits'] = array(
     'title' => 'Commit Log',
     'description' => 'View commit log entries',
     'page callback' => 'devshop_log_page',
