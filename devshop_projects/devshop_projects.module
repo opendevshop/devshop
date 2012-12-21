@@ -22,7 +22,10 @@ include_once('inc/ui.inc');
 function devshop_projects_perm() {
   return array(
     'view projects',
-    'delete project'
+    'create devshop-create task',
+    'create devshop-commit task',
+    'create devshop-pull task',
+    'create devshop-sync task',
   );
 }
 
@@ -118,7 +121,7 @@ function devshop_project_status($node){
   $sites_installing = FALSE;
 
   // PROJECT STATUS
-  if (empty($node->project_objects) || empty($node->git_branches)){
+  if (empty($node->project_objects) && empty($node->git_branches)){
     return 'preparing-project';
   }
 
@@ -146,6 +149,9 @@ function devshop_project_status($node){
   } else {
     $sites_ready = FALSE;
   }
+  
+  
+  // @TODO: This is so rough!  We can do better.
   return $sites_ready? 'sites_ready': (
     $sites_installing? 'sites_installing': (
       $platforms_ready? 'platforms_ready': 'platforms_verifying'
@@ -221,3 +227,23 @@ function _devshop_projects_node_create($type, $node = stdClass){
   return $node;
 }
 
+/**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_projects_site_has_module($node, $module) {
+  $param = array(
+    'rid' => $node->nid,
+    'p.short_name' => $module,
+  );
+  $package = hosting_package_instance_load($param);
+  return $package->status;
+}
+
+/**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_projects_project_has_module($node, $module) {
+  $sites = array_flip($node->project_objects['site']);
+  return _devshop_projects_site_has_module(node_load($sites['dev']), $module);
+}
+ 
