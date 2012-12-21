@@ -28,6 +28,7 @@ function devshop_projects_create_wizard($step = NULL){
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
     $project->git_url = '';
+    $project->project_nid = NULL;
     $project->title = '';
     $project->default_platforms = array();
     $project->branch_platforms = array();
@@ -36,21 +37,15 @@ function devshop_projects_create_wizard($step = NULL){
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
 
-  // Particular overrides
-  if ($step == 'environments' && isset($project->project_nid)){
-    $project_node = node_load($project->project_nid);
-    if (empty($project_node->git_branches)){
-      //$form_info['show back'] = FALSE;
-    }
-  }
-
   // Check verification status
   $project_node = node_load($project->project_nid);
-  $tasks = hosting_task_fetch_tasks($project_node->nid);
-  $project->verify_task_status = $tasks['verify']['task_status'];
+  if (!empty($project_node->nid)){
+    $tasks = hosting_task_fetch_tasks($project_node->nid);
+  }
+  $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
 
   // If project verification failed, we need to ask for a new git url.
-  if ($project->verify_task_status === HOSTING_TASK_ERROR){
+  if ($project->verify_task_status === HOSTING_TASK_ERROR && !empty($project_node->nid)){
     drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
@@ -58,10 +53,12 @@ function devshop_projects_create_wizard($step = NULL){
     }
   }
 
-
   // All forms can access $form_state['project'];
   $form_state['project'] = $project;
 
+  // Saving the last visited step for redirects from node
+  $_SESSION['last_step'] = $step;
+  
   // Generate our ctools form and output
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
@@ -83,9 +80,10 @@ function devshop_projects_create_wizard_info(){
     'finish callback' => 'devshop_projects_create_wizard_finish',
     'cancel callback' => 'devshop_projects_create_wizard_cancel',
     'order' => array(
-      'git_url' => t('Step 1: Git'),
+      'git_url' => t('Step 1: Source'),
       'settings' => t('Step 2: Settings'),
       'environments' => t('Step 3: Platforms'),
+      'sites' => t('Step 4: Sites'),
     ),
     'forms' => array(
       'git_url' => array(
@@ -96,6 +94,9 @@ function devshop_projects_create_wizard_info(){
       ),
       'environments' => array(
         'form id' => 'devshop_project_create_step_environments'
+      ),
+      'sites' => array(
+        'form id' => 'devshop_project_create_step_sites'
       ),
     ),
   );
@@ -127,17 +128,25 @@ function devshop_projects_create_wizard_next(&$form_state) {
 function devshop_projects_create_wizard_finish(&$form_state) {
   $project = &$form_state['project'];
 
-  // Save the extra options to the project
+  // Save the extra options to the project node.
   $node = node_load($project->project_nid);
   $node->code_path = $project->code_path;
   $node->base_url = $project->base_url;
-
-  // Everything else is done on the Node Page.  We will fake the last step on
-  // the node page.
+  $node->install_profile = $project->install_profile;
   node_save($node);
 
+  // Create the site nodes
+  // @TODO: Can we speed things up here by only running install for the first,
+  // then  "Cloning" to create the rest?
+  foreach ($node->project_objects['platform'] as $nid => $env){
+    devshop_projects_create_site($node, node_load($nid), $env);
+  }
+  
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'node/' . $node->nid;
+  
+  // Removing last step session variable.
+  unset($_SESSION['last_step']);
 }
 
 
@@ -158,6 +167,10 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   if (!empty($project->project_nid)){
     hosting_add_task($project->project_nid, 'delete');
   }
+  
+  // Removing last step session variable.
+  unset($_SESSION['last_step']);
+  
 }
 
 /**
@@ -224,7 +237,18 @@ function devshop_project_create_step_git(&$form, &$form_state) {
  */
 function devshop_project_create_step_git_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
-  // @TODO: Check for duplicate project name here.
+
+  // No spaces or special characters allowed.
+  $url = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
+  if (!_hosting_valid_fqdn($url)) {
+    form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
+  }
+
+  // Check for duplicate project name here.
+  $node = hosting_context_load($form_state['values']['title']);
+  if ($node->nid != $project->project_nid){
+    form_set_error('title', t('That name is in use.  Please try again.'));
+  }
 }
 
 /**
@@ -292,7 +316,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $form['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
-    '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+    '#description' => t('The absolute path on the filesystem that will be used to create all platforms within this project.'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->code_path,
@@ -301,14 +325,12 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $form['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Primary Domain'),
-    '#description' => t('The domain name all sites will be built under.'),
+    '#description' => t('All sites will be under a subdomain of this domain.'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
   );
-
-  // @TODO: Put Pull Code settings here
 }
 
 /**
@@ -316,6 +338,15 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
  */
 function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
+  
+  // Code path and domain must be unique
+  if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s";', $form_state['values']['code_path']))){
+    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
+  }
+  if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE base_url = "%s";', $form_state['values']['base_url']))){
+    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
+  }
+  
 }
 
 /**
@@ -351,15 +382,26 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $form['note'] = array(
       '#type' => 'markup',
-      '#value' => t('Please wait while we connect to your repository and determine any branches. For now you must reload the page to continue.'),
+      '#value' => t('Please wait while we connect to your repository and determine any branches.  NOTE: You must reload the page when the tasks complete to continue.'),
     );
     $form['not_ready'] = array(
       '#type' => 'value',
       '#value' => TRUE,
     );
+    
+    // Add JS that reloads the page when tasks finish.
+    $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js'; 
+    drupal_add_js($path);
+    
+    $project->no_next = TRUE;
     return;
   }
 
+
+  // Add JS that reloads the page when tasks finish.
+  $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js'; 
+  drupal_add_js($path);
+    
   $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
 
   $form['default_platforms'] = array(
@@ -447,7 +489,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project = &$form_state['project'];
   $values = $form_state['values'];
-
+  
+  // Get last platforms, in case this form is re-submitted
+  $old_platforms = array_merge($project->default_platforms, $project->branch_platforms);
+  
   // Get platforms from form values and save into our object
   $project->default_platforms = array_filter($values['default_platforms']);
   $project->branch_platforms = array_filter($values['branch_platforms']);
@@ -474,5 +519,200 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $project->platforms[$platform_name] = $platform_node->nid;
     }
+    // If the platform already exists, change the platform node branch and save it.
+    // @TODO: only re-save the node if the chosen branch changed.
+    else {
+      $platform_node = node_load($project->platforms[$platform_name]);
+      $platform_node->git_branch = $branch;
+      node_save($platform_node);
+    }
   }
+  
+  // For all removed platforms, trigger a delete task
+  $removed_platforms  = array_diff_key($old_platforms, $all_platforms);
+  foreach ($removed_platforms as $platform_name => $branch) {
+    
+    // @TODO: Determine what to do here based on task status...
+    // if verify task hasn't even run yet (and has never run) we can just delete
+    // the platform node.
+    
+    // Create 'delete' task for this project
+    hosting_add_task($project->platforms[$platform_name], 'delete');
+    
+    // Remove from project object
+    unset($project->platforms[$platform_name]);
+  }
+}
+
+/**********
+ * STEP 4
+ * Project Settings
+ *********/
+
+/**
+ * STEP 4: Form
+ */
+function devshop_project_create_step_sites(&$form, &$form_state) {
+  $project = &$form_state['project'];
+  $project_node = node_load($project->project_nid);
+
+  // OUTPUT
+  if ($project_node->project_status == 'sites_installing') {
+    $form['note'] = array(
+      '#type' => 'item',
+      '#title' => t('Sites Installing'),
+      '#value' => t('Your sites are being installed!'),
+    );
+    return $form;
+  }
+  elseif ($project_node->project_status == 'preparing-project') {
+    // @TODO: Not yet, needs more logic
+    // drupal_goto('node/add/project');
+  }
+  elseif ($project_node->project_status == 'sites-installed') {
+    return;
+  }
+
+  $profiles = array();
+  $available_profiles = array();
+  $completed = TRUE;
+  
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_node->nid,
+  );
+
+  // Display the platforms
+  $rows = array();
+  $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
+  foreach ($project_node->project_objects['platform'] as $nid => $name){
+    
+    // If this platform is no longer in the $project object, we shouldn't show
+    // it here.
+    if (!isset($project->platforms[$name])){
+      continue;
+    }
+    
+    // Get verification task for this platform.
+    $task = hosting_get_most_recent_task($nid, 'verify');
+    $platform = node_load($nid);
+    
+    $row = array();
+    $row[] = $name;
+    $row[] = $platform->git_branch;
+    $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('Pending');
+    $row[] =  _hosting_parse_error_code($task->task_status);
+    
+    // If platform verified successfully:
+    if ($task->task_status == HOSTING_TASK_SUCCESS) {
+
+      // Collect install profiles
+      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+        $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
+        $row[] = implode(', ', $profiles[$name]);
+      } else {
+        $profiles[$name] = array();
+      }
+      
+      // If no available profiles found yet, this becomes the available list.
+      if (empty($available_profiles)){
+        $available_profiles = $profiles[$name];
+      }
+      // If we have available profiles, only keep the ones we found again.
+      else {
+        // @TODO: This joins profiles by name, not profile name.
+        $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+      }
+    }
+    // If platform verification failed:
+    elseif ($task->task_status == HOSTING_TASK_ERROR) {
+      $completed = FALSE;
+      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
+    }
+    // If platform verified successfully:
+    elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
+      $completed = FALSE;
+      $row[] = t('Platform download & verification in process.');
+    }
+    
+    // If platform has NOT verified successfully, mark process not complete.
+    else {
+      $completed = FALSE;
+      $row[] = t('Pending');
+    }
+
+    // Store rows for display
+    $rows[] = $row;
+  } // end foreach platform
+  
+  // Output our table.
+  $form['platforms'] = array(
+    '#type' => 'markup',
+    '#value' => theme('table', $header, $rows),
+  );
+
+  // Provide something for people while they wait.
+  if (!$completed){
+    $project->no_finish = TRUE;
+    $form['help'] = array(
+      '#type' => 'markup',
+      '#value' => t('Please wait while we download and verify your drupal code.  NOTE: You will have to manually reload the page after the tasks complete to continue.'),
+    );
+    return $form;
+  }
+  // If no available profiles:
+  elseif (count($available_profiles) == 0) {
+    $project->no_finish = TRUE;
+    $form['error'] = array(
+      '#type' => 'markup',
+      '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'node/add/project/environments')))
+    );
+    return $form;
+  } else {
+   $project->no_finish = FALSE;
+
+    // Install Profile
+    // Sensible default?
+    // Lets go with standard for now... we can update later.
+    if (isset($available_profiles['standard'])) {
+      $default_profile = 'standard';
+    }
+    // If 'drupal' profile exists, it is likely drupal6!
+    elseif (isset($available_profiles['drupal'])) {
+      $default_profile = 'drupal';
+    }
+
+    // @TODO: Handle no available profiles
+    $form['install_profile'] = array(
+      '#type' => 'radios',
+      '#options' => $available_profiles,
+      '#title' => t('Project Install Profile'),
+      '#required' => 1,
+      '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.  Choose the installation profile for this project.'),
+      '#default_value' => $default_profile,
+    );
+  }
+}
+
+/**
+ * STEP 4: Validate
+ */
+function devshop_project_create_step_sites_validate(&$from, &$form_state) {
+  $project = &$form_state['project'];
+  
+  if (empty($form_state['values']['install_profile'])){
+    form_set_error('install_profile', t('You must choose an install profile'));
+  }
+}
+
+/**
+ * STEP 4: Submit
+ *
+ * Save install profile to the project object (project and site node creation
+ * happens on wizard finish.)
+ */
+function devshop_project_create_step_sites_submit(&$from, &$form_state) {
+  $project = &$form_state['project'];
+  $project->install_profile = $form_state['values']['install_profile'];
 }

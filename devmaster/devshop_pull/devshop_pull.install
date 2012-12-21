@@ -65,7 +65,7 @@ function devshop_pull_install() {
   drupal_install_schema('devshop_pull');
 
   //Enable pull for dev platform
-  $result = db_query("SELECT DISTINCT object_nid FROM  {hosting_devshop_project_object} WHERE env_type='dev' AND object_type='platform'");
+  $result = db_query("SELECT DISTINCT object_nid FROM  {hosting_devshop_project_object} WHERE environment='dev' AND object_type='platform'");
 
   while ($item = db_fetch_object($result)) {
     db_query("INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, pull_enabled, pull_reset) VALUES(%d, 1, 0)", $result->object_nid);
