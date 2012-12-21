@@ -1,0 +1,57 @@
+
+DevShop Hosting
+===============
+
+Installation
+------------
+
+DevShop is built on top of Aegir, and consists of two projects:
+devshop_provision (backend) and devshop_hosting (front-end).
+
+DevShop Provision also requires the provision_git drush module.
+
+
+1. Install Aegir
+
+  DevShop assumes a base Aegir installation.
+  See http://community.aegirproject.org/handbook to learn about Aegir.
+
+  The most reliable and generally supported way to install aegir is with
+  the Debian packages.
+
+  See http://community.aegirproject.org/installing/debian for instructions on
+  installing in debian based systems like Ubuntu.  Pay close attention to
+
+2. Install provision_git and devshop provision
+
+  $ drush dl devshop_provision provision_git
+
+  In a typical debian environment, it will try to download it to
+  /usr/share/drush/commands, but you can put it anywhere Drush command files can live.
+
+3. Install devshop_hosting and enable desired modules.
+
+  Download devshop_hosting and ctools into your @hostmaster site with drush:
+  $ drush @hostmaster dl devshop_hosting ctools
+
+  Enable devshop_projects, devshop_tasks, devshop_log, and optionally,
+  devshop_tasks and devshop_tests:
+
+  $ drush @hostmaster en devshop_projects devshop_tasks devshop_log devshop_tests
+
+NOTE: The project creation wizard requires certain Hosting Tasks to run before
+later steps can be completed. For this reason, it really helps to have a very
+fast Hosting Queue, or to install the Hosting Queue Runner project (http://drupal.org/project/hosting_queue_runner) so that tasks fire as quickly
+as possible.
+
+4. Connect to your private Git repositories.
+
+DevShop allows you to clone your projects via the web based interface.  In order
+to do this, you must first make sure your DevShop/aegir server can connect to
+your repository.
+
+Setup SSH keys so that your aegir user can git clone your repository.  The first
+time you clone an SSH repository, you have to type "Yes" for security purposes.
+
+Once you can connect and clone, you no longer need to use the command line to
+create new platforms on your aegir server.

@@ -176,7 +176,13 @@ function devshop_projects_load($node) {
 
   $objects = array();
   while($project_object = db_fetch_object($query)) {
-    $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
+    
+    // Only load if site or platform is enabled.
+    // FYI HOSTING_SITE_ENABLED == HOSTING_PLATFORM_ENABLED
+    $node = node_load($project_object->object_nid);
+    if ($node->{$project_object->object_type .'_status'} == HOSTING_SITE_ENABLED || $node->{$project_object->object_type .'_status'} == HOSTING_SITE_QUEUED) {
+      $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
+    }
   }
   $additions['project_objects'] = $objects;
 
