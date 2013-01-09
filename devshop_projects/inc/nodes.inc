@@ -108,10 +108,14 @@ function devshop_projects_insert($node) {
   if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
+  
+  $data = array();
+  $data['git_branches'] = $node->git_branches;
+  $data['git_tags'] = $node->git_tags;
 
-  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path, base_url) ".
-  	   "VALUES (%d, '%s', '%s', '%s')",
-	   $node->nid, $node->git_url, hosting_path_normalize($node->code_path), $node->base_url);
+  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path, base_url, install_profile, data)
+    VALUES (%d, '%s', '%s', '%s', '%s', '%s')",
+	  $node->nid, $node->git_url, hosting_path_normalize($node->code_path), $node->base_url, $node->install_profile, serialize($data));
 
   // Save hosting context
   if ((!$node->old_vid)) {
@@ -127,19 +131,20 @@ function devshop_projects_insert($node) {
  *
  */
 function devshop_projects_update($node) {
+  
+  if (!$node->no_verify) {
+    hosting_add_task($node->nid, 'verify');
+  }
+  
   $data = array();
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
 
-  db_query("UPDATE {hosting_devshop_project} " .
-           "SET git_url = '%s', code_path = '%s', base_url = '%s', data='%s' " .
-  	   "WHERE nid = %d",
-	   $node->git_url, hosting_path_normalize($node->code_path),
-	   $node->base_url, serialize($data), $node->nid);
+  db_query("UPDATE {hosting_devshop_project}
+    SET git_url = '%s', code_path = '%s', base_url = '%s', install_profile='%s', data='%s'
+    WHERE nid = %d",
+	  $node->git_url, hosting_path_normalize($node->code_path), $node->base_url, $node->install_profile, serialize($data), $node->nid);
 
-   if (!$node->no_verify) {
-    hosting_add_task($node->nid, 'verify');
-  }
 }
 
 /**
