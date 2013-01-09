@@ -298,8 +298,8 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
 
   // Setup project url.
-  $hostmaster_site = hosting_context_load('hostmaster');
-  $server = variable_get('devshop_project_default_base_url', $hostmaster_site->title);
+  $base_url = $_SERVER['SERVER_NAME'];
+  $server = variable_get('devshop_project_default_base_url', $base_url);
   $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@name.@server"), array('@name' => $project_name, '@server' => $server));
 }
 
