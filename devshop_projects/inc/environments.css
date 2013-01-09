@@ -2,3 +2,6 @@
   float: left;
   width: 50%;
 }
+body.aegir #page div.node div.content fieldset.project-environments div.form-item {
+  padding: 5px;
+}

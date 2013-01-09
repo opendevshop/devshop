@@ -178,6 +178,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#type' => 'fieldset',
       '#title' => t('Project Environments'),
       '#weight' => 12,
+      '#attributes' => array(
+        'class' => 'project-environments',
+      ),
     );
     $node->content['sites']['table'] = array(
       '#type' => 'item',
@@ -198,8 +201,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     'nid' => $node->nid,
     'changed' => $node->changed,
   );
+
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/environments.css');
 
   // MAIN DISPLAY
   $node->content['devshop'] = array(
