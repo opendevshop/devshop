@@ -161,7 +161,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $row[] = l('Platform Dashboard', "node/$site->platform");
 
       if (module_exists('devshop_log')){
-        $row[] = l('Commit Log', "node/$site->platform/gitlog");
+        $row[] = l('Commit Log', "node/$site->nid/logs/commits");
+      }
+      if (module_exists('hosting_logs')){
+        $row[] = l('Error Log', "node/$site->nid/logs/errors");
+      }
+      if (module_exists('hosting_filemanager')){
+        $row[] = l('Files', "node/$site->nid/files/platform");
       }
       $rows[] = $row;
     }
