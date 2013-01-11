@@ -5,3 +5,7 @@
 body.aegir #page div.node div.content fieldset.project-environments div.form-item {
   padding: 5px;
 }
+
+fieldset.project-environments {
+  clear: both;
+}
