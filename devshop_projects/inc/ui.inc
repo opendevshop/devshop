@@ -161,7 +161,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $row[] = l('Platform Dashboard', "node/$site->platform");
 
       if (module_exists('devshop_log')){
-        $row[] = l('Commit Log', "node/$site->platform/gitlog");
+        $row[] = l('Commit Log', "node/$site->nid/logs/commits");
+      }
+      if (module_exists('hosting_logs')){
+        $row[] = l('Error Log', "node/$site->nid/logs/errors");
+      }
+      if (module_exists('hosting_filemanager')){
+        $row[] = l('Files', "node/$site->nid/files/platform");
       }
       $rows[] = $row;
     }
@@ -172,6 +178,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#type' => 'fieldset',
       '#title' => t('Project Environments'),
       '#weight' => 12,
+      '#attributes' => array(
+        'class' => 'project-environments',
+      ),
     );
     $node->content['sites']['table'] = array(
       '#type' => 'item',
@@ -192,8 +201,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     'nid' => $node->nid,
     'changed' => $node->changed,
   );
+
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/environments.css');
 
   // MAIN DISPLAY
   $node->content['devshop'] = array(
