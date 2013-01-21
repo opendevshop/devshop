@@ -58,7 +58,7 @@ function devshop_projects_create_wizard($step = NULL){
 
   // Saving the last visited step for redirects from node
   $_SESSION['last_step'] = $step;
-  
+
   // Generate our ctools form and output
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
   return $output;
@@ -141,10 +141,10 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   foreach ($node->project_objects['platform'] as $nid => $env){
     devshop_projects_create_site($node, node_load($nid), $env);
   }
-  
+
   ctools_object_cache_clear('project', $form_state['cache name']);
   $form_state['redirect'] = 'node/' . $node->nid;
-  
+
   // Removing last step session variable.
   unset($_SESSION['last_step']);
 }
@@ -167,10 +167,10 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   if (!empty($project->project_nid)){
     hosting_add_task($project->project_nid, 'delete');
   }
-  
+
   // Removing last step session variable.
   unset($_SESSION['last_step']);
-  
+
 }
 
 /**
@@ -298,8 +298,8 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project->code_path = strtr(variable_get('devshop_project_default_code_path', "/var/aegir/projects/@name"), array('@name' => $project_name));
 
   // Setup project url.
-  $hostmaster_site = hosting_context_load('hostmaster');
-  $server = variable_get('devshop_project_default_base_url', $hostmaster_site->title);
+  $base_url = $_SERVER['SERVER_NAME'];
+  $server = variable_get('devshop_project_default_base_url', $base_url);
   $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@name.@server"), array('@name' => $project_name, '@server' => $server));
 }
 
@@ -338,7 +338,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
  */
 function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
-  
+
   // Code path and domain must be unique
   if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s";', $form_state['values']['code_path']))){
     form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
@@ -346,7 +346,7 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE base_url = "%s";', $form_state['values']['base_url']))){
     form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
   }
-  
+
 }
 
 /**
@@ -388,25 +388,25 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'value',
       '#value' => TRUE,
     );
-    
+
     // Add JS that reloads the page when tasks finish.
-    $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js'; 
+    $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js';
     drupal_add_js($path);
-    
+
     $project->no_next = TRUE;
     return;
   }
 
 
   // Add JS that reloads the page when tasks finish.
-  $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js'; 
+  $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
-    
+
   $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
 
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Default Platforms'),
+    '#title' => t('Default Platform Environments'),
     '#theme' => 'devshop_project_create_platforms_table',
     '#tree' => TRUE,
   );
@@ -429,7 +429,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $form['branch_platforms'] = array(
     '#type' => 'checkboxes',
     '#multiple' => 'true',
-    '#title' => t('Branch Platforms'),
+    '#title' => t('Branch Platform Environments'),
     '#description' => t('Check the branches you wish to create platforms for.'),
     '#default_value' => $project->branch_platforms,
     '#options' => $branch_options
@@ -489,10 +489,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project = &$form_state['project'];
   $values = $form_state['values'];
-  
+
   // Get last platforms, in case this form is re-submitted
   $old_platforms = array_merge($project->default_platforms, $project->branch_platforms);
-  
+
   // Get platforms from form values and save into our object
   $project->default_platforms = array_filter($values['default_platforms']);
   $project->branch_platforms = array_filter($values['branch_platforms']);
@@ -527,18 +527,18 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       node_save($platform_node);
     }
   }
-  
+
   // For all removed platforms, trigger a delete task
   $removed_platforms  = array_diff_key($old_platforms, $all_platforms);
   foreach ($removed_platforms as $platform_name => $branch) {
-    
+
     // @TODO: Determine what to do here based on task status...
     // if verify task hasn't even run yet (and has never run) we can just delete
     // the platform node.
-    
+
     // Create 'delete' task for this project
     hosting_add_task($project->platforms[$platform_name], 'delete');
-    
+
     // Remove from project object
     unset($project->platforms[$platform_name]);
   }
@@ -576,7 +576,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $profiles = array();
   $available_profiles = array();
   $completed = TRUE;
-  
+
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project_node->nid,
@@ -586,23 +586,23 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
   foreach ($project_node->project_objects['platform'] as $nid => $name){
-    
+
     // If this platform is no longer in the $project object, we shouldn't show
     // it here.
     if (!isset($project->platforms[$name])){
       continue;
     }
-    
+
     // Get verification task for this platform.
     $task = hosting_get_most_recent_task($nid, 'verify');
     $platform = node_load($nid);
-    
+
     $row = array();
     $row[] = $name;
     $row[] = $platform->git_branch;
     $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('Pending');
     $row[] =  _hosting_parse_error_code($task->task_status);
-    
+
     // If platform verified successfully:
     if ($task->task_status == HOSTING_TASK_SUCCESS) {
 
@@ -614,7 +614,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       } else {
         $profiles[$name] = array();
       }
-      
+
       // If no available profiles found yet, this becomes the available list.
       if (empty($available_profiles)){
         $available_profiles = $profiles[$name];
@@ -635,7 +635,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $completed = FALSE;
       $row[] = t('Platform download & verification in process.');
     }
-    
+
     // If platform has NOT verified successfully, mark process not complete.
     else {
       $completed = FALSE;
@@ -645,7 +645,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // Store rows for display
     $rows[] = $row;
   } // end foreach platform
-  
+
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
@@ -700,7 +700,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
-  
+
   if (empty($form_state['values']['install_profile'])){
     form_set_error('install_profile', t('You must choose an install profile'));
   }

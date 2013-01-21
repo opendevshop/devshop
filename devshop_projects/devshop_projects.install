@@ -78,7 +78,7 @@ function devshop_projects_schema() {
       ),
       'git_branch' => array(
         'type' => 'varchar',
-        'length' => 16,
+        'length' => 128,
         'not null' => FALSE,
         'description' => 'The current branch of this site or platform.',
       ),
@@ -151,5 +151,14 @@ function devshop_projects_update_4() {
   $schema = devshop_projects_schema();
   $spec = $schema['hosting_devshop_project_object']['fields']['environment'];
   db_change_field($ret, 'hosting_devshop_project_object', 'env_type', 'environment', $spec);
+  return $ret;
+}
+
+/**
+ * Makes "git_branch" field larger.
+ */
+function devshop_projects_update_5() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} CHANGE git_branch git_branch VARCHAR(128) NULL");
   return $ret;
 }

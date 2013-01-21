@@ -59,6 +59,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
   // Save values that need to be saved.
   if ($form_id == 'platform_node_form' || $form_id == 'site_node_form'){
+    $node = $form['#node'];
     $form['project'] = array(
       '#type' => 'value',
       '#value' => $node->project,
