@@ -139,7 +139,7 @@ function devshop_projects_update_2() {
  */
 function devshop_projects_update_3() {
   $ret = array();
-  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} ADD COLUMN git_branch VARCHAR(16) NULL");
+  db_add_field($ret, 'hosting_devshop_project_object', 'git_branch', array('type' => 'varchar', 'length' => 16, 'not null' => FALSE));
   return $ret;
 }
 
@@ -160,5 +160,16 @@ function devshop_projects_update_4() {
 function devshop_projects_update_5() {
   $ret = array();
   $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} CHANGE git_branch git_branch VARCHAR(128) NULL");
+  return $ret;
+}
+
+/**
+ * Adds live_domain colum to {hosting_devshop_project}
+ */
+function devshop_projects_update_6() {
+  $ret = array();
+
+  db_add_field($ret, 'hosting_devshop_project', 'live_domain', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE));
+
   return $ret;
 }
