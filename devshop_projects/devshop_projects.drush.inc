@@ -25,7 +25,7 @@ function drush_devshop_projects_pre_hosting_task() {
   if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->git_url)) {
     drush_devshop_provision_pre_hosting_task_platform_verify();
   }
-  
+
   // Pull
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
     $task->args['environments'] = $task->task_args['environments'];
@@ -92,7 +92,7 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
 
     // Build the command string
-    $command = "git clone $git_remote $root";
+    $command = "git clone --recursive $git_remote $root";
     if ($git_branch) {
       $command .= " --branch $git_branch";
     }
@@ -100,7 +100,7 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   // If the platform has been verified and has a branch and git url
   else {
     drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $platform->git_branch, '!root' => $root)));
-    
+
     $root = $platform->publish_path;
     $git_remote = $platform->git_url;
     $git_branch = $platform->git_branch;
@@ -133,7 +133,7 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task
  *
- * 
+ *
  */
 function devshop_projects_post_hosting_verify_task($task, $data) {
 
@@ -142,22 +142,22 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     // Get objects
     $nid = $task->ref->nid;
     $platform = node_load($nid);
-  
+
     // If this platform isn't in a project, bail.
     if (empty($platform->project_nid)){
       drush_log('[DEVSHOP] No project found for this platform.', 'notice');
       return;
     }
-  
+
     // Get the project
     $project = node_load($platform->project_nid);
-  
+
     // If the project doesn't have an install profile chosen yet, bail.
     if (empty($project->install_profile)){
       drush_log('[DEVSHOP] No install profile found for this platform\'s project.', 'notice');
       return;
     }
-  
+
     // If the project has a site already, bail.
     $sites = array_flip($project->project_objects['site']);
     $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
@@ -165,13 +165,13 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
       return;
     }
-  
+
     // live. Let's create a site based off of this platform.
     drush_log('[DEVSHOP] Platform verified.  Creating your site.');
-  
-  
+
+
     $site_node = devshop_projects_create_site($project, $platform, $platform->environment);
-  
+
     drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. !link', array('!link' => l('node/' . $site_node->nid)));
   }
 }
