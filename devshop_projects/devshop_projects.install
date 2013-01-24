@@ -43,6 +43,11 @@ function devshop_projects_schema() {
         'size' => 'big',
         'description' => 'A serialized array of name value pairs for this project.',
       ),
+      'live_domain' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
     ),
     'primary key' => array('nid'),
   );
@@ -169,7 +174,12 @@ function devshop_projects_update_5() {
 function devshop_projects_update_6() {
   $ret = array();
 
-  db_add_field($ret, 'hosting_devshop_project', 'live_domain', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE));
+  //Check if field was created
+  $schema = drupal_get_schema('hosting_devshop_project');
+
+  if (!isset($schema['fields']['live_domain'])) {
+    db_add_field($ret, 'hosting_devshop_project', 'live_domain', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE));
+  }
 
   return $ret;
 }
