@@ -128,18 +128,6 @@ function devshop_projects_insert($node) {
   if ((!$node->old_vid)) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
   }
-
-  //Get all data of node
-  $node = node_load($node->nid);
-
-  if (module_exists('devshop_live') && $info->live_domain) {
-    $live_nid = array_search('live', $node->project_objects['site']);
-
-    if ($live_nid) {
-      $live_node = node_load($live_nid);
-      devshop_live_add_domain($live_node, $info->live_domain);
-    }
-  }
 }
 
 /**
@@ -169,18 +157,6 @@ function devshop_projects_update($node) {
   $info->data = serialize($data);
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
-
-  //get more information node
-  $node = node_load($node->nid);
-
-  if (module_exists('devshop_live') && $info->live_domain) {
-    $live_nid = array_search('live', $node->project_objects['site']);
-
-    if ($live_nid) {
-      $live_node = node_load($live_nid);
-      devshop_live_add_domain($live_node, $info->live_domain);
-    }
-  }
 }
 
 /**
@@ -201,7 +177,7 @@ function devshop_projects_delete($node) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url, install_profile, live_domain, data ' .
+  $additions = db_fetch_array(db_query('SELECT * ' .
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));

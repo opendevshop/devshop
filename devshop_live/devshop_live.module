@@ -1,9 +1,17 @@
 <?php
 
 /**
- * API functions
+ * @file devshop_live.module
+ *
+ * Provides Node Type, UI, and tools for DevShop Live.
  */
 
+include_once('inc/forms.inc');
+include_once('inc/nodes.inc');
+
+/**
+ * API functions
+ */
 
 /**
  * Add new domain to site node
