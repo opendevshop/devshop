@@ -315,6 +315,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
  */
 function devshop_project_create_step_settings(&$form, &$form_state) {
   $project = &$form_state['project'];
+
   $form['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
@@ -333,17 +334,6 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
   );
-
-  if(module_exists('devshop_live')) {
-    $form['live_domain'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Live domain'),
-      '#description' => t('The live domain. If you still do not know you can input it later.'),
-      '#size' => 40,
-      '#default_value' => $project->live_domain,
-      '#maxlenght' => 255,
-    );
-  }
 }
 
 /**
@@ -366,14 +356,12 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
  * STEP 2: Submit
  */
 function devshop_project_create_step_settings_submit(&$from, &$form_state) {
-  global $user;
   $project = &$form_state['project'];
 
   // For this step, we just save code path and base url for later saving and
   // verification.
   $project->code_path = $form_state['values']['code_path'];
   $project->base_url = $form_state['values']['base_url'];
-  $project->live_domain = $form_state['values']['live_domain'];
 }
 
 

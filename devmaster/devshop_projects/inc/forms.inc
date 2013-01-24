@@ -117,18 +117,6 @@ function devshop_projects_form(&$node) {
     '#weight' => 2,
   );
 
-  if(module_exists('devshop_live')) {
-    $form['live_domain'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Live domain'),
-      '#description' => t('The live domain. If you still do not know you can input it later.'),
-      '#size' => 40,
-      '#default_value' => $node->live_domain,
-      '#maxlenght' => 255,
-      '#weight' => 3,
-    );
-  }
-
   // Don't allow editing
   if ($node->nid) {
     $locked = array('title', 'git_url', 'code_path', 'base_url');
