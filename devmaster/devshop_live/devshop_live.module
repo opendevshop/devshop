@@ -1,2 +1,21 @@
 <?php
 
+/**
+ * API functions
+ */
+
+
+/**
+ * Add new domain to site node
+ */
+function devshop_live_add_domain($node, $domain) {
+  if ($node->type == 'site') {
+    if (array_search($domain, $node->aliases) === FALSE) {
+      $node->aliases[] = $domain;
+      node_save($node);
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}

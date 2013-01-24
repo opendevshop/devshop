@@ -113,13 +113,32 @@ function devshop_projects_insert($node) {
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
 
-  db_query("INSERT INTO {hosting_devshop_project} (nid, git_url, code_path, base_url, install_profile, data)
-    VALUES (%d, '%s', '%s', '%s', '%s', '%s')",
-	  $node->nid, $node->git_url, hosting_path_normalize($node->code_path), $node->base_url, $node->install_profile, serialize($data));
+  $info = new stdClass();
+  $info->nid = $node->nid;
+  $info->git_url = $node->git_url;
+  $info->code_path = hosting_path_normalize($node->code_path);
+  $info->base_url = $node->base_url;
+  $info->install_profile = $node->install_profile;
+  $info->live_domain = $node->live_domain;
+  $info->data = serialize($data);
+
+  drupal_write_record('hosting_devshop_project', $info);
 
   // Save hosting context
   if ((!$node->old_vid)) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
+  }
+
+  //Get all data of node
+  $node = node_load($node->nid);
+
+  if (module_exists('devshop_live') && $info->live_domain) {
+    $live_nid = array_search('live', $node->project_objects['site']);
+
+    if ($live_nid) {
+      $live_node = node_load($live_nid);
+      devshop_live_add_domain($live_node, $info->live_domain);
+    }
   }
 }
 
@@ -140,11 +159,28 @@ function devshop_projects_update($node) {
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
 
-  db_query("UPDATE {hosting_devshop_project}
-    SET git_url = '%s', code_path = '%s', base_url = '%s', install_profile='%s', data='%s'
-    WHERE nid = %d",
-	  $node->git_url, hosting_path_normalize($node->code_path), $node->base_url, $node->install_profile, serialize($data), $node->nid);
+  $info = new stdClass();
+  $info->nid = $node->nid;
+  $info->git_url = $node->git_url;
+  $info->code_path = hosting_path_normalize($node->code_path);
+  $info->base_url = $node->base_url;
+  $info->install_profile = $node->install_profile;
+  $info->live_domain = $node->live_domain;
+  $info->data = serialize($data);
 
+  drupal_write_record('hosting_devshop_project', $info, 'nid');
+
+  //get more information node
+  $node = node_load($node->nid);
+
+  if (module_exists('devshop_live') && $info->live_domain) {
+    $live_nid = array_search('live', $node->project_objects['site']);
+
+    if ($live_nid) {
+      $live_node = node_load($live_nid);
+      devshop_live_add_domain($live_node, $info->live_domain);
+    }
+  }
 }
 
 /**
@@ -165,7 +201,7 @@ function devshop_projects_delete($node) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url, install_profile, data ' .
+  $additions = db_fetch_array(db_query('SELECT git_url, code_path, base_url, install_profile, live_domain, data ' .
                                         'FROM {hosting_devshop_project} ' .
                                         'WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
