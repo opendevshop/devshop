@@ -32,6 +32,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project->title = '';
     $project->default_platforms = array();
     $project->branch_platforms = array();
+    $project->live_domain = '';
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
@@ -133,6 +134,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $node->code_path = $project->code_path;
   $node->base_url = $project->base_url;
   $node->install_profile = $project->install_profile;
+  $node->live_domain = $project->live_domain;
   node_save($node);
 
   // Create the site nodes
@@ -331,6 +333,17 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
   );
+
+  if(module_exists('devshop_live')) {
+    $form['live_domain'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Live domain'),
+      '#description' => t('The live domain. If you still do not know you can input it later.'),
+      '#size' => 40,
+      '#default_value' => $project->live_domain,
+      '#maxlenght' => 255,
+    );
+  }
 }
 
 /**
@@ -360,6 +373,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   // verification.
   $project->code_path = $form_state['values']['code_path'];
   $project->base_url = $form_state['values']['base_url'];
+  $project->live_domain = $form_state['values']['live_domain'];
 }
 
 
