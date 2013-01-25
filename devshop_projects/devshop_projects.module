@@ -61,6 +61,11 @@ function devshop_projects_menu() {
   return ($items);
 }
 
+/**
+ * Replacement for hosting_task_confirm_form()
+ *
+ * @TODO: Remove once http://drupal.org/node/1861898 is committed.
+ */ 
 function devshop_projects_hosting_task_confirm_form_page($nid, $task){
   $node = node_load($nid);
   return drupal_get_form('hosting_task_confirm_form', $node, $task);
