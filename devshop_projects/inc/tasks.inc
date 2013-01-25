@@ -91,7 +91,6 @@ function hosting_task_devshop_create_form($node) {
     '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
     '#required' => TRUE,
   );
-  dsm($node);
   $form['project_nid'] = array(
     '#type' => 'value',
     '#value' => $node->nid,
