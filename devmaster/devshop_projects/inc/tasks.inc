@@ -16,7 +16,7 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
   );
   $tasks['project']['devshop-create'] = array(
-    'title' => t('Create New Site'),
+    'title' => t('Create New Environment'),
     'description' => t('Creates a new site & platform within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
@@ -86,18 +86,11 @@ function hosting_task_devshop_create_form($node) {
   );
   // @TODO: Add "create branch" functionality.
   $form['platform_name'] = array(
-    '#title' => t('Platform Name'),
+    '#title' => t('Environment Name'),
     '#type' => 'textfield',
-    '#description' => t('Enter the system name of your platform.  For consistency, you should make this match the branch name.'),
+    '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
     '#required' => TRUE,
   );
-  /* @TODO: Let devshop_pull handle this.
-  $form['pull'] = array(
-    '#title' => t('Enable Pull on Commit'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
-  );
-  */
   return $form;
 }
 
