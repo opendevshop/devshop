@@ -105,7 +105,7 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
   $params = $form_state['values']['parameters'];
   
   // Check for existing environments for this project.
-  $object_nid = db_result(db_queryd('SELECT object_nid FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type = "%s" AND environment = "%s"', $params['project_nid'], 'platform', $params['platform_name']));
+  $object_nid = db_result(db_query('SELECT object_nid FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type = "%s" AND environment = "%s"', $params['project_nid'], 'platform', $params['platform_name']));
   if ($object_nid) {
     form_set_error('platform_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['platform_name'])));
   }
