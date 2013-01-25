@@ -126,7 +126,13 @@ function devshop_hosting_task_menu_access($node, $task) {
   }
   if (user_access("create " . $task . " task")) {
     if ($node->type == 'project') {
-      return TRUE;
+      
+      // If Commit Features task, make sure features module is present
+      if ($task == 'devshop-commit'){
+        return _devshop_projects_project_has_module($node, 'features');
+      } else {
+        return TRUE;
+      }
     }
   }
 }
