@@ -69,7 +69,7 @@ function drush_devshop_projects_pre_hosting_task() {
       }
     }
     $task->args['environment'] = $task->task_args['environment'];
-    $task->options['tests-to-run'] = implode($tests, ",");
+    $task->options['tests-to-run'] = implode(',', $tests);
     $task->options['sync-from-live'] = $task->task_args['sync'];
   }
 }

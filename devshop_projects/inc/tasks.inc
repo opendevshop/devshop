@@ -39,20 +39,17 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-
-
-  /*
-  @TODO: Refactor custom forms to work with hosting_confirm_form()
+  
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
+    'hidden' => TRUE,
   );
-  */
+  
   return $tasks;
 }
-
 
 /**
  * Helper to provide a select list of environments for this project
@@ -290,3 +287,78 @@ function hosting_task_devshop_sync_form_validate(&$form, &$form_state){
     form_set_error('source', t('The source cannot be the same as the destination.'));
   }
 }
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Delete" task.
+ */
+function hosting_task_delete_form($node) {
+  $form = array();
+
+  if ($node->type == 'project') {
+    $form['remove_dir'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Remove all project files and directories.'),
+      '#description' => t("Note that the platform & site directories are removed regardless of this option. By choosing this option, everything else in the directory '{$node->code_path}', including the directory itself, will be removed."),
+      '#default_value' => FALSE,
+      '#weight' => 30,
+    );
+
+    $form['nid'] = array(
+      '#type' => 'value',
+      '#value' => $node->nid,
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Extra submit function for hosting_task_confirm_form()
+ *
+ * @see devshop_projects_form_alter().  We had to add the submit hadler there.
+ */
+function hosting_task_delete_form_submit($form, &$form_state) {
+  $project = node_load($form_state['values']['nid']);
+
+  $snid = array();
+  $pnid = array();
+
+  $sites = $project->project_objects['site'];
+  $platforms = $project->project_objects['platform'];
+
+  //First add task to delete sites
+  if (!empty($sites)) {
+    foreach ($sites as $snid => $alias) {
+      hosting_add_task($snid, 'delete');
+    }
+  }
+
+  $data_delete = array();
+
+  //Second add task to delete platforms
+  if (!empty($platforms)) {
+    foreach ($platforms as $pnid => $alias) {
+      //Is need delete code?
+      if ($form_state['values']['remove_dir']) {
+        $pnode = node_load($pnid);
+        $data_delete[] = $node->publish_path;
+      }
+      hosting_add_task($pnid, 'delete');
+    }
+  }
+
+  if (!empty($data_delete)) {
+    //Add task delete to delete directories
+    hosting_add_task($project->nid, 'delete', $data_delete);
+  }
+
+  //The last step delete project node
+  node_delete($project->nid);
+
+  // Go back to the main project list page
+  $form_state['redirect'] = 'hosting/projects';
+  drupal_goto('hosting/projects');
+}
+
