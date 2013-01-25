@@ -81,8 +81,30 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/add/project']['page arguments'] = array(3);
   $items['node/add/project']['file'] = 'create-wizard.inc';
   $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
+
+  // Make project node pages more user-friendly.
+  $items['node/%node/view']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/view']['title arguments'] = array('View', 1);
+  
+  $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/edit']['title arguments'] = array('Edit', 1);
+
 }
 
+/**
+ * Tab title replacer
+ */ 
+function devshop_hosting_project_tab_title($default, $node){
+  if ($default == 'View' && $node->type == 'project'){
+    return t('Dashboard'); 
+  }
+  if ($default == 'Edit' && $node->type == 'project'){
+    return t('Settings'); 
+  }
+  
+  // Otherwise, just return the page text
+  return t($default);
+}
 
 /**
  * Task access controls
