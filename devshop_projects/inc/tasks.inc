@@ -1,3 +1,4 @@
+
 <?php
 /**
  * @file devshop_project.task.inc DevShop Project Task related hooks and
@@ -163,7 +164,7 @@ function hosting_task_devshop_commit_form($node) {
 
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to commit features from.'));
-  
+
   $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
 
   if (_devshop_projects_site_has_module($node, 'features_diff')) {
@@ -198,25 +199,25 @@ function hosting_task_devshop_commit_form($node) {
  * For "Pull Code" task.
  */
 function hosting_task_devshop_pull_form($node) {
-  
+
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to.'), 'environments', 'Environments', 'checkboxes');
-  
+
   /*
    *$form['environments'] = array(
     '#title' => t('list of environments'),
     '#type' => 'textfield',
     '#default_value' => 'dev test',
   );
-  
+
   */
-  
+
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  
+
   if (_devshop_projects_project_has_module($node, 'features')){
     $form['revert'] = array(
       '#title' => t('Revert all features after code pull?'),
@@ -229,7 +230,7 @@ function hosting_task_devshop_pull_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  
+
   // Add validator for environments
   //$form['#validate'] = array('hosting_task_devshop_pull_form');
   return $form;
@@ -258,13 +259,20 @@ function hosting_task_devshop_sync_form($node) {
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the source environment.'), 'source', 'Source');
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the destination environment.'), 'destination', 'Destination');
-    
+
+
+  $form['databases'] = array(
+    '#title' => t('Sync database from destination to source.'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+
   $form['files'] = array(
     '#title' => t('Sync files folder from destination to source.'),
     '#type' => 'checkbox',
     '#default_value' => 0,
   );
-    
+
   $form['note'] = array(
     '#value' => '<p>'. t('This will DESTROY the database for <strong>Destination</strong> and replace it with the database for the selected <strong>Source</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
     '#type' => 'markup',
@@ -287,6 +295,14 @@ function hosting_task_devshop_sync_form($node) {
       '#default_value' => $has_features,
       '#access' => $has_features,
     );
+  }else{
+    $form['revert'] = array(
+      '#title' => t('<em>Revert all features on Destination after content sync?</em>'),
+      '#type' => 'checkbox',
+      '#description' => t('This site doesn\'t have features.module enabled. Please enable and then "Verify" the site.'),
+      '#default_value' => FALSE,
+      '#disabled' => TRUE,
+      );
   }
   $form['cache'] = array(
     '#title' => t('Clear cache on Destination after content sync?'),
