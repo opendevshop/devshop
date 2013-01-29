@@ -334,7 +334,6 @@ function hosting_task_devshop_delete_form_submit($form, &$form_state) {
   $platforms = array();
   $snids = array();
   $pnids = array();
-  $data = array();
 
   if (!empty($project->project_objects['site'])) {
     foreach ($project->project_objects['site'] as $nid => $type) {
@@ -350,7 +349,6 @@ function hosting_task_devshop_delete_form_submit($form, &$form_state) {
       $platform = node_load($nid);
       $platforms[] = $platform->title;
       $pnids[] = $nid;
-      $data[] = $platform->publish_path;
     }
   }
 
@@ -359,7 +357,6 @@ function hosting_task_devshop_delete_form_submit($form, &$form_state) {
     'platforms' => implode(' ', $platforms),
     'snids' => implode(' ', $snids),
     'pnids' => implode(' ', $pnids),
-    'data' => implode(' ', $data),
   ));
 
   // Go back to the main project list page
