@@ -34,6 +34,13 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['cache'] = $task->task_args['cache'];
   }
 
+  //delete
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-delete') {
+    $task->args['sites'] = $task->task_args['sites'];
+    $task->args['platforms'] = $task->task_args['platforms'];
+    $task->args['data'] = $task->task_args['data'];
+  }
+
   // Commit
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-commit') {
     $task->args['environment'] = $task->task_args['environment'];
@@ -70,7 +77,7 @@ function drush_devshop_projects_pre_hosting_task() {
       }
     }
     $task->args['environment'] = $task->task_args['environment'];
-    $task->options['tests-to-run'] = implode($tests, ",");
+    $task->options['tests-to-run'] = implode(',', $tests);
     $task->options['sync-from-live'] = $task->task_args['sync'];
   }
 }
@@ -128,6 +135,43 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
     $output = drush_shell_exec_output();
     drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
     return $output;
+  }
+}
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task
+ */
+function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-delete') {
+    $sites = explode(' ', $task->task_args['snids']);
+    $platforms = explode(' ', $task->task_args['pnids']);
+
+    //First sites
+    if (!empty($sites)) {
+      foreach ($sites as $key => $nid) {
+        hosting_context_delete($nid);
+
+        $ref = node_load($nid);
+        $ref->no_verify = TRUE;
+        $ref->site_status = HOSTING_SITE_DELETED;
+        node_save($ref);
+      }
+    }
+
+    //Second platforms
+    if (!empty($platforms)) {
+      foreach ($platforms as $key => $nid) {
+        $ref = node_load($nid);
+        $ref->platform_status = HOSTING_PLATFORM_DELETED;
+        $ref->no_verify = TRUE;
+        node_save($ref);
+        hosting_context_delete($ref->nid);
+        db_query("DELETE FROM {hosting_platform_client_access} WHERE pid = %d", $ref->nid);
+      }
+    }
+
+    //The last step delete project node
+    node_delete($task->ref->nid);
   }
 }
 
