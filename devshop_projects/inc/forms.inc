@@ -28,7 +28,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     //Add button for delete project
     $form['buttons']['delete'] = array(
       '#type' => 'markup',
-      '#value' => l(t('Delete this project'), 'node/'. $project->nid .'/project_delete', array('query' => array('token' => drupal_get_token($user->uid)))),
+      '#value' => l(t('Delete this project'), 'node/'. $project->nid .'/project_devshop-delete', array('query' => array('token' => drupal_get_token($user->uid)))),
       '#weight' => 10,
     );
   }
@@ -49,8 +49,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   }
 
    // On Hosting Task: Delete Project form, do our own submission.
-  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'delete' && $form['#node']->type == 'project'){
-    $form['#submit'] = array('hosting_task_devshop_delete_form_submit');
+  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-delete') {
+    $node = node_load($form['nid']['#value']);
+
+    if ($node->type == 'project') {
+      $form['#submit'] = array('hosting_task_devshop_delete_form_submit');
+    }
   }
 
 
@@ -64,14 +68,16 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     $node = $form['#node'];
     $project_node = node_load($node->project_nid);
 
-    $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
-    $form['git_branch'] = array(
-      '#type' => 'select',
-      '#title' => t('Branch'),
-      '#default_value' => isset($node->git_branch)? $node->git_branch: NULL,
-      '#options' => $branch_options,
-      '#description' => t('Choose the branch that this platform should track.'),
-    );
+    if ($project_node) {
+      $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
+      $form['git_branch'] = array(
+        '#type' => 'select',
+        '#title' => t('Branch'),
+        '#default_value' => isset($node->git_branch)? $node->git_branch: NULL,
+        '#options' => $branch_options,
+        '#description' => t('Choose the branch that this platform should track.'),
+      );
+    }
   }
 
   // Save values that need to be saved.
