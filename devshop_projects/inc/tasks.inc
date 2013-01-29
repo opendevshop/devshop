@@ -41,19 +41,16 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
   );
 
-
-  /*
-  @TODO: Refactor custom forms to work with hosting_confirm_form()
-  $tasks['project']['delete'] = array(
+  $tasks['project']['devshop-delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
+    'hidden' => TRUE,
   );
-  */
+
   return $tasks;
 }
-
 
 /**
  * Helper to provide a select list of environments for this project
@@ -322,4 +319,63 @@ function hosting_task_devshop_sync_form_validate(&$form, &$form_state){
   if ($form_state['values']['parameters']['source'] == $form_state['values']['parameters']['destination']){
     form_set_error('source', t('The source cannot be the same as the destination.'));
   }
+}
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * For "Delete" task.
+ */
+function hosting_task_devshop_delete_form($node) {
+  $form = array();
+
+  if ($node->type == 'project') {
+    $form['nid'] = array(
+      '#type' => 'value',
+      '#value' => $node->nid,
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Extra submit function for hosting_task_confirm_form()
+ *
+ * @see devshop_projects_form_alter().  We had to add the submit hadler there.
+ */
+function hosting_task_devshop_delete_form_submit($form, &$form_state) {
+  $project = node_load($form_state['values']['nid']);
+
+  $sites = array();
+  $platforms = array();
+  $snids = array();
+  $pnids = array();
+
+  if (!empty($project->project_objects['site'])) {
+    foreach ($project->project_objects['site'] as $nid => $type) {
+      //Use a query instead node_load for improve the performance
+      $title = db_result(db_query("SELECT title FROM {node} WHERE nid=%d", $nid));
+      $sites[] = $title;
+      $snids[] = $nid;
+    }
+  }
+
+  if (!empty($project->project_objects['platform'])) {
+    foreach ($project->project_objects['platform'] as $nid => $type) {
+      $platform = node_load($nid);
+      $platforms[] = $platform->title;
+      $pnids[] = $nid;
+    }
+  }
+
+  hosting_add_task($project->nid, 'devshop-delete', array(
+    'sites' => implode(' ', $sites),
+    'platforms' => implode(' ', $platforms),
+    'snids' => implode(' ', $snids),
+    'pnids' => implode(' ', $pnids),
+  ));
+
+  // Go back to the main project list page
+  $form_state['redirect'] = 'hosting/projects';
+  drupal_goto('hosting/projects');
 }
