@@ -16,7 +16,7 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
   );
   $tasks['project']['devshop-create'] = array(
-    'title' => t('Create New Site'),
+    'title' => t('Create New Environment'),
     'description' => t('Creates a new site & platform within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
@@ -83,19 +83,35 @@ function hosting_task_devshop_create_form($node) {
   );
   // @TODO: Add "create branch" functionality.
   $form['platform_name'] = array(
-    '#title' => t('Platform Name'),
+    '#title' => t('Environment Name'),
     '#type' => 'textfield',
-    '#description' => t('Enter the system name of your platform.  For consistency, you should make this match the branch name.'),
+    '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
     '#required' => TRUE,
   );
-  /* @TODO: Let devshop_pull handle this.
-  $form['pull'] = array(
-    '#title' => t('Enable Pull on Commit'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
+  dsm($node);
+  $form['project_nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
   );
-  */
   return $form;
+}
+
+/**
+ * Validation hook for hosting_task_devshop_create_form()
+ */
+function hosting_task_devshop_create_form_validate($form, &$form_state){
+  $params = $form_state['values']['parameters'];
+  
+  // Check for existing environments for this project.
+  $object_nid = db_result(db_queryd('SELECT object_nid FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type = "%s" AND environment = "%s"', $params['project_nid'], 'platform', $params['platform_name']));
+  if ($object_nid) {
+    form_set_error('platform_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['platform_name'])));
+  }
+  
+  // Check for illegal chars
+  if (!preg_match('!^[a-z0-9_]+$!', $params['platform_name'])) {
+    form_set_error('type', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+  }
 }
 
 /**
