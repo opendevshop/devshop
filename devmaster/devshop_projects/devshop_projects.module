@@ -26,6 +26,11 @@ function devshop_projects_perm() {
     'create devshop-commit task',
     'create devshop-pull task',
     'create devshop-sync task',
+    'create project',
+    'view project', 
+    'edit project',
+    'delete projects',
+    'administer projects',
   );
 }
 
