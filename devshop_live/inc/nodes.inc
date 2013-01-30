@@ -30,7 +30,7 @@ function devshop_live_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
       $node->content['info']['live_domain'] = array(
         '#type' => 'item',
-        '#title' => t('Live domain'),
+        '#title' => t('Live Site'),
         '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
         '#weight' => -9,
       );

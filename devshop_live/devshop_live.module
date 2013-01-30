@@ -47,8 +47,10 @@ function devshop_live_devshop_projects_page($rows, $header) {
     foreach ($rows as $nid => $row) {
       $live_domain = db_result(db_query("SELECT live_domain FROM {hosting_devshop_project} WHERE nid=%d", $nid));
 
-      $live_domain = 'http://'. $live_domain;
-      $live_domain = l($live_domain, $live_domain, $link_options);
+      if ($live_domain) {
+        $live_domain = 'http://'. $live_domain;
+        $live_domain = l($live_domain, $live_domain, $link_options);
+      }
       $new_rows[] = array_merge($row, array($live_domain));
     }
   }
