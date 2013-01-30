@@ -26,6 +26,11 @@ function devshop_projects_perm() {
     'create devshop-commit task',
     'create devshop-pull task',
     'create devshop-sync task',
+    'create project',
+    'view project', 
+    'edit project',
+    'delete projects',
+    'administer projects',
   );
 }
 
@@ -61,6 +66,11 @@ function devshop_projects_menu() {
   return ($items);
 }
 
+/**
+ * Replacement for hosting_task_confirm_form()
+ *
+ * @TODO: Remove once http://drupal.org/node/1861898 is committed.
+ */ 
 function devshop_projects_hosting_task_confirm_form_page($nid, $task){
   $node = node_load($nid);
   return drupal_get_form('hosting_task_confirm_form', $node, $task);
@@ -76,8 +86,30 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/add/project']['page arguments'] = array(3);
   $items['node/add/project']['file'] = 'create-wizard.inc';
   $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
+
+  // Make project node pages more user-friendly.
+  $items['node/%node/view']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/view']['title arguments'] = array('View', 1);
+  
+  $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/edit']['title arguments'] = array('Edit', 1);
+
 }
 
+/**
+ * Tab title replacer
+ */ 
+function devshop_hosting_project_tab_title($default, $node){
+  if ($default == 'View' && $node->type == 'project'){
+    return t('Dashboard'); 
+  }
+  if ($default == 'Edit' && $node->type == 'project'){
+    return t('Settings'); 
+  }
+  
+  // Otherwise, just return the page text
+  return t($default);
+}
 
 /**
  * Task access controls
@@ -99,7 +131,13 @@ function devshop_hosting_task_menu_access($node, $task) {
   }
   if (user_access("create " . $task . " task")) {
     if ($node->type == 'project') {
-      return TRUE;
+      
+      // If Commit Features task, make sure features module is present
+      if ($task == 'devshop-commit'){
+        return _devshop_projects_project_has_module($node, 'features');
+      } else {
+        return TRUE;
+      }
     }
   }
 }
