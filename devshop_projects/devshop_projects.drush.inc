@@ -170,8 +170,9 @@ function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
       }
     }
 
-    //The last step delete project node
-    node_delete($task->ref->nid);
+    //The last step set status = 0 project node
+    $task->ref->status = 0;
+    node_save($task->ref);
   }
 }
 
