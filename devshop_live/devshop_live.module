@@ -4,6 +4,11 @@
  * @file devshop_live.module
  *
  * Provides Node Type, UI, and tools for DevShop Live.
+ *
+ * 
+ * @TODO: There is a situation where the project might not have a
+ * "live" environment yet... I am not yet sure how to handle this,
+ * but we should at the very least notify the user.
  */
 
 include_once('inc/forms.inc');
