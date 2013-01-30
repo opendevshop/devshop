@@ -56,10 +56,14 @@ function devshop_projects_projects_page() {
     $row[] = l($dev_site_url, $dev_site_url, $link_options);
 
 
-    $rows[] = $row;
+    $rows[$proj->nid] = $row;
   }
 
-  $output = theme('table', $header, $rows, array('class' => 'hosting-table'));
+  //Call hooks for alter informacion
+  $data = module_invoke_all('devshop_projects_page', $rows, $header);
+
+
+  $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));
   $output .= l(t('Create a new project?'), 'node/add/project');
   return $output;
 }
