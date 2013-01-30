@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Live
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_live_schema_alter(&$schema) {
+  $schema['hosting_devshop_project']['fields']['live_domain'] = array(
+    'type' => 'varchar',
+    'length' => 128,
+    'not null' => TRUE,
+  );
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function devshop_live_enable() {
+  $ret = array();
+
+  db_add_field($ret, 'hosting_devshop_project', 'live_domain', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE));
+
+  return $ret;
+}
+
+/**
+ * Implementation of hook_disable().
+ */
+function devshop_live_disable() {
+  $ret = array();
+
+  db_drop_field($ret, 'hosting_devshop_project', 'live_domain');
+
+  return $ret;
+}
