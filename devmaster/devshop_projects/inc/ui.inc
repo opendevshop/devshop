@@ -21,7 +21,7 @@ function devshop_projects_projects_page() {
     'Dev Site',
   );
 
-  $r = db_query("SELECT * FROM {hosting_devshop_project}");
+  $r = db_query("SELECT hdp.* FROM {hosting_devshop_project} hdp LEFT JOIN {node} n ON hdp.nid=n.nid WHERE n.status=1");
   $rows = array();
 
   while(($proj = db_fetch_object($r))) {
