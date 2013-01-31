@@ -130,6 +130,11 @@ function devshop_hosting_task_menu_access($node, $task) {
   if (!isset($node->nid)){
     $node = node_load($node);
   }
+
+  if ($task != 'delete' && !$node->status) {
+    return FALSE;
+  }
+
   if (user_access("create " . $task . " task")) {
     if ($node->type == 'project') {
       
