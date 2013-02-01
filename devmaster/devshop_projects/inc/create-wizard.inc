@@ -127,6 +127,8 @@ function devshop_projects_create_wizard_next(&$form_state) {
  * this is where you'd normally save.
  */
 function devshop_projects_create_wizard_finish(&$form_state) {
+  global $user;
+
   $project = &$form_state['project'];
 
   // Save the extra options to the project node.
@@ -135,6 +137,8 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $node->base_url = $project->base_url;
   $node->install_profile = $project->install_profile;
   $node->live_domain = $project->live_domain;
+  $node->uid = $user->uid;
+  $node->status = 1;
   node_save($node);
 
   // Create the site nodes
