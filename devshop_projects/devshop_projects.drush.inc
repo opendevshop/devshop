@@ -34,13 +34,6 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['cache'] = $task->task_args['cache'];
   }
 
-  //delete
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-delete') {
-    $task->args['sites'] = $task->task_args['sites'];
-    $task->args['platforms'] = $task->task_args['platforms'];
-    $task->args['data'] = $task->task_args['data'];
-  }
-
   // Commit
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-commit') {
     $task->args['environment'] = $task->task_args['environment'];
@@ -140,49 +133,59 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
 
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task
+ *
+ * Runs after project delete
  */
-function devshop_projects_post_hosting_devshop_delete_task($task, $data) {
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-delete') {
-    $sites = explode(' ', $task->task_args['snids']);
-    $platforms = explode(' ', $task->task_args['pnids']);
-
-    //First sites
-    if (!empty($sites)) {
-      foreach ($sites as $key => $nid) {
-        hosting_context_delete($nid);
-
-        $ref = node_load($nid);
-        $ref->no_verify = TRUE;
-        $ref->site_status = HOSTING_SITE_DELETED;
-        node_save($ref);
+function devshop_projects_post_hosting_delete_task($task, $data) {
+  if ($task->ref->type == 'project') {
+    // We just trigger site deletion here.
+    // The Post Deletion hook must take care of platforms, since this must finish first.
+    $project = $task->ref;
+    if (!empty($project->project_objects['site'])) {
+      foreach ($project->project_objects['site'] as $nid => $name) {
+        hosting_add_task($nid, 'delete');
       }
     }
 
-    //Second platforms
-    if (!empty($platforms)) {
-      foreach ($platforms as $key => $nid) {
-        $ref = node_load($nid);
-        $ref->platform_status = HOSTING_PLATFORM_DELETED;
-        $ref->no_verify = TRUE;
-        node_save($ref);
-        hosting_context_delete($ref->nid);
-        db_query("DELETE FROM {hosting_platform_client_access} WHERE pid = %d", $ref->nid);
-      }
-    }
-
-    //The last step set status = 0 project node
+    // @TODO: Should probably add our own status column
+    // The last step set status = 0 project node
     $task->ref->status = 0;
     node_save($task->ref);
   }
+  
+  // When a site is deleted... delete the platform
+  if ($task->ref->type == 'site' && !empty($task->ref->project)) {
+    // We trigger platform deletion here.
+    hosting_add_task($task->ref->platform, 'delete');
+  }
+  
+  // When a platform is deleted, if it is the last in the project,
+  // and the project has been unpublished, delete the directory.
+  if ($task->ref->type == 'platform' && !empty($task->ref->project)) {
+    $project = node_load($task->ref->project_nid);
+    drush_log('[DEVSHOP] Checking for other platforms...', 'ok');
+    
+    if ($project->status == 0){
+      // Don't know if this platform is still here or not...
+      unset($project->project_objects['platform'][$task->ref]);
+      if (empty($project->project_objects['platform'])){
+        drush_log('[DEVSHOP] Last Platform! Removing code_path folder.', 'ok');
+        rmdir($project->code_path);
+      }   
+    }
+   
+  }
+
 }
 
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task
- *
- *
  */
 function devshop_projects_post_hosting_verify_task($task, $data) {
 
+    $project = $task->ref;
+    drush_log(print_r($project->project_objects,1), 'notice');
+    
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
     // Get objects
@@ -219,6 +222,16 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     $site_node = devshop_projects_create_site($project, $platform, $platform->environment);
 
     drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. !link', array('!link' => l('node/' . $site_node->nid)));
+  }
+  
+  // When a project is verified, queue a verification for all platforms  
+  if ($task->ref->type == 'project'){
+    $project = node_load($task->ref->nid);
+    $platform_nids = array_keys($project->project_objects['platform']);
+    foreach ($project->project_objects['platform'] as $nid => $name){
+      drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
+      hosting_add_task($nid, 'verify');
+    }
   }
 }
 
