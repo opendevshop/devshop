@@ -66,6 +66,16 @@ function devshop_pull_hosting_queues() {
 }
 
 /**
+ * Implements hook_devshop_project_settings
+ */
+function devshop_pull_devshop_project_settings(){
+  return array(
+    'pull_enabled' => t('Pull on Commit'),
+    'pull_reset' => t('Hard Reset on Pull'),
+  );
+}
+
+/**
  * Implements hook_form_alter().
  */
 function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
@@ -84,7 +94,6 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     $form['git_settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Git Settings'),
-      '#tree' => TRUE,
     );
  
     $form['git_settings']['pull_method'] = array(
@@ -101,50 +110,6 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
         DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
       ),
     );
-
-    $platforms = $node->project_objects['platform'];
-
-    if (!empty($platforms)) {
-      foreach ($platforms as $nid => $name) {
-        $default_value = array();
-        $platform = node_load($nid);
-      
-        $default_value['pull'] = ($platform->pull_enabled) ? 'pull' : 0; 
-        $default_value['reset'] = ($platform->pull_reset) ? 'reset' : 0;
-        $form['git_settings']['git_'. $name] = array(
-          '#type' => 'checkboxes',
-          '#title' => $name,
-          '#options' => array(
-            'pull' => t('Pull on commit'),
-            'reset' => t('Hard reset'),
-          ),
-          '#default_value' => $default_value,
-        ); 
-      }
-    }
-
-    array_unshift($form['#submit'], 'devshop_pull_submit_save_data_platform');
-  }
-}
-
-/**
- * Submit function for save data of platforms.
- */
-function devshop_pull_submit_save_data_platform($form, &$form_state) {
-  $project = $form['#node'];
-  $values = $form_state['values'];
-  $platforms = $project->project_objects['platform'];
-
-  if (!empty($platforms)) {
-    foreach ($platforms as $nid => $name) {
-      $platform = node_load($nid);
-
-      $platform->pull_enabled = ($values['git_settings']['git_'. $name]['pull']) ? 1 : 0; 
-      $platform->pull_reset = ($values['git_settings']['git_'. $name]['reset']) ? 1 : 0;
-      $platform->no_verify = TRUE; 
-
-      node_save($platform);
-    }
   }
 }
 
@@ -216,24 +181,22 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       if ($node->type == 'project') {
         $data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
         if (!empty($data->project_nid)) {
+          $node->pull_enabled = TRUE;
           $node->pull_method = $data->pull_method;
           $node->last_pull = $data->last_pull;
           $node->last_pull_status = $data->last_pull_status;
         }
       }
-  elseif ($node->type == 'platform') {
-          $data_project = db_fetch_array(db_query('SELECT project_nid, environment AS project_environment, n.title as project_name FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid WHERE object_nid = %d', $node->nid));
-    if (isset($data_project['project_nid'])) {
+      elseif ($node->type == 'platform') {
         $data = db_fetch_array(db_query("SELECT pull_enabled, pull_reset FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
         return $data;
       }
-    }
       break;
     case 'insert':
     case 'update':
       if ($node->type == 'project') {
         db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
-        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->git_settings['pull_method']);
+        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
       }
       elseif ($node->type == 'platform') {
         db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
