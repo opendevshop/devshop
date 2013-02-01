@@ -141,7 +141,8 @@ function devshop_pull_submit_save_data_platform($form, &$form_state) {
 
       $platform->pull_enabled = ($values['git_settings']['git_'. $name]['pull']) ? 1 : 0; 
       $platform->pull_reset = ($values['git_settings']['git_'. $name]['reset']) ? 1 : 0;
-      $platform->no_verify = TRUE; dpm($platform);
+      $platform->no_verify = TRUE; 
+
       node_save($platform);
     }
   }
