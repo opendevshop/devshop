@@ -79,8 +79,15 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     if (is_null($node->pull_method)) {
       $node->pull_method = DEVSHOP_PULL_DISABLED;
     }
-    
-    $form['pull_method'] = array(
+   
+    //All settings git pull in project page
+    $form['git_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Git Settings'),
+      '#tree' => TRUE,
+    );
+ 
+    $form['git_settings']['pull_method'] = array(
       '#title' => 'Automatic Git Pull Method',
       '#type' => 'radios',
       '#description' => t('Choose the method of regularly calling "Pull Code". See !link to configure the queue. See !link2 to configure URL Callback.', array(
@@ -94,26 +101,26 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
         DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
       ),
     );
-  }
-  // On Projects, choose if Pull on Commit is enabled, and if "reset --hard"
-  // should be used to keep the codebase clean.
-  if ($form_id == 'platform_node_form') {
-    $platform = $form['#node'];
-    if (isset($platform->project_nid)) {
-      $default_value = $platform->nid ? $platform->pull_enabled : FALSE;
 
-      $form['pull_enabled'] = array(
-        '#title' => t('Pull on Commit'),
-        '#description' => t('If enabled. When detecting new code changes will be updated automatically.'),
-        '#type' => 'checkbox',
-        '#default_value' => $default_value,
-      );
-      $form['pull_reset'] = array(
-        '#title' => 'Hard Reset on Pull',
-        '#type' => 'checkbox',
-        '#description' => t('Reset any changes to project files. <em>WARNING: Any uncommitted changes to the project files will be discarded.</em>'),
-        '#default_value' => $platform->pull_reset,
-      );
+    $platforms = $node->project_objects['platform'];
+
+    if (!empty($platforms)) {
+      foreach ($platforms as $nid => $name) {
+        $default_value = array();
+        $platform = node_load($nid);
+      
+        $default_value['pull'] = ($platform->pull_enabled) ? 'pull' : 0; 
+        $default_value['reset'] = ($platform->pull_reset) ? 'reset' : 0;
+        $form['git_settings']['git_'. $name] = array(
+          '#type' => 'checkboxes',
+          '#title' => $name,
+          '#options' => array(
+            'pull' => t('Pull on commit'),
+            'reset' => t('Hard reset'),
+          ),
+          '#default_value' => $default_value,
+        ); 
+      }
     }
   }
 }
@@ -203,7 +210,22 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
     case 'update':
       if ($node->type == 'project') {
         db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
-        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
+        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->git_settings['pull_method']);
+
+        //load all data
+        $project = node_load($node->nid);
+        $platforms = $project->project_objects['platform'];
+
+        if (!empty($platforms)) {
+          foreach ($platforms as $nid => $name) {
+            $platform = node_load($nid);
+
+            $platform->pull_enabled = ($node->git_settings['git_'. $name]['pull']) ? 1 : 0; 
+            $platform->pull_reset = ($node->git_settings['git_'. $name]['reset']) ? 1 : 0;
+            $platform->no_verify = TRUE;
+            node_save($platform);
+          }
+        }
       }
       elseif ($node->type == 'platform') {
         db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
