@@ -348,10 +348,10 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
 
   // Code path and domain must be unique
-  if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s";', $form_state['values']['code_path']))){
+  if (db_result(db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = 1 AND code_path = "%s";', $form_state['values']['code_path']))){
     form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
   }
-  if (db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE base_url = "%s";', $form_state['values']['base_url']))){
+  if (db_result(db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = 1 AND base_url = "%s";', $form_state['values']['base_url']))){
     form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
   }
 
