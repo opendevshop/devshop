@@ -183,9 +183,6 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
  */
 function devshop_projects_post_hosting_verify_task($task, $data) {
 
-    $project = $task->ref;
-    drush_log(print_r($project->project_objects,1), 'notice');
-    
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
     // Get objects
