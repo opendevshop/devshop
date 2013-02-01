@@ -122,6 +122,28 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
         ); 
       }
     }
+
+    array_unshift($form['#submit'], 'devshop_pull_submit_save_data_platform');
+  }
+}
+
+/**
+ * Submit function for save data of platforms.
+ */
+function devshop_pull_submit_save_data_platform($form, &$form_state) {
+  $project = $form['#node'];
+  $values = $form_state['values'];
+  $platforms = $project->project_objects['platform'];
+
+  if (!empty($platforms)) {
+    foreach ($platforms as $nid => $name) {
+      $platform = node_load($nid);
+
+      $platform->pull_enabled = ($values['git_settings']['git_'. $name]['pull']) ? 1 : 0; 
+      $platform->pull_reset = ($values['git_settings']['git_'. $name]['reset']) ? 1 : 0;
+      $platform->no_verify = TRUE; dpm($platform);
+      node_save($platform);
+    }
   }
 }
 
@@ -211,21 +233,6 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       if ($node->type == 'project') {
         db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
         db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->git_settings['pull_method']);
-
-        //load all data
-        $project = node_load($node->nid);
-        $platforms = $project->project_objects['platform'];
-
-        if (!empty($platforms)) {
-          foreach ($platforms as $nid => $name) {
-            $platform = node_load($nid);
-
-            $platform->pull_enabled = ($node->git_settings['git_'. $name]['pull']) ? 1 : 0; 
-            $platform->pull_reset = ($node->git_settings['git_'. $name]['reset']) ? 1 : 0;
-            $platform->no_verify = TRUE;
-            node_save($platform);
-          }
-        }
       }
       elseif ($node->type == 'platform') {
         db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
