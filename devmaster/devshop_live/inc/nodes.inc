@@ -25,7 +25,7 @@ function devshop_live_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         }
       }
     }
-    if ($op == 'view') {
+    if ($op == 'view' && !empty($node->live_domain)) {
       $url = 'http://' . $node->live_domain;
 
       $node->content['info']['live_domain'] = array(
