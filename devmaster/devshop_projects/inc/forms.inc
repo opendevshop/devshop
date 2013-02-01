@@ -63,23 +63,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     return;
   }
 
-  // On Platform node forms, allow changing branch.
-  if ($form_id == 'platform_node_form'){
-    $node = $form['#node'];
-    $project_node = node_load($node->project_nid);
-
-    if ($project_node) {
-      $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
-      $form['git_branch'] = array(
-        '#type' => 'select',
-        '#title' => t('Branch'),
-        '#default_value' => isset($node->git_branch)? $node->git_branch: NULL,
-        '#options' => $branch_options,
-        '#description' => t('Choose the branch that this platform should track.'),
-      );
-    }
-  }
-
   // Save values that need to be saved.
   if ($form_id == 'platform_node_form' || $form_id == 'site_node_form'){
     $node = $form['#node'];
@@ -139,6 +122,40 @@ function devshop_projects_form(&$node) {
     '#maxlength' => 255,
     '#weight' => 2,
   );
+  
+  // Extensible settings
+  $form['settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Environment Settings'),
+    '#tree' => TRUE,
+  );
+  
+  $settings = module_invoke_all('devshop_project_settings');
+  $branch_options = array_combine($node->git_branches, $node->git_branches);
+  foreach ($node->project_objects['platform'] as $nid => $name){
+    $platform = node_load($nid);
+    $form['settings'][$name] = array(
+      '#tree' => TRUE,
+      '#title' => $name,
+      '#type' => 'fieldset',
+    );
+    $form['settings'][$name]['git_branch'] = array(
+      '#type' => 'select',
+      '#title' => t('Branch'),
+      '#default_value' => isset($platform->git_branch)? $platform->git_branch: NULL,
+      '#options' => $branch_options,
+      '#description' => t('Choose the branch that this platform should track.'),
+    );
+    foreach ($settings as $setting => $label){
+      $form['settings'][$name][$setting] = array(
+        '#type' => 'checkbox',
+        '#title' => $label,
+        '#default_value' => $platform->{$setting},
+      );
+    }
+  }
+  $form['#submit'] = array('devshop_projects_submit_settings');
+
 
   // Don't allow editing
   if ($node->nid) {
@@ -153,6 +170,23 @@ function devshop_projects_form(&$node) {
     }
   }
   return $form;
+}
+
+/**
+ * Submit function for save data of platforms.
+ */
+function devshop_projects_submit_settings($form, &$form_state) {
+  $node = node_load($form_state['values']['nid']);
+                    
+  // Go through and save our platforms
+  foreach ($node->project_objects['platform'] as $nid => $name){
+    $platform = node_load($nid);
+    $platform->no_verify = TRUE;
+    foreach ($form_state['values']['settings'][$name] as $setting_name => $value){
+      $platform->{$setting_name} = $value;
+    }
+    node_save($platform);
+  }
 }
 
 /**
