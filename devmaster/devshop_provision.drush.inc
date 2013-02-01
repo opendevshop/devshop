@@ -20,18 +20,6 @@ function devshop_provision_drush_init(){
  * Provides provision commands for all devshop tasks.
  */
 function devshop_provision_drush_command() {
-  $items['provision-devshop-delete'] = array(
-    'description' => 'Delete a DevShop Project and all associated sites and platforms.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-    ),
-    'arguments' => array(
-      'sites' => 'A list of sites to delete',
-      'platforms' => 'A list of platforms to delete',
-      'data' => 'A list of paths to delete',
-    ),
-    'example' => 'drush @project_mysite provision-devshop-delete',
-  );
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
