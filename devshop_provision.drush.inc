@@ -27,6 +27,7 @@ function devshop_provision_drush_command() {
       'update' => 'Run update.php after code pull.',
       'revert' => 'Revert all features after code pull.',
       'cache' => 'Clear all caches after code pull.',
+      'reset' => 'Runs "git reset --hard" before pulling.',
     ),
     'arguments' => array(
       'environments' => 'A list of environment names to Pull Code to.',
