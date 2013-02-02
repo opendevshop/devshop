@@ -138,6 +138,7 @@ function devshop_projects_form(&$node) {
       '#tree' => TRUE,
       '#title' => $name,
       '#type' => 'fieldset',
+      '#theme' => 'devshop_projects_settings_table',
     );
     $form['settings'][$name]['git_branch'] = array(
       '#type' => 'select',
