@@ -31,6 +31,11 @@ function drush_devshop_provision_provision_devshop_pull() {
     return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify at least one environment to pull.');
   }
   
+  // Get global options
+  $revert = drush_get_option('revert');
+  $update = drush_get_option('update');
+  $cache = drush_get_option('cache');
+  
   foreach($environments as $platform_name){
     drush_log(dt('[DEVSHOP] Provision DevShop Pull on: ' . $platform_name), 'ok');
   
@@ -39,7 +44,6 @@ function drush_devshop_provision_provision_devshop_pull() {
       drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify an environment to pull.');
       continue;
     }
-    
     
     // Get platform & site object
     $project_name = d()->project_name;
@@ -55,10 +59,14 @@ function drush_devshop_provision_provision_devshop_pull() {
     // Ensure it's a git repo.
     provision_git_is_repo($repo_path);
     
-    // Get options
-    $update = drush_get_option('update');
-    $revert = drush_get_option('revert');
-    $cache = drush_get_option('cache');
+    // Determine revert setting from project settings (or if set as option, always)
+    $reset = drush_get_option('reset')? drush_get_option('reset'): d()->settings[$platform_name]['pull_reset'];
+  
+    // If reset is true, do a git reset --hard first.
+    if ($reset) {
+      drush_shell_cd_and_exec($repo_path, 'git reset --hard');
+      drush_log(dt('[DEVSHOP] Git repository reset.'), 'ok');
+    }
   
     // Pull latest version of site
     // Execute git pull --rebase
