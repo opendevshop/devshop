@@ -27,6 +27,7 @@ class provisionContext_project extends provisionContext {
     $this->setProperty('git_branches');
     $this->setProperty('git_tags');
     $this->setProperty('base_url');
+    $this->setProperty('settings');
   }
 
   function verify() {
