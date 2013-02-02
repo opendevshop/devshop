@@ -165,10 +165,6 @@ function devshop_projects_form(&$node) {
     foreach ($locked as $field){
       $form[$field]['#value'] = $form[$field]['#default_value'];
       $form[$field]['#type'] = 'value';
-
-      // Be nice and show it.
-      $form["{$field}_display"] = $form[$field];
-      $form["{$field}_display"]['#type'] = 'item';
     }
   }
   return $form;
