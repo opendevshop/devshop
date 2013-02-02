@@ -27,6 +27,7 @@ function theme_devshop_projects_settings_form($form){
       if (!isset($header[$setting])){
         $header[$setting] = $form[$env_name][$setting]['#title'];
       }
+      $form[$env_name][$setting]['#title'] = '';
       $row[] = drupal_render($form[$env_name][$setting]); 
     }
     $rows[] = $row;
