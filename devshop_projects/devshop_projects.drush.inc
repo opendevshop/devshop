@@ -257,6 +257,17 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   $task->context_options['git_branches'] = $branches['branches'];
   $task->context_options['git_tags'] = $branches['tags'];
+  
+  // Load environment settings
+  foreach ($task->ref->project_objects['platform'] as $nid => $name){
+    $platform = node_load($nid);
+    $task->context_options['settings'][$name] = array();
+    
+    // @TODO: HOOK!
+    $task->context_options['settings'][$name]['git_branch'] = $platform->git_branch;
+    $task->context_options['settings'][$name]['pull_enabled'] = $platform->pull_enabled;
+    $task->context_options['settings'][$name]['pull_reset'] = $platform->pull_reset;
+  }
 }
 
 /**
