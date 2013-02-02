@@ -127,7 +127,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $node->content['info']['git_branches'] = array(
       '#type' => 'item',
       '#title' => t('Remote Branches'),
-      '#value' => theme('item_list', $node->git_branches),
+      '#value' => implode($node->git_branches, ' '),
       '#weight' => -8
     );
   }
