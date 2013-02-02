@@ -127,6 +127,7 @@ function devshop_projects_form(&$node) {
   $form['settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environment Settings'),
+    '#theme' => 'devshop_projects_settings_form',
     '#tree' => TRUE,
   );
   
