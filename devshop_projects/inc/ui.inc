@@ -196,5 +196,56 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#type' => 'fieldset',
     '#weight' => 100,
   );
+  
+  
+  // Add Breadcrumbs
+  $crumbs = array();
+  $crumbs[] = l(t('Home'), '<front>');
+  $crumbs[] = l(t('Projects'), 'hosting/projects');
+  drupal_set_breadcrumb($crumbs);
+  
   return $node;
+}
+
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ */
+function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
+  if (!empty($node->project)){
+    
+    
+    // Display Project, Environment and Branch.
+    $node->content['info']['project'] = array(
+      '#type' => 'item',
+      '#title' => t('Project'),
+      '#value' => l($node->project, "node/{$node->project_nid}"),
+      '#weight' => -12,
+    );
+    $node->content['info']['env'] = array(
+      '#type' => 'item',
+      '#title' => t('Environment'),
+      '#value' => $node->environment,
+      '#weight' => -11,
+    );
+    $node->content['info']['branch'] = array(
+      '#type' => 'item',
+      '#title' => t('Branch'),
+      '#value' => $node->git_branch,
+      '#weight' => -11,
+    );
+    
+    // Add Breadcrumbs
+    $crumbs = array();
+    $crumbs[] = l(t('Home'), '<front>');
+    $crumbs[] = l(t('Projects'), 'hosting/projects');
+    $crumbs[] = l($node->project, "node/" . $node->project_nid);
+    drupal_set_breadcrumb($crumbs);
+  }
+}
+
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ */
+function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
+  devshop_projects_nodeapi_site_view($node, $a3, $a4);
 }
