@@ -441,13 +441,16 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Default Platform Environments'),
+    '#title' => t('Project Environments'),
+    '#description' => t('Choose the environments you would like to create for this project.  You will be able to create more or change the branch later.'),
     '#theme' => 'devshop_project_create_platforms_table',
     '#tree' => TRUE,
   );
   foreach ($default_platforms as $env) {
     $form['default_platforms'][$env] = array(
       '#tree' => TRUE,
+      '#prefix' => '<div class="platform">',
+      '#suffix' => '</div>',
     );
     $form['default_platforms'][$env]['enabled'] = array(
       '#type' => 'checkbox',
@@ -457,15 +460,15 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     $form['default_platforms'][$env]['branch'] = array(
         '#type' => 'select',
         '#default_value' => isset($project->default_platforms[$env])? $project->default_platforms[$env]: NULL,
-        '#options' => array(t('Choose a branch...')) + $branch_options
+        '#options' => array(t('Choose a branch...')) + $branch_options,
       );
   }
 
   $form['branch_platforms'] = array(
     '#type' => 'checkboxes',
     '#multiple' => 'true',
-    '#title' => t('Branch Platform Environments'),
-    '#description' => t('Check the branches you wish to create platforms for.'),
+    '#title' => t('Branch Environments'),
+    '#description' => t('Create new environments based on the project\'s git branches.'),
     '#default_value' => $project->branch_platforms,
     '#options' => $branch_options
   );
