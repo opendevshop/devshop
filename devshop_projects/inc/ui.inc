@@ -71,25 +71,6 @@ function devshop_projects_projects_page() {
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
-  // If not ready yet:
-  if ($node->project_status != 'sites_ready'){
-    //// @TODO: Once we have a smarter status, we can redirect them back the
-    //// create wizard.
-    //
-    //// Site install form
-    //$node->content['devshop'] = array(
-    //  '#value' => '<p>' . t('Your project is still being configured... Sites are not ready yet.') . '</p>',
-    //  '#type' => 'markup',
-    //  '#weight' => 1,
-    //);
-    //$node->content['create'] = array(
-    //  '#value' => '<p>' . l(t('Go back to Create Project Wizard.'), 'node/add/project/settings') . '</p>',
-    //  '#type' => 'markup',
-    //  '#weight' => 2,
-    //);
-    //return $node;
-  }
-
   modalframe_parent_js();
 
   $node->content['info'] = array(
