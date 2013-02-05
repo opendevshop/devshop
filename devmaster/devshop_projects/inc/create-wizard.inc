@@ -27,6 +27,7 @@ function devshop_projects_create_wizard($step = NULL){
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
+    $project->step = $step;
     $project->git_url = '';
     $project->project_nid = NULL;
     $project->title = '';
@@ -35,6 +36,10 @@ function devshop_projects_create_wizard($step = NULL){
     $project->live_domain = '';
 
     // ** set the storage object so its ready for whatever comes next
+    ctools_object_cache_set('project', $form_state['cache name'], $project);
+  } else {
+    // Quickly save the current step
+    $project->step = $step;
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
 
@@ -50,7 +55,7 @@ function devshop_projects_create_wizard($step = NULL){
     drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
-      drupal_goto('node/add/project');
+      drupal_goto('hosting/projects/add');
     }
   }
 
@@ -71,7 +76,7 @@ function devshop_projects_create_wizard($step = NULL){
 function devshop_projects_create_wizard_info(){
   return array(
     'id' => 'devshop_project_create',
-    'path' => "node/add/project/%step",
+    'path' => "hosting/projects/add/%step",
     'show trail' => TRUE,
     'show back' => TRUE,
     'show cancel' => TRUE,
@@ -569,7 +574,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   }
   elseif ($project_node->project_status == 'preparing-project') {
     // @TODO: Not yet, needs more logic
-    // drupal_goto('node/add/project');
+    // drupal_goto('hosting/projects/add');
   }
   elseif ($project_node->project_status == 'sites-installed') {
     return;
@@ -630,7 +635,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
       $completed = FALSE;
-      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'node/add/project/environments')));
+      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
     }
     // If platform verified successfully:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
@@ -668,7 +673,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $project->no_finish = TRUE;
     $form['error'] = array(
       '#type' => 'markup',
-      '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'node/add/project/environments')))
+      '#value' => t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')))
     );
     return $form;
   } else {
