@@ -1,0 +1,6 @@
+name = DevShop
+description = Drupal Development Environment Manager
+core = 6.x
+package = DevShop
+
+dependencies[] = hosting
