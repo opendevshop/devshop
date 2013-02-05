@@ -160,6 +160,9 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 
   // Removing last step session variable.
   unset($_SESSION['last_step']);
+  
+  // Friendly message
+  drupal_set_message(t('Your project has been created.  Once installed, your sites will be available.'));
 }
 
 
