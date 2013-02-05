@@ -16,7 +16,7 @@ function devshop_projects_theme(){
  * Theme function for environments settings
  */
 function theme_devshop_projects_settings_form($form){
-  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/environments.css');
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
   $rows = array();
   $header = array();
   $header[] = t('Environment');
