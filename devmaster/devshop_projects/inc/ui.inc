@@ -11,7 +11,6 @@
  * a table.
  */
 function devshop_projects_projects_page() {
-  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
 
   $header = array(
     'Name',
@@ -211,7 +210,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
-  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
 
   // MAIN DISPLAY
   $node->content['devshop'] = array(
