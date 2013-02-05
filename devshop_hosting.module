@@ -2,6 +2,8 @@
 /**
  * @file devshop_hosting.module
  */
+drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
+
 
 /**
  * Implements hook_menu()

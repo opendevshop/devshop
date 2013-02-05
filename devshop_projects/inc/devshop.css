@@ -1,3 +1,11 @@
+div#header div.logo a {
+  background: none;
+  text-indent: -999px;
+  overflow: hidden;
+  height: 72px;
+  width: 72px;
+}
+
 #devshop-project-create-step-environments .platform {
   clear: both;
   border-bottom: 1px solid #e8e8e8;
