@@ -65,7 +65,7 @@ function devshop_projects_projects_page() {
     $button = l(t('Create your first Project'), 'hosting/projects/add');
     $output = <<<HTML
 <div class="empty">
-    <div class="empty-message">You haven't created a project yet!</div>
+    <div class="empty-message">You have no projects.</div>
     <div class="empty-button">$button</div>
 </div>
 HTML;
