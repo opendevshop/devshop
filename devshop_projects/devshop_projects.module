@@ -304,7 +304,11 @@ function _devshop_projects_site_has_module($node, $module) {
  * Check if a site has features diff enabled.
  */
 function _devshop_projects_project_has_module($node, $module) {
-  $sites = array_flip($node->project_objects['site']);
+  if (is_array($node->project_objects['site'])){
+    $sites = array_flip($node->project_objects['site']);
+  } else {
+    $sites = array();
+  }
   return _devshop_projects_site_has_module(node_load($sites['dev']), $module);
 }
  
