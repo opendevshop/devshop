@@ -21,7 +21,7 @@ function devshop_projects_projects_page() {
     'Dev Site',
   );
 
-  $r = db_query("SELECT * FROM {hosting_devshop_project}");
+  $r = db_query("SELECT hdp.* FROM {hosting_devshop_project} hdp LEFT JOIN {node} n ON hdp.nid=n.nid WHERE n.status=1");
   $rows = array();
 
   while(($proj = db_fetch_object($r))) {
@@ -56,10 +56,14 @@ function devshop_projects_projects_page() {
     $row[] = l($dev_site_url, $dev_site_url, $link_options);
 
 
-    $rows[] = $row;
+    $rows[$proj->nid] = $row;
   }
 
-  $output = theme('table', $header, $rows, array('class' => 'hosting-table'));
+  //Call hooks for alter informacion
+  $data = module_invoke_all('devshop_projects_page', $rows, $header);
+
+
+  $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));
   $output .= l(t('Create a new project?'), 'node/add/project');
   return $output;
 }
@@ -71,6 +75,7 @@ function devshop_projects_projects_page() {
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
+<<<<<<< HEAD
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
   $project_wizard_cache = ctools_object_cache_get('project', NULL);
@@ -81,6 +86,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   // Setup project
 
 
+=======
+>>>>>>> 19468c50a34d4ccd8ca2af49bdd4fda78f8b6a9e
   modalframe_parent_js();
 
   $node->content['info'] = array(
@@ -114,7 +121,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $node->content['info']['git_branches'] = array(
       '#type' => 'item',
       '#title' => t('Remote Branches'),
-      '#value' => theme('item_list', $node->git_branches),
+      '#value' => implode($node->git_branches, ' '),
       '#weight' => -8
     );
   }
@@ -202,5 +209,56 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#type' => 'fieldset',
     '#weight' => 100,
   );
+  
+  
+  // Add Breadcrumbs
+  $crumbs = array();
+  $crumbs[] = l(t('Home'), '<front>');
+  $crumbs[] = l(t('Projects'), 'hosting/projects');
+  drupal_set_breadcrumb($crumbs);
+  
   return $node;
+}
+
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ */
+function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
+  if (!empty($node->project)){
+    
+    
+    // Display Project, Environment and Branch.
+    $node->content['info']['project'] = array(
+      '#type' => 'item',
+      '#title' => t('Project'),
+      '#value' => l($node->project, "node/{$node->project_nid}"),
+      '#weight' => -12,
+    );
+    $node->content['info']['env'] = array(
+      '#type' => 'item',
+      '#title' => t('Environment'),
+      '#value' => $node->environment,
+      '#weight' => -11,
+    );
+    $node->content['info']['branch'] = array(
+      '#type' => 'item',
+      '#title' => t('Branch'),
+      '#value' => $node->git_branch,
+      '#weight' => -11,
+    );
+    
+    // Add Breadcrumbs
+    $crumbs = array();
+    $crumbs[] = l(t('Home'), '<front>');
+    $crumbs[] = l(t('Projects'), 'hosting/projects');
+    $crumbs[] = l($node->project, "node/" . $node->project_nid);
+    drupal_set_breadcrumb($crumbs);
+  }
+}
+
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ */
+function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
+  devshop_projects_nodeapi_site_view($node, $a3, $a4);
 }
