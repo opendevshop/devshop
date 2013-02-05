@@ -22,9 +22,17 @@ function devshop_hosting_menu(){
  */
 function devshop_hosting_menu_alter(&$items){
   $items['user/password']['type'] = MENU_CALLBACK;
-  
   unset($items['hosting/sites']);
   unset($items['hosting/platforms']);
+  
+  $items['hosting/servers/add'] = $items['node/add/server'];
+  $items['hosting/servers/add']['title'] = t('Add new Server');
+  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/servers/list'] = array(
+    'title' => t('All Servers'),
+    'weight' => -1,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
 }
 
 /**
