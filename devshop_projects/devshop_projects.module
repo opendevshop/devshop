@@ -100,11 +100,6 @@ function devshop_projects_hosting_task_confirm_form_page($nid, $task){
  * Replaces node/add/project with a ctools wizard.
  */
 function devshop_projects_menu_alter(&$items) {
-<<<<<<< HEAD
-  $items['node/add/project']['page callback'] = 'drupal_goto';
-  $items['node/add/project']['page arguments'] = array('hosting/projects/add');
-  
-=======
   $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
   $items['node/add/project']['page arguments'] = array(3);
   $items['node/add/project']['file'] = 'create-wizard.inc';
@@ -117,7 +112,6 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
   $items['node/%node/edit']['title arguments'] = array('Edit', 1);
 
->>>>>>> 19468c50a34d4ccd8ca2af49bdd4fda78f8b6a9e
 }
 
 /**
