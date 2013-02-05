@@ -3,6 +3,9 @@
  * @file devshop_hosting.module
  */
 
+ /**
+  * Implements hook_init()
+  */
 function devshop_hosting_init(){
   drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
   $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
