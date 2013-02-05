@@ -92,10 +92,11 @@ function devshop_projects_add($step = NULL){
     // Check to see if this project is still in the wizard
     ctools_include('object-cache');
     $project_wizard_cache = ctools_object_cache_get('project', NULL);
-    drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
-  } else {
-    return devshop_projects_create_wizard($step);
+    if (!empty($project_wizard_cache->step)) {
+      drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
+    }
   }
+  return devshop_projects_create_wizard($step);
 }
 /**
  * Replacement for hosting_task_confirm_form()
