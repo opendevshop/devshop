@@ -35,14 +35,30 @@ function devshop_projects_perm() {
 function devshop_projects_menu() {
 
   $items['hosting/projects'] = array(
-    'title' => 'Projects',
+    'title' => t('Projects'),
     'description' => 'Display a list of all projects',
     'page callback' => 'devshop_projects_projects_page',
     'access arguments' => array('view projects'),
     'menu_name' => 'primary-links',
     'weight' => 1,
   );
-
+  $items['hosting/projects/list'] = array(
+    'title' => 'Projects',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items['hosting/projects/add'] = array(
+    'title' => 'Start New Project',
+    'type' => MENU_LOCAL_TASK,
+    'title' => t('Start a new Project'), 
+    'title callback' => 'check_plain', 
+    'page callback' => 'devshop_projects_create_wizard', 
+    'page arguments' => array(3), 
+    'access callback' => 'node_access', 
+    'access arguments' => array('create', 'project'), 
+    'description' => 'Start a new Drupal website project.', 
+    'file' => 'create-wizard.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+  );
 
   // hosting tasks ajax pages.
   foreach (hosting_available_tasks('project') as $task => $info){
@@ -72,10 +88,9 @@ function devshop_projects_hosting_task_confirm_form_page($nid, $task){
  * Replaces node/add/project with a ctools wizard.
  */
 function devshop_projects_menu_alter(&$items) {
-  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
-  $items['node/add/project']['page arguments'] = array(3);
-  $items['node/add/project']['file'] = 'create-wizard.inc';
-  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
+  $items['node/add/project']['page callback'] = 'drupal_goto';
+  $items['node/add/project']['page arguments'] = array('hosting/projects/add');
+  
 }
 
 
