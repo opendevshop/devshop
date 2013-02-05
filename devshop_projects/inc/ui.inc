@@ -187,9 +187,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         'class' => 'project-environments',
       ),
     );
+    $link = l(t('Create New Environment'), 'node/81/project_devshop-create');
     $node->content['sites']['table'] = array(
       '#type' => 'item',
       '#value' => $table,
+      '#suffix' => $link,
     );
   }
 
