@@ -455,7 +455,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
 
-  $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
+  $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
 
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
