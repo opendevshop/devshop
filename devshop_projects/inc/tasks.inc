@@ -149,6 +149,9 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $form_state['redirect'] = 'node/' . $values['nid'];
   modalframe_close_dialog();
+  
+  // Friendly message
+  drupal_set_message(t('Your environment is being created.'));
 }
 
 
