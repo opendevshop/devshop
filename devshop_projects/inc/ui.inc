@@ -11,7 +11,7 @@
  * a table.
  */
 function devshop_projects_projects_page() {
-  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/environments.css');
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
 
   $header = array(
     'Name',
@@ -62,14 +62,13 @@ function devshop_projects_projects_page() {
 
   // No Projects
   if (empty($rows)){
-    $output = '<div class="empty">';
-    $output .= '<div class="empty-message">You haven\'t created a project yet!</div>';
-    $output .= '<div class="empty-button">' . l(t('Create your first Project*'), 'hosting/projects/add') . '</div>';
-    $output .= '<div class="empty-message"><em>*If you haven\'t granted this server access to your Git repositories, you should do so now with our <a href="#rsa" onclick="$(\'#rsa\').show()">public SSH key</a>.</div>';
-    
-    $pubkey = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
-    $output .= '<textarea id="rsa" onclick="this.select()">' . $pubkey . '</textarea>';
-    $output .= '</div>';
+    $button = l(t('Create your first Project'), 'hosting/projects/add');
+    $output = <<<HTML
+<div class="empty">
+    <div class="empty-message">You haven't created a project yet!</div>
+    <div class="empty-button">$button</div>
+</div>
+HTML;
   } else {
     //Call hooks for alter informacion
     $data = module_invoke_all('devshop_projects_page', $rows, $header);
@@ -210,7 +209,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
-  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/environments.css');
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
 
   // MAIN DISPLAY
   $node->content['devshop'] = array(

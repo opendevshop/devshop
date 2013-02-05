@@ -7,6 +7,7 @@ function devshop_projects_create_wizard($step = NULL){
   // required includes for wizard
   ctools_include('wizard');
   ctools_include('object-cache');
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
 
   // Setup form info
   $form_info = devshop_projects_create_wizard_info();
@@ -222,7 +223,6 @@ function devshop_project_create_step_git(&$form, &$form_state) {
   );
 
   // If there is already a title, make this an item.
-  // @TODO: Can we allow "renaming" of projects?  (probably only at this stage).
   if (!empty($project->title)) {
     // Force title
     $form['title']['#value'] = $form['title']['#default_value'];
@@ -232,8 +232,28 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     // Be nice and show it.
     $form['title_display'] = $form['title'];
     $form['title_display']['#type'] = 'item';
+  }
+  
+  // Display helpful tips for connecting.
+  $pubkey_path = variable_get('devshop_public_key_path', '/var/aegir/.ssh/id_rsa.pub');
+  if (!file_exists($pubkey_path)){
+    $output = t('No file was found at %path! To clone a Git repository to this server you need an SSH Key.  See !link for a nice guide to generating SSH keys.', array('%path' => $pubkey_path, '!link' => l('github:help', 'https://help.github.com/articles/generating-ssh-keys', array('target' => '_blank'))));
+  } else {
+    $pubkey = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
+    
+    // @TODO: Make this Translatable.
+    $output = <<<HTML
+  <div class="empty-message"><em>If you haven't granted this server access to your Git repositories, you should do so now using our <a href="#rsa" onclick="$('#rsa').show().select()">public SSH key</a>.</em></div>
+  <textarea id="rsa" onclick="this.select()">$pubkey</textarea>
+HTML;
+  }
 
-    }
+  // Add info about connecting to Repo
+  $form['connect'] = array(
+    '#type' => 'item',
+    '#title' => t('Repository Access'),
+    '#value' => $output,
+  );
 }
 
 /**
