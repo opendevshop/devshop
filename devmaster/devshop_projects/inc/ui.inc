@@ -71,6 +71,16 @@ function devshop_projects_projects_page() {
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
+  // Check to see if this project is still in the wizard
+  ctools_include('object-cache');
+  $project_wizard_cache = ctools_object_cache_get('project', NULL);
+  if ($node->nid == $project_wizard_cache->project_nid){
+    drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
+  }
+
+  // Setup project
+
+
   modalframe_parent_js();
 
   $node->content['info'] = array(
