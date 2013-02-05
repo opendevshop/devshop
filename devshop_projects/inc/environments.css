@@ -9,3 +9,9 @@ body.aegir #page div.node div.content fieldset.project-environments div.form-ite
 fieldset.project-environments {
   clear: both;
 }
+
+#project-settings-table .description,
+#project-settings-table .form-item-labeled label
+{
+  display: none;  
+}

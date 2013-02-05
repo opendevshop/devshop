@@ -4,6 +4,11 @@
  * @file devshop_live.module
  *
  * Provides Node Type, UI, and tools for DevShop Live.
+ *
+ * 
+ * @TODO: There is a situation where the project might not have a
+ * "live" environment yet... I am not yet sure how to handle this,
+ * but we should at the very least notify the user.
  */
 
 include_once('inc/forms.inc');
@@ -26,4 +31,29 @@ function devshop_live_add_domain($node, $domain) {
   }
 
   return FALSE;
+}
+
+/**
+ * Implement of hook_devshop_projects_page().
+ */
+function devshop_live_devshop_projects_page($rows, $header) {
+  $new_rows = array();
+  $link_options = array('attributes' => array('target' => '_blank'));
+
+  //add new header live
+  $header[] = t('Live site');
+
+  if (!empty($rows)) {
+    foreach ($rows as $nid => $row) {
+      $live_domain = db_result(db_query("SELECT live_domain FROM {hosting_devshop_project} WHERE nid=%d", $nid));
+
+      if ($live_domain) {
+        $live_domain = 'http://'. $live_domain;
+        $live_domain = l($live_domain, $live_domain, $link_options);
+      }
+      $new_rows[] = array_merge($row, array($live_domain));
+    }
+  }
+
+  return array('rows' => $new_rows, 'header' => $header);
 }

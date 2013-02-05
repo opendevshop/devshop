@@ -1,3 +1,4 @@
+
 <?php
 /**
  * @file devshop_project.task.inc DevShop Project Task related hooks and
@@ -16,7 +17,7 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
   );
   $tasks['project']['devshop-create'] = array(
-    'title' => t('Create New Site'),
+    'title' => t('Create New Environment'),
     'description' => t('Creates a new site & platform within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
@@ -39,26 +40,23 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-
-
-  /*
-  @TODO: Refactor custom forms to work with hosting_confirm_form()
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
+    'hidden' => TRUE,
   );
-  */
+
   return $tasks;
 }
-
 
 /**
  * Helper to provide a select list of environments for this project
  */
 function devshop_projects_tasks_add_environment_to_form(&$form, $node, $description, $key = 'environment', $title = 'Environment', $type = 'radios') {
   // @TODO: Add a check here.  Sometimes we want to limit this list.
+
   $options = array_combine($node->project_objects['site'], $node->project_objects['site']);
   $form[$key] = array(
     '#type' => $type,
@@ -86,19 +84,34 @@ function hosting_task_devshop_create_form($node) {
   );
   // @TODO: Add "create branch" functionality.
   $form['platform_name'] = array(
-    '#title' => t('Platform Name'),
+    '#title' => t('Environment Name'),
     '#type' => 'textfield',
-    '#description' => t('Enter the system name of your platform.  For consistency, you should make this match the branch name.'),
+    '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
     '#required' => TRUE,
   );
-  /* @TODO: Let devshop_pull handle this.
-  $form['pull'] = array(
-    '#title' => t('Enable Pull on Commit'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
+  $form['project_nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
   );
-  */
   return $form;
+}
+
+/**
+ * Validation hook for hosting_task_devshop_create_form()
+ */
+function hosting_task_devshop_create_form_validate($form, &$form_state){
+  $params = $form_state['values']['parameters'];
+
+  // Check for existing environments for this project.
+  $object_nid = db_result(db_query('SELECT object_nid FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type = "%s" AND environment = "%s"', $params['project_nid'], 'platform', $params['platform_name']));
+  if ($object_nid) {
+    form_set_error('platform_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['platform_name'])));
+  }
+
+  // Check for illegal chars
+  if (!preg_match('!^[a-z0-9_]+$!', $params['platform_name'])) {
+    form_set_error('type', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+  }
 }
 
 /**
@@ -147,7 +160,7 @@ function hosting_task_devshop_commit_form($node) {
 
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to commit features from.'));
-  
+
   $descr = 'A message describing this commit. Too see a diff output off all of the features, ';
 
   if (_devshop_projects_site_has_module($node, 'features_diff')) {
@@ -182,25 +195,25 @@ function hosting_task_devshop_commit_form($node) {
  * For "Pull Code" task.
  */
 function hosting_task_devshop_pull_form($node) {
-  
+
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to.'), 'environments', 'Environments', 'checkboxes');
-  
+
   /*
    *$form['environments'] = array(
     '#title' => t('list of environments'),
     '#type' => 'textfield',
     '#default_value' => 'dev test',
   );
-  
+
   */
-  
+
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  
+
   if (_devshop_projects_project_has_module($node, 'features')){
     $form['revert'] = array(
       '#title' => t('Revert all features after code pull?'),
@@ -213,7 +226,7 @@ function hosting_task_devshop_pull_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  
+
   // Add validator for environments
   //$form['#validate'] = array('hosting_task_devshop_pull_form');
   return $form;
@@ -242,13 +255,20 @@ function hosting_task_devshop_sync_form($node) {
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the source environment.'), 'source', 'Source');
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the destination environment.'), 'destination', 'Destination');
-    
+
+
+  $form['database'] = array(
+    '#title' => t('Sync database from destination to source.'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+
   $form['files'] = array(
     '#title' => t('Sync files folder from destination to source.'),
     '#type' => 'checkbox',
     '#default_value' => 0,
   );
-    
+
   $form['note'] = array(
     '#value' => '<p>'. t('This will DESTROY the database for <strong>Destination</strong> and replace it with the database for the selected <strong>Source</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
     '#type' => 'markup',
@@ -271,6 +291,14 @@ function hosting_task_devshop_sync_form($node) {
       '#default_value' => $has_features,
       '#access' => $has_features,
     );
+  }else{
+    $form['revert'] = array(
+      '#title' => t('<em>Revert all features on Destination after content sync?</em>'),
+      '#type' => 'checkbox',
+      '#description' => t('This site doesn\'t have features.module enabled. Please enable and then "Verify" the site.'),
+      '#default_value' => FALSE,
+      '#disabled' => TRUE,
+      );
   }
   $form['cache'] = array(
     '#title' => t('Clear cache on Destination after content sync?'),
