@@ -1,6 +1,13 @@
-#edit-default-platforms-dev-enabled-wrapper, #edit-default-platforms-dev-branch-wrapper {
+#devshop-project-create-step-environments .platform {
+  clear: both;
+  border-bottom: 1px solid #e8e8e8;
+}
+#devshop-project-create-step-environments .platform .form-item {
   float: left;
-  width: 50%;
+  width: 46%;
+  clear: none;
+  height: 2.0em;
+  border-bottom: none;
 }
 body.aegir #page div.node div.content fieldset.project-environments div.form-item {
   padding: 5px;
