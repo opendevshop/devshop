@@ -89,8 +89,8 @@ function devshop_projects_create_wizard_info(){
     'order' => array(
       'git_url' => t('Step 1: Source'),
       'settings' => t('Step 2: Settings'),
-      'environments' => t('Step 3: Platforms'),
-      'sites' => t('Step 4: Sites'),
+      'environments' => t('Step 3: Environments'),
+      'sites' => t('Step 4: Install Profile'),
     ),
     'forms' => array(
       'git_url' => array(
