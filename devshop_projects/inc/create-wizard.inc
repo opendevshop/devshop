@@ -240,7 +240,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
   // Display helpful tips for connecting.
   $pubkey_path = variable_get('devshop_public_key_path', '/var/aegir/.ssh/id_rsa.pub');
   if (!file_exists($pubkey_path)){
-    $output = t('No file was found at %path! To clone a Git repository to this server you need an SSH Key.  See !link for a nice guide to generating SSH keys.', array('%path' => $pubkey_path, '!link' => l('github:help', 'https://help.github.com/articles/generating-ssh-keys', array('target' => '_blank'))));
+    $output = t('No file was found at %path! To clone a Git repository to this server you probably need a public SSH Key.  See !link for a nice guide to generating SSH keys.', array('%path' => $pubkey_path, '!link' => l('github:help', 'https://help.github.com/articles/generating-ssh-keys', array('target' => '_blank'))));
   } else {
     $pubkey = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
     
