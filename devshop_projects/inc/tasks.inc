@@ -21,6 +21,7 @@ function devshop_projects_hosting_tasks() {
     'description' => t('Creates a new site & platform within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
+    'hidden' => TRUE,
   );
   $tasks['project']['devshop-commit'] = array(
     'title' => t('Commit Features'),
