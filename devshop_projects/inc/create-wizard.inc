@@ -427,8 +427,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // Add JS that reloads the page when tasks finish.
     $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js';
     drupal_add_js($path);
-
-    $project->no_next = TRUE;
     return;
   }
 
