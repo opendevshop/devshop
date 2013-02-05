@@ -2,8 +2,12 @@
 /**
  * @file devshop_hosting.module
  */
-drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
 
+function devshop_hosting_init(){
+  drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
+  $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
+  drupal_set_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
+}
 
 /**
  * Implements hook_menu()
