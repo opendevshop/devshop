@@ -58,7 +58,7 @@ function devshop_projects_menu() {
     'type' => MENU_LOCAL_TASK,
     'title' => t('Start a new Project'), 
     'title callback' => 'check_plain', 
-    'page callback' => 'devshop_projects_create_wizard', 
+    'page callback' => 'devshop_projects_add', 
     'page arguments' => array(3), 
     'access callback' => 'node_access', 
     'access arguments' => array('create', 'project'), 
@@ -84,6 +84,19 @@ function devshop_projects_menu() {
   return ($items);
 }
 
+/**
+ * Page Callback for hosting/projects/add
+ */
+function devshop_projects_add($step = NULL){
+  if ($step == NULL){
+    // Check to see if this project is still in the wizard
+    ctools_include('object-cache');
+    $project_wizard_cache = ctools_object_cache_get('project', NULL);
+    drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
+  } else {
+    return devshop_projects_create_wizard($step);
+  }
+}
 /**
  * Replacement for hosting_task_confirm_form()
  *
