@@ -412,9 +412,12 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
+    $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
+    $note .= '<p class="wait">' . t('<em>NOTE: It is a <a href="http://drupal.org/node/1870416" target>known bug</a> that this page doesn\'t automatically reload.  Please reload the page manually once the task is complete.</em>') . '</p>';
+    
     $form['note'] = array(
       '#type' => 'markup',
-      '#value' => t('Please wait while we connect to your repository and determine any branches.  NOTE: You must reload the page when the tasks complete to continue.'),
+      '#value' => $note,
     );
     $form['not_ready'] = array(
       '#type' => 'value',

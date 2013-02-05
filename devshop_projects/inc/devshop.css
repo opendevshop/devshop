@@ -35,3 +35,8 @@ fieldset.project-environments {
 textarea#rsa {
   display: none;
 }
+
+p.wait {
+  text-align: center;
+  padding: 30px 0px 0px;
+}
