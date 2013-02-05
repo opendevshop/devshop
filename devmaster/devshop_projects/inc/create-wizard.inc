@@ -691,9 +691,12 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Provide something for people while they wait.
   if (!$completed){
     $project->no_finish = TRUE;
+    $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
+    $note .= '<p class="wait">' . t('<em>NOTE: It is a <a href="http://drupal.org/node/1870416" target>known bug</a> that this page doesn\'t automatically reload.  Please reload the page manually once the task is complete.</em>') . '</p>';
+
     $form['help'] = array(
       '#type' => 'markup',
-      '#value' => t('Please wait while we download and verify your drupal code.  NOTE: You will have to manually reload the page after the tasks complete to continue.'),
+      '#value' => $note,
     );
     return $form;
   }
