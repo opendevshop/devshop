@@ -50,7 +50,7 @@ function devshop_projects_menu() {
     'weight' => 1,
   );
   $items['hosting/projects/list'] = array(
-    'title' => 'Projects',
+    'title' => t('All Projects'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
   $items['hosting/projects/add'] = array(
