@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Set a new homepage.
+ */
+function devshop_hosting_install(){
+  variable_set('site_frontpage', 'devshop');
+  drupal_set_message(t('Site frontpage set to <em>devshop</em>.'));
+}
