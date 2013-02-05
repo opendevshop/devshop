@@ -64,7 +64,6 @@ function devshop_projects_projects_page() {
 
 
   $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));
-  $output .= l(t('Create a new project?'), 'node/add/project');
   return $output;
 }
 
