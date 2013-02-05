@@ -47,3 +47,9 @@ p.wait {
   text-align: center;
   padding: 30px 0px 0px;
 }
+
+#edit-return {
+  float: right;
+  font-size: 3.0em;
+  height: 1.0em;
+}
