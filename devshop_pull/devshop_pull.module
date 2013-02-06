@@ -110,6 +110,16 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
         DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
       ),
     );
+    module_load_include('inc', 'devshop_pull');
+    $form['git_settings']['pull_url'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Pull Trigger URL'),
+      '#value' => _devshop_pull_callback_url($node),
+      '#description' => t('Configure your repo to hit this URL when it receives a commit.'),
+      '#attributes' => array(
+        'onclick' => 'this.select()',
+      ),
+    );
   }
 }
 
