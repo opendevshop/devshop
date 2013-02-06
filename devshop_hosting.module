@@ -76,3 +76,36 @@ function devshop_hosting_form_user_login_block_alter(&$form){
     $form = array();
   }
 }
+
+/**
+ * Implements hook_block()
+ */
+function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['built'] = array(
+        'info' => t('Built by THINKDROP'), 
+        'weight' => '10',
+        // Not worth caching. 
+        'cache' => BLOCK_NO_CACHE,
+      );
+      $blocks['driven'] = array(
+        'info' => t('Driven by Aegir'), 
+        'weight' => '10',
+        // Not worth caching. 
+        'cache' => BLOCK_NO_CACHE,
+      );
+      return $blocks;
+    case 'view':
+      if ($delta == 'built'){
+        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-td.png';
+        $block['subject'] = t('Built by'); // Don't display a title
+        $block['content'] = l(theme('image', $image_path), 'http://thinkdrop.net/', array('html' => TRUE));
+      } elseif ($delta == 'driven') {
+        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-aegir.png';
+        $block['subject'] = t('Powered by'); // Don't display a title
+        $block['content'] = l(theme('image', $image_path), 'http://aegirproject.org/', array('html' => TRUE));
+      }
+      return $block;
+  }
+}
