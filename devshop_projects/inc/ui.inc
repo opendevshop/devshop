@@ -186,7 +186,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         'class' => 'project-environments',
       ),
     );
-    $link = l(t('Create New Environment'), 'node/81/project_devshop-create');
+    global $user;
+    $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('query' => array('token' => drupal_get_token($user->uid))));
     $node->content['sites']['table'] = array(
       '#type' => 'item',
       '#value' => $table,
