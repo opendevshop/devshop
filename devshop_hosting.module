@@ -86,14 +86,16 @@ function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
       $blocks['built'] = array(
         'info' => t('Built by THINKDROP'), 
         'weight' => '10',
-        // Not worth caching. 
         'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'footer',
       );
       $blocks['driven'] = array(
         'info' => t('Driven by Aegir'), 
         'weight' => '10',
-        // Not worth caching. 
         'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'footer',
       );
       return $blocks;
     case 'view':
