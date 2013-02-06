@@ -261,9 +261,9 @@ function devshop_project_create_step_git(&$form, &$form_state) {
       $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
     }
   } else {
-    // @TODO: Make this Translatable.
+    // @TODO: Make this Translatable
     $output = <<<HTML
-  <div class="empty-message">If you haven't granted this server access to your Git repository, you should do so now using our <a href="#rsa" onclick="$('#rsa').toggle().select()">public SSH key</a>.</div>
+  <div class="empty-message">If you haven't granted this server access to your Git repository, you should do so now using our <a href="#rsa" title="Click to see this server's public SSH key" onclick="$('#rsa').toggle().select()">public SSH key</a>.</div>
   <textarea id="rsa" onclick="this.select()">$pubkey</textarea>
 HTML;
   }
