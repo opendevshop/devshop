@@ -69,3 +69,21 @@ p.wait {
   font-family: Courier New, monospace;
   width: 100%;
 }
+#footer {
+  height: 100px !important;
+  line-height: inherit !important;
+}
+#footer h2 {
+  border: none;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+#footer .block {
+  float: left;
+  margin-right: 20px;
+  
+}
+
+#block-system-0.block {
+  float: right;
+}
