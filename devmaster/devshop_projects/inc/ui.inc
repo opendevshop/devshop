@@ -283,6 +283,7 @@ function devshop_hosting_site_goto_link($node) {
   else {
     $title = t("!url", array('!url' => $node->title));
   }
+  $options['attributes']['target'] = '_blank';
   $options['attributes']['class'] = 'hosting-goto-site-link';
   return l($title, "node/" . $node->nid . "/goto_site", $options);
 }
