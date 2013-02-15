@@ -20,7 +20,9 @@ function devshop_projects_create_wizard($step = NULL){
 
   // Setup Step.
   if ($step == NULL){
-    $step = current(array_keys($form_info['order']));
+    drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+
+    //$step = current(array_keys($form_info['order']));
   }
 
   // Create default project object
@@ -56,7 +58,7 @@ function devshop_projects_create_wizard($step = NULL){
     drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
-      drupal_goto('hosting/projects/add');
+      drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
     }
   }
 
