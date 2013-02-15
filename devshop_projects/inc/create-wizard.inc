@@ -21,8 +21,6 @@ function devshop_projects_create_wizard($step = NULL){
   // Setup Step.
   if ($step == NULL){
     drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
-
-    //$step = current(array_keys($form_info['order']));
   }
 
   // Create default project object
