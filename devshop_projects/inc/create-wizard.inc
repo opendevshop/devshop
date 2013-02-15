@@ -44,22 +44,6 @@ function devshop_projects_create_wizard($step = NULL){
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
 
-  // Check verification status
-  $project_node = node_load($project->project_nid);
-  if (!empty($project_node->nid)){
-    $tasks = hosting_task_fetch_tasks($project_node->nid);
-  }
-  $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
-
-  // If project verification failed, we need to ask for a new git url.
-  if ($project->verify_task_status === HOSTING_TASK_ERROR && !empty($project_node->nid)){
-    drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
-    // If not on the first step, go to it.
-    if ($step != current(array_keys($form_info['order']))){
-      drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
-    }
-  }
-
   // All forms can access $form_state['project'];
   $form_state['project'] = $project;
 
@@ -312,9 +296,8 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project = &$form_state['project'];
 
   // If the project already exists, and git url has changed...
-  if ($project->project_nid && $project->git_url != $form_state['values']['git_url']) {
+  if ($project->project_nid) {
     // Change the git url and save the node.  Verification SHOULD run again.
-    drupal_set_message(t('You have changed the git URL.  Please wait while we verify your remote and branches.'));
     $node = node_load($project->project_nid);
     $node->git_url = $form_state['values']['git_url'];
     $node->branches = array();
