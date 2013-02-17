@@ -1,5 +1,0 @@
-name = DevShop Projects Testing
-description = A DevShop Projects module that allows the user to incorporate simple tests within a project and have the test run automatically. 
-core = 6.x
-package = DevShop
-~           
