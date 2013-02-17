@@ -7,7 +7,7 @@
 /**
  * Implementation of hook_schema().
  */
-function devshop_projects_testing_schema() {
+function devshop_testing_schema() {
  $schema['hosting_devshop_project_testing'] = array(
     'fields' => array(
       'project_nid' => array(
@@ -34,16 +34,16 @@ function devshop_projects_testing_schema() {
 /**
  * Implementation of hook_install().
  */
-function devshop_projects_testing_install() {  
+function devshop_testing_install() {  
   // Create tables.
-  drupal_install_schema('devshop_projects_testing');
+  drupal_install_schema('devshop_testing');
 }
 
 /**
  * Implementation of hook_uninstall().
  */
-function devshop_projects_testing_uninstall() {  
+function devshop_testing_uninstall() {  
   // Delete tables.
-  drupal_uninstall_schema('devshop_projects_testing');
+  drupal_uninstall_schema('devshop_testing');
 }
 
