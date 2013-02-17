@@ -9,7 +9,7 @@
 /**
  * Implementation of hook_perm()
  */
-function devshop_projects_testing_perm() {
+function devshop_testing_perm() {
   return array(
     'run project tests',
   );
@@ -18,7 +18,7 @@ function devshop_projects_testing_perm() {
 /**
  * Implements hook_form_alter().
  */
-function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
+function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
 
   if ($form_id == 'project_node_form') {
     $form['tests_to_run'] = array(
@@ -35,7 +35,7 @@ function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
 /**
  * Implements hook_nodeapi()
  */
-function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
+function devshop_testing_nodeapi(&$node, $op, $a3 = null) {
 
   if ($node->type != 'project' || $a3 != null) {
     return;
@@ -44,7 +44,7 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
   switch ($op) {
   case 'load':
     $data = db_fetch_array(db_query("SELECT tests_to_run " .
-				     "FROM {hosting_devshop_project_testing} ".
+				     "FROM {hosting_devshop_testing} ".
 				     "WHERE project_nid = %d", $node->nid));
     return $data;
 
@@ -78,15 +78,15 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
  * Implementation of hook_hosting_tasks()
  *
  */
-function devshop_projects_testing_hosting_tasks() {
+function devshop_testing_hosting_tasks() {
   $tasks = array();
 
-  $tasks['site']['devshop-test'] = array(
+  $tasks['project']['devshop-test'] = array(
     'title' => t('Run Tests'),
     'description' => t('Run a group of previousely defined SimpleTest tests.'),
     'dialog' => TRUE,
     'task_permitted' => TRUE,
-    'access callback' => 'devshop_projects_testing_access',
+    'access callback' => 'devshop_testing_access',
   );
 
   return $tasks;
@@ -99,7 +99,7 @@ function devshop_projects_testing_hosting_tasks() {
  * To qualify, it much be part of a devshop project group and must
  * be either the 'test' site or one of the branch sites.
  */
-function devshop_projects_testing_access($node, $type) {
+function devshop_testing_access($node, $type) {
 
   if ($node->type != 'site' || !$node->project_nid) {
     return FALSE;
