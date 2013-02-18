@@ -81,11 +81,10 @@ function devshop_provision_drush_command() {
   );
   */
   $items['provision-devshop-test'] = array(
-    'description' => 'Run a group of SimpleTest tests.',
+    'description' => 'Run a group of SimpleTests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
-      'tests-to-run' => 'The list of tests to run.',
-      'sync-from-live' => 'Sync contents from Live before running tests.',
+      'tests-to-run' => 'The list of tests to run, separated by comma.',
     ),
     'aliases' => array('pdt'),
     'arguments' => array(
