@@ -36,8 +36,8 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
   );
   $tasks['project']['devshop-sync'] = array(
-    'title' => t('Sync Content'),
-    'description' => t('Sync content from another site and (optionally) run update.php, clear cache, and revert features.'),
+    'title' => t('Sync Data'),
+    'description' => t('Sync database and files from another site and (optionally) run update.php, clear cache, and revert features.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
