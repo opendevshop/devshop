@@ -274,6 +274,26 @@ function devshop_projects_hosting_project_context_options(&$task) {
 }
 
 /**
+ * Implements hook_drush_context_import()
+ *
+ * This allows project nodes to be created from contexts (aliases)
+ */
+function devshop_projects_drush_context_import($context, &$node) {
+  if ($context->type == 'project') {
+    $node->title = $context->project_name;
+    $node->type = $context->type;
+    $node->code_path = $context->code_path;
+    $node->base_url = $context->base_url;
+    $node->install_profile = $context->install_profile;
+
+    $node->git_url = $context->git_url;
+    $branches = getBranchesAndTags($context->git_url);
+    $node->git_branches = $branches['branches'];
+    $node->git_tags = $branches['tags'];
+  }
+}
+
+/**
  * Helpfer for getting branches and tags from a git URL
  */
 function getBranchesAndTags($git_url = NULL){
