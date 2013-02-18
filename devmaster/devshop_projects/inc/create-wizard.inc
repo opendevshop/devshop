@@ -351,7 +351,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   // Setup project url.
   $base_url = $_SERVER['SERVER_NAME'];
   $server = variable_get('devshop_project_default_base_url', $base_url);
-  $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@name.@server"), array('@name' => $project_name, '@server' => $server));
+  $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@name.@server"), array('@name' => strtolower($project_name), '@server' => $server));
 }
 
 /**********
