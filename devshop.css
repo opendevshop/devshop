@@ -87,3 +87,8 @@ p.wait {
 #block-system-0.block {
   float: right;
 }
+
+body.node-type-project a.hosting-goto-site-link {
+  background: none;
+  padding: inherit;
+}
