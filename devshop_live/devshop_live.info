@@ -2,6 +2,5 @@ name = DevShop Live
 description = A DevShop module to Going Live.
 core = 6.x
 package = DevShop
-
 dependencies[] = devshop_projects
 dependencies[] = hosting_alias

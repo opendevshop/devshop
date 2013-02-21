@@ -153,8 +153,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       }
       $row = array();
       if ($site->site_status != -2) {
-        $url = "http://$site->title";
-        $row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+        
+        //$row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
+        $row[] = devshop_hosting_site_goto_link($site);
         $row[] = l('Site Dashboard', "node/$site->nid");
       }
       else {
@@ -269,4 +270,20 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
  */
 function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
   devshop_projects_nodeapi_site_view($node, $a3, $a4);
+}
+
+/**
+ * Our own version of _hosting_site_goto_link()
+ */
+function devshop_hosting_site_goto_link($node) {
+  $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
+  if (!is_null($cache) && (time() < $cache->data['expire'])) {
+    $title = t("Log in: !url", array('!url' => $node->title));
+  }
+  else {
+    $title = t("!url", array('!url' => $node->title));
+  }
+  $options['attributes']['target'] = '_blank';
+  $options['attributes']['class'] = 'hosting-goto-site-link';
+  return l($title, "node/" . $node->nid . "/goto_site", $options);
 }

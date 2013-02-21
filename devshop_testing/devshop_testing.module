@@ -9,16 +9,16 @@
 /**
  * Implementation of hook_perm()
  */
-function devshop_projects_testing_perm() {
+function devshop_testing_perm() {
   return array(
-    'run project tests',
+    'create devshop-test task',
   );
 }
 
 /**
  * Implements hook_form_alter().
  */
-function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
+function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
 
   if ($form_id == 'project_node_form') {
     $form['tests_to_run'] = array(
@@ -35,7 +35,7 @@ function devshop_projects_testing_form_alter(&$form, &$form_state, $form_id) {
 /**
  * Implements hook_nodeapi()
  */
-function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
+function devshop_testing_nodeapi(&$node, $op, $a3 = null) {
 
   if ($node->type != 'project' || $a3 != null) {
     return;
@@ -44,7 +44,7 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
   switch ($op) {
   case 'load':
     $data = db_fetch_array(db_query("SELECT tests_to_run " .
-				     "FROM {hosting_devshop_project_testing} ".
+				     "FROM {hosting_devshop_testing} ".
 				     "WHERE project_nid = %d", $node->nid));
     return $data;
 
@@ -78,75 +78,37 @@ function devshop_projects_testing_nodeapi(&$node, $op, $a3 = null) {
  * Implementation of hook_hosting_tasks()
  *
  */
-function devshop_projects_testing_hosting_tasks() {
+function devshop_testing_hosting_tasks() {
   $tasks = array();
 
-  $tasks['site']['devshop-test'] = array(
+  $tasks['project']['devshop-test'] = array(
     'title' => t('Run Tests'),
-    'description' => t('Run a group of previousely defined SimpleTest tests.'),
+    'description' => t('Run a group of SimpleTests.'),
     'dialog' => TRUE,
     'task_permitted' => TRUE,
-    'access callback' => 'devshop_projects_testing_access',
+    'access callback' => 'devshop_hosting_task_menu_access',
   );
 
   return $tasks;
 }
 
-/*
- * Task access callback hook
- *
- * Returne TRUE is this is a site node and qualifies to run tests.
- * To qualify, it much be part of a devshop project group and must
- * be either the 'test' site or one of the branch sites.
- */
-function devshop_projects_testing_access($node, $type) {
-
-  if ($node->type != 'site' || !$node->project_nid) {
-    return FALSE;
-  }
-
-  $query = db_query("SELECT * FROM {hosting_devshop_project_object} " .
-		    "WHERE object_nid = %d", $node->nid);
-
-  if (!($obj = db_fetch_object($query))) {
-    // This should not happen, but let's check for it anyway
-    return FALSE;
-  }
-
-  if ($obj->environment == 'live' || $obj->environment == 'dev') {
-    return FALSE;
-  }
-
-  // Everything else is OK
-  return TRUE;
-}
-
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
- *
  */
 function hosting_task_devshop_test_form($node) {
 
-  if ($node->project_nid) {
-    $project_node = node_load($node->project_nid);
-    $tests = $project_node->tests_to_run;
-  }
-  else {
-    $tests = "";
-  }
+  $tests = $node->tests_to_run;
+  
+  $form = array();
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to run tests on.'), 'environment', 'Environment', 'radios');
 
+  $example_site = key($form['environment']['#options']) . "." . $node->base_url;
   $form['tests_to_run'] = array(
     '#type' => 'textarea',
     '#title' => t('Tests To Run'),
     '#default_value' => $tests,
     '#rows' => 6,
-    '#description' => t('Enter the names of the simpletests to run when this project receives a commit, one per line.'),
-    );
-
-  $form['sync'] = array(
-    '#type' => 'checkbox',
-    '#title' => t("Sync from Live before testing?"),
-    '#default_value' => FALSE,
+    '#description' => t('Enter the names of the simpletests to run, one per line.  See the !link for examples, or call <strong><code>drush @@site test-run</code></strong> for a list of available tests.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/hierarchy/DrupalWebTestCase/7'), '@site' => $example_site)),
   );
 
   return $form;
