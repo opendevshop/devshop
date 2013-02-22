@@ -74,6 +74,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       '#type' => 'value',
       '#value' => $node->environment,
     );
+    $form['git_branch'] = array(
+      '#type' => 'value',
+      '#value' => $node->git_branch,
+    );
   }
 }
 
