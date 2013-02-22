@@ -126,8 +126,9 @@ function devshop_projects_update($node) {
   if (!$node->no_verify) {
     hosting_add_task($node->nid, 'verify');
   }
-  
   $data = array();
+  
+  // Branches and tags get saved upon verify.
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
 
