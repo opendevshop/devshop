@@ -58,16 +58,12 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
         // Save to table
         db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, environment, git_branch) VALUES (%d, %d, "%s", "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment, $node->git_branch);
-
-        //If is platform update all sites with the corret git_branch
+        
+        //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
         if ($node->type == 'platform') {
-          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform=%d", $node->nid);
-          
-          while ($object = db_fetch_object($result)) {
-            $site = node_load($object->nid);
-            $site->no_verify;
-            $site->git_branch = $node->git_branch;
-            node_save($site);
+          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
+          while ($site = db_fetch_object($result)) {
+            db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $site->nid);
           } 
         }
       }
