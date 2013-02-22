@@ -49,7 +49,11 @@ function devshop_projects_create_wizard($step = NULL){
   if (!empty($project_node->nid)){
     $tasks = hosting_task_fetch_tasks($project_node->nid);
   }
+  if (isset($tasks['verify']['nid'])){
+    
+  }
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
+  $project->verify_task_nid = $tasks['verify']['nid'];
   
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status === HOSTING_TASK_ERROR && !empty($project_node->nid)){
@@ -443,10 +447,28 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#value' => TRUE,
     );
 
-    // Add JS that reloads the page when tasks finish.
-    $path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js';
-    drupal_add_js($path);
+    // @TODO: Add proper JS that reloads the page when tasks finish.
+    //$path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js';
+    //drupal_add_js($path);
     return;
+  }
+  // Handle failure
+  elseif ($project->verify_task_status == HOSTING_TASK_ERROR){
+    $type = 'error';
+    $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, $type));  
+    drupal_set_message($error, 'error');
+    $note = '<p class="wait">'. t('Something Failed.  Please check the error message, and retry verification.') . '</p>';
+    
+    $form['note'] = array(
+      '#type' => 'markup',
+      '#value' => $note,
+    );
+    
+    $form['not_ready'] = array(
+      '#type' => 'value',
+      '#value' => TRUE,
+    );
+     return;
   }
 
 
