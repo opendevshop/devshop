@@ -184,7 +184,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
         db_query('UPDATE {hosting_devshop_pull_projects} SET pull_method = %d WHERE project_nid = %d', $node->pull_method, $node->nid);
       }
       elseif ($node->type == 'platform') {
-        db_query('UPDATE {hosting_devshop_pull_platforms} SET pull_enabled = %d, pull_reset = %d WHERE platform_nid = %d,', $node->pull_enabled, $node->pull_reset, $node->nid);
+        db_query('UPDATE {hosting_devshop_pull_platforms} SET pull_enabled = %d, pull_reset = %d WHERE platform_nid = %d', $node->pull_enabled, $node->pull_reset, $node->nid);
       }
       break;
     }
