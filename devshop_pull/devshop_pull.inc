@@ -100,7 +100,7 @@ function _devshop_pull_hash_create($node) {
  */
 function devshop_pull_project($project_nid) {
   // Search platforms with pull enabled for this project
-  $results = db_query("SELECT environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND project_nid = %d", $project_nid);
+  $results = db_query("SELECT environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND p.project_nid = %d", $project_nid);
   
   $args = array('environments' => '');
   
