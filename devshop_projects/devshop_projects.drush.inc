@@ -185,6 +185,8 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
+    drush_log('[DEVSHOP] Platform Verification complete.', 'notice');
+    
     // Get objects
     $nid = $task->ref->nid;
     $platform = node_load($nid);
@@ -204,18 +206,20 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       return;
     }
 
-    // If the project has a site already, bail.
+    // If the project has a site already, trigger verification, then bail.
     $sites = array_flip($project->project_objects['site']);
     $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
     if (!empty($sites)){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
+      foreach($sites as $site_nid => $site){
+        hosting_add_task($site_nid, 'verify');
+        drush_log(t('[DEVSHOP] Queued verification for !site', array('!site' => $site->title)), 'notice');
+      }
       return;
     }
 
     // live. Let's create a site based off of this platform.
     drush_log('[DEVSHOP] Platform verified.  Creating your site.');
-
-
     $site_node = devshop_projects_create_site($project, $platform, $platform->environment);
 
     drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. !link', array('!link' => l('node/' . $site_node->nid)));
