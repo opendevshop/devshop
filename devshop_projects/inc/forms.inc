@@ -127,6 +127,16 @@ function devshop_projects_form(&$node) {
     '#weight' => 2,
   );
   
+  // Unchanging Values
+  $form['git_branches'] = array(
+    '#type' => 'value',
+    '#value' => $node->git_branches,
+  );
+  $form['git_tags'] = array(
+    '#type' => 'value',
+    '#value' => $node->git_tags,
+  );
+  
   // Extensible settings
   $form['settings'] = array(
     '#type' => 'fieldset',
@@ -179,7 +189,10 @@ function devshop_projects_form(&$node) {
  */
 function devshop_projects_submit_settings($form, &$form_state) {
   $node = node_load($form_state['values']['nid']);
-                    
+
+  // @TODO: Using the devshop_project_settings hook, determine if this
+  // property should be added to the platform or site node.
+  
   // Go through and save our platforms
   foreach ($node->project_objects['platform'] as $nid => $name){
     $platform = node_load($nid);
