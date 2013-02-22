@@ -35,6 +35,11 @@ function devshop_pull_schema() {
   );
   $schema['hosting_devshop_pull_platforms'] = array(
     'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'platform_nid' => array(
         'type' => 'int',
         'not null' => TRUE,
@@ -71,4 +76,13 @@ function devshop_pull_install() {
 function devshop_pull_uninstall() {  
   // Create tables.
   drupal_uninstall_schema('devshop_pull');
+}
+
+/**
+ * Adds project_nid column to our table.
+ */
+function devshop_pull_update_6000(){
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_pull_platforms', 'project_nid', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  return $ret;
 }
