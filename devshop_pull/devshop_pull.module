@@ -157,34 +157,29 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
         break;
     case 'load':
       if ($node->type == 'project') {
-        $data = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
-        if (!empty($data->project_nid)) {
-          $node->pull_enabled = TRUE;
-          $node->pull_method = $data->pull_method;
-          $node->last_pull = $data->last_pull;
-          $node->last_pull_status = $data->last_pull_status;
+        $data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
+        if (!empty($data)) {
+          return $data;
         }
       }
       elseif ($node->type == 'platform') {
         $data = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
-        return $data;
+        if (!empty($data)){
+          return $data;
+        }
       }
       break;
     case 'insert':
-      if ($node->type == 'project') {
-        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method) VALUES (%d, %d)', $node->nid, $node->pull_method);
-      }
-      elseif ($node->type == 'platform') {
-        db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d)', $node->nid, $node->pull_enabled, $node->pull_reset);
-      }
-      break;
       
+      break;
     case 'update':
       if ($node->type == 'project') {
-        db_query('UPDATE {hosting_devshop_pull_projects} SET pull_method = %d WHERE project_nid = %d', $node->pull_method, $node->nid);
+        db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
+        db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status) VALUES (%d, %d, %d, %d)', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status);
       }
       elseif ($node->type == 'platform') {
-        db_query('UPDATE {hosting_devshop_pull_platforms} SET pull_enabled = %d, pull_reset = %d WHERE platform_nid = %d', $node->pull_enabled, $node->pull_reset, $node->nid);
+        db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
+        db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
       }
       break;
     }
