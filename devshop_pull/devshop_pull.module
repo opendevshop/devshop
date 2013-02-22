@@ -71,7 +71,7 @@ function devshop_pull_hosting_queues() {
 function devshop_pull_devshop_project_settings(){
   return array(
     'pull_enabled' => t('Pull on Commit'),
-    'pull_reset' => t('Hard Reset on Pull'),
+    'pull_reset' => t('Reset on Commit'),
   );
 }
 
@@ -226,7 +226,6 @@ function hosting_pull_queue($count) {
   $result = db_query("SELECT d.*  FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
   
   while ($project = db_fetch_object($result)) {
-    
     devshop_pull_project($project->project_nid);
     module_invoke_all('devshop_pull', $project); 
   }
