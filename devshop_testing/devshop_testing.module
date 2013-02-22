@@ -44,7 +44,7 @@ function devshop_testing_nodeapi(&$node, $op, $a3 = null) {
   switch ($op) {
   case 'load':
     $data = db_fetch_array(db_query("SELECT tests_to_run " .
-				     "FROM {hosting_devshop_testing} ".
+				     "FROM {hosting_devshop_project_testing} ".
 				     "WHERE project_nid = %d", $node->nid));
     return $data;
 
