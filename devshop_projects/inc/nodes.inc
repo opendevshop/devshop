@@ -197,7 +197,7 @@ function devshop_projects_load($node) {
  
   foreach ($settings as $setting_name => $setting){
     $setting_node_type = $setting['#node_type'];
-    foreach ($additions['project_objects'][$setting_node_type] as $nid => $environment_name){
+    foreach ((array) $additions['project_objects'][$setting_node_type] as $nid => $environment_name){
       $object = node_load($nid);
       $additions['settings'][$environment_name][$setting_name] = $object->{$setting_name};
     }
