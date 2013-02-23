@@ -90,14 +90,15 @@ function devshop_projects_menu() {
  */
 function devshop_projects_devshop_project_settings($project_node = NULL){
   $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
-  return array(
-    'git_branch' => array(
-      '#title' => t('Git Branch'),
-      '#node_type' => 'platform',
-      '#type' => 'select',
-      '#options' => $branch_options,
-    ),
+  
+  $settings = array();
+  $settings['git_branch'] = array(
+    '#title' => t('Git Branch'),
+    '#node_type' => 'platform',
+    '#type' => 'select',
+    '#options' => $branch_options,
   );
+  return $settings;
 }
 
 
