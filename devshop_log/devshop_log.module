@@ -14,6 +14,28 @@ function devshop_log_perm() {
   );
 }
 
+
+/**
+ * Implements hook_devshop_project_settings
+ */
+function devshop_log_devshop_project_settings($project_node = NULL){
+  if (module_exists('hosting_logs')){
+    return array(
+      'logs_enabled' => array(
+        '#title' => t('Separate Error Logs'),
+        '#node_type' => 'site',
+        '#type' => 'checkbox',
+      ),
+      'logs_available' => array(
+        '#title' => t('Visible Error Logs'),
+        '#node_type' => 'site',
+        '#type' => 'checkbox',
+      ),
+    );    
+  }
+}
+
+
 /**
  * The access callback for the Git Log menu tab.
  *
@@ -73,13 +95,7 @@ function devshop_log_page($nid) {
  * General settings form.
  */
 function devshop_git_log_settings() {
-  $form['devsop_github'] = array(
-    '#type' => 'item',
-    '#title' => t('DevShop Git Commit Log View settings'),
-    '#value' => '',
-    '#weight' => 0,
-  );
-  $form['devsop_git_log']['devshop_git_log_count'] = array(
+  $form['devshop_git_log']['devshop_git_log_count'] = array(
     '#type' => 'textfield',
     '#maxlength' => 5,
     '#title' => t('Max log entries to display'),
@@ -89,7 +105,6 @@ function devshop_git_log_settings() {
     		        'display in the Git Commit Log View page. A ' .
 			'value of 0 will display all of the log entries.'),
   );
-
   return system_settings_form($form);
 }
 
