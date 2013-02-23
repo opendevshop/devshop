@@ -263,17 +263,14 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['git_tags'] = $branches['tags'];
   
   // Load environment settings
-  if (isset($task->ref->project_objects['platform'])) {
-    foreach ($task->ref->project_objects['platform'] as $nid => $name){
-      $platform = node_load($nid);
-      $task->context_options['settings'][$name] = array();
-      
-      // @TODO: HOOK!
-      $task->context_options['settings'][$name]['git_branch'] = $platform->git_branch;
-      $task->context_options['settings'][$name]['pull_enabled'] = $platform->pull_enabled;
-      $task->context_options['settings'][$name]['pull_reset'] = $platform->pull_reset;
-    }
-  }
+  if (isset($task->ref->settings)) {
+    $task->context_options['settings'] = $task->ref->settings;
+    
+  //  // @TODO: HOOK!
+  //  $task->context_options['settings'][$name]['git_branch'] = $platform->git_branch;
+  //  $task->context_options['settings'][$name]['pull_enabled'] = $platform->pull_enabled;
+  //  $task->context_options['settings'][$name]['pull_reset'] = $platform->pull_reset;
+  //}
 }
 
 /**
