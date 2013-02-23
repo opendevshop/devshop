@@ -190,6 +190,18 @@ function devshop_projects_load($node) {
 
   // Set status
   $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)));
+  
+  // Get Settings
+  $settings = module_invoke_all('devshop_project_settings');
+  $additions['settings'] = array();
+ 
+  foreach ($settings as $setting_name => $setting){
+    $setting_node_type = $setting['#node_type'];
+    foreach ($additions['project_objects'][$setting_node_type] as $nid => $environment_name){
+      $object = node_load($nid);
+      $additions['settings'][$environment_name][$setting_name] = $object->{$setting_name};
+    }
+  }
   return $additions;
 }
 
