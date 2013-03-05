@@ -71,12 +71,18 @@ HTML;
   } else {
     //Call hooks for alter informacion
     $data = module_invoke_all('devshop_projects_page', $rows, $header);
+    
+    // @TODO: Better hook...
+    if (empty($data['rows'])){
+      $data['rows'] = $rows;
+    }
+    if (empty($data['header'])){
+      $data['header'] = $header;
+    }
   
     $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));  
   }
-  
-  
-  
+$output .= 'hey';  
   return $output;
 }
 
