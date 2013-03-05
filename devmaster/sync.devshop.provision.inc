@@ -16,58 +16,52 @@ function drush_provision_devshop_sync_init($source = NULL, $destination = NULL) 
 }
 
 /**
- * Pre provision-devshop-pull
+ * Pre provision-devshop-sync
  */
 function drush_devshop_provision_pre_provision_devshop_sync(){
   devshop_provision_pre_flight();
 }
 
 /**
- * Pre provision-devshop-pull
+ * Pre provision-devshop-sync
  */
 function drush_devshop_provision_provision_devshop_sync_validate($source = NULL, $destination = NULL){
   drush_set_arguments(array($source, $destination));
 }
 
 /**
- * Implements the provision-devshop-deploy command.
+ * Implements the provision-devshop-sync command.
+ *
+ * Now expects environment names for source and destination
  */
 function drush_devshop_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
   drush_log(dt('[DEVSHOP] Provision DevShop Sync started...'));
-
-  // Get source name
-  if ($source){
-    $source_name = substr($source, 1);  // Without @
-  } else {
-    $source = drush_get_option('source');
-    $source_name = substr($source, 1); // Without @
+  $base_url = d()->base_url;
+  
+  // Fail if base url
+  if (empty($base_url)){
+    return drush_log(dt('[DEVSHOP] Your project doesn\'t seem to have the base_url saved.  Run project verification.'), 'error');
   }
-
+  
   // Fail if no source
-  if (!$source_name){
+  if (empty($source) && !($source = drush_get_option('source'))){
     return drush_log(dt('[DEVSHOP] Source not found.  You must enter a source alias to sync from'), 'error');
   } else {
-    $source_site_alias = $source .'.'. d()->base_url;
-  }
-
-  // Get destination name
-  if ($destination){
-    $destination_name = substr($destination, 1); // Without @
-  } else {
-    //If $destination as an argument is not present it is the target name
-    $destination = drush_get_option('destination');
-    $destination_name = substr($destination, 1); // Without @
+    $source_site = "$source.$base_url";
+    $source_site_alias = "@$source_site";
+    drush_log(dt('[DEVSHOP] Source found: ' . $source_site_alias));
   }
 
   // Fail if no destination
-  if (!$destination_name){
-    return drush_log(dt('[DEVSHOP] Destination not found.  You must enter a destination alias to sync from'), 'error');
+  if (empty($destination) && !($destination = drush_get_option('destination'))){
+    return drush_log(dt('[DEVSHOP] Destination not found.  You must enter a source alias to sync to.'), 'error');
   } else {
-    $destination_site_alias = $destination .'.'. d()->base_url;
+    $destination_site = "$destination.$base_url";
+    $destination_site_alias = "@$destination_site";
+    drush_log(dt('[DEVSHOP] Destination found: '. $destination_site_alias));
   }
 
-
-   // Run provision-devshop-pull if requested
+  // Run provision-devshop-pull if requested
   if (drush_get_option('pull')) {
     if (!provision_backend_invoke($destination_site_alias, 'provision-git-pull')){
       return;
@@ -89,7 +83,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     $timestamp = date("Ymd-His");
   //@TODO I know there is a better way...  Don't remember where to find it.
     $file_path = drush_server_home() . "/backups/devshop-sync/";
-    $file_name = "$source_name-$timestamp.sql";
+    $file_name = "$source-$timestamp.sql";
     $file = $file_path . $file_name;
   // Create backup folder if does not exist
   // @TODO: DO THIS ON REMOTE AS WELL
@@ -132,7 +126,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // SQL Import
   // provision_backend_invoke() does not work here.  Doesn't like piping
     drush_log(dt('[DEVSHOP] Importing SQL into !destination', array('!destination' => $destination_site_alias)), 'ok');
-    exec("drush @$destination_site_alias sql-cli < $file");
+    exec("drush $destination_site_alias sql-cli < $file");
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing databases...'), 'ok');
@@ -143,7 +137,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
      drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
 
 
-     provision_backend_invoke(d()->server->name, 'rsync', array("@$source_site_alias:sites/$source_site_alias/files/", "@$destination_site_alias:sites/$destination_site_alias/files/"));
+     provision_backend_invoke(d()->server->name, 'rsync', array("$source_site_alias:sites/$source_site/files/", "$destination_site_alias:sites/$destination_site_alias/files/"));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing files...'), 'ok');
@@ -155,12 +149,10 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   $revert = drush_get_option('revert');
   $cache = drush_get_option('cache');
 
-  $site = "@$destination_site_alias";
-
   // update db, unless option is false.
   if ($update){
     drush_log(dt('[DEVSHOP] Updating database...'), 'ok');
-    provision_backend_invoke($site, 'updb');
+    provision_backend_invoke($destination_site_alias, 'updb');
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
@@ -169,7 +161,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // Revert All Features, unless option is false
   if ($revert){
     drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
-    provision_backend_invoke($site, 'features-revert-all');
+    provision_backend_invoke($destination_site_alias, 'features-revert-all');
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
@@ -179,8 +171,8 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   // Seriously, lets do this twice.  Go Drupal!
   if ($cache){
     drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
-    provision_backend_invoke($site, 'cc all');
-    provision_backend_invoke($site, 'cc all');
+    provision_backend_invoke($destination_site_alias, 'cc all');
+    provision_backend_invoke($destination_site_alias, 'cc all');
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
