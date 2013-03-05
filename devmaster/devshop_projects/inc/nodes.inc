@@ -36,6 +36,20 @@ function devshop_projects_node_info() {
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
+  if ($node->type == 'project') {
+    // Settings are added here, since $git_branches hadn't been added to the
+    // node yet in devshop_projects_load().
+    $settings = module_invoke_all('devshop_project_settings', $node);
+
+    foreach ($settings as $setting_name => $setting){
+      $setting_node_type = $setting['#node_type'];
+      foreach ((array) $node->project_objects[$setting_node_type] as $nid => $environment_name){
+        $object = node_load($nid);
+        $node->settings[$environment_name][$setting_name] = $object->{$setting_name};
+      }
+    }
+  }
+
   // Project-enabled platforms get
   if ($node->type == 'platform' || $node->type == 'site'){
 
@@ -178,11 +192,11 @@ function devshop_projects_load($node) {
 
   $objects = array();
   while($project_object = db_fetch_object($query)) {
-    
+
     // Only load if site or platform is enabled.
     // FYI HOSTING_SITE_ENABLED == HOSTING_PLATFORM_ENABLED
-    $node = node_load($project_object->object_nid);
-    if ($node->{$project_object->object_type .'_status'} == HOSTING_SITE_ENABLED || $node->{$project_object->object_type .'_status'} == HOSTING_SITE_QUEUED) {
+    $site_node = node_load($project_object->object_nid);
+    if ($site_node->{$project_object->object_type .'_status'} == HOSTING_SITE_ENABLED || $site_node->{$project_object->object_type .'_status'} == HOSTING_SITE_QUEUED) {
       $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
     }
   }
@@ -190,18 +204,9 @@ function devshop_projects_load($node) {
 
   // Set status
   $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)));
-  
-  // Get Settings
-  $settings = module_invoke_all('devshop_project_settings');
-  $additions['settings'] = array();
- 
-  foreach ($settings as $setting_name => $setting){
-    $setting_node_type = $setting['#node_type'];
-    foreach ((array) $additions['project_objects'][$setting_node_type] as $nid => $environment_name){
-      $object = node_load($nid);
-      $additions['settings'][$environment_name][$setting_name] = $object->{$setting_name};
-    }
-  }
+
+  // Settings are added in devshop_projects_nodeapi
+
   return $additions;
 }
 
