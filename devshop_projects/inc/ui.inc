@@ -82,7 +82,6 @@ HTML;
   
     $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));  
   }
-$output .= 'hey';  
   return $output;
 }
 
