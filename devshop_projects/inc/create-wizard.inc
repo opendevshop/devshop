@@ -248,22 +248,9 @@ function devshop_project_create_step_git(&$form, &$form_state) {
   
   // If we don't yet have the server's public key saved as a variable...
   if (empty($pubkey)){
-    // Try to read it from the default location, sometimes www-data can read the public key
-    if (is_readable($ssh_path)){
-      $pubkey = file_get_contents($ssh_path);
-      variable_set('devshop_public_key', $pubkey);
-    }
-    // Sometimes www-data can't read /var/aegir/.ssh/id_rsa.pub, so file_exists
-    // fails. Thats why I'm checking for the parent folder.
-    elseif (!file_exists('/var/aegir/.ssh')) {
-      $output .= t("It appears you do not have SSH keys setup. Please ensure that %path exists, or see !link for a nice guide to generating SSH keys.", array('%path' => $pubkey_path, '!link' => l('github:help', 'https://help.github.com/articles/generating-ssh-keys', array('target' => '_blank'))));
-      
-    } else {
-      $output = t("We were unable to read your public SSH key.  On your server, run the following command and then reload this page..");
-      $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
-
-      $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
-    }
+    $output = t("For convenience, the server's SSH public key would be displayed here.  First, on your server, run the following command and then reload this page:");
+    $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
+    $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
   } else {
     // @TODO: Make this Translatable
     $output = <<<HTML
