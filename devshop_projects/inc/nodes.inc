@@ -192,13 +192,10 @@ function devshop_projects_load($node) {
 
   $objects = array();
   while($project_object = db_fetch_object($query)) {
-
     // Only load if site or platform is enabled.
-    // FYI HOSTING_SITE_ENABLED == HOSTING_PLATFORM_ENABLED
+    // @TODO: We should load all.  Let other code hide by status.
     $site_node = node_load($project_object->object_nid);
-    if ($site_node->{$project_object->object_type .'_status'} == HOSTING_SITE_ENABLED || $site_node->{$project_object->object_type .'_status'} == HOSTING_SITE_QUEUED) {
-      $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
-    }
+    $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
   }
   $additions['project_objects'] = $objects;
 
