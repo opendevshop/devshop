@@ -243,18 +243,16 @@ function devshop_project_create_step_git(&$form, &$form_state) {
   
   // Display helpful tips for connecting.
   $pubkey = variable_get('devshop_public_key', '');
-  $ssh_path = variable_get('devshop_ssh_path', '/var/aegir/.ssh');
-  $pubkey_path = variable_get('devshop_public_key_path', '/var/aegir/.ssh/id_rsa.pub');
   
   // If we don't yet have the server's public key saved as a variable...
   if (empty($pubkey)){
-    $output = t("For convenience, the server's SSH public key would be displayed here.  First, on your server, run the following command and then reload this page:");
+    $output = t("For convenience, the server's SSH public key will be displayed here, once you run the following command on your server:");
     $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
     $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
   } else {
     // @TODO: Make this Translatable
     $output = <<<HTML
-  <div class="empty-message">If you haven't granted this server access to your Git repository, you should do so now using our <a href="#rsa" title="Click to see this server's public SSH key" onclick="$('#rsa').toggle().select()">public SSH key</a>.</div>
+  <div class="empty-message">If you haven't granted this server access to your Git repository, you should do so now using it's <a href="#rsa" title="Click to see this server's public SSH key" onclick="$('#rsa').toggle().select()">public SSH key</a>.</div>
   <textarea id="rsa" onclick="this.select()">$pubkey</textarea>
 HTML;
   }
