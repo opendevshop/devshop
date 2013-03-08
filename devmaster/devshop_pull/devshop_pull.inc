@@ -10,7 +10,7 @@
 function devshop_pull_callback($project, $hash) {
   
   // Get the access from list
-  $acl = explode("\n", trim(variable_get('devshop_pull_ip_acl', '')));
+  $acl = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
 
   // I wish I didn't have to do this
   for($i = 0; $i < count($acl); $i++) {
