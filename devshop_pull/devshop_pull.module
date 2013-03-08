@@ -16,6 +16,15 @@ define('DEVSHOP_PULL_DISABLED', 0);
 define('DEVSHOP_PULL_QUEUE', 1);
 define('DEVSHOP_PULL_CALLBACK', 2);
 
+define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS', "207.97.227.253
+50.57.128.197
+108.171.174.178
+50.57.231.61
+204.232.175.64
+192.30.252.0
+204.232.175.75
+");
+
 // The base URL to use for the Post Commit callback.
 define('DEVSHOP_PULL_CALLBACK_URL', 'devshop/pull');
 
