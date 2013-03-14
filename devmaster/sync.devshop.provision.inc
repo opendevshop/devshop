@@ -137,7 +137,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
      drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
 
 
-     provision_backend_invoke(d()->server->name, 'rsync', array("$source_site_alias:sites/$source_site/files/", "$destination_site_alias:sites/$destination_site_alias/files/"));
+     provision_backend_invoke(d()->server->name, 'rsync', array("$source_site_alias:sites/$source_site/files/", "$destination_site_alias:sites/$destination_site/files/"));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing files...'), 'ok');
