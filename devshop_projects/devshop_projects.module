@@ -66,6 +66,15 @@ function devshop_projects_menu() {
     'file' => 'create-wizard.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
   );
+  
+  // Ajax endpoint for reloads
+  $items['hosting/projects/add/status'] = array(
+    'page callback' => 'devshop_projects_add_status',
+    'access callback' => 'node_access', 
+    'access arguments' => array('create', 'project'),
+    'file' => 'create-wizard.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+  );
 
   // hosting tasks ajax pages.
   foreach (hosting_available_tasks('project') as $task => $info){
@@ -81,6 +90,8 @@ function devshop_projects_menu() {
     );
     $items[$path] = array_merge($items[$path], $info);
   }
+  
+  
   return ($items);
 }
 
