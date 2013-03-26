@@ -36,7 +36,7 @@ function devshop_projects_node_info() {
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  if ($node->type == 'project') {
+  if ($node->type == 'project' && isset($node->git_branches)) {
     // Settings are added here, since $git_branches hadn't been added to the
     // node yet in devshop_projects_load().
     $settings = module_invoke_all('devshop_project_settings', $node);
