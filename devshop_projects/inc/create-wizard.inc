@@ -421,7 +421,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
-    $note .= '<p class="wait">' . t('<em>NOTE: It is a <a href="http://drupal.org/node/1870416" target>known bug</a> that this page doesn\'t automatically reload.  Please reload the page manually once the task is complete.</em>') . '</p>';
     
     $form['note'] = array(
       '#type' => 'markup',
@@ -431,10 +430,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'value',
       '#value' => TRUE,
     );
-
-    // @TODO: Add proper JS that reloads the page when tasks finish.
-    //$path = drupal_get_path('module', 'devshop_projects') . '/inc/reload.js';
-    //drupal_add_js($path);
+    // Add code to reload the page when complete.
+    devshop_form_reloader($form, 'project');
     return;
   }
   // Handle failure
@@ -455,9 +452,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
      return;
   }
-
-
-  // Add JS that reloads the page when tasks finish.
+  
+  // this JS handles the form element hiding/showing
   $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
 
@@ -497,6 +493,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     '#options' => $branch_options
   );
   $form_state['no buttons'] = TRUE;
+  
 }
 
 
@@ -692,8 +689,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $completed = FALSE;
       $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
     }
-    // If platform verified successfully:
-    elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
+    // If platform is still processing:
+    elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
       $row[] = t('Platform download & verification in process.');
     }
@@ -707,18 +704,21 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // Store rows for display
     $rows[] = $row;
   } // end foreach platform
+  
 
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
-
+  
   // Provide something for people while they wait.
   if (!$completed){
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
-    $note .= '<p class="wait">' . t('<em>NOTE: It is a <a href="http://drupal.org/node/1870416" target>known bug</a> that this page doesn\'t automatically reload.  Please reload the page manually once the task is complete.</em>') . '</p>';
+    
+    devshop_form_reloader($form, 'platform');
+
 
     $form['help'] = array(
       '#type' => 'markup',
@@ -783,4 +783,67 @@ function devshop_project_create_step_sites_validate(&$from, &$form_state) {
 function devshop_project_create_step_sites_submit(&$from, &$form_state) {
   $project = &$form_state['project'];
   $project->install_profile = $form_state['values']['install_profile'];
+}
+
+
+function devshop_projects_add_status($type = 'platform'){
+  $return = array();
+  
+  // Get Project Cache
+  ctools_include('wizard');
+  ctools_include('object-cache');
+  $project = ctools_object_cache_get('project', NULL);
+  
+  
+  $project_node = node_load($project->project_nid);
+  
+  $good_to_go = TRUE;
+  $nids = array();
+  
+  // When checking project...
+  if ($type == 'project') {
+    $nids = array($project_node->nid);
+  }
+  
+  // When checking platforms...
+  if ($type == 'platform') {
+    foreach ($project_node->project_objects['platform'] as $nid => $name){
+      $nids[] = $nid;
+    }
+  }
+  
+  // Check verification task for all nids
+  foreach ($nids as $nid){
+    $task = hosting_get_most_recent_task($nid, 'verify');
+    if ($task->task_status != HOSTING_TASK_SUCCESS) {
+      $good_to_go = FALSE;
+    }
+  }
+  
+  $return['reload'] = $good_to_go;
+  drupal_json($return);
+  exit;
+}
+
+
+
+/**
+ * Helper for adding reloading feature to form
+ */
+function devshop_form_reloader(&$form, $type = 'platform'){
+  // Add JS that reloads the page when tasks finish.
+  $form[$element_id] = array(
+    '#type' => 'item',
+    '#value' => 'Waiting on verification...',
+    '#prefix' => '<div id="hosting-task-list">',
+    '#suffix' => '</div>',
+    '#weight' => 10
+  );
+  $settings['devshopReload'] = array(
+    'type' => $type,
+    'delay' => 1000,
+  );
+
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js');
 }
