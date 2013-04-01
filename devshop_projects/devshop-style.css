@@ -1,0 +1,47 @@
+div.node div.content div.item-list ul.branches {
+  margin: 0px;
+  padding: 0px;
+}
+div.item-list ul.branches li,
+span.branch
+{
+  list-style: none;
+  
+  background-color:#dfdfdf;
+
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	display:inline-block;
+  white-space: nowrap;
+	color:#777777;
+	font-family:arial;
+	font-size:11px;
+	font-weight:bold;
+	padding:0px 6px;
+  margin: 0px 5px 5px 0px;
+	text-decoration:none;
+}
+body.aegir #page div.node div.content .branches-list div.form-item  {
+  padding-bottom: 2em;
+}
+.refresh-link a {
+  display: block;
+  z-index: 2;
+  float: right;
+  margin-top: -2em;
+}
+
+fieldset.project-environments {
+  position: relative;
+}
+.create-new-environment {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin-top: 2px;
+  display: block;
+}
+a.hosting-goto-site-link {
+  display: inline-block;
+}
