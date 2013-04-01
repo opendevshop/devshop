@@ -106,20 +106,20 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#suffix' => '</div>'
   );
 
-  $node->content['info']['code_path'] = array(
-    '#type' => 'item',
-    '#title' => t('Code path'),
-    '#value' => filter_xss($node->code_path),
-    '#weight' => -8
-  );
-
-  $url = 'http://dev.' . $node->base_url;
-  $node->content['info']['base_url'] = array(
-    '#type' => 'item',
-    '#title' => t('Dev Site'),
-    '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
-    '#weight' => -10
-  );
+  //$node->content['info']['code_path'] = array(
+  //  '#type' => 'item',
+  //  '#title' => t('Code path'),
+  //  '#value' => filter_xss($node->code_path),
+  //  '#weight' => -8
+  //);
+  //
+  //$url = 'http://dev.' . $node->base_url;
+  //$node->content['info']['base_url'] = array(
+  //  '#type' => 'item',
+  //  '#title' => t('Dev Site'),
+  //  '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
+  //  '#weight' => -10
+  //);
 
   $node->content['info']['git_url'] = array(
     '#type' => 'item',
