@@ -159,7 +159,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
               
               $last = (int) $node->last_pull;
               if ($last == 0){
-                $output = t('No Requests.  Setup your Git host to ping');
+                $output = t('No commit notifications received.  Setup your Git host to ping');
                     $output .= strtr(" <input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $url));
 
               } else {
@@ -167,7 +167,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
               }
               $node->content['info']['last_pull'] = array(
                 '#type' => 'item',
-                '#title' => t('Last Pull Request'),
+                '#title' => t('Last Commit'),
                 '#weight' => 32,
                 '#value' => $output,
               );
