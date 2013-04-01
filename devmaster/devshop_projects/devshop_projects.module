@@ -15,6 +15,15 @@ include_once('inc/theme.inc');
 include_once('inc/ui.inc');
 
 /**
+ * Implementation of hook_init()
+ *
+ * Adds a css file.
+ */
+function devshop_projects_init() {
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/devshop-style.css', 'theme');
+}
+
+/**
  * Implementation of hook_perm()
  *
  * Since we have a node type, "create project content permission is

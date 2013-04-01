@@ -129,11 +129,22 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   if (!empty($node->git_branches)){
+   $items = theme_item_list($node->git_branches, NULL, 'ul', array('class' => 'branches')); 
+    $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
+    
+    if ($verify_task->task_status == HOSTING_TASK_SUCCESS){    
+      $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+    } else {
+      $refresh_link =  t('Refresh in progress...');
+    }
+    
     $node->content['info']['git_branches'] = array(
       '#type' => 'item',
       '#title' => t('Remote Branches'),
-      '#value' => implode($node->git_branches, ' '),
-      '#weight' => -8
+      '#value' => $items . $refresh_link,
+      '#weight' => -8,
+      '#prefix' => '<div class="branches-list">',
+      '#suffix' => '</div>',
     );
   }
 
@@ -160,7 +171,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($site->site_status != -2) {
         
         //$row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
-        $row[] = devshop_hosting_site_goto_link($site);
+        $branch = "<span class='branch'>$site->git_branch</span>";
+        $row[] = devshop_hosting_site_goto_link($site) . $branch;
         $row[] = l('Site Dashboard', "node/$site->nid");
       }
       else {
@@ -193,7 +205,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       ),
     );
     global $user;
-    $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('query' => array('token' => drupal_get_token($user->uid))));
+    $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment'), 'query' => array('token' => drupal_get_token($user->uid))));
     $node->content['sites']['table'] = array(
       '#type' => 'item',
       '#value' => $table,
