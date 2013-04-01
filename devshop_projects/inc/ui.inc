@@ -141,10 +141,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $node->content['info']['git_branches'] = array(
       '#type' => 'item',
       '#title' => t('Remote Branches'),
-      '#value' => $items . $refresh_link,
+      '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
       '#weight' => -8,
-      '#prefix' => '<div class="branches-list">',
-      '#suffix' => '</div>',
     );
   }
 
@@ -153,7 +151,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       '#type' => 'item',
       '#title' => t('Install profile'),
       '#value' => ($node->install_profile),
-      '#weight' => -8
+      '#weight' => -7
     );
   }
 
