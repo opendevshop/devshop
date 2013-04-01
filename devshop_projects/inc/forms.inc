@@ -45,6 +45,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   
   // On Hosting Task: Create Project form, do our own submission.
   if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-create'){
+    drupal_set_title(t('Create new environment'));
     $form['#submit'] = array('hosting_task_devshop_create_form_submit');
   }
 
