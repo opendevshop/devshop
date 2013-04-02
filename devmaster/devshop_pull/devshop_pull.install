@@ -30,6 +30,11 @@ function devshop_pull_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'last_pull_ip' => array(
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+      ),
     ),
     'primary key' => array('project_nid'),
   );
@@ -83,6 +88,14 @@ function devshop_pull_uninstall() {
  */
 function devshop_pull_update_6000(){
   $ret = array();
-  db_add_field($ret, 'hosting_devshop_pull_platforms', 'project_nid', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  db_add_field($ret, 'hosting_devshop_pull_platforms', 'last_pull_ip', array('type' => 'varchar', 'not null' => TRUE, 'default' => ''));
+  return $ret;
+}
+/**
+ * Adds project_nid column to our table.
+ */
+function devshop_pull_update_6001(){
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_pull_projects', 'last_pull_ip', array('type' => 'varchar', 'not null' => TRUE, 'default' => '', 'length' => 15));
   return $ret;
 }
