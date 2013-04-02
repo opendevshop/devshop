@@ -15,8 +15,15 @@ function devshop_pull_callback($project, $hash) {
   $project_node = hosting_context_load(str_replace('project_', '', $project));
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
-
   
+  // Check for environments set to pull
+  $environments_to_pull = array();
+  foreach ($project_node->settings as $env => $settings) {
+    if ($settings['pull_enabled']) {
+      $environments_to_pull[] = $env;
+    }
+  }
+
   // Make sure we got the project.
   if (!$project_node){
     $message = "Project $project not found.";
@@ -30,6 +37,10 @@ function devshop_pull_callback($project, $hash) {
   elseif ($project_node->pull_method != DEVSHOP_PULL_CALLBACK){
     $message = "Project $project is NOT configured to use Pull Code URL callback!";
   }
+  // Make sure the project has platforms with pull enabled.
+  elseif (empty($environments_to_pull)){
+    $message = "Project $project has no environments configured to Pull Code on commit!";
+  }
   // Make sure the client's IP address is on the list
   else if (!in_array(ip_address(), $allowed_ips)) {
     $message = ip_address() . " is not authorized to invoke a Pull Code request.";
@@ -40,8 +51,11 @@ function devshop_pull_callback($project, $hash) {
     $message = "Commit Received! Invoked by " . ip_address();
     $status = DEVSHOP_PULL_STATUS_OK;
     
-    // This does the hard work of figuring out what tasks to create.
-    devshop_pull_project($project_node->nid);
+    // Create the hosting task
+    // @TODO: We maybe don't need to pass args here? its saved in the context
+    $args = array();
+    $args['environments'] = implode(' ', $environments_to_pull);
+    hosting_add_task($project_nid, 'devshop-pull', $args);
   }
 
   // Log It, only if there is a status
@@ -99,8 +113,10 @@ function devshop_pull_project($project_nid) {
   while ($info = db_fetch_object($results)){
     $args['environments'] .= $info->environment .' ';
   }
-  hosting_add_task($project_nid, 'devshop-pull', $args);
-  
-  // Put timestamp
-  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), DEVSHOP_PULL_STATUS_OK, $project_nid);
+  $args['environments'] = trim($args['environments']);
+  if (!empty($args['environments'])){
+    hosting_add_task($project_nid, 'devshop-pull', $args);
+  } else {
+    print "No environments configured to pull! Aborting.";
+  }
 }
