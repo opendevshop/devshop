@@ -217,7 +217,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   
     // Insert Project
     elseif ($op == 'insert'){
-      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, "%s")', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
+      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, %d, "%s")', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
 
     }
     // Update Project
