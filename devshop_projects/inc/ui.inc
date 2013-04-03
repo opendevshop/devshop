@@ -11,7 +11,7 @@
  * a table.
  */
 function devshop_projects_projects_page() {
-
+  drupal_set_title(t('Projects'));
   $header = array(
     'Name',
     'Profile',
