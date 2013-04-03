@@ -149,7 +149,6 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $node->live_domain = $project->live_domain;
   $node->uid = $user->uid;
   $node->status = 1;
-  $node->no_verify = TRUE;
   node_save($node);
 
   // Create the site nodes
