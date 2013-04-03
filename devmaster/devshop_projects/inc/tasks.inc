@@ -267,42 +267,34 @@ function hosting_task_devshop_sync_form($node) {
   $form['destination']['#prefix'] = '<div class="destination">';
   $form['destination']['#suffix'] = '</div></div>';
 
-  $form['to_sync'] = array(
-    '#tree' => FALSE,
-    '#type' => 'fieldset',
-    '#title' => t('What to sync'),
-  );
-  $form['to_sync']['database'] = array(
+  $form['database'] = array(
     '#title' => t('Copy database from source to destination.'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#prefix' => '<fieldset><legend>What to sync</legend>',
   );
 
-  $form['to_sync']['files'] = array(
+  $form['files'] = array(
     '#title' => t('Copy files folder from source to destination.'),
     '#type' => 'checkbox',
     '#default_value' => 0,
+    '#suffix' => '</fieldset>',
   );
 
   
-  $form['actions'] = array(
-    '#tree' => FALSE,
-    '#type' => 'fieldset',
-    '#title' => t('Actions'),
-  );
-  
-  $form['actions']['pull'] = array(
+  $form['pull'] = array(
     '#title' => t('Pull code on Destination'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#prefix' => '<fieldset><legend>Actions</legend>',
   );
-  $form['actions']['update'] = array(
+  $form['update'] = array(
     '#title' => t('Run update.php on Destination'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
   if (_devshop_projects_project_has_module($node, 'features')){
-    $form['actions']['revert'] = array(
+    $form['revert'] = array(
       '#title' => t('Revert all features on Destination'),
       '#type' => 'checkbox',
       '#default_value' => $has_features,
@@ -318,10 +310,11 @@ function hosting_task_devshop_sync_form($node) {
     //  '#disabled' => TRUE,
     //  );
   }
-  $form['actions']['cache'] = array(
+  $form['cache'] = array(
     '#title' => t('Clear cache on Destination'),
     '#type' => 'checkbox',
     '#default_value' => 1,
+    '#suffix' => '</fieldset>',
   );
   $form['#validate'][] = 'hosting_task_devshop_sync_form_validate';
   return $form;
