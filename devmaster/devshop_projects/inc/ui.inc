@@ -167,8 +167,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       }
       $row = array();
       if ($site->site_status != -2) {
-        
-        //$row[] = l($url, $url, array('attributes' => array('target' => '_blank')));
         $branch = "<span class='branch'>$site->git_branch</span>";
         $row[] = devshop_hosting_site_goto_link($site) . $branch;
         $row[] = l('Site Dashboard', "node/$site->nid");
@@ -196,7 +194,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
     $node->content['sites'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Project Environments'),
+      '#title' => t('Environments'),
       '#weight' => 12,
       '#attributes' => array(
         'class' => 'project-environments',
@@ -214,7 +212,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //Tasks
   $node->content['tasks_view'] = array(
     '#type' => 'item',
-    //'#value' => devshop_projects_hosting_task_table($node),
     '#value' => hosting_task_table($node),
     '#prefix' => '<div id="hosting-task-list">',
     '#suffix' => '</div>',
