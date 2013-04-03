@@ -55,7 +55,7 @@ function devshop_pull_callback($project, $hash) {
     // @TODO: We maybe don't need to pass args here? its saved in the context
     $args = array();
     $args['environments'] = implode(' ', $environments_to_pull);
-    hosting_add_task($project_nid, 'devshop-pull', $args);
+    hosting_add_task($project_node->nid, 'devshop-pull', $args);
   }
 
   // Log It, only if there is a status
