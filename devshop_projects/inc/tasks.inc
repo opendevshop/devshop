@@ -260,54 +260,64 @@ function hosting_task_devshop_sync_form($node) {
 
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the source environment.'), 'source', 'Source');
-  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the destination environment.'), 'destination', 'Destination');
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the destination environment.  <em>Data from this environment will be DESTROYED.</em>'), 'destination', 'Destination');
 
+  $form['source']['#prefix'] = '<div class="sync-envs"><div class="source">';
+  $form['source']['#suffix'] = '</div>';
+  $form['destination']['#prefix'] = '<div class="destination">';
+  $form['destination']['#suffix'] = '</div></div>';
 
-  $form['database'] = array(
-    '#title' => t('Sync database from destination to source.'),
+  $form['to_sync'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('What to sync'),
+  );
+  $form['to_sync']['database'] = array(
+    '#title' => t('Copy database from source to destination.'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
 
-  $form['files'] = array(
-    '#title' => t('Sync files folder from destination to source.'),
+  $form['to_sync']['files'] = array(
+    '#title' => t('Copy files folder from source to destination.'),
     '#type' => 'checkbox',
     '#default_value' => 0,
   );
 
-  $form['note'] = array(
-    '#value' => '<p>'. t('This will DESTROY the database for <strong>Destination</strong> and replace it with the database for the selected <strong>Source</strong>.', array('!site' => l($node->title, "node/$nid"))) . '</p>',
-    '#type' => 'markup',
-    '#weight' => 100,
+  
+  $form['actions'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Actions'),
   );
-  $form['pull'] = array(
-    '#title' => t('Pull code on Destination before content sync?'),
+  
+  $form['actions']['pull'] = array(
+    '#title' => t('Pull code on Destination'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  $form['update'] = array(
-    '#title' => t('Run update.php on Destination after content sync?'),
+  $form['actions']['update'] = array(
+    '#title' => t('Run update.php on Destination'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
   if (_devshop_projects_project_has_module($node, 'features')){
-    $form['revert'] = array(
-      '#title' => t('Revert all features on Destination after content sync?'),
+    $form['actions']['revert'] = array(
+      '#title' => t('Revert all features on Destination'),
       '#type' => 'checkbox',
       '#default_value' => $has_features,
       '#access' => $has_features,
     );
-  }else{
-    $form['revert'] = array(
-      '#title' => t('<em>Revert all features on Destination after content sync?</em>'),
-      '#type' => 'checkbox',
-      '#description' => t('This site doesn\'t have features.module enabled. Please enable and then "Verify" the site.'),
-      '#default_value' => FALSE,
-      '#disabled' => TRUE,
-      );
+  } else{
+    // I think its better UI just to hide it? If they need features it will be enabled!
+    //$form['actions']['revert'] = array(
+    //  '#title' => t('<em>Revert all features on Destination after content sync?</em>'),
+    //  '#type' => 'checkbox',
+    //  '#description' => t('This site doesn\'t have features.module enabled. Please enable and then "Verify" the site.'),
+    //  '#default_value' => FALSE,
+    //  '#disabled' => TRUE,
+    //  );
   }
-  $form['cache'] = array(
-    '#title' => t('Clear cache on Destination after content sync?'),
+  $form['actions']['cache'] = array(
+    '#title' => t('Clear cache on Destination'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
