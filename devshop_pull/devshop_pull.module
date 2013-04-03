@@ -242,6 +242,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
     if ($node->type == 'platform' && $op == 'load'){
       $data = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
       if (!empty($data)){
+        unset($data['project_nid']);
         return $data;
       }
     }
