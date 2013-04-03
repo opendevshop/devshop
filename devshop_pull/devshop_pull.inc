@@ -51,8 +51,12 @@ function devshop_pull_callback($project, $hash) {
     $message = "Commit Received! Invoked by " . ip_address();
     $status = DEVSHOP_PULL_STATUS_OK;
     
+    // @TODO: Check Payload Here... If we see a GitHub payload with branches,
+    // filter out the $environments_to_pull based on those branches.
+    
     // Create the hosting task
-    // @TODO: We maybe don't need to pass args here? its saved in the context
+    // We need to pass environments so we can control what envs to pull based
+    // on the data coming back from github!
     $args = array();
     $args['environments'] = implode(' ', $environments_to_pull);
     hosting_add_task($project_node->nid, 'devshop-pull', $args);
