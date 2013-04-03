@@ -430,6 +430,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'value',
       '#value' => TRUE,
     );
+    $project->no_next = TRUE;
+
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
     return;
@@ -492,8 +494,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     '#default_value' => $project->branch_platforms,
     '#options' => $branch_options
   );
-  $form_state['no buttons'] = TRUE;
-  
 }
 
 
@@ -834,7 +834,7 @@ function devshop_form_reloader(&$form, $type = 'platform'){
   // Add JS that reloads the page when tasks finish.
   $form[$element_id] = array(
     '#type' => 'item',
-    '#value' => 'Waiting on verification...',
+    '#value' => '',
     '#prefix' => '<div id="hosting-task-list">',
     '#suffix' => '</div>',
     '#weight' => 10
