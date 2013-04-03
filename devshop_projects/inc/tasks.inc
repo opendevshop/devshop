@@ -268,6 +268,7 @@ function hosting_task_devshop_sync_form($node) {
   $form['destination']['#suffix'] = '</div></div>';
 
   $form['to_sync'] = array(
+    '#tree' => FALSE,
     '#type' => 'fieldset',
     '#title' => t('What to sync'),
   );
@@ -285,6 +286,7 @@ function hosting_task_devshop_sync_form($node) {
 
   
   $form['actions'] = array(
+    '#tree' => FALSE,
     '#type' => 'fieldset',
     '#title' => t('Actions'),
   );
