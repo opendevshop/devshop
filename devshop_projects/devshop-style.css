@@ -45,3 +45,22 @@ fieldset.project-environments {
 a.hosting-goto-site-link {
   display: inline-block;
 }
+
+.sync-envs {
+  min-height: 100px;
+}
+.sync-envs > div {
+  width: 49%;
+  margin-right: 1%;
+  float: left;
+}
+
+form .sync-envs  div.form-item-labeled {
+  padding-left: 20px;
+}
+
+form .sync-envs div.form-item-labeled label {
+  font-size: 11px;
+  position: relative;
+  left: 0px;
+}
