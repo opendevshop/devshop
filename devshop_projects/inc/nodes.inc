@@ -59,11 +59,6 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       return $data;
     }
 
-    // On update or delete, delete the existing records.  We will replace below.
-    if ($op == 'update' || $op == 'delete') {
-      db_query('DELETE FROM {hosting_devshop_project_object} WHERE object_nid = %d', $node->nid);
-    }
-
     // On insert or update, insert records saving this objects project and environment
     if ($op == 'update' || $op == 'insert') {
       if (!empty($node->project) && !empty($node->environment)) {
@@ -71,8 +66,19 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         $project = hosting_context_load($node->project);
 
         // Save to table
-        db_query('INSERT INTO {hosting_devshop_project_object} (project_nid, object_nid, object_type, environment, git_branch) VALUES (%d, %d, "%s", "%s", "%s")', $project->nid, $node->nid, $node->type, $node->environment, $node->git_branch);
-        
+        $data = new stdClass();
+        $data->project_nid = $project->nid;
+        $data->object_nid = $node->nid;
+        $data->object_type = $node->type;
+        $data->environment = $node->environment;
+        $data->git_branch = $node->git_branch;
+        if ($op == 'insert') {
+          drupal_write_record('hosting_devshop_project_object', $data);
+        }
+        else {
+          drupal_write_record('hosting_devshop_project_object', $data, 'object_nid');
+        }
+
         //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
         if ($node->type == 'platform') {
           $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);

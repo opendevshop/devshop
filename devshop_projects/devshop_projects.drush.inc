@@ -168,14 +168,23 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     if ($project->status == 0){
       // Don't know if this platform is still here or not...
       unset($project->project_objects['platform'][$task->ref]);
-      if (empty($project->project_objects['platform'])){
+
+      //Check if all platforms were deleted. If is the last platform delete root folder.       
+      $last = TRUE;
+      if (!empty($node->project_objects['platform'])) {
+        foreach ($project->project_objects['platform'] as $nid => $type) {
+          $platform_status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
+          if ($nid != $task->ref && $platform_status != HOSTING_PLATFORM_DELETED) {
+            $last = FALSE;
+          }
+        }
+      }
+      if ($last) {
         drush_log('[DEVSHOP] Last Platform! Removing code_path folder.', 'ok');
         rmdir($project->code_path);
       }   
-    }
-   
+    } 
   }
-
 }
 
 /**
