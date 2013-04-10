@@ -43,7 +43,7 @@ function devshop_projects_projects_page() {
     $row[] = $platform_node->release->version;
 
     // Number of environments
-    $num = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} WHERE project_nid = %d AND object_type='site'", $node->nid));
+    $num = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} hdpo LEFT JOIN {hosting_site} hs ON hdpo.object_nid = hs.nid WHERE hdpo.project_nid = %d AND hdpo.object_type='site' AND hs.status=1", $node->nid));
     $row[] = format_plural($num, t('1 site'), t('!num sites', array('!num' => $num)));
 
 
