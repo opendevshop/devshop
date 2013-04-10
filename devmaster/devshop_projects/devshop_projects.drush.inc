@@ -229,9 +229,16 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
     $project = node_load($task->ref->nid);
     $platform_nids = array_keys($project->project_objects['platform']);
-    foreach ($project->project_objects['platform'] as $nid => $name){
-      drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
-      hosting_add_task($nid, 'verify');
+    foreach ($project->project_objects['platform'] as $nid => $name) {
+      //Check if a platform was deleted for exclude from verify.
+      $status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
+      if ($status != HOSTING_PLATFORM_DELETED) {
+        drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
+        hosting_add_task($nid, 'verify');
+      }
+      else {
+        drush_log('[DEVSHOP] Can\'t run verify on project: ' . $name, 'ok');
+      }
     }
   }
 }
