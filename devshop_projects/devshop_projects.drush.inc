@@ -88,6 +88,11 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   $git_remote = $platform->git_url;
   $git_branch = $platform->git_branch;
 
+  //Remove drupal_path to clone.
+  if ($platform->drupal_path) {
+    $root = str_replace($platform->drupal_path, '', $root);
+  }
+
   // Check if a repo exists
   if (!is_dir($root) || !drush_shell_cd_and_exec($root, 'git status')){
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
@@ -105,6 +110,11 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
     $root = $platform->publish_path;
     $git_remote = $platform->git_url;
     $git_branch = $platform->git_branch;
+
+    //Remove drupal_path to clone.
+    if ($platform->drupal_path) {
+      $root = str_replace($platform->drupal_path, '', $root);
+    }
 
     // Build the command string
     $command = "git checkout $git_branch";
@@ -181,7 +191,14 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
       }
       if ($last) {
         drush_log('[DEVSHOP] Last Platform! Removing code_path folder.', 'ok');
-        rmdir($project->code_path);
+
+        //Is the drupal directory isn't empty then we need to delete recursively
+        if ($project->drupal_path) {
+          _devshop_rrmdir($project->code_path);
+        }
+        else {
+          rmdir($project->code_path);
+        }
       }   
     } 
   }
@@ -265,6 +282,7 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['install_profile'] = $task->ref->install_profile;
   $task->context_options['base_url'] = $task->ref->base_url;
   $task->context_options['code_path'] = trim($task->ref->code_path, " ");
+  $task->context_options['drupal_path'] = trim($task->ref->drupal_path, " ");
   $task->context_options['git_url'] = $task->ref->git_url;
 
   $branches = getBranchesAndTags($task->ref->git_url);
@@ -294,6 +312,7 @@ function devshop_projects_drush_context_import($context, &$node) {
     $node->title = $context->project_name;
     $node->type = $context->type;
     $node->code_path = $context->code_path;
+    $node->drupal_path = $context->drupal_path;
     $node->base_url = $context->base_url;
     $node->install_profile = $context->install_profile;
 
