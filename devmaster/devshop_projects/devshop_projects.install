@@ -27,6 +27,11 @@ function devshop_projects_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
+      'drupal_path' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
       'base_url' => array(
         'type' => 'text',
         'size' => 'big',
@@ -81,6 +86,11 @@ function devshop_projects_schema() {
         'length' => 128,
         'not null' => FALSE,
         'description' => 'The current branch of this site or platform.',
+      ),
+      'drupal_path' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
       ),
     ),
     'primary key' => array('object_nid'),
@@ -162,3 +172,22 @@ function devshop_projects_update_5() {
   $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} CHANGE git_branch git_branch VARCHAR(128) NULL");
   return $ret;
 }
+
+/**
+ * Adds drupal_path column to hosting_devshop_project table.
+ */
+function devshop_projects_update_6() {
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_project', 'drupal_path', array('type' => 'text', 'size' => 'big', 'not null' => FALSE));
+  return $ret;
+}
+
+/**
+ * Adds drupal_path column to hosting_devshop_project table.
+ */
+function devshop_projects_update_7() {
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_project_object', 'drupal_path', array('type' => 'text', 'size' => 'big', 'not null' => FALSE));
+  return $ret;
+}
+

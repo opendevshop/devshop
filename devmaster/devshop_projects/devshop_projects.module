@@ -363,4 +363,19 @@ function _devshop_projects_project_has_module($node, $module) {
   }
   return _devshop_projects_site_has_module(node_load($sites['dev']), $module);
 }
- 
+
+ /*
+ * Delete a directory recursively
+ */
+function _devshop_rrmdir($dir) {
+  if (is_dir($dir)) { 
+     $objects = scandir($dir); 
+     foreach ($objects as $object) { 
+       if ($object != "." && $object != "..") { 
+         if (filetype($dir."/".$object) == "dir") _devshop_rrmdir($dir."/".$object); else unlink($dir."/".$object); 
+       } 
+     } 
+     reset($objects); 
+     rmdir($dir); 
+   } 
+} 
