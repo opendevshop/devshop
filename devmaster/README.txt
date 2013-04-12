@@ -36,10 +36,10 @@ To start, you must have a Project drush alias.  Using the DevShop+Hostmaster
 system will make this much easier, but if you wish to only use the backend, you
 can create a project alias with provision-save, for project NAME:
 
-  $ drush provision-save project_NAME --context_type=project --code_path=/var/aegir/projects/NAME --git_url=http://git.url/to/repo.git --base_url=NAME.server.com
+  $ drush provision-save project_NAME --context_type=project --code_path=/var/aegir/projects/NAME --drupal_path= --git_url=http://git.url/to/repo.git --base_url=NAME.server.com
   
   
-    $ drush provision-save project_NAME --project_name=NAME --context_type=project --code_path=/var/aegir/projects/NAME --git_url=git@github.com:devudo/drupal-flat.git --base_url=NAME.server.com
+    $ drush provision-save project_NAME --project_name=NAME --context_type=project --code_path=/var/aegir/projects/NAME --drupal_path= --git_url=git@github.com:devudo/drupal-flat.git --base_url=NAME.server.com
 
 Commands
 --------
