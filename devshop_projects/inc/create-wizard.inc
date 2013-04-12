@@ -147,6 +147,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $node->base_url = $project->base_url;
   $node->install_profile = $project->install_profile;
   $node->live_domain = $project->live_domain;
+  $node->drupal_path = $project->drupal_path;
   $node->uid = $user->uid;
   $node->status = 1;
   node_save($node);
@@ -362,6 +363,14 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#default_value' => $project->code_path,
     '#maxlength' => 255,
   );
+  $form['drupal_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to Drupal'),
+    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
+    '#size' => 40,
+    '#default_Value' => $project->drupal_path,
+    '#maxlength' => 255,
+  );
   $form['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Primary Domain'),
@@ -398,6 +407,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   // For this step, we just save code path and base url for later saving and
   // verification.
   $project->code_path = $form_state['values']['code_path'];
+  $project->drupal_path = $form_state['values']['drupal_path'];
   $project->base_url = $form_state['values']['base_url'];
 }
 
@@ -567,12 +577,17 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform->title = $project->title . '_' . $platform_name;
       $platform->publish_path = $project->code_path . '/' . $platform_name;
 
+      if ($project->drupal_path) {
+        $platform->publish_path = $project->code_path . '/' . $platform_name . '/' . $project->drupal_path;
+      }
+
       $servers = hosting_get_servers('http');
       $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));
 
       $platform->git_branch = $branch;
       $platform->project = $project->title;
       $platform->environment = $platform_name;
+      $platform->drupal_path = $project->drupal_path;
 
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $project->platforms[$platform_name] = $platform_node->nid;

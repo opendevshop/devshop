@@ -1,5 +1,5 @@
-
 <?php
+
 /**
  * @file devshop_project.task.inc DevShop Project Task related hooks and
  * support function include file.
@@ -138,6 +138,11 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $platform->git_branch = $branch;
   $platform->project = $project->title;
   $platform->environment = $platform_name;
+  $platform->drupal_path = $project->drupal_path;
+
+  if ($project->drupal_path) {
+    $platform->publish_path = $project->code_path . '/' . $platform_name . '/' . $project->drupal_path;
+  }
 
   watchdog('debug', 'Form state: ' . print_r($form_state['values'],1));
 
