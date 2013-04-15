@@ -217,6 +217,15 @@ function devshop_projects_submit_settings($form, &$form_state) {
         $nodes[$nid] = node_load($nid);
         $nodes[$nid]->no_verify = TRUE;
       }
+
+      //If changed database then execute migrate task.
+      if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
+        $args['target_platform'] = $nodes[$nid]->platform;
+        $args['new_uri'] = $nodes[$nid]->title;
+        $args['new_db_server'] = $setting_value;
+
+        hosting_add_task($nid, 'migrate', $args);
+      }
       $nodes[$nid]->{$setting_name} = $setting_value;
     }
   }
