@@ -1,0 +1,8 @@
+name = DevShop Clients
+description = Allow DevShop to configure clients.
+core = 6.x
+package = DevShop
+
+dependencies[] = hosting
+dependencies[] = ctools
+dependencies[] = hosting_client
