@@ -118,6 +118,18 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     '#type' => 'select',
     '#options' => $branch_options,
   );
+
+  $http_servers = hosting_get_servers('http');
+
+  if (count($http_servers)) {
+    $settings['web_server'] = array(
+      '#title' => t('Web server'),
+      '#node_type' => 'platform',
+      '#type' => 'select',
+      '#options' => $http_servers,
+    );
+  }
+
   return $settings;
 }
 
