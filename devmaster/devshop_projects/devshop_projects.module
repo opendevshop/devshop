@@ -130,6 +130,17 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     );
   }
 
+  $db_servers = hosting_get_servers('db');
+
+  if (count($http_servers)) {
+    $settings['db_server'] = array(
+      '#title' => t('Database server'),
+      '#node_type' => 'site',
+      '#type' => 'select',
+      '#options' => $db_servers,
+    );
+  }
+
   return $settings;
 }
 
