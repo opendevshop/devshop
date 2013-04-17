@@ -425,6 +425,10 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $project_node = node_load($project->project_nid);
 
   $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
+
+  if (isset($project->extra_platform) && !empty($project->extra_platform)) {
+    $default_platforms = array_merge($default_platforms, $project->extra_platform);
+  }
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING){
 
     // @TODO: Detect and show errors when they occur.
@@ -468,7 +472,50 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
 
-  $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
+
+//New ui
+  $settings = module_invoke_all('devshop_project_settings', $project_node);
+  $form['environments'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Environment'),
+    '#theme' => 'devshop_projects_create_settings_form',
+    '#tree' => TRUE,
+    '#prefix' => '<div id="environments-wrapper">',
+    '#suffix' => '</div>',
+  );
+
+  foreach ($default_platforms as $env) {
+    $form['environments'][$env] = array(
+      '#tree' => TRUE,
+      '#title' => $env,
+      '#type' => 'fieldset',
+      '#theme' => 'devshop_projects_settings_table',
+    );
+
+    $form['environments'][$env]['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Title'),
+      '#default_value' => $env,
+      '#size' => 25,
+      '#maxlength' => 255,
+    );
+
+    foreach ($settings as $setting_id => $setting){
+      $form['environments'][$env][$setting_id] = $setting;
+      $form['environments'][$env][$setting_id]['#default_value'] = $project_node->settings[$env][$setting_id];
+    }
+
+    //Now add button.
+    $form['add_environment'] = array(
+      '#type' => 'submit',
+      '#value' => t('Add environment'), 
+      '#name' => 'add_environment',
+      '#submit' => array('devshop_projects_create_wizard_add_new_environment'),
+    ); 
+  }
+
+//End new ui
+/*  $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
 
   $form['default_platforms'] = array(
     '#type' => 'fieldset',
@@ -493,7 +540,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#default_value' => isset($project->default_platforms[$env])? $project->default_platforms[$env]: NULL,
         '#options' => array(t('Choose a branch...')) + $branch_options,
       );
-  }
+  }*/
 
   $form['branch_platforms'] = array(
     '#type' => 'checkboxes',
@@ -512,6 +559,10 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 function devshop_project_create_step_environments_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
+
+  if ($form_state['clicked_button']['#value'] == t('Add environment')) {
+    return;
+  }
 
   // Not ready
   if (isset($values['not_ready'])) {
@@ -839,8 +890,6 @@ function devshop_projects_add_status($type = 'platform'){
   exit;
 }
 
-
-
 /**
  * Helper for adding reloading feature to form
  */
@@ -860,4 +909,52 @@ function devshop_form_reloader(&$form, $type = 'platform'){
 
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js');
+}
+
+/**
+ * Add new environment to site.
+ */
+function devshop_projects_add_environment_js() {
+  // Get Project Cache
+  ctools_include('wizard');
+  ctools_include('object-cache');
+  $project = ctools_object_cache_get('project', NULL);
+  $count_extra = count($project->extra_platform);
+  $project->extra_platform['new_platform_'. $count_extra] = 'new platform '. $count_extra;
+  ctools_object_cache_set('project', NULL, $project);
+
+ $form_state = array(
+    'storage' => NULL,
+    'submitted' => FALSE,
+    'input' => $_POST,
+    'method' => 'post',
+    'project' => $project,
+    'values' => $_POST,
+  );
+  $form_build_id = $_POST['form_build_id'];
+  $form = form_get_cache($form_build_id, $form_state);
+  devshop_project_create_step_environments($form, $form_state);
+  form_set_cache($form_build_id, $form, NULL);
+
+  $env_form = $form['environments']; dpm($env_form);
+  unset($env_form['#prefix'], $env_form['#suffix']); // Prevent duplicate wrappers.
+  $javascript = drupal_add_js(NULL, NULL, 'header');
+  drupal_json(array(
+    'status'   => TRUE,
+    'data'     => theme('status_messages') . drupal_render($env_form),
+    'settings' => call_user_func_array('array_merge_recursive', $javascript['setting']),
+  ));
+  exit;
+}
+
+function devshop_projects_create_wizard_add_new_environment($form, &$form_state) {
+  // Get Project Cache
+  ctools_include('wizard');
+  ctools_include('object-cache');
+  $project = ctools_object_cache_get('project', NULL);
+  $count_extra = count($project->extra_platform);
+  $project->extra_platform['new_platform_'. $count_extra] = 'new platform '. $count_extra;
+  ctools_object_cache_set('project', NULL, $project);
+
+  drupal_goto('hosting/projects/add/environments');
 }
