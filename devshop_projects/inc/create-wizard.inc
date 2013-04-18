@@ -744,7 +744,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
-    $note .= '<p class="wait">' . t('<em>NOTE: It is a <a href="http://drupal.org/node/1870416" target>known bug</a> that this page doesn\'t automatically reload.  Please reload the page manually once the task is complete.</em>') . '</p>';
+
+    devshop_form_reloader($form, 'platform');
 
     $form['error'] = array(
       '#type' => 'markup',
