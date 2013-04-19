@@ -155,8 +155,9 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   // Create the site nodes
   // @TODO: Can we speed things up here by only running install for the first,
   // then  "Cloning" to create the rest?
-  foreach ($node->project_objects['platform'] as $nid => $env){
-    devshop_projects_create_site($node, node_load($nid), $env);
+  foreach ($node->project_objects['platform'] as $nid => $env) {
+    $db_server = $project->environments[$env]['db_server'];
+    devshop_projects_create_site($node, node_load($nid), $env, $db_server);
   }
 
   ctools_object_cache_clear('project', $form_state['cache name']);
@@ -424,13 +425,12 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
 
-  $default_platforms = variable_get('devshop_default_platforms', array('dev', 'test', 'live'));
+  $default_platforms = variable_get('devshop_default_platforms', array('dev' => 'dev', 'test' => 'test', 'live' => 'live'));
 
   if (isset($project->extra_platform) && !empty($project->extra_platform)) {
     $default_platforms = array_merge($default_platforms, $project->extra_platform);
   }
-  if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING){
-
+  if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
@@ -450,7 +450,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     return;
   }
   // Handle failure
-  elseif ($project->verify_task_status == HOSTING_TASK_ERROR){
+  elseif ($project->verify_task_status == HOSTING_TASK_ERROR) {
     $type = 'error';
     $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, $type));  
     drupal_set_message($error, 'error');
@@ -472,8 +472,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
 
-
-//New ui
   $settings = module_invoke_all('devshop_project_settings', $project_node);
   $form['environments'] = array(
     '#type' => 'fieldset',
@@ -502,7 +500,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
     foreach ($settings as $setting_id => $setting){
       $form['environments'][$env][$setting_id] = $setting;
-      $form['environments'][$env][$setting_id]['#default_value'] = $project_node->settings[$env][$setting_id];
+      $form['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
     }
 
     //Now add button.
@@ -513,43 +511,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#submit' => array('devshop_projects_create_wizard_add_new_environment'),
     ); 
   }
-
-//End new ui
-/*  $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
-
-  $form['default_platforms'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Project Environments'),
-    '#description' => t('Choose the environments you would like to create for this project.  You will be able to create more or change the branch later.'),
-    '#theme' => 'devshop_project_create_platforms_table',
-    '#tree' => TRUE,
-  );
-  foreach ($default_platforms as $env) {
-    $form['default_platforms'][$env] = array(
-      '#tree' => TRUE,
-      '#prefix' => '<div class="platform">',
-      '#suffix' => '</div>',
-    );
-    $form['default_platforms'][$env]['enabled'] = array(
-      '#type' => 'checkbox',
-      '#title' => $env,
-      '#default_value' => !empty($project->default_platforms[$env]),
-    );
-    $form['default_platforms'][$env]['branch'] = array(
-        '#type' => 'select',
-        '#default_value' => isset($project->default_platforms[$env])? $project->default_platforms[$env]: NULL,
-        '#options' => array(t('Choose a branch...')) + $branch_options,
-      );
-  }*/
-
-  $form['branch_platforms'] = array(
-    '#type' => 'checkboxes',
-    '#multiple' => 'true',
-    '#title' => t('Branch Environments'),
-    '#description' => t('Create new environments based on the project\'s git branches.'),
-    '#default_value' => $project->branch_platforms,
-    '#options' => $branch_options
-  );
 }
 
 
@@ -560,8 +521,21 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   $project = &$form_state['project'];
   $values = $form_state['values'];
 
+  $default_platforms = variable_get('devshop_default_platforms', array('dev' => 'dev', 'test' => 'test', 'live' => 'live'));
+
+  if (isset($project->extra_platform) && !empty($project->extra_platform)) {
+    $default_platforms = array_merge($default_platforms, $project->extra_platform);
+  }
+
   if ($form_state['clicked_button']['#value'] == t('Add environment')) {
     return;
+  }
+
+  foreach ($default_platforms as $key => $data) {
+    // Check for illegal chars
+    if (!preg_match('!^[a-z0-9_]+$!', $data['title'])) {
+      form_set_error('environments[' . $data['title']  . '][title', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+    }
   }
 
   // Not ready
@@ -569,36 +543,6 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
     return;
   }
-
-  // At least one platform is required
-  $none_chosen = TRUE;
-  foreach ($values['default_platforms'] as $env => $data) {
-    if ($data['enabled']){
-      $none_chosen = FALSE;
-      if ($data['branch']){
-        // Save the value
-        form_set_value($form['default_platforms'][$env], $data['branch'], $form_state);
-      } else {
-        // If you chose a default platform, you must choose a branch
-        form_set_error("default_platforms][$env][branch", t('You must choose a branch to create a platform.'));
-      }
-    } else {
-      // Set a null value.  Otherwise this comes through as an array.
-      form_set_value($form['default_platforms'][$env], NULL, $form_state);
-    }
-  }
-
-  $branch_platforms = array_filter($values['branch_platforms']);
-  if (!empty($branch_platforms)){
-    $none_chosen = FALSE;
-  }
-
-  if ($none_chosen){
-    form_set_error('form', t('You must choose to build at least one platform.'));
-  }
-
-  // Filter out branch platforms forms_api so we can keep the submit clean.
-  form_set_value($form['branch_platforms'], array_filter($values['branch_platforms']), $form_state);
 }
 
 /**
@@ -609,51 +553,56 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
 
-  // Get last platforms, in case this form is re-submitted
-  $old_platforms = array_merge($project->default_platforms, $project->branch_platforms);
+  $project->environments = $values['environments'];
 
   // Get platforms from form values and save into our object
-  $project->default_platforms = array_filter($values['default_platforms']);
-  $project->branch_platforms = array_filter($values['branch_platforms']);
+  $default_platforms = variable_get('devshop_default_platforms', array('dev' => 'dev', 'test' => 'test', 'live' => 'live'));
+
+  if (isset($project->extra_platform) && !empty($project->extra_platform)) {
+    $default_platforms = array_merge($default_platforms, $project->extra_platform);
+  }
+
+  $old_platforms = $project->platforms;
+  $project->default_platforms = $default_platforms;
 
   // Create these platforms
-  $all_platforms = array_merge($project->default_platforms, $project->branch_platforms);
-  foreach ($all_platforms as $platform_name => $branch) {
+  foreach ($default_platforms as $name) {
+    $data = $values['environments'][$name];
     // If platform hasn't been created yet, do so now!
-    if (!empty($branch) && empty($project->platforms[$platform_name])){
+    if (empty($project->platforms[$data['title']])) {
       // Save the damn platform nodes
       $platform = new stdClass;
 
       // hosting_platform fields
-      $platform->title = $project->title . '_' . $platform_name;
-      $platform->publish_path = $project->code_path . '/' . $platform_name;
+      $platform->title = $project->title . '_' . $data['title'];
+      $platform->publish_path = $project->code_path . '/' . $data['title'];
 
       if ($project->drupal_path) {
-        $platform->publish_path = $project->code_path . '/' . $platform_name . '/' . $project->drupal_path;
+        $platform->publish_path = $project->code_path . '/' . $data['title'] . '/' . $project->drupal_path;
       }
 
-      $servers = hosting_get_servers('http');
-      $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));
+      $platform->web_server = $data['web_server'];
 
-      $platform->git_branch = $branch;
+      $platform->git_branch = $data['git_branch'];
+      $platform->pull_enable = $data['pull_enabled'];
       $platform->project = $project->title;
-      $platform->environment = $platform_name;
+      $platform->environment = $data['title'];
       $platform->drupal_path = $project->drupal_path;
 
       $platform_node = _devshop_projects_node_create('platform', $platform);
-      $project->platforms[$platform_name] = $platform_node->nid;
+      $project->platforms[$data['title']] = $platform_node->nid;
     }
     // If the platform already exists, change the platform node branch and save it.
     // @TODO: only re-save the node if the chosen branch changed.
     else {
-      $platform_node = node_load($project->platforms[$platform_name]);
-      $platform_node->git_branch = $branch;
+      $platform_node = node_load($project->platforms[$data['title']]);
+      $platform_node->git_branch = $data['git_branch'];
       node_save($platform_node);
     }
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_platforms  = array_diff_key($old_platforms, $all_platforms);
+  $removed_platforms  = array_diff_key($old_platforms, $default_platforms);
   foreach ($removed_platforms as $platform_name => $branch) {
 
     // @TODO: Determine what to do here based on task status...
@@ -713,7 +662,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
     // If this platform is no longer in the $project object, we shouldn't show
     // it here.
-    if (!isset($project->platforms[$name])){
+    if (!isset($project->platforms[$name])) {
       continue;
     }
 
@@ -912,48 +861,15 @@ function devshop_form_reloader(&$form, $type = 'platform'){
 }
 
 /**
- * Add new environment to site.
+ * Functionality for add a new environment.
  */
-function devshop_projects_add_environment_js() {
-  // Get Project Cache
-  ctools_include('wizard');
-  ctools_include('object-cache');
-  $project = ctools_object_cache_get('project', NULL);
-  $count_extra = count($project->extra_platform);
-  $project->extra_platform['new_platform_'. $count_extra] = 'new platform '. $count_extra;
-  ctools_object_cache_set('project', NULL, $project);
-
- $form_state = array(
-    'storage' => NULL,
-    'submitted' => FALSE,
-    'input' => $_POST,
-    'method' => 'post',
-    'project' => $project,
-    'values' => $_POST,
-  );
-  $form_build_id = $_POST['form_build_id'];
-  $form = form_get_cache($form_build_id, $form_state);
-  devshop_project_create_step_environments($form, $form_state);
-  form_set_cache($form_build_id, $form, NULL);
-
-  $env_form = $form['environments']; dpm($env_form);
-  unset($env_form['#prefix'], $env_form['#suffix']); // Prevent duplicate wrappers.
-  $javascript = drupal_add_js(NULL, NULL, 'header');
-  drupal_json(array(
-    'status'   => TRUE,
-    'data'     => theme('status_messages') . drupal_render($env_form),
-    'settings' => call_user_func_array('array_merge_recursive', $javascript['setting']),
-  ));
-  exit;
-}
-
 function devshop_projects_create_wizard_add_new_environment($form, &$form_state) {
   // Get Project Cache
   ctools_include('wizard');
   ctools_include('object-cache');
   $project = ctools_object_cache_get('project', NULL);
   $count_extra = count($project->extra_platform);
-  $project->extra_platform['new_platform_'. $count_extra] = 'new platform '. $count_extra;
+  $project->extra_platform['environment'. $count_extra] = 'environment'. $count_extra;
   ctools_object_cache_set('project', NULL, $project);
 
   drupal_goto('hosting/projects/add/environments');
