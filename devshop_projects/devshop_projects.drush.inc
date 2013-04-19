@@ -160,6 +160,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // @TODO: Should probably add our own status column
     // The last step set status = 0 project node
     $task->ref->status = 0;
+    $task->ref->no_verify = TRUE;
     node_save($task->ref);
   }
   
