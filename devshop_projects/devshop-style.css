@@ -64,3 +64,7 @@ form .sync-envs div.form-item-labeled label {
   position: relative;
   left: 0px;
 }
+
+.path-hosting-projects-add-environments #right {
+  display: none;
+}
