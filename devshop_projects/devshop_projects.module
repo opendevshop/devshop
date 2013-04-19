@@ -84,15 +84,6 @@ function devshop_projects_menu() {
     'file' => 'create-wizard.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
   );
-
-  // Ajax for add new environment in wizard page.
-  $items['js/devshop/projects/add'] = array(
-    'page callback' => 'devshop_projects_add_environment_js',
-    'access callback' => 'node_access',
-    'access arguments' => array('create', 'project'),
-    'file' => 'create-wizard.inc',
-    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
-  );
   
   // hosting tasks ajax pages.
   foreach (hosting_available_tasks('project') as $task => $info){
@@ -319,7 +310,7 @@ function devshop_projects_hosting_drush_aliases_name($node) {
  * Helper function to create a site in a project.
  * Used by Wizard & "Create Platform" > Post Verify
  */
-function devshop_projects_create_site($project_node, $platform_node, $platform_name) {
+function devshop_projects_create_site($project_node, $platform_node, $platform_name, $db_server = NULL) {
 
   global $user;
 
@@ -334,7 +325,8 @@ function devshop_projects_create_site($project_node, $platform_node, $platform_n
   // @TODO: better client & DB support
   $node->client = HOSTING_DEFAULT_CLIENT;
   $servers = hosting_get_servers('db');
-  $node->db_server = key($servers);
+  $server = $db_server ? $db_server : key($servers);
+  $node->db_server = $server;
 
   $node->platform = $platform_node->nid;
 
