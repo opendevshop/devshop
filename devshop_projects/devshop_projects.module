@@ -49,6 +49,16 @@ function devshop_projects_perm() {
  * Implementation of hook_menu()
  */
 function devshop_projects_menu() {
+  //Settings page.
+  $items['admin/hosting/devshop_projects'] = array(
+    'title' => 'Settings projects',
+    'description' => 'Default values for use in creation project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_projects_settings_form'),
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+  );
 
   $items['hosting/projects'] = array(
     'title' => t('Projects'),
@@ -99,7 +109,6 @@ function devshop_projects_menu() {
     );
     $items[$path] = array_merge($items[$path], $info);
   }
-  
   
   return ($items);
 }
