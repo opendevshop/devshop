@@ -341,7 +341,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   // Setup project url.
   $base_url = $_SERVER['SERVER_NAME'];
   $server = variable_get('devshop_project_master_url', $base_url);
-  $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@name.@server"), array('@name' => strtolower($project_name), '@server' => $server));
+  $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@project.@hostname"), array('@project' => strtolower($project_name), '@hostname' => $server));
 }
 
 /**********
@@ -354,6 +354,16 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
  */
 function devshop_project_create_step_settings(&$form, &$form_state) {
   $project = &$form_state['project'];
+
+  //Verify if is need to skip.
+  $skip = variable_get('devshop_projects_skip_settings', TRUE);
+  if ($skip) {
+    $project->code_path = variable_get('devshop_projects_default_path', '/var/aegir/projects');
+    $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
+    $project->step = 'environments';
+    $cache = ctools_object_cache_set('project', $form_state['cache name'], $project);
+    drupal_goto('hosting/projects/add/environments');
+  }
 
   $form['code_path'] = array(
     '#type' => 'textfield',
@@ -562,7 +572,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     $default_platforms = array_merge($default_platforms, $project->extra_platform);
   }
 
-  $old_platforms = $project->platforms;
+  $old_platforms = $project->platforms ? $project->platforms : array();
   $project->default_platforms = $default_platforms;
 
   // Create these platforms
