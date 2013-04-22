@@ -32,6 +32,7 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['update'] = $task->task_args['update'];
     $task->options['revert'] = !empty($task->task_args['revert']);
     $task->options['cache'] = $task->task_args['cache'];
+    $task->options['force'] = $task->task_args['force'];
   }
 
   // Commit
