@@ -35,6 +35,7 @@ function drush_devshop_provision_provision_devshop_pull() {
   $revert = drush_get_option('revert');
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
+  $force = drush_get_option('force');
   
   foreach($environments as $platform_name){
     drush_log(dt('[DEVSHOP] Provision DevShop Pull on: ' . $platform_name), 'ok');
@@ -60,7 +61,7 @@ function drush_devshop_provision_provision_devshop_pull() {
     provision_git_is_repo($repo_path);
     
     // Determine revert setting from project settings (or if set as option, always)
-    $reset = drush_get_option('reset')? drush_get_option('reset'): d()->settings[$platform_name]['pull_reset'];
+    $reset = drush_get_option('reset') ? drush_get_option('reset') : d()->settings[$platform_name]['pull_reset'];
   
     // If reset is true, do a git reset --hard first.
     if ($reset) {
@@ -80,8 +81,8 @@ function drush_devshop_provision_provision_devshop_pull() {
       continue;
     }
     
-    // If no new files were detected... skip out.
-    if (count($output) == 1) {
+    // If no new files were detected... and force is false then skip out.
+    if (count($output) == 1 && !$force) {
       drush_log('[DEVSHOP] No changes detected. Nothing else needs to be done', 'ok');
       continue;
     }

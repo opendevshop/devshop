@@ -28,6 +28,7 @@ function devshop_provision_drush_command() {
       'revert' => 'Revert all features after code pull.',
       'cache' => 'Clear all caches after code pull.',
       'reset' => 'Runs "git reset --hard" before pulling.',
+      'force' => 'Runs always update,revert and cache options',
     ),
     'arguments' => array(
       'environments' => 'A list of environment names to Pull Code to.',
