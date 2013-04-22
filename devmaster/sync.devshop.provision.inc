@@ -10,22 +10,22 @@ require_once DRUSH_BASE_PATH . '/commands/sql/sync.sql.inc';
 function drush_provision_devshop_sync_init($source = NULL, $destination = NULL) {
   // Source and destination here are just platform names.  We need the full
   // alias.
-  $source = $source .'.'. $d->base_url;
-  $destination = $destination .'.'. $d->base_url;
+  $source = $source . '.' . d()->base_url;
+  $destination = $destination . '.' . d()->base_url;
   return drush_sql_sync_init($source, $destination);
 }
 
 /**
  * Pre provision-devshop-sync
  */
-function drush_devshop_provision_pre_provision_devshop_sync(){
+function drush_devshop_provision_pre_provision_devshop_sync() {
   devshop_provision_pre_flight();
 }
 
 /**
  * Pre provision-devshop-sync
  */
-function drush_devshop_provision_provision_devshop_sync_validate($source = NULL, $destination = NULL){
+function drush_devshop_provision_provision_devshop_sync_validate($source = NULL, $destination = NULL) {
   drush_set_arguments(array($source, $destination));
 }
 
@@ -39,31 +39,33 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   $base_url = d()->base_url;
   
   // Fail if base url
-  if (empty($base_url)){
+  if (empty($base_url)) {
     return drush_log(dt('[DEVSHOP] Your project doesn\'t seem to have the base_url saved.  Run project verification.'), 'error');
   }
   
   // Fail if no source
-  if (empty($source) && !($source = drush_get_option('source'))){
+  if (empty($source) && !($source = drush_get_option('source'))) {
     return drush_log(dt('[DEVSHOP] Source not found.  You must enter a source alias to sync from'), 'error');
-  } else {
+  }
+  else {
     $source_site = "$source.$base_url";
-    $source_site_alias = "@$source_site";
+    $source_site_alias = $source_site;
     drush_log(dt('[DEVSHOP] Source found: ' . $source_site_alias));
   }
 
   // Fail if no destination
-  if (empty($destination) && !($destination = drush_get_option('destination'))){
+  if (empty($destination) && !($destination = drush_get_option('destination'))) {
     return drush_log(dt('[DEVSHOP] Destination not found.  You must enter a source alias to sync to.'), 'error');
-  } else {
+  }
+  else {
     $destination_site = "$destination.$base_url";
-    $destination_site_alias = "@$destination_site";
+    $destination_site_alias = $destination_site;
     drush_log(dt('[DEVSHOP] Destination found: '. $destination_site_alias));
   }
 
   // Run provision-devshop-pull if requested
   if (drush_get_option('pull')) {
-    if (!provision_backend_invoke($destination_site_alias, 'provision-git-pull')){
+    if (!provision_backend_invoke($destination_site_alias, 'provision-git-pull')) {
       return;
     }
   }
@@ -71,62 +73,13 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     drush_log(dt('[DEVSHOP] Skipped pulling code for destination...'), 'ok');
   }
 
-  if (drush_get_option('database')){
-
+  if (drush_get_option('database')) {
   // Drop the database
-    drush_log(dt('[DEVSHOP] Dropping tables on destination'), 'ok');
+    drush_log(dt('[DEVSHOP] Dropping tables for destination database (!dest)', array('!dest' => $destination)), 'ok');
     provision_backend_invoke($destination_site_alias, 'sql-drop');
-
-
     drush_log(dt('[DEVSHOP] Syncing databases...'), 'ok');
-  // Sync the databases
-    $timestamp = date("Ymd-His");
-  //@TODO I know there is a better way...  Don't remember where to find it.
-    $file_path = drush_server_home() . "/backups/devshop-sync/";
-    $file_name = "$source-$timestamp.sql";
-    $file = $file_path . $file_name;
-  // Create backup folder if does not exist
-  // @TODO: DO THIS ON REMOTE AS WELL
-    if (!file_exists($file_path)){
-      provision_file()->mkdir($file_path)
-      ->succeed('[DEVSHOP] Created devshop-sync backups folder: ' . $file_path)
-      ->fail('[DEVSHOP] Could not create the folder: ' . $file_path)
-      ->status();
-    }
-
-    $options = array(
-      'source-dump' => $file,
-      'target-dump' => $file,
-      'result-file' => $file,
-    //@TODO: get this working.  Have to figure out proper code to extract gz into SQL Import
-    //'gzip' => TRUE,
-      );
-
-  // Source and target dump options aren't working here... @TODO: figure out why!
-  //provision_backend_invoke('@hostmaster', 'sql-sync', array($source, $destination), $options);
-  //drush_invoke('sql-sync', $source, $destination);
-
-  // SQL Dump
-    drush_log(dt('[DEVSHOP] Creating SQL dump from !source', array('!source' => $source_site_alias)), 'ok');
-    provision_backend_invoke($source_site_alias, 'sql-dump', array(), $options);
-
-  // COPY SQL file if it doesn't exist (which means a remote source)
-  // @TODO: Determine if source is remote instead of just checking if file is there.
-    if (!file_exists($file)){
-    // Rsync to this machine.
-      drush_log('Copying backup from remote server', 'ok');
-
-      if (provision_backend_invoke('server_master', 'rsync', array($source_site_alias . ':' . $file_path, $file_path))) {
-        drush_log('SQL transfered', 'ok');
-      } else {
-        return drush_log(dt('[DEVSHOP] Failed to copy the backup from the remote server'), 'error');
-      }
-    }
-
-  // SQL Import
-  // provision_backend_invoke() does not work here.  Doesn't like piping
-    drush_log(dt('[DEVSHOP] Importing SQL into !destination', array('!destination' => $destination_site_alias)), 'ok');
-    exec("drush $destination_site_alias sql-cli < $file");
+    // Sync the databases
+    drush_backend_invoke('sql-sync', array('@' . $source_site_alias, '@' . $destination_site_alias));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing databases...'), 'ok');
@@ -150,7 +103,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   $cache = drush_get_option('cache');
 
   // update db, unless option is false.
-  if ($update){
+  if ($update) {
     drush_log(dt('[DEVSHOP] Updating database...'), 'ok');
     provision_backend_invoke($destination_site_alias, 'updb');
   }
@@ -159,7 +112,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
   }
 
   // Revert All Features, unless option is false
-  if ($revert){
+  if ($revert) {
     drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
     provision_backend_invoke($destination_site_alias, 'features-revert-all');
   }
@@ -169,7 +122,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
 
   // Clear the whole cache, unless option is false
   // Seriously, lets do this twice.  Go Drupal!
-  if ($cache){
+  if ($cache) {
     drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
     provision_backend_invoke($destination_site_alias, 'cc all');
     provision_backend_invoke($destination_site_alias, 'cc all');
