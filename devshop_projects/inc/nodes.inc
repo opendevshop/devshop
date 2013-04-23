@@ -55,7 +55,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     // On Load: load this object's project and environment type
     if ($op == 'load'){
-      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
+      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
 
@@ -73,6 +73,11 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
         $data->environment = $node->environment;
         $data->git_branch = $node->git_branch;
         $data->drupal_path = $node->drupal_path;
+
+        //Site used for cloned the new site or platorm
+        if (isset($node->clone_nid)) {
+          $data->clone_nid = $node->clone_nid;
+        }
 
         if ($op == 'insert') {
           drupal_write_record('hosting_devshop_project_object', $data);

@@ -91,6 +91,7 @@ HTML;
  * Project Page Display
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
+  global $user;
 
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
@@ -155,8 +156,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
-
-
   $rows = array();
   if (isset($node->project_objects['site'])) {
     foreach($node->project_objects['site'] as $nid => $env) {
@@ -169,6 +168,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($site->site_status != -2) {
         $branch = "<span class='branch'>$site->git_branch</span>";
         $row[] = devshop_hosting_site_goto_link($site) . $branch;
+        $row[] = l(t('Clone environment'), 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))));
         $row[] = l('Site Dashboard', "node/$site->nid");
       }
       else {
@@ -200,7 +200,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         'class' => 'project-environments',
       ),
     );
-    global $user;
+
     $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment'), 'query' => array('token' => drupal_get_token($user->uid))));
     $node->content['sites']['table'] = array(
       '#type' => 'item',

@@ -78,13 +78,51 @@ function devshop_projects_tasks_add_environment_to_form(&$form, $node, $descript
  */
 function hosting_task_devshop_create_form($node) {
   $branch_options = array_combine($node->git_branches, $node->git_branches);
-  $form['branch'] = array(
-    '#title' => t('Branch'),
-    '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, re-verify your project.</em>'),
-    '#type' => 'select',
-    '#options' => $branch_options,
-    '#required' => TRUE,
-  );
+
+  $site_nid = arg(3);
+  $site = NULL;
+
+  if ($site_nid && is_numeric($site_nid)) {
+    //Sanitize data.
+    $site_nid = check_plain($site_nid);
+
+    //Check is a valid project site.
+    if (!empty($node->project_objects['site'])) {
+      foreach($node->project_objects['site'] as $nid => $alias) {
+        if ($nid == $site_nid) {
+          $site = node_load($nid);
+        }
+      }
+    }
+  } 
+
+  if ($site) {
+    $form['branch'] = array(
+      '#type' => 'hidden',
+      '#value' => $site->git_branch,
+    );
+    $form['clone_nid'] = array(
+      '#type' => 'hidden',
+      '#value' => $site->nid,
+    );
+    $form['new_branch'] = array(
+      '#title' => t('New branch name'),
+      '#description' => t('Choose the new Git branch you with to use for this new platform.'),
+      '#type' => 'textfield',
+      '#size' => 60,
+      '#maxlength' => 128,
+      '#required' => TRUE,
+    );
+  }
+  else {
+    $form['branch'] = array(
+      '#title' => t('Branch'),
+      '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, re-verify your project.</em>'),
+      '#type' => 'select',
+      '#options' => $branch_options,
+      '#required' => TRUE,
+    );
+  }
   // @TODO: Add "create branch" functionality.
   $form['platform_name'] = array(
     '#title' => t('Environment Name'),
@@ -115,6 +153,10 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
   if (!preg_match('!^[a-z0-9_]+$!', $params['platform_name'])) {
     form_set_error('type', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
   }
+
+  if (isset($params['new_branch']) && !preg_match('!^[a-z0-9_]+$!', $params['platform_name'])) {
+    form_set_error('new_branch', t('The new branch name must contain only lowercase letters, numbers, and underscores.'));
+  }
 }
 
 /**
@@ -144,7 +186,12 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
     $platform->publish_path = $project->code_path . '/' . $platform_name . '/' . $project->drupal_path;
   }
 
-  watchdog('debug', 'Form state: ' . print_r($form_state['values'],1));
+  //Check if is need to clone and create a new branch
+  if (isset($form_state['values']['parameters']['clone_nid'])) {
+    $platform->clone_nid = $form_state['values']['parameters']['clone_nid'];
+    $platform->git_branch = $form_state['values']['parameters']['new_branch'];
+    $platform->old_branch = $branch;
+  }
 
   watchdog('debug', 'Attempting to create: ' . print_r($platform,1));
 
