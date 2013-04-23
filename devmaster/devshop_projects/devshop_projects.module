@@ -62,7 +62,7 @@ function devshop_projects_menu() {
   );
 
   $items['admin/hosting/devshop/projects'] = $items['admin/hosting/devshop'];
-  $items['admin/hosting/devshop/projects']['title'] = 'Settings projects';
+  $items['admin/hosting/devshop/projects']['title'] = 'Projects';
   $items['admin/hosting/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
   $items['admin/hosting/devshop/projects']['tab_parent'] = 'admin/hosting/devshop';
 
