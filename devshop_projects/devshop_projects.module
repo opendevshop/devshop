@@ -50,15 +50,21 @@ function devshop_projects_perm() {
  */
 function devshop_projects_menu() {
   //Settings page.
-  $items['admin/hosting/devshop_projects'] = array(
-    'title' => 'Settings projects',
+  $items['admin/hosting/devshop'] = array(
+    'title' => 'DevShop',
     'description' => 'Default values for use in creation project',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_projects_settings_form'),
     'access arguments' => array('administer projects'),
     'file' => 'admin.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+    'type' => MENU_LOCAL_TASK,
   );
+
+  $items['admin/hosting/devshop/projects'] = $items['admin/hosting/devshop'];
+  $items['admin/hosting/devshop/projects']['title'] = 'Settings projects';
+  $items['admin/hosting/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  $items['admin/hosting/devshop/projects']['tab_parent'] = 'admin/hosting/devshop';
 
   $items['hosting/projects'] = array(
     'title' => t('Projects'),
