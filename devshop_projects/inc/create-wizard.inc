@@ -573,36 +573,32 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project = &$form_state['project'];
   $values = $form_state['values'];
 
-  $project->environments = $values['environments'];
+  $project->environments = array_filter($values['environments']);
 
-  // Get platforms from form values and save into our object
-  $default_platforms = array('');
-
-  if (isset($project->extra_platform) && !empty($project->extra_platform)) {
-    $default_platforms = array_merge($default_platforms, $project->extra_platform);
-  }
-
-  $old_platforms = $project->platforms ? $project->platforms : array();
-  $project->default_platforms = $default_platforms;
-
+  $first_envs = $project->environments ? $project->environments : array();
+  $settings = module_invoke_all('devshop_project_settings', $project_node);
+  
   // Create these platforms
-  foreach ($default_platforms as $name) {
-    $data = $values['environments'][$name];
+  foreach ($project->environments as $name => $data) {
+    
     // If platform hasn't been created yet, do so now!
-    if (empty($project->platforms[$data['title']])) {
+    if (empty($data['platform_nid'])) {
       // Save the damn platform nodes
       $platform = new stdClass;
 
-      // hosting_platform fields
+      // Platform name
       $platform->title = $project->title . '_' . $data['title'];
-      $platform->publish_path = $project->code_path . '/' . $data['title'];
-
+      
+      // Platform publish_path
       if ($project->drupal_path) {
         $platform->publish_path = $project->code_path . '/' . $data['title'] . '/' . $project->drupal_path;
       }
+      else {
+        $platform->publish_path = $project->code_path . '/' . $data['title'];
+      }
 
+      // Other attributes
       $platform->web_server = $data['web_server'];
-
       $platform->git_branch = $data['git_branch'];
       $platform->pull_enable = $data['pull_enabled'];
       $platform->project = $project->title;
@@ -610,30 +606,31 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform->drupal_path = $project->drupal_path;
 
       $platform_node = _devshop_projects_node_create('platform', $platform);
-      $project->platforms[$data['title']] = $platform_node->nid;
+      $project->environments[$name]['platform_nid']  = $platform_node->nid;
     }
-    // If the platform already exists, change the platform node branch and save it.
-    // @TODO: only re-save the node if the chosen branch changed.
+    // If the platform already exists, save it again with new settings.
     else {
       $platform_node = node_load($project->platforms[$data['title']]);
-      $platform_node->git_branch = $data['git_branch'];
+      foreach ($settings as $setting_name => $element){
+        $platform_node->{$setting_name} = $data[$setting_name];
+      }
       node_save($platform_node);
     }
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_platforms  = array_diff_key($old_platforms, $default_platforms);
-  foreach ($removed_platforms as $platform_name => $branch) {
+  $removed_environments  = array_diff_key($first_envs, $values['environments']);
+  foreach ($removed_environments as $environment_name => $settings) {
 
     // @TODO: Determine what to do here based on task status...
     // if verify task hasn't even run yet (and has never run) we can just delete
     // the platform node.
 
     // Create 'delete' task for this project
-    hosting_add_task($project->platforms[$platform_name], 'delete');
+    hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
 
     // Remove from project object
-    unset($project->platforms[$platform_name]);
+    unset($project->environments[$environment_name]);
   }
 }
 
