@@ -14,6 +14,16 @@ function devshop_projects_create_wizard($step = NULL){
   $form_state = array(
     'cache name' => NULL,
   );
+  
+  // Skip step 2 if needed
+  $skip = variable_get('devshop_projects_skip_settings', TRUE);
+  if ($skip) {
+    $form_info['order'] = array(
+      'git_url' => t('Step 1: Source'),
+      'environments' => t('Step 2: Environments'),
+      'sites' => t('Step 3: Install Profile'),
+    );
+  }
 
   // Setup project
   $project = ctools_object_cache_get('project', NULL);
@@ -341,6 +351,15 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $base_url = $_SERVER['SERVER_NAME'];
   $server = variable_get('devshop_project_master_url', $base_url);
   $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@project.@hostname"), array('@project' => strtolower($project_name), '@hostname' => $server));
+  
+  
+  //Verify if is need to skip.
+  $skip = variable_get('devshop_projects_skip_settings', TRUE);
+  if ($skip) {
+    $project->code_path = variable_get('devshop_projects_default_path', '/var/aegir/projects');
+    $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
+    $project->step = 'environments';
+  }
 }
 
 /**********
@@ -354,15 +373,6 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
 function devshop_project_create_step_settings(&$form, &$form_state) {
   $project = &$form_state['project'];
 
-  //Verify if is need to skip.
-  $skip = variable_get('devshop_projects_skip_settings', TRUE);
-  if ($skip) {
-    $project->code_path = variable_get('devshop_projects_default_path', '/var/aegir/projects');
-    $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
-    $project->step = 'environments';
-    $cache = ctools_object_cache_set('project', $form_state['cache name'], $project);
-    drupal_goto('hosting/projects/add/environments');
-  }
 
   $form['code_path'] = array(
     '#type' => 'textfield',
