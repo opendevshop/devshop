@@ -118,7 +118,11 @@ function devshop_projects_menu() {
  * Implements hook_devshop_project_settings
  */
 function devshop_projects_devshop_project_settings($project_node = NULL){
-  $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
+  if (!empty($project_node->git_branches)){
+    $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
+  } else {
+    $branch_options = array();
+  }
   
   $settings = array();
   $settings['git_branch'] = array(
