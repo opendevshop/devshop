@@ -49,6 +49,16 @@ function devshop_projects_perm() {
  * Implementation of hook_menu()
  */
 function devshop_projects_menu() {
+  //Settings page.
+  $items['admin/hosting/devshop_projects'] = array(
+    'title' => 'Settings projects',
+    'description' => 'Default values for use in creation project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_projects_settings_form'),
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+  );
 
   $items['hosting/projects'] = array(
     'title' => t('Projects'),
@@ -84,7 +94,7 @@ function devshop_projects_menu() {
     'file' => 'create-wizard.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
   );
-
+  
   // hosting tasks ajax pages.
   foreach (hosting_available_tasks('project') as $task => $info){
     $path = 'node/%/project_' . $task;
@@ -99,7 +109,6 @@ function devshop_projects_menu() {
     );
     $items[$path] = array_merge($items[$path], $info);
   }
-  
   
   return ($items);
 }
@@ -310,7 +319,7 @@ function devshop_projects_hosting_drush_aliases_name($node) {
  * Helper function to create a site in a project.
  * Used by Wizard & "Create Platform" > Post Verify
  */
-function devshop_projects_create_site($project_node, $platform_node, $platform_name) {
+function devshop_projects_create_site($project_node, $platform_node, $platform_name, $db_server = NULL) {
 
   global $user;
 
@@ -325,7 +334,8 @@ function devshop_projects_create_site($project_node, $platform_node, $platform_n
   // @TODO: better client & DB support
   $node->client = HOSTING_DEFAULT_CLIENT;
   $servers = hosting_get_servers('db');
-  $node->db_server = key($servers);
+  $server = $db_server ? $db_server : key($servers);
+  $node->db_server = $server;
 
   $node->platform = $platform_node->nid;
 
