@@ -314,7 +314,7 @@ function devshop_project_status($node){
  * See http://drupal.org/project/hosting_drush_aliases
  */
 function devshop_projects_hosting_drush_aliases_name($node) {
-  if (isset($node->project_name)){
+  if (isset($node->project_name)) {
     return $node->project_name .".". $node->project_environment;
   }
 }
@@ -324,7 +324,6 @@ function devshop_projects_hosting_drush_aliases_name($node) {
  * Used by Wizard & "Create Platform" > Post Verify
  */
 function devshop_projects_create_site($project_node, $platform_node, $platform_name, $db_server = NULL) {
-
   global $user;
 
   // Create the site nodes
