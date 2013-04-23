@@ -49,7 +49,7 @@ function devshop_pull_perm() {
  */
 function devshop_pull_menu() {
   $items['admin/hosting/devshop/pull'] = array(
-    'title' => 'Pull Settings',
+    'title' => 'Pull',
     'description' => 'Configure Pull Code URL callback ',
     'page callback' => 'devshop_pull_settings_page',
     'access arguments' => array('administer hosting settings'),
