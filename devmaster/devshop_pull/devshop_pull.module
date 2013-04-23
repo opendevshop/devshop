@@ -48,13 +48,14 @@ function devshop_pull_perm() {
  * Implementation of hook_menu()
  */
 function devshop_pull_menu() {
-  $items['admin/hosting/devshop_pull'] = array(
-    'title' => 'DevShop Pull Settings',
+  $items['admin/hosting/devshop/pull'] = array(
+    'title' => 'Pull Settings',
     'description' => 'Configure Pull Code URL callback ',
     'page callback' => 'devshop_pull_settings_page',
-    'type' => MENU_LOCAL_TASK,
     'access arguments' => array('administer hosting settings'),
     'file' => 'devshop_pull.settings.inc',
+    'tab_parent' => 'admin/hosting/devshop',
+    'type' => MENU_LOCAL_TASK,
   );
   $items[DEVSHOP_PULL_CALLBACK_URL] = array(
     'page callback' => 'devshop_pull_callback',
