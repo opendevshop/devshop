@@ -92,6 +92,12 @@ function devshop_projects_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
+      'clone_nid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
     ),
     'primary key' => array('object_nid'),
   );
@@ -197,5 +203,16 @@ function devshop_projects_update_7() {
 function devshop_projects_update_8() {
   $ret = array();
   $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} CHANGE environment environment VARCHAR(64) NOT NULL");
+
+  return $ret;
+}
+
+/*
+ * Add clone_nid column to hosting_devshop_project_object.
+ */
+function devshop_projects_update_9() {
+  $ret = array();
+  $ret[] = db_add_field($ret, 'hosting_devshop_project_object', 'clone_nid', array('type' => 'int', 'not null' => FALSE, 'default' => 0, 'unsigned' => TRUE));
+
   return $ret;
 }
