@@ -433,7 +433,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-dsm($project, 'project in form');
+
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
@@ -679,7 +679,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
     // If this platform is no longer in the $project object, we shouldn't show
     // it here.
-    if (!isset($project->platforms[$name])) {
+    if (!isset($project->environments[$name])) {
       continue;
     }
 
