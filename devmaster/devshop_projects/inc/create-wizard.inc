@@ -32,8 +32,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project->git_url = '';
     $project->project_nid = NULL;
     $project->title = '';
-    $project->default_platforms = array();
-    $project->branch_platforms = array();
+    $project->environments = array('NEW' => array());
     $project->live_domain = '';
 
     // ** set the storage object so its ready for whatever comes next
@@ -434,12 +433,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-
-  $default_platforms = variable_get('devshop_default_platforms', array('dev' => 'dev', 'test' => 'test', 'live' => 'live'));
-
-  if (isset($project->extra_platform) && !empty($project->extra_platform)) {
-    $default_platforms = array_merge($default_platforms, $project->extra_platform);
-  }
+dsm($project, 'project in form');
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     // @TODO: Detect and show errors when they occur.
     // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
@@ -483,34 +477,43 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   drupal_add_js($path);
 
   $settings = module_invoke_all('devshop_project_settings', $project_node);
+  
   $form['environments'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Environment'),
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
     '#suffix' => '</div>',
   );
 
-  foreach ($default_platforms as $env) {
+  foreach ($project->environments as $env => $env_settings) {
+    // No platforms exist yet
+    if ($env == 'NEW') {
+      $env_title = '';
+    } else {
+      $env_title = $env;
+    }
     $form['environments'][$env] = array(
       '#tree' => TRUE,
-      '#title' => $env,
       '#type' => 'fieldset',
       '#theme' => 'devshop_projects_settings_table',
     );
 
     $form['environments'][$env]['title'] = array(
       '#type' => 'textfield',
-      '#title' => t('Title'),
-      '#default_value' => $env,
+      '#title' => t('Environment Name'),
+      '#default_value' => $env_title,
       '#size' => 25,
       '#maxlength' => 255,
+      '#attributes' => array(
+        'placeholder' => t('Name this environment...'),
+      ),
     );
 
+    // Add environment settings form elements
     foreach ($settings as $setting_id => $setting){
       $form['environments'][$env][$setting_id] = $setting;
-      $form['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
+      $form['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];      
     }
 
     //Now add button.
@@ -529,30 +532,37 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
  */
 function devshop_project_create_step_environments_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
-  $values = $form_state['values'];
+  $values = &$form_state['values'];
 
-  $default_platforms = variable_get('devshop_default_platforms', array('dev' => 'dev', 'test' => 'test', 'live' => 'live'));
-
-  if (isset($project->extra_platform) && !empty($project->extra_platform)) {
-    $default_platforms = array_merge($default_platforms, $project->extra_platform);
-  }
-
-  if ($form_state['clicked_button']['#value'] == t('Add environment')) {
-    return;
-  }
-
-  foreach ($default_platforms as $key => $data) {
-    // Check for illegal chars
-    if (!preg_match('!^[a-z0-9_]+$!', $data['title'])) {
-      form_set_error('environments[' . $data['title']  . '][title', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
-    }
-  }
-
-  // Not ready
+  // Project not verified yet.  We don't know the branches.
   if (isset($values['not_ready'])) {
     form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
     return;
   }
+  
+  // Check environment titles
+  foreach ($values['environments'] as $env => $env_settings) {
+    // Check for illegal chars
+    if ($env != 'NEW' && !preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
+      $form_item = 'environments][' . $env  . '][title';
+      form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+    }
+  }
+  
+  // Change NEW environment data to $title
+  if ($values['environments']['NEW']['title']){
+    $new_env = $values['environments']['NEW']['title'];
+    $new_env_settings = $values['environments']['NEW'];
+    $values['environments'][$new_env] = $new_env_settings;
+
+    // Create the next NEW environment
+    unset($values['environments']['NEW']);
+    $values['environments']['NEW'] = array();
+  }
+  
+  // Save envs to project
+  $project->environments = $values['environments'];
+  
 }
 
 /**
@@ -566,7 +576,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project->environments = $values['environments'];
 
   // Get platforms from form values and save into our object
-  $default_platforms = variable_get('devshop_default_platforms', array('dev' => 'dev', 'test' => 'test', 'live' => 'live'));
+  $default_platforms = array('');
 
   if (isset($project->extra_platform) && !empty($project->extra_platform)) {
     $default_platforms = array_merge($default_platforms, $project->extra_platform);
@@ -878,10 +888,12 @@ function devshop_projects_create_wizard_add_new_environment($form, &$form_state)
   // Get Project Cache
   ctools_include('wizard');
   ctools_include('object-cache');
-  $project = ctools_object_cache_get('project', NULL);
-  $count_extra = count($project->extra_platform);
-  $project->extra_platform['environment'. $count_extra] = 'environment'. $count_extra;
+
+  // All we are doing here is saving the project to cache.
+  // devshop_project_create_step_environments_validate() handles putting data in $project.
+  $project = &$form_state['project'];
   ctools_object_cache_set('project', NULL, $project);
 
+  // Go back to the same page.
   drupal_goto('hosting/projects/add/environments');
 }
