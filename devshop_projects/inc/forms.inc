@@ -156,24 +156,22 @@ function devshop_projects_form(&$node) {
   );
   
   $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project_objects['platform'] as $nid => $environment_name){
+  foreach ($node->project_objects['platform'] as $nid => $environment_name) {
     $platform = node_load($nid);
-    $form['settings'][$environment_name] = array(
-      '#tree' => TRUE,
-      '#title' => $name,
-      '#type' => 'fieldset',
-      '#theme' => 'devshop_projects_settings_table',
-    );
-    //$form['settings'][$name]['git_branch'] = array(
-    //  '#type' => 'select',
-    //  '#title' => t('Branch'),
-    //  '#default_value' => isset($platform->git_branch)? $platform->git_branch: NULL,
-    //  '#options' => $branch_options,
-    //  '#description' => t('Choose the branch that this platform should track.'),
-    //);
-    foreach ($settings as $setting_id => $setting){
-      $form['settings'][$environment_name][$setting_id] = $setting;
-      $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
+    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
+
+    if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
+      $form['settings'][$environment_name] = array(
+        '#tree' => TRUE,
+        '#title' => $name,
+        '#type' => 'fieldset',
+        '#theme' => 'devshop_projects_settings_table',
+      );
+
+      foreach ($settings as $setting_id => $setting){
+        $form['settings'][$environment_name][$setting_id] = $setting;
+        $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
+      }
     }
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
