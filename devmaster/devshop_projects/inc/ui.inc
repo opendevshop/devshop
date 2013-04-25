@@ -168,7 +168,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($site->site_status != -2) {
         $branch = "<span class='branch'>$site->git_branch</span>";
         $row[] = devshop_hosting_site_goto_link($site) . $branch;
-        $row[] = l(t('Clone environment'), 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))));
+        $row[] = l(t('Fork Environment'), 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))));
         $row[] = l('Site Dashboard', "node/$site->nid");
       }
       else {
