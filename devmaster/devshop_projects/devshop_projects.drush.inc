@@ -90,9 +90,9 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   $git_remote = $platform->git_url;
   $git_branch = $platform->git_branch;
   $create_branch = FALSE;
-  drush_log(print_r($platform, 1));
+
   //If is set site nid clone from old site and later create a new branch.
-  if (isset($platform->clone_nid)) {
+  if ($platform->clone_nid) {
     $site_source = node_load($platform->clone_nid);
     $git_branch = $site_source->git_branch;
     $create_branch = TRUE;
@@ -238,8 +238,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       return;
     }
 
-    // If the project has a site already, trigger verification, then bail.
-    $sites = array_flip($project->project_objects['site']);
+    // If the platform has a site already, trigger verification, then bail.
     $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
     if (!empty($sites)){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');

@@ -170,7 +170,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         $branch = "<span class='branch'>$site->git_branch</span>";
         $row[] = devshop_hosting_site_goto_link($site) . $branch;
         $row_menu[] = array(
-                       'title' => t('Clone environment'),
+                       'title' => t('Fork environment'),
                        'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid)))
         );
         $row_menu[] = array(
