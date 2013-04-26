@@ -159,6 +159,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $node->drupal_path = $project->drupal_path;
   $node->uid = $user->uid;
   $node->status = 1;
+  $node->no_verify = TRUE;
   node_save($node);
 
   // Create the site nodes
