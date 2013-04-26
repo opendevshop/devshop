@@ -30,11 +30,11 @@ function devshop_hosting_hosting_feature() {
     'module' => 'devshop_testing',
     'group' => 'devshop',
   );
-  $features['devshop_logs'] = array(
+  $features['devshop_log'] = array(
     'title' => t('DevShop Logs'),
     'description' => t('Provides error and commit logs to DevShop.'),
     'status' => HOSTING_FEATURE_DISABLED,
-    'module' => 'devshop_logs',
+    'module' => 'devshop_log',
     'group' => 'devshop',
   );
   $features['devshop_live'] = array(
