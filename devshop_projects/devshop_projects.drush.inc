@@ -91,26 +91,26 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   $git_branch = $platform->git_branch;
   $create_branch = FALSE;
 
-  //If is set site nid clone from old site and later create a new branch.
-  if ($platform->clone_nid) {
-    $site_source = node_load($platform->clone_nid);
-    $git_branch = $site_source->git_branch;
-    $create_branch = TRUE;
-  }
-
   //Remove drupal_path to clone.
   if ($platform->drupal_path) {
     $root = str_replace($platform->drupal_path, '', $root);
   }
 
   // Check if a repo exists
-  if (!is_dir($root) || !drush_shell_cd_and_exec($root, 'git status')){
+  if (!is_dir($root) || !drush_shell_cd_and_exec($root, 'git status')) {
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
 
     // Build the command string
     $command = "git clone --recursive $git_remote $root";
     if ($git_branch) {
       $command .= " --branch $git_branch";
+    }
+
+    //If is set site nid clone from old site and later create a new branch.
+    if ($platform->clone_nid) {
+      $site_source = node_load($platform->clone_nid);
+      $git_branch = $site_source->git_branch;
+      $create_branch = TRUE;
     }
   }
   // If the platform has been verified and has a branch and git url
