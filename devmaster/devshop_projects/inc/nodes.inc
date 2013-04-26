@@ -41,9 +41,9 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     // node yet in devshop_projects_load().
     $settings = module_invoke_all('devshop_project_settings', $node);
 
-    foreach ($settings as $setting_name => $setting){
+    foreach ($settings as $setting_name => $setting) {
       $setting_node_type = $setting['#node_type'];
-      foreach ((array) $node->project_objects[$setting_node_type] as $nid => $environment_name){
+      foreach ((array) $node->project_objects[$setting_node_type] as $nid => $environment_name) {
         $object = node_load($nid);
         $node->settings[$environment_name][$setting_name] = $object->{$setting_name};
       }
@@ -51,16 +51,25 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   }
 
   // Project-enabled platforms get
-  if ($node->type == 'platform' || $node->type == 'site'){
-
+  if ($node->type == 'platform' || $node->type == 'site') {
     // On Load: load this object's project and environment type
-    if ($op == 'load'){
+    if ($op == 'load') {
       $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
       return $data;
     }
 
     // On insert or update, insert records saving this objects project and environment
     if ($op == 'update' || $op == 'insert') {
+      //Special case for migrate site. Is need copy the information to the new site.
+      if ($op == 'insert' && $node->type == 'site' && $node->import && !$node->verified) {
+        $platform = node_load($node->platform);
+        $node->project = $platform->project;
+        $node->project_nid = $platform->project_nid;
+        $node->environment = $platform->environment;
+        $node->git_branch = $platform->git_branch;
+        $node->drupal_path = $platform->drupal_path;
+        $node->clone_nid = $platform->clone_nid;
+      }
       if (!empty($node->project) && !empty($node->environment)) {
         // Get the project node by name.
         $project = hosting_context_load($node->project);
