@@ -285,12 +285,6 @@ function hosting_task_devshop_pull_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-  $form['force'] = array(
-    '#title' => t('Force'),
-    '#description' => t('Force to execute update, cache if are enabled'),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
-  );
 
   // Add validator for environments
   //$form['#validate'] = array('hosting_task_devshop_pull_form');
