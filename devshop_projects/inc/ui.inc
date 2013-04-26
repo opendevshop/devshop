@@ -165,29 +165,50 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         continue;
       }
       $row = array();
+      $row_menu = array();
       if ($site->site_status != -2) {
         $branch = "<span class='branch'>$site->git_branch</span>";
         $row[] = devshop_hosting_site_goto_link($site) . $branch;
-        $row[] = l(t('Clone environment'), 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))));
-        $row[] = l('Site Dashboard', "node/$site->nid");
+        $row_menu[] = array(
+                       'title' => t('Clone environment'),
+                       'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid)))
+        );
+        $row_menu[] = array(
+          'title' =>  t('Site Dashboard'),
+          'href' => "node/$site->nid",
+        );
       }
       else {
         // Site if deleted, just show the platform name
         $row[] = $platform->title;
         $row[] = '';
       }
-      $row[] = l('Platform Dashboard', "node/$site->platform");
+      $row_menu[] = array(
+          'title' =>  t('Platform Dashboard'),
+          'href' => "node/$site->platform",
+      );
 
-      if (module_exists('devshop_log')){
-        $row[] = l('Commit Log', "node/$site->nid/logs/commits");
+      if (module_exists('devshop_log')) {
+        $row_menu[] = array(
+            'title' =>  t('Commit Log'),
+            'href' => "node/$site->nid/logs/commits",
+        );
       }
-      if (module_exists('hosting_logs')){
-        $row[] = l('Error Log', "node/$site->nid/logs/errors");
+      if (module_exists('hosting_logs')) {
+        $row_menu[] = array(
+            'title' =>  t('Error Log'),
+            'href' => "node/$site->nid/logs/errors",
+        );
       }
-      if (module_exists('hosting_filemanager')){
-        $row[] = l('Files', "node/$site->nid/files/platform");
+      if (module_exists('hosting_filemanager')) {
+        $row_menu[] = array(
+            'title' =>  t('Files'),
+            'href' => "node/$site->nid/files/platform",
+        );
       }
+      $row[] = theme('ctools_dropdown', t('Actions'), $row_menu);
       $rows[] = $row;
+//      $rows[] = array($platform->title, theme('ctools_dropdown', $platform->title, $row));
     }
     $header = array();
     $table = theme('table', $header, $rows);
