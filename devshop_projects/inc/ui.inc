@@ -200,8 +200,12 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       
       // Aegir Tasks
       $site_tasklist = hosting_task_fetch_tasks($site->nid);
-      $site_actions = array('flush_cache', 'login_reset', 'backup');
-      
+      $site_tasklist['restore']['title'] = t('Restore Backups');
+
+      // The actions we want
+      $site_actions = array('flush_cache', 'login_reset', 'backup', 'restore');
+
+      // Add disable or delete task based on hosting variable.
       if (!variable_get('hosting_require_disable_before_delete', TRUE)){
         $site_actions[] = 'delete';
       } else {
@@ -212,6 +216,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
           $site_actions[] = 'disable';
         }
       }
+      
+      // Build links to tasks
       foreach ($site_actions as $task_name) {
         $actions[] = array(
           'title' => $site_tasklist[$task_name]['title'],
@@ -223,14 +229,17 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         );
       }
       
-      $actions[] = array(
-        'title' =>  t('Site Dashboard'),
-        'href' => "node/$site->nid",
-      );
-      $actions[] = array(
-        'title' =>  t('Platform Dashboard'),
-        'href' => "node/$site->platform",
-      );
+      // Grant access to Aegir pages
+      if (user_access('administer hosting')){
+        $actions[] = array(
+          'title' =>  t('Site Dashboard'),
+          'href' => "node/$site->nid",
+        );
+        $actions[] = array(
+          'title' =>  t('Platform Dashboard'),
+          'href' => "node/$site->platform",
+        );
+      }
       
       $row[] = theme('ctools_dropdown', t('Actions'), $actions);
       $rows[] = $row;
