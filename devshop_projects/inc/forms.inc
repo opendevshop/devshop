@@ -171,6 +171,7 @@ function devshop_projects_form(&$node) {
       foreach ($settings as $setting_id => $setting){
         $form['settings'][$environment_name][$setting_id] = $setting;
         $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
+        $form['settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
     }
   }
