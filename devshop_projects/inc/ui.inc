@@ -194,7 +194,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $actions = array();
       $actions[] = array(
         'title' => t('Fork environment'),
-        'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid)))
+        'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))),
+        'attributes' => array(
+          'class' => 'hosting-button-dialog',
+        ),
       );
       
       
@@ -227,6 +230,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
               'token' => drupal_get_token($user->uid),
               'destination' => "node/$node->nid",
             ),
+            'attributes' => array(
+              'class' => $site_tasklist[$task_name]['dialog']? 'hosting-button-dialog': '',
+            ),
           );
         }
       }
@@ -258,7 +264,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       ),
     );
 
-    $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment'), 'query' => array('token' => drupal_get_token($user->uid))));
+    $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment hosting-button-dialog'), 'query' => array('token' => drupal_get_token($user->uid))));
     $node->content['sites']['table'] = array(
       '#type' => 'item',
       '#value' => $table,
