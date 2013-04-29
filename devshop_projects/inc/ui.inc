@@ -158,11 +158,14 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // Environments
   $rows = array();
-  if (isset($node->project_objects['site'])) {
-    foreach($node->project_objects['site'] as $nid => $env) {
+  $site_nids = array_flip($node->project_objects['site']);
+  $platform_nids = array_flip($node->project_objects['site']);
+
+  if (isset($platform_nids)) {
+    foreach($platform_nids as $env => $nid) {
       
-      $site = node_load($nid);
-      $platform = node_load($site->platform);
+      $site = node_load($site_nids[$env]);
+      $platform = node_load($nid);
       
       // Skip this if it is not enabled.
       if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
