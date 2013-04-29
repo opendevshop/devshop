@@ -36,6 +36,10 @@ table * span.environment {
   font-size: 1.5em;
 }
 
+html.js div.ctools-dropdown div.ctools-dropdown-container {
+  width: 186px;
+}
+
 body.aegir #page div.node div.content .branches-list div.form-item  {
   padding-bottom: 2em;
 }
