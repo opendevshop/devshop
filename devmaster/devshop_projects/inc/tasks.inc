@@ -97,6 +97,11 @@ function hosting_task_devshop_create_form($node) {
   } 
 
   if ($site) {
+    $form['branch_source'] = array(
+      '#type' => 'item',
+      '#title' => t('Fork from'),
+      '#value' => t('!env environment on branch !branch', array('!env' => "<span class='environment'>$site->environment</span>", '!branch' => "<span class='branch'>$site->git_branch</span>")),
+    );
     $form['branch'] = array(
       '#type' => 'hidden',
       '#value' => $site->git_branch,
@@ -124,7 +129,7 @@ function hosting_task_devshop_create_form($node) {
     );
   }
   // @TODO: Add "create branch" functionality.
-  $form['platform_name'] = array(
+  $form['environment_name'] = array(
     '#title' => t('Environment Name'),
     '#type' => 'textfield',
     '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
@@ -144,18 +149,18 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
   $params = $form_state['values']['parameters'];
 
   // Check for existing environments for this project.
-  $object_nid = db_result(db_query('SELECT object_nid FROM {hosting_devshop_project_object} d LEFT JOIN {hosting_platform} h ON d.object_nid = h.nid WHERE project_nid = %d AND object_type = "%s" AND environment = "%s" AND status != %d', $params['project_nid'], 'platform', $params['platform_name'], HOSTING_PLATFORM_DELETED));
+  $object_nid = db_result(db_query('SELECT object_nid FROM {hosting_devshop_project_object} d LEFT JOIN {hosting_platform} h ON d.object_nid = h.nid WHERE project_nid = %d AND object_type = "%s" AND environment = "%s" AND status != %d', $params['project_nid'], 'platform', $params['environment_name'], HOSTING_PLATFORM_DELETED));
   
   if ($object_nid) {
-    form_set_error('platform_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['platform_name'])));
+    form_set_error('environment_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['environment_name'])));
   }
 
   // Check for illegal chars
-  if (!preg_match('!^[a-z0-9_]+$!', $params['platform_name'])) {
+  if (!preg_match('!^[a-z0-9_]+$!', $params['environment_name'])) {
     form_set_error('type', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
   }
 
-  if (isset($params['new_branch']) && !preg_match('!^[a-z0-9_]+$!', $params['platform_name'])) {
+  if (isset($params['new_branch']) && !preg_match('!^[a-z0-9_]+$!', $params['environment_name'])) {
     form_set_error('new_branch', t('The new branch name must contain only lowercase letters, numbers, and underscores.'));
   }
 }
@@ -168,23 +173,23 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
 function hosting_task_devshop_create_form_submit($form, &$form_state) {
 
   $project = node_load($form_state['values']['nid']);
-  $platform_name = $form_state['values']['parameters']['platform_name'];
+  $environment_name = $form_state['values']['parameters']['environment_name'];
   $branch = $form_state['values']['parameters']['branch'];
   $servers = hosting_get_servers('http');
   $server = variable_get('devshop_projects_default_web_server', key($servers));
 
   // hosting_platform fields
   $platform = new stdClass;
-  $platform->title = $project->title . '_' . $platform_name;
-  $platform->publish_path = $project->code_path . '/' . $platform_name;
+  $platform->title = $project->title . '_' . $environment_name;
+  $platform->publish_path = $project->code_path . '/' . $environment_name;
   $platform->web_server = $server;
   $platform->git_branch = $branch;
   $platform->project = $project->title;
-  $platform->environment = $platform_name;
+  $platform->environment = $environment_name;
   $platform->drupal_path = $project->drupal_path;
 
   if ($project->drupal_path) {
-    $platform->publish_path = $project->code_path . '/' . $platform_name . '/' . $project->drupal_path;
+    $platform->publish_path = $project->code_path . '/' . $environment_name . '/' . $project->drupal_path;
   }
 
   //Check if is need to clone and create a new branch
