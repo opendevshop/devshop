@@ -180,7 +180,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       } else {
         $row[] = devshop_hosting_site_goto_link($site);
       }
-      $row[] = "<span class='branch'>$site->git_branch</span>";
+      $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
       
 
       if (module_exists('devshop_log')) {
