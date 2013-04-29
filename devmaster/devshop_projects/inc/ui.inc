@@ -159,56 +159,46 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $rows = array();
   if (isset($node->project_objects['site'])) {
     foreach($node->project_objects['site'] as $nid => $env) {
+      
       $site = node_load($nid);
       $platform = node_load($site->platform);
-      if ($site->site_status == -2 && $platform->platform_status == -2) {
+      
+      // Skip this if it is not enabled.
+      if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
         continue;
       }
+      
       $row = array();
-      $row_menu = array();
-      if ($site->site_status != -2) {
-        $branch = "<span class='branch'>$site->git_branch</span>";
-        $row[] = devshop_hosting_site_goto_link($site) . $branch;
-        $row_menu[] = array(
-                       'title' => t('Fork environment'),
-                       'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid)))
-        );
-        $row_menu[] = array(
-          'title' =>  t('Site Dashboard'),
-          'href' => "node/$site->nid",
-        );
+      $row[] = "<span class='branch'>$site->git_branch</span>";;
+      $row[] = devshop_hosting_site_goto_link($site);
+
+      if (module_exists('devshop_log')) {
+        $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
       }
-      else {
-        // Site if deleted, just show the platform name
-        $row[] = $platform->title;
-        $row[] = '';
+      if (module_exists('hosting_logs')) {
+        $row[] = l(t('Errors'), "node/$site->nid/logs/errors");
       }
-      $row_menu[] = array(
+      if (module_exists('hosting_filemanager')) {
+        $row[] = l(t('Files'), "node/$site->nid/files/platform");
+      }
+      
+      // Create actions dropdown.
+      $actions = array();
+      $actions[] = array(
+        'title' => t('Fork environment'),
+        'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid)))
+      );
+      $actions[] = array(
+        'title' =>  t('Site Dashboard'),
+        'href' => "node/$site->nid",
+      );
+      $actions[] = array(
           'title' =>  t('Platform Dashboard'),
           'href' => "node/$site->platform",
       );
-
-      if (module_exists('devshop_log')) {
-        $row_menu[] = array(
-            'title' =>  t('Commit Log'),
-            'href' => "node/$site->nid/logs/commits",
-        );
-      }
-      if (module_exists('hosting_logs')) {
-        $row_menu[] = array(
-            'title' =>  t('Error Log'),
-            'href' => "node/$site->nid/logs/errors",
-        );
-      }
-      if (module_exists('hosting_filemanager')) {
-        $row_menu[] = array(
-            'title' =>  t('Files'),
-            'href' => "node/$site->nid/files/platform",
-        );
-      }
-      $row[] = theme('ctools_dropdown', t('Actions'), $row_menu);
+      
+      $row[] = theme('ctools_dropdown', t('Actions'), $actions);
       $rows[] = $row;
-//      $rows[] = array($platform->title, theme('ctools_dropdown', $platform->title, $row));
     }
     $header = array();
     $table = theme('table', $header, $rows);
