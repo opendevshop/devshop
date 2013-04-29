@@ -219,14 +219,16 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       
       // Build links to tasks
       foreach ($site_actions as $task_name) {
-        $actions[] = array(
-          'title' => $site_tasklist[$task_name]['title'],
-          'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
-          'query' => array(
-            'token' => drupal_get_token($user->uid),
-            'destination' => "node/$node->nid",
-          ),
-        );
+        if ($site_tasklist[$task_name]['task_permitted']){
+          $actions[] = array(
+            'title' => $site_tasklist[$task_name]['title'],
+            'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
+            'query' => array(
+              'token' => drupal_get_token($user->uid),
+              'destination' => "node/$node->nid",
+            ),
+          );
+        }
       }
       
       // Grant access to Aegir pages
