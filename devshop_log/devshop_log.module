@@ -22,14 +22,16 @@ function devshop_log_devshop_project_settings($project_node = NULL){
   if (module_exists('hosting_logs')){
     return array(
       'logs_enabled' => array(
-        '#title' => t('Separate Error Logs'),
+        '#title' => '',
         '#node_type' => 'site',
-        '#type' => 'checkbox',
+        '#type' => 'hidden',
+        '#value' => TRUE,
       ),
       'logs_available' => array(
         '#title' => t('Visible Error Logs'),
         '#node_type' => 'site',
         '#type' => 'checkbox',
+        '#description' => t('Make error logs available at http://mysite/error.log'),
       ),
     );    
   }
