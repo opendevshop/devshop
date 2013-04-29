@@ -23,6 +23,10 @@ span.branch
 	text-decoration:none;
 }
 
+span.branch.environment-branch {
+  cursor: help;
+}
+
 span.environment,
 table * span.environment {
   color:#777777;
