@@ -22,6 +22,20 @@ span.branch
   margin: 0px 5px 5px 0px;
 	text-decoration:none;
 }
+
+table * span.environment {
+  color:#777777;
+	font-weight:bold;
+	padding:0px 6px;
+  margin: 0px 5px 5px 0px;
+  border: 1px solid #dfdfdf;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	display:inline-block;
+  background-color:#fefefe;
+  font-size: 1.5em;
+}
+
 body.aegir #page div.node div.content .branches-list div.form-item  {
   padding-bottom: 2em;
 }
