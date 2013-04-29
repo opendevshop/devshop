@@ -117,7 +117,7 @@ function hosting_task_devshop_create_form($node) {
   else {
     $form['branch'] = array(
       '#title' => t('Branch'),
-      '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, re-verify your project.</em>'),
+      '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
       '#type' => 'select',
       '#options' => $branch_options,
       '#required' => TRUE,
