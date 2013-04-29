@@ -156,6 +156,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
+  // Environments
   $rows = array();
   if (isset($node->project_objects['site'])) {
     foreach($node->project_objects['site'] as $nid => $env) {
@@ -169,8 +170,15 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       }
       
       $row = array();
-      $row[] = "<span class='branch'>$site->git_branch</span>";;
-      $row[] = devshop_hosting_site_goto_link($site);
+      $row[] = "<span class='environment'>$site->environment</span>";
+      
+      if ($site->site_status == HOSTING_SITE_DISABLED){
+        $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
+      } else {
+        $row[] = devshop_hosting_site_goto_link($site);
+      }
+      $row[] = "<span class='branch'>$site->git_branch</span>";
+      
 
       if (module_exists('devshop_log')) {
         $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
@@ -188,13 +196,40 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         'title' => t('Fork environment'),
         'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid)))
       );
+      
+      
+      // Aegir Tasks
+      $site_tasklist = hosting_task_fetch_tasks($site->nid);
+      $site_actions = array('flush_cache', 'login_reset', 'backup');
+      
+      if (!variable_get('hosting_require_disable_before_delete', TRUE)){
+        $site_actions[] = 'delete';
+      } else {
+        if ($site->site_status == HOSTING_SITE_DISABLED){
+          $site_actions[] = 'enable';
+          $site_actions[] = 'delete';
+        } else {
+          $site_actions[] = 'disable';
+        }
+      }
+      foreach ($site_actions as $task_name) {
+        $actions[] = array(
+          'title' => $site_tasklist[$task_name]['title'],
+          'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
+          'query' => array(
+            'token' => drupal_get_token($user->uid),
+            'destination' => "node/$node->nid",
+          ),
+        );
+      }
+      
       $actions[] = array(
         'title' =>  t('Site Dashboard'),
         'href' => "node/$site->nid",
       );
       $actions[] = array(
-          'title' =>  t('Platform Dashboard'),
-          'href' => "node/$site->platform",
+        'title' =>  t('Platform Dashboard'),
+        'href' => "node/$site->platform",
       );
       
       $row[] = theme('ctools_dropdown', t('Actions'), $actions);
