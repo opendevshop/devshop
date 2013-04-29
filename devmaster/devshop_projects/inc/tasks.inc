@@ -20,7 +20,7 @@ function devshop_projects_hosting_tasks() {
   );
   $tasks['project']['devshop-create'] = array(
     'title' => t('Create New Environment'),
-    'description' => t('Creates a new site & platform within this project.'),
+    'description' => t('Creates a new environment within this project.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
     'hidden' => TRUE,
