@@ -91,7 +91,7 @@ function devshop_pull_devshop_project_settings(){
       '#title' => t('Pull on Commit'),
       '#node_type' => 'platform',
       '#type' => 'checkbox',
-      '#description' => t('When DevShop receives commit notification, run <em>Pull Code</em> task.'),
+      '#description' => t('When DevShop receives commit notification, Pull Code.'),
     ),
     // Pull reset won't work until we are storing the settings in the project drush context.
     //'pull_reset' => array(
