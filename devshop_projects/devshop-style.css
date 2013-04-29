@@ -23,6 +23,7 @@ span.branch
 	text-decoration:none;
 }
 
+span.environment,
 table * span.environment {
   color:#777777;
 	font-weight:bold;
