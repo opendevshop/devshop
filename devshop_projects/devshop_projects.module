@@ -46,6 +46,26 @@ function devshop_projects_perm() {
 }
 
 /**
+ * Implementation of hook_access()
+ */
+function devshop_projects_access($op, $node, $account) {
+  switch ($op) {
+    case 'create':
+      return user_access('create project', $account);
+      break;
+    case 'update':
+      return user_access('edit project', $account);
+      break;
+    case 'delete':
+      return user_access('delete projects', $account);
+      break;
+    case 'view':
+      return user_access('view project', $account);
+      break;
+  }
+}
+
+/**
  * Implementation of hook_menu()
  */
 function devshop_projects_menu() {
