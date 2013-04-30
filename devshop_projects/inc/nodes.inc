@@ -12,7 +12,7 @@
  */
 function devshop_projects_node_info() {
   $types["project"] =  array(
-    "type" => 'devshop_project',
+    "type" => 'project',
     "name" => 'DevShop Project',
     "module" => 'devshop_projects',
     "has_title" => TRUE,
