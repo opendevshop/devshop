@@ -78,6 +78,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     drush_log(dt('[DEVSHOP] Dropping tables for destination database (!dest)', array('!dest' => $destination)), 'ok');
     provision_backend_invoke($destination_site_alias, 'sql-drop');
     drush_log(dt('[DEVSHOP] Syncing databases...'), 'ok');
+    
     // Sync the databases
     drush_backend_invoke('sql-sync', array('@' . $source_site_alias, '@' . $destination_site_alias));
   }
@@ -87,10 +88,10 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
 
   // Sync files via rsync
   if (drush_get_option('files')) {
-     drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
-
-
-     provision_backend_invoke(d()->server->name, 'rsync', array("$source_site_alias:sites/$source_site/files/", "$destination_site_alias:sites/$destination_site/files/"));
+    drush_log(dt('[DEVSHOP] Syncing file contents from !source to !destination', array('!source' => $source_site_alias, '!destination' => $destination_site_alias)), 'ok');
+    
+    // Sync the files
+    drush_backend_invoke('rsync', array("@$source_site_alias:sites/$source_site/files/", "@$destination_site_alias:sites/$destination_site/files/"));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing files...'), 'ok');
