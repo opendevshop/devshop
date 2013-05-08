@@ -524,7 +524,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     foreach ($settings as $setting_id => $setting){
       $form['environments'][$env][$setting_id] = $setting;
       $form['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
-      $form['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
+      $form['environments'][$env][$setting_id]['#attributes']['title'] = $setting['#description'];
+      $form['environments'][$env][$setting_id]['#description'] = '';
     }
 
     //Now add button.
