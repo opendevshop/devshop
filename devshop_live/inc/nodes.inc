@@ -13,15 +13,13 @@
 function devshop_live_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if ($node->type == 'project') {
     if (in_array($op, array('insert', 'update'))) {
-      //Load all information
+      // Load all information... @TODO: Would it be better to use devshop_project_load() directly?
       $node_p = node_load($node->nid);
-
-      if ($node->live_domain && !isset($node_p->project_objects['site'])) {
-        $live_nid = array_search('live', $node_p->project_objects['site']);
-
-        if ($live_nid) {
-          $live_node = node_load($live_nid);
-          devshop_live_add_domain($live_node, $node->live_domain);
+      if ($node->live_domain && isset($node_p->project_objects['site'])) {
+	foreach ($node_p->project_objects['site'] as $nid => $env){
+          $site = node_load($nid);
+          drupal_set_message('looping for '.$env .$site->nid);
+          devshop_live_add_domain($site, $env . '.' . $node->live_domain);
         }
       }
     }
