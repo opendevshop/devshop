@@ -54,6 +54,7 @@ function devshop_projects_create_wizard($step = NULL){
   }
   
   // Check verification status
+  // @TODO: We should be able to get the error messages...
   $project_node = node_load($project->project_nid);
   if (!empty($project_node->nid)){
     $tasks = hosting_task_fetch_tasks($project_node->nid);
