@@ -3,7 +3,7 @@
 /**
  * Class for the platform context.
  */
-class provisionContext_project extends provisionContext {
+class Provision_Context_Project extends Provision_Context {
   public $parent_key = 'server';
 
   static function option_documentation() {
