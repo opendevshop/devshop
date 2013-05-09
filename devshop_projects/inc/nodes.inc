@@ -160,7 +160,7 @@ function devshop_projects_insert($node) {
  */
 function devshop_projects_update($node) {
   
-  if (!$node->no_verify) {
+  if (!isset($node->no_verify) || $node->no_verify == FALSE) {
     hosting_add_task($node->nid, 'verify');
   }
   $data = array();
