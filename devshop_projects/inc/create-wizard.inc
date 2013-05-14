@@ -62,6 +62,8 @@ function devshop_projects_create_wizard($step = NULL){
   if (isset($tasks['verify']['nid'])){
     
   }
+  
+  // Get "verify" task status for the project
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
   
@@ -699,7 +701,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Display the platforms
   $rows = array();
-  $header = array(t('Name'), t('Branch'), t('Version'), t('Installation Profiles'), t('Verification Status'));
+  $header = array(t('Name'), t('Branch'), t('Version'), t('Install Profiles'), t('Status'));
   $all_tasks_queued = TRUE;
   $tasks_failed = FALSE;
   
@@ -739,8 +741,10 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $tasks_failed = TRUE;
       $available_profiles = array();
       
+      $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error'));
+      
       $row['version'] = array(
-        'data' => t('Platform verification failed! !link to check your environment branch or git repository.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))),
+        'data' => t('Platform verification failed: %error', array('%error' => $error)),
         'colspan' => 2,
       );
       
@@ -788,16 +792,14 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => $note,
     );
 
-  devshop_form_reloader($form, 'platform');
+    devshop_form_reloader($form, 'platform');
 
     return $form;
   }
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
-
-    devshop_form_reloader($form, 'platform');
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#type' => 'markup',
@@ -866,7 +868,7 @@ function devshop_projects_add_status($type = 'platform'){
   
   $project_node = node_load($project->project_nid);
   
-  $good_to_go = TRUE;
+  $all_tasks_completed = TRUE;
   $nids = array();
   
   // When checking project...
@@ -885,11 +887,16 @@ function devshop_projects_add_status($type = 'platform'){
   foreach ($nids as $nid){
     $task = hosting_get_most_recent_task($nid, 'verify');
     $return['tasks'][$nid] = _hosting_parse_error_code($task->task_status);
-    if ($task->task_status != HOSTING_TASK_SUCCESS && $task->task_status != HOSTING_TASK_ERROR) {
-      $good_to_go = FALSE;
+    
+    // If task is not completed, mark all tasks not complete.
+    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR) {
+      continue;
+    } else {
+      $all_tasks_completed = FALSE;
     }
+      
   }
-  $return['reload'] = $good_to_go;
+  $return['tasks_complete'] = $all_tasks_completed;
   drupal_json($return);
   exit;
 }
