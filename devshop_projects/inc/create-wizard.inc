@@ -701,6 +701,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Version'), t('Installation Profiles'), t('Verification Status'));
   $all_tasks_queued = TRUE;
+  $tasks_failed = FALSE;
+  
   foreach ($project_node->environments as $name => $environment){
   
     // Get platform and latest verify task.
@@ -710,9 +712,9 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
     // Build a table.
     $row = array();
-    $row[] = $name;
-    $row[] = $platform->git_branch;
-    $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('...');
+    $row['name'] = $name;
+    $row['branch'] = $platform->git_branch;
+    $row['version'] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('...');
 
     // If platform verified successfully:
     if ($task->task_status == HOSTING_TASK_SUCCESS) {
@@ -721,25 +723,26 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
       if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
         $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-        $row[] = implode(', ', $profiles[$name]);
+        $row['profiles'] = implode(', ', $profiles[$name]);
       } else {
         $profiles[$name] = array();
       }
 
-      // If no available profiles found yet, this becomes the available list.
-      if (empty($available_profiles)){
-        $available_profiles = $profiles[$name];
-      }
-      // If we have available profiles, only keep the ones we found again.
-      else {
-        // @TODO: This joins profiles by name, not profile name.
+      // If no tasks have failed, save available profiles
+      if (!$tasks_failed){
         $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
       }
     }
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
-      $completed = FALSE;
-      $row[] = t('Platform verification failed! !link to check your environment branch or git repository.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
+      $completed = TRUE;
+      $tasks_failed = TRUE;
+      $available_profiles = array();
+      
+      $row['version'] = array(
+        'data' => t('Platform verification failed! !link to check your environment branch or git repository.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))),
+        'colspan' => 2,
+      );
       
       // @TODO: Get task log error message
       
@@ -747,12 +750,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
-      $row[] = '...';
-    }
-    // If platform has NOT verified successfully, mark process not complete.
-    else {
-      $completed = FALSE;
-      $row[] = t('Pending');
+      $row['version'] = '...';
     }
     
     // If a single task is not queued, $all_tasks_queued == FALSE
@@ -761,21 +759,19 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     }
     
     // Add hosting task status.
-    $row[] =  _hosting_parse_error_code($task->task_status);
+    $row['status'] =  _hosting_parse_error_code($task->task_status);
 
     // Store rows for display
     $rows[] = $row;
   } // end foreach platform
   
-
-
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
   
-  // Provide something for people while they wait.
+  // Not completed means show all tasks are not completed (or errored)
   if (!$completed){
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
@@ -799,7 +795,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="warning">' . t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
+    $note = '<p class="error">' . t('No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
 
     devshop_form_reloader($form, 'platform');
 
@@ -809,6 +805,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     );
     return $form;
   } else {
+      dsm($available_profiles);
+
    $project->no_finish = FALSE;
 
     // Install Profile
