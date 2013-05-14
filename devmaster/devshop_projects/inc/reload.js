@@ -9,7 +9,7 @@ var devshopCheckProject = function(){
 
 var devshopReloadPage = function(data){
   
-  if (data.reload){
+  if (data.tasks_complete){
     document.location.reload();
   } else {
     setTimeout("devshopCheckProject()", Drupal.settings.devshopReload.delay);
