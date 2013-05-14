@@ -457,6 +457,16 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
     $project->no_next = TRUE;
     
+    // If we are all queued, show a friendly message
+    //devshop_form_reloader($form, 'platform');
+    if ($project->verify_task_status == HOSTING_TASK_QUEUED){
+      $task = node_load($project->verify_task_nid);
+      $time_ago = time() - $task->created;
+      if ($time_ago > 60) {
+        $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
+      }
+    }
+    
     $form['note'] = array(
       '#type' => 'markup',
       '#value' => $note,
@@ -467,6 +477,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
+    
+    
     return;
   }
   
@@ -687,7 +699,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Display the platforms
   $rows = array();
-  $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
+  $header = array(t('Name'), t('Branch'), t('Version'), t('Installation Profiles'), t('Verification Status'));
+  $all_tasks_queued = TRUE;
   foreach ($project_node->environments as $name => $environment){
   
     // Get platform and latest verify task.
@@ -700,7 +713,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $row[] = $name;
     $row[] = $platform->git_branch;
     $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('...');
-    $row[] =  _hosting_parse_error_code($task->task_status);
 
     // If platform verified successfully:
     if ($task->task_status == HOSTING_TASK_SUCCESS) {
@@ -734,17 +746,25 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $completed = FALSE;
       $row[] = '...';
     }
-
     // If platform has NOT verified successfully, mark process not complete.
     else {
       $completed = FALSE;
       $row[] = t('Pending');
     }
+    
+    // If a single task is not queued, $all_tasks_queued == FALSE
+    if ($task->task_status != HOSTING_TASK_QUEUED){
+      $all_tasks_queued = FALSE;
+    }
+    
+    // Add hosting task status.
+    $row[] =  _hosting_parse_error_code($task->task_status);
 
     // Store rows for display
     $rows[] = $row;
   } // end foreach platform
   
+
 
   // Output our table.
   $form['platforms'] = array(
@@ -757,13 +777,20 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
     
-    //devshop_form_reloader($form, 'platform');
-
+    // If we are all queued, show a friendly message
+    
+    $time_ago = time() - $task->created;
+    if ($all_tasks_queued && $time_ago > 120) {
+      $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
+    }
 
     $form['help'] = array(
       '#type' => 'markup',
       '#value' => $note,
     );
+
+  devshop_form_reloader($form, 'platform');
+
     return $form;
   }
   // If no available profiles:
@@ -848,19 +875,19 @@ function devshop_projects_add_status($type = 'platform'){
   
   // When checking platforms...
   if ($type == 'platform') {
-    foreach ($project_node->project_objects['platform'] as $nid => $name){
-      $nids[] = $nid;
+    foreach ($project_node->environments as $name => $environment){
+      $nids[] = $environment['platform'];
     }
   }
   
   // Check verification task for all nids
   foreach ($nids as $nid){
     $task = hosting_get_most_recent_task($nid, 'verify');
+    $return['tasks'][$nid] = _hosting_parse_error_code($task->task_status);
     if ($task->task_status != HOSTING_TASK_SUCCESS && $task->task_status != HOSTING_TASK_ERROR) {
       $good_to_go = FALSE;
     }
   }
-  
   $return['reload'] = $good_to_go;
   drupal_json($return);
   exit;
