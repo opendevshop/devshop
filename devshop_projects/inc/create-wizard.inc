@@ -668,7 +668,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // the platform node.
 
     // Create 'delete' task for this project
-    hosting_add_task($project_node->environments[$environment_name]['platform'], 'delete');
+    hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
   }
 }
 
