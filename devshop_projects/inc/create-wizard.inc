@@ -740,6 +740,9 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
       $completed = FALSE;
       $row[] = t('Platform verification failed! !link to check your environment branch or git repository.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
+      
+      // @TODO: Get task log error message
+      
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
