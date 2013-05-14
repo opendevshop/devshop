@@ -91,3 +91,9 @@ form .sync-envs div.form-item-labeled label {
 .path-hosting-projects-add-environments #right {
   display: none;
 }
+
+p.wait {
+  text-align: center;
+  padding: 32px 0px 52px;
+  background: bottom center no-repeat url(images/loading.gif);
+}
