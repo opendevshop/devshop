@@ -665,10 +665,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments  = array_diff_key($values['environments'], $project->environments);
-  
-  dsm($project, 'project');
-  dsm($removed_environments, 'envs to remove');
+  $removed_environments  = array_diff_key($project_node->environments, $values['environments']);
   
   foreach ($removed_environments as $environment_name => $settings) {
     // @TODO: Determine what to do here based on task status...
@@ -676,9 +673,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // the platform node.
 
     // Create 'delete' task for the removed platform
-    $platform_nid = $project->environments[$environment_name]['platform_nid'];
+    $platform_nid = $settings['platform'];
     if ($platform_nid){
-      hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
+      hosting_add_task($platform_nid, 'delete');
     }
   }
 }
