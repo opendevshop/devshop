@@ -477,7 +477,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $settings = module_invoke_all('devshop_project_settings', $project_node);
   
   $form['environments'] = array(
-    '#type' => 'fieldset',
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
@@ -491,6 +490,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     } else {
       $env_title = $env;
     }
+    
     $form['environments'][$env] = array(
       '#tree' => TRUE,
       '#type' => 'fieldset',
@@ -522,6 +522,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#value' => t('Add environment'), 
       '#name' => 'add_environment',
       '#submit' => array('devshop_projects_create_wizard_add_new_environment'),
+      '#prefix' => '<div class="project-add-environment-button">',
+      '#suffix' => '</div>',
     ); 
   }
 }
