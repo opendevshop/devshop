@@ -570,7 +570,11 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 
     // Create the next NEW environment.  Unset makes sure its always last.
     unset($values['environments']['NEW']);
-    $values['environments']['NEW'] = array();
+    
+    // If "add environment" button clicked, add another row.    
+    if ($form_state['clicked_button']['#name'] == 'add_environment'){
+      $values['environments']['NEW'] = array();
+    }
   } else {
     unset($values['environments']['NEW']);
   }
@@ -581,7 +585,7 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   // Check environment titles
   foreach ($values['environments'] as $env => $env_settings) {
     // Check for illegal chars
-    if ($env != 'NEW'){
+    if ($env != 'NEW' && !empty($env_settings['title'])){
       if (!preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
         $form_item = 'environments][' . $env  . '][title';
         form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
@@ -591,6 +595,8 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       }
     }
   }
+  
+  
   
   // Reject if empty
   if (count($project->environments) < 1){
@@ -611,7 +617,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project_node = node_load($project->project_nid);
   $values = $form_state['values'];
 
-  $first_envs = $project->environments ? $project->environments : array();
   $settings = module_invoke_all('devshop_project_settings', $project_node);
   
   // Create these platforms, if they don't exist yet
@@ -655,20 +660,26 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
         $platform->{$setting_name} = $environment[$setting_name];
       }
       $platform_node = _devshop_projects_node_create('platform', $platform);
-      $project->environments[$name]['platform_nid']  = $platform_node->nid;
+      $project->environments[$name]['platform_nid'] = $platform_node->nid;
     }
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments  = array_diff_key($first_envs, $values['environments']);
+  $removed_environments  = array_diff_key($values['environments'], $project->environments);
+  
+  dsm($project, 'project');
+  dsm($removed_environments, 'envs to remove');
+  
   foreach ($removed_environments as $environment_name => $settings) {
-
     // @TODO: Determine what to do here based on task status...
     // if verify task hasn't even run yet (and has never run) we can just delete
     // the platform node.
 
-    // Create 'delete' task for this project
-    hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
+    // Create 'delete' task for the removed platform
+    $platform_nid = $project->environments[$environment_name]['platform_nid'];
+    if ($platform_nid){
+      hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
+    }
   }
 }
 
@@ -805,7 +816,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => $note,
     );
 
-    devshop_form_reloader($form, 'platform');
+    //devshop_form_reloader($form, 'platform');
     return $form;
   }
   // If no available profiles:
