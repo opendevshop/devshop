@@ -231,6 +231,17 @@ function devshop_projects_load($node) {
   // Set status
   $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)));
 
+  // Environments Array
+  // @TODO: Remove the above code, after refactoring out of the rest of the system.
+  $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d ORDER BY environment", $node->nid);
+
+  $environments = array();
+  while ($obj = db_fetch_object($query)) {
+    $object_node = node_load($obj->object_nid);
+    $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
+  }
+  $additions['environments'] = $environments;
+  
   // Settings are added in devshop_projects_nodeapi
 
   return $additions;
