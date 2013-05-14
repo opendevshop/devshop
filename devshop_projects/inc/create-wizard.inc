@@ -561,12 +561,16 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     unset($values['environments']['NEW']);
     $values['environments']['NEW'] = array();
   }
+  // Unset empty "NEW" environment
+  else {
+    unset($values['environments']['NEW']);
+  }
   
   // Save envs to project
   $project->environments = $values['environments'];
   
   // Reject if empty
-  if (count($project->environments) - 1 < 1){
+  if (count($project->environments) < 1){
     form_set_error('environments][NEW][title', t('You must add at least one environment.'));
   }
 }
