@@ -72,6 +72,8 @@ function devshop_projects_create_wizard($step = NULL){
     if ($step != current(array_keys($form_info['order']))){
       drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
     }
+  } else {
+    $project->verify_error = NULL;
   }
 
   // All forms can access $form_state['project'];
