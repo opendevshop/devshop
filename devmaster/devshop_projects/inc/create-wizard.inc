@@ -805,8 +805,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => $note,
     );
 
-//    devshop_form_reloader($form, 'platform');
-
+    devshop_form_reloader($form, 'platform');
     return $form;
   }
   // If no available profiles:
