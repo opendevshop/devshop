@@ -483,6 +483,12 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     '#suffix' => '</div>',
   );
 
+  // Ensure a blank row exists (happens when using 'Back' button)
+  if (empty($project->environments['NEW'])){
+    $project->environments['NEW'] = array();
+  }
+
+
   foreach ($project->environments as $env => $env_settings) {
     // No platforms exist yet
     if ($env == 'NEW') {
