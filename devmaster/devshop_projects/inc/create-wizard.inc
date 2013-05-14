@@ -610,7 +610,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
   $values = $form_state['values'];
-  dsm($values, 'values');
 
   $first_envs = $project->environments ? $project->environments : array();
   $settings = module_invoke_all('devshop_project_settings', $project_node);
@@ -621,7 +620,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
     // If the platform already exists, save it again with new settings.
     if ($platform_nid) {
-      drupal_set_message("Updating platform for $name");
       $platform_node = node_load($platform_nid);
       foreach ($settings as $setting_name => $element){
         $platform_node->{$setting_name} = $environment[$setting_name];
@@ -630,7 +628,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
     // If platform hasn't been created yet, do so now!
     elseif (empty($platform_nid)) {
-      drupal_set_message("Creating new platform for $name");
 
       // Save the damn platform nodes
       $platform = new stdClass;
@@ -657,8 +654,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       foreach ($settings as $setting_name => $element){
         $platform->{$setting_name} = $environment[$setting_name];
       }
-      dsm($platform, 'CREATEING NEW PLATFORM!');
-
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $project->environments[$name]['platform_nid']  = $platform_node->nid;
     }
@@ -673,8 +668,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // the platform node.
 
     // Create 'delete' task for this project
-    dsm($environment_name, '@TODO: hosting delete');
-    //hosting_add_task($project_node->environments[$environment_name]['platform'], 'delete');
+    hosting_add_task($project_node->environments[$environment_name]['platform'], 'delete');
   }
 }
 
