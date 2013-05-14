@@ -663,6 +663,10 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $project_node = node_load($project->project_nid);
 
   // OUTPUT
+  // @TODO: Clean this up!!
+  
+  // @TODO: This is old code that is never seen.  User ends up on project page.  
+  // Perhaps we should keep people on this page until the sites are all installed?  No, because we want to free up the wizard for another project create... instead lets fix the project node page to display proper status.
   if ($project_node->project_status == 'sites_installing') {
     $form['note'] = array(
       '#type' => 'item',
@@ -670,13 +674,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => t('Your sites are being installed!'),
     );
     return $form;
-  }
-  elseif ($project_node->project_status == 'preparing-project') {
-    // @TODO: Not yet, needs more logic
-    // drupal_goto('hosting/projects/add');
-  }
-  elseif ($project_node->project_status == 'sites-installed') {
-    return;
   }
 
   $profiles = array();
@@ -691,22 +688,18 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Display the platforms
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
-  foreach ($project_node->project_objects['platform'] as $nid => $name){
+  foreach ($project_node->environments as $name => $environment){
+  
+    // Get platform and latest verify task.
+    $platform_nid = $environment['platform'];
+    $platform = node_load($platform_nid);
+    $task = hosting_get_most_recent_task($platform_nid, 'verify');
 
-    // If this platform is no longer in the $project object, we shouldn't show
-    // it here.
-    if (!isset($project->environments[$name])) {
-      continue;
-    }
-
-    // Get verification task for this platform.
-    $task = hosting_get_most_recent_task($nid, 'verify');
-    $platform = node_load($nid);
-
+    // Build a table.
     $row = array();
     $row[] = $name;
     $row[] = $platform->git_branch;
-    $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('Pending');
+    $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('...');
     $row[] =  _hosting_parse_error_code($task->task_status);
 
     // If platform verified successfully:
@@ -734,12 +727,12 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
       $completed = FALSE;
-      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
+      $row[] = t('Platform verification failed! !link to check your environment branch or git repository.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
-      $row[] = t('Platform download & verification in process.');
+      $row[] = '...';
     }
 
     // If platform has NOT verified successfully, mark process not complete.
@@ -764,7 +757,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
     
-    devshop_form_reloader($form, 'platform');
+    //devshop_form_reloader($form, 'platform');
 
 
     $form['help'] = array(
@@ -776,7 +769,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="wait">' . t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
+    $note = '<p class="warning">' . t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
 
     devshop_form_reloader($form, 'platform');
 
