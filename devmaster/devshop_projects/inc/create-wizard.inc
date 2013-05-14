@@ -62,16 +62,15 @@ function devshop_projects_create_wizard($step = NULL){
   if (isset($tasks['verify']['nid'])){
     
   }
-  dsm($tasks, 'tasks');
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
   
   // If project verification failed, we need to ask for a new git url.
-  if ($project->verify_task_status === HOSTING_TASK_ERROR && !empty($project_node->nid)){
-    //drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
+  if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)){
+    $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));  
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
-      //drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+      drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
     }
   }
 
@@ -224,6 +223,14 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
  */
 function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
+  
+  if ($project->verify_error){
+    $form['node'] = array(
+      '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
+      '#type' => 'markup',
+    );
+  }
+  
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
@@ -459,25 +466,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
     return;
-  }
-  // Handle failure
-  elseif ($project->verify_task_status == HOSTING_TASK_ERROR) {
-    $type = 'error';
-    $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, $type));  
-    drupal_set_message($error, 'error');
-    
-    $note = '<p class="warning">'. $error . t('Something Failed.  Please check the error message, and retry verification.') . '</p>';
-    $project->no_next = TRUE;
-    
-    $form['note'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
-    );
-    $form['not_ready'] = array(
-      '#type' => 'value',
-      '#value' => TRUE,
-    );
-     return;
   }
   
   // this JS handles the form element hiding/showing
