@@ -711,7 +711,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $rows = array();
   $header = array(t('Name'), t('Branch'), t('Version'), t('Install Profiles'), t('Status'));
   $all_tasks_queued = TRUE;
-  $tasks_failed = FALSE;
+  $all_tasks_succeeded = TRUE;
   
   foreach ($project_node->environments as $name => $environment){
   
@@ -739,14 +739,18 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       }
 
       // If no tasks have failed, save available profiles
-      if (!$tasks_failed){
-        $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+      if ($all_tasks_succeeded){
+        if (empty($available_profiles)){
+          $available_profiles = $profiles[$name];
+        } else {
+          $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+        }
       }
     }
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
       $completed = TRUE;
-      $tasks_failed = TRUE;
+      $all_tasks_succeeded = FALSE;
       $available_profiles = array();
       
       $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error'));
@@ -783,7 +787,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
-  
+
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed){
     $project->no_finish = TRUE;
@@ -806,6 +810,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     return $form;
   }
   // If no available profiles:
+
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
     $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
@@ -816,8 +821,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     );
     return $form;
   } else {
-      dsm($available_profiles);
-
    $project->no_finish = FALSE;
 
     // Install Profile
