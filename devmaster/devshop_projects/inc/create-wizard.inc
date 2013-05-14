@@ -62,15 +62,16 @@ function devshop_projects_create_wizard($step = NULL){
   if (isset($tasks['verify']['nid'])){
     
   }
+  dsm($tasks, 'tasks');
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
   
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status === HOSTING_TASK_ERROR && !empty($project_node->nid)){
-    drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
+    //drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
-      drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+      //drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
     }
   }
 
@@ -443,11 +444,9 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
-    // @TODO: Detect and show errors when they occur.
-    // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
+    $project->no_next = TRUE;
     
     $form['note'] = array(
       '#type' => 'markup',
@@ -457,8 +456,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'value',
       '#value' => TRUE,
     );
-    $project->no_next = TRUE;
-
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
     return;
@@ -468,13 +465,14 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     $type = 'error';
     $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, $type));  
     drupal_set_message($error, 'error');
-    $note = '<p class="wait">'. t('Something Failed.  Please check the error message, and retry verification.') . '</p>';
+    
+    $note = '<p class="warning">'. $error . t('Something Failed.  Please check the error message, and retry verification.') . '</p>';
+    $project->no_next = TRUE;
     
     $form['note'] = array(
       '#type' => 'markup',
       '#value' => $note,
     );
-    
     $form['not_ready'] = array(
       '#type' => 'value',
       '#value' => TRUE,
@@ -863,7 +861,7 @@ function devshop_projects_add_status($type = 'platform'){
   // Check verification task for all nids
   foreach ($nids as $nid){
     $task = hosting_get_most_recent_task($nid, 'verify');
-    if ($task->task_status != HOSTING_TASK_SUCCESS) {
+    if ($task->task_status != HOSTING_TASK_SUCCESS && $task->task_status != HOSTING_TASK_ERROR) {
       $good_to_go = FALSE;
     }
   }
