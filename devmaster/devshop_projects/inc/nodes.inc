@@ -238,7 +238,12 @@ function devshop_projects_load($node) {
   $environments = array();
   while ($obj = db_fetch_object($query)) {
     $object_node = node_load($obj->object_nid);
-    $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
+    
+    if (($object_node->type == 'site' && $object_node->site_status != HOSTING_SITE_DELETED) ||
+      ($object_node->type == 'platform' && $object_node->platform_status != HOSTING_PLATFORM_DELETED)
+        ){
+      $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
+    }
   }
   $additions['environments'] = $environments;
   
