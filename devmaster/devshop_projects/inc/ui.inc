@@ -274,9 +274,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   //Tasks
+  $tasks_table = hosting_task_table($node);
   $node->content['tasks_view'] = array(
     '#type' => 'item',
-    '#value' => hosting_task_table($node),
+    '#value' => $tasks_table,
     '#prefix' => '<div id="hosting-task-list">',
     '#suffix' => '</div>',
     '#weight' => 10
