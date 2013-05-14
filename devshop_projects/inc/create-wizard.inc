@@ -881,8 +881,6 @@ function devshop_form_reloader(&$form, $type = 'platform'){
   $form[$element_id] = array(
     '#type' => 'item',
     '#value' => '',
-    '#prefix' => '<div id="hosting-task-list">',
-    '#suffix' => '</div>',
     '#weight' => 10
   );
   $settings['devshopReload'] = array(
