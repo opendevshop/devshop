@@ -455,6 +455,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
+  
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
     $project->no_next = TRUE;
@@ -498,10 +499,9 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   );
 
   // Ensure a blank row exists (happens when using 'Back' button)
-  if (empty($project->environments['NEW'])){
+  if (!is_array($project->environments['NEW'])){
     $project->environments['NEW'] = array();
   }
-
 
   foreach ($project->environments as $env => $env_settings) {
     // No platforms exist yet
@@ -562,36 +562,43 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     return;
   }
   
-  // Check environment titles
-  foreach ($values['environments'] as $env => $env_settings) {
-    // Check for illegal chars
-    if ($env != 'NEW' && !preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
-      $form_item = 'environments][' . $env  . '][title';
-      form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
-    }
-  }
-  
-  // Change NEW environment data to $title
+  // Changes NEW environment data to $title
   if ($values['environments']['NEW']['title']){
     $new_env = $values['environments']['NEW']['title'];
     $new_env_settings = $values['environments']['NEW'];
     $values['environments'][$new_env] = $new_env_settings;
 
-    // Create the next NEW environment
+    // Create the next NEW environment.  Unset makes sure its always last.
     unset($values['environments']['NEW']);
     $values['environments']['NEW'] = array();
-  }
-  // Unset empty "NEW" environment
-  else {
+  } else {
     unset($values['environments']['NEW']);
   }
   
-  // Save envs to project
-  $project->environments = $values['environments'];
+  // Reset project environments
+  $project->environments = array();
+  
+  // Check environment titles
+  foreach ($values['environments'] as $env => $env_settings) {
+    // Check for illegal chars
+    if ($env != 'NEW'){
+      if (!preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
+        $form_item = 'environments][' . $env  . '][title';
+        form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+      } else {
+        // If all is well, save to project cache
+        $project->environments[$env] = $env_settings;
+      }
+    }
+  }
   
   // Reject if empty
   if (count($project->environments) < 1){
-    form_set_error('environments][NEW][title', t('You must add at least one environment.'));
+    if ($form_state['clicked_button']['#name'] == 'add_environment'){
+      form_set_error('environments][NEW][title', t('Name this environment before you add another.'));
+    } else {
+      form_set_error('environments][NEW][title', t('You must add at least one environment.'));
+    }
   }
 }
 
@@ -601,50 +608,59 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project = &$form_state['project'];
+  $project_node = node_load($project->project_nid);
   $values = $form_state['values'];
-
-  $project->environments = array_filter($values['environments']);
+  dsm($values, 'values');
 
   $first_envs = $project->environments ? $project->environments : array();
   $settings = module_invoke_all('devshop_project_settings', $project_node);
   
-  // Create these platforms
-  foreach ($project->environments as $name => $data) {
-    
+  // Create these platforms, if they don't exist yet
+  foreach ($project->environments as $name => $environment) {
+    $platform_nid = $project_node->environments[$name]['platform'];
+
+    // If the platform already exists, save it again with new settings.
+    if ($platform_nid) {
+      drupal_set_message("Updating platform for $name");
+      $platform_node = node_load($platform_nid);
+      foreach ($settings as $setting_name => $element){
+        $platform_node->{$setting_name} = $environment[$setting_name];
+      }
+      node_save($platform_node);
+    }
     // If platform hasn't been created yet, do so now!
-    if (empty($data['platform_nid'])) {
+    elseif (empty($platform_nid)) {
+      drupal_set_message("Creating new platform for $name");
+
       // Save the damn platform nodes
       $platform = new stdClass;
-
+    
       // Platform name
-      $platform->title = $project->title . '_' . $data['title'];
+      $platform->title = $project->title . '_' . $environment['title'];
       
       // Platform publish_path
       if ($project->drupal_path) {
-        $platform->publish_path = $project->code_path . '/' . $data['title'] . '/' . $project->drupal_path;
+        $platform->publish_path = $project->code_path . '/' . $environment['title'] . '/' . $project->drupal_path;
       }
       else {
-        $platform->publish_path = $project->code_path . '/' . $data['title'];
+        $platform->publish_path = $project->code_path . '/' . $environment['title'];
       }
-
+    
       // Other attributes
-      $platform->web_server = $data['web_server'];
-      $platform->git_branch = $data['git_branch'];
-      $platform->pull_enable = $data['pull_enabled'];
+      $platform->web_server = $environment['web_server'];
+      $platform->git_branch = $environment['git_branch'];
+      $platform->pull_enable = $environment['pull_enabled'];
       $platform->project = $project->title;
-      $platform->environment = $data['title'];
+      $platform->environment = $environment['title'];
       $platform->drupal_path = $project->drupal_path;
+      
+      foreach ($settings as $setting_name => $element){
+        $platform->{$setting_name} = $environment[$setting_name];
+      }
+      dsm($platform, 'CREATEING NEW PLATFORM!');
 
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $project->environments[$name]['platform_nid']  = $platform_node->nid;
-    }
-    // If the platform already exists, save it again with new settings.
-    else {
-      $platform_node = node_load($project->platforms[$data['title']]);
-      foreach ($settings as $setting_name => $element){
-        $platform_node->{$setting_name} = $data[$setting_name];
-      }
-      node_save($platform_node);
     }
   }
 
@@ -657,10 +673,8 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // the platform node.
 
     // Create 'delete' task for this project
-    hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
-
-    // Remove from project object
-    unset($project->environments[$environment_name]);
+    dsm($environment_name, '@TODO: hosting delete');
+    //hosting_add_task($project_node->environments[$environment_name]['platform'], 'delete');
   }
 }
 
@@ -755,6 +769,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
       $row['version'] = '...';
+      $row['profiles'] = '...';
     }
     
     // If a single task is not queued, $all_tasks_queued == FALSE
@@ -792,7 +807,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => $note,
     );
 
-    devshop_form_reloader($form, 'platform');
+//    devshop_form_reloader($form, 'platform');
 
     return $form;
   }
