@@ -251,7 +251,7 @@ function devshop_task_finalize() {
   db_query("DELETE FROM {cache}");
 
   drupal_set_message(st('Configuring default blocks'));
-  install_add_block('hosting', 'hosting_queues', $theme, 1, 5, 'right', 1);
+  install_add_block('devshop_hosting', 'devshop_tasks', $theme, 1, 5, 'header', 1);
 
   // @TODO: CREATE DEVSHOP ROLES!
   drupal_set_message(st('Configuring roles'));
