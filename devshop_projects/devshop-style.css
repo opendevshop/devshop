@@ -91,3 +91,33 @@ form .sync-envs div.form-item-labeled label {
 .path-hosting-projects-add-environments #right {
   display: none;
 }
+
+.path-hosting-projects-add-environments #main {
+  width: 98%;
+}
+
+.path-hosting-projects-add-environments div#page div.limiter {
+  background: #fff;
+}
+p.wait {
+  text-align: center;
+  padding: 32px 0px 52px;
+  background: bottom center no-repeat url(images/loading.gif);
+}
+
+p.error {
+  text-align: center;
+  padding: 32px 0px 52px;
+}
+
+#project-settings-table {
+  margin-top: 20px;
+}
+
+.project-add-environment-button {
+  margin: 0px auto;  
+  text-align: center;  
+}
+#edit-add-environment {
+  background: #999;
+}
