@@ -10,6 +10,9 @@
 #
 #    $ sudo ./install.debian.sh
 #
+# You will be asked to create a MySQL root password.  Later you will be asked
+# for this password again by the Aegir installer.
+#
 echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
 wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
 apt-get update
