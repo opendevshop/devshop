@@ -461,7 +461,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     $project->no_next = TRUE;
     
     // If we are all queued, show a friendly message
-    //devshop_form_reloader($form, 'platform');
     if ($project->verify_task_status == HOSTING_TASK_QUEUED){
       $task = node_load($project->verify_task_nid);
       $time_ago = time() - $task->created;
@@ -813,7 +812,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => $note,
     );
 
-    //devshop_form_reloader($form, 'platform');
+    devshop_form_reloader($form, 'platform');
     return $form;
   }
   // If no available profiles:
