@@ -166,7 +166,9 @@ function devshop_hosting_task_queue_block() {
   if (user_access('access task logs')){
     $link = l('Tasks Logs', 'hosting/queues/tasks', array('attributes' => array('class' => 'task-logs-link')));
   }
-  $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
+  if ($rows){
+    $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
+  }
   
   // Output our "template"
   return <<<HTML
