@@ -114,7 +114,7 @@ body.node-type-project a.hosting-goto-site-link {
   cursor: pointer;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
-  width: 150px;  
+  width: 200px;  
 }
 
 #block-devshop_hosting-devshop_tasks  #devshop-task-status.active {
