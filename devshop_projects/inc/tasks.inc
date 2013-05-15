@@ -16,7 +16,6 @@ function devshop_projects_hosting_tasks() {
     'provision_save' => TRUE,
     'access callback' => 'devshop_hosting_task_menu_access',
     'hidden' => TRUE,
-    'nid' => NULL,  // This silly hack hides verify... hidden won't work!
   );
   $tasks['project']['devshop-create'] = array(
     'title' => t('Create New Environment'),
