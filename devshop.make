@@ -4,8 +4,7 @@ api = 2
 projects[drupal][type] = "core"
 
 ; DevShop modules
-projects[devshop_hosting][download][type] = "git"
-projects[devshop_hosting][type] = "module"
+projects[devshop_hosting][subdir] = contrib
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
