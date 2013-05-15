@@ -243,20 +243,25 @@ function devshop_hosting_project_tab_title($default, $node){
 }
 
 /**
- * Task access controls
+ * Access Callback for Aegir Tasks
  *
- * This function defines which tasks should be showed to the user but
- * especially which will be accessible to him, in the permissions system.
+ * This function defines access to the various aegir tasks.
  *
  * @arg $node object
- *   the node object we're trying to access
+ *   The node object is running the task. (Site, Platform, Server)
  *
  * @arg $task string
- *   the task type we're trying to do on the $node
+ *   The type of the task that is running.
  *
- * @see hosting_task_menu()
+ * @see hosting_task_menu_access()
+ *
+ * @TODO: This NEVER runs for verify!  Only for devshop-xyz tasks.
+ * project verify task is defined in devshop_projects_hosting_tasks() in
+ * inc/tasks.inc, and has this function as it's access callback.  But this
+ * function seems to never run.
  */
 function devshop_hosting_task_menu_access($node, $task) {
+  // If we are passed the nid by mistake
   if (!isset($node->nid)){
     $node = node_load($node);
   }

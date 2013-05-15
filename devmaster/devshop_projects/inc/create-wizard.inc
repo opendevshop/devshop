@@ -62,16 +62,20 @@ function devshop_projects_create_wizard($step = NULL){
   if (isset($tasks['verify']['nid'])){
     
   }
+  
+  // Get "verify" task status for the project
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
   
   // If project verification failed, we need to ask for a new git url.
-  if ($project->verify_task_status === HOSTING_TASK_ERROR && !empty($project_node->nid)){
-    drupal_set_message(t('Unable to connect to the git url: !git.  Please check the git URL and try again.', array('!git' => $project->git_url)));
+  if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)){
+    $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));  
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
       drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
     }
+  } else {
+    $project->verify_error = NULL;
   }
 
   // All forms can access $form_state['project'];
@@ -223,6 +227,14 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
  */
 function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
+  
+  if ($project->verify_error){
+    $form['node'] = array(
+      '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
+      '#type' => 'markup',
+    );
+  }
+  
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
@@ -443,11 +455,19 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-
+  
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
-    // @TODO: Detect and show errors when they occur.
-    // @TODO: Pretty this up, figure out how to maybe, display the task in the body?
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
+    $project->no_next = TRUE;
+    
+    // If we are all queued, show a friendly message
+    if ($project->verify_task_status == HOSTING_TASK_QUEUED){
+      $task = node_load($project->verify_task_nid);
+      $time_ago = time() - $task->created;
+      if ($time_ago > 60) {
+        $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
+      }
+    }
     
     $form['note'] = array(
       '#type' => 'markup',
@@ -457,29 +477,11 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'value',
       '#value' => TRUE,
     );
-    $project->no_next = TRUE;
-
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
+    
+    
     return;
-  }
-  // Handle failure
-  elseif ($project->verify_task_status == HOSTING_TASK_ERROR) {
-    $type = 'error';
-    $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, $type));  
-    drupal_set_message($error, 'error');
-    $note = '<p class="wait">'. t('Something Failed.  Please check the error message, and retry verification.') . '</p>';
-    
-    $form['note'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
-    );
-    
-    $form['not_ready'] = array(
-      '#type' => 'value',
-      '#value' => TRUE,
-    );
-     return;
   }
   
   // this JS handles the form element hiding/showing
@@ -489,12 +491,16 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $settings = module_invoke_all('devshop_project_settings', $project_node);
   
   $form['environments'] = array(
-    '#type' => 'fieldset',
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
     '#suffix' => '</div>',
   );
+
+  // Ensure a blank row exists (happens when using 'Back' button)
+  if (!is_array($project->environments['NEW'])){
+    $project->environments['NEW'] = array();
+  }
 
   foreach ($project->environments as $env => $env_settings) {
     // No platforms exist yet
@@ -503,6 +509,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     } else {
       $env_title = $env;
     }
+    
     $form['environments'][$env] = array(
       '#tree' => TRUE,
       '#type' => 'fieldset',
@@ -534,6 +541,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#value' => t('Add environment'), 
       '#name' => 'add_environment',
       '#submit' => array('devshop_projects_create_wizard_add_new_environment'),
+      '#prefix' => '<div class="project-add-environment-button">',
+      '#suffix' => '</div>',
     ); 
   }
 }
@@ -552,32 +561,49 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     return;
   }
   
-  // Check environment titles
-  foreach ($values['environments'] as $env => $env_settings) {
-    // Check for illegal chars
-    if ($env != 'NEW' && !preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
-      $form_item = 'environments][' . $env  . '][title';
-      form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
-    }
-  }
-  
-  // Change NEW environment data to $title
+  // Changes NEW environment data to $title
   if ($values['environments']['NEW']['title']){
     $new_env = $values['environments']['NEW']['title'];
     $new_env_settings = $values['environments']['NEW'];
     $values['environments'][$new_env] = $new_env_settings;
 
-    // Create the next NEW environment
+    // Create the next NEW environment.  Unset makes sure its always last.
     unset($values['environments']['NEW']);
-    $values['environments']['NEW'] = array();
+    
+    // If "add environment" button clicked, add another row.    
+    if ($form_state['clicked_button']['#name'] == 'add_environment'){
+      $values['environments']['NEW'] = array();
+    }
+  } else {
+    unset($values['environments']['NEW']);
   }
   
-  // Save envs to project
-  $project->environments = $values['environments'];
+  // Reset project environments
+  $project->environments = array();
+  
+  // Check environment titles
+  foreach ($values['environments'] as $env => $env_settings) {
+    // Check for illegal chars
+    if ($env != 'NEW' && !empty($env_settings['title'])){
+      if (!preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
+        $form_item = 'environments][' . $env  . '][title';
+        form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+      } else {
+        // If all is well, save to project cache
+        $project->environments[$env] = $env_settings;
+      }
+    }
+  }
+  
+  
   
   // Reject if empty
-  if (count($project->environments) - 1 < 1){
-    form_set_error('environments][NEW][title', t('You must add at least one environment.'));
+  if (count($project->environments) < 1){
+    if ($form_state['clicked_button']['#name'] == 'add_environment'){
+      form_set_error('environments][NEW][title', t('Name this environment before you add another.'));
+    } else {
+      form_set_error('environments][NEW][title', t('You must add at least one environment.'));
+    }
   }
 }
 
@@ -587,66 +613,69 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project = &$form_state['project'];
+  $project_node = node_load($project->project_nid);
   $values = $form_state['values'];
 
-  $project->environments = array_filter($values['environments']);
-
-  $first_envs = $project->environments ? $project->environments : array();
   $settings = module_invoke_all('devshop_project_settings', $project_node);
   
-  // Create these platforms
-  foreach ($project->environments as $name => $data) {
-    
+  // Create these platforms, if they don't exist yet
+  foreach ($project->environments as $name => $environment) {
+    $platform_nid = $project_node->environments[$name]['platform'];
+
+    // If the platform already exists, save it again with new settings.
+    if ($platform_nid) {
+      $platform_node = node_load($platform_nid);
+      foreach ($settings as $setting_name => $element){
+        $platform_node->{$setting_name} = $environment[$setting_name];
+      }
+      node_save($platform_node);
+    }
     // If platform hasn't been created yet, do so now!
-    if (empty($data['platform_nid'])) {
+    elseif (empty($platform_nid)) {
+
       // Save the damn platform nodes
       $platform = new stdClass;
-
+    
       // Platform name
-      $platform->title = $project->title . '_' . $data['title'];
+      $platform->title = $project->title . '_' . $environment['title'];
       
       // Platform publish_path
       if ($project->drupal_path) {
-        $platform->publish_path = $project->code_path . '/' . $data['title'] . '/' . $project->drupal_path;
+        $platform->publish_path = $project->code_path . '/' . $environment['title'] . '/' . $project->drupal_path;
       }
       else {
-        $platform->publish_path = $project->code_path . '/' . $data['title'];
+        $platform->publish_path = $project->code_path . '/' . $environment['title'];
       }
-
+    
       // Other attributes
-      $platform->web_server = $data['web_server'];
-      $platform->git_branch = $data['git_branch'];
-      $platform->pull_enable = $data['pull_enabled'];
+      $platform->web_server = $environment['web_server'];
+      $platform->git_branch = $environment['git_branch'];
+      $platform->pull_enable = $environment['pull_enabled'];
       $platform->project = $project->title;
-      $platform->environment = $data['title'];
+      $platform->environment = $environment['title'];
       $platform->drupal_path = $project->drupal_path;
-
-      $platform_node = _devshop_projects_node_create('platform', $platform);
-      $project->environments[$name]['platform_nid']  = $platform_node->nid;
-    }
-    // If the platform already exists, save it again with new settings.
-    else {
-      $platform_node = node_load($project->platforms[$data['title']]);
+      
       foreach ($settings as $setting_name => $element){
-        $platform_node->{$setting_name} = $data[$setting_name];
+        $platform->{$setting_name} = $environment[$setting_name];
       }
-      node_save($platform_node);
+      $platform_node = _devshop_projects_node_create('platform', $platform);
+      $project->environments[$name]['platform_nid'] = $platform_node->nid;
     }
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments  = array_diff_key($first_envs, $values['environments']);
+  $removed_environments  = array_diff_key($project_node->environments, $values['environments']);
+  
   foreach ($removed_environments as $environment_name => $settings) {
-
     // @TODO: Determine what to do here based on task status...
     // if verify task hasn't even run yet (and has never run) we can just delete
     // the platform node.
 
-    // Create 'delete' task for this project
-    hosting_add_task($project->environments[$environment_name]['platform_nid'], 'delete');
-
-    // Remove from project object
-    unset($project->environments[$environment_name]);
+    // Create 'delete' task for the removed platform
+    $platform_nid = $settings['platform'];
+    if ($platform_nid){
+      hosting_add_task($platform_nid, 'delete');
+    }
   }
 }
 
@@ -663,6 +692,10 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $project_node = node_load($project->project_nid);
 
   // OUTPUT
+  // @TODO: Clean this up!!
+  
+  // @TODO: This is old code that is never seen.  User ends up on project page.  
+  // Perhaps we should keep people on this page until the sites are all installed?  No, because we want to free up the wizard for another project create... instead lets fix the project node page to display proper status.
   if ($project_node->project_status == 'sites_installing') {
     $form['note'] = array(
       '#type' => 'item',
@@ -670,13 +703,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#value' => t('Your sites are being installed!'),
     );
     return $form;
-  }
-  elseif ($project_node->project_status == 'preparing-project') {
-    // @TODO: Not yet, needs more logic
-    // drupal_goto('hosting/projects/add');
-  }
-  elseif ($project_node->project_status == 'sites-installed') {
-    return;
   }
 
   $profiles = array();
@@ -690,24 +716,22 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Display the platforms
   $rows = array();
-  $header = array(t('Name'), t('Branch'), t('Version'), t('Verification Status'), t('Installation Profiles'));
-  foreach ($project_node->project_objects['platform'] as $nid => $name){
+  $header = array(t('Name'), t('Branch'), t('Version'), t('Install Profiles'), t('Status'));
+  $all_tasks_queued = TRUE;
+  $all_tasks_succeeded = TRUE;
+  
+  foreach ($project_node->environments as $name => $environment){
+  
+    // Get platform and latest verify task.
+    $platform_nid = $environment['platform'];
+    $platform = node_load($platform_nid);
+    $task = hosting_get_most_recent_task($platform_nid, 'verify');
 
-    // If this platform is no longer in the $project object, we shouldn't show
-    // it here.
-    if (!isset($project->environments[$name])) {
-      continue;
-    }
-
-    // Get verification task for this platform.
-    $task = hosting_get_most_recent_task($nid, 'verify');
-    $platform = node_load($nid);
-
+    // Build a table.
     $row = array();
-    $row[] = $name;
-    $row[] = $platform->git_branch;
-    $row[] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('Pending');
-    $row[] =  _hosting_parse_error_code($task->task_status);
+    $row['name'] = $name;
+    $row['branch'] = $platform->git_branch;
+    $row['version'] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('...');
 
     // If platform verified successfully:
     if ($task->task_status == HOSTING_TASK_SUCCESS) {
@@ -716,69 +740,86 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
       if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
         $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-        $row[] = implode(', ', $profiles[$name]);
+        $row['profiles'] = implode(', ', $profiles[$name]);
       } else {
         $profiles[$name] = array();
       }
 
-      // If no available profiles found yet, this becomes the available list.
-      if (empty($available_profiles)){
-        $available_profiles = $profiles[$name];
-      }
-      // If we have available profiles, only keep the ones we found again.
-      else {
-        // @TODO: This joins profiles by name, not profile name.
-        $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+      // If no tasks have failed, save available profiles
+      if ($all_tasks_succeeded){
+        if (empty($available_profiles)){
+          $available_profiles = $profiles[$name];
+        } else {
+          $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+        }
       }
     }
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
-      $completed = FALSE;
-      $row[] = t('Platform verification failed!  Check the task log for more details. You can !link', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments')));
+      $completed = TRUE;
+      $all_tasks_succeeded = FALSE;
+      $available_profiles = array();
+      
+      $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error'));
+      
+      $row['version'] = array(
+        'data' => t('Platform verification failed: %error', array('%error' => $error)),
+        'colspan' => 2,
+      );
+      
+      // @TODO: Get task log error message
+      
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
-      $row[] = t('Platform download & verification in process.');
+      $row['version'] = '...';
+      $row['profiles'] = '...';
     }
-
-    // If platform has NOT verified successfully, mark process not complete.
-    else {
-      $completed = FALSE;
-      $row[] = t('Pending');
+    
+    // If a single task is not queued, $all_tasks_queued == FALSE
+    if ($task->task_status != HOSTING_TASK_QUEUED){
+      $all_tasks_queued = FALSE;
     }
+    
+    // Add hosting task status.
+    $row['status'] =  _hosting_parse_error_code($task->task_status);
 
     // Store rows for display
     $rows[] = $row;
   } // end foreach platform
   
-
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
     '#value' => theme('table', $header, $rows),
   );
-  
-  // Provide something for people while they wait.
+
+  // Not completed means show all tasks are not completed (or errored)
   if (!$completed){
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
     
-    devshop_form_reloader($form, 'platform');
-
+    // If we are all queued, show a friendly message
+    
+    $time_ago = time() - $task->created;
+    if ($all_tasks_queued && $time_ago > 120) {
+      $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
+    }
 
     $form['help'] = array(
       '#type' => 'markup',
       '#value' => $note,
     );
+
+    devshop_form_reloader($form, 'platform');
     return $form;
   }
   // If no available profiles:
+
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="wait">' . t('WARNING: No common profile was found in all of your platforms.  Please check your branches and code and try again.  You must !link to change your branches.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
-
-    devshop_form_reloader($form, 'platform');
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#type' => 'markup',
@@ -845,7 +886,7 @@ function devshop_projects_add_status($type = 'platform'){
   
   $project_node = node_load($project->project_nid);
   
-  $good_to_go = TRUE;
+  $all_tasks_completed = TRUE;
   $nids = array();
   
   // When checking project...
@@ -855,20 +896,25 @@ function devshop_projects_add_status($type = 'platform'){
   
   // When checking platforms...
   if ($type == 'platform') {
-    foreach ($project_node->project_objects['platform'] as $nid => $name){
-      $nids[] = $nid;
+    foreach ($project_node->environments as $name => $environment){
+      $nids[] = $environment['platform'];
     }
   }
   
   // Check verification task for all nids
   foreach ($nids as $nid){
     $task = hosting_get_most_recent_task($nid, 'verify');
-    if ($task->task_status != HOSTING_TASK_SUCCESS) {
-      $good_to_go = FALSE;
+    $return['tasks'][$nid] = _hosting_parse_error_code($task->task_status);
+    
+    // If task is not completed, mark all tasks not complete.
+    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR) {
+      continue;
+    } else {
+      $all_tasks_completed = FALSE;
     }
+      
   }
-  
-  $return['reload'] = $good_to_go;
+  $return['tasks_complete'] = $all_tasks_completed;
   drupal_json($return);
   exit;
 }
@@ -881,8 +927,6 @@ function devshop_form_reloader(&$form, $type = 'platform'){
   $form[$element_id] = array(
     '#type' => 'item',
     '#value' => '',
-    '#prefix' => '<div id="hosting-task-list">',
-    '#suffix' => '</div>',
     '#weight' => 10
   );
   $settings['devshopReload'] = array(
