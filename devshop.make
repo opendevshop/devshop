@@ -8,14 +8,14 @@ projects[devshop_hosting][download][type] = "git"
 projects[devshop_hosting][type] = "module"
 
 ; Contrib modules
-projects[adminrole][type] = "module"
-projects[ctools][type] = "module"
-projects[hosting_drush_aliases][type] = "module"
-projects[hosting_filemanager][type] = "module"
-projects[hosting_logs][type] = "module"
-projects[hosting_queue_runner][type] = "module"
-projects[hosting_solr][type] = "module"
-projects[hosting_tasks_extra][type] = "module"
+projects[adminrole][subdir] = contrib
+projects[ctools][subdir] = contrib
+projects[hosting_drush_aliases][subdir] = contrib
+projects[hosting_filemanager][subdir] = contrib
+projects[hosting_logs][subdir] = contrib
+projects[hosting_queue_runner][subdir] = contrib
+projects[hosting_solr][subdir] = contrib
+projects[hosting_tasks_extra][subdir] = contrib
 
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
