@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Set a new homepage.
+ * Implements hook_install()
+ *
+ * Sets a new frontpage.
  */
 function devshop_hosting_install(){
   variable_set('site_frontpage', 'devshop');

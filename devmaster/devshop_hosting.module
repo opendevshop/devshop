@@ -1,10 +1,14 @@
 <?php
 /**
  * @file devshop_hosting.module
+ *
+ * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
  */
 
  /**
   * Implements hook_init()
+  *
+  * Adds CSS and sets the logo.
   */
 function devshop_hosting_init(){
   drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
@@ -14,6 +18,9 @@ function devshop_hosting_init(){
 
 /**
  * Implements hook_menu()
+ *
+ * Defines a new menu callback: login page for new users, redirect to projects
+ * for authenticated users.
  */
 function devshop_hosting_menu(){
   $items['devshop'] = array(
@@ -25,28 +32,9 @@ function devshop_hosting_menu(){
   return $items;
 }
 
-
 /**
- * Implements hook_menu()
- */
-function devshop_hosting_menu_alter(&$items){
-  $items['user/password']['type'] = MENU_CALLBACK;
-  unset($items['hosting/sites']);
-  unset($items['hosting/platforms']);
-  
-  $items['hosting/servers/add'] = $items['node/add/server'];
-  $items['hosting/servers/add']['title'] = t('Add new Server');
-  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
-  $items['hosting/servers/add']['page arguments'] = array('server');
-  
-  $items['hosting/servers/list'] = array(
-    'title' => t('All Servers'),
-    'weight' => -1,
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-  );
-}
-
-/**
+ * Menu callback for path "devshop"
+ *
  * Provides a login page or redirects to proejcts
  */
 function devshop_hosting_home(){
@@ -59,17 +47,38 @@ function devshop_hosting_home(){
 }
 
 /**
- * Implements hook_form_user_login_alter()
+ * Implements hook_menu_alter()
+ *
+ * Streamlines login and servers pages.
+ */
+function devshop_hosting_menu_alter(&$items){
+  $items['user/password']['type'] = MENU_CALLBACK;
+  unset($items['hosting/sites']);
+  unset($items['hosting/platforms']);
+
+  $items['hosting/servers/add'] = $items['node/add/server'];
+  $items['hosting/servers/add']['title'] = t('Add new Server');
+  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/servers/add']['page arguments'] = array('server');
+
+  $items['hosting/servers/list'] = array(
+    'title' => t('All Servers'),
+    'weight' => -1,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+}
+
+/**
+ * Implements hook_form_alter() for user_login.
  * Provides some UI enhancements.
  */
 function devshop_hosting_form_user_login_alter(&$form){
   $form['pass']['#description'] .= '  ' . l(t('Forgot your Password?'), 'user/password');
 }
 
-
 /**
- * Implements hook_form_user_login_block_alter()
- * Provides some UI enhancements.
+ * Implements hook_form_alter() for user_login_block.
+ * Hides the login block form on "devshop" page.
  */
 function devshop_hosting_form_user_login_block_alter(&$form){
   if (arg(0) == 'devshop'){
@@ -79,25 +88,30 @@ function devshop_hosting_form_user_login_block_alter(&$form){
 
 /**
  * Implements hook_block()
+ *
+ * Provides three blocks:
+ *  - DevShop Tasks
+ *  - Created by ThinkDrop
+ *  - Powered by Aegir
  */
 function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
   switch ($op) {
     case 'list':
       $blocks['devshop_tasks'] = array(
-        'info' => t('DevShop Tasks'), 
-        'enabled' => 1, 
-        'region' => 'header', 
+        'info' => t('DevShop Tasks'),
+        'enabled' => 1,
+        'region' => 'header',
         'weight' => 0,
       );
       $blocks['built'] = array(
-        'info' => t('Created by THINKDROP'), 
+        'info' => t('Created by THINKDROP'),
         'weight' => '10',
         'cache' => BLOCK_NO_CACHE,
         'status' => 1,
         'region' => 'footer',
       );
       $blocks['driven'] = array(
-        'info' => t('Driven by Aegir'), 
+        'info' => t('Driven by Aegir'),
         'weight' => '10',
         'cache' => BLOCK_NO_CACHE,
         'status' => 1,
@@ -124,7 +138,8 @@ function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
 }
 
 /**
- * Output our own tiny footprint queue block
+ * DevShop Tasks block.
+ * @todo: Ajaxify.
  */
 function devshop_hosting_task_queue_block() {
   drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
@@ -151,7 +166,7 @@ function devshop_hosting_task_queue_block() {
     foreach ($nodes as $node) {
       $row = array();
       $row['type'] = array(
-        'data' => drupal_ucfirst(str_replace('_', ' ', $node->task_type)) . ' ' . _hosting_node_link($node->rid), 
+        'data' => drupal_ucfirst(str_replace('_', ' ', $node->task_type)) . ' ' . _hosting_node_link($node->rid),
         'class' => 'hosting-status',
       );
       $class = hosting_task_status_class($node->task_status);
@@ -161,7 +176,7 @@ function devshop_hosting_task_queue_block() {
       );
     }
   }
-  
+
   // Build Strings
   if (user_access('access task logs')){
     $link = l('Tasks Logs', 'hosting/queues/tasks', array('attributes' => array('class' => 'task-logs-link')));
@@ -169,7 +184,7 @@ function devshop_hosting_task_queue_block() {
   if ($rows){
     $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
   }
-  
+
   // Output our "template"
   return <<<HTML
 <div id='devshop-task-status' class='$status_class'>$status</div>
@@ -181,4 +196,3 @@ function devshop_hosting_task_queue_block() {
 HTML;
 
 }
-
