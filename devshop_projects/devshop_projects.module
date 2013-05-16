@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file devshop_projects.module
  *
@@ -10,8 +9,6 @@ include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
 include_once('inc/tasks.inc');
 include_once('inc/theme.inc');
-
-// Lets keep front end code here.
 include_once('inc/ui.inc');
 
 /**
@@ -38,7 +35,7 @@ function devshop_projects_perm() {
     'create devshop-sync task',
     'create devshop-delete task',
     'create project',
-    'view project', 
+    'view project',
     'edit project',
     'delete projects',
     'administer projects',
@@ -101,25 +98,25 @@ function devshop_projects_menu() {
   $items['hosting/projects/add'] = array(
     'title' => 'Start New Project',
     'type' => MENU_LOCAL_TASK,
-    'title' => t('Start a new Project'), 
-    'title callback' => 'check_plain', 
-    'page callback' => 'devshop_projects_add', 
-    'page arguments' => array(3), 
-    'access arguments' => array('create project'), 
-    'description' => 'Start a new Drupal website project.', 
+    'title' => t('Start a new Project'),
+    'title callback' => 'check_plain',
+    'page callback' => 'devshop_projects_add',
+    'page arguments' => array(3),
+    'access arguments' => array('create project'),
+    'description' => 'Start a new Drupal website project.',
     'file' => 'create-wizard.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
   );
-  
+
   // Ajax endpoint for reloads
   $items['hosting/projects/add/status'] = array(
     'page callback' => 'devshop_projects_add_status',
-    'access callback' => 'node_access', 
+    'access callback' => 'node_access',
     'access arguments' => array('create', 'project'),
     'file' => 'create-wizard.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
   );
-  
+
   // hosting tasks ajax pages.
   foreach (hosting_available_tasks('project') as $task => $info){
     $path = 'node/%/project_' . $task;
@@ -134,8 +131,7 @@ function devshop_projects_menu() {
     );
     $items[$path] = array_merge($items[$path], $info);
   }
-  
-  return ($items);
+  return $items;
 }
 
 
@@ -148,7 +144,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
   } else {
     $branch_options = array();
   }
-  
+
   $settings = array();
   $settings['git_branch'] = array(
     '#title' => t('Git Branch'),
@@ -158,24 +154,22 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
   );
 
   $http_servers = hosting_get_servers('http');
-
   if (count($http_servers)) {
     $settings['web_server'] = array(
       '#title' => t('Web server'),
       '#node_type' => 'platform',
-      '#type' => 'select',
+      '#type' => count($http_servers) == 1? 'hidden': 'select',
       '#options' => $http_servers,
     );
   }
 
   $db_servers = hosting_get_servers('db');
-
   if (count($db_servers)) {
     $settings['db_server'] = array(
       '#title' => t('Database server'),
       '#node_type' => 'site',
       '#type' => 'select',
-      '#options' => $db_servers,
+      '#options' => count($db_servers) == 1? 'hidden': 'select',
     );
   }
 
@@ -201,7 +195,7 @@ function devshop_projects_add($step = NULL){
  * Replacement for hosting_task_confirm_form()
  *
  * @TODO: Remove once http://drupal.org/node/1861898 is committed.
- */ 
+ */
 function devshop_projects_hosting_task_confirm_form_page($nid, $task){
   $node = node_load($nid);
   return drupal_get_form('hosting_task_confirm_form', $node, $task);
@@ -221,7 +215,7 @@ function devshop_projects_menu_alter(&$items) {
   // Make project node pages more user-friendly.
   $items['node/%node/view']['title callback'] = 'devshop_hosting_project_tab_title';
   $items['node/%node/view']['title arguments'] = array('View', 1);
-  
+
   $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
   $items['node/%node/edit']['title arguments'] = array('Edit', 1);
 
@@ -229,15 +223,15 @@ function devshop_projects_menu_alter(&$items) {
 
 /**
  * Tab title replacer
- */ 
+ */
 function devshop_hosting_project_tab_title($default, $node){
   if ($default == 'View' && $node->type == 'project'){
-    return t('Dashboard'); 
+    return t('Dashboard');
   }
   if ($default == 'Edit' && $node->type == 'project'){
-    return t('Settings'); 
+    return t('Settings');
   }
-  
+
   // Otherwise, just return the page text
   return t($default);
 }
@@ -272,7 +266,7 @@ function devshop_hosting_task_menu_access($node, $task) {
 
   if (user_access("create " . $task . " task")) {
     if ($node->type == 'project') {
-      
+
       // If Commit Features task, make sure features module is present
       if ($task == 'devshop-commit'){
         return _devshop_projects_project_has_module($node, 'features');
@@ -328,8 +322,8 @@ function devshop_project_status($node){
   } else {
     $sites_ready = FALSE;
   }
-  
-  
+
+
   // @TODO: This is so rough!  We can do better.
   return $sites_ready? 'sites_ready': (
     $sites_installing? 'sites_installing': (
@@ -434,14 +428,14 @@ function _devshop_projects_project_has_module($node, $module) {
  * Delete a directory recursively
  */
 function _devshop_rrmdir($dir) {
-  if (is_dir($dir)) { 
-     $objects = scandir($dir); 
-     foreach ($objects as $object) { 
-       if ($object != "." && $object != "..") { 
-         if (filetype($dir."/".$object) == "dir") _devshop_rrmdir($dir."/".$object); else unlink($dir."/".$object); 
-       } 
-     } 
-     reset($objects); 
-     rmdir($dir); 
-   } 
-} 
+  if (is_dir($dir)) {
+     $objects = scandir($dir);
+     foreach ($objects as $object) {
+       if ($object != "." && $object != "..") {
+         if (filetype($dir."/".$object) == "dir") _devshop_rrmdir($dir."/".$object); else unlink($dir."/".$object);
+       }
+     }
+     reset($objects);
+     rmdir($dir);
+   }
+}
