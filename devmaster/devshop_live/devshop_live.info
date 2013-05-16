@@ -1,5 +1,5 @@
 name = DevShop Live
-description = A DevShop module to Going Live.
+description = Add a live domain to projects.
 core = 6.x
 package = DevShop
 dependencies[] = devshop_projects
