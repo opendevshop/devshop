@@ -1,7 +1,10 @@
 <?php
 
+/**
+ * Implements hook_hosting_feature
+ * @return array List of features to expose to Aegir's hosting features page.
+ */
 function devshop_hosting_hosting_feature() {
-  // From hosting_example_hosting_feature().
   $features['devshop_hosting'] = array(
     'title' => t('DevShop'),
     'description' => t('Enables the project-centric DevShop UI.'),
