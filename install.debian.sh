@@ -10,10 +10,10 @@
 #  To install, run the following command:
 #
 #    $ sudo ./install.debian.sh
+#.
 #
-# You will be asked to create a MySQL root password.  Later you will be asked
-# for this password again by the Aegir installer.
-#
+
+# @TODO: Fail if not running as root (sudo)
 
 # Generate a secure password for MySQL
 # Saves this password to /tmp/mysql_root_password in case you have to run the
