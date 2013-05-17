@@ -19,4 +19,4 @@ projects[hosting_tasks_extra][subdir] = contrib
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
 projects[hostmaster][type] = "profile"
-projects[hostmaster][version] = "1.x"
+projects[hostmaster][version] = "1.x-dev"
