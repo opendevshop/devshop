@@ -1,14 +1,11 @@
 <?php
 /**
  * @file devshop_pull.module
+ *
  * Provides a Hosting Queue and a URL callback for remote services to ping, in
  * order to trigger a Pull Code task.
  *
  * Used to keep a dev server up to date with the commits of projects.
- *
- * @TODO: This module needs some re-architecting, because there are a few things
- * we might want to do "on-commit".  Also, we should be able to handle
- * integrations with any system, not just github.
  *
  */
 
@@ -21,7 +18,7 @@ define('DEVSHOP_PULL_STATUS_ACCESS_DENIED', 2);
 define('DEVSHOP_PULL_STATUS_INVALID_CODE', 3);
 
 // These are github's Webhook callback IPs.
-// This list grows occaisonally...
+// This list grows occaisonally, update it as needed.
 define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS',"
 207.97.227.253
 50.57.128.197
@@ -36,7 +33,7 @@ define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS',"
 define('DEVSHOP_PULL_CALLBACK_URL', 'devshop/pull');
 
 /**
- * Implementation of hook_perm()
+ * Implements hook_perm()
  */
 function devshop_pull_perm() {
   return array(
@@ -45,7 +42,7 @@ function devshop_pull_perm() {
 }
 
 /**
- * Implementation of hook_menu()
+ * Implements hook_menu()
  */
 function devshop_pull_menu() {
   $items['admin/hosting/devshop/pull'] = array(
@@ -71,19 +68,19 @@ function devshop_pull_menu() {
  */
 function devshop_pull_hosting_queues() {
   $items['pull'] = array(
-    'type' => 'batch', 
-    'name' => t('Pull queue'), 
-    'description' => t('Run git pull on projects configured to do so.'), 
+    'type' => 'batch',
+    'name' => t('Pull queue'),
+    'description' => t('Run git pull on projects configured to do so.'),
     'total_items' => devshop_pull_get_platforms(10),
-    'frequency' => strtotime("1 minute", 0), 
-    'singular' => t('project'), 
+    'frequency' => strtotime("1 minute", 0),
+    'singular' => t('project'),
     'plural' => t('projects'),
   );
   return $items;
 }
 
 /**
- * Implements hook_devshop_project_settings
+ * Implements hook_devshop_project_settings()
  */
 function devshop_pull_devshop_project_settings(){
   return array(
@@ -107,23 +104,23 @@ function devshop_pull_devshop_project_settings(){
  * Implements hook_form_alter().
  */
 function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
-  
+
   // On Projects, add "Choose Pull Method"
   if ($form_id == 'project_node_form') {
     // Get node
     $node = $form['#node'];
-    
+
     // Get default value
     if (is_null($node->pull_method)) {
       $node->pull_method = DEVSHOP_PULL_DISABLED;
     }
-   
+
     //All settings git pull in project page
     $form['git_settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Git Settings'),
     );
- 
+
     $form['git_settings']['pull_method'] = array(
       '#title' => 'Automatic Git Pull Method',
       '#type' => 'radios',
@@ -148,7 +145,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
         'onclick' => 'this.select()',
       ),
     );
-    
+
     // @TODO: is there a better way to save certain values? We lose data without these.
     $form['git_settings']['last_pull'] = array(
       '#type' => 'value',
@@ -167,20 +164,22 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
 
 /**
  * Implements hook_nodeapi()
+ *
+ * @todo Break this out into aegir's subhook hook_nodeapi_OP_TYPE()
  */
 function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
-  
+
   // PROJECTS
   if ($node->type == 'project'){
-    
+
     // View Project
     if ($op == 'view' && $node->pull_method == DEVSHOP_PULL_CALLBACK){
       module_load_include('inc', 'devshop_pull');
       $url = _devshop_pull_callback_url($node);
       $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
-      
+
       $status = (int) $node->last_pull_status;
-      
+
       // If access denied, provide link to settings page
       if ($status == DEVSHOP_PULL_STATUS_ACCESS_DENIED){
         $output = '<strong>' . t('Access Denied') . '</strong><br />';
@@ -216,7 +215,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
         return $data;
       }
     }
-  
+
     // Insert Project
     elseif ($op == 'insert'){
       db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, %d, "%s")', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
@@ -228,18 +227,18 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       // project exists
       db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
       db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, "%s", %d)', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
-    
+
     }
     // Delete Project
     elseif ($op == 'delete'){
       db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
-      
+
     }
   }
-  
+
   // PLATFORMS
   elseif ($node->type == 'platform'){
-    
+
     // Load Platform
     if ($node->type == 'platform' && $op == 'load'){
       $data = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
@@ -248,18 +247,18 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
         return $data;
       }
     }
-    
+
     // Insert Platform
     elseif ($op == 'insert'){
       db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
     }
-    
+
     // Update Platform
     elseif ($op == 'update'){
       db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
       db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
     }
-    
+
     // Delete Project
     elseif ($op == 'delete'){
       db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
@@ -269,7 +268,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 
 /**
  * Get a number of platforms that have their pull queue enabled.
- * 
+ *
  * @param $limit
  *   Limit to a maximum of this number of platforms.
  * @return
@@ -283,32 +282,15 @@ function devshop_pull_get_platforms($limit = 5) {
 }
 
 /**
- * Implementation of hook_hosting_TASK_TYPE_task_rollback().
- */
-function devshop_pull_hosting_devshop_pull_task_rollback($task, $data) {
-  $project = node_load($task->ref->project_nid);
-  watchdog('devshop', 'Pull FAILED on project: @alias', array('@alias' => $project->title));
-  db_query('UPDATE {hosting_devshop_pull_projects} SET last_pull = %d, last_pull_status = %d WHERE project_nid = %d', time(), 0, $task->ref->project_nid);
-}
-
-/**
- * Implementation of hook_post_hosting_TASK_TYPE_task().
- */
-function devshop_pull_post_hosting_devshop_pull_task($task, $data) {
-  $project = node_load($task->ref->project_nid);
-  watchdog('devshop', 'Pull SUCCESS on project: @alias', array('@alias' => $project->title));
-}
-
-/**
- * Implementation of hosting_QUEUE_TYPE_queue().
+ * Implements hosting_QUEUE_TYPE_queue().
  */
 function hosting_pull_queue($count) {
 
   $result = db_query("SELECT d.*  FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
-  
+
   while ($project = db_fetch_object($result)) {
     $project_node = node_load($project->project_nid);
-    
+
     // Create the hosting task
     // @TODO: We maybe don't need to pass args here? its saved in the context
     // Check for environments set to pull
@@ -321,7 +303,7 @@ function hosting_pull_queue($count) {
     $args = array();
     $args['environments'] = implode(' ', $environments_to_pull);
     hosting_add_task($project_node->nid, 'devshop-pull', $args);
-    
-    module_invoke_all('devshop_pull', $project_node); 
+
+    module_invoke_all('devshop_pull', $project_node);
   }
 }
