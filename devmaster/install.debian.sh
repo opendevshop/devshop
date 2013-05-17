@@ -29,13 +29,18 @@ then
 else
   MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;)
   echo "Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
-  echo $MYSQL_ROOT_PASSWORD > '/tmp/mysql_root_password'
+  echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
 # Add aegir debian sources
-echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
-wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
-apt-get update
+if [ -f '/etc/apt/sources.list.d/aegir-stable.list' ]
+  then echo "Aegir apt sources found."
+else
+  echo "Adding Aegir apt sources."
+  echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
+  wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
+  apt-get update
+fi
 
 # Pre-set mysql root pw
 echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
@@ -44,22 +49,31 @@ echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debc
 # @TODO: Preseed postfix settings
 
 # Install git and mysql
-apt-get install php5 php-gd mysql-server unzip git supervisor -y
+apt-get install mysql-server -y
 
-# Delete anonymous MySQL users
-mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
+# MySQL Secure Installtion
+if [ -f '/etc/mysql-secured' ]
+  then echo "Aegir apt sources found."
+else
+  # Delete anonymous users
+  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
 
-# Delete test table records
-mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
-mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
-mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
+  # Delete test table records
+  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
+  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
 
+  echo 'Secured' > /etc/mysql-secured
+fi
 
-# Install Aegir-provision
-apt-get install aegir-provision -y
+# Install aegir-provision and other tools
+apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
 
-# Download DevShop backend projects
-su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
+# Download DevShop backend projects (devshop_provision and provision_git)
+if [ ! -f '/var/aegir/.drush' ]
+  then
+  su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
+fi
 
 # Install DevShop with drush devshop-install
 MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
@@ -67,27 +81,31 @@ COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PAS
 echo "Running...  $COMMAND"
 su - aegir -c "$COMMAND"
 
-
 # Adding Supervisor
-# Following instructions from hosting_queue_runner README:
-# http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
-cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh /var/aegir
-chown aegir:aegir /var/aegir/hosting_queue_runner.sh
+if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
+  then
+  # Following instructions from hosting_queue_runner README:
+  # http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
+  cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh /var/aegir
+  chown aegir:aegir /var/aegir/hosting_queue_runner.sh
+  cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.conf /etc/supervisor/conf.d/
+  service supervisor restart
+fi
 
-cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.conf /etc/supervisor/conf.d/
-service supervisor restart
-
-# Create SSH Keypair
-su aegir -c "mkdir /var/aegir/.ssh"
-su aegir -c "ssh-keygen -t rsa -q -f /var/aegir/.ssh/id_rsa -P \"\""
-su aegir -c "drush @hostmaster --always-set --yes vset devshop_public_key \"\$(cat /var/aegir/.ssh/id_rsa.pub)\""
+# Create SSH Keypair and Config
+if [ ! -f '/var/aegir/.ssh/config' ] then
+  su aegir -c "mkdir /var/aegir/.ssh"
+  su aegir -c "ssh-keygen -t rsa -q -f /var/aegir/.ssh/id_rsa -P \"\""
+  su aegir -c "drush @hostmaster --always-set --yes vset devshop_public_key \"\$(cat /var/aegir/.ssh/id_rsa.pub)\""
 
   # Create a ssh config file so we don't have to approve every new host.
   echo "StrictHostKeyChecking no" > /var/aegir/.ssh/config
   chown aegir:aegir /var/aegir/.ssh/config
   chmod 600 /var/aegir/.ssh/config
+fi
 
 # @TODO Find out best way to detect proper installation
+  echo "=============================================================================="
   echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
   echo "This password was saved to /tmp/mysql_root_password"
   echo "You might want to delete it or reboot so that it will be removed."
