@@ -44,7 +44,7 @@ echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debc
 # @TODO: Preseed postfix settings
 
 # Install git and mysql
-apt-get install unzip git mysql-server -y
+apt-get install php5 php-gd mysql-server unzip git -y
 
 # Delete anonymous MySQL users
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
@@ -67,17 +67,17 @@ COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PAS
 echo "Running...  $COMMAND"
 su - aegir -c "$COMMAND"
 
-if [ -f "/var/aegir/devshop-6.x-1.x/sites/$HOSTNAME/drushrc.php" ]
-then
+# @TODO Find out best way to detect proper installation
   echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
   echo "This password was saved to /tmp/mysql_root_password"
   echo "You might want to delete it or reboot so that it will be removed."
-else
-  echo "============================================================="
-  echo "  DevShop was NOT installed properly!"
-  echo "  Please Review the logs and try again."
-  echo ""
-  echo "  If you are still having problems you may submit an issue at"
-  echo "  http://drupal.org/node/add/project-issue/devshop"
-  echo "============================================================="
-fi
+
+  # echo "============================================================="
+  # echo "  DevShop was NOT installed properly!"
+  # echo "  Please Review the logs and try again."
+  # echo ""
+  # echo "  If you are still having problems you may submit an issue at"
+  # echo "  http://drupal.org/node/add/project-issue/devshop"
+  # echo "============================================================="
+
+# @TODO: Install hosting-queue-runner as a service.
