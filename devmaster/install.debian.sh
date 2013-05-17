@@ -44,7 +44,7 @@ echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debc
 # @TODO: Preseed postfix settings
 
 # Install git and mysql
-apt-get install php5 php-gd mysql-server unzip git -y
+apt-get install php5 php-gd mysql-server unzip git supervisor -y
 
 # Delete anonymous MySQL users
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
@@ -67,10 +67,41 @@ COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PAS
 echo "Running...  $COMMAND"
 su - aegir -c "$COMMAND"
 
+
+# Adding Supervisor
+# Following instructions from hosting_queue_runner README:
+# http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
+cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh /var/aegir
+chown aegir:aegir /var/aegir/hosting_queue_runner.sh
+
+cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.conf /etc/supervisor/conf.d/
+service supervisor restart
+
+# Create SSH Keypair
+su aegir -c "mkdir /var/aegir/.ssh"
+su aegir -c "ssh-keygen -t rsa -q -f /var/aegir/.ssh/id_rsa -P \"\""
+su aegir -c "drush @hostmaster --always-set --yes vset devshop_public_key \"\$(cat /var/aegir/.ssh/id_rsa.pub)\""
+
+  # Create a ssh config file so we don't have to approve every new host.
+  echo "StrictHostKeyChecking no" > /var/aegir/.ssh/config
+  chown aegir:aegir /var/aegir/.ssh/config
+  chmod 600 /var/aegir/.ssh/config
+
 # @TODO Find out best way to detect proper installation
   echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
   echo "This password was saved to /tmp/mysql_root_password"
   echo "You might want to delete it or reboot so that it will be removed."
+  echo ""
+  echo "An SSH keypair has been created in /var/aegir/.ssh"
+  echo ""
+  echo "Supervisor is running Hosting Queue Runner."
+  echo ""
+  echo "=============================================================================="
+  echo "Welcome to DevShop!"
+  echo "Use the link above to login to your DevShop"
+  echo "You should now reboot your server."
+  echo "=============================================================================="
+
 
   # echo "============================================================="
   # echo "  DevShop was NOT installed properly!"
@@ -79,5 +110,3 @@ su - aegir -c "$COMMAND"
   # echo "  If you are still having problems you may submit an issue at"
   # echo "  http://drupal.org/node/add/project-issue/devshop"
   # echo "============================================================="
-
-# @TODO: Install hosting-queue-runner as a service.
