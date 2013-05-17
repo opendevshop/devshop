@@ -103,7 +103,7 @@ environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"usr/bin/drush\"" 
 fi
 
 # Create SSH Keypair and Config
-if [ ! -d '/var/aegir/.ssh/config' ]
+if [ ! -d '/var/aegir/.ssh' ]
   then
   su aegir -c "mkdir /var/aegir/.ssh"
   su aegir -c "ssh-keygen -t rsa -q -f /var/aegir/.ssh/id_rsa -P \"\""
