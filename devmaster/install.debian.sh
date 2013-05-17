@@ -87,6 +87,7 @@ if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   # Copy sh script and chown
   cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh /var/aegir
   chown aegir:aegir /var/aegir/hosting_queue_runner.sh
+  chmod 700 /var/aegir/hosting_queue_runner.sh
 
   # Setup config
   echo "[program:hosting_queue_runner]
@@ -98,7 +99,7 @@ stdout_logfile=/var/log/hosting_queue_runner
 autostart=TRUE
 autorestart=TRUE
 ; Tweak the next line to match your environment.
-environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"usr/bin/drush\"" > /etc/supervisor/conf.d/hosting_queue_runner.conf
+environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"/usr/bin/drush\"" > /etc/supervisor/conf.d/hosting_queue_runner.conf
   service supervisor restart
 fi
 
