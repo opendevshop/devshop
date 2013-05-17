@@ -13,7 +13,11 @@
 #.
 #
 
-# @TODO: Fail if not running as root (sudo)
+# Fail if not running as root (sudo)
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
 
 # Generate a secure password for MySQL
 # Saves this password to /tmp/mysql_root_password in case you have to run the
