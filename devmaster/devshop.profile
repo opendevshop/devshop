@@ -1,7 +1,7 @@
 <?php
 /**
  * @file devshop.profile
- * 
+ *
  * DevShop Installation Profile
  */
 
@@ -22,7 +22,7 @@ function devshop_profile_modules() {
 
     /* DEVSHOP */
     'devshop_hosting', 'devshop_projects', 'devshop_log', 'devshop_pull', 'devshop_live',
-    
+
     /* NICEITIES */
     'hosting_drush_aliases', 'hosting_filemanager', 'hosting_logs', 'hosting_queue_runner', 'hosting_solr',
   );
@@ -215,7 +215,7 @@ function devshop_task_finalize() {
   $item['weight'] = 3;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
-  
+
   $items = install_menu_get_items('hosting/servers');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
@@ -223,7 +223,7 @@ function devshop_task_finalize() {
   $item['weight'] = 2;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
-  
+
   $items = install_menu_get_items('user');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
