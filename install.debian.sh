@@ -45,6 +45,10 @@ apt-get install git mysql-server -y
 # Delete anonymous MySQL users
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User=''"
 
+# Delete test table
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test; DELETE FROM mysql.db WHERE Db LIKE 'test%'"
+
+
 # Install Aegir-provision
 apt-get install aegir-provision -y
 
