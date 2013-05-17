@@ -51,11 +51,6 @@ textarea#rsa {
   display: none;
 }
 
-p.wait {
-  text-align: center;
-  padding: 30px 0px 0px;
-}
-
 .form-submit {
   margin-top: 10px;
 }
@@ -91,4 +86,64 @@ p.wait {
 body.node-type-project a.hosting-goto-site-link {
   background: none;
   padding: inherit;
+}
+
+/**
+ * Task Block!
+ */
+#block-devshop_hosting-devshop_tasks {
+  position: absolute;
+  top: 0px;
+  margin: 0px auto;
+  width: 940px;
+}
+
+
+#block-devshop_hosting-devshop_tasks .content {
+  position: absolute;
+  right: 0px;
+  top: 40px;
+}
+
+#block-devshop_hosting-devshop_tasks  #devshop-task-status {
+  font: bold 13px/20px "Helvetica Neue",Arial,sans-serif;
+  border: 0px;
+  padding: 5px 10px 5px 30px;
+  color: #fff;
+  background: #666;
+  cursor: pointer;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  width: 200px;  
+}
+
+#block-devshop_hosting-devshop_tasks  #devshop-task-status.active {
+  background: #666 5px no-repeat url('devshop_projects/images/spinner-white.gif');
+}
+
+#block-devshop_hosting-devshop_tasks  #devshop-task-status.inactive {
+  background: #666;
+}
+
+
+#hosting-task-queue-block {
+  display: none;
+  width: 96%;
+  margin: 0px auto;
+}
+
+
+#block-devshop_hosting-devshop_tasks:hover #hosting-task-queue-block {
+  display: block;
+}
+
+
+#block-devshop_hosting-devshop_tasks .task-logs-link {
+  display: block;
+  padding: 5px 10px;
+  background: #999;
+  color: white;
+  text-align: center;
+  font-size: 10pt;
+  text-transform: uppercase;
 }
