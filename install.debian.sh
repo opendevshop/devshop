@@ -68,6 +68,7 @@ fi
 if [ ! -d '/var/aegir/.drush/provision_git' ]
   then
   su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
+  su - aegir -c "drush dl provision_logs provision_solr provision_tasks_extra --destination=/var/aegir/.drush -y"
 fi
 
 # Install DevShop with drush devshop-install
