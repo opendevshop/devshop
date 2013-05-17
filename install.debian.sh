@@ -43,10 +43,12 @@ echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debc
 apt-get install unzip git mysql-server -y
 
 # Delete anonymous MySQL users
-mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User=''"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
 
 # Delete test table records
-mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test; DELETE FROM mysql.db WHERE Db LIKE 'test%'"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
 
 
 # Install Aegir-provision
@@ -61,7 +63,7 @@ COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PAS
 echo "Running...  $COMMAND"
 su - aegir -c "$COMMAND"
 
-if [ -f '/var/aegir/devshop-6.x-1.x/drushrc.php' ]
+if [ -f "/var/aegir/devshop-6.x-1.x/sites/$HOSTNAME/drushrc.php" ]
 then
   echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
   echo "This password was saved to /tmp/mysql_root_password"
