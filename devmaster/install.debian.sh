@@ -94,8 +94,7 @@ if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
 ; Adjust the next line to point to where you copied the script.
 command=/var/aegir/hosting_queue_runner.sh
 user=aegir
-numprocs=3
-process_name=%(program_name)s_%(process_num)02d
+numprocs=1
 stdout_logfile=/var/log/hosting_queue_runner
 autostart=TRUE
 autorestart=TRUE
