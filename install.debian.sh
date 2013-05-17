@@ -55,17 +55,24 @@ apt-get install aegir-provision -y
 # Download DevShop backend projects
 su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
 
-# Install DevShop
+# Install DevShop with drush devshop-install
 MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-
 COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --makefile=$MAKEFILE --profile=devshop -y"
-echo "Running..."
-echo $COMMAND
+echo "Running...  $COMMAND"
 su - aegir -c "$COMMAND"
 
-$comm ""
-echo "================================================"
-echo "DevShop has been installed!"
-echo "================================================"
-echo "Your MySQL root password is $MYSQL_ROOT_PASSWORD"
-echo ""
+if [ -f '/var/aegir/devshop-6.x-1.x/drushrc.php' ]
+then
+  echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
+  echo "This password was saved to /tmp/mysql_root_password"
+  echo "You might want to delete it or reboot so that it will be removed."
+else
+  echo "============================================================="
+  echo "  DevShop was NOT installed properly!"
+  echo "  Please Review the logs and try again."
+  echo ""
+  echo "  If you are still having problems you may submit an issue at"
+  echo "  http://drupal.org/node/add/project-issue/devshop"
+  echo "============================================================="
+fi
+
