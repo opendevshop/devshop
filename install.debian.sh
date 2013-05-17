@@ -100,7 +100,8 @@ autostart=TRUE
 autorestart=TRUE
 ; Tweak the next line to match your environment.
 environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"/usr/bin/drush\"" > /etc/supervisor/conf.d/hosting_queue_runner.conf
-  service supervisor restart
+  service supervisor stop
+  service supervisor start
 fi
 
 # Create SSH Keypair and Config
