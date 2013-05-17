@@ -158,127 +158,126 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // Environments
   $rows = array();
-  $site_nids = array_flip($node->project_objects['site']);
-  $platform_nids = array_flip($node->project_objects['site']);
+  foreach($node->environments as $env => $environment) {
+    
+    $site_nid = $environment['site'];
+    $platform_nid = $environment['platform'];
 
-  if (isset($platform_nids)) {
-    foreach($platform_nids as $env => $nid) {
-      
-      $site = node_load($site_nids[$env]);
-      $platform = node_load($nid);
-      
-      // Skip this if it is not enabled.
-      if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
-        continue;
-      }
-      
-      $row = array();
-      $row[] = "<span class='environment'>$site->environment</span>";
-      
-      if ($site->site_status == HOSTING_SITE_DISABLED){
-        $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
-      } else {
-        $row[] = devshop_hosting_site_goto_link($site);
-      }
-      $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
-      
-
-      if (module_exists('devshop_log')) {
-        $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
-      }
-      if (module_exists('hosting_logs')) {
-        $row[] = l(t('Errors'), "node/$site->nid/logs/errors");
-      }
-      if (module_exists('hosting_filemanager')) {
-        $row[] = l(t('Files'), "node/$site->nid/files/platform");
-      }
-      
-      // Create actions dropdown.
-      $actions = array();
-      $actions[] = array(
-        'title' => t('Fork environment'),
-        'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))),
-        'attributes' => array(
-          'class' => 'hosting-button-dialog',
-        ),
-      );
-      
-      
-      // Aegir Tasks
-      $site_tasklist = hosting_task_fetch_tasks($site->nid);
-      $site_tasklist['restore']['title'] = t('Restore Backups');
-
-      // The actions we want
-      $site_actions = array('flush_cache', 'login_reset', 'backup', 'restore');
-
-      // Add disable or delete task based on hosting variable.
-      if (!variable_get('hosting_require_disable_before_delete', TRUE)){
-        $site_actions[] = 'delete';
-      } else {
-        if ($site->site_status == HOSTING_SITE_DISABLED){
-          $site_actions[] = 'enable';
-          $site_actions[] = 'delete';
-        } else {
-          $site_actions[] = 'disable';
-        }
-      }
-      
-      // Build links to tasks
-      foreach ($site_actions as $task_name) {
-        if ($site_tasklist[$task_name]['task_permitted']){
-          $actions[] = array(
-            'title' => $site_tasklist[$task_name]['title'],
-            'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
-            'query' => array(
-              'token' => drupal_get_token($user->uid),
-              'destination' => "node/$node->nid",
-            ),
-            'attributes' => array(
-              'class' => $site_tasklist[$task_name]['dialog']? 'hosting-button-dialog': '',
-            ),
-          );
-        }
-      }
-      
-      // Grant access to Aegir pages
-      if (user_access('administer hosting')){
-        $actions[] = array(
-          'title' =>  t('Site Dashboard'),
-          'href' => "node/$site->nid",
-        );
-        $actions[] = array(
-          'title' =>  t('Platform Dashboard'),
-          'href' => "node/$site->platform",
-        );
-      }
-      
-      $row[] = theme('ctools_dropdown', t('Actions'), $actions);
-      $rows[] = $row;
+    $site = node_load($site_nid);
+    $platform = node_load($platform_nid);
+    
+    // Skip this if it is not enabled.
+    if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
+      continue;
     }
-    $header = array();
-    $table = theme('table', $header, $rows);
+    
+    $row = array();
+    $row[] = "<span class='environment'>$site->environment</span>";
+    
+    if ($site->site_status == HOSTING_SITE_DISABLED){
+      $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
+    } else {
+      $row[] = devshop_hosting_site_goto_link($site);
+    }
+    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
+    
 
-    $node->content['sites'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Environments'),
-      '#weight' => 12,
-      '#attributes' => array(
-        'class' => 'project-environments',
+    if (module_exists('devshop_log')) {
+      $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
+    }
+    if (module_exists('hosting_logs')) {
+      $row[] = l(t('Errors'), "node/$site->nid/logs/errors");
+    }
+    if (module_exists('hosting_filemanager')) {
+      $row[] = l(t('Files'), "node/$site->nid/files/platform");
+    }
+    
+    // Create actions dropdown.
+    $actions = array();
+    $actions[] = array(
+      'title' => t('Fork environment'),
+      'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))),
+      'attributes' => array(
+        'class' => 'hosting-button-dialog',
       ),
     );
+    
+    
+    // Aegir Tasks
+    $site_tasklist = hosting_task_fetch_tasks($site->nid);
+    $site_tasklist['restore']['title'] = t('Restore Backups');
 
-    $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment hosting-button-dialog'), 'query' => array('token' => drupal_get_token($user->uid))));
-    $node->content['sites']['table'] = array(
-      '#type' => 'item',
-      '#value' => $table,
-      '#suffix' => $link,
-    );
+    // The actions we want
+    $site_actions = array('flush_cache', 'login_reset', 'backup', 'restore');
+
+    // Add disable or delete task based on hosting variable.
+    if (!variable_get('hosting_require_disable_before_delete', TRUE)){
+      $site_actions[] = 'delete';
+    } else {
+      if ($site->site_status == HOSTING_SITE_DISABLED){
+        $site_actions[] = 'enable';
+        $site_actions[] = 'delete';
+      } else {
+        $site_actions[] = 'disable';
+      }
+    }
+    
+    // Build links to tasks
+    foreach ($site_actions as $task_name) {
+      if ($site_tasklist[$task_name]['task_permitted']){
+        $actions[] = array(
+          'title' => $site_tasklist[$task_name]['title'],
+          'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
+          'query' => array(
+            'token' => drupal_get_token($user->uid),
+            'destination' => "node/$node->nid",
+          ),
+          'attributes' => array(
+            'class' => $site_tasklist[$task_name]['dialog']? 'hosting-button-dialog': '',
+          ),
+        );
+      }
+    }
+    
+    // Grant access to Aegir pages
+    if (user_access('administer hosting')){
+      $actions[] = array(
+        'title' =>  t('Site Dashboard'),
+        'href' => "node/$site->nid",
+      );
+      $actions[] = array(
+        'title' =>  t('Platform Dashboard'),
+        'href' => "node/$site->platform",
+      );
+    }
+    
+    $row[] = theme('ctools_dropdown', t('Actions'), $actions);
+    $rows[] = $row;
   }
+  $header = array();
+  $table = theme('table', $header, $rows);
+
+  $node->content['sites'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Environments'),
+    '#weight' => 12,
+    '#attributes' => array(
+      'class' => 'project-environments',
+    ),
+  );
+
+  $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment hosting-button-dialog'), 'query' => array('token' => drupal_get_token($user->uid))));
+  $node->content['sites']['table'] = array(
+    '#type' => 'item',
+    '#value' => $table,
+    '#suffix' => $link,
+  );
 
   //Tasks
+  $tasks_table = hosting_task_table($node);
   $node->content['tasks_view'] = array(
     '#type' => 'item',
-    '#value' => hosting_task_table($node),
+    '#value' => $tasks_table,
     '#prefix' => '<div id="hosting-task-list">',
     '#suffix' => '</div>',
     '#weight' => 10
