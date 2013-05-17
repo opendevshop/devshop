@@ -40,12 +40,12 @@ echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debc
 # @TODO: Preseed postfix settings
 
 # Install git and mysql
-apt-get install git mysql-server -y
+apt-get install unzip git mysql-server -y
 
 # Delete anonymous MySQL users
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User=''"
 
-# Delete test table
+# Delete test table records
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test; DELETE FROM mysql.db WHERE Db LIKE 'test%'"
 
 
