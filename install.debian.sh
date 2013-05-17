@@ -98,7 +98,7 @@ stdout_logfile=/var/log/hosting_queue_runner
 autostart=TRUE
 autorestart=TRUE
 ; Tweak the next line to match your environment.
-environment=HOME='/var/aegir',USER='aegir',DRUSH_COMMAND='/usr/bin/drush'" > /etc/supervisor/conf.d/hosting_queue_runner.conf
+environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"usr/bin/drush\"" > /etc/supervisor/conf.d/hosting_queue_runner.conf
   service supervisor restart
 fi
 
