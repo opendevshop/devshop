@@ -40,21 +40,15 @@ else
   echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
   wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
   apt-get update
-fi
 
-# Pre-set mysql root pw
-echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
-echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
+  # Pre-set mysql root pw
+  echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
+  echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
 
-# @TODO: Preseed postfix settings
+  # Install mysql server before aegir, because we must secure it before aegir.
+  apt-get install mysql-server -y
 
-# Install git and mysql
-apt-get install mysql-server -y
-
-# MySQL Secure Installtion
-if [ -f '/etc/mysql-secured' ]
-  then echo "Aegir apt sources found."
-else
+  # MySQL Secure Installtion
   # Delete anonymous users
   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
 
@@ -64,36 +58,53 @@ else
   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
 
   echo 'Secured' > /etc/mysql-secured
+
+  # Install aegir-provision and other tools
+  # @TODO: Preseed postfix settings
+  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
 fi
 
-# Install aegir-provision and other tools
-apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
-
 # Download DevShop backend projects (devshop_provision and provision_git)
-if [ ! -f '/var/aegir/.drush' ]
+if [ ! -d '/var/aegir/.drush/provision_git' ]
   then
   su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
 fi
 
 # Install DevShop with drush devshop-install
-MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --makefile=$MAKEFILE --profile=devshop -y"
-echo "Running...  $COMMAND"
-su - aegir -c "$COMMAND"
+if [ ! -d '/var/aegir/devshop-6.x-1.x/' ]
+  then
+  MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
+  COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --makefile=$MAKEFILE --profile=devshop -y"
+  echo "Running...  $COMMAND"
+  su - aegir -c "$COMMAND"
+fi
 
 # Adding Supervisor
 if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   then
   # Following instructions from hosting_queue_runner README:
   # http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
+  # Copy sh script and chown
   cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh /var/aegir
   chown aegir:aegir /var/aegir/hosting_queue_runner.sh
-  cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.conf /etc/supervisor/conf.d/
+
+  # Setup config
+  echo "[program:hosting_queue_runner]
+; Adjust the next line to point to where you copied the script.
+command=/var/aegir/hosting_queue_runner.sh
+user=aegir
+numprocs=3
+stdout_logfile=/var/log/hosting_queue_runner
+autostart=TRUE
+autorestart=TRUE
+; Tweak the next line to match your environment.
+environment=HOME='/var/aegir',USER='aegir',DRUSH_COMMAND='/usr/bin/drush'" > /etc/supervisor/conf.d/hosting_queue_runner.conf
   service supervisor restart
 fi
 
 # Create SSH Keypair and Config
-if [ ! -f '/var/aegir/.ssh/config' ] then
+if [ ! -d '/var/aegir/.ssh/config' ]
+  then
   su aegir -c "mkdir /var/aegir/.ssh"
   su aegir -c "ssh-keygen -t rsa -q -f /var/aegir/.ssh/id_rsa -P \"\""
   su aegir -c "drush @hostmaster --always-set --yes vset devshop_public_key \"\$(cat /var/aegir/.ssh/id_rsa.pub)\""
