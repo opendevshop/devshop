@@ -74,6 +74,11 @@ function devshop_hosting_menu_alter(&$items){
  */
 function devshop_hosting_form_user_login_alter(&$form){
   $form['pass']['#description'] .= '  ' . l(t('Forgot your Password?'), 'user/password');
+
+  // Add user register link
+  if (user_register_access()){
+    $form['submit']['#suffix'] = t('or') . ' ' . l(t('Signup'), 'user/register');
+  }
 }
 
 /**
