@@ -92,6 +92,14 @@ function devshop_hosting_form_user_login_block_alter(&$form){
 }
 
 /**
+ * Implements hook_form_alter() for user_register.
+ * Removes the hosting module help.
+ */
+function devshop_hosting_form_user_register_alter(&$form){
+  $form['user_registration_help'] = array();
+}
+
+/**
  * Implements hook_block()
  *
  * Provides three blocks:
