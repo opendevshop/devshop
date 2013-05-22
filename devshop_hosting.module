@@ -77,7 +77,7 @@ function devshop_hosting_form_user_login_alter(&$form){
 
   // Add user register link
   if (user_register_access()){
-    $form['submit']['#suffix'] = t('or') . ' ' . l(t('Signup'), 'user/register');
+    $form['submit']['#suffix'] = t('or') . ' ' . l(t('Create an Account'), 'user/register');
   }
 }
 
