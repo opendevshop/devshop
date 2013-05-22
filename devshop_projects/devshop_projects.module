@@ -158,7 +158,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     $settings['web_server'] = array(
       '#title' => t('Web server'),
       '#node_type' => 'platform',
-      '#type' => count($http_servers) == 1? 'hidden': 'select',
+      '#type' => 'select',
       '#options' => $http_servers,
     );
   }
@@ -169,7 +169,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
       '#title' => t('Database server'),
       '#node_type' => 'site',
       '#type' => 'select',
-      '#options' => count($db_servers) == 1? 'hidden': 'select',
+      '#options' => $db_servers,
     );
   }
 
