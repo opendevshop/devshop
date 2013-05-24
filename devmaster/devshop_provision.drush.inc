@@ -102,6 +102,6 @@ function devshop_provision_drush_command() {
  */
 function devshop_provision_pre_flight($platform_name = NULL){
   if (d()->type != 'project'){
-    return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, 'All provision-devshop-* commands must be run on a project alias.');
+    return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', 'All provision-devshop-* commands must be run on a project alias.');
   }
 }
