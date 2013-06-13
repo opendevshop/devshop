@@ -1,25 +1,13 @@
 <?php
-
 /**
  * @file devshop_live.module
  *
- * Provides Node Type, UI, and tools for DevShop Live.
- *
- * 
- * @TODO: There is a situation where the project might not have a
- * "live" environment yet... I am not yet sure how to handle this,
- * but we should at the very least notify the user.
- */
-
-include_once('inc/forms.inc');
-include_once('inc/nodes.inc');
-
-/**
- * API functions
+ * Stores a "live domain" and adds aliases for that domain for each environment.
  */
 
 /**
- * Add new domain to site node
+ * Helper to add a domain alias to a site node. Makes sure not to add the same
+ * alias twice.
  */
 function devshop_live_add_domain($node, $domain) {
   if ($node->type == 'site') {
@@ -29,12 +17,13 @@ function devshop_live_add_domain($node, $domain) {
       return TRUE;
     }
   }
-
   return FALSE;
 }
 
 /**
- * Implement of hook_devshop_projects_page().
+ * Implements hook_devshop_projects_page().
+ *
+ * Adds a link to the live domain.
  */
 function devshop_live_devshop_projects_page($rows, $header) {
   $new_rows = array();
@@ -56,4 +45,79 @@ function devshop_live_devshop_projects_page($rows, $header) {
   }
 
   return array('rows' => $new_rows, 'header' => $header);
+}
+
+/**
+ * Implements hook_nodeapi().
+ */
+function devshop_live_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'project') {
+    if (in_array($op, array('insert', 'update'))) {
+      //Load all information
+      $node_p = node_load($node->nid);
+
+      if ($node->live_domain && !isset($node_p->project_objects['site'])) {
+        $live_nid = array_search('live', $node_p->project_objects['site']);
+
+        if ($live_nid) {
+          $live_node = node_load($live_nid);
+          devshop_live_add_domain($live_node, $node->live_domain);
+        }
+      }
+    }
+    if ($op == 'view' && !empty($node->live_domain)) {
+      $url = 'http://' . $node->live_domain;
+
+      $node->content['info']['live_domain'] = array(
+        '#type' => 'item',
+        '#title' => t('Live Site'),
+        '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
+        '#weight' => -9,
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_live_form_alter(&$form, &$form_state, $form_id) {
+  //Add field live_domain to edit form
+  if ($form_id == 'project_node_form') {
+    $node = $form['#node'];
+
+    $form['live_domain'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Live domain'),
+      '#description' => t('The live domain for this project.'),
+      '#size' => 40,
+      '#default_value' => $node->live_domain,
+      '#maxlenght' => 255,
+      '#weight' => 3,
+    );
+  }
+
+  if ($form_id == 'devshop_project_create_step_settings') {
+   $project = $form_state['project'];
+
+    $form['live_domain'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Live domain'),
+      '#description' => t('The live domain for this project.'),
+      '#size' => 40,
+      '#default_value' => $project->live_domain,
+      '#maxlenght' => 255,
+    );
+
+    $form['#submit'][] = 'devshop_live_create_form_submit';
+  }
+}
+
+/**
+ *  Extra submit handler for Project node form.
+ */
+function devshop_live_create_form_submit($form, &$form_state) {
+  $project = &$form_state['project'];
+
+  $project->live_domain = $form_state['values']['live_domain'];
 }

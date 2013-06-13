@@ -2,20 +2,15 @@
 
 
 /**
- * Menu callback that is invoked by GitHub WebHook facility to create
- * a code pull task.
- *
- * @TODO: Save "Last Pull" and "Last Pull Status" when git pull task is complete. ... DONE?? seems to be in place
+ * URL callback that is invoked by git to create a code pull task.
  */
 function devshop_pull_callback($project, $hash) {
-  
-  // @TODO: Should we switch to using node ID so we can use hook_menu's autoloader?
-  
+
   // Load the project node & list of allowed IPs
   $project_node = hosting_context_load(str_replace('project_', '', $project));
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
-  
+
   // Check for environments set to pull
   $environments_to_pull = array();
   foreach ($project_node->settings as $env => $settings) {
@@ -50,16 +45,16 @@ function devshop_pull_callback($project, $hash) {
   else {
     $message = "Commit Received! Invoked by " . ip_address();
     $status = DEVSHOP_PULL_STATUS_OK;
-    
+
     // @TODO: Check Payload Here... If we see a GitHub payload with branches,
     // filter out the $environments_to_pull based on those branches.
-    
+
     // Create the hosting task
     // We need to pass environments so we can control what envs to pull based
     // on the data coming back from github!
     $args = array();
     $args['environments'] = implode(' ', $environments_to_pull);
-    
+
     // Always clear cache...
     // @TODO: Should we make this a setting? "What to do on auto-pull?"
     $args['cache'] = 1;
@@ -74,14 +69,14 @@ function devshop_pull_callback($project, $hash) {
     $record->last_pull = time();
     $record->last_pull_status = $status;
     $record->last_pull_ip = ip_address();
-    
+
     drupal_write_record('hosting_devshop_pull_projects', $record, array('project_nid'));
   }
 
-  // Output a message, no matter what.  
+  // Output a message, no matter what.
   watchdog('devshop_pull', $message, array(), WATCHDOG_INFO);
   print $message;
-  
+
   // Save a variable to help when using the settings page.
   variable_set('devshop_pull_last_ip', ip_address());
 }
@@ -106,7 +101,7 @@ function _devshop_pull_hash_create($node) {
 
 /**
  * Prepares a "Pull Code" task for a project.
- * 
+ *
  * @param $project_nid
  *   A project nid.
  *
@@ -115,9 +110,9 @@ function _devshop_pull_hash_create($node) {
 function devshop_pull_project($project_nid) {
   // Search platforms with pull enabled for this project
   $results = db_query("SELECT environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND p.project_nid = %d", $project_nid);
-  
+
   $args = array('environments' => '');
-  
+
   while ($info = db_fetch_object($results)){
     $args['environments'] .= $info->environment .' ';
   }
