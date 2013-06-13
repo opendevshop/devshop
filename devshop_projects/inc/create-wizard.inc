@@ -14,7 +14,7 @@ function devshop_projects_create_wizard($step = NULL){
   $form_state = array(
     'cache name' => NULL,
   );
-  
+
   // Skip step 2 if needed
   $skip = variable_get('devshop_projects_skip_settings', TRUE);
   if ($skip) {
@@ -52,7 +52,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project->step = $step;
     ctools_object_cache_set('project', $form_state['cache name'], $project);
   }
-  
+
   // Check verification status
   // @TODO: We should be able to get the error messages...
   $project_node = node_load($project->project_nid);
@@ -60,16 +60,16 @@ function devshop_projects_create_wizard($step = NULL){
     $tasks = hosting_task_fetch_tasks($project_node->nid);
   }
   if (isset($tasks['verify']['nid'])){
-    
+
   }
-  
+
   // Get "verify" task status for the project
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
-  
+
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)){
-    $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));  
+    $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
       drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
@@ -180,7 +180,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 
   // Removing last step session variable.
   unset($_SESSION['last_step']);
-  
+
   // Friendly message
   drupal_set_message(t('Your project has been created.  Once installed, your sites will be available.'));
 }
@@ -227,14 +227,14 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
  */
 function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
-  
+
   if ($project->verify_error){
     $form['node'] = array(
       '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
       '#type' => 'markup',
     );
   }
-  
+
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
@@ -264,10 +264,10 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     $form['title_display'] = $form['title'];
     $form['title_display']['#type'] = 'item';
   }
-  
+
   // Display helpful tips for connecting.
   $pubkey = variable_get('devshop_public_key', '');
-  
+
   // If we don't yet have the server's public key saved as a variable...
   if (empty($pubkey)){
     $output = t("For convenience, the server's SSH public key will be displayed here, once you run the following command on your server:");
@@ -366,7 +366,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $server = variable_get('devshop_project_master_url', $base_url);
   $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@project.@hostname"), array('@project' => strtolower($project_name), '@hostname' => $server));
   $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
-  
+
   //Verify if is need to skip.
   $skip = variable_get('devshop_projects_skip_settings', TRUE);
   if ($skip) {
@@ -455,11 +455,11 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 function devshop_project_create_step_environments(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-  
+
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
     $project->no_next = TRUE;
-    
+
     // If we are all queued, show a friendly message
     if ($project->verify_task_status == HOSTING_TASK_QUEUED){
       $task = node_load($project->verify_task_nid);
@@ -468,7 +468,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
       }
     }
-    
+
     $form['note'] = array(
       '#type' => 'markup',
       '#value' => $note,
@@ -479,17 +479,17 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
-    
-    
+
+
     return;
   }
-  
+
   // this JS handles the form element hiding/showing
   $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
 
   $settings = module_invoke_all('devshop_project_settings', $project_node);
-  
+
   $form['environments'] = array(
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
@@ -509,7 +509,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     } else {
       $env_title = $env;
     }
-    
+
     $form['environments'][$env] = array(
       '#tree' => TRUE,
       '#type' => 'fieldset',
@@ -538,12 +538,12 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     //Now add button.
     $form['add_environment'] = array(
       '#type' => 'submit',
-      '#value' => t('Add environment'), 
+      '#value' => t('Add environment'),
       '#name' => 'add_environment',
       '#submit' => array('devshop_projects_create_wizard_add_new_environment'),
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',
-    ); 
+    );
   }
 }
 
@@ -560,7 +560,7 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
     return;
   }
-  
+
   // Changes NEW environment data to $title
   if ($values['environments']['NEW']['title']){
     $new_env = $values['environments']['NEW']['title'];
@@ -569,18 +569,18 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 
     // Create the next NEW environment.  Unset makes sure its always last.
     unset($values['environments']['NEW']);
-    
-    // If "add environment" button clicked, add another row.    
+
+    // If "add environment" button clicked, add another row.
     if ($form_state['clicked_button']['#name'] == 'add_environment'){
       $values['environments']['NEW'] = array();
     }
   } else {
     unset($values['environments']['NEW']);
   }
-  
+
   // Reset project environments
   $project->environments = array();
-  
+
   // Check environment titles
   foreach ($values['environments'] as $env => $env_settings) {
     // Check for illegal chars
@@ -594,9 +594,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       }
     }
   }
-  
-  
-  
+
+
+
   // Reject if empty
   if (count($project->environments) < 1){
     if ($form_state['clicked_button']['#name'] == 'add_environment'){
@@ -617,7 +617,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $values = $form_state['values'];
 
   $settings = module_invoke_all('devshop_project_settings', $project_node);
-  
+
   // Create these platforms, if they don't exist yet
   foreach ($project->environments as $name => $environment) {
     $platform_nid = $project_node->environments[$name]['platform'];
@@ -635,10 +635,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       // Save the damn platform nodes
       $platform = new stdClass;
-    
+
       // Platform name
       $platform->title = $project->title . '_' . $environment['title'];
-      
+
       // Platform publish_path
       if ($project->drupal_path) {
         $platform->publish_path = $project->code_path . '/' . $environment['title'] . '/' . $project->drupal_path;
@@ -646,7 +646,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       else {
         $platform->publish_path = $project->code_path . '/' . $environment['title'];
       }
-    
+
       // Other attributes
       $platform->web_server = $environment['web_server'];
       $platform->git_branch = $environment['git_branch'];
@@ -654,7 +654,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform->project = $project->title;
       $platform->environment = $environment['title'];
       $platform->drupal_path = $project->drupal_path;
-      
+
       foreach ($settings as $setting_name => $element){
         $platform->{$setting_name} = $environment[$setting_name];
       }
@@ -665,7 +665,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // For all removed platforms, trigger a delete task
   $removed_environments  = array_diff_key($project_node->environments, $values['environments']);
-  
+
   foreach ($removed_environments as $environment_name => $settings) {
     // @TODO: Determine what to do here based on task status...
     // if verify task hasn't even run yet (and has never run) we can just delete
@@ -693,8 +693,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // OUTPUT
   // @TODO: Clean this up!!
-  
-  // @TODO: This is old code that is never seen.  User ends up on project page.  
+
+  // @TODO: This is old code that is never seen.  User ends up on project page.
   // Perhaps we should keep people on this page until the sites are all installed?  No, because we want to free up the wizard for another project create... instead lets fix the project node page to display proper status.
   if ($project_node->project_status == 'sites_installing') {
     $form['note'] = array(
@@ -719,9 +719,9 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $header = array(t('Name'), t('Branch'), t('Version'), t('Install Profiles'), t('Status'));
   $all_tasks_queued = TRUE;
   $all_tasks_succeeded = TRUE;
-  
+
   foreach ($project_node->environments as $name => $environment){
-  
+
     // Get platform and latest verify task.
     $platform_nid = $environment['platform'];
     $platform = node_load($platform_nid);
@@ -759,16 +759,16 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $completed = TRUE;
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
-      
+
       $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error'));
-      
+
       $row['version'] = array(
         'data' => t('Platform verification failed: %error', array('%error' => $error)),
         'colspan' => 2,
       );
-      
+
       // @TODO: Get task log error message
-      
+
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
@@ -776,19 +776,19 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $row['version'] = '...';
       $row['profiles'] = '...';
     }
-    
+
     // If a single task is not queued, $all_tasks_queued == FALSE
     if ($task->task_status != HOSTING_TASK_QUEUED){
       $all_tasks_queued = FALSE;
     }
-    
+
     // Add hosting task status.
     $row['status'] =  _hosting_parse_error_code($task->task_status);
 
     // Store rows for display
     $rows[] = $row;
   } // end foreach platform
-  
+
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
@@ -799,9 +799,9 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   if (!$completed){
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
-    
+
     // If we are all queued, show a friendly message
-    
+
     $time_ago = time() - $task->created;
     if ($all_tasks_queued && $time_ago > 120) {
       $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
@@ -877,42 +877,42 @@ function devshop_project_create_step_sites_submit(&$from, &$form_state) {
 
 function devshop_projects_add_status($type = 'platform'){
   $return = array();
-  
+
   // Get Project Cache
   ctools_include('wizard');
   ctools_include('object-cache');
   $project = ctools_object_cache_get('project', NULL);
-  
-  
+
+
   $project_node = node_load($project->project_nid);
-  
+
   $all_tasks_completed = TRUE;
   $nids = array();
-  
+
   // When checking project...
   if ($type == 'project') {
     $nids = array($project_node->nid);
   }
-  
+
   // When checking platforms...
   if ($type == 'platform') {
     foreach ($project_node->environments as $name => $environment){
       $nids[] = $environment['platform'];
     }
   }
-  
+
   // Check verification task for all nids
   foreach ($nids as $nid){
     $task = hosting_get_most_recent_task($nid, 'verify');
     $return['tasks'][$nid] = _hosting_parse_error_code($task->task_status);
-    
+
     // If task is not completed, mark all tasks not complete.
     if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR) {
       continue;
     } else {
       $all_tasks_completed = FALSE;
     }
-      
+
   }
   $return['tasks_complete'] = $all_tasks_completed;
   drupal_json($return);
