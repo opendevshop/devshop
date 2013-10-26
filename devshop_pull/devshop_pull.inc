@@ -37,7 +37,7 @@ function devshop_pull_callback($project, $hash) {
     $message = "Project $project has no environments configured to Pull Code on commit!";
   }
   // Make sure the client's IP address is on the list
-  else if (!in_array(ip_address(), $allowed_ips)) {
+  else if (!devshop_pull_ip_match(ip_address(), $allowed_ips)) {
     $message = ip_address() . " is not authorized to invoke a Pull Code request.";
     $status = DEVSHOP_PULL_STATUS_ACCESS_DENIED;
   }
@@ -79,6 +79,31 @@ function devshop_pull_callback($project, $hash) {
 
   // Save a variable to help when using the settings page.
   variable_set('devshop_pull_last_ip', ip_address());
+}
+
+/**
+ * Check whether a given ip address matches a list of allowed ip addresses, some of which
+ * may be CIDR.
+ *
+ * @param $ip
+ *   The ip addy to test.
+ * @param $list
+ *   The list to test against.
+ */
+function devshop_pull_ip_match($ip, $list) {
+  foreach ($list as $cidr) {
+    if (trim($ip) === trim($cidr)) {
+      return TRUE;
+    }
+    @list($net, $mask) = explode('/', trim($cidr));
+    if (isset($mask)) {
+      $bitmask = ~((1 << (32 - $mask)) - 1);
+      if ((ip2long($net) & $bitmask) == (ip2long($ip) & $bitmask)) {
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
 }
 
 /**
