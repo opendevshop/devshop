@@ -229,10 +229,16 @@ function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
 
   if ($project->verify_error){
-    $form['node'] = array(
+    $form['note'] = array(
       '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
       '#type' => 'markup',
     );
+
+    // Display some help for certain errors
+    if ($project->verify_error == '[DEVSHOP] Error retrieving remote information: Host key verification failed. fatal: The remote end hung up unexpectedly'){
+      $project->verify_error
+    }
+    $form['note']['#value'] .= '<div class="messages warning">' . t('You might have to authorize the host your are trying to connect to first.  Add "StrictHostKeyChecking no" to your ~/.ssh/config file to avoid this for all domains.') . '</div>';
   }
 
   $form['git_url'] = array(
@@ -463,7 +469,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // If we are all queued, show a friendly message
     if ($project->verify_task_status == HOSTING_TASK_QUEUED){
       $task = node_load($project->verify_task_nid);
-      $time_ago = time() - $task->created;
+      $time_ago = time() - $task->updated;
       if ($time_ago > 60) {
         $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
       }
