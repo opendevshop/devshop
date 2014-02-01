@@ -62,7 +62,14 @@ else
   # Install aegir-provision and other tools
   # @TODO: Preseed postfix settings
   apt-get install drush=4.5-6
-  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
+  apt-get install aegir-provision php5 php5-gd unzip git supervisor curl -y
+fi
+
+# Install composer
+if [ ! -d '/usr/local/bin/composer' ]
+  then
+    curl -sS https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
 fi
 
 # Download DevShop backend projects (devshop_provision and provision_git)
