@@ -62,14 +62,35 @@ else
   # Install aegir-provision and other tools
   # @TODO: Preseed postfix settings
   apt-get install drush=4.5-6
-  apt-get install aegir-provision php5 php5-gd unzip git supervisor curl -y
+  apt-get install aegir-provision php5 php5-gd unzip git supervisor curl php5-curl -y
 fi
 
 # Install composer
-if [ ! -d '/usr/local/bin/composer' ]
+if [ ! -f '/usr/local/bin/composer' ]
   then
     curl -sS https://getcomposer.org/installer | php
     mv composer.phar /usr/local/bin/composer
+fi
+
+# Install mink
+if [ ! -d '/opt/mink' ]
+  then
+    mkdir /opt/mink
+    echo '
+{
+    "require": {
+        "behat/mink": "1.5",
+
+        "behat/mink-goutte-driver": "*",
+        "behat/mink-selenium-driver": "*",
+        "behat/mink-selenium2-driver": "*",
+        "behat/mink-sahi-driver": "*",
+        "behat/mink-zombie-driver": "*"
+    }
+}
+' > /opt/mink/composer.json
+    cd /opt/mink
+    composer install
 fi
 
 # Download DevShop backend projects (devshop_provision and provision_git)
@@ -137,18 +158,18 @@ fi
   echo "Supervisor is running Hosting Queue Runner."
   echo ""
   echo "=============================================================================="
-  echo "Welcome to "
-  echo "  ____              ____  _                 "
+  echo "  ____  Welcome to  ____  _                 "
   echo " |  _ \  _____   __/ ___|| |__   ___  _ __  "
   echo " | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \ "
   echo " | |_| |  __/\ V /  ___) | | | | (_) | |_) |"
   echo " |____/ \___| \_/  |____/|_| |_|\___/| .__/ "
   echo "                                     |_|    "
-  echo "                                            "
-  echo "Use the link above to login to your DevShop."
-  echo "You should now reboot your server."
+  echo "Use the link below to login to your DevShop."
   echo "=============================================================================="
 
+  su - aegir -c "drush @hostmaster uli"
+
+  echo "=============================================================================="
 
   # echo "============================================================="
   # echo "  DevShop was NOT installed properly!"
