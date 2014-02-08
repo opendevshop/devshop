@@ -216,16 +216,8 @@ function drush_devshop_provision_devshop_install($site = NULL) {
   provision_backend_invoke($site_name, 'hosting-setup');
 
   drush_print("");
-  drush_print("==============================================================================");
-  drush_print("");
-  drush_print("");
-  drush_print(dt("Congratulations, DEVSHOP has now been installed."));
-  drush_print("");
-  drush_print(dt("You should now log in to the DEVSHOP frontend by opening the following link in your web browser:"));
-  drush_print("");
-  drush_print($data['context']['login_link']);
-  drush_print("");
-  drush_print("");
-  drush_print("==============================================================================");
+  drush_print("=====================================");
+  drush_print(dt("Aegir DevShop has now been installed."));
+  drush_print("=====================================");
   drush_print("");
 }
