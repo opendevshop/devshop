@@ -118,7 +118,7 @@ if [ ! -d '/var/aegir/.ssh' ]
   chown aegir:aegir /var/aegir/.ssh/config
   chmod 600 /var/aegir/.ssh/config
 fi
-
+# @TODO: Find out how to grab or suppress the original aegir login link.
 # @TODO Find out best way to detect proper installation
   echo "=============================================================================="
   echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
