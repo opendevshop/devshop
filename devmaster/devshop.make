@@ -21,6 +21,4 @@ projects[hosting_tasks_extra][subdir] = contrib
 
 projects[hostmaster][type] = "profile"
 projects[hostmaster][version] = "1.11"
-
-; @TODO: Remove if hostmaster has a new 1.x release.
-projects[modalframe][version] = "1.9"
+projects[hostmaster][patch][] = "https://drupal.org/files/issues/2193065-modalframe-version-1.x.patch"
