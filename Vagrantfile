@@ -31,6 +31,5 @@ Vagrant::Config.run do |config|
   # end
 
   # Make local source code available to the VM
-  # config.vm.share_folder "app", "/app",  "app", :owner => "www-data", :group => "www-data"
-  # config.vm.share_folder "cookbooks", "/var/chef/cookbooks", "cookbooks"
+  config.vm.share_folder "repos", "/repos",  "repos", :owner => "www-data", :group => "www-data"
 end
