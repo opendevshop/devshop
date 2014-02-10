@@ -18,5 +18,9 @@ projects[hosting_tasks_extra][subdir] = contrib
 
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
+
 projects[hostmaster][type] = "profile"
 projects[hostmaster][version] = "1.11"
+
+; @TODO: Remove if hostmaster has a new 1.x release.
+projects[modalframe][version] = "1.9"
