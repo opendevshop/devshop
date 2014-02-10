@@ -21,4 +21,4 @@ projects[hosting_tasks_extra][subdir] = contrib
 
 projects[hostmaster][type] = "profile"
 projects[hostmaster][version] = "1.11"
-projects[hostmaster][patch][] = "https://drupal.org/files/issues/2193065-modalframe-version-1.x.patch"
+projects[hostmaster][patch][] = "https://drupal.org/files/issues/2193065-modalframe-version-1.x-4.patch"
