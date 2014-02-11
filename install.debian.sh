@@ -136,7 +136,7 @@ else
   echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
   echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
   echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                    |_|                        ║"
+  echo "║                                              |_|              ║"
   echo "╟───────────────────────────────────────────────────────────────╢"
   echo "║ If you are still having problems you may submit an issue at   ║"
   echo "║   http://drupal.org/node/add/project-issue/devshop            ║"
