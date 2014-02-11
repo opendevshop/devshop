@@ -14,9 +14,13 @@
 #
 
 # Fail if not running as root (sudo)
-if [[ $EUID -ne 0 ]]; then
+if [[ $EUID -ne 0 ]]
+then
    echo "This script must be run as root" 1>&2
    exit 1
+else
+  # Tell debian to not ask us any questions.
+  export DEBIAN_FRONTEND=noninteractive
 fi
 
 # Generate a secure password for MySQL
@@ -45,8 +49,9 @@ fi
 # Pre-set mysql root pw
 if [ -f '/etc/mysql-secured' ]
 then
-  echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
-  echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
+  # Pre-seed mysql server config.
+  echo mysql-server mysql-server/root_password password $MYSQL_ROOT_PASSWORD | debconf-set-selections
+  echo mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD | debconf-set-selections
 
   # Install mysql server before aegir, because we must secure it before aegir.
   apt-get install mysql-server -y
