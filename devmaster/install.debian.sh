@@ -61,7 +61,7 @@ else
 
   # Install aegir-provision and other tools
   # @TODO: Preseed postfix settings
-  apt-get install drush=4.5-6
+  apt-get install drush=4.5-6 -y
   apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
 fi
 
