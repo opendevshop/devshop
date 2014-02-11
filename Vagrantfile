@@ -5,8 +5,8 @@ Vagrant::Config.run do |config|
   attributes = JSON.parse(IO.read("attributes.json"))
 
   # Base Box
-  config.vm.box = "precise32"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.box = "precise64"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
   # Networking & hostname
   config.vm.network :bridged, :bridge => attributes["vagrant"]["adapter"]
@@ -14,7 +14,11 @@ Vagrant::Config.run do |config|
   config.vm.host_name = attributes["vagrant"]["hostname"]
 
   # Set SH as our provisioner
-  #config.vm.provision "shell", path: "install.debian.sh"
+  # @TODO: The installer is not yet able to run in non-interactive mode, because of postfix.
+  # Until this is resolved, you must run the installer interactively.
+  # config.vm.provision "shell", path: "repos/devshop/install.debian.sh"
+
+  config.vm.provision "shell", inline: "echo 'Vagrant Box is set up.  Please `vagrant ssh` into the box, and then run'; echo '`sudo sh /vagrant/repos/devshop/install.debian.sh` to install devshop.'"
 
   # @TODO: Release chef recipes for devshop servers.
   # Set Chef as our provisioner
