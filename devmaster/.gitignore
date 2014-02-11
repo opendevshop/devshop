@@ -1,8 +1,5 @@
 
 # devshop repos
-devshop
-devshop_hosting
-devshop_provision
-provision_git
-
+repos
+# Local config
 .vagrant
