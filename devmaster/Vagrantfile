@@ -1,6 +1,19 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Vagrant::Config.run do |config|
+
+  # Attributes are loaded from attributes.json
+  if !(File.exists?("attributes.json"))
+    warn "Make sure you have an attributes.json file and try again."
+    exit
+  end
+
+  # Check for repos folder.
+  if !(File.exists?("repos"))
+    warn "Run `sh init-repos.sh` to clone the needed source code to the host."
+    exit
+  end
+
   # Get attributes from attributes.json
   attributes = JSON.parse(IO.read("attributes.json"))
 
