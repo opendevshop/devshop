@@ -19,6 +19,9 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+# Let's block interaction
+export DEBIAN_FRONTEND=noninteractive
+
 # Generate a secure password for MySQL
 # Saves this password to /tmp/mysql_root_password in case you have to run the
 # script again.
@@ -60,7 +63,6 @@ else
   echo 'Secured' > /etc/mysql-secured
 
   # Install aegir-provision and other tools
-  # @TODO: Preseed postfix settings
   apt-get install drush=4.5-6 -y
   apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
 fi
@@ -69,7 +71,7 @@ fi
 if [ ! -d '/var/aegir/.drush/provision_git' ]
   then
   su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
-  su - aegir -c "drush dl provision_logs provision_solr provision_tasks_extra --destination=/var/aegir/.drush -y"
+  su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
 fi
 
 # Install DevShop with drush devshop-install
@@ -118,35 +120,50 @@ if [ ! -d '/var/aegir/.ssh' ]
   chown aegir:aegir /var/aegir/.ssh/config
   chmod 600 /var/aegir/.ssh/config
 fi
-# @TODO: Find out how to grab or suppress the original aegir login link.
-# @TODO Find out best way to detect proper installation
+
+# Detect Install, notify the user.
+if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
   echo "=============================================================================="
-  echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
-  echo "This password was saved to /tmp/mysql_root_password"
-  echo "You might want to delete it or reboot so that it will be removed."
-  echo ""
-  echo "An SSH keypair has been created in /var/aegir/.ssh"
-  echo ""
-  echo "Supervisor is running Hosting Queue Runner."
-  echo ""
+  echo " It appears something failed during installation. "
+  echo " There is no \`/var/aegir/.drush/hostmaster.alias.drushrc.php\` file."
+  echo " "
+  echo " It is possible MySQL Secure installation was not configured correctly. "
+  echo " "
+  echo " We tried to set the MySQL root password to $MYSQL_ROOT_PASSWORD but it may have"
+  echo " failed."
+  echo " "
+  echo " Try running 'sudo mysql_secure_installation' and change the root user's "
+  echo " password to $MYSQL_ROOT_PASSWORD"
+  echo " The current root mysql password is probably blank. Answer 'Yes' to all other questions."
+  echo " "
+  echo " Then, run this install script again to install DevShop."
   echo "=============================================================================="
-  echo "Welcome to "
-  echo "  ____              ____  _                 "
+else
+
+
+  echo "=============================================================================="
+  echo "  ____  Welcome to  ____  _                 "
   echo " |  _ \  _____   __/ ___|| |__   ___  _ __  "
   echo " | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \ "
   echo " | |_| |  __/\ V /  ___) | | | | (_) | |_) |"
   echo " |____/ \___| \_/  |____/|_| |_|\___/| .__/ "
   echo "                                     |_|    "
   echo "                                            "
-  echo "Use the link above to login to your DevShop."
-  echo "You should now reboot your server."
+  echo "Use this link to login to your DevShop:"
+
+  su - aegir -c"drush @hostmaster uli"
+
+  echo "  If you are still having problems you may submit an issue at"
+  echo "  http://drupal.org/node/add/project-issue/devshop"
   echo "=============================================================================="
-
-
-  # echo "============================================================="
-  # echo "  DevShop was NOT installed properly!"
-  # echo "  Please Review the logs and try again."
-  # echo ""
-  # echo "  If you are still having problems you may submit an issue at"
-  # echo "  http://drupal.org/node/add/project-issue/devshop"
-  # echo "============================================================="
+  echo " NOTES"
+  echo " Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
+  echo " This password was saved to /tmp/mysql_root_password"
+  echo " You might want to delete it or reboot so that it will be removed."
+  echo ""
+  echo " An SSH keypair has been created in /var/aegir/.ssh"
+  echo ""
+  echo " Supervisor is running Hosting Queue Runner."
+  echo ""
+  echo "============================================================="
+fi
