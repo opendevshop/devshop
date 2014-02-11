@@ -18,10 +18,10 @@ if [[ $EUID -ne 0 ]]
 then
    echo "This script must be run as root" 1>&2
    exit 1
-else
-  # Tell debian to not ask us any questions.
-  export DEBIAN_FRONTEND=noninteractive
 fi
+
+# Let's block interaction
+export DEBIAN_FRONTEND=noninteractive
 
 # Generate a secure password for MySQL
 # Saves this password to /tmp/mysql_root_password in case you have to run the
@@ -47,25 +47,36 @@ else
 fi
 
 # Pre-set mysql root pw
-if [ -f '/etc/mysql-secured' ]
-then
+if [ -f '/etc/mysql-secured' ]; then
+  # @TODO: Precise64 doesn't seem to like the pre-seeding or the mysql-secure-install
   # Pre-seed mysql server config.
-  echo mysql-server mysql-server/root_password password $MYSQL_ROOT_PASSWORD | debconf-set-selections
-  echo mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD | debconf-set-selections
+  echo debconf mysql-server/root_password password "$MYSQL_ROOT_PASSWORD" | debconf-set-selections
+  echo debconf mysql-server/root_password_again password "$MYSQL_ROOT_PASSWORD" | debconf-set-selections
 
   # Install mysql server before aegir, because we must secure it before aegir.
   apt-get install mysql-server -y
 
-  # @TODO: In 64 bit systems this process is interactive.
+  # @TODO: This is a hack for precise-64 that still doesn't work. As far as I can tell it won't set the password, echo, or run mysql_secure_installtion.
+  # I added a instructions to the end of this installer to run mysql_secure_install manually.
+  if [ `getconf LONG_BIT` = "64" ]; then
+    mysqladmin -u root password $MYSQL_ROOT_PASSWORD
+    echo "====================================================================================================="
+    echo "[DEVSHOP] Starting Manual MySQL Secure Installation..."
+    echo "[DEVSHOP] Warning: Do not reset the root password! Accept the default answers for all other questions"
+    echo "====================================================================================================="
+    mysql_secure_installation
+  else
 
-  # MySQL Secure Installtion
-  # Delete anonymous users
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
+    # MySQL Secure Installation
+    # Delete anonymous users
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
 
-  # Delete test table records
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
+    # Delete test table records
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
+
+  fi
 
   echo 'Secured' > /etc/mysql-secured
 fi
@@ -135,8 +146,22 @@ if [ ! -d '/var/aegir/.ssh' ]
   chown aegir:aegir /var/aegir/.ssh/config
   chmod 600 /var/aegir/.ssh/config
 fi
-# @TODO: Find out how to grab or suppress the original aegir login link.
-# @TODO Find out best way to detect proper installation
+
+if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
+  echo "=============================================================================="
+  echo " Something failed during installation. "
+  echo " "
+  echo " It is possible MySQL Secure installation was not configured correctly. "
+  echo " "
+  echo " We tried to set the MySQL root password to $MYSQL_ROOT_PASSWORD but it may have"
+  echo " failed."
+  echo " "
+  echo " Try running 'sudo mysql_secure_installation' and change the root user's "
+  echo " password to $MYSQL_ROOT_PASSWORD"
+  echo " "
+  echo " Then, run this install script again to install DevShop."
+  echo "=============================================================================="
+else
   echo "=============================================================================="
   echo "Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
   echo "This password was saved to /tmp/mysql_root_password"
@@ -147,17 +172,18 @@ fi
   echo "Supervisor is running Hosting Queue Runner."
   echo ""
   echo "=============================================================================="
-  echo "Welcome to "
-  echo "  ____              ____  _                 "
+  echo "  ____  Welcome to  ____  _                 "
   echo " |  _ \  _____   __/ ___|| |__   ___  _ __  "
   echo " | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \ "
   echo " | |_| |  __/\ V /  ___) | | | | (_) | |_) |"
   echo " |____/ \___| \_/  |____/|_| |_|\___/| .__/ "
   echo "                                     |_|    "
   echo "                                            "
-  echo "Use the link above to login to your DevShop."
-  echo "You should now reboot your server."
+  echo "Use this link to login to your DevShop:"
+  echo "             "
+  su - aegir -c"drush @hostmaster uli"
   echo "=============================================================================="
+fi
 
 
   # echo "============================================================="
