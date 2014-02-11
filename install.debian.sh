@@ -10,7 +10,7 @@
 #  To install, run the following command:
 #
 #    $ sudo ./install.debian.sh
-#.
+#
 #
 
 # Fail if not running as root (sudo)
@@ -40,13 +40,18 @@ else
   echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
   wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
   apt-get update
+fi
 
-  # Pre-set mysql root pw
+# Pre-set mysql root pw
+if [ -f '/etc/mysql-secured' ]
+then
   echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
   echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
 
   # Install mysql server before aegir, because we must secure it before aegir.
   apt-get install mysql-server -y
+
+  # @TODO: In 64 bit systems this process is interactive.
 
   # MySQL Secure Installtion
   # Delete anonymous users
@@ -58,18 +63,25 @@ else
   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
 
   echo 'Secured' > /etc/mysql-secured
+fi
 
-  # Install aegir-provision and other tools
-  # @TODO: Preseed postfix settings
-  apt-get install drush=4.5-6
-  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
+# Install drush 4.5-6
+if [ ! -d '/usr/share/drush' ]
+  then
+
+  echo "Installing drush 4.5-6..."
+  apt-get install drush=4.5-6 -y
 fi
 
 # Download DevShop backend projects (devshop_provision and provision_git)
-if [ ! -d '/var/aegir/.drush/provision_git' ]
+if [ ! -d '/var/aegir' ]
   then
+
+  # @TODO: Preseed postfix settings
+  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
+
   su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
-  su - aegir -c "drush dl provision_logs provision_solr provision_tasks_extra --destination=/var/aegir/.drush -y"
+  su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
 fi
 
 # Install DevShop with drush devshop-install
