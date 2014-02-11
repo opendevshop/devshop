@@ -149,10 +149,11 @@ else
   echo " |____/ \___| \_/  |____/|_| |_|\___/| .__/ "
   echo "                                     |_|    "
   echo "                                            "
-  echo "Use this link to login to your DevShop:"
+  echo "Use this link to login:"
 
   su - aegir -c"drush @hostmaster uli"
 
+  echo "=============================================================================="
   echo "  If you are still having problems you may submit an issue at"
   echo "  http://drupal.org/node/add/project-issue/devshop"
   echo "=============================================================================="
@@ -164,6 +165,5 @@ else
   echo " An SSH keypair has been created in /var/aegir/.ssh"
   echo ""
   echo " Supervisor is running Hosting Queue Runner."
-  echo ""
   echo "============================================================="
 fi
