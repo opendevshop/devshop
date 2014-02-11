@@ -51,7 +51,7 @@ else
   # Install mysql server before aegir, because we must secure it before aegir.
   apt-get install mysql-server -y
 
-  # MySQL Secure Installtion
+  # MySQL Secure Installation
   # Delete anonymous users
   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
 
@@ -123,47 +123,35 @@ fi
 
 # Detect Install, notify the user.
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
-  echo "=============================================================================="
-  echo " It appears something failed during installation. "
-  echo " There is no \`/var/aegir/.drush/hostmaster.alias.drushrc.php\` file."
-  echo " "
-  echo " It is possible MySQL Secure installation was not configured correctly. "
-  echo " "
-  echo " We tried to set the MySQL root password to $MYSQL_ROOT_PASSWORD but it may have"
-  echo " failed."
-  echo " "
-  echo " Try running 'sudo mysql_secure_installation' and change the root user's "
-  echo " password to $MYSQL_ROOT_PASSWORD"
-  echo " The current root mysql password is probably blank. Answer 'Yes' to all other questions."
-  echo " "
-  echo " Then, run this install script again to install DevShop."
-  echo "=============================================================================="
+
+  echo "╔═════════════════════════════════════════════════════════════════════╗"
+  echo "║ It appears something failed during installation.                    ║"
+  echo "║ There is no \`/var/aegir/.drush/hostmaster.alias.drushrc.php\` file.║"
+  echo "╚═════════════════════════════════════════════════════════════════════╝"
 else
 
+  echo "╔═══════════════════════════════════════════════════════════════╗"
+  echo "║           ____  Welcome to  ____  _                           ║"
+  echo "║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║"
+  echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
+  echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
+  echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
+  echo "║                                    |_|                        ║"
+  echo "╟───────────────────────────────────────────────────────────────╢"
+  echo "║ If you are still having problems you may submit an issue at   ║"
+  echo "║   http://drupal.org/node/add/project-issue/devshop            ║"
+  echo "╟───────────────────────────────────────────────────────────────╢"
+  echo "║ NOTES                                                         ║"
+  echo "║ Your MySQL root password was set as $MYSQL_ROOT_PASSWORD      ║"
+  echo "║ This password was saved to /tmp/mysql_root_password.          ║"
+  echo "║ You might want to delete it or reboot to remove it.           ║"
+  echo "║                                                               ║"
+  echo "║ An SSH keypair has been created in /var/aegir/.ssh            ║"
+  echo "║                                                               ║"
+  echo "║  Supervisor is running Hosting Queue Runner.                  ║"
+  echo "╠═══════════════════════════════════════════════════════════════╣"
+  echo "║ Use this link to login:                                       ║"
+  echo "║ `su - aegir -c"drush @hostmaster uli"`                        ║"
+  echo "╚═══════════════════════════════════════════════════════════════╝"
 
-  echo "=============================================================================="
-  echo "  ____  Welcome to  ____  _                 "
-  echo " |  _ \  _____   __/ ___|| |__   ___  _ __  "
-  echo " | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \ "
-  echo " | |_| |  __/\ V /  ___) | | | | (_) | |_) |"
-  echo " |____/ \___| \_/  |____/|_| |_|\___/| .__/ "
-  echo "                                     |_|    "
-  echo "                                            "
-  echo "Use this link to login:"
-
-  su - aegir -c"drush @hostmaster uli"
-
-  echo "=============================================================================="
-  echo "  If you are still having problems you may submit an issue at"
-  echo "  http://drupal.org/node/add/project-issue/devshop"
-  echo "=============================================================================="
-  echo " NOTES"
-  echo " Your MySQL root password was set as $MYSQL_ROOT_PASSWORD"
-  echo " This password was saved to /tmp/mysql_root_password"
-  echo " You might want to delete it or reboot so that it will be removed."
-  echo ""
-  echo " An SSH keypair has been created in /var/aegir/.ssh"
-  echo ""
-  echo " Supervisor is running Hosting Queue Runner."
-  echo "============================================================="
 fi
