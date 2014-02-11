@@ -158,6 +158,7 @@ if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
   echo " "
   echo " Try running 'sudo mysql_secure_installation' and change the root user's "
   echo " password to $MYSQL_ROOT_PASSWORD"
+  echo " The current root mysql password is probably blank. Answer 'Yes' to all other questions."
   echo " "
   echo " Then, run this install script again to install DevShop."
   echo "=============================================================================="
