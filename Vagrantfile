@@ -14,11 +14,8 @@ Vagrant::Config.run do |config|
   config.vm.host_name = attributes["vagrant"]["hostname"]
 
   # Set SH as our provisioner
-  # @TODO: The installer is not yet able to run in non-interactive mode, because of postfix.
   # Until this is resolved, you must run the installer interactively.
-  # config.vm.provision "shell", path: "repos/devshop/install.debian.sh"
-
-  config.vm.provision "shell", inline: "echo 'Vagrant Box is set up.  Please `vagrant ssh` into the box, and then run'; echo '`sudo sh /vagrant/repos/devshop/install.debian.sh` to install devshop.'"
+  config.vm.provision "shell", path: "repos/devshop/install.debian.sh"
 
   # @TODO: Release chef recipes for devshop servers.
   # Set Chef as our provisioner
