@@ -25,6 +25,7 @@ export DEBIAN_FRONTEND=noninteractive
 # Generate a secure password for MySQL
 # Saves this password to /tmp/mysql_root_password in case you have to run the
 # script again.
+MYSQL_ROOT_USER=root
 if [ -f '/tmp/mysql_root_password' ]
 then
   MYSQL_ROOT_PASSWORD=$(cat /tmp/mysql_root_password)
@@ -78,7 +79,7 @@ fi
 if [ ! -d '/var/aegir/devshop-6.x-1.x/' ]
   then
   MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-  COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --makefile=$MAKEFILE --profile=devshop -y"
+  COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
   echo "Running...  $COMMAND"
   su - aegir -c "$COMMAND"
 fi
