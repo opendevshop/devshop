@@ -36,6 +36,26 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
+# Check for travis
+if [ $TRAVIS = true ]; then
+  echo "TRAVIS DETECTED! Setting 'travis' user password."
+  MYSQL_ROOT_PASSWORD=password
+  MYSQL_ROOT_USER=root
+
+  # MySQL Secure Installation.  Aegir doesn't like users without passwords.
+  mysql -u root -e "DELETE FROM mysql.user WHERE User='';" -p"$MYSQL_ROOT_PASSWORD"
+  mysql -u root -e "USE mysql;\nUPDATE user SET password=PASSWORD('password');\nFLUSH PRIVILEGES;\n" -p"$MYSQL_ROOT_PASSWORD"
+fi
+
+# Check database connectivity.  Early failure == faster testing.
+echo "Checking Database Access for: $MYSQL_ROOT_USER using password '$MYSQL_ROOT_PASSWORD'"
+if mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -e 'use mysql' -h 'localhost' ; then
+  echo "Database Access granted for $MYSQL_ROOT_USER using password '$MYSQL_ROOT_PASSWORD'"
+else
+  echo "Cannot access database as $MYSQL_ROOT_USER"
+  exit 1
+fi
+
 # Add aegir debian sources
 if [ -f '/etc/apt/sources.list.d/aegir-stable.list' ]
   then echo "Aegir apt sources found."
@@ -54,12 +74,12 @@ else
 
   # MySQL Secure Installation
   # Delete anonymous users
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='';"
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM user WHERE User='';"
 
   # Delete test table records
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
-  mysql -u root -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DROP DATABASE test;"
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "FLUSH PRIVILEGES;"
 
   echo 'Secured' > /etc/mysql-secured
 
