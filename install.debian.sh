@@ -37,7 +37,7 @@ else
 fi
 
 # Check for travis
-if [ $TRAVIS = true ]; then
+if [[ $TRAVIS ]]; then
   echo "TRAVIS DETECTED! Setting 'travis' user password."
   MYSQL_ROOT_PASSWORD=password
   MYSQL_ROOT_USER=root
@@ -45,6 +45,37 @@ if [ $TRAVIS = true ]; then
   # MySQL Secure Installation.  Aegir doesn't like users without passwords.
   mysql -u root -e "DELETE FROM mysql.user WHERE User='';" -p"$MYSQL_ROOT_PASSWORD"
   mysql -u root -e "USE mysql;\nUPDATE user SET password=PASSWORD('password');\nFLUSH PRIVILEGES;\n" -p"$MYSQL_ROOT_PASSWORD"
+fi
+
+# Add aegir debian sources
+if [ -f '/etc/apt/sources.list.d/aegir-stable.list' ]
+  then echo "Aegir apt sources found."
+else
+  echo "Adding Aegir apt sources."
+  echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
+  wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
+  apt-get update
+fi
+
+# Setup MySQL
+if [ ! -d '/etc/mysql' ]; then
+  # Pre-set mysql root pw
+  echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
+  echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
+
+  # Install mysql server before aegir, because we must secure it before aegir.
+  apt-get install mysql-server -y
+
+  # MySQL Secure Installation
+  # Delete anonymous users
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM user WHERE User='' OR Password='';"
+
+  # Delete test table records
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DROP DATABASE test;"
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "FLUSH PRIVILEGES;"
+
+  echo 'Secured' > /etc/mysql-secured
 fi
 
 # Check database connectivity.  Early failure == faster testing.
@@ -56,33 +87,7 @@ else
   exit 1
 fi
 
-# Add aegir debian sources
-if [ -f '/etc/apt/sources.list.d/aegir-stable.list' ]
-  then echo "Aegir apt sources found."
-else
-  echo "Adding Aegir apt sources."
-  echo "deb http://debian.aegirproject.org stable main" | tee -a /etc/apt/sources.list.d/aegir-stable.list
-  wget -q http://debian.aegirproject.org/key.asc -O- | apt-key add -
-  apt-get update
-
-  # Pre-set mysql root pw
-  echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
-  echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
-
-  # Install mysql server before aegir, because we must secure it before aegir.
-  apt-get install mysql-server -y
-
-  # MySQL Secure Installation
-  # Delete anonymous users
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM user WHERE User='';"
-
-  # Delete test table records
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DROP DATABASE test;"
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "FLUSH PRIVILEGES;"
-
-  echo 'Secured' > /etc/mysql-secured
-
+if  [ ! -d '/var/aegir' ]; then
   # Install aegir-provision and other tools
   apt-get install drush=4.5-6 -y
   apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
