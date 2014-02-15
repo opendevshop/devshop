@@ -91,25 +91,32 @@ fi
 
 if  [ ! -d '/var/aegir' ]; then
   # Install aegir-provision and other tools
-  apt-get install drush=4.5-6 -y
-  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
+#  apt-get install drush -y
+  apt-get install php5 php5-gd unzip git supervisor -y
 fi
+#
+## Download DevShop backend projects (devshop_provision and provision_git)
+#if [ ! -d '/var/aegir/.drush/provision_git' ]
+#  then
+#  su - aegir -c "drush dl provision_git-6.x devshop_provision-$DEVSHOP_VERSION --destination=/var/aegir/.drush -y"
+#  su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
+#fi
 
-# Download DevShop backend projects (devshop_provision and provision_git)
-if [ ! -d '/var/aegir/.drush/provision_git' ]
-  then
-  su - aegir -c "drush dl provision_git-$DEVSHOP_VERSION devshop_provision-$DEVSHOP_VERSION --destination=/var/aegir/.drush -y"
-  su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
-fi
-
-# Install DevShop with drush devshop-install
+# Install Aegir with makefile setting.
 if [ ! -d "/var/aegir/devshop-$DEVSHOP_VERSION/" ]
   then
-  MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
-  echo "Running...  $COMMAND"
-  su - aegir -c "$COMMAND"
+#  MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
+  MAKEFILE="http://drupalcode.org/project/devshop_provision.git/blob_plain/HEAD:/build-devshop.make"
+  echo debconf aegir/makefile string $MAKEFILE | debconf-set-selections
+
+  apt-get install aegir2 -y
+
+#
+#  COMMAND="drush aegir-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
+#  echo "Running...  $COMMAND"
+#  su - aegir -c "$COMMAND"
 fi
+
 
 # Adding Supervisor
 if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
