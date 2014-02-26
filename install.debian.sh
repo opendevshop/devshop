@@ -142,7 +142,17 @@ if [ ! -d '/var/aegir/.ssh' ]
   su aegir -c "drush @hostmaster --always-set --yes vset devshop_public_key \"\$(cat /var/aegir/.ssh/id_rsa.pub)\""
 
   # Create a ssh config file so we don't have to approve every new host.
-  echo "StrictHostKeyChecking no" > /var/aegir/.ssh/config
+  echo "Host *drupal.org
+    StrictHostKeyChecking no
+Host *github.com
+    StrictHostKeyChecking no
+Host *bitbucket.org
+    StrictHostKeyChecking no
+Host *acquia.com
+    StrictHostKeyChecking no
+Host *drush.in.com
+    StrictHostKeyChecking no
+" > /var/aegir/.ssh/config
   chown aegir:aegir /var/aegir/.ssh/config
   chmod 600 /var/aegir/.ssh/config
 fi
