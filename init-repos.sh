@@ -1,3 +1,11 @@
+#!/bin/sh
+
+# Ask for drupal.org username for cloning repos.
+if [ -z "$1" ]
+  then
+    echo "Missing username.  Add your drupal.org username as an argument to this script.  ie. 'sh init-repos.sh druplicon'"
+    exit 0
+fi
 
 # DevShop Repos
 if [ ! -d 'repos' ]
@@ -6,8 +14,10 @@ if [ ! -d 'repos' ]
     mkdir repos
     cd repos
 
-    git clone http://git.drupal.org/project/devshop.git
-    git clone http://git.drupal.org/project/devshop_provision.git
-    git clone http://git.drupal.org/project/devshop_hosting.git
-    git clone http://git.drupal.org/project/provision_git.git
+    `git clone $1@git.drupal.org:project/devshop.git`
+    `git clone $1@git.drupal.org:project/devshop_provision.git`
+    `git clone $1@git.drupal.org:project/devshop_hosting.git`
+    `git clone $1@git.drupal.org:project/provision_git.git`
+else
+  echo "Repos already cloned.  Exiting."
 fi
