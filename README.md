@@ -2,6 +2,8 @@
 DevShop
 =======
 
+[![Build Status](https://travis-ci.org/drupal-devshop/devshop.png?branch=6.x-1.x)](https://travis-ci.org/drupal-devshop/devshop)
+
 This project contains the three things needed to build a DevShop:
 
 1. install-devshop.sh
