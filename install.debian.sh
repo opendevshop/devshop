@@ -41,10 +41,6 @@ if [[ $TRAVIS ]]; then
   echo "TRAVIS DETECTED! Setting 'travis' user password."
   MYSQL_ROOT_PASSWORD=password
   MYSQL_ROOT_USER=root
-
-  # MySQL Secure Installation.  Aegir doesn't like users without passwords.
-  mysql -u root -e "DELETE FROM mysql.user WHERE User='';" -p"$MYSQL_ROOT_PASSWORD"
-  mysql -u root -e "USE mysql;\nUPDATE user SET password=PASSWORD('password');\nFLUSH PRIVILEGES;\n" -p"$MYSQL_ROOT_PASSWORD"
 fi
 
 # Add aegir debian sources
@@ -58,7 +54,7 @@ else
 fi
 
 # Setup MySQL
-if [ ! -d '/etc/mysql' ]; then
+if [ ! `which mysql` ] || [ $TRAVIS ]; then
   # Pre-set mysql root pw
   echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
   echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
@@ -68,12 +64,12 @@ if [ ! -d '/etc/mysql' ]; then
 
   # MySQL Secure Installation
   # Delete anonymous users
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM user WHERE User='' OR Password='';"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='' OR Password='';"
 
   # Delete test table records
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DROP DATABASE test;"
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "FLUSH PRIVILEGES;"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
 
   echo 'Secured' > /etc/mysql-secured
 fi
@@ -84,6 +80,13 @@ if mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -e 'use mysql' -h 'local
   echo "Database Access granted for $MYSQL_ROOT_USER using password '$MYSQL_ROOT_PASSWORD'"
 else
   echo "Cannot access database as $MYSQL_ROOT_USER"
+  exit 1
+fi
+
+# Check anonymous mysql access
+echo "Checking anonyous Database Access... This MUST result in access denied..."
+if mysql -u "NotARealUser"; then
+  echo "Database is accessible by 'NotARealUser'. This means the mysql installation is not secure!"
   exit 1
 fi
 
@@ -120,7 +123,7 @@ if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   chmod 700 /var/aegir/hosting_queue_runner.sh
 
   # Setup config
-  echo "[program:hosting_queue_runner]
+  echo '[program:hosting_queue_runner]
 ; Adjust the next line to point to where you copied the script.
 command=/var/aegir/hosting_queue_runner.sh
 user=aegir
@@ -129,7 +132,7 @@ stdout_logfile=/var/log/hosting_queue_runner
 autostart=TRUE
 autorestart=TRUE
 ; Tweak the next line to match your environment.
-environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"/usr/bin/drush\"" > /etc/supervisor/conf.d/hosting_queue_runner.conf
+environment=HOME="/var/aegir",USER="aegir",DRUSH_COMMAND="/usr/bin/drush"' > /etc/supervisor/conf.d/hosting_queue_runner.conf
   service supervisor stop
   service supervisor start
 fi
