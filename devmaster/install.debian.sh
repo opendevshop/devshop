@@ -37,7 +37,7 @@ else
 fi
 
 # Check for travis
-if [[ $TRAVIS ]]; then
+if [ "$TRAVIS" = "true" ]; then
   echo "TRAVIS DETECTED! Setting 'travis' user password."
   MYSQL_ROOT_PASSWORD=password
   MYSQL_ROOT_USER=root
@@ -54,7 +54,7 @@ else
 fi
 
 # Setup MySQL
-if [ ! `which mysql` ] || [ $TRAVIS ]; then
+if [ ! `which mysql` ] || [ "$TRAVIS" = "true" ]; then
   # Pre-set mysql root pw
   echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
   echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
