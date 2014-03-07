@@ -827,10 +827,11 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     return $form;
   }
   // If no available profiles:
+  // @TODO: This fails sometimes because the list of install profiles is not quite available.
 
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch. NOTE: Try reloading the page. This is a known bug.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#type' => 'markup',
