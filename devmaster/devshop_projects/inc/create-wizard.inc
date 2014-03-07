@@ -236,9 +236,8 @@ function devshop_project_create_step_git(&$form, &$form_state) {
 
     // Display some help for certain errors
     if ($project->verify_error == '[DEVSHOP] Error retrieving remote information: Host key verification failed. fatal: The remote end hung up unexpectedly'){
-      $project->verify_error
+      $form['note']['#value'] .= '<div class="messages warning">' . t('You might have to authorize the host your are trying to connect to first.  Add "StrictHostKeyChecking no" to your ~/.ssh/config file to avoid this for all domains.') . '</div>';
     }
-    $form['note']['#value'] .= '<div class="messages warning">' . t('You might have to authorize the host your are trying to connect to first.  Add "StrictHostKeyChecking no" to your ~/.ssh/config file to avoid this for all domains.') . '</div>';
   }
 
   $form['git_url'] = array(
