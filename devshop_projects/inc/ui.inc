@@ -170,7 +170,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
       continue;
     }
-    
+
     $row = array();
     $row[] = "<span class='environment'>$site->environment</span>";
     
@@ -255,7 +255,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $rows[] = $row;
   }
   $header = array();
-  $table = theme('table', $header, $rows);
+  $table = theme('table', $header, $rows, array('class' => 'environments-table'));
 
   $node->content['sites'] = array(
     '#type' => 'fieldset',
