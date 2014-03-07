@@ -628,6 +628,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project_node = node_load($project->project_nid);
   $values = $form_state['values'];
 
+  // @TODO: Settings from the form are not saving.
   $settings = module_invoke_all('devshop_project_settings', $project_node);
 
   // Create these platforms, if they don't exist yet
