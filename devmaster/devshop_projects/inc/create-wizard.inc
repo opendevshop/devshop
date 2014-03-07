@@ -171,6 +171,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   // @TODO: Can we speed things up here by only running install for the first,
   // then  "Cloning" to create the rest?
   foreach ($node->project_objects['platform'] as $nid => $env) {
+    // @TODO: Does this set the http_server as well?? Doesn't look like it.
     $db_server = $project->environments[$env]['db_server'];
     devshop_projects_create_site($node, node_load($nid), $env, $db_server);
   }
