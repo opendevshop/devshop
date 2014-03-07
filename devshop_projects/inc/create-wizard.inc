@@ -529,11 +529,13 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t('Environment Name'),
       '#default_value' => $env_title,
-      '#size' => 25,
+      '#size' => 6,
       '#maxlength' => 255,
       '#attributes' => array(
-        'placeholder' => t('Name this environment...'),
+        'placeholder' => t('name'),
       ),
+      '#field_prefix' => 'http://',
+      '#field_suffix' => ".$project->base_url",
     );
 
     // Add environment settings form elements
