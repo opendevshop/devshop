@@ -309,13 +309,16 @@ function devshop_project_create_step_git_validate(&$from, &$form_state) {
   $project = &$form_state['project'];
 
   // No spaces or special characters allowed.
-  $url = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
-  if (!_hosting_valid_fqdn($url)) {
+  $project_name = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
+  if (!_hosting_valid_fqdn($project_name)) {
+    form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
+  }
+  if (!ctype_alnum($project_name)) {
     form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
   }
 
   // Check for duplicate project name here.
-  $node = hosting_context_load($form_state['values']['title']);
+  $node = hosting_context_load($project_name);
   if ($node->nid != $project->project_nid){
     form_set_error('title', t('That name is in use.  Please try again.'));
   }
@@ -470,7 +473,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       $task = node_load($project->verify_task_nid);
       $time_ago = time() - $task->updated;
       if ($time_ago > 60) {
-        $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
+        // @TODO: This doesn't work quite right yet.
+        // $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
       }
     }
 
