@@ -146,5 +146,5 @@ function devshop_log_page($nid) {
   }
 
   // return the output
-  return $output;
+  return check_markup($output);
 }
