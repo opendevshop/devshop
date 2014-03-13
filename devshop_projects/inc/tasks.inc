@@ -219,9 +219,9 @@ function hosting_create_environment($project, $environment_name, $branch, $fork_
 
   //Check if we are forking another site.
   if (isset($project->environments[$fork_source])) {
-    $platform->clone_nid = $project->environments[$environment_to_fork]['site'];
+    $platform->clone_nid = $project->environments[$fork_source]['site'];
     $platform->git_branch = $branch;
-    $platform->old_branch = $project->settings[$environment_to_fork]['git_branch'];
+    $platform->old_branch = $project->settings[$fork_source]['git_branch'];
   }
 
   watchdog('debug', 'Attempting to create: ' . print_r($platform,1));
