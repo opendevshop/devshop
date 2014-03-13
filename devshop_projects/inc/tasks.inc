@@ -101,10 +101,6 @@ function hosting_task_devshop_create_form($node) {
       '#title' => t('Fork from'),
       '#value' => t('!env environment on branch !branch', array('!env' => "<span class='environment'>$site->environment</span>", '!branch' => "<span class='branch'>$site->git_branch</span>")),
     );
-    $form['branch'] = array(
-      '#type' => 'hidden',
-      '#value' => $site->git_branch,
-    );
     $form['fork_source'] = array(
       '#type' => 'hidden',
       '#value' => $site->environment,
@@ -173,8 +169,9 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
 
   $project = node_load($form_state['values']['nid']);
   $environment_name = $form_state['values']['parameters']['environment_name'];
-  $branch = $form_state['values']['parameters']['branch'];
+  $branch = $form_state['values']['parameters']['new_branch']? $form_state['values']['parameters']['new_branch']: $form_state['values']['parameters']['branch'];
   $fork_source = $form_state['values']['parameters']['fork_source'];
+
   hosting_create_environment($project, $environment_name, $branch, $fork_source);
 
   // We are replacing hosting_confirm_form_submit here, so just do what it does,
