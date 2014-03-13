@@ -159,8 +159,8 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
     form_set_error('type', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
   }
 
-  if (isset($params['new_branch']) && !preg_match('!^[a-z0-9_]+$!', $params['environment_name'])) {
-    form_set_error('new_branch', t('The new branch name must contain only lowercase letters, numbers, and underscores.'));
+  if (isset($params['new_branch']) && !preg_match('!^[a-z0-9_-]+$!', $params['new_branch'])) {
+    form_set_error('new_branch', t('The new branch name must contain only lowercase letters, numbers, dashes and underscores.'));
   }
 }
 
