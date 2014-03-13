@@ -112,7 +112,7 @@ function devshop_pull_github_webhook($project){
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
     
     $args = array();
-    $args['environments'] = implode(' ', $environments_to_pull);
+//    $args['environments'] = implode(' ', $environments_to_pull);
     $args['cache'] = 1;
 
    
@@ -141,8 +141,7 @@ function devshop_pull_github_webhook($project){
             }
           }
           if (empty($pull_environment_found)){
-            // @TODO: Create one!
-            print "CREATE $branch!";
+            hosting_create_environment($project, str_replace('-', '_', $branch), $branch);
           }
           else {
             print "Branch already has an environment.";
