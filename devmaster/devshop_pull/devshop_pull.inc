@@ -75,6 +75,7 @@ function devshop_pull_callback($project, $hash) {
 
   // Output a message, no matter what.
   watchdog('devshop_pull', $message, array(), WATCHDOG_INFO);
+  watchdog('devshop_pull_debug', 'PAYLOAD: '. $GLOBALS['HTTP_RAW_POST_DATA'], array(), WATCHDOG_INFO);
   print $message;
 
   // Save a variable to help when using the settings page.
