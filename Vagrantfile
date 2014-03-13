@@ -16,7 +16,7 @@ Vagrant::Config.run do |config|
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
   # Networking & hostname
-  config.vm.network :bridged, :bridge => attributes["vagrant"]["adapter"]
+  config.vm.network :bridged
   config.vm.network :hostonly, attributes["vagrant"]["hostonly_ip"]
   config.vm.host_name = attributes["vagrant"]["hostname"]
 
