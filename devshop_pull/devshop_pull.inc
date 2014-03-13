@@ -43,23 +43,20 @@ function devshop_pull_callback($project, $hash) {
   }
   // All checks pass! Server is allowed to trigger tasks!
   else {
-    $message = "Commit Received! Invoked by " . ip_address();
     $status = DEVSHOP_PULL_STATUS_OK;
 
-    // @TODO: Check Payload Here... If we see a GitHub payload with branches,
-    // filter out the $environments_to_pull based on those branches.
+    // @TODO: Make this pluggable.
 
-    // Create the hosting task
-    // We need to pass environments so we can control what envs to pull based
-    // on the data coming back from github!
-    $args = array();
-    $args['environments'] = implode(' ', $environments_to_pull);
+    // Check headers for GitHub Integration
+    $headers = getallheaders();
+    if (isset($headers['X-GitHub-Event'])) {
+      $message = devshop_pull_github_webhook($project_node, $environments_to_pull);
+    }
+    else {
+      $message = devshop_pull_default_webhook($project_node, $environments_to_pull);
+    }
 
-    // Always clear cache...
-    // @TODO: Should we make this a setting? "What to do on auto-pull?"
-    $args['cache'] = 1;
-    hosting_add_task($project_node->nid, 'devshop-pull', $args);
-  }
+   }
 
   // Log It, only if there is a status
   if (isset($status)){
@@ -75,11 +72,93 @@ function devshop_pull_callback($project, $hash) {
 
   // Output a message, no matter what.
   watchdog('devshop_pull', $message, array(), WATCHDOG_INFO);
+
+  // @TODO: Create a "debug" mode to prevent logging of all payloads
   watchdog('devshop_pull_debug', 'PAYLOAD: '. $GLOBALS['HTTP_RAW_POST_DATA'], array(), WATCHDOG_INFO);
+  watchdog('devshop_pull_debug', 'HEADERS: '. print_r(getallheaders(), 1), WATCHDOG_INFO);
+
+
   print $message;
 
   // Save a variable to help when using the settings page.
   variable_set('devshop_pull_last_ip', ip_address());
+}
+
+/**
+ * Default action to take on webhook init.
+ */
+function devshop_pull_default_webhook($project, $environments_to_pull){
+  // Create the hosting task
+  // We need to pass environments so we can control what envs to pull based
+  // on the data coming back from github!
+  $args = array();
+  $args['environments'] = implode(' ', $environments_to_pull);
+
+  // Always clear cache...
+  // @TODO: Should we make this a setting? "What to do on auto-pull?"
+  $args['cache'] = 1;
+  hosting_add_task($project_node->nid, 'devshop-pull', $args);
+
+  return "Commit notification received! Running 'Pull Code' on $project->title environments " . $args['environments'];
+}
+
+/**
+ * GitHub action to take on webhook init
+ */
+function devshop_pull_github_webhook($project){
+  $headers = getallheaders();
+
+  if ($headers['content-type'] == 'application/json'){
+    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
+    
+    $args = array();
+    $args['environments'] = implode(' ', $environments_to_pull);
+    $args['cache'] = 1;
+
+   
+    switch ($headers['X-GitHub-Event']){
+      case 'ping':
+        $message = 'Pong!';
+        break;
+      case 'push':
+        // Add a task to pull then project's environments
+        hosting_add_task($project->nid, 'devshop-pull', $args);
+        $message = 'Push Received.';
+        break;
+      case 'pull_request':
+        $message = 'Pull Request Received.';
+
+        // @TODO: Add to project settings.
+        $create_environments_from_pr = TRUE;
+        $branch = $data->pull_request->head->ref;
+
+        $message = "Detected Pull Request for $branch";
+        if ($create_environments_from_pr == TRUE){
+          // Lookup environments by branch
+          foreach ($project->settings as $env => $settings){
+            if ($settings['git_branch'] == $branch){
+              $pull_environment_found = $branch;
+            }
+          }
+          if (empty($pull_environment_found)){
+            // @TODO: Create one!
+            print "CREATE $branch!";
+          }
+          else {
+            print "Branch already has an environment.";
+          }
+        }
+
+
+        break;
+    }
+
+    return $message;
+    
+  }
+  else {
+    watchdog('devshop_pull', 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json');
+  }
 }
 
 /**
@@ -149,3 +228,4 @@ function devshop_pull_project($project_nid) {
     print "No environments configured to pull! Aborting.";
   }
 }
+
