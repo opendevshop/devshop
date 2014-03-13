@@ -105,9 +105,9 @@ function hosting_task_devshop_create_form($node) {
       '#type' => 'hidden',
       '#value' => $site->git_branch,
     );
-    $form['clone_nid'] = array(
+    $form['fork_source'] = array(
       '#type' => 'hidden',
-      '#value' => $site->nid,
+      '#value' => $site->environment,
     );
     $form['new_branch'] = array(
       '#title' => t('New branch name'),
@@ -174,6 +174,35 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $project = node_load($form_state['values']['nid']);
   $environment_name = $form_state['values']['parameters']['environment_name'];
   $branch = $form_state['values']['parameters']['branch'];
+  $fork_source = $form_state['values']['parameters']['fork_source'];
+  hosting_create_environment($project, $environment_name, $branch, $fork_source);
+
+  // We are replacing hosting_confirm_form_submit here, so just do what it does,
+  // minus the hosting task creation!
+  $values = $form_state['values'];
+  $form_state['redirect'] = 'node/' . $values['nid'];
+  modalframe_close_dialog();
+
+  // Friendly message
+  drupal_set_message(t('Your environment is being created.'));
+}
+
+
+/**
+ * API-level function for creating a new environment.
+ *
+ * @TODO: Add more options like web server, etc.
+ * @param $project
+ *   A full project node (for now. @TODO Allow project name (and/or nid) as parameters.
+ * @param $environment_name
+ *   A new name for the environment
+ * @param $branch
+ *   What git branch to track.
+ * @param $fork_source
+ *   If desired, the environment to fork off of. (Copy the database and create a new branch from)
+ */
+function hosting_create_environment($project, $environment_name, $branch, $fork_source = NULL) {
+
   $servers = hosting_get_servers('http');
   $server = variable_get('devshop_projects_default_web_server', key($servers));
 
@@ -191,26 +220,19 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
     $platform->publish_path = $project->code_path . '/' . $environment_name . '/' . $project->drupal_path;
   }
 
-  //Check if is need to clone and create a new branch
-  if (isset($form_state['values']['parameters']['clone_nid'])) {
-    $platform->clone_nid = $form_state['values']['parameters']['clone_nid'];
-    $platform->git_branch = $form_state['values']['parameters']['new_branch'];
-    $platform->old_branch = $branch;
+  //Check if we are forking another site.
+  if (isset($project->environments[$fork_source])) {
+    $platform->clone_nid = $project->environments[$environment_to_fork]['site'];
+    $platform->git_branch = $branch;
+    $platform->old_branch = $project->settings[$environment_to_fork]['git_branch'];
   }
 
   watchdog('debug', 'Attempting to create: ' . print_r($platform,1));
 
-  // Create the platform node
+  // Create the platform node. The platform and site creation handle it from there.
   $platform_node = _devshop_projects_node_create('platform', $platform);
 
-  // We are replacing hosting_confirm_form_submit here, so just do what it does,
-  // minus the hosting task creation!
-  $values = $form_state['values'];
-  $form_state['redirect'] = 'node/' . $values['nid'];
-  modalframe_close_dialog();
-  
-  // Friendly message
-  drupal_set_message(t('Your environment is being created.'));
+  return $platform_node;
 }
 
 
