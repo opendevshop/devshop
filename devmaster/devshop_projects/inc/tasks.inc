@@ -86,12 +86,8 @@ function hosting_task_devshop_create_form($node) {
     $site_nid = check_plain($site_nid);
 
     //Check is a valid project site.
-    if (!empty($node->project_objects['site'])) {
-      foreach($node->project_objects['site'] as $nid => $alias) {
-        if ($nid == $site_nid) {
-          $site = node_load($nid);
-        }
-      }
+    if (!empty($node->project_objects['site'][$site_nid])) {
+       $site = node_load($site_nid);
     }
   } 
 
