@@ -8,12 +8,6 @@ Vagrant::Config.run do |config|
     exit
   end
 
-  # Check for repos folder.
-  if !(File.exists?("repos"))
-    warn "Run `sh init-repos.sh` to clone the needed source code to the host."
-    exit
-  end
-
   # Get attributes from attributes.json
   attributes = JSON.parse(IO.read("attributes.json"))
 
