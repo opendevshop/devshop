@@ -299,7 +299,7 @@ function devshop_projects_validate($node, &$form) {
 
   // The project code name must not be in the hosting_context table
   if (!$node->retry){
-    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
+    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s' AND nid != %d", $node->title, $node->nid));
     if ($node->nid != $result->nid){
       form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
     }
