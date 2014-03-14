@@ -97,6 +97,7 @@ function devshop_live_form_alter(&$form, &$form_state, $form_id) {
     );
   }
 
+  // Add live domain field to create project form.
   if ($form_id == 'devshop_project_create_step_settings') {
    $project = $form_state['project'];
 
