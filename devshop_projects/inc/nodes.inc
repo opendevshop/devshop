@@ -103,6 +103,14 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
             db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
           } 
         }
+
+        // If we are updating or inserting sites, check for live domain aliases.
+        $live_domain_alias = "{$node->environment}.{$project->live_domain}";
+
+        // If project should use live_domain_aliases, and site does not have the alias already...
+        if ($node->type == 'site' && $project->live_domain_aliases && array_search($live_domain_alias, $node->aliases) === FALSE) {
+          $node->aliases[] = $live_domain_alias;
+        }
       }
     }
   }
