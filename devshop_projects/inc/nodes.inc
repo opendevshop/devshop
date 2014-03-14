@@ -132,6 +132,7 @@ function devshop_projects_insert($node) {
   $data = array();
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
+  $data['live_alias'] = $node->live_alias;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -168,6 +169,7 @@ function devshop_projects_update($node) {
   // Branches and tags get saved upon verify.
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
+  $data['live_alias'] = $node->live_alias;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -211,6 +213,7 @@ function devshop_projects_load($node) {
   $data = unserialize($additions['data']);
   $additions['git_branches'] = $data['git_branches'];
   $additions['git_tags'] = $data['git_tags'];
+  $additions['live_alias'] = $data['live_alias'];
 
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 

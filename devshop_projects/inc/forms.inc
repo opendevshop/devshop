@@ -186,6 +186,18 @@ function devshop_projects_form(&$node) {
       $form[$field]['#type'] = 'value';
     }
   }
+
+  // Master Site alias
+  $form['live_alias'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Live Site Alias'),
+    '#description' => t('The drush alias for the live production site of this project. Can be hosted here or setup as a remote alias.'),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $node->live_alias,
+    '#maxlength' => 255,
+    '#weight' => 4,
+  );
   return $form;
 }
 
