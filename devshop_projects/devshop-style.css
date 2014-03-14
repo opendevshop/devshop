@@ -119,3 +119,14 @@ p.error {
 #edit-parameters-environment-name-wrapper input.form-text {
     width: inherit;
 }
+#edit-live-alias-other-wrapper input.form-text {
+    width: inherit;
+    display: inline;
+}
+body.aegir fieldset {
+    margin-left: 40px !important;
+}
+body.aegir fieldset > legend,
+body.aegir fieldset > table {
+    margin-left: -40px !important;
+}
