@@ -270,7 +270,7 @@ function devshop_projects_load($node) {
   $additions['live_domain'] = $data['live_domain'];
   $additions['live_domain_aliases'] = $data['live_domain_aliases'];
 
-  $additions['live_environment'] = $data['live_environment'];
+  $additions['live_environment'] = $data['live_environment'] == 'other'? '@' . $data['live_environment_alias']: $data['live_environment'];
   $additions['live_environment_alias'] = $data['live_environment_alias'];
 
   $additions['project'] = $data;

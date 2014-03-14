@@ -205,7 +205,7 @@ function devshop_projects_form(&$node) {
     '#title' => t('Live Environment'),
     '#options' => $live_alias_options,
     '#required' => FALSE,
-    '#default_value' => $node->live_environment,
+    '#default_value' => in_array($node->live_environment, $live_alias_options)? $node->live_environment: 'other',
     '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
   );
   $form['live']['live_environment_alias'] = array(
@@ -337,5 +337,13 @@ function devshop_projects_validate($node, &$form) {
   // Directory must not exist
   if (!$node->retry && $add && file_exists($cp)) {
     form_set_error('code_path', t('Code path directory already exists.'));
+  }
+
+  // If live environment is selected, do not save live environment alias
+  if ($node->live_environment == 'other'){
+    $node->live_environment = $node->live_environment_alias;
+  }
+  else {
+    $node->live_environment_alias = '';
   }
 }
