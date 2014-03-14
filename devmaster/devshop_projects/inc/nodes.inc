@@ -275,11 +275,6 @@ function devshop_projects_load($node) {
 
   $additions['project'] = $data;
 
-  // If live domain is set, override base url.
-  if (!empty($additions['live_domain'])){
-    $additions['base_url'] = $additions['live_domain'];
-  }
-
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
   $objects = array();
