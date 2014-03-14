@@ -244,9 +244,7 @@ function devshop_projects_delete($node) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT * ' .
-                                        'FROM {hosting_devshop_project} ' .
-                                        'WHERE nid = %d', $node->nid));
+  $additions = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
   $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
   if (is_array($hosting_name) && is_array($additions)) {
     $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
@@ -260,6 +258,10 @@ function devshop_projects_load($node) {
 
   $additions['project'] = $data;
 
+  // If live domain is set, override base url.
+  if (!empty($additions['live_domain'])){
+    $additions['base_url'] = $additions['live_domain'];
+  }
 
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
