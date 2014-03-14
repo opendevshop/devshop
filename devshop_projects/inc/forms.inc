@@ -205,7 +205,7 @@ function devshop_projects_form(&$node) {
     '#title' => t('Live Environment'),
     '#options' => $live_alias_options,
     '#required' => FALSE,
-    '#default_value' => in_array($node->live_environment, $live_alias_options)? $node->live_environment: 'other',
+    '#default_value' => isset($live_alias_options[$node->live_environment])? $node->live_environment: 'other',
     '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
   );
   $form['live']['live_environment_alias'] = array(
