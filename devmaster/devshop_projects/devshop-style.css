@@ -116,3 +116,6 @@ p.error {
 #edit-add-environment {
   background: #999;
 }
+#edit-parameters-environment-name-wrapper input.form-text {
+    width: inherit;
+}
