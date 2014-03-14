@@ -219,9 +219,10 @@ function devshop_projects_update_9() {
 
 
 /**
- * Remove live_domain from hosting_devsho_project schema.
+ * Remove live_domain from hosting_devsho_project schema and disable devshop_live if needed.
  */
 function devshop_projects_update_10() {
+  modules_disable(array('devshop_live'));
   $ret = array();
   if (db_column_exists('hosting_devshop_project', 'live_domain')){
     $ret[] = db_drop_field($ret, 'hosting_devshop_project', 'live_domain');
