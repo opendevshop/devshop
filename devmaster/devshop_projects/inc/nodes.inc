@@ -145,6 +145,9 @@ function devshop_projects_insert($node) {
   $data['live_domain'] = $node->live_domain;
   $data['live_domain_aliases'] = $node->live_domain_aliases;
 
+  $data['live_environment'] = $node->live_environment;
+  $data['live_environment_alias'] = $node->live_environment_alias;
+
   $info = new stdClass();
   $info->nid = $node->nid;
   $info->git_url = $node->git_url;
@@ -185,6 +188,9 @@ function devshop_projects_update($node) {
   $data['live_alias'] = $node->live_alias;
   $data['live_domain'] = $node->live_domain;
   $data['live_domain_aliases'] = $node->live_domain_aliases;
+
+  $data['live_environment'] = $node->live_environment;
+  $data['live_environment_alias'] = $node->live_environment_alias;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -263,6 +269,9 @@ function devshop_projects_load($node) {
   $additions['git_tags'] = $data['git_tags'];
   $additions['live_domain'] = $data['live_domain'];
   $additions['live_domain_aliases'] = $data['live_domain_aliases'];
+
+  $additions['live_environment'] = $data['live_environment'];
+  $additions['live_environment_alias'] = $data['live_environment_alias'];
 
   $additions['project'] = $data;
 
