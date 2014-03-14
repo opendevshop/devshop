@@ -32,7 +32,14 @@ function drush_devshop_provision_pre_provision_devshop_sync() {
  * Pre provision-devshop-sync
  */
 function drush_devshop_provision_provision_devshop_sync_validate($source = NULL, $destination = NULL) {
+}
 
+/**
+ * Implements the provision-devshop-sync command.
+ *
+ * Now expects environment names for source and destination
+ */
+function drush_devshop_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
   // Source and destination here are just platform names.  We need the full
   // alias.  Source can also be another alias.
   if (strpos($source, '@') === 0){
@@ -42,16 +49,12 @@ function drush_devshop_provision_provision_devshop_sync_validate($source = NULL,
     $source = $source . '.' . d()->base_url;
   }
   $destination = $destination . '.' . d()->base_url;
-  drush_set_arguments(array($source, $destination));
-}
 
-/**
- * Implements the provision-devshop-sync command.
- *
- * Now expects environment names for source and destination
- */
-function drush_devshop_provision_provision_devshop_sync($source = NULL, $destination = NULL) {
-  drush_log(dt('[DEVSHOP] Provision DevShop Sync started...'));
+  // Aliases
+  $source_alias = "@$source";
+  $destination_alias = "@$destination";
+
+  drush_log(dt("[DEVSHOP] Provision DevShop Sync started from $source to $destination... "), 'ok');
   $base_url = d()->base_url;
   
   // Fail if base url
@@ -92,7 +95,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     drush_log(dt('[DEVSHOP] Syncing databases...'), 'ok');
     
     // Sync the databases
-    drush_backend_invoke('sql-sync', array('@' . $source, '@' . $destination));
+    drush_backend_invoke('sql-sync', array($source_alias, $destination_alias));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing databases...'), 'ok');
@@ -104,7 +107,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     
     // Sync the files
     // @TODO: Use %files aliases?
-    drush_backend_invoke('rsync', array("@$source:sites/$source/files/", "@$destination:sites/$destination/files/"));
+    drush_backend_invoke('rsync', array("$source_alias:sites/$source/files/", "$destination_alias:sites/$destination/files/"));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing files...'), 'ok');
