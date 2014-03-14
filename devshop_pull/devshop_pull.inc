@@ -142,7 +142,8 @@ function devshop_pull_github_webhook($project){
               }
             }
             if (empty($pull_environment_found)){
-              hosting_create_environment($project, str_replace('-', '_', $branch), $branch);
+              $environment_name = strtr($branch, array('-' => '_', '/' => '_'));
+              hosting_create_environment($project, $environment_name, $branch);
             }
             else {
               print "Branch already has an environment.";
