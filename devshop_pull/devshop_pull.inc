@@ -128,27 +128,27 @@ function devshop_pull_github_webhook($project){
       case 'pull_request':
         $message = 'Pull Request Received.';
 
-        // @TODO: Add to project settings.
-        $create_environments_from_pr = TRUE;
-        $branch = $data->pull_request->head->ref;
+        if ($data->action == 'opened'){
+          // @TODO: Add to project settings.
+          $create_environments_from_pr = TRUE;
+          $branch = $data->pull_request->head->ref;
 
-        $message = "Detected Pull Request for $branch";
-        if ($create_environments_from_pr == TRUE){
-          // Lookup environments by branch
-          foreach ($project->settings as $env => $settings){
-            if ($settings['git_branch'] == $branch){
-              $pull_environment_found = $branch;
+          $message = "Detected Pull Request for $branch";
+          if ($create_environments_from_pr == TRUE){
+            // Lookup environments by branch
+            foreach ($project->settings as $env => $settings){
+              if ($settings['git_branch'] == $branch){
+                $pull_environment_found = $branch;
+              }
+            }
+            if (empty($pull_environment_found)){
+              hosting_create_environment($project, str_replace('-', '_', $branch), $branch);
+            }
+            else {
+              print "Branch already has an environment.";
             }
           }
-          if (empty($pull_environment_found)){
-            hosting_create_environment($project, str_replace('-', '_', $branch), $branch);
-          }
-          else {
-            print "Branch already has an environment.";
-          }
         }
-
-
         break;
     }
 
