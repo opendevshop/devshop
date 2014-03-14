@@ -133,6 +133,7 @@ function devshop_projects_insert($node) {
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
   $data['live_alias'] = $node->live_alias;
+  $data['live_domain'] = $node->live_domain;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -141,7 +142,6 @@ function devshop_projects_insert($node) {
   $info->drupal_path = hosting_path_normalize($node->drupal_path);
   $info->base_url = $node->base_url;
   $info->install_profile = $node->install_profile;
-  $info->live_domain = $node->live_domain;
   $info->data = serialize($data);
 
   drupal_write_record('hosting_devshop_project', $info);
@@ -170,6 +170,7 @@ function devshop_projects_update($node) {
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
   $data['live_alias'] = $node->live_alias;
+  $data['live_domain'] = $node->live_domain;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -178,7 +179,6 @@ function devshop_projects_update($node) {
   $info->drupal_path = hosting_path_normalize($node->drupal_path);
   $info->base_url = $node->base_url;
   $info->install_profile = $node->install_profile;
-  $info->live_domain = $node->live_domain;
   $info->data = serialize($data);
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
