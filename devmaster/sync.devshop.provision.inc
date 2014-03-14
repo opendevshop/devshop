@@ -11,8 +11,12 @@ function drush_provision_devshop_sync_init($source = NULL, $destination = NULL) 
 
   // Source and destination here are just platform names.  We need the full
   // alias.  Source can also be another alias.
-  if (strpos($source, '@') !== 0){
+  if (strpos($source, '@') === 0){
+    $source = str_replace('@', '', $source);
+  }
+  else {
     $source = $source . '.' . d()->base_url;
+
   }
   $destination = $destination . '.' . d()->base_url;
   return drush_sql_sync_init($source, $destination);
