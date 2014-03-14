@@ -357,12 +357,14 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
  * Our own version of _hosting_site_goto_link()
  */
 function devshop_hosting_site_goto_link($node) {
+  $project = node_load($node->project_nid);
+  $url = $project->live_domain_aliases? "{$node->environment}.{$project->live_domain}": $node->title;
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
   if (!is_null($cache) && (time() < $cache->data['expire'])) {
-    $title = t("Log in: !url", array('!url' => $node->title));
+    $title = t("Log in: !url", array('!url' => $url));
   }
   else {
-    $title = t("!url", array('!url' => $node->title));
+    $title = t("!url", array('!url' => $url));
   }
   $options['attributes']['target'] = '_blank';
   $options['attributes']['class'] = 'hosting-goto-site-link';
