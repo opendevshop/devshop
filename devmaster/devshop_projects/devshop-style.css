@@ -83,6 +83,10 @@ form .sync-envs div.form-item-labeled label {
   left: 0px;
 }
 
+#hosting-task-confirm-form fieldset {
+    clear: both;
+}
+
 .path-hosting-projects-add-environments #right {
   display: none;
 }
