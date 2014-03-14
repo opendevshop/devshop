@@ -117,14 +117,17 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //  '#value' => filter_xss($node->code_path),
   //  '#weight' => -8
   //);
-  //
-  //$url = 'http://dev.' . $node->base_url;
-  //$node->content['info']['base_url'] = array(
-  //  '#type' => 'item',
-  //  '#title' => t('Dev Site'),
-  //  '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
-  //  '#weight' => -10
-  //);
+
+  if (!empty($node->live_domain)) {
+    $url = 'http://' . $node->live_domain;
+
+    $node->content['info']['live_domain'] = array(
+      '#type' => 'item',
+      '#title' => t('Live Site'),
+      '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
+      '#weight' => -9,
+    );
+  }
 
   $node->content['info']['git_url'] = array(
     '#type' => 'item',
