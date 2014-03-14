@@ -8,9 +8,12 @@ require_once DRUSH_BASE_PATH . '/commands/sql/sync.sql.inc';
  * drush_sql_sync_init() does what we want!
  */
 function drush_provision_devshop_sync_init($source = NULL, $destination = NULL) {
+
   // Source and destination here are just platform names.  We need the full
-  // alias.
-  $source = $source . '.' . d()->base_url;
+  // alias.  Source can also be another alias.
+  if (strpos($source, '@') !== 0){
+    $source = $source . '.' . d()->base_url;
+  }
   $destination = $destination . '.' . d()->base_url;
   return drush_sql_sync_init($source, $destination);
 }
