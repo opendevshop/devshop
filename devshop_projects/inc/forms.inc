@@ -156,11 +156,11 @@ function devshop_projects_form(&$node) {
     '#tree' => TRUE,
   );
 
+  $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
   foreach ($node->project_objects['platform'] as $nid => $environment_name) {
     $platform = node_load($nid);
     $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
-
     if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
       $form['settings'][$environment_name] = array(
         '#tree' => TRUE,
@@ -174,7 +174,10 @@ function devshop_projects_form(&$node) {
         $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
         $form['settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
+      $site = array_pop($sites);
+      $live_alias_options[$site->hosting_name] = $site->hosting_name;
     }
+
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
 
@@ -188,21 +191,37 @@ function devshop_projects_form(&$node) {
     }
   }
 
-  // @TODO: Give the user a select list of all environments, and allow <other>, where they can input an alias manually.
-//  // Master Site alias
-//  $form['live_alias'] = array(
-//    '#type' => 'textfield',
-//    '#title' => t('Live Site Alias'),
-//    '#description' => t('The drush alias for the live production site of this project. Can be hosted here or setup as a remote alias.'),
-//    '#required' => TRUE,
-//    '#size' => 40,
-//    '#default_value' => $node->live_alias,
-//    '#maxlength' => 255,
-//    '#weight' => 4,
-//  );
+  //All settings git pull in project page
+  $form['live'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Live Environment Settings'),
+    '#tree' => FALSE,
+  );
+
+  // Master Site alias
+  $live_alias_options['other'] = 'Other...';
+  $form['live']['live_environment'] = array(
+    '#type' => 'select',
+    '#title' => t('Live Environment'),
+    '#options' => $live_alias_options,
+    '#required' => FALSE,
+    '#default_value' => $node->live_environment,
+    '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
+  );
+  $form['live']['live_environment_alias'] = array(
+    '#title' => t('Live Site Drush Alias'),
+    '#type' => 'textfield',
+    '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
+    '#field_prefix' => '@',
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $node->live_environment_alias,
+    '#size' => 50,
+    '#maxlength' => 50,
+  );
 
   // Live Domain
-  $form['live_domain'] = array(
+  $form['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live domain'),
     '#description' => t('The live domain for this project. Do not include "www".'),
@@ -213,7 +232,7 @@ function devshop_projects_form(&$node) {
 
   // Use aliases
   if (module_exists('hosting_alias')){
-    $form['live_domain_aliases'] = array(
+    $form['live']['live_domain_aliases'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use environment aliases'),
       '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
@@ -228,7 +247,6 @@ function devshop_projects_form(&$node) {
  * Submit function for save data of platforms.
  */
 function devshop_projects_submit_settings($form, &$form_state) {
-
 
   // Go through and save our settings
   $project_node = node_load($form_state['values']['nid']);
@@ -306,7 +324,7 @@ function devshop_projects_validate($node, &$form) {
   }
 
   // The project code name must be unique
-  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND	nid <> %d", $node->title, $node->nid)))) {
+  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND nid <> %d", $node->title, $node->nid)))) {
     form_set_error('title', t('Project code name is already is use by another project'));
   }
 

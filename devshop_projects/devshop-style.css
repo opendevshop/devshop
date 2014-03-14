@@ -119,7 +119,7 @@ p.error {
 #edit-parameters-environment-name-wrapper input.form-text {
     width: inherit;
 }
-#edit-live-alias-other-wrapper input.form-text {
+#edit-live-environment-alias-wrapper input.form-text {
     width: inherit;
     display: inline;
 }
