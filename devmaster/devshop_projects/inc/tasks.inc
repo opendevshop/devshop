@@ -343,7 +343,7 @@ function hosting_task_devshop_sync_form($node) {
   $form['destination']['#prefix'] = '<div class="destination">';
   $form['destination']['#suffix'] = '</div></div>';
 
-  if (!empty($node->live_environment)){
+  if (!empty($form['destination']['#options'][$node->live_environment])){
     // Remove live site from destination options.
     unset($form['destination']['#options'][$node->live_environment]);
 
@@ -351,6 +351,9 @@ function hosting_task_devshop_sync_form($node) {
     unset($source_options[$node->live_environment]);
     $form['source']['#options'] = array_merge(array($node->live_environment => $node->live_environment . " <em>(LIVE ENVIRONMENT)</em>"), $source_options);
     $form['source']['#default_value'] = $node->live_environment;
+  }
+  elseif (!empty($node->live_environment_alias)){
+    $form['source']['#options']["@" . $node->live_environment_alias] = "@" . $node->live_environment_alias . " <em>(LIVE ENVIRONMENT)</em>";
   }
 
   $form['database'] = array(
