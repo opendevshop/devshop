@@ -343,6 +343,16 @@ function hosting_task_devshop_sync_form($node) {
   $form['destination']['#prefix'] = '<div class="destination">';
   $form['destination']['#suffix'] = '</div></div>';
 
+  if (!empty($node->live_environment)){
+    // Remove live site from destination options.
+    unset($form['destination']['#options'][$node->live_environment]);
+
+    $source_options = $form['source']['#options'];
+    unset($source_options[$node->live_environment]);
+    $form['source']['#options'] = array_merge(array($node->live_environment => $node->live_environment . " <em>(LIVE ENVIRONMENT)</em>"), $source_options);
+    $form['source']['#default_value'] = $node->live_environment;
+  }
+
   $form['database'] = array(
     '#title' => t('Copy database from source to destination.'),
     '#type' => 'checkbox',

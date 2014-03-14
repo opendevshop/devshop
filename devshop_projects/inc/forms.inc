@@ -175,7 +175,7 @@ function devshop_projects_form(&$node) {
         $form['settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
       $site = array_pop($sites);
-      $live_alias_options[$site->hosting_name] = $site->hosting_name;
+      $live_alias_options[$environment_name] = $site->hosting_name;
     }
 
   }
@@ -213,7 +213,6 @@ function devshop_projects_form(&$node) {
     '#type' => 'textfield',
     '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
     '#field_prefix' => '@',
-    '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $node->live_environment_alias,
     '#size' => 50,
