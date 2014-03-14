@@ -55,6 +55,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     // On Load: load this object's project and environment type
     if ($op == 'load') {
       $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
+      $data[$node->type . "_nid"] = $node->nid;
       return $data;
     }
 
@@ -134,6 +135,7 @@ function devshop_projects_insert($node) {
   $data['git_tags'] = $node->git_tags;
   $data['live_alias'] = $node->live_alias;
   $data['live_domain'] = $node->live_domain;
+  $data['live_domain_aliases'] = $node->live_domain_aliases;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -150,6 +152,9 @@ function devshop_projects_insert($node) {
   if ((!$node->old_vid)) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
   }
+
+  // If using environment aliases... save them.
+  devshop_project_save_domain_aliases($node);
 }
 
 /**
@@ -171,6 +176,7 @@ function devshop_projects_update($node) {
   $data['git_tags'] = $node->git_tags;
   $data['live_alias'] = $node->live_alias;
   $data['live_domain'] = $node->live_domain;
+  $data['live_domain_aliases'] = $node->live_domain_aliases;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -182,6 +188,42 @@ function devshop_projects_update($node) {
   $info->data = serialize($data);
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
+
+  // If using environment aliases... save them.
+  devshop_project_save_domain_aliases($node);
+
+}
+
+
+/**
+ * Helper to add a domain alias to a site node. Makes sure not to add the same
+ * alias twice.
+ */
+function devshop_project_save_domain_aliases($project_node) {
+  if (module_exists('hosting_alias')){
+    if (!empty($project_node->live_domain) && $project_node->live_domain_aliases) {
+      foreach ($project_node->settings as $env => $details){
+        $domain = "$env.$project_node->live_domain";
+        $site_node = node_load($details['site_nid']);
+        if (array_search($domain, $site_node->aliases) === FALSE) {
+          $site_node->aliases[] = $domain;
+          node_save($site_node);
+        }
+      }
+    }
+    // If live_domain_aliases is checked, remove them from the nodes.
+    elseif (!$project_node->live_domain_aliases){
+      foreach ($project_node->settings as $env => $details){
+        $domain = "$env.$project_node->live_domain";
+        $site_node = node_load($details['site_nid']);
+        $i = array_search($domain, $site_node->aliases);
+        if ($i !== FALSE) {
+          unset($site_node->aliases[$i]);
+          node_save($site_node);
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -213,7 +255,11 @@ function devshop_projects_load($node) {
   $data = unserialize($additions['data']);
   $additions['git_branches'] = $data['git_branches'];
   $additions['git_tags'] = $data['git_tags'];
-  $additions['live_alias'] = $data['live_alias'];
+  $additions['live_domain'] = $data['live_domain'];
+  $additions['live_domain_aliases'] = $data['live_domain_aliases'];
+
+  $additions['project'] = $data;
+
 
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
