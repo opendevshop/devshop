@@ -142,7 +142,7 @@ function devshop_pull_github_webhook($project){
               }
             }
             if (empty($pull_environment_found)){
-              $environment_name = strtr(array('-' => '_', '/' => '_'), $branch);
+              $environment_name = strtr($branch, array('-' => '_', '/' => '_'));
               hosting_create_environment($project, $environment_name, $branch);
             }
             else {
