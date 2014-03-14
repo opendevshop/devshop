@@ -125,6 +125,10 @@ function hosting_task_devshop_create_form($node) {
     '#type' => 'textfield',
     '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
     '#required' => TRUE,
+    '#field_prefix' => 'http://',
+    '#field_suffix' => ".$node->base_url",
+    '#size' => 6,
+    '#maxlength' => 64,
   );
   $form['project_nid'] = array(
     '#type' => 'value',

@@ -531,7 +531,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#title' => t('Environment Name'),
       '#default_value' => $env_title,
       '#size' => 6,
-      '#maxlength' => 255,
+      '#maxlength' => 64,
       '#attributes' => array(
         'placeholder' => t('name'),
       ),
