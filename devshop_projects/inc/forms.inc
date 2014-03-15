@@ -230,15 +230,13 @@ function devshop_projects_form(&$node) {
   );
 
   // Use aliases
-  if (module_exists('hosting_alias')){
-    $form['live']['live_domain_aliases'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Use environment aliases'),
-      '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
-      '#default_value' => $node->live_domain_aliases,
-      '#weight' => 6,
-    );
-  }
+  $form['live']['live_domain_aliases'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use environment aliases'),
+    '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
+    '#default_value' => $node->live_domain_aliases,
+    '#weight' => 6,
+  );
 
   return $form;
 }
