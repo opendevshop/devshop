@@ -30,20 +30,10 @@ Vagrant::Config.run do |config|
   # Until this is resolved, you must run the installer interactively.
   config.vm.provision "shell", path: "repos/devshop/install.debian.sh"
 
-  # @TODO: Release chef recipes for devshop servers.
-  # Set Chef as our provisioner
-  # config.vm.provision :chef_solo do |chef|
-
-    # Cookbooks folder is expected to be in the same folder as this file.
-    # chef.cookbooks_path = "cookbooks"
-
-    # Add "devshop" recipe.
-    # chef.add_recipe "devshop"
-
-    # Pass attributes from json to Chef.
-    # chef.json = attributes
-  # end
-
   # Make local source code available to the VM
   config.vm.share_folder "repos", "/repos",  "repos", :owner => "www-data", :group => "www-data"
+
+  config.vm.share_folder "devshop_hosting", "/var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/devshop_hosting",  "repos/devshop_hosting", :owner => "aegir", :group => "aegir"
+  config.vm.share_folder "devshop_provision", "/var/aegir/.drush/devshop_provision",  "repos/devshop_provision", :owner => "aegir", :group => "aegir"
+
 end
