@@ -4,7 +4,7 @@ api = 2
 projects[drupal][type] = "core"
 
 ; DevShop modules
-projects[devshop_hosting][subdir] = contrib
+projects[devshop_hosting][subdir] = devshop
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
