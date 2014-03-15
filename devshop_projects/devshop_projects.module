@@ -146,6 +146,14 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
   }
 
   $settings = array();
+  $settings['site_nid'] = array(
+    '#node_type' => 'site',
+    '#type' => 'hidden',
+  );
+  $settings['platform_nid'] = array(
+    '#node_type' => 'platform',
+    '#type' => 'hidden',
+  );
   $settings['git_branch'] = array(
     '#title' => t('Git Branch'),
     '#node_type' => 'platform',

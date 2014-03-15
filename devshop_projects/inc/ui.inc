@@ -18,7 +18,7 @@ function devshop_projects_projects_page() {
     'Version',
     '',
     'Git URL',
-    'Dev Site',
+    'Environments',
   );
 
   $r = db_query("SELECT hdp.* FROM {hosting_devshop_project} hdp LEFT JOIN {node} n ON hdp.nid = n.nid WHERE n.status = 1 ORDER BY n.title");
@@ -31,7 +31,6 @@ function devshop_projects_projects_page() {
     }
 
     $row = array();
-    $link_options = array('attributes' => array('target' => '_blank'));
 
     // Link to Project page
     $row[] = '<strong>' . l($node->title, "node/$proj->nid") . '</strong>';
@@ -46,15 +45,20 @@ function devshop_projects_projects_page() {
     $num = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} hdpo LEFT JOIN {hosting_site} hs ON hdpo.object_nid = hs.nid WHERE hdpo.project_nid = %d AND hdpo.object_type='site' AND hs.status=1", $node->nid));
     $row[] = format_plural($num, t('1 site'), t('!num sites', array('!num' => $num)));
 
-
-
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url));
 
-    // Link to Dev Site
-    $dev_site_url = url("http://dev." . $node->base_url, array('absolute' => TRUE));
-    $row[] = l($dev_site_url, $dev_site_url, $link_options);
-
+    // Links to all sites
+    $actions = array();
+    foreach ($node->environments as $env => $details){
+      $dev_site_url = url("http://$env.$node->base_url", array('absolute' => TRUE));
+      $actions[] = array(
+        'title' => $dev_site_url,
+        'href' => $dev_site_url,
+        'attributes' => array('target' => '_blank'),
+      );
+    }
+    $row[] = theme('ctools_dropdown', t('Visit...'), $actions);
 
     $rows[$proj->nid] = $row;
   }
@@ -113,14 +117,17 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //  '#value' => filter_xss($node->code_path),
   //  '#weight' => -8
   //);
-  //
-  //$url = 'http://dev.' . $node->base_url;
-  //$node->content['info']['base_url'] = array(
-  //  '#type' => 'item',
-  //  '#title' => t('Dev Site'),
-  //  '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
-  //  '#weight' => -10
-  //);
+
+  if (!empty($node->live_domain)) {
+    $url = 'http://' . $node->live_domain;
+
+    $node->content['info']['live_domain'] = array(
+      '#type' => 'item',
+      '#title' => t('Live Site'),
+      '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
+      '#weight' => -9,
+    );
+  }
 
   $node->content['info']['git_url'] = array(
     '#type' => 'item',
@@ -353,12 +360,14 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
  * Our own version of _hosting_site_goto_link()
  */
 function devshop_hosting_site_goto_link($node) {
+  $project = node_load($node->project_nid);
+  $url = "{$node->environment}.{$project->base_url}";
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
   if (!is_null($cache) && (time() < $cache->data['expire'])) {
-    $title = t("Log in: !url", array('!url' => $node->title));
+    $title = t("Log in: !url", array('!url' => $url));
   }
   else {
-    $title = t("!url", array('!url' => $node->title));
+    $title = t("!url", array('!url' => $url));
   }
   $options['attributes']['target'] = '_blank';
   $options['attributes']['class'] = 'hosting-goto-site-link';
