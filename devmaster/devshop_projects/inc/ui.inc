@@ -50,6 +50,7 @@ function devshop_projects_projects_page() {
 
     // Links to all sites
     $actions = array();
+    $count = 0;
     foreach ($node->environments as $env => $details){
       $dev_site_url = url("http://$env.$node->base_url", array('absolute' => TRUE));
       $actions[] = array(
@@ -57,8 +58,10 @@ function devshop_projects_projects_page() {
         'href' => $dev_site_url,
         'attributes' => array('target' => '_blank'),
       );
+      $count++;
     }
-    $row[] = theme('ctools_dropdown', t('Visit...'), $actions);
+    $label = format_plural($count, t('1 Environment'), t('@num Environments', array('@num' => $count)));
+    $row[] = theme('ctools_dropdown', $label, $actions);
 
     $rows[$proj->nid] = $row;
   }
