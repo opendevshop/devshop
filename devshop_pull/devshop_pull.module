@@ -74,26 +74,26 @@ function devshop_pull_hosting_queues() {
   return $items;
 }
 
-/**
- * Implements hook_devshop_project_settings()
- */
-function devshop_pull_devshop_project_settings(){
-  return array(
-    'pull_enabled' => array(
-      '#title' => t('Pull on Commit'),
-      '#node_type' => 'platform',
-      '#type' => 'checkbox',
-      '#description' => t('When DevShop receives commit notification, Pull Code.'),
-    ),
-    // Pull reset won't work until we are storing the settings in the project drush context.
-    //'pull_reset' => array(
-    //  '#title' => t('Reset files'),
-    //  '#node_type' => 'platform',
-    //  '#type' => 'checkbox',
-    //  '#description' => t('When runing a <em>Pull Code</em> task triggered by a git commit, run git reset --hard just before.'),
-    //),
-  );
-}
+///**
+// * Implements hook_devshop_project_settings()
+// */
+//function devshop_pull_devshop_project_settings(){
+//  return array(
+//    'pull_enabled' => array(
+//      '#title' => t('Pull on Commit'),
+//      '#node_type' => 'platform',
+//      '#type' => 'checkbox',
+//      '#description' => t('When DevShop receives commit notification, Pull Code.'),
+//    ),
+//    // Pull reset won't work until we are storing the settings in the project drush context.
+//    //'pull_reset' => array(
+//    //  '#title' => t('Reset files'),
+//    //  '#node_type' => 'platform',
+//    //  '#type' => 'checkbox',
+//    //  '#description' => t('When runing a <em>Pull Code</em> task triggered by a git commit, run git reset --hard just before.'),
+//    //),
+//  );
+//}
 
 /**
  * Implements hook_form_alter().
@@ -116,30 +116,23 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#title' => t('Git Settings'),
     );
 
-    $form['project_settings']['pull']['pull_method'] = array(
-      '#title' => 'Automatic Git Pull Method',
-      '#type' => 'radios',
-      '#description' => t('Choose the method of regularly calling "Pull Code". See !link to configure the queue. See !link2 to configure URL Callback.', array(
-        '!link' => l(t('Hosting > Queues'), 'admin/hosting/queues'),
-        '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop/pull')
-      )),
-      '#default_value' => $node->project_settings['pull']['pull_method'],
-      '#options' => array(
-        DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
-        DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
-        DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
-      ),
+    $form['project_settings']['pull']['pull_enabled'] = array(
+      '#title' => 'Pull on Commit',
+      '#type' => 'checkbox',
+      '#description' => t('Run a "Pull Code" task when a commit notification is received.'),
+      '#default_value' => $node->project_settings['pull']['pull_enabled'],
     );
-    module_load_include('inc', 'devshop_pull');
-    $form['project_settings']['pull']['pull_url'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Pull Trigger URL'),
-      '#value' => _devshop_pull_callback_url($node),
-      '#description' => t('Configure your repo to hit this URL when it receives a commit.'),
-      '#attributes' => array(
-        'onclick' => 'this.select()',
-      ),
-    );
+
+//    module_load_include('inc', 'devshop_pull');
+//    $form['project_settings']['pull']['pull_url'] = array(
+//      '#type' => 'textfield',
+//      '#title' => t('Pull Trigger URL'),
+//      '#value' => _devshop_pull_callback_url($node),
+//      '#description' => t('Configure your repo to hit this URL when it receives a commit.'),
+//      '#attributes' => array(
+//        'onclick' => 'this.select()',
+//      ),
+//    );
 
     // @TODO: is there a better way to save certain values? We lose data without these.
     $form['project_settings']['pull']['last_pull'] = array(
