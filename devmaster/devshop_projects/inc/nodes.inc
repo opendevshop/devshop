@@ -186,9 +186,11 @@ function devshop_projects_update($node) {
 
   // Everything from $form['project'] gets serialized and saved.
   // Save our environments data here as well.
-//  dsm($node->project);
-  $info->data = serialize($node->project);
+  dsm($node->project, 'node project object update.');
 
+
+  $info->data = serialize($node->project);
+  dsm($info->data, 'serialized');
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
@@ -271,14 +273,14 @@ function devshop_projects_load($node) {
   $environments = array();
   while ($obj = db_fetch_object($query)) {
     $object_node = node_load($obj->object_nid);
-    
+
     if (($object_node->type == 'site' && $object_node->site_status != HOSTING_SITE_DELETED) ||
       ($object_node->type == 'platform' && $object_node->platform_status != HOSTING_PLATFORM_DELETED)
         ){
       $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
     }
   }
-  $project->environments = $environments;
+  $project->environment_nodes = $environments;
 
   // Save project object be available at $node->project.
   $additions['project'] = $project;
