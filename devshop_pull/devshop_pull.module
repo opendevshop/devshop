@@ -111,19 +111,19 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     }
 
     //All settings git pull in project page
-    $form['git_settings'] = array(
+    $form['project_settings']['pull'] = array(
       '#type' => 'fieldset',
       '#title' => t('Git Settings'),
     );
 
-    $form['git_settings']['pull_method'] = array(
+    $form['project_settings']['pull']['pull_method'] = array(
       '#title' => 'Automatic Git Pull Method',
       '#type' => 'radios',
       '#description' => t('Choose the method of regularly calling "Pull Code". See !link to configure the queue. See !link2 to configure URL Callback.', array(
         '!link' => l(t('Hosting > Queues'), 'admin/hosting/queues'),
         '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop/pull')
       )),
-      '#default_value' => $node->pull_method,
+      '#default_value' => $node->project_settings['pull']['pull_method'],
       '#options' => array(
         DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
         DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
@@ -131,7 +131,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       ),
     );
     module_load_include('inc', 'devshop_pull');
-    $form['git_settings']['pull_url'] = array(
+    $form['project_settings']['pull']['pull_url'] = array(
       '#type' => 'textfield',
       '#title' => t('Pull Trigger URL'),
       '#value' => _devshop_pull_callback_url($node),
@@ -142,23 +142,23 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     );
 
     // @TODO: is there a better way to save certain values? We lose data without these.
-    $form['git_settings']['last_pull'] = array(
+    $form['project_settings']['pull']['last_pull'] = array(
       '#type' => 'value',
-      '#value' => $node->last_pull,
+      '#value' => $node->project_settings['pull']['last_pull'],
     );
-    $form['git_settings']['last_pull_status'] = array(
+    $form['project_settings']['pull']['last_pull_status'] = array(
       '#type' => 'value',
-      '#value' => $node->last_pull_status,
+      '#value' => $node->project_settings['pull']['last_pull_status'],
     );
-    $form['git_settings']['last_pull_ip'] = array(
+    $form['project_settings']['pull']['last_pull_ip'] = array(
       '#type' => 'value',
-      '#value' => $node->last_pull_ip,
+      '#value' => $node->project_settings['pull']['last_pull_ip'],
     );
 
-    $form['git_settings']['pull_request_environments'] = array(
+    $form['project_settings']['pull']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
-      '#default_value' => $node->pull_request_environments,
+      '#default_value' => $node->project_settings['pull']['pull_request_environments'],
       '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
     );
   }
@@ -175,26 +175,26 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'project'){
 
     // View Project
-    if ($op == 'view' && $node->pull_method == DEVSHOP_PULL_CALLBACK){
+    if ($op == 'view' && $node->project_settings['pull']['pull_method']== DEVSHOP_PULL_CALLBACK){
       module_load_include('inc', 'devshop_pull');
       $url = _devshop_pull_callback_url($node);
       $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
 
-      $status = (int) $node->last_pull_status;
+      $status = (int) $node->project_settings['pull']['last_pull_status'];
 
       // If access denied, provide link to settings page
       if ($status == DEVSHOP_PULL_STATUS_ACCESS_DENIED){
         $output = '<strong>' . t('Access Denied') . '</strong><br />';
-        $output .= '<em>' . hosting_format_interval($node->last_pull) . '</em><br />';
+        $output .= '<em>' . hosting_format_interval($node->project_settings['pull']['last_pull']) . '</em><br />';
         $output .= t('Commit notification recieved from %ip, but the IP is not allowed to trigger tasks.  See !link.', array(
           '!link' => l(t('DevShop Pull Settings'), 'admin/hosting/devshop_pull'),
-          '%ip' => $node->last_pull_ip,
+          '%ip' => $node->project_settings['pull']['last_pull_ip'],
         ));
 
       }
       // If OK, show how much time has passed.
       elseif ($status == DEVSHOP_PULL_STATUS_OK) {
-        $output = hosting_format_interval($node->last_pull);
+        $output = hosting_format_interval($node->project_settings['pull']['last_pull']);
       }
       // Otherwise, we assume no commit notification recieved.
       else {
