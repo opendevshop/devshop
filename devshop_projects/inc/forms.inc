@@ -154,11 +154,7 @@ function devshop_projects_form(&$node) {
 
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
-
   foreach ($node->project->environments as $environment_name => $environment) {
-    $platform = node_load($environment['platform']);
-    $sites = hosting_get_sites_by_status($environment['platform'], HOSTING_SITE_ENABLED);
-    if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
       $form['project']['environments'][$environment_name] = array(
         '#tree' => TRUE,
         '#title' => $environment_name,
@@ -167,13 +163,11 @@ function devshop_projects_form(&$node) {
 
       foreach ($settings as $setting_id => $setting){
         $form['project']['environments'][$environment_name][$setting_id] = $setting;
-        $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $node->project->environments[$environment_name]['settings'][$setting_id];
+        $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $node->project->environments[$environment_name][$setting_id];
         $form['project']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
-      $site = array_pop($sites);
+      $site = node_load($environment['site']);
       $live_alias_options[$environment_name] = $site->hosting_name;
-    }
-
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
 
@@ -262,17 +256,17 @@ function devshop_projects_form(&$node) {
  */
 function devshop_projects_submit_settings($form, &$form_state) {
 
-  // Go through and save our settings
+  // Go through and save our settings to site and platform nodes.
   $project_node = node_load($form_state['values']['nid']);
   $settings_info = module_invoke_all('devshop_project_settings', $project_node);
   $nodes = array();
-  
+
   // Go through each environment
   foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
-    
+
     // Then through each setting of each environment
     foreach ($settings as $setting_name => $setting_value){
-      
+
       //Find the node type for this setting.
       $node_type = $settings_info[$setting_name]['#node_type'];
 
@@ -294,7 +288,7 @@ function devshop_projects_submit_settings($form, &$form_state) {
       }
     }
   }
-  
+
   // Go save all nodes
   dsm($nodes, 'nodes to save');
   foreach ($nodes as $nid => $node){
