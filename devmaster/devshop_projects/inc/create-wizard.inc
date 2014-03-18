@@ -43,7 +43,6 @@ function devshop_projects_create_wizard($step = NULL){
     $project->project_nid = NULL;
     $project->title = '';
     $project->environments = array('NEW' => array());
-    $project->live_domain = '';
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
@@ -170,10 +169,10 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   // Create the site nodes
   // @TODO: Can we speed things up here by only running install for the first,
   // then  "Cloning" to create the rest?
-  foreach ($node->project_objects['platform'] as $nid => $env) {
+  foreach ($node->project->environments as $environment_name => $environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $project->environments[$env]['db_server'];
-    devshop_projects_create_site($node, node_load($nid), $env, $db_server);
+    $db_server = $environment['db_server'];
+    devshop_projects_create_site($node, node_load($environment['platform']), $environment_name, $db_server);
   }
 
   ctools_object_cache_clear('project', $form_state['cache name']);
@@ -733,7 +732,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   $all_tasks_queued = TRUE;
   $all_tasks_succeeded = TRUE;
 
-  foreach ($project_node->environments as $name => $environment){
+  foreach ($project_node->project->environments as $name => $environment){
 
     // Get platform and latest verify task.
     $platform_nid = $environment['platform'];
@@ -840,7 +839,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch. NOTE: Try reloading the page. This is a known bug.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#type' => 'markup',
