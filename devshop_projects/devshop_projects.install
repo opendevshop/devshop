@@ -46,13 +46,14 @@ function devshop_projects_schema() {
         'type' => 'text',
         'not null' => FALSE,
         'size' => 'big',
-        'description' => 'A serialized array of name value pairs for this project.',
+        'description' => 'A serialized array of data for this project.',
       ),
     ),
     'primary key' => array('nid'),
   );
 
- $schema['hosting_devshop_project_object'] = array(
+  // @TODO: Delete this schema once update scripts work.
+  $schema['hosting_devshop_project_object'] = array(
     'fields' => array(
       'project_nid' => array(
         'type' => 'int',
@@ -102,6 +103,52 @@ function devshop_projects_schema() {
     'primary key' => array('object_nid'),
   );
 
+  // Table for tracking environments
+  $schema['hosting_devshop_project_environment'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      'description' => "The project's Node ID.",
+      ),
+      'environment' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 64,
+        'default' => '',
+        'description' => 'Environment name.',
+      ),
+      'git_branch' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+        'description' => 'The current branch of this site or platform.',
+      ),
+      'site_nid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+      'platform_nid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+      'data' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'A serialized array of data for this project.',
+      ),
+    ),
+    'indexes' => array(
+      'project_environment' => array('project_nid', 'environment'),
+    ),
+  );
   return $schema;
 }
 
@@ -228,4 +275,13 @@ function devshop_projects_update_10() {
     $ret[] = db_drop_field($ret, 'hosting_devshop_project', 'live_domain');
   }
   return $ret;
+}
+
+
+/**
+ * Create new hosting_devshop_environment table.
+ */
+function devshop_projects_update_11() {
+  // Create tables.
+  drupal_install_schema('devshop_projects');
 }
