@@ -42,15 +42,17 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $settings = module_invoke_all('devshop_project_settings', $node);
 
     // For each environment, pull values out of the site or platform into a new environments object.
-    foreach ($node->project->environments as $environment_name => &$environment){
-      $nodes = array();
-      $nodes['site'] = node_load($environment['site']);
-      $nodes['platform'] = node_load($environment['platform']);
+    if (!empty($node->project->environments)){
+      foreach ($node->project->environments as $environment_name => &$environment){
+        $nodes = array();
+        $nodes['site'] = node_load($environment['site']);
+        $nodes['platform'] = node_load($environment['platform']);
 
-      foreach ($settings as $setting_name => $setting) {
-        $environment[$setting_name] = $nodes[$setting['#node_type']]->{$setting_name};
+        foreach ($settings as $setting_name => $setting) {
+          $environment[$setting_name] = $nodes[$setting['#node_type']]->{$setting_name};
+        }
+        $environment = $environment;
       }
-      $environment = $environment;
     }
   }
 
