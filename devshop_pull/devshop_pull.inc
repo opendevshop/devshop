@@ -121,6 +121,13 @@ function devshop_pull_github_webhook($project){
         break;
       case 'push':
         // Add a task to pull then project's environments
+        // Check for environments set to pull
+        $environments_to_pull = array();
+        foreach ($project->settings as $env => $settings) {
+          if ($settings['pull_enabled']) {
+            $environments_to_pull[] = $env;
+          }
+        }
         $args['environments'] = implode(' ', $environments_to_pull);
         hosting_add_task($project->nid, 'devshop-pull', $args);
         $message = 'Push Received.';
