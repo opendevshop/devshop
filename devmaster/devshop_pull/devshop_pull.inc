@@ -104,6 +104,7 @@ function devshop_pull_default_webhook($project, $environments_to_pull){
 
 /**
  * GitHub action to take on webhook init
+ * @TODO: Once it is more pluggable, put this in it's own include, or maybe it's own module.
  */
 function devshop_pull_github_webhook($project){
   $headers = getallheaders();
@@ -112,16 +113,15 @@ function devshop_pull_github_webhook($project){
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
     
     $args = array();
-//    $args['environments'] = implode(' ', $environments_to_pull);
     $args['cache'] = 1;
 
-   
     switch ($headers['X-GitHub-Event']){
       case 'ping':
         $message = 'Pong!';
         break;
       case 'push':
         // Add a task to pull then project's environments
+        $args['environments'] = implode(' ', $environments_to_pull);
         hosting_add_task($project->nid, 'devshop-pull', $args);
         $message = 'Push Received.';
         break;
