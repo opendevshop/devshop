@@ -178,13 +178,13 @@ function devshop_projects_form(&$node) {
   $form['#submit'] = array('devshop_projects_submit_settings');
 
   // Save git branches and tags
-  $form['project_settings']['git_branches'] = array(
+  $form['project']['git']['branches'] = array(
     '#type' => 'value',
-    '#value' => $node->git_branches,
+    '#value' => $node->project->git['branches'],
   );
-  $form['project_settings']['git_tags'] = array(
+  $form['project']['git']['tags'] = array(
     '#type' => 'value',
-    '#value' => $node->git_tags,
+    '#value' => $node->project->git['tags'],
   );
 
 
@@ -198,23 +198,23 @@ function devshop_projects_form(&$node) {
   }
 
   //All settings git pull in project page
-  $form['project_settings']['live'] = array(
+  $form['project']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live Environment Settings'),
   );
 
   // Master Site alias
   $live_alias_options['other'] = 'Other...';
-  if (empty($live_alias_options[$node->project_settings['live']['live_environment']])){
+  if (empty($live_alias_options[$node->project->live['live_environment']])){
     // No live environment
     $live_environment_default_value = '';
   }
-  elseif (!empty($node->project_settings['live']['live_environment_alias'])){
+  elseif (!empty($node->project->live['live_environment_alias'])){
     // "other" live environment
     $live_environment_default_value = 'other';
   }
 
-  $form['project_settings']['live']['live_environment'] = array(
+  $form['project']['live']['live_environment'] = array(
     '#type' => 'select',
     '#title' => t('Live Environment'),
     '#options' => $live_alias_options,
@@ -222,34 +222,34 @@ function devshop_projects_form(&$node) {
     '#default_value' => $live_environment_default_value,
     '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
   );
-  $form['project_settings']['live']['live_environment_alias'] = array(
+  $form['project']['live']['live_environment_alias'] = array(
     '#title' => t('Live Site Drush Alias'),
     '#type' => 'textfield',
     '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
     '#field_prefix' => '@',
     '#size' => 40,
-    '#default_value' => $node->project_settings['live']['live_environment_alias'],
+    '#default_value' => $node->project->live['live_environment_alias'],
     '#size' => 50,
     '#maxlength' => 50,
   );
 
   // Live Domain
-  $form['project_settings']['live']['live_domain'] = array(
+  $form['project']['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live domain'),
     '#description' => t('The live domain for this project. Do not include "www".'),
     '#size' => 40,
-    '#default_value' => $node->project_settings['live']['live_domain'],
+    '#default_value' => $node->project->live['live_domain'],
     '#weight' => 5,
   );
 
   // Use aliases
   if (module_exists('hosting_alias')){
-    $form['project_settings']['live']['live_domain_aliases'] = array(
+    $form['project']['live']['live_domain_aliases'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use environment aliases'),
       '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
-      '#default_value' => $node->project_settings['live']['live_domain_aliases'],
+      '#default_value' => $node->project->live['live_domain_aliases'],
       '#weight' => 6,
     );
   }
@@ -268,35 +268,35 @@ function devshop_projects_submit_settings($form, &$form_state) {
   $nodes = array();
   
   // Go through each environment
-  foreach ($form_state['values']['environment_settings'] as $environment_name => $settings){
+  foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
     
     // Then through each setting of each environment
     foreach ($settings as $setting_name => $setting_value){
       
       //Find the node type for this setting.
       $node_type = $settings_info[$setting_name]['#node_type'];
-      $nids = array_flip($project_node->project_objects[$node_type]);
-      
+
       // Load the site or platform node for this environment, then set the value and save.
-      $nid = $nids[$environment_name];
-      if (empty($nodes[$nid])){
+      if (!empty($project_node->project->environments[$environment_name][$node_type])){
+        $nid = $project_node->project->environments[$environment_name][$node_type];
         $nodes[$nid] = node_load($nid);
         $nodes[$nid]->no_verify = TRUE;
-      }
 
-      //If changed database then execute migrate task.
-      if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
-        $args['target_platform'] = $nodes[$nid]->platform;
-        $args['new_uri'] = $nodes[$nid]->title;
-        $args['new_db_server'] = $setting_value;
+        //If changed database then execute migrate task.
+        if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
+          $args['target_platform'] = $nodes[$nid]->platform;
+          $args['new_uri'] = $nodes[$nid]->title;
+          $args['new_db_server'] = $setting_value;
 
-        hosting_add_task($nid, 'migrate', $args);
+          hosting_add_task($nid, 'migrate', $args);
+        }
+        $nodes[$nid]->{$setting_name} = $setting_value;
       }
-      $nodes[$nid]->{$setting_name} = $setting_value;
     }
   }
   
   // Go save all nodes
+  dsm($nodes, 'nodes to save');
   foreach ($nodes as $nid => $node){
     node_save($node);
   }
@@ -328,11 +328,14 @@ function devshop_projects_validate($node, &$form) {
   if(strpos($node->title, ' ') != FALSE) {
     form_set_error('title', t('Project code name must not contain any white spaces.'));
   }
-
   // The project code name must not be in the hosting_context table
   if (!$node->retry){
-    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s' AND nid != %d", $node->title, $node->nid));
+    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
     if ($node->nid != $result->nid){
+
+      dsm($node, 'node');
+      dsm($result, 'result');
+
       form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
     }
   }
