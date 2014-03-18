@@ -91,6 +91,8 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   $git_branch = $platform->git_branch;
   $create_branch = FALSE;
 
+  $output = '';
+
   //Remove drupal_path to clone.
   if ($platform->drupal_path) {
     $root = str_replace($platform->drupal_path, '', $root);
@@ -126,12 +128,15 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
       $root = str_replace($platform->drupal_path, '', $root);
     }
 
+    // Run git fetch to ensure we have all branches and tags
+    $output .= _devshop_projects_git_execute('git fetch', $root);
+
     // Build the command string
     $command = "git checkout $git_branch";
   }
 
   // Execute
-  $output =  _devshop_projects_git_execute($command, $root);
+  $output .=  _devshop_projects_git_execute($command, $root);
 
   if ($create_branch) {
     //Create branch.

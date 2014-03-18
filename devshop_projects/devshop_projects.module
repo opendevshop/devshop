@@ -145,6 +145,10 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     $branch_options = array();
   }
 
+  foreach ($project_node->git_tags as $tag){
+    $branch_options[$tag] = "tag/" . $tag;
+  }
+
   $settings = array();
   $settings['site_nid'] = array(
     '#node_type' => 'site',
@@ -155,7 +159,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     '#type' => 'hidden',
   );
   $settings['git_branch'] = array(
-    '#title' => t('Git Branch'),
+    '#title' => t('Git Branch/Tag'),
     '#node_type' => 'platform',
     '#type' => 'select',
     '#options' => $branch_options,
