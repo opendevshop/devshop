@@ -218,10 +218,12 @@ function devshop_project_save_domain_aliases($project_node) {
       foreach ($project_node->project->environments as $env => $details){
         $domain = "$env.$project_node->live_domain";
         $site_node = node_load($details['site_nid']);
-        $i = array_search($domain, $site_node->aliases);
-        if ($i !== FALSE) {
-          unset($site_node->aliases[$i]);
-          node_save($site_node);
+        if (!empty($site_node->aliases)){
+          $i = array_search($domain, $site_node->aliases);
+          if ($i !== FALSE) {
+            unset($site_node->aliases[$i]);
+            node_save($site_node);
+          }
         }
       }
     }
