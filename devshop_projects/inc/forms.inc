@@ -149,7 +149,7 @@ function devshop_projects_form(&$node) {
   );
 
   // Extensible settings
-  $form['settings'] = array(
+  $form['environment_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environment Settings'),
     '#theme' => 'devshop_projects_settings_form',
@@ -162,7 +162,7 @@ function devshop_projects_form(&$node) {
     $platform = node_load($nid);
     $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
     if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
-      $form['settings'][$environment_name] = array(
+      $form['environment_settings'][$environment_name] = array(
         '#tree' => TRUE,
         '#title' => $name,
         '#type' => 'fieldset',
@@ -170,9 +170,9 @@ function devshop_projects_form(&$node) {
       );
 
       foreach ($settings as $setting_id => $setting){
-        $form['settings'][$environment_name][$setting_id] = $setting;
-        $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
-        $form['settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
+        $form['environment_settings'][$environment_name][$setting_id] = $setting;
+        $form['environment_settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
+        $form['environment_settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
       $site = array_pop($sites);
       $live_alias_options[$environment_name] = $site->hosting_name;
@@ -242,6 +242,7 @@ function devshop_projects_form(&$node) {
 
   return $form;
 }
+
 /**
  * Submit function for save data of platforms.
  */
@@ -253,7 +254,7 @@ function devshop_projects_submit_settings($form, &$form_state) {
   $nodes = array();
   
   // Go through each environment
-  foreach ($form_state['values']['settings'] as $environment_name => $settings){
+  foreach ($form_state['values']['environment_settings'] as $environment_name => $settings){
     
     // Then through each setting of each environment
     foreach ($settings as $setting_name => $setting_value){
