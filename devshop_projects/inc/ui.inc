@@ -136,23 +136,27 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -10
   );
 
-  if (!empty($node->git_branches)){
-   $items = theme_item_list($node->git_branches, NULL, 'ul', array('class' => 'branches')); 
-    $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
-    
-    if ($verify_task->task_status == HOSTING_TASK_SUCCESS){    
-      $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-    } else {
-      $refresh_link =  t('Refresh in progress...');
-    }
-    
-    $node->content['info']['git_branches'] = array(
-      '#type' => 'item',
-      '#title' => t('Remote Branches'),
-      '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
-      '#weight' => -8,
-    );
+  // Branches display
+  if (!empty($node->project_settings['git_branches'])){
+    $items = theme_item_list($node->project_settings['git_branches'], NULL, 'ul', array('class' => 'branches'));
   }
+  else {
+    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
+  }
+  $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
+
+  if ($verify_task->task_status == HOSTING_TASK_SUCCESS){
+    $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+  } else {
+    $refresh_link =  t('Refresh in progress...');
+  }
+
+  $node->content['info']['git_branches'] = array(
+    '#type' => 'item',
+    '#title' => t('Remote Branches'),
+    '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
+    '#weight' => -8,
+  );
 
   if (!empty($node->install_profile)){
     $node->content['info']['install_profile'] = array(
