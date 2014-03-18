@@ -119,7 +119,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     $form['project_settings']['pull']['pull_enabled'] = array(
       '#title' => 'Pull on Commit',
       '#type' => 'checkbox',
-      '#description' => t('Run a "Pull Code" task when a commit notification is received.'),
+      '#description' => t('Run a "Pull Code" task when a commit notification is received. All environments set to a branch will have their code updated.'),
       '#default_value' => $node->project_settings['pull']['pull_enabled'],
     );
 
