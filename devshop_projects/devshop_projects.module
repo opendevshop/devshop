@@ -139,13 +139,16 @@ function devshop_projects_menu() {
  * Implements hook_devshop_project_settings
  */
 function devshop_projects_devshop_project_settings($project_node = NULL){
-  if (!empty($project_node->git_branches)){
-    $branch_options = array(
-      'Branches' => $project_node->git_branches,
-      'Tags' => $project_node->git_tags,
-    );
-  } else {
-    $branch_options = array();
+
+  // Build branch options
+  $branch_options = array(
+    'Branches' => $project_node->project->git['branches'],
+    'Tags' => $project_node->project->git['tags'],
+  );
+
+  // If no branches... the project probably needs verification.
+  if (empty($project_node->project->git->branches)) {
+    $branch_options = array('' => 'No Branches');
   }
 
   $settings = array();

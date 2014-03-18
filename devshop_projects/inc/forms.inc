@@ -138,8 +138,14 @@ function devshop_projects_form(&$node) {
     '#weight' => 4,
   );
 
-  // Extensible settings
-  $form['environment_settings'] = array(
+  // Project Settings
+  // Every value under $form['project'] gets serialized and saved into a project's "data" column.
+  $form['project'] = array(
+    '#tree' => TRUE,
+  );
+
+  // Environment settings
+  $form['project']['environments'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environment Settings'),
     '#theme' => 'devshop_projects_settings_form',
@@ -148,21 +154,21 @@ function devshop_projects_form(&$node) {
 
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project_objects['platform'] as $nid => $environment_name) {
-    $platform = node_load($nid);
-    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
+
+  foreach ($node->project->environments as $environment_name => $environment) {
+    $platform = node_load($environment['platform']);
+    $sites = hosting_get_sites_by_status($environment['platform'], HOSTING_SITE_ENABLED);
     if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
-      $form['environment_settings'][$environment_name] = array(
+      $form['project']['environments'][$environment_name] = array(
         '#tree' => TRUE,
-        '#title' => $name,
-        '#type' => 'fieldset',
+        '#title' => $environment_name,
         '#theme' => 'devshop_projects_settings_table',
       );
 
       foreach ($settings as $setting_id => $setting){
-        $form['environment_settings'][$environment_name][$setting_id] = $setting;
-        $form['environment_settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
-        $form['environment_settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
+        $form['project']['environments'][$environment_name][$setting_id] = $setting;
+        $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $node->project->environments[$environment_name]['settings'][$setting_id];
+        $form['project']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
       $site = array_pop($sites);
       $live_alias_options[$environment_name] = $site->hosting_name;
@@ -170,11 +176,6 @@ function devshop_projects_form(&$node) {
 
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
-
-  // Project Settings
-  $form['project_settings'] = array(
-    '#tree' => TRUE,
-  );
 
   // Save git branches and tags
   $form['project_settings']['git_branches'] = array(

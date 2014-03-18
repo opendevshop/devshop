@@ -140,18 +140,17 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   // Branches display
-  if (!empty($node->project_settings['git_branches'])){
-    $items = theme_item_list($node->project_settings['git_branches'], NULL, 'ul', array('class' => 'branches'));
-  }
-  else {
-    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
-  }
+//  if (!empty($node->project->git['branches'])){
+//    $items = theme_item_list($node->project->git['branches', NULL, 'ul', array('class' => 'branches'));
+//  }
+//  else {
+//    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
+//  }
   $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
-
-  if ($verify_task->task_status == HOSTING_TASK_SUCCESS){
-    $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-  } else {
+  if (!empty($verify_task) && ($verify_task->task_status == HOSTING_TASK_PROCESSING || $verify_task->task_status == HOSTING_TASK_QUEUED)) {
     $refresh_link =  t('Refresh in progress...');
+  } else {
+    $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
   }
 
   $node->content['info']['git_branches'] = array(
