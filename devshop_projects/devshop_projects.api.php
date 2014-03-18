@@ -22,8 +22,8 @@
   * 
   * 
   */
-function hook_devshop_project_settings($project_node = NULL){
-  $branch_options = array_combine((array) $project_node->git_branches, (array) $project_node->git_branches);
+function hook_devshop_project_settings($node = NULL){
+  $branch_options = array_combine((array) $node->project->git->branches, (array) $node->project->git->branches);
   return array(
     'git_branch' => array(
       '#title' => t('Git Branch'),

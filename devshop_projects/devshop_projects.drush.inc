@@ -305,10 +305,10 @@ function devshop_projects_hosting_project_context_options(&$task) {
   $task->context_options['drupal_path'] = trim($task->ref->drupal_path, " ");
   $task->context_options['git_url'] = $task->ref->git_url;
 
-  $branches = getBranchesAndTags($task->ref->git_url);
+  $branches = getBranchesAndTags($task->ref->project->git_url);
 
-  $task->ref->project_settings['git_branches'] = $branches['branches'];
-  $task->ref->project_settings['git_tags'] = $branches['tags'];
+  $task->ref->project->git['branches'] = $branches['branches'];
+  $task->ref->project->git['tags'] = $branches['tags'];
 
   // Save the project node now that we have branches and tags.
   node_save($task->ref);
@@ -338,8 +338,8 @@ function devshop_projects_drush_context_import($context, &$node) {
 
     $node->git_url = $context->git_url;
     $branches = getBranchesAndTags($context->git_url);
-    $node->project_settings['git_branches'] = $branches['branches'];
-    $node->project_settings['git_tags'] = $branches['tags'];
+    $node->project->git['branches'] = $branches['branches'];
+    $node->project->git['tags'] = $branches['tags'];
   }
 }
 
