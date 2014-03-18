@@ -186,6 +186,7 @@ function devshop_projects_update($node) {
 
   // Everything from $form['project'] gets serialized and saved.
   // Save our environments data here as well.
+  dsm($node->project);
   $info->data = serialize($node->project);
 
 
