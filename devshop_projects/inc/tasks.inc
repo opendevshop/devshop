@@ -198,14 +198,14 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  * @param $fork_source
  *   If desired, the environment to fork off of. (Copy the database and create a new branch from)
  */
-function hosting_create_environment($project, $environment_name, $branch, $fork_source = NULL) {
+function hosting_create_environment($project_node, $environment_name, $branch, $fork_source = NULL) {
 
   $servers = hosting_get_servers('http');
   $server = variable_get('devshop_projects_default_web_server', key($servers));
 
   // hosting_platform fields
   $platform = new stdClass;
-  $platform->title = $project->title . '_' . $environment_name;
+  $platform->title = $project_node->title . '_' . $environment_name;
   $platform->publish_path = $project->code_path . '/' . $environment_name;
   $platform->web_server = $server;
   $platform->git_branch = $branch;
@@ -218,10 +218,10 @@ function hosting_create_environment($project, $environment_name, $branch, $fork_
   }
 
   //Check if we are forking another site.
-  if (isset($project->environments[$fork_source])) {
-    $platform->clone_nid = $project->environments[$fork_source]['site'];
+  if (isset($project_node->project->environments[$fork_source])) {
+    $platform->clone_nid = $project_node->project->environments[$fork_source]['site'];
     $platform->git_branch = $branch;
-    $platform->old_branch = $project->settings[$fork_source]['git_branch'];
+    $platform->old_branch = $project_node->project->environments[$fork_source]['git_branch'];
   }
 
   watchdog('debug', 'Attempting to create: ' . print_r($platform,1));
