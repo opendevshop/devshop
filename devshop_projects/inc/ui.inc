@@ -171,7 +171,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // Environments
   $rows = array();
-  foreach($node->environments as $env => $environment) {
+  foreach ($node->project->environments as $env => $environment) {
     
     $site_nid = $environment['site'];
     $platform_nid = $environment['platform'];
@@ -185,7 +185,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     $row = array();
-    $row[] = "<span class='environment'>$site->environment</span>";
+    $row[] = "<span class='environment'>$env</span>";
     
     if ($site->site_status == HOSTING_SITE_DISABLED){
       $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
