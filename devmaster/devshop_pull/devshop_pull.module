@@ -74,26 +74,19 @@ function devshop_pull_hosting_queues() {
   return $items;
 }
 
-///**
-// * Implements hook_devshop_project_settings()
-// */
-//function devshop_pull_devshop_project_settings(){
-//  return array(
-//    'pull_enabled' => array(
-//      '#title' => t('Pull on Commit'),
-//      '#node_type' => 'platform',
-//      '#type' => 'checkbox',
-//      '#description' => t('When DevShop receives commit notification, Pull Code.'),
-//    ),
-//    // Pull reset won't work until we are storing the settings in the project drush context.
-//    //'pull_reset' => array(
-//    //  '#title' => t('Reset files'),
-//    //  '#node_type' => 'platform',
-//    //  '#type' => 'checkbox',
-//    //  '#description' => t('When runing a <em>Pull Code</em> task triggered by a git commit, run git reset --hard just before.'),
-//    //),
-//  );
-//}
+/**
+ * Implements hook_devshop_project_settings()
+ */
+function devshop_pull_devshop_project_settings(){
+  return array(
+    'disable_pull' => array(
+      '#title' => t('Disable Code Pull'),
+      '#node_type' => 'platform',
+      '#type' => 'checkbox',
+      '#description' => t('Prevent git pull and reset, allowing "Live Development".'),
+    ),
+  );
+}
 
 /**
  * Implements hook_form_alter().

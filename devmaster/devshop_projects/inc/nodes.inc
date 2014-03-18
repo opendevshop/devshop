@@ -36,17 +36,21 @@ function devshop_projects_node_info() {
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  if ($node->type == 'project' && isset($node->git_branches)) {
+  if ($node->type == 'project') {
     // Settings are added here, since $git_branches hadn't been added to the
     // node yet in devshop_projects_load().
     $settings = module_invoke_all('devshop_project_settings', $node);
 
-    foreach ($settings as $setting_name => $setting) {
-      $setting_node_type = $setting['#node_type'];
-      foreach ((array) $node->project_objects[$setting_node_type] as $nid => $environment_name) {
-        $object = node_load($nid);
-        $node->settings[$environment_name][$setting_name] = $object->{$setting_name};
+    // For each environment, pull values out of the site or platform into a new environments object.
+    foreach ($node->project->environments as $environment_name => &$environment){
+      $nodes = array();
+      $nodes['site'] = node_load($environment['site']);
+      $nodes['platform'] = node_load($environment['platform']);
+
+      foreach ($settings as $setting_name => $setting) {
+        $environment[$setting_name] = $nodes[$setting['#node_type']]->{$setting_name};
       }
+      $environment = $environment;
     }
   }
 
@@ -138,17 +142,6 @@ function devshop_projects_insert($node) {
     hosting_add_task($node->nid, 'verify');
   }
   
-  $data = $node->project_settings;
-  $data['git_branches'] = $node->git_branches;
-  $data['git_tags'] = $node->git_tags;
-
-//  $data['live_alias'] = $node->live_alias;
-//  $data['live_domain'] = $node->live_domain;
-//  $data['live_domain_aliases'] = $node->live_domain_aliases;
-
-  $data['live_environment'] = $node->live_environment;
-  $data['live_environment_alias'] = $node->live_environment_alias;
-
   $info = new stdClass();
   $info->nid = $node->nid;
   $info->git_url = $node->git_url;
@@ -156,7 +149,7 @@ function devshop_projects_insert($node) {
   $info->drupal_path = hosting_path_normalize($node->drupal_path);
   $info->base_url = $node->base_url;
   $info->install_profile = $node->install_profile;
-  $info->data = serialize($data);
+  $info->data = serialize($node->project);
 
   drupal_write_record('hosting_devshop_project', $info);
 
@@ -189,8 +182,10 @@ function devshop_projects_update($node) {
   $info->base_url = $node->base_url;
   $info->install_profile = $node->install_profile;
 
-  // Everything in $form['project_settings'] gets serialized and saved.
-  $info->data = serialize($node->project_settings);
+  // Everything from $form['project'] gets serialized and saved.
+  // Save our environments data here as well.
+  $info->data = serialize($node->project);
+
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
@@ -249,41 +244,23 @@ function devshop_projects_delete($node) {
  *    Node object
  */
 function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
-  $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
-  if (is_array($hosting_name) && is_array($additions)) {
-    $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
-    $additions += $hosting_name;
-  }
 
-  // Load up all project settings
-  $additions['project_settings'] = unserialize($additions['data']);
+  // Load everything straight from the database table.
+  $project_data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
+  $additions = $project_data;
 
-  // Make most common attributes available.
-  $additions['git_branches'] = $additions['project_settings']['git_branches'];
-  $additions['git_tags'] = $additions['project_settings']['git_tags'];
+  // Load the "hosting context". The unique name in the aegir system.
+  $additions['hosting_name'] = 'project_' . db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
 
-  $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
-
-  $objects = array();
-  while($project_object = db_fetch_object($query)) {
-    // Only load if site or platform is enabled.
-    $object_node = node_load($project_object->object_nid);
-    
-    if (($object_node->type == 'site' && $object_node->site_status == HOSTING_SITE_ENABLED) ||
-      ($object_node->type == 'platform' && $object_node->platform_status == HOSTING_PLATFORM_ENABLED)
-        ){
-      $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
-
-    }
-  }
-  $additions['project_objects'] = $objects;
+  // Load up all project settings, merging db table and serialized data.
+  $data = $project_data['data'];
+  unset($project_data['data']);
+  $project = (object) array_merge($project_data, unserialize($data));
 
   // Set status
-  $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)));
+  $project->status = devshop_project_status((object) (array_merge($additions, (array) $node)));
 
   // Environments Array
-  // @TODO: Remove the above code, after refactoring out of the rest of the system.
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d ORDER BY environment", $node->nid);
 
   $environments = array();
@@ -296,10 +273,10 @@ function devshop_projects_load($node) {
       $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
     }
   }
-  $additions['environments'] = $environments;
-  
-  // Settings are added in devshop_projects_nodeapi
+  $project->environments = $environments;
 
+  // Save project object be available at $node->project.
+  $additions['project'] = $project;
   return $additions;
 }
 
