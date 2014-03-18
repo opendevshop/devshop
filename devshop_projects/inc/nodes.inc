@@ -202,7 +202,7 @@ function devshop_projects_update($node) {
 function devshop_project_save_domain_aliases($project_node) {
   if (module_exists('hosting_alias')){
     if (!empty($project_node->live_domain) && $project_node->live_domain_aliases) {
-      foreach ($project_node->settings as $env => $details){
+      foreach ($project_node->project->environments as $env => $details){
         $domain = "$env.$project_node->live_domain";
         $site_node = node_load($details['site_nid']);
         if (array_search($domain, $site_node->aliases) === FALSE) {
@@ -213,7 +213,7 @@ function devshop_project_save_domain_aliases($project_node) {
     }
     // If live_domain_aliases is checked, remove them from the nodes.
     elseif (!$project_node->live_domain_aliases){
-      foreach ($project_node->settings as $env => $details){
+      foreach ($project_node->project->environments as $env => $details){
         $domain = "$env.$project_node->live_domain";
         $site_node = node_load($details['site_nid']);
         $i = array_search($domain, $site_node->aliases);
@@ -255,7 +255,7 @@ function devshop_projects_load($node) {
   // Load up all project settings, merging db table and serialized data.
   $data = $project_data['data'];
   unset($project_data['data']);
-  $project = (object) array_merge($project_data, unserialize($data));
+  $project = (object) array_merge((array) $project_data, (array) unserialize($data));
 
   // Set status
   $project->status = devshop_project_status((object) (array_merge($additions, (array) $node)));
