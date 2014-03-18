@@ -51,7 +51,7 @@ function devshop_projects_projects_page() {
     // Links to all sites
     $actions = array();
     $count = 0;
-    foreach ($node->environments as $env => $details){
+    foreach ($node->project->environments as $env => $details){
       $dev_site_url = url("http://$env.$node->base_url", array('absolute' => TRUE));
       $actions[] = array(
         'title' => $dev_site_url,
@@ -192,23 +192,26 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
     }
-//    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
+
+    // Display current branch
+    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
 
     // Create branch/tag chooser
-    $actions = array();
-    foreach ($node->git_branches as $branch){
-      $actions[] = array(
-        'title' => $branch,
-        'href' => "node/" . $platform_nid . "/deploy",
-      );
-    }
-    foreach ($node->git_tags as $tag){
-      $actions[] = array(
-        'title' => "tag/" . $tag,
-        'href' => "node/" . $platform_nid . "/deploy",
-      );
-    }
-    $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
+    // @TODO: Uncomment once we have a link to go to.
+//    $actions = array();
+//    foreach ($node->project->git['branches'] as $branch){
+//      $actions[] = array(
+//        'title' => $branch,
+//        'href' => "node/" . $platform_nid . "/deploy",
+//      );
+//    }
+//    foreach ($node->project->git['tags'] as $tag){
+//      $actions[] = array(
+//        'title' => "tag/" . $tag,
+//        'href' => "node/" . $platform_nid . "/deploy",
+//      );
+//    }
+//    $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
 
 
     if (module_exists('devshop_log')) {

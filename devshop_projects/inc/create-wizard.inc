@@ -916,7 +916,7 @@ function devshop_projects_add_status($type = 'platform'){
 
   // When checking platforms...
   if ($type == 'platform') {
-    foreach ($project_node->environments as $name => $environment){
+    foreach ($project_node->project->environments as $name => $environment){
       $nids[] = $environment['platform'];
     }
   }

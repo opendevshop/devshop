@@ -141,13 +141,20 @@ function devshop_projects_menu() {
 function devshop_projects_devshop_project_settings($project_node = NULL){
 
   // Build branch options
-  $branch_options = array(
-    'Branches' => $project_node->project->git['branches'],
-  );
+  if (is_array($project_node->project->git['branches']) && !empty($project_node->project->git['branches'])) {
+    $branch_options = array(
+      'Branches' => array_combine($project_node->project->git['branches'], $project_node->project->git['branches']),
+    );
+  }
 
   // If there are tags...
-  if (!empty($project_node->project->git['tags'])) {
-    $branch_options['Tags'] = $project_node->project->git['tags'];
+  if (is_array($project_node->project->git['tags']) && !empty($project_node->project->git['tags'])) {
+    $branch_options['Tags'] = array_combine($project_node->project->git['tags'], $project_node->project->git['tags']);
+  }
+
+  // If there are none...
+  if (empty($branch_options['Tags']) && empty($branch_options['Branches'])){
+    $branch_options = array(t('No branches or tags! Re-validate the project.'));
   }
 
   $settings = array();
