@@ -138,16 +138,6 @@ function devshop_projects_form(&$node) {
     '#weight' => 4,
   );
 
-  // Unchanging Values
-  $form['git_branches'] = array(
-    '#type' => 'value',
-    '#value' => $node->git_branches,
-  );
-  $form['git_tags'] = array(
-    '#type' => 'value',
-    '#value' => $node->git_tags,
-  );
-
   // Extensible settings
   $form['environment_settings'] = array(
     '#type' => 'fieldset',
@@ -181,6 +171,21 @@ function devshop_projects_form(&$node) {
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
 
+  // Project Settings
+  $form['project_settings'] = array(
+    '#tree' => TRUE,
+  );
+
+  // Save git branches and tags
+  $form['project_settings']['git_branches'] = array(
+    '#type' => 'value',
+    '#value' => $node->git_branches,
+  );
+  $form['project_settings']['git_tags'] = array(
+    '#type' => 'value',
+    '#value' => $node->git_tags,
+  );
+
 
   // Don't allow editing
   if ($node->nid) {
@@ -192,50 +197,58 @@ function devshop_projects_form(&$node) {
   }
 
   //All settings git pull in project page
-  $form['live'] = array(
+  $form['project_settings']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live Environment Settings'),
-    '#tree' => FALSE,
   );
 
   // Master Site alias
   $live_alias_options['other'] = 'Other...';
-  $form['live']['live_environment'] = array(
+  if (empty($live_alias_options[$node->project_settings['live']['live_environment']])){
+    // No live environment
+    $live_environment_default_value = '';
+  }
+  elseif (!empty($node->project_settings['live']['live_environment_alias'])){
+    // "other" live environment
+    $live_environment_default_value = 'other';
+  }
+
+  $form['project_settings']['live']['live_environment'] = array(
     '#type' => 'select',
     '#title' => t('Live Environment'),
     '#options' => $live_alias_options,
     '#required' => FALSE,
-    '#default_value' => isset($live_alias_options[$node->live_environment])? $node->live_environment: 'other',
+    '#default_value' => $live_environment_default_value,
     '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
   );
-  $form['live']['live_environment_alias'] = array(
+  $form['project_settings']['live']['live_environment_alias'] = array(
     '#title' => t('Live Site Drush Alias'),
     '#type' => 'textfield',
     '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
     '#field_prefix' => '@',
     '#size' => 40,
-    '#default_value' => $node->live_environment_alias,
+    '#default_value' => $node->project_settings['live']['live_environment_alias'],
     '#size' => 50,
     '#maxlength' => 50,
   );
 
   // Live Domain
-  $form['live']['live_domain'] = array(
+  $form['project_settings']['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live domain'),
     '#description' => t('The live domain for this project. Do not include "www".'),
     '#size' => 40,
-    '#default_value' => $node->live_domain,
+    '#default_value' => $node->project_settings['live']['live_domain'],
     '#weight' => 5,
   );
 
   // Use aliases
   if (module_exists('hosting_alias')){
-    $form['live']['live_domain_aliases'] = array(
+    $form['project_settings']['live']['live_domain_aliases'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use environment aliases'),
       '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
-      '#default_value' => $node->live_domain_aliases,
+      '#default_value' => $node->project_settings['live']['live_domain_aliases'],
       '#weight' => 6,
     );
   }
