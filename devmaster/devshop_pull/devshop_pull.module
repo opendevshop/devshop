@@ -98,22 +98,17 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     // Get node
     $node = $form['#node'];
 
-    // Get default value
-    if (is_null($node->pull_method)) {
-      $node->pull_method = DEVSHOP_PULL_DISABLED;
-    }
-
     //All settings git pull in project page
-    $form['project_settings']['pull'] = array(
+    $form['project']['pull'] = array(
       '#type' => 'fieldset',
       '#title' => t('Git Settings'),
     );
 
-    $form['project_settings']['pull']['pull_enabled'] = array(
+    $form['project']['pull']['pull_enabled'] = array(
       '#title' => 'Pull on Commit',
       '#type' => 'checkbox',
       '#description' => t('Run a "Pull Code" task when a commit notification is received. All environments set to a branch will have their code updated.'),
-      '#default_value' => $node->project_settings['pull']['pull_enabled'],
+      '#default_value' => $node->project->pull['pull_enabled'],
     );
 
 //    module_load_include('inc', 'devshop_pull');
@@ -128,23 +123,23 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
 //    );
 
     // @TODO: is there a better way to save certain values? We lose data without these.
-    $form['project_settings']['pull']['last_pull'] = array(
+    $form['project']['pull']['last_pull'] = array(
       '#type' => 'value',
-      '#value' => $node->project_settings['pull']['last_pull'],
+      '#value' => $node->project->pull['last_pull'],
     );
-    $form['project_settings']['pull']['last_pull_status'] = array(
+    $form['project']['pull']['last_pull_status'] = array(
       '#type' => 'value',
-      '#value' => $node->project_settings['pull']['last_pull_status'],
+      '#value' => $node->project->pull['last_pull_status'],
     );
-    $form['project_settings']['pull']['last_pull_ip'] = array(
+    $form['project']['pull']['last_pull_ip'] = array(
       '#type' => 'value',
-      '#value' => $node->project_settings['pull']['last_pull_ip'],
+      '#value' => $node->project->pull['last_pull_ip'],
     );
 
-    $form['project_settings']['pull']['pull_request_environments'] = array(
+    $form['project']['pull']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
-      '#default_value' => $node->project_settings['pull']['pull_request_environments'],
+      '#default_value' => $node->project->pull['pull_request_environments'],
       '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
     );
   }
