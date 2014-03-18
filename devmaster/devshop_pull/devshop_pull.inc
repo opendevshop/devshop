@@ -130,11 +130,10 @@ function devshop_pull_github_webhook($project){
 
         if ($data->action == 'opened'){
           // @TODO: Add to project settings.
-          $create_environments_from_pr = TRUE;
           $branch = $data->pull_request->head->ref;
 
           $message = "Detected Pull Request for $branch";
-          if ($create_environments_from_pr == TRUE){
+          if ($project->pull_request_environments){
             // Lookup environments by branch
             foreach ($project->settings as $env => $settings){
               if ($settings['git_branch'] == $branch){

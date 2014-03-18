@@ -121,7 +121,7 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'radios',
       '#description' => t('Choose the method of regularly calling "Pull Code". See !link to configure the queue. See !link2 to configure URL Callback.', array(
         '!link' => l(t('Hosting > Queues'), 'admin/hosting/queues'),
-        '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop_pull')
+        '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop/pull')
       )),
       '#default_value' => $node->pull_method,
       '#options' => array(
@@ -153,6 +153,13 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     $form['git_settings']['last_pull_ip'] = array(
       '#type' => 'value',
       '#value' => $node->last_pull_ip,
+    );
+
+    $form['git_settings']['pull_request_environments'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Create Environments for Pull Requests'),
+      '#default_value' => $node->pull_request_environments,
+      '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
     );
   }
 }
