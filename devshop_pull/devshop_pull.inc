@@ -39,10 +39,7 @@ function devshop_pull_callback($project, $hash) {
   }
   // All checks pass! Server is allowed to trigger tasks!
   else {
-    $status = DEVSHOP_PULL_STATUS_OK;
-
     // @TODO: Make this pluggable.
-
     // Check headers for GitHub Integration
     $headers = getallheaders();
     if (isset($headers['X-GitHub-Event'])) {
@@ -51,28 +48,18 @@ function devshop_pull_callback($project, $hash) {
     else {
       $message = devshop_pull_default_webhook($project_node, $environments_to_pull);
     }
-   }
-
-  // Log It, only if there is a status
-  if (isset($status)){
-    $record = new stdClass;
-    $record->project_nid = $project_node->nid;
-    $record->pull_method = $project_node->pull_method;
-    $record->last_pull = time();
-    $record->last_pull_status = $status;
-    $record->last_pull_ip = ip_address();
-
-    drupal_write_record('hosting_devshop_pull_projects', $record, array('project_nid'));
   }
+
+  // Save the project node with last pull info.
+  $project_node->project_settings['pull']['last_pull'] = time();
+  $project_node->project_settings['pull']['last_pull_status'] = DEVSHOP_PULL_STATUS_OK;
+  $project_node->project_settings['pull']['last_pull_ip'] = ip_address();
+  node_save($project_node);
 
   // Output a message, no matter what.
   watchdog('devshop_pull', $message, array(), WATCHDOG_INFO);
 
-  // @TODO: Create a "debug" mode to prevent logging of all payloads
-  watchdog('devshop_pull_debug', 'PAYLOAD: '. $GLOBALS['HTTP_RAW_POST_DATA'], array(), WATCHDOG_INFO);
-  watchdog('devshop_pull_debug', 'HEADERS: '. print_r(getallheaders(), 1), WATCHDOG_INFO);
-
-
+  // @TODO Print an appropriate header.
   print $message;
 
   // Save a variable to help when using the settings page.
