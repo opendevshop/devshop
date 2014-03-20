@@ -168,12 +168,13 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'project'){
 
     // View Project
-    if ($op == 'view' && $node->project_settings['pull']['pull_method']== DEVSHOP_PULL_CALLBACK){
+    if ($op == 'view' && $node->project_settings['pull']['pull_enabled']){
       module_load_include('inc', 'devshop_pull');
       $url = _devshop_pull_callback_url($node);
       $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
 
       $status = (int) $node->project_settings['pull']['last_pull_status'];
+      drupal_set_message(print_r($node->project_settings, 1));
 
       // If access denied, provide link to settings page
       if ($status == DEVSHOP_PULL_STATUS_ACCESS_DENIED){
