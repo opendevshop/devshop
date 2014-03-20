@@ -91,6 +91,7 @@ function devshop_pull_default_webhook($project, $environments_to_pull){
 function devshop_pull_github_webhook($project){
   $headers = getallheaders();
 
+  // @TODO: Handle form content as well.
   if ($headers['content-type'] == 'application/json'){
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
     
