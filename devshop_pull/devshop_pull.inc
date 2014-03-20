@@ -29,12 +29,8 @@ function devshop_pull_callback($project, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  elseif ($project_node->pull_method != DEVSHOP_PULL_CALLBACK){
+  elseif (!$project_node->project_settings['pull']['pull_enabled']){
     $message = "Project $project is NOT configured to use Pull Code URL callback!";
-  }
-  // Make sure the project has platforms with pull enabled.
-  elseif (empty($environments_to_pull)){
-    $message = "Project $project has no environments configured to Pull Code on commit!";
   }
   // Make sure the client's IP address is on the list
   else if (!devshop_pull_ip_match(ip_address(), $allowed_ips)) {
@@ -55,7 +51,6 @@ function devshop_pull_callback($project, $hash) {
     else {
       $message = devshop_pull_default_webhook($project_node, $environments_to_pull);
     }
-
    }
 
   // Log It, only if there is a status
@@ -139,32 +134,27 @@ function devshop_pull_github_webhook($project){
           // @TODO: Add to project settings.
           $branch = $data->pull_request->head->ref;
 
-          $message = "Detected Pull Request for $branch";
-          if ($project->pull_request_environments){
-            // Lookup environments by branch
-            foreach ($project->settings as $env => $settings){
-              if ($settings['git_branch'] == $branch){
-                $pull_environment_found = $branch;
-              }
-            }
-            if (empty($pull_environment_found)){
-              $environment_name = strtr($branch, array('-' => '_', '/' => '_'));
-              hosting_create_environment($project, $environment_name, $branch);
+          $message = "Detected Pull Request for $branch \n";
+          if ($project->project_settings['pull']['pull_request_environments']){
+            $environment_name = "pr" . $data->pull_request->number;
+
+            if (isset($project->environments[$environment_name])){
+              $message = "Environment $environment_name already exists.";
             }
             else {
-              print "Branch already has an environment.";
+              hosting_create_environment($project, $environment_name, $branch);
+              $message .= "Environment $environment_name created for $project->title \n";
             }
           }
         }
         break;
     }
 
-    return $message;
-    
   }
   else {
-    watchdog('devshop_pull', 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json');
+    $message = 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json';
   }
+  return $message;
 }
 
 /**
