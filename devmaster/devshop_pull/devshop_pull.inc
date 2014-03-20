@@ -79,7 +79,7 @@ function devshop_pull_default_webhook($project, $environments_to_pull){
   // Always clear cache...
   // @TODO: Should we make this a setting? "What to do on auto-pull?"
   $args['cache'] = 1;
-  hosting_add_task($project_node->nid, 'devshop-pull', $args);
+  hosting_add_task($project->nid, 'devshop-pull', $args);
 
   return "Commit notification received! Running 'Pull Code' on $project->title environments " . $args['environments'];
 }
