@@ -107,7 +107,7 @@ function devshop_pull_github_webhook($project){
         // Check for environments set to pull
         $environments_to_pull = array();
         foreach ($project->settings as $env => $settings) {
-          if ($settings['pull_enabled']) {
+          if (!$settings['pull_disabled']) {
             $environments_to_pull[] = $env;
           }
         }
