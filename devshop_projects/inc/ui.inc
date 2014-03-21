@@ -148,7 +148,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   }
   $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
 
-  if ($verify_task->task_status == HOSTING_TASK_SUCCESS){
+  if ($verify_task->task_status == HOSTING_TASK_SUCCESS || $verify_task->task_status == HOSTING_TASK_ERROR){
     $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
   } else {
     $refresh_link =  t('Refresh in progress...');
