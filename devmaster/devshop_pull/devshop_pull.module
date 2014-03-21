@@ -147,6 +147,13 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#default_value' => $node->project_settings['pull']['pull_request_environments'],
       '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
     );
+    $form['project_settings']['pull']['pull_request_environments_delete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete Pull Request Environments'),
+      '#default_value' => $node->project_settings['pull']['pull_request_environments_delete'],
+      '#description' => t('When Pull Requests are closed, delete the environment.'),
+    );
+
   }
 }
 

@@ -118,17 +118,17 @@ function devshop_pull_github_webhook($project){
         break;
       case 'pull_request':
         $message = 'Pull Request Received.';
+        $branch = $data->pull_request->head->ref;
+        $environment_name = "pr" . $data->pull_request->number;
 
         if ($data->action == 'opened'){
           // @TODO: Add to project settings.
-          $branch = $data->pull_request->head->ref;
 
           $message = "Detected Pull Request for $branch \n";
           if ($project->project_settings['pull']['pull_request_environments']){
-            $environment_name = "pr" . $data->pull_request->number;
 
             if (isset($project->environments[$environment_name])){
-              $message = "Environment $environment_name already exists.";
+              $message .= "Environment $environment_name already exists.";
             }
             else {
               hosting_create_environment($project, $environment_name, $branch);
@@ -136,6 +136,13 @@ function devshop_pull_github_webhook($project){
             }
           }
           // @TODO: synchronize action
+        }
+        elseif ($data->action == 'closed'){
+          $message .= "Pull Request Closed \n";
+          if ($project->project_settings['pull']['pull_request_environments_delete']){
+            hosting_add_task($project->environments[$environment_name]['site'], 'delete');
+            $message .= "Site $environment_name scheduled for deletion.";
+          }
         }
         break;
     }
