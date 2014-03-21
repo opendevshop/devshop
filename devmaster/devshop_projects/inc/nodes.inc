@@ -270,12 +270,12 @@ function devshop_projects_load($node) {
     // Only load if site or platform is enabled.
     $object_node = node_load($project_object->object_nid);
     
-    if (($object_node->type == 'site' && $object_node->site_status == HOSTING_SITE_ENABLED) ||
-      ($object_node->type == 'platform' && $object_node->platform_status == HOSTING_PLATFORM_ENABLED)
-        ){
+   // if (($object_node->type == 'site' && $object_node->site_status == HOSTING_SITE_ENABLED) ||
+    //  ($object_node->type == 'platform' && $object_node->platform_status == HOSTING_PLATFORM_ENABLED)
+      //  ){
       $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
 
-    }
+    // }
   }
   $additions['project_objects'] = $objects;
 
