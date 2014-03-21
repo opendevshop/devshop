@@ -271,7 +271,8 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
   }
   
-  // When a project is verified, queue a verification for all platforms  
+  // When a project is verified, queue a verification for all platforms
+  // @TODO: Figure out a better way to verify all the things.
 //  if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
 //    $project = node_load($task->ref->nid);
 //    $platform_nids = array_keys($project->project_objects['platform']);
