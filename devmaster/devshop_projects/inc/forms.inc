@@ -153,9 +153,14 @@ function devshop_projects_form(&$node) {
 
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project_objects['platform'] as $nid => $environment_name) {
-    $platform = node_load($nid);
-    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
+
+
+//  foreach ($node->project_objects['platform'] as $nid => $environment_name) {
+  foreach ($node->project_settings['environments'] as $environment_name => $environment_settings) {
+//    $platform = node_load($nid);
+//    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
+
+    $platform = node_load($settings['platform_nid']);
     if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
       $form['project_settings']['environments'][$environment_name] = array(
         '#tree' => TRUE,
@@ -163,16 +168,14 @@ function devshop_projects_form(&$node) {
         '#type' => 'fieldset',
         '#theme' => 'devshop_projects_settings_table',
       );
-
       foreach ($settings as $setting_id => $setting){
         $form['project_settings']['environments'][$environment_name][$setting_id] = $setting;
-        $form['project_settings']['environments'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
+        $form['project_settings']['environments'][$environment_name][$setting_id]['#default_value'] = $environment_settings[$setting_id];
         $form['project_settings']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
-      $site = array_pop($sites);
+      $site = node_load($settings['site_nid']);
       $live_alias_options[$environment_name] = $site->hosting_name;
     }
-
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
 
