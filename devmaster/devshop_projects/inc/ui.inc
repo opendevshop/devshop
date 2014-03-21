@@ -193,8 +193,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
     }
-//    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
-
+    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
+    /*
+    @TODO: One step at a time ...
     // Create branch/tag chooser
     $actions = array();
     foreach ($node->git_branches as $branch){
@@ -210,7 +211,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       );
     }
     $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
-
+    */
 
     if (module_exists('devshop_log')) {
       $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
