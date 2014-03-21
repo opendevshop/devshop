@@ -153,11 +153,12 @@ function devshop_projects_form(&$node) {
 
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
+  // @TODO: Whenever an environment is created, make sure to resave the project so settings are captured in json.
+  foreach ($node->environments as $environment_name => $env) {
 
-  foreach ($node->project_settings['environments'] as $environment_name => $environment_settings) {
-
-    $platform = node_load($environment_settings['platform_nid']);
-    $site = node_load($environment_settings['site_nid']);
+    $environment_settings = $node->project_settings['environments'][$environment_name];
+    $platform = node_load($env['platform']);
+    $site = node_load($env['site']);
     if ($platform->status == HOSTING_PLATFORM_ENABLED && $site->status == HOSTING_PLATFORM_ENABLED) {
       $form['project_settings']['environments'][$environment_name] = array(
         '#tree' => TRUE,
