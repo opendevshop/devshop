@@ -307,11 +307,14 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   $branches = getBranchesAndTags($task->ref->git_url);
 
-  $task->ref->project_settings['git_branches'] = $branches['branches'];
-  $task->ref->project_settings['git_tags'] = $branches['tags'];
+  // If something went wrong connecting to the git repo, don't wipe out our branches.
+  if (!empty($branches['branches'])){
+    $task->ref->project_settings['git_branches'] = $branches['branches'];
+    $task->ref->project_settings['git_tags'] = $branches['tags'];
 
-  // Save the project node now that we have branches and tags.
-  node_save($task->ref);
+    // Save the project node now that we have branches and tags.
+    node_save($task->ref);
+  }
 
   $task->context_options['git_branches'] = $branches['branches'];
   $task->context_options['git_tags'] = $branches['tags'];
