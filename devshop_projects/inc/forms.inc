@@ -138,8 +138,13 @@ function devshop_projects_form(&$node) {
     '#weight' => 4,
   );
 
+  // Project Settings
+  $form['project_settings'] = array(
+    '#tree' => TRUE,
+  );
+
   // Extensible settings
-  $form['environment_settings'] = array(
+  $form['project_settings']['environments'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environment Settings'),
     '#theme' => 'devshop_projects_settings_form',
@@ -152,7 +157,7 @@ function devshop_projects_form(&$node) {
     $platform = node_load($nid);
     $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
     if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
-      $form['environment_settings'][$environment_name] = array(
+      $form['project_settings']['environments'][$environment_name] = array(
         '#tree' => TRUE,
         '#title' => $name,
         '#type' => 'fieldset',
@@ -160,9 +165,9 @@ function devshop_projects_form(&$node) {
       );
 
       foreach ($settings as $setting_id => $setting){
-        $form['environment_settings'][$environment_name][$setting_id] = $setting;
-        $form['environment_settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
-        $form['environment_settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
+        $form['project_settings']['environments'][$environment_name][$setting_id] = $setting;
+        $form['project_settings']['environments'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
+        $form['project_settings']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
       $site = array_pop($sites);
       $live_alias_options[$environment_name] = $site->hosting_name;
@@ -171,10 +176,6 @@ function devshop_projects_form(&$node) {
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
 
-  // Project Settings
-  $form['project_settings'] = array(
-    '#tree' => TRUE,
-  );
 
   // Save git branches and tags
   $form['project_settings']['git_branches'] = array(
