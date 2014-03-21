@@ -281,6 +281,7 @@ function hosting_task_devshop_pull_form($node) {
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to.'), 'environments', 'Environments', 'checkboxes');
 
+  // @TODO: Remove any environments where pull is disabled or is tracking a tag.
   /*
    *$form['environments'] = array(
     '#title' => t('list of environments'),
