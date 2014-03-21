@@ -106,8 +106,9 @@ function devshop_pull_github_webhook($project){
         // Add a task to pull then project's environments
         // Check for environments set to pull
         $environments_to_pull = array();
-        foreach ($project->settings as $env => $settings) {
-          if (!$settings['pull_disabled']) {
+        foreach ($project->project_settings['environments'] as $env => $settings) {
+          // Only pull if pull disabled or is tracking a tag.
+          if (!$settings['pull_disabled'] && !in_array($settings['git_branch'], $project->project_settings['git_tags'])) {
             $environments_to_pull[] = $env;
           }
         }
