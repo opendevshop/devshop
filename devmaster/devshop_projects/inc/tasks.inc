@@ -288,6 +288,12 @@ function hosting_task_devshop_pull_form($node) {
     }
   }
 
+  // If empty, send them to project page.
+  if (empty($form['environments']['#options'][$env])){
+    drupal_set_message(t('You do not have any environments with Pull Code enabled, or they are all tracking tags. !link to be able to pull code.', array('!link' => l(t('Edit the project settings'), "node/$node->nid/edit"))));
+    drupal_goto("node/$node->nid");
+  }
+
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
