@@ -279,17 +279,14 @@ function hosting_task_devshop_commit_form($node) {
 function hosting_task_devshop_pull_form($node) {
 
   $form = array();
-  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to.'), 'environments', 'Environments', 'checkboxes');
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to. NOTE: Environments that are tracking a tag or have pull disabled are not listed.'), 'environments', 'Environments', 'checkboxes');
 
-  // @TODO: Remove any environments where pull is disabled or is tracking a tag.
-  /*
-   *$form['environments'] = array(
-    '#title' => t('list of environments'),
-    '#type' => 'textfield',
-    '#default_value' => 'dev test',
-  );
-
-  */
+  // Remove any environments where pull is disabled or is tracking a tag.
+  foreach ($node->project_settings['environments'] as $env => $settings){
+    if (isset($form['environments']['#options'][$env]) && ($settings['pull_disabled'] || in_array($settings['git_branch'], $node->project_settings['git_tags']))){
+      unset($form['environments']['#options'][$env]);
+    }
+  }
 
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
