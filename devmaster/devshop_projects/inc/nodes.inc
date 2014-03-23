@@ -107,7 +107,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
           $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
           while ($site = db_fetch_object($result)) {
             db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
-          } 
+          }
         }
 
         // If we are updating or inserting sites, check for live domain aliases.
@@ -156,12 +156,25 @@ function devshop_projects_insert($node) {
   drupal_write_record('hosting_devshop_project', $info);
 
   // Save hosting context
-  if ((!$node->old_vid)) {
+  if (!$node->old_vid) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
   }
 
   // If using environment aliases... save them.
   devshop_project_save_domain_aliases($node);
+
+  // Save Environment records.
+  foreach ($node->project->environments as $env => $environment){
+    $info = new stdClass();
+    $info->project_nid = $node->nid;
+    $info->environment = $env;
+    $info->git_ref = $environment['git_ref'];
+    $info->site_nid = $environment['site_nid'];
+    $info->platform_nid = $environment['platform_nid'];
+    $info->data = serialize($environment);
+
+    drupal_write_record('hosting_devshop_project_environment', $info);
+  }
 }
 
 /**
@@ -183,16 +196,25 @@ function devshop_projects_update($node) {
   $info->drupal_path = hosting_path_normalize($node->drupal_path);
   $info->base_url = $node->base_url;
   $info->install_profile = $node->install_profile;
-
-  // Everything from $form['project'] gets serialized and saved.
-  // Save our environments data here as well.
-
   $info->data = serialize($node->project);
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
   // If using environment aliases... save them.
   devshop_project_save_domain_aliases($node);
+
+  // Save Environment records.
+  foreach ($node->project->environments as $env => $environment){
+    $info = new stdClass();
+    $info->project_nid = $node->nid;
+    $info->environment = $env;
+    $info->git_ref = $environment['git_ref'];
+    $info->site_nid = $environment['site_nid'];
+    $info->platform_nid = $environment['platform_nid'];
+    $info->data = serialize($environment);
+
+    drupal_write_record('hosting_devshop_project_environment', $info, 'project_nid');
+  }
 
 }
 
