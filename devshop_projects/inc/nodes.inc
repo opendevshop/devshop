@@ -26,103 +26,6 @@ function devshop_projects_node_info() {
 }
 
 /**
- * Implementation of hook_nodeapi()
- *
- * Handle project information for Platforms and Sites:
- *   $node->project : The context name of the project.
- *   $node->environment: The type of environment this platform or site is:
- *	can be dev, test, or live.
- *   $node->git_branch: The current git branch the project lives on.
- */
-function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
-
-  if ($node->type == 'project') {
-    // Settings are added here, since $git_branches hadn't been added to the
-    // node yet in devshop_projects_load().
-    $settings = module_invoke_all('devshop_project_settings', $node);
-
-    // For each environment, pull values out of the site or platform into a new environments object.
-    if (!empty($node->project->environments)){
-      foreach ($node->project->environments as $environment_name => &$environment){
-        $nodes = array();
-        $nodes['site'] = node_load($environment['site']);
-        $nodes['platform'] = node_load($environment['platform']);
-
-        foreach ($settings as $setting_name => $setting) {
-          $environment[$setting_name] = $nodes[$setting['#node_type']]->{$setting_name};
-        }
-        $environment = $environment;
-      }
-    }
-  }
-
-  // Project-enabled platforms get
-  if ($node->type == 'platform' || $node->type == 'site') {
-    // On Load: load this object's project and environment type
-    if ($op == 'load') {
-      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
-      $data[$node->type . "_nid"] = $node->nid;
-      return $data;
-    }
-
-    // On insert or update, insert records saving this objects project and environment
-    if ($op == 'update' || $op == 'insert') {
-      //Special case for migrate site. Is need copy the information to the new site.
-      if ($op == 'insert' && $node->type == 'site' && $node->import && !$node->verified) {
-        $platform = node_load($node->platform);
-        $node->project = $platform->project;
-        $node->project_nid = $platform->project_nid;
-        $node->environment = $platform->environment;
-        $node->git_branch = $platform->git_branch;
-        $node->drupal_path = $platform->drupal_path;
-        $node->clone_nid = $platform->clone_nid;
-      }
-      if (!empty($node->project) && !empty($node->environment)) {
-        // Get the project node by name.
-        $project = hosting_context_load($node->project);
-
-        // Save to table
-        $data = new stdClass();
-        $data->project_nid = $project->nid;
-        $data->object_nid = $node->nid;
-        $data->object_type = $node->type;
-        $data->environment = $node->environment;
-        $data->git_branch = $node->git_branch;
-        $data->drupal_path = $node->drupal_path;
-
-        //Site used for cloned the new site or platorm
-        if (isset($node->clone_nid)) {
-          $data->clone_nid = $node->clone_nid;
-        }
-
-        if ($op == 'insert') {
-          drupal_write_record('hosting_devshop_project_object', $data);
-        }
-        else {
-          drupal_write_record('hosting_devshop_project_object', $data, 'object_nid');
-        }
-
-        //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
-        if ($node->type == 'platform') {
-          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
-          while ($site = db_fetch_object($result)) {
-            db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
-          }
-        }
-
-        // If we are updating or inserting sites, check for live domain aliases.
-        $live_domain_alias = "{$node->environment}.{$project->live_domain}";
-
-        // If project should use live_domain_aliases, and site does not have the alias already...
-        if ($node->type == 'site' && $project->live_domain_aliases && array_search($live_domain_alias, $node->aliases) === FALSE) {
-          $node->aliases[] = $live_domain_alias;
-        }
-      }
-    }
-  }
-}
-
-/**
  * Helper to load a project node by code path.
  */
 function devshop_project_load_by_path($project_path){
@@ -305,3 +208,100 @@ function devshop_projects_load($node) {
   return $additions;
 }
 
+
+/**
+ * Implementation of hook_nodeapi()
+ *
+ * Handle project information for Platforms and Sites:
+ *   $node->project : The context name of the project.
+ *   $node->environment: The type of environment this platform or site is:
+ *	can be dev, test, or live.
+ *   $node->git_branch: The current git branch the project lives on.
+ */
+function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
+
+  if ($node->type == 'project') {
+    // Settings are added here, since $git_branches hadn't been added to the
+    // node yet in devshop_projects_load().
+    $settings = module_invoke_all('devshop_project_settings', $node);
+
+    // For each environment, pull values out of the site or platform into a new environments object.
+    if (!empty($node->project->environments)){
+      foreach ($node->project->environments as $environment_name => &$environment){
+        $nodes = array();
+        $nodes['site'] = node_load($environment['site']);
+        $nodes['platform'] = node_load($environment['platform']);
+
+        foreach ($settings as $setting_name => $setting) {
+          $environment[$setting_name] = $nodes[$setting['#node_type']]->{$setting_name};
+        }
+        $environment = $environment;
+      }
+    }
+  }
+
+  // Project-enabled platforms get
+  if ($node->type == 'platform' || $node->type == 'site') {
+    // On Load: load this object's project and environment type
+    if ($op == 'load') {
+      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
+      $data[$node->type . "_nid"] = $node->nid;
+      return $data;
+    }
+
+    // On insert or update, insert records saving this objects project and environment
+    if ($op == 'update' || $op == 'insert') {
+      //Special case for migrate site. Is need copy the information to the new site.
+      if ($op == 'insert' && $node->type == 'site' && $node->import && !$node->verified) {
+        $platform = node_load($node->platform);
+        $node->project = $platform->project;
+        $node->project_nid = $platform->project_nid;
+        $node->environment = $platform->environment;
+        $node->git_branch = $platform->git_branch;
+        $node->drupal_path = $platform->drupal_path;
+        $node->clone_nid = $platform->clone_nid;
+      }
+      if (!empty($node->project) && !empty($node->environment)) {
+        // Get the project node by name.
+        $project = hosting_context_load($node->project);
+
+        // Save to table
+        $data = new stdClass();
+        $data->project_nid = $project->nid;
+        $data->object_nid = $node->nid;
+        $data->object_type = $node->type;
+        $data->environment = $node->environment;
+        $data->git_branch = $node->git_branch;
+        $data->drupal_path = $node->drupal_path;
+
+        //Site used for cloned the new site or platorm
+        if (isset($node->clone_nid)) {
+          $data->clone_nid = $node->clone_nid;
+        }
+
+        if ($op == 'insert') {
+          drupal_write_record('hosting_devshop_project_object', $data);
+        }
+        else {
+          drupal_write_record('hosting_devshop_project_object', $data, 'object_nid');
+        }
+
+        //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
+        if ($node->type == 'platform') {
+          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
+          while ($site = db_fetch_object($result)) {
+            db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
+          }
+        }
+
+        // If we are updating or inserting sites, check for live domain aliases.
+        $live_domain_alias = "{$node->environment}.{$project->live_domain}";
+
+        // If project should use live_domain_aliases, and site does not have the alias already...
+        if ($node->type == 'site' && $project->live_domain_aliases && array_search($live_domain_alias, $node->aliases) === FALSE) {
+          $node->aliases[] = $live_domain_alias;
+        }
+      }
+    }
+  }
+}
