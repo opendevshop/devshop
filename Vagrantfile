@@ -3,8 +3,10 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5.1"
-# PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
-PROVISION_SCRIPT_PATH = "repos/devshop/install.debian.sh"
+PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
+
+# For Development, uncomment
+# PROVISION_SCRIPT_PATH = "repos/devshop/install.debian.sh"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
