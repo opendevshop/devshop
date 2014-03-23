@@ -220,26 +220,6 @@ function devshop_projects_load($node) {
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  if ($node->type == 'project') {
-    // Settings are added here, since $git_branches hadn't been added to the
-    // node yet in devshop_projects_load().
-    $settings = module_invoke_all('devshop_project_settings', $node);
-
-    // For each environment, pull values out of the site or platform into a new environments object.
-    if (!empty($node->project->environments)){
-      foreach ($node->project->environments as $environment_name => &$environment){
-        $nodes = array();
-        $nodes['site'] = node_load($environment['site']);
-        $nodes['platform'] = node_load($environment['platform']);
-
-        foreach ($settings as $setting_name => $setting) {
-          $environment[$setting_name] = $nodes[$setting['#node_type']]->{$setting_name};
-        }
-        $environment = $environment;
-      }
-    }
-  }
-
   // Project-enabled platforms get
   if ($node->type == 'platform' || $node->type == 'site') {
     // On Load: load this object's project and environment type
