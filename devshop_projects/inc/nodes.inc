@@ -25,14 +25,6 @@ function devshop_projects_node_info() {
 }
 
 /**
- * Helper to load a project node by code path.
- */
-function devshop_project_load_by_path($project_path){
-  $nid = db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s"', array($project_path)));
-  return node_load($nid);
-}
-
-/**
  * Implementation of hook_insert().
  *
  *   1. Saves data into our table.
