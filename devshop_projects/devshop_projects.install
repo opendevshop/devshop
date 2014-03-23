@@ -120,11 +120,11 @@ function devshop_projects_schema() {
         'default' => '',
         'description' => 'Environment name.',
       ),
-      'git_branch' => array(
+      'git_ref' => array(
         'type' => 'varchar',
         'length' => 128,
         'not null' => FALSE,
-        'description' => 'The current branch of this site or platform.',
+        'description' => 'The current branch or tag of this site or platform.',
       ),
       'site_nid' => array(
         'type' => 'int',
