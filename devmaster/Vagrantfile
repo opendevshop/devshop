@@ -1,6 +1,18 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-Vagrant::Config.run do |config|
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.5.1"
+PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
+
+# For development...
+# PROVISION_SCRIPT_PATH = "repos/devshop/install.debian.sh"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Base Box
+  config.vm.box = "hashicorp/precise64"
 
   # Attributes are loaded from attributes.json
   if !(File.exists?("attributes.json"))
@@ -11,23 +23,27 @@ Vagrant::Config.run do |config|
   # Get attributes from attributes.json
   attributes = JSON.parse(IO.read("attributes.json"))
 
-  # Base Box
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-
   # Networking & hostname
-  config.vm.network :bridged
-  config.vm.network :hostonly, attributes["vagrant"]["hostonly_ip"]
+  # Connect to your internet
+  config.vm.network "public_network"
+
+  # Connect to your computer at the IP in the attributes file.
+  config.vm.network "private_network", ip: attributes["vagrant"]["private_network_ip"]
   config.vm.host_name = attributes["vagrant"]["hostname"]
 
   # Set SH as our provisioner
   # Until this is resolved, you must run the installer interactively.
-  config.vm.provision "shell", path: "repos/devshop/install.debian.sh"
+  config.vm.provision "shell", path: PROVISION_SCRIPT_PATH
 
-  # Make local source code available to the VM
-  config.vm.share_folder "repos", "/repos",  "repos", :owner => "www-data", :group => "www-data"
+  # Make local source code available to the VM, if they have the repos folder.
+  config.vm.synced_folder "repos", "/repos",
+    owner: "www-data", group: "www-data"
 
-  config.vm.share_folder "devshop_hosting", "/var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/devshop_hosting",  "repos/devshop_hosting", :owner => "aegir", :group => "aegir"
-  config.vm.share_folder "devshop_provision", "/var/aegir/.drush/devshop_provision",  "repos/devshop_provision", :owner => "aegir", :group => "aegir"
+  # @TODO: Clone and replace all the essential repos.
+  config.vm.synced_folder "repos/devshop_hosting", "/var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/devshop_hosting",
+    owner: "www-data", group: "www-data"
+
+  config.vm.synced_folder "repos/devshop_provision", "/var/aegir/.drush/devshop_provision",
+    owner: "www-data", group: "www-data"
 
 end

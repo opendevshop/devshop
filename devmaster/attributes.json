@@ -1,7 +1,6 @@
 {
   "vagrant": {
     "hostname": "devshop.local",
-    "adapter": "wlan0",
-    "hostonly_ip": "10.10.10.10"
+    "private_network_ip": "10.10.10.10"
   }
 }
