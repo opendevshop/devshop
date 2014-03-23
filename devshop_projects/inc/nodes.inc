@@ -4,7 +4,6 @@
  *
  * DevShop Project Node related hooks and support functions.
  *
- * @TODO: Add default http and db servers to project nodes.
  */
 
 /**
