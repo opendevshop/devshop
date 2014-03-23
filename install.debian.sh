@@ -95,17 +95,15 @@ if  [ ! `which drush` ]; then
   apt-get install drush=4.5-6 -y
 
   # Install Provision, git, supervisor
-  apt-get install aegir-provision php5-gd unzip git supervisor -y
+  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
 
   # Using drush, install provision_git, provision_logs, provisions_tasks_extra
-  # @TODO: Figure out a nicer way to do this. Is is possible with drush makefiles?
+  # @TODO: Figure out a nicer way to setup a lot of drush projects. Is is possible with drush makefiles?
+  # @TODO: Make VERSION a variable, see hostmaster-install.
   su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
   su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
-fi
 
-# Install DevShop with drush devshop-install
-if [ ! -d '/var/aegir/devshop-6.x-1.x/' ]
-  then
+  # @TODO: Should we move this to top so it is "configurable"?
   MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
   COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
   echo "Running...  $COMMAND"
