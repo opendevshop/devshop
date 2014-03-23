@@ -239,6 +239,9 @@ function devshop_project_save_domain_aliases($project_node) {
 function devshop_projects_delete($node) {
 
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
+  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
+
+  // @TODO: Remove once table is deleted.
   db_query('DELETE FROM {hosting_devshop_project_object} WHERE project_nid = %d', $node->nid);
 
   hosting_context_delete($node->nid);
@@ -247,40 +250,36 @@ function devshop_projects_delete($node) {
 /**
  * Implementation of hook_load().
  *
+ * Loads data for project and environments.
+ *
  * @param node
  *    Node object
  */
 function devshop_projects_load($node) {
 
-  // Load everything straight from the database table.
-  $project_data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
-  $additions = $project_data;
-
   // Load the "hosting context". The unique name in the aegir system.
   $additions['hosting_name'] = 'project_' . db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
+
+  // Load project data
+  $project_data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
 
   // Load up all project settings, merging db table and serialized data.
   $data = $project_data['data'];
   unset($project_data['data']);
   $project = (object) array_merge((array) $project_data, (array) unserialize($data));
 
+  // @TODO: Create a good status system.
   // Set status
-  $project->status = devshop_project_status((object) (array_merge($additions, (array) $node)));
+  // $project->status = devshop_project_status((object) (array_merge($additions, (array) $node)));
 
-  // Environments Array
-  $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d ORDER BY environment", $node->nid);
-
+  // Load Environments Data
+  $query = db_query("SELECT * FROM {hosting_devshop_project_environment} WHERE project_nid = %d ORDER BY environment", $node->nid);
   $environments = array();
-  while ($obj = db_fetch_object($query)) {
-    $object_node = node_load($obj->object_nid);
-
-    if (($object_node->type == 'site' && $object_node->site_status != HOSTING_SITE_DELETED) ||
-      ($object_node->type == 'platform' && $object_node->platform_status != HOSTING_PLATFORM_DELETED)
-        ){
-      $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
-    }
+  while ($environment_data = db_fetch_array($query)) {
+    $environment_data['data'] = unserialize($environment_data['data']);
+    $environments[$environment_data['environment']] = $environment_data;
   }
-  $project->environment_nodes = $environments;
+  $project->environments = $environments;
 
   // Save project object be available at $node->project.
   $additions['project'] = $project;
