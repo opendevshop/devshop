@@ -271,22 +271,23 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
   }
   
-  // When a project is verified, queue a verification for all platforms  
-  if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
-    $project = node_load($task->ref->nid);
-    $platform_nids = array_keys($project->project_objects['platform']);
-    foreach ($project->project_objects['platform'] as $nid => $name) {
-      //Check if a platform was deleted for exclude from verify.
-      $status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
-      if ($status != HOSTING_PLATFORM_DELETED) {
-        drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
-        hosting_add_task($nid, 'verify');
-      }
-      else {
-        drush_log('[DEVSHOP] Can\'t run verify on project: ' . $name, 'ok');
-      }
-    }
-  }
+  // When a project is verified, queue a verification for all platforms
+  // @TODO: Figure out a better way to verify all the things.
+//  if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
+//    $project = node_load($task->ref->nid);
+//    $platform_nids = array_keys($project->project_objects['platform']);
+//    foreach ($project->project_objects['platform'] as $nid => $name) {
+//      //Check if a platform was deleted for exclude from verify.
+//      $status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
+//      if ($status != HOSTING_PLATFORM_DELETED) {
+//        drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
+//        hosting_add_task($nid, 'verify');
+//      }
+//      else {
+//        drush_log('[DEVSHOP] Can\'t run verify on project: ' . $name, 'ok');
+//      }
+//    }
+//  }
 }
 
 /**
@@ -307,11 +308,14 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   $branches = getBranchesAndTags($task->ref->project->git_url);
 
-  $task->ref->project->git['branches'] = $branches['branches'];
-  $task->ref->project->git['tags'] = $branches['tags'];
+  // If something went wrong connecting to the git repo, don't wipe out our branches.
+  if (!empty($branches['branches'])){
+    $task->ref->project_settings['git_branches'] = $branches['branches'];
+    $task->ref->project_settings['git_tags'] = $branches['tags'];
 
-  // Save the project node now that we have branches and tags.
-  node_save($task->ref);
+    // Save the project node now that we have branches and tags.
+    node_save($task->ref);
+  }
 
   $task->context_options['git_branches'] = $branches['branches'];
   $task->context_options['git_tags'] = $branches['tags'];

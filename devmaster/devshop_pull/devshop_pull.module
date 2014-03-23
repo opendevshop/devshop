@@ -79,11 +79,11 @@ function devshop_pull_hosting_queues() {
  */
 function devshop_pull_devshop_project_settings(){
   return array(
-    'disable_pull' => array(
-      '#title' => t('Disable Code Pull'),
+    'pull_disabled' => array(
+      '#title' => t('Disable Pull'),
       '#node_type' => 'platform',
       '#type' => 'checkbox',
-      '#description' => t('Prevent git pull and reset, allowing "Live Development".'),
+      '#description' => t('Disable pulling code on this environment, allowing "live development".'),
     ),
   );
 }
@@ -142,6 +142,13 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#default_value' => $node->project->pull['pull_request_environments'],
       '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
     );
+    $form['project_settings']['pull']['pull_request_environments_delete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete Pull Request Environments'),
+      '#default_value' => $node->project_settings['pull']['pull_request_environments_delete'],
+      '#description' => t('When Pull Requests are closed, delete the environment.'),
+    );
+
   }
 }
 
@@ -156,10 +163,10 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'project'){
 
     // View Project
-    if ($op == 'view' && $node->project_settings['pull']['pull_method']== DEVSHOP_PULL_CALLBACK){
+    if ($op == 'view' && $node->project_settings['pull']['pull_enabled']){
       module_load_include('inc', 'devshop_pull');
       $url = _devshop_pull_callback_url($node);
-      $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
+      $output = '';
 
       $status = (int) $node->project_settings['pull']['last_pull_status'];
 

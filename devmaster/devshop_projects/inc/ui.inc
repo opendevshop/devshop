@@ -140,17 +140,18 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   // Branches display
-//  if (!empty($node->project->git['branches'])){
-//    $items = theme_item_list($node->project->git['branches', NULL, 'ul', array('class' => 'branches'));
-//  }
-//  else {
-//    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
-//  }
+  if (!empty($node->project->git['branches'])){
+    $items = theme_item_list($node->project->git['branches'], NULL, 'ul', array('class' => 'branches'));
+  }
+  else {
+    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
+  }
   $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
-  if (!empty($verify_task) && ($verify_task->task_status == HOSTING_TASK_PROCESSING || $verify_task->task_status == HOSTING_TASK_QUEUED)) {
-    $refresh_link =  t('Refresh in progress...');
-  } else {
+
+  if ($verify_task->task_status == HOSTING_TASK_SUCCESS || $verify_task->task_status == HOSTING_TASK_ERROR){
     $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+  } else {
+    $refresh_link =  t('Refresh in progress...');
   }
 
   $node->content['info']['git_branches'] = array(
@@ -180,15 +181,16 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $platform = node_load($platform_nid);
     
     // Skip this if it is not enabled.
-    if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
+    if ($site->site_status == HOSTING_SITE_DELETED && $platform->platform_status == HOSTING_PLATFORM_DELETED) {
       continue;
     }
 
     $row = array();
     $row[] = "<span class='environment'>$env</span>";
-    
     if ($site->site_status == HOSTING_SITE_DISABLED){
       $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
+    } elseif ($site->site_status == HOSTING_SITE_QUEUED){
+      $row[] = '<em>' . t('Installing...') . '</em>';
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
     }
@@ -212,7 +214,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 //      );
 //    }
 //    $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
-
 
     if (module_exists('devshop_log')) {
       $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
