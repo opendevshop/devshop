@@ -3,7 +3,8 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5.1"
-PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
+# PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
+PROVISION_SCRIPT_PATH = "repos/devshop/install.debian.sh"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -30,13 +31,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Set SH as our provisioner
   config.vm.provision "shell", path: PROVISION_SCRIPT_PATH
-
-  # Make local source code available to the VM, if they have the repos folder.
-  # @TODO: Clone and replace all the essential repos.
-  config.vm.synced_folder "repos/devshop_hosting", "/var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/devshop_hosting",
-    owner: "www-data", group: "www-data"
-
-  config.vm.synced_folder "repos/devshop_provision", "/var/aegir/.drush/devshop_provision",
-    owner: "www-data", group: "www-data"
 
 end
