@@ -188,7 +188,7 @@ else
   echo "║  Supervisor is running Hosting Queue Runner.                  ║"
   echo "╠═══════════════════════════════════════════════════════════════╣"
   echo "║ Use this link to login:                                       ║"
-  echo "║ `su - aegir -c"drush @hostmaster uli"`                        ║"
   echo "╚═══════════════════════════════════════════════════════════════╝"
+  echo " `su - aegir -c"drush @hostmaster uli"`    "
 
 fi
