@@ -152,6 +152,7 @@ function devshop_projects_form(&$node) {
     '#tree' => TRUE,
   );
 
+  // @TODO: Whenever an environment is created, make sure to resave the project so settings are captured in json.
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
   foreach ($node->project->environments as $environment_name => $environment) {
@@ -160,7 +161,6 @@ function devshop_projects_form(&$node) {
         '#title' => $environment_name,
         '#theme' => 'devshop_projects_settings_table',
       );
-
       foreach ($settings as $setting_id => $setting){
         $form['project']['environments'][$environment_name][$setting_id] = $setting;
         $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $node->project->environments[$environment_name][$setting_id];
