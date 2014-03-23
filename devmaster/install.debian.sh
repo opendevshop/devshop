@@ -90,15 +90,15 @@ if mysql -u "NotARealUser"; then
   exit 1
 fi
 
-if  [ ! -d '/var/aegir' ]; then
-  # Install aegir-provision and other tools
+if  [ ! `which drush` ]; then
+  # Install drush
   apt-get install drush=4.5-6 -y
-  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
-fi
 
-# Download DevShop backend projects (devshop_provision and provision_git)
-if [ ! -d '/var/aegir/.drush/provision_git' ]
-  then
+  # Install Provision, git, supervisor
+  apt-get install aegir-provision php5-gd unzip git supervisor -y
+
+  # Using drush, install provision_git, provision_logs, provisions_tasks_extra
+  # @TODO: Figure out a nicer way to do this. Is is possible with drush makefiles?
   su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
   su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
 fi
