@@ -220,68 +220,77 @@ function devshop_projects_load($node) {
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  // Project-enabled platforms get
-  if ($node->type == 'platform' || $node->type == 'site') {
-    // On Load: load this object's project and environment type
-    if ($op == 'load') {
-      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
-      $data[$node->type . "_nid"] = $node->nid;
-      return $data;
-    }
-
-    // On insert or update, insert records saving this objects project and environment
-    if ($op == 'update' || $op == 'insert') {
-      //Special case for migrate site. Is need copy the information to the new site.
-      if ($op == 'insert' && $node->type == 'site' && $node->import && !$node->verified) {
-        $platform = node_load($node->platform);
-        $node->project = $platform->project;
-        $node->project_nid = $platform->project_nid;
-        $node->environment = $platform->environment;
-        $node->git_branch = $platform->git_branch;
-        $node->drupal_path = $platform->drupal_path;
-        $node->clone_nid = $platform->clone_nid;
-      }
-      if (!empty($node->project) && !empty($node->environment)) {
-        // Get the project node by name.
-        $project = hosting_context_load($node->project);
-
-        // Save to table
-        $data = new stdClass();
-        $data->project_nid = $project->nid;
-        $data->object_nid = $node->nid;
-        $data->object_type = $node->type;
-        $data->environment = $node->environment;
-        $data->git_branch = $node->git_branch;
-        $data->drupal_path = $node->drupal_path;
-
-        //Site used for cloned the new site or platorm
-        if (isset($node->clone_nid)) {
-          $data->clone_nid = $node->clone_nid;
-        }
-
-        if ($op == 'insert') {
-          drupal_write_record('hosting_devshop_project_object', $data);
-        }
-        else {
-          drupal_write_record('hosting_devshop_project_object', $data, 'object_nid');
-        }
-
-        //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
-        if ($node->type == 'platform') {
-          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
-          while ($site = db_fetch_object($result)) {
-            db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
-          }
-        }
-
-        // If we are updating or inserting sites, check for live domain aliases.
-        $live_domain_alias = "{$node->environment}.{$project->live_domain}";
-
-        // If project should use live_domain_aliases, and site does not have the alias already...
-        if ($node->type == 'site' && $project->live_domain_aliases && array_search($live_domain_alias, $node->aliases) === FALSE) {
-          $node->aliases[] = $live_domain_alias;
-        }
-      }
-    }
+  // Load environment info into platforms and sites.
+  if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
+    $additions = array();
+    $additions['environment'] = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project_environment} where {$node->type}_nid', $node->nid));
+    return $additions;
   }
 }
+
+// @TODO: Remove.  I believe this is all cruft from back things were a bit more decoupled.
+//
+//    if ($op == 'load') {
+//
+//      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
+//
+//      $data[$node->type . "_nid"] = $node->nid;
+//      return $data;
+//    }
+//
+//    // On insert or update, insert records saving this objects project and environment
+//    if ($op == 'update' || $op == 'insert') {
+//      //Special case for migrate site. Is need copy the information to the new site.
+//      if ($op == 'insert' && $node->type == 'site' && $node->import && !$node->verified) {
+//        $platform = node_load($node->platform);
+//        $node->project = $platform->project;
+//        $node->project_nid = $platform->project_nid;
+//        $node->environment = $platform->environment;
+//        $node->git_branch = $platform->git_branch;
+//        $node->drupal_path = $platform->drupal_path;
+//        $node->clone_nid = $platform->clone_nid;
+//      }
+//      if (!empty($node->project) && !empty($node->environment)) {
+//        // Get the project node by name.
+//        $project = hosting_context_load($node->project);
+//
+//        // Save to table
+//        $data = new stdClass();
+//        $data->project_nid = $project->nid;
+//        $data->object_nid = $node->nid;
+//        $data->object_type = $node->type;
+//        $data->environment = $node->environment;
+//        $data->git_branch = $node->git_branch;
+//        $data->drupal_path = $node->drupal_path;
+//
+//        //Site used for cloned the new site or platorm
+//        if (isset($node->clone_nid)) {
+//          $data->clone_nid = $node->clone_nid;
+//        }
+//
+//        if ($op == 'insert') {
+//          drupal_write_record('hosting_devshop_project_object', $data);
+//        }
+//        else {
+//          drupal_write_record('hosting_devshop_project_object', $data, 'object_nid');
+//        }
+//
+//        //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
+//        if ($node->type == 'platform') {
+//          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
+//          while ($site = db_fetch_object($result)) {
+//            db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
+//          }
+//        }
+//
+//        // If we are updating or inserting sites, check for live domain aliases.
+//        $live_domain_alias = "{$node->environment}.{$project->live_domain}";
+//
+//        // If project should use live_domain_aliases, and site does not have the alias already...
+//        if ($node->type == 'site' && $project->live_domain_aliases && array_search($live_domain_alias, $node->aliases) === FALSE) {
+//          $node->aliases[] = $live_domain_alias;
+//        }
+//      }
+//    }
+//  }
+//}
