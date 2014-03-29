@@ -21,7 +21,7 @@ function devshop_profile_modules() {
     'ctools',
 
     /* DEVSHOP */
-    'devshop_hosting', 'devshop_projects', 'devshop_log', 'devshop_pull', 'devshop_live',
+    'devshop_hosting', 'devshop_projects', 'devshop_log', 'devshop_pull',
 
     /* NICEITIES */
     'hosting_drush_aliases', 'hosting_filemanager', 'hosting_logs', 'hosting_queue_runner', 'hosting_solr', 'hosting_tasks_extra',
