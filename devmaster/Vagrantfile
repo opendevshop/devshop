@@ -34,4 +34,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Set SH as our provisioner
   config.vm.provision "shell", path: PROVISION_SCRIPT_PATH
 
+  # Shared folder owned by aegir
+  config.vm.synced_folder "repos/", "/repos",
+    owner: "aegir", group: "aegir"
+
 end
