@@ -8,16 +8,7 @@ if [ -z "$1" ]
 fi
 
 # DevShop Repos
-if [ ! -d 'repos' ]
-  then
-
-    mkdir repos
-    cd repos
-
-    `git clone $1@git.drupal.org:project/devshop.git`
-    `git clone $1@git.drupal.org:project/devshop_provision.git`
-    `git clone $1@git.drupal.org:project/devshop_hosting.git`
-    `git clone $1@git.drupal.org:project/provision_git.git`
-else
-  echo "Repos already cloned.  Exiting."
-fi
+`git clone $1@git.drupal.org:project/devshop.git`
+`git clone $1@git.drupal.org:project/devshop_provision.git`
+`git clone $1@git.drupal.org:project/devshop_hosting.git`
+`git clone $1@git.drupal.org:project/provision_git.git`
