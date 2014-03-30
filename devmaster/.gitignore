@@ -1,6 +1,7 @@
 
 # devshop repos
 repos/*
-~repos/README.md
+!repos/README.md
+!repos/init-repos.sh
 # Local config
 .vagrant
