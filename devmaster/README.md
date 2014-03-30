@@ -58,5 +58,30 @@ It is best to use the installers from the websites so you are sure to get the ri
   ```
   cd devshop_vagrant vagrant up
   ```
+  Once the install script finished you should see the stock DevShop Install Success output 
+  with a link to login to your devshop front-end.
 
+  *You must use that link to login.* The admin password is automatically generated.
+  
+7. Manage Devshop.
+
+  To access the server simply use `vagrant ssh`, then switch to the `aegir` user:
+  ```
+  sudo su - aegir
+  ```
+  Once you are the aegir user, you can interact with the devshop front-end with drush.  For example, 
+  to get another login link, use the `drush uli` command:
+  ```
+  drush @hostmaster uli
+  ```
+  All server-side interactions with your sites are done as the `aegir` user.
+  
+  
+*NOTE: When you create new projects and environments, you will need to add those URIs to your 
+hosts file as well, or you will not be able to access them.*
+
+Development
+-----------
+
+If you are interested in developing devshop, checkout the `/repos` folder.
 
