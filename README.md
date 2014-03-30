@@ -54,16 +54,33 @@ It is best to use the installers from the websites so you are sure to get the ri
   ```
   git clone git@github.com:drupaldevshop/devshop_vagrant.git
   ```
-6. Vagrant Up!
-  ```
-  cd devshop_vagrant vagrant up
-  ```
-  Once the install script finished you should see the stock DevShop Install Success output 
-  with a link to login to your devshop front-end.
 
-  *You must use that link to login.* The admin password is automatically generated.
+Usage
+-----
+
+Once that's all done you can launch (and destroy) the devshop VM any time you wish with:
+
+  ```
+  cd devshop_vagrant
+  vagrant up
+  ```
+Once up, you can ssh into the VM with:
+  ```
+  vagrant ssh
+  ```
+
+### DevShop Installer
+
+The first time you `vagrant up` it will install devshop.  Once the install script finished you should 
+see the stock DevShop Install Success output with a link to login to your devshop front-end.
+
+*You must use that link to login.* The admin password is automatically generated.
   
-7. Manage Devshop.
+See "DevShop Management" for instructions for accessing the server to do things like
+reset the password.
+
+DevShop Management
+------------------
 
   To access the server simply use `vagrant ssh`, then switch to the `aegir` user:
   ```
@@ -76,6 +93,10 @@ It is best to use the installers from the websites so you are sure to get the ri
   ```
   All server-side interactions with your sites are done as the `aegir` user.
   
+  To see all hosted sites call 
+  ```
+  drush site-alias
+  ```
   
 *NOTE: When you create new projects and environments, you will need to add those URIs to your 
 hosts file as well, or you will not be able to access them.*
@@ -83,5 +104,8 @@ hosts file as well, or you will not be able to access them.*
 Development
 -----------
 
-If you are interested in developing devshop, checkout the `/repos` folder.
+If you are interested in developing devshop, checkout the `/repos` folder.  
+
+Run the `init-repos.sh` script to initialize the git repos needed for development
+and set them up in the VM.
 
