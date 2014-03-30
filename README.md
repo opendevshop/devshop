@@ -51,11 +51,11 @@ It is best to use the installers from the websites so you are sure to get the ri
   
 5. Clone this Repo.
 
-  ```sh
+  ```
   git clone git@github.com:drupaldevshop/devshop_vagrant.git
   ```
 6. Vagrant Up!
-  ```sh
+  ```
   cd devshop_vagrant vagrant up
   ```
 
