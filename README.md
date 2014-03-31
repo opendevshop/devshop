@@ -110,3 +110,6 @@ If you are interested in developing devshop, there are a few more steps you need
   2. Uncomment line 45 in `Vagrantfile` (the line with config.vm.synced_folder), and run `vagrant reload`.
   3. Change directory to `repos` and run the `init-repos.sh` script to prepare the repositories
      and place files in the guest.
+
+The reasoning here is that the synced_file must be owned by `aegir`, but the user doesn't exist until
+the provisioner runs.  There is currently now way around this problem, that I know of.
