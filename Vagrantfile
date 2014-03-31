@@ -4,6 +4,7 @@
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5.1"
 PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
+PATH_TO_ATTRIBUTES = File.dirname(__FILE__) + "/attributes.json"
 
 # For Development, uncomment
 # PROVISION_SCRIPT_PATH = "repos/devshop/install.debian.sh"
@@ -14,13 +15,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hashicorp/precise64"
 
   # Attributes are loaded from attributes.json
-  if !(File.exists?("attributes.json"))
+
+  if !(File.exists?(PATH_TO_ATTRIBUTES))
     warn "Make sure you have an attributes.json file and try again."
     exit
   end
 
   # Get attributes from attributes.json
-  attributes = JSON.parse(IO.read("attributes.json"))
+  attributes = JSON.parse(IO.read(PATH_TO_ATTRIBUTES))
 
   # Networking & hostname
   config.vm.host_name = attributes["vagrant"]["hostname"]
@@ -34,8 +36,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Set SH as our provisioner
   config.vm.provision "shell", path: PROVISION_SCRIPT_PATH
 
-  # Shared folder owned by aegir
-  # config.vm.synced_folder "repos/", "/repos",
-  #  owner: "aegir", group: "aegir"
+  # To develop DevShop
+  #   1. `vagrant up` with the synced folder commented out.
+  #   2. Uncomment this line, and run `vagrant reload`.
+  #   3. Change directory to `repos` and run the `init-repos.sh` script to
+  #      prepare the repositories and place files in the guest.
+  # @TODO: Figure out how to make this work without this workaround.
+  # config.vm.synced_folder "repos/", "/repos", owner: "aegir", group: "aegir"
 
 end
