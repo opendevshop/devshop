@@ -12,3 +12,6 @@ fi
 `git clone $1@git.drupal.org:project/devshop_provision.git`
 `git clone $1@git.drupal.org:project/devshop_hosting.git`
 `git clone $1@git.drupal.org:project/provision_git.git`
+
+# Run vagrant-guest-setup.sh on the guest machine
+vagrant ssh -c 'sudo sh /vagrant/repos/vagrant-guest-setup.sh'
