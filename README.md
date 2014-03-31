@@ -109,3 +109,4 @@ If you are interested in developing devshop, checkout the `/repos` folder.
 Run the `init-repos.sh` script to initialize the git repos needed for development
 and set them up in the VM.
 
+@TODO: This still needs work. Can't sync a folder to the aegir user until the aegir user exists.
