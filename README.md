@@ -104,9 +104,9 @@ hosts file as well, or you will not be able to access them.*
 Development
 -----------
 
-If you are interested in developing devshop, checkout the `/repos` folder.  
+If you are interested in developing devshop, there are a few more steps you need to take.
 
-Run the `init-repos.sh` script to initialize the git repos needed for development
-and set them up in the VM.
-
-@TODO: This still needs work. Can't sync a folder to the aegir user until the aegir user exists.
+  1. `vagrant up` with the synced folder commented out.
+  2. Uncomment line 45 in `Vagrantfile` (the line with config.vm.synced_folder), and run `vagrant reload`.
+  3. Change directory to `repos` and run the `init-repos.sh` script to prepare the repositories
+     and place files in the guest.
