@@ -233,10 +233,7 @@ function devshop_projects_load($node) {
  * Implementation of hook_nodeapi()
  *
  * Handle project information for Platforms and Sites:
- *   $node->project : The context name of the project.
- *   $node->environment: The type of environment this platform or site is:
- *	can be dev, test, or live.
- *   $node->git_branch: The current git branch the project lives on.
+ *   $node->environment: All information about this environment.
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
