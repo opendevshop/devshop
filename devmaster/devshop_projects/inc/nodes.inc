@@ -34,18 +34,23 @@ function devshop_projects_node_info() {
  *  @see hosting_platform_insert()
  */
 function devshop_projects_insert($node) {
+
   if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
   
   $info = new stdClass();
   $info->nid = $node->nid;
-  $info->git_url = $node->git_url;
-  $info->code_path = hosting_path_normalize($node->code_path);
-  $info->drupal_path = hosting_path_normalize($node->drupal_path);
-  $info->base_url = $node->base_url;
-  $info->install_profile = $node->install_profile;
-  $info->data = serialize($node->project);
+  $info->git_url = $node->project->git_url;
+  $info->code_path = hosting_path_normalize($node->project->code_path);
+  $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
+  $info->base_url = $node->project->base_url;
+  $info->install_profile = $node->project->install_profile;
+
+  // Save serialized data, minus environments
+  $data = $node->project;
+  unset($data->environments);
+  $info->data = serialize($data);
 
   drupal_write_record('hosting_devshop_project', $info);
 
@@ -64,8 +69,8 @@ function devshop_projects_insert($node) {
       $info->project_nid = $node->nid;
       $info->environment = $env;
       $info->git_ref = $environment['git_ref'];
-      $info->site_nid = $environment['site_nid'];
-      $info->platform_nid = $environment['platform_nid'];
+      $info->site = $environment['site'];
+      $info->platform = $environment['platform'];
       $info->data = serialize($environment);
 
       drupal_write_record('hosting_devshop_project_environment', $info);
@@ -81,40 +86,58 @@ function devshop_projects_insert($node) {
  *
  */
 function devshop_projects_update($node) {
+
   if (!$node->no_verify) {
     hosting_add_task($node->nid, 'verify');
   }
 
   $info = new stdClass();
   $info->nid = $node->nid;
-  $info->git_url = $node->git_url;
-  $info->code_path = hosting_path_normalize($node->code_path);
-  $info->drupal_path = hosting_path_normalize($node->drupal_path);
-  $info->base_url = $node->base_url;
-  $info->install_profile = $node->install_profile;
-  $info->data = serialize($node->project);
+  $info->git_url = $node->project->git_url;
+  $info->code_path = hosting_path_normalize($node->project->code_path);
+  $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
+  $info->base_url = $node->project->base_url;
+  $info->install_profile = $node->project->install_profile;
+
+  $environments = $node->project->environments;
+
+  // Save serialized data, minus environments
+  $data = $node->project;
+  unset($data->environments);
+  $info->data = serialize($data);
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
   // If using environment aliases... save them.
   devshop_project_save_domain_aliases($node);
 
-  // Delete existing environment records
-  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
+
 
   // Save Environment records.
-  foreach ($node->project->environments as $env => $environment){
-    $info = new stdClass();
-    $info->project_nid = $node->nid;
-    $info->environment = $env;
-    $info->git_ref = $environment['git_ref'];
-    $info->site_nid = $environment['site'];
-    $info->platform_nid = $environment['platform'];
-    $info->data = serialize($environment);
+  if (!empty($environments)) {
+    // Delete existing environment records
+    db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
 
-    drupal_write_record('hosting_devshop_project_environment', $info);
+    // Save each environment
+    foreach ($environments as $env => $environment){
+      $info = new stdClass();
+      $info->project_nid = $node->nid;
+      $info->environment = $env;
+      $info->git_ref = $environment['git_ref'];
+      $info->site = $environment['site'];
+      $info->platform = $environment['platform'];
+
+      unset($environment->data);
+      $info->data = serialize($environment);
+
+      if (drupal_write_record('hosting_devshop_project_environment', $info)){
+        drupal_set_message(t('Environment %name saved.', array('%name' => $env)));
+      }
+      else {
+        drupal_set_message(t('Something went wrong saving environment %name.', array('%name' => $env)), 'error');
+      }
+    }
   }
-
 }
 
 
@@ -196,7 +219,6 @@ function devshop_projects_load($node) {
   while ($environment_data = db_fetch_array($query)) {
     $environment_data['data'] = unserialize($environment_data['data']);
     $environments[$environment_data['environment']] = $environment_data;
-    $environments[$environment_data['environment']]['in_db'] = TRUE;
   }
   $project->environments = $environments;
 
@@ -221,7 +243,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   // Load environment info into platforms and sites.
   if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
     $additions = array();
-    $additions['environment'] = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_project_environment} where {$node->type}_nid = %d", $node->nid));
+    $additions['environment'] = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_project_environment} where {$node->type} = %d", $node->nid));
     return $additions;
   }
 }
