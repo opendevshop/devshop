@@ -255,7 +255,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#required' => TRUE,
     '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
     '#size' => 40,
-    '#default_value' => $project_node->project->title,
+    '#default_value' => $project_node->title,
     '#maxlength' => 255,
   );
 
