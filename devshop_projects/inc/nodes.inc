@@ -58,16 +58,18 @@ function devshop_projects_insert($node) {
   devshop_project_save_domain_aliases($node);
 
   // Save Environment records.
-  foreach ($node->project->environments as $env => $environment){
-    $info = new stdClass();
-    $info->project_nid = $node->nid;
-    $info->environment = $env;
-    $info->git_ref = $environment['git_ref'];
-    $info->site_nid = $environment['site_nid'];
-    $info->platform_nid = $environment['platform_nid'];
-    $info->data = serialize($environment);
+  if (!empty($node->project->environments)) {
+    foreach ($node->project->environments as $env => $environment){
+      $info = new stdClass();
+      $info->project_nid = $node->nid;
+      $info->environment = $env;
+      $info->git_ref = $environment['git_ref'];
+      $info->site_nid = $environment['site_nid'];
+      $info->platform_nid = $environment['platform_nid'];
+      $info->data = serialize($environment);
 
-    drupal_write_record('hosting_devshop_project_environment', $info);
+      drupal_write_record('hosting_devshop_project_environment', $info);
+    }
   }
 }
 
