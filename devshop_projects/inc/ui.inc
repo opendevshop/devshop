@@ -25,7 +25,6 @@ function devshop_projects_projects_page() {
 
   while ($result = db_fetch_object($query)) {
     $project_node = node_load($result->nid);
-    dsm($project_node, 'project node');
     $project = $project_node->project;
 
     // Load an environment for extra info like version.
@@ -50,7 +49,6 @@ function devshop_projects_projects_page() {
     // Links to all sites
     $actions = array();
     $count = 0;
-    dsm($project);
     foreach ($project->environments as $env => $details){
       // @TODO: Handle aliases.
       $site_url = url("http://$env.$project->base_url", array('absolute' => TRUE));
