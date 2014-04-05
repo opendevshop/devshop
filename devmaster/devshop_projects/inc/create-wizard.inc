@@ -623,8 +623,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Create these platforms, if they don't exist yet
   foreach ($form_state['values']['project']['environments'] as $name => $environment) {
 
-    if ($name == 'NEW') continue;
-
     // If platform exists, it's because user went back in the wizard.
     $platform_nid = $project_node->project->environments[$name]['platform'];
 
@@ -639,12 +637,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       node_save($platform_node);
     }
     // If platform hasn't been created yet, do so now!
-    elseif (empty($platform_nid)) {
+    else {
 
-      // Save the damn platform nodes
       $platform = new stdClass;
-
-      // Platform name
       $platform->title = $project_node->title . '_' . $environment['title'];
 
       // Platform publish_path
@@ -657,11 +652,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       // Other attributes
       $platform->web_server = $environment['web_server'];
-      $platform->git_branch = $environment['git_branch'];
-      $platform->pull_enable = $environment['pull_enabled'];
-      $platform->project = $project_node->title;
-      $platform->environment = $environment['title'];
-//      $platform->drupal_path = $project_node->project->drupal_path;
 
       foreach ($settings as $setting_name => $element){
         if ($element['#node_type'] == 'platform'){
@@ -706,6 +696,8 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 function devshop_project_create_step_sites(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
+
+  dsm($project_node, 'project');
 
   $profiles = array();
   $available_profiles = array();
