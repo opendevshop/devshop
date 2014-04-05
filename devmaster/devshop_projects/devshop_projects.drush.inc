@@ -107,7 +107,7 @@ function drush_devshop_platform_verify(){
   }
 
   // Check if the platform code exists. If it doesn't, clone it.
-  if (!is_dir($root) || !drush_shell_cd_and_exec($root, 'git status')) {
+  if (!is_dir($root)) {
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
     // Build the command string
