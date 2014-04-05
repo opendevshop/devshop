@@ -257,7 +257,7 @@ function devshop_projects_form(&$node) {
 function devshop_projects_submit_settings($form, &$form_state) {
 
   // Go through and save our settings to site and platform nodes.
-  $project_node = node_load($form_state['values']['nid']);
+//  $project_node = node_load($form_state['values']['nid']);
   $settings_info = module_invoke_all('devshop_project_settings', $project_node);
   $nodes = array();
 

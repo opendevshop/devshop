@@ -227,6 +227,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
  */
 function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
+  $project_node = node_load($project->project_nid);
 
   if ($project->verify_error){
     $form['note'] = array(
@@ -245,7 +246,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#required' => 1,
     '#title' => t('Git URL'),
     '#description' => t('Enter the Git URL for your drupal project.  The root of the repo must contain Drupal\'s index.php.  A clone of !link is a good place to start.', array('!link' => l('http://git.drupal.org/project/drupal.git', 'http://git.drupal.org/project/drupal.git'))),
-    '#default_value' => $project->git_url,
+    '#default_value' => $project_node->project->git_url,
   );
 
   $form['title'] = array(
@@ -254,7 +255,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#required' => TRUE,
     '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
     '#size' => 40,
-    '#default_value' => $project->title,
+    '#default_value' => $project_node->project->title,
     '#maxlength' => 255,
   );
 
@@ -305,7 +306,7 @@ HTML;
  *
  *  This is also where we get all the tags and branches.
  */
-function devshop_project_create_step_git_validate(&$from, &$form_state) {
+function devshop_project_create_step_git_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
 
   // No spaces or special characters allowed.
@@ -316,6 +317,8 @@ function devshop_project_create_step_git_validate(&$from, &$form_state) {
   if (!ctype_alnum($project_name)) {
     form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
   }
+
+  form_set_value($form['title'], $project_name, $form_state);
 
   // Check for duplicate project name here.
   $node = hosting_context_load($project_name);
@@ -332,48 +335,47 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
 
   $project = &$form_state['project'];
 
-  // If the project already exists, and git url has changed...
+  // If the project already exists, this means the git url has changed...
   if ($project->project_nid) {
     // Change the git url and save the node.  Verification SHOULD run again.
     $node = node_load($project->project_nid);
-    $node->git_url = $form_state['values']['git_url'];
-    $node->branches = array();
+    $node->project->git_url = $form_state['values']['git_url'];
     node_save($node);
-
-    // Also clear the repo related info from $project
   }
-
-  // Now that we've compared old and new, set $project properties.
-  $project->git_url = $form_state['values']['git_url'];
-  $project->title = $project_name = $form_state['values']['title'];
-
-  if (empty($project->project_nid)){
+  // Create new project node
+  elseif (empty($project->project_nid)){
     // Create the project node now.  We will update it with the chosen path.
     // This is so we can check for branches and save the hosting_context as soon
     // as possible.
     $node = new stdClass;
-    $node->title = $project->title;
-    $node->git_url = $project->git_url;
+    $node->title = $form_state['values']['title'];
+
+
     $node->type = 'project';
     $node->status = 0;
     $node->uid = $user->uid;
     $node->name = $user->name;
+
+    $node->project = new stdClass();
+    $node->project->git_url = $form_state['values']['git_url'];
+    $node->project->code_path = variable_get('devshop_projects_default_path', '/var/aegir/projects'). '/'. $form_state['values']['title'];
+
+    // Setup project url.
+    $base_url = $_SERVER['SERVER_NAME'];
+    $server = variable_get('devshop_project_master_url', $base_url);
+    $node->project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@project.@hostname"), array('@project' => $form_state['values']['title'], '@hostname' => $server));
+    $node->project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
+
+    // Save project node.
     if ($node = node_submit($node)) {
       node_save($node);
     }
+
+    // Save NID to ctools object cache.
     if ($node->nid){
       $project->project_nid = $node->nid;
     }
   }
-
-  // Now that we have the project name, set the defaults for code path and project URL
-  $project->code_path = variable_get('devshop_projects_default_path', '/var/aegir/projects'). '/'. $project_name;
-
-  // Setup project url.
-  $base_url = $_SERVER['SERVER_NAME'];
-  $server = variable_get('devshop_project_master_url', $base_url);
-  $project->base_url = strtr(variable_get('devshop_project_default_base_url_pattern', "@project.@hostname"), array('@project' => strtolower($project_name), '@hostname' => $server));
-  $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
 
   //Verify if is need to skip.
   $skip = variable_get('devshop_projects_skip_settings', TRUE);
@@ -444,11 +446,13 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
 function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project = &$form_state['project'];
 
-  // For this step, we just save code path and base url for later saving and
-  // verification.
-  $project->code_path = $form_state['values']['code_path'];
-  $project->drupal_path = $form_state['values']['drupal_path'];
-  $project->base_url = $form_state['values']['base_url'];
+  // Save code path and base url.
+  $project_node = node_load($project->project_nid);
+  $project_node->project->code_path = $form_state['values']['code_path'];
+  $project_node->project->drupal_path = $form_state['values']['drupal_path'];
+  $project_node->project->base_url = $form_state['values']['base_url'];
+
+  node_save($project_node);
 }
 
 
@@ -488,8 +492,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
-
-
     return;
   }
 
@@ -498,8 +500,14 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   drupal_add_js($path);
 
   $settings = module_invoke_all('devshop_project_settings', $project_node);
-
-  $form['environments'] = array(
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $project_node->nid,
+  );
+  $form['project'] = array(
+    '#tree' => TRUE,
+  );
+  $form['project']['environments'] = array(
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
@@ -507,11 +515,10 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   );
 
   // Ensure a blank row exists (happens when using 'Back' button)
-  if (!is_array($project->environments['NEW'])){
-    $project->environments['NEW'] = array();
+  if (!is_array($project_node->project->environments['NEW'])){
+    $project_node->project->environments['NEW'] = array();
   }
-
-  foreach ($project->environments as $env => $env_settings) {
+  foreach ($project_node->project->environments as $env => $env_settings) {
     // No platforms exist yet
     if ($env == 'NEW') {
       $env_title = '';
@@ -519,13 +526,13 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       $env_title = $env;
     }
 
-    $form['environments'][$env] = array(
+    $form['project']['environments'][$env] = array(
       '#tree' => TRUE,
       '#type' => 'fieldset',
       '#theme' => 'devshop_projects_settings_table',
     );
 
-    $form['environments'][$env]['title'] = array(
+    $form['project']['environments'][$env]['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Environment Name'),
       '#default_value' => $env_title,
@@ -535,15 +542,15 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         'placeholder' => t('name'),
       ),
       '#field_prefix' => 'http://',
-      '#field_suffix' => ".$project->base_url",
+      '#field_suffix' => "." . $project_node->project->base_url,
     );
 
     // Add environment settings form elements
     foreach ($settings as $setting_id => $setting){
-      $form['environments'][$env][$setting_id] = $setting;
-      $form['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
-      $form['environments'][$env][$setting_id]['#attributes']['title'] = $setting['#description'];
-      $form['environments'][$env][$setting_id]['#description'] = '';
+      $form['project']['environments'][$env][$setting_id] = $setting;
+      $form['project']['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
+      $form['project']['environments'][$env][$setting_id]['#attributes']['title'] = $setting['#description'];
+      $form['project']['environments'][$env][$setting_id]['#description'] = '';
     }
 
     //Now add button.
@@ -564,56 +571,43 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
  */
 function devshop_project_create_step_environments_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
+
   $values = &$form_state['values'];
 
-  // Project not verified yet.  We don't know the branches.
-  if (isset($values['not_ready'])) {
-    form_set_error('', t('We haven\'t connected to your repo yet.  Please wait for the queue.'));
-    return;
-  }
-
   // Changes NEW environment data to $title
-  if ($values['environments']['NEW']['title']){
-    $new_env = $values['environments']['NEW']['title'];
-    $new_env_settings = $values['environments']['NEW'];
-    $values['environments'][$new_env] = $new_env_settings;
+  if ($values['project']['environments']['NEW']['title']){
+    $new_env = $values['project']['environments']['NEW']['title'];
+    $new_env_settings = $values['project']['environments']['NEW'];
+    $values['project']['environments'][$new_env] = $new_env_settings;
 
     // Create the next NEW environment.  Unset makes sure its always last.
-    unset($values['environments']['NEW']);
+    unset($values['project']['environments']['NEW']);
 
     // If "add environment" button clicked, add another row.
     if ($form_state['clicked_button']['#name'] == 'add_environment'){
-      $values['environments']['NEW'] = array();
+      $values['project']['environments']['NEW'] = array();
     }
   } else {
-    unset($values['environments']['NEW']);
+    unset($values['project']['environments']['NEW']);
   }
 
-  // Reset project environments
-  $project->environments = array();
-
   // Check environment titles
-  foreach ($values['environments'] as $env => $env_settings) {
+  foreach ($values['project']['environments'] as $env => $env_settings) {
     // Check for illegal chars
     if ($env != 'NEW' && !empty($env_settings['title'])){
       if (!preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
         $form_item = 'environments][' . $env  . '][title';
         form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
-      } else {
-        // If all is well, save to project cache
-        $project->environments[$env] = $env_settings;
       }
     }
   }
 
-
-
   // Reject if empty
-  if (count($project->environments) < 1){
+  if (count($values['project']['environments']) < 1){
     if ($form_state['clicked_button']['#name'] == 'add_environment'){
-      form_set_error('environments][NEW][title', t('Name this environment before you add another.'));
+      form_set_error('project][environments][NEW][title', t('Name this environment before you add another.'));
     } else {
-      form_set_error('environments][NEW][title', t('You must add at least one environment.'));
+      form_set_error('project][environments][NEW][title', t('You must add at least one environment.'));
     }
   }
 }
@@ -623,22 +617,24 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
  */
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
-  $project = &$form_state['project'];
-  $project_node = node_load($project->project_nid);
-  $values = $form_state['values'];
-
-  // @TODO: Settings from the form are not saving.
+  $project_node = node_load($form_state['values']['nid']);
   $settings = module_invoke_all('devshop_project_settings', $project_node);
 
   // Create these platforms, if they don't exist yet
-  foreach ($project->environments as $name => $environment) {
-    $platform_nid = $project_node->environments[$name]['platform'];
+  foreach ($form_state['values']['project']['environments'] as $name => $environment) {
+
+    if ($name == 'NEW') continue;
+
+    // If platform exists, it's because user went back in the wizard.
+    $platform_nid = $project_node->project->environments[$name]['platform'];
 
     // If the platform already exists, save it again with new settings.
     if ($platform_nid) {
       $platform_node = node_load($platform_nid);
       foreach ($settings as $setting_name => $element){
-        $platform_node->{$setting_name} = $environment[$setting_name];
+        if ($element['#node_type'] == 'platform'){
+          $platform_node->{$setting_name} = $environment[$setting_name];
+        }
       }
       node_save($platform_node);
     }
@@ -649,34 +645,38 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform = new stdClass;
 
       // Platform name
-      $platform->title = $project->title . '_' . $environment['title'];
+      $platform->title = $project_node->title . '_' . $environment['title'];
 
       // Platform publish_path
-      if ($project->drupal_path) {
-        $platform->publish_path = $project->code_path . '/' . $environment['title'] . '/' . $project->drupal_path;
+      if (!empty($project_node->project->drupal_path)) {
+        $platform->publish_path = $project_node->project->code_path . '/' . $environment['title'] . '/' . $project_node->project->drupal_path;
       }
       else {
-        $platform->publish_path = $project->code_path . '/' . $environment['title'];
+        $platform->publish_path = $project_node->project->code_path . '/' . $environment['title'];
       }
 
       // Other attributes
       $platform->web_server = $environment['web_server'];
       $platform->git_branch = $environment['git_branch'];
       $platform->pull_enable = $environment['pull_enabled'];
-      $platform->project = $project->title;
+      $platform->project = $project_node->title;
       $platform->environment = $environment['title'];
-      $platform->drupal_path = $project->drupal_path;
+//      $platform->drupal_path = $project_node->project->drupal_path;
 
       foreach ($settings as $setting_name => $element){
-        $platform->{$setting_name} = $environment[$setting_name];
+        if ($element['#node_type'] == 'platform'){
+          $platform->{$setting_name} = $environment[$setting_name];
+        }
       }
       $platform_node = _devshop_projects_node_create('platform', $platform);
-      $project->environments[$name]['platform_nid'] = $platform_node->nid;
     }
+
+    $environment['platform'] = $platform_node->nid;
+    $project_node->project->environments[$name] = $environment;
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments = array_diff_key($project_node->project->environments, $values['environments']);
+  $removed_environments = array_diff_key($project_node->project->environments, $form_state['values']['project']['environments']);
 
   foreach ($removed_environments as $environment_name => $settings) {
     // @TODO: Determine what to do here based on task status...
@@ -689,6 +689,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       hosting_add_task($platform_nid, 'delete');
     }
   }
+
+//  dsm($platform_node, 'platform');
+//  dsm($project_node, 'saving project');
+  node_save($project_node);
 }
 
 /**********
@@ -702,20 +706,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 function devshop_project_create_step_sites(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-
-  // OUTPUT
-  // @TODO: Clean this up!!
-
-  // @TODO: This is old code that is never seen.  User ends up on project page.
-  // Perhaps we should keep people on this page until the sites are all installed?  No, because we want to free up the wizard for another project create... instead lets fix the project node page to display proper status.
-  if ($project_node->project_status == 'sites_installing') {
-    $form['note'] = array(
-      '#type' => 'item',
-      '#title' => t('Sites Installing'),
-      '#value' => t('Your sites are being installed!'),
-    );
-    return $form;
-  }
 
   $profiles = array();
   $available_profiles = array();

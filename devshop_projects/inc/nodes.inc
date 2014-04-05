@@ -99,6 +99,9 @@ function devshop_projects_update($node) {
   // If using environment aliases... save them.
   devshop_project_save_domain_aliases($node);
 
+  // Delete existing environment records
+  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
+
   // Save Environment records.
   foreach ($node->project->environments as $env => $environment){
     $info = new stdClass();
@@ -109,7 +112,7 @@ function devshop_projects_update($node) {
     $info->platform_nid = $environment['platform_nid'];
     $info->data = serialize($environment);
 
-    drupal_write_record('hosting_devshop_project_environment', $info, 'project_nid');
+    drupal_write_record('hosting_devshop_project_environment', $info);
   }
 
 }
@@ -193,6 +196,7 @@ function devshop_projects_load($node) {
   while ($environment_data = db_fetch_array($query)) {
     $environment_data['data'] = unserialize($environment_data['data']);
     $environments[$environment_data['environment']] = $environment_data;
+    $environments[$environment_data['environment']]['in_db'] = TRUE;
   }
   $project->environments = $environments;
 
