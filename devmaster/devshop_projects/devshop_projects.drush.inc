@@ -19,12 +19,15 @@
  */
 function drush_devshop_projects_pre_hosting_task() {
 
+  drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
+
   $task =& drush_get_context('HOSTING_TASK');
+
   // Verify Platform
   // For our platforms, we have to clone it if it has a git_remote
   // If it has a git branch, we should checkout as well.
-  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->git_url)) {
-    drush_devshop_provision_pre_hosting_task_platform_verify();
+  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->environment->git_url)) {
+    drush_devshop_platform_verify();
   }
 
   // Pull
@@ -80,27 +83,32 @@ function drush_devshop_projects_pre_hosting_task() {
 /**
  * Pre hosting task hook for "verify platform" task.
  *  - Clones the repository on first run, checks out the selected after that.
+ *
+ * Not a hook! Called from drush_devshop_projects_pre_hosting_task
  */
-function drush_devshop_provision_pre_hosting_task_platform_verify(){
+function drush_devshop_platform_verify(){
+
+  drush_log(dt("[DEVSHOP] Hello. Verifying Platform..."));
+
   // Verify Platform
   $task =& drush_get_context('HOSTING_TASK');
 
   $platform = $task->ref;
   $root = $platform->publish_path;
-  $git_remote = $platform->git_url;
-  $git_branch = $platform->git_branch;
+  $git_remote = $platform->environment->git_url;
+  $git_branch = $platform->environment->git_ref;
   $create_branch = FALSE;
 
   $output = '';
 
   //Remove drupal_path to clone.
-  if ($platform->drupal_path) {
-    $root = str_replace($platform->drupal_path, '', $root);
+  if ($platform->environment->drupal_path) {
+    $root = str_replace($platform->environment->drupal_path, '', $root);
   }
 
-  // Check if a repo exists
+  // Check if the platform code exists. If it doesn't, clone it.
   if (!is_dir($root) || !drush_shell_cd_and_exec($root, 'git status')) {
-    drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $platform->git_url, '!root' => $root)));
+    drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
     // Build the command string
     $command = "git clone --recursive $git_remote $root";
@@ -108,25 +116,17 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
       $command .= " --branch $git_branch";
     }
 
-    //If is set site nid clone from old site and later create a new branch.
-    if ($platform->clone_nid) {
-      $site_source = node_load($platform->clone_nid);
-      $git_branch = $site_source->git_branch;
-      $create_branch = TRUE;
-    }
+    // @TODO: Gotta be a better way...
+    // If is set site nid clone from old site and later create a new branch.
+//    if ($platform->clone_nid) {
+//      $site_source = node_load($platform->clone_nid);
+//      $git_branch = $site_source->git_branch;
+//      $create_branch = TRUE;
+//    }
   }
   // If the platform has been verified and has a branch and git url
   else {
-    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $platform->git_branch, '!root' => $root)));
-
-    $root = $platform->publish_path;
-    $git_remote = $platform->git_url;
-    $git_branch = $platform->git_branch;
-
-    //Remove drupal_path to clone.
-    if ($platform->drupal_path) {
-      $root = str_replace($platform->drupal_path, '', $root);
-    }
+    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_branch, '!root' => $root)));
 
     // Run git fetch to ensure we have all branches and tags
     $output .= _devshop_projects_git_execute('git fetch', $root);
@@ -140,11 +140,11 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
 
   if ($create_branch) {
     //Create branch.
-    $command = "git checkout -b $platform->git_branch";
+    $command = "git checkout -b $git_branch";
     $output .=  _devshop_projects_git_execute($command, $root);
 
     //Push the branch
-    $command = "git push -u origin $platform->git_branch";
+    $command = "git push -u origin $git_branch";
     $output .=  _devshop_projects_git_execute($command, $root);
   }
 
@@ -298,7 +298,6 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  */
 function devshop_projects_hosting_project_context_options(&$task) {
 
-  $task->context_options['server'] = '@server_master';
 
   $branches = getBranchesAndTags($task->ref->project->git_url);
 
@@ -313,6 +312,8 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   // Save project object to context.
   if (isset($task->ref->project)) {
+    $task->context_options['server'] = '@server_master';
+    $task->context_options['project_name'] = $task->ref->title;
     $task->context_options['project'] = $task->ref->project;
   }
 }
@@ -326,6 +327,8 @@ function devshop_projects_drush_context_import($context, &$node) {
   if ($context->type == 'project') {
     $node->title = $context->project_name;
     $node->type = $context->type;
+
+    // @TODO: Fix up for $node->project
     $node->code_path = $context->code_path;
     $node->drupal_path = $context->drupal_path;
     $node->base_url = $context->base_url;
@@ -392,36 +395,6 @@ function getBranchesAndTags($git_url = NULL){
   drush_log(dt('[DEVSHOP] Found !b branches and !t tags.', array('!b' => count($branches), '!t' => count($tags), )), 'ok');
   return array('branches' => $branches, 'tags' => $tags);
 }
-
-/**
- * Implements hook_hosting_site_context_options()
- *
- * This transfers data from the node to the aegir context object (the alias!)
- * For site entities.
- */
-function devshop_projects_hosting_site_context_options(&$task) {
-  $task->context_options['project'] = $task->ref->project;
-  $task->context_options['nerd'] = 'vision';
-}
-
-/**
- * Implements hook_hosting_site_context_options()
- *
- * This transfers data from the node to the aegir context object (the alias!)
- * For site entities.
- */
-function devshop_projects_hosting_platform_context_options(&$task) {
-  if (!empty($task->ref->project)){
-    $task->context_options['project'] = $task->ref->project;
-    $task->properties['task properties'] = 'works';
-    $task->ref->properties['task ref properties'] = 'works';
-
-    d()->setProperty('setProperty', 'works');
-
-    // @TODO: none of these work --^
-  }
-}
-
 
 /**
  * Utility for execute git commands.
