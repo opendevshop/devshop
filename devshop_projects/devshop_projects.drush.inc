@@ -310,19 +310,16 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   // If something went wrong connecting to the git repo, don't wipe out our branches.
   if (!empty($branches['branches'])){
-    $task->ref->project_settings['git_branches'] = $branches['branches'];
-    $task->ref->project_settings['git_tags'] = $branches['tags'];
+    $task->ref->project->git['branches'] = $branches['branches'];
+    $task->ref->project->git['tags'] = $branches['tags'];
 
     // Save the project node now that we have branches and tags.
     node_save($task->ref);
   }
 
-  $task->context_options['git_branches'] = $branches['branches'];
-  $task->context_options['git_tags'] = $branches['tags'];
-  
-  // Load environment settings
-  if (isset($task->ref->settings)) {
-    $task->context_options['settings'] = $task->ref->settings;
+  // Save project object to context.
+  if (isset($task->ref->project)) {
+    $task->context_options['project'] = $task->ref->project;
   }
 }
 
