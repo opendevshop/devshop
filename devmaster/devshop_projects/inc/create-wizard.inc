@@ -614,7 +614,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
 
     $environment['platform'] = $platform_node->nid;
-    $project_node->project->environments[$name] = $environment;
+    $project_node->project->environments[$name] = (object) $environment;
   }
 
   // @TODO: Put this back once creation works.
@@ -669,7 +669,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   foreach ($project_node->project->environments as $name => $environment){
 
     // Get platform and latest verify task.
-    $platform_nid = $environment['platform'];
+    $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
     $task = hosting_get_most_recent_task($platform_nid, 'verify');
 
@@ -836,9 +836,9 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   // then  "Cloning" to create the rest?
   foreach ($project_node->project->environments as $environment_name => &$environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $environment['db_server'];
-    $site_node = devshop_projects_create_site($project_node, node_load($environment['platform']), $environment_name, $db_server);
-    $environment['site'] = $site_node->nid;
+    $db_server = $environment->db_server;
+    $site_node = devshop_projects_create_site($project_node, node_load($environment->platform), $environment_name, $db_server);
+    $environment->site = $site_node->nid;
   }
 
   // Set to not verify and to publish.
