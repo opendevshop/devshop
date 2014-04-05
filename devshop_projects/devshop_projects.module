@@ -366,7 +366,7 @@ function devshop_projects_hosting_drush_aliases_name($node) {
  * Helper function to create a site in a project.
  * Used by Wizard & "Create Platform" > Post Verify
  */
-function devshop_projects_create_site($project_node, $platform_node, $platform_name, $db_server = NULL) {
+function devshop_projects_create_site($project_node, $platform_node, $environment_name, $db_server = NULL) {
   global $user;
 
   // Create the site nodes
@@ -374,7 +374,7 @@ function devshop_projects_create_site($project_node, $platform_node, $platform_n
   $node->type = 'site';
   $node->status = 1;
   $node->uid = $user->uid;
-  $node->title = $platform_name .'.'. $project_node->base_url;
+  $node->title = $environment_name .'.'. $project_node->project->base_url;
 
   // Aegir properties
   // @TODO: better client & DB support
@@ -386,11 +386,11 @@ function devshop_projects_create_site($project_node, $platform_node, $platform_n
   $node->platform = $platform_node->nid;
 
   // Lookup this platforms install profile
-  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
+  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->project->install_profile));
 
-  $node->environment = $platform_name;
-  $node->git_branch = $platform_node->git_branch;
-  $node->project = $project_node->title;
+//  $node->environment = $environment_name;
+//  $node->git_branch = $platform_node->git_branch;
+//  $node->project = $project_node->title;
 
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
