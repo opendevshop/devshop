@@ -269,7 +269,7 @@ function devshop_projects_update_9() {
  * Remove live_domain from hosting_devsho_project schema and disable devshop_live if needed.
  */
 function devshop_projects_update_10() {
-  modules_disable(array('devshop_live'));
+  module_disable(array('devshop_live'));
   $ret = array();
   if (db_column_exists('hosting_devshop_project', 'live_domain')){
     $ret[] = db_drop_field($ret, 'hosting_devshop_project', 'live_domain');
@@ -277,11 +277,19 @@ function devshop_projects_update_10() {
   return $ret;
 }
 
-
 /**
  * Create new hosting_devshop_environment table.
  */
 function devshop_projects_update_11() {
-  // Create tables.
-  drupal_install_schema('devshop_projects');
+  // Create only the new table
+  // Clone of drupal_install_schema('devshop_projects');
+  $module = 'devshop_projects';
+  $name = 'hosting_devshop_project_environment';
+
+  $schema = drupal_get_schema_unprocessed($module);
+  _drupal_initialize_schema($module, $schema);
+
+  $ret = array();
+  db_create_table($ret, $name, $schema['hosting_devshop_project_environment']);
+  return $ret;
 }
