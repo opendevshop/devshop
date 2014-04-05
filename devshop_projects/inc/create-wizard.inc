@@ -834,8 +834,6 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   // Create the site nodes, saving to the environment.
   // @TODO: Can we speed things up here by only running install for the first,
   // then  "Cloning" to create the rest?
-  dsm($project_node, 'node for environments');
-
   foreach ($project_node->project->environments as $environment_name => &$environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
     $db_server = $environment['db_server'];
