@@ -240,7 +240,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   // Load environment info into platforms and sites.
   if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
     $additions = array();
-    $additions['environment'] = db_fetch_object(db_query("SELECT * FROM {hosting_devshop_project_environment} e LEFT JOIN {hosting_devshop_project} p on e.project_nid = p.nid where {$node->type} = %d", $node->nid));
+    $additions['environment'] = db_fetch_object(db_query("SELECT e.*, n.title AS project FROM {hosting_devshop_project_environment} e LEFT JOIN {node} n ON e.project_nid = n.nid WHERE {$node->type} = %d", $node->nid));
     return $additions;
   }
 }
