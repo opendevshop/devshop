@@ -412,6 +412,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project_node->project->drupal_path = $form_state['values']['drupal_path'];
   $project_node->project->base_url = $form_state['values']['base_url'];
 
+  $project_node->no_verify;
   node_save($project_node);
 }
 
@@ -634,6 +635,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Somehow, NEW environment still appears!
   unset($project_node->project->environments['NEW']);
+  $project_node->no_verify = TRUE;
   node_save($project_node);
 }
 
@@ -824,29 +826,30 @@ function devshop_project_create_step_sites_submit(&$from, &$form_state) {
 function devshop_projects_create_wizard_finish(&$form_state) {
 
   $project = &$form_state['project'];
+  $project_node = node_load($project->project_nid);
 
   // Save the extra options to the project node.
-  $node = node_load($project->project_nid);
-  $node->project->install_profile = $project->install_profile;
-  $node->no_verify = TRUE;
+  $project_node->project->install_profile = $project->install_profile;
 
-  // Create the site nodes
+  // Create the site nodes, saving to the environment.
   // @TODO: Can we speed things up here by only running install for the first,
   // then  "Cloning" to create the rest?
-  dsm($node, 'node for environments');
+  dsm($project_node, 'node for environments');
 
-  foreach ($node->project->environments as $environment_name => &$environment) {
+  foreach ($project_node->project->environments as $environment_name => &$environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
     $db_server = $environment['db_server'];
-    $site_node = devshop_projects_create_site($node, node_load($environment['platform']), $environment_name, $db_server);
+    $site_node = devshop_projects_create_site($project_node, node_load($environment['platform']), $environment_name, $db_server);
     $environment['site'] = $site_node->nid;
   }
 
-  node_save($node);
-
+  // Set to not verify and to publish.
+  $project_node->no_verify = TRUE;
+  $project_node->status = 1;
+  node_save($project_node);
 
   ctools_object_cache_clear('project', $form_state['cache name']);
-  $form_state['redirect'] = 'node/' . $node->nid;
+  $form_state['redirect'] = 'node/' . $project_node->nid;
 
   // Removing last step session variable.
   unset($_SESSION['last_step']);
