@@ -221,7 +221,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   // Load environment info into platforms and sites.
   if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
     $additions = array();
-    $additions['environment'] = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_project_environment} where {$node->type}_nid", $node->nid));
+    $additions['environment'] = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_project_environment} where {$node->type}_nid = %d", $node->nid));
     return $additions;
   }
 }
