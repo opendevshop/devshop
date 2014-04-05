@@ -123,20 +123,23 @@ function devshop_projects_schema() {
       'git_ref' => array(
         'type' => 'varchar',
         'length' => 128,
-        'not null' => FALSE,
+        'not null' => TRUE,
+        'default' => '',
         'description' => 'The current branch or tag of this site or platform.',
       ),
-      'site_nid' => array(
+      'site' => array(
         'type' => 'int',
         'not null' => FALSE,
         'default' => 0,
         'unsigned' => TRUE,
+        'description' => 'The node ID of the site for this environment.',
       ),
-      'platform_nid' => array(
+      'platform' => array(
         'type' => 'int',
         'not null' => FALSE,
         'default' => 0,
         'unsigned' => TRUE,
+        'description' => 'The node ID of the platform for this environment.',
       ),
       'data' => array(
         'type' => 'text',

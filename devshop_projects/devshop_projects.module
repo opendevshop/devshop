@@ -165,7 +165,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     '#node_type' => 'platform',
     '#type' => 'hidden',
   );
-  $settings['git_branch'] = array(
+  $settings['git_ref'] = array(
     '#title' => t('Git Branch/Tag'),
     '#node_type' => 'platform',
     '#type' => 'select',

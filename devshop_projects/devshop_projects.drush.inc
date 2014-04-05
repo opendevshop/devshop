@@ -299,12 +299,6 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 function devshop_projects_hosting_project_context_options(&$task) {
 
   $task->context_options['server'] = '@server_master';
-  $task->context_options['project_name'] = $task->ref->title;
-  $task->context_options['install_profile'] = $task->ref->install_profile;
-  $task->context_options['base_url'] = $task->ref->base_url;
-  $task->context_options['code_path'] = trim($task->ref->code_path, " ");
-  $task->context_options['drupal_path'] = trim($task->ref->drupal_path, " ");
-  $task->context_options['git_url'] = $task->ref->git_url;
 
   $branches = getBranchesAndTags($task->ref->project->git_url);
 

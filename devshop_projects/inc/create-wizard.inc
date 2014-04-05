@@ -661,27 +661,29 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform_node = _devshop_projects_node_create('platform', $platform);
     }
 
+
     $environment['platform'] = $platform_node->nid;
     $project_node->project->environments[$name] = $environment;
   }
 
-  // For all removed platforms, trigger a delete task
-  $removed_environments = array_diff_key($project_node->project->environments, $form_state['values']['project']['environments']);
+  // @TODO: Put this back once creation works.
+//  // For all removed platforms, trigger a delete task
+//  $removed_environments = array_diff_key($project_node->project->environments, $form_state['values']['project']['environments']);
+//
+//  foreach ($removed_environments as $environment_name => $settings) {
+//    // @TODO: Determine what to do here based on task status...
+//    // if verify task hasn't even run yet (and has never run) we can just delete
+//    // the platform node.
+//
+//    // Create 'delete' task for the removed platform
+//    $platform_nid = $settings['platform'];
+//    if ($platform_nid){
+//      hosting_add_task($platform_nid, 'delete');
+//    }
+//  }
 
-  foreach ($removed_environments as $environment_name => $settings) {
-    // @TODO: Determine what to do here based on task status...
-    // if verify task hasn't even run yet (and has never run) we can just delete
-    // the platform node.
-
-    // Create 'delete' task for the removed platform
-    $platform_nid = $settings['platform'];
-    if ($platform_nid){
-      hosting_add_task($platform_nid, 'delete');
-    }
-  }
-
-//  dsm($platform_node, 'platform');
-//  dsm($project_node, 'saving project');
+  // Somehow, NEW environment still appears!
+  unset($project_node->project->environments['NEW']);
   node_save($project_node);
 }
 
@@ -696,8 +698,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 function devshop_project_create_step_sites(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
-
-  dsm($project_node, 'project');
 
   $profiles = array();
   $available_profiles = array();
