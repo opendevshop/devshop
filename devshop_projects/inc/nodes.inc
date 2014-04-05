@@ -108,8 +108,8 @@ function devshop_projects_update($node) {
     $info->project_nid = $node->nid;
     $info->environment = $env;
     $info->git_ref = $environment['git_ref'];
-    $info->site_nid = $environment['site_nid'];
-    $info->platform_nid = $environment['platform_nid'];
+    $info->site_nid = $environment['site'];
+    $info->platform_nid = $environment['platform'];
     $info->data = serialize($environment);
 
     drupal_write_record('hosting_devshop_project_environment', $info);
