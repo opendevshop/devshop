@@ -144,46 +144,6 @@ function devshop_projects_create_wizard_next(&$form_state) {
 }
 
 
-/**
- * FINISH callback
- * Callback generated when the add page process is finished.
- * this is where you'd normally save.
- */
-function devshop_projects_create_wizard_finish(&$form_state) {
-  global $user;
-
-  $project = &$form_state['project'];
-
-  // Save the extra options to the project node.
-  $node = node_load($project->project_nid);
-  $node->code_path = $project->code_path;
-  $node->base_url = $project->base_url;
-  $node->install_profile = $project->install_profile;
-  $node->live_domain = $project->live_domain;
-  $node->drupal_path = $project->drupal_path;
-  $node->uid = $user->uid;
-  $node->status = 1;
-  $node->no_verify = TRUE;
-  node_save($node);
-
-  // Create the site nodes
-  // @TODO: Can we speed things up here by only running install for the first,
-  // then  "Cloning" to create the rest?
-  foreach ($node->project->environments as $environment_name => $environment) {
-    // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $environment['db_server'];
-    devshop_projects_create_site($node, node_load($environment['platform']), $environment_name, $db_server);
-  }
-
-  ctools_object_cache_clear('project', $form_state['cache name']);
-  $form_state['redirect'] = 'node/' . $node->nid;
-
-  // Removing last step session variable.
-  unset($_SESSION['last_step']);
-
-  // Friendly message
-  drupal_set_message(t('Your project has been created.  Once installed, your sites will be available.'));
-}
 
 
 /**
@@ -471,16 +431,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
     $project->no_next = TRUE;
-
-    // If we are all queued, show a friendly message
-    if ($project->verify_task_status == HOSTING_TASK_QUEUED){
-      $task = node_load($project->verify_task_nid);
-      $time_ago = time() - $task->updated;
-      if ($time_ago > 60) {
-        // @TODO: This doesn't work quite right yet.
-        // $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
-      }
-    }
 
     $form['note'] = array(
       '#type' => 'markup',
@@ -801,13 +751,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $project->no_finish = TRUE;
     $note = '<p class="wait">' . t('Please wait while we download and verify your drupal code.') . '</p>';
 
-    // If we are all queued, show a friendly message
-
-    $time_ago = time() - $task->created;
-    if ($all_tasks_queued && $time_ago > 120) {
-      $note .= '<p class="error">' . t('Your tasks have been queued for %time.  You should check your Hosting Task Queue.', array('%time' => format_interval($time_ago))) . '</p>';
-    }
-
     $form['help'] = array(
       '#type' => 'markup',
       '#value' => $note,
@@ -817,8 +760,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     return $form;
   }
   // If no available profiles:
-  // @TODO: This fails sometimes because the list of install profiles is not quite available.
-
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
     $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
@@ -842,7 +783,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $default_profile = 'drupal';
     }
 
-    // @TODO: Handle no available profiles
     $form['install_profile'] = array(
       '#type' => 'radios',
       '#options' => $available_profiles,
@@ -877,6 +817,47 @@ function devshop_project_create_step_sites_submit(&$from, &$form_state) {
 }
 
 
+/**
+ * FINISH callback
+ * Callback generated when the add page process is finished.
+ */
+function devshop_projects_create_wizard_finish(&$form_state) {
+
+  $project = &$form_state['project'];
+
+  // Save the extra options to the project node.
+  $node = node_load($project->project_nid);
+  $node->project->install_profile = $project->install_profile;
+  $node->no_verify = TRUE;
+
+  // Create the site nodes
+  // @TODO: Can we speed things up here by only running install for the first,
+  // then  "Cloning" to create the rest?
+  dsm($node, 'node for environments');
+
+  foreach ($node->project->environments as $environment_name => &$environment) {
+    // @TODO: Does this set the http_server as well?? Doesn't look like it.
+    $db_server = $environment['db_server'];
+    $site_node = devshop_projects_create_site($node, node_load($environment['platform']), $environment_name, $db_server);
+    $environment['site'] = $site->nid;
+  }
+
+  node_save($node);
+
+
+  ctools_object_cache_clear('project', $form_state['cache name']);
+  $form_state['redirect'] = 'node/' . $node->nid;
+
+  // Removing last step session variable.
+  unset($_SESSION['last_step']);
+
+  // Friendly message
+  drupal_set_message(t('Your project has been created.  Your sites are being installed.'));
+}
+
+/**
+ * Returns JSON showing the state of the project
+ */
 function devshop_projects_add_status($type = 'platform'){
   $return = array();
 
