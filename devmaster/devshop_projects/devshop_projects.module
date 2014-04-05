@@ -139,11 +139,10 @@ function devshop_projects_menu() {
  * Implements hook_devshop_project_settings
  */
 function devshop_projects_devshop_project_settings($project_node = NULL){
-
   // Build branch options
   if (is_array($project_node->project->git['branches']) && !empty($project_node->project->git['branches'])) {
     $branch_options = array(
-      'Branches' => array_combine($project_node->git_branches, $project_node->git_branches),
+      'Branches' => array_combine($project_node->project->git['branches'], $project_node->project->git['branches']),
     );
   }
 

@@ -676,7 +676,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments  = array_diff_key($project_node->environments, $values['environments']);
+  $removed_environments = array_diff_key($project_node->project->environments, $values['environments']);
 
   foreach ($removed_environments as $environment_name => $settings) {
     // @TODO: Determine what to do here based on task status...

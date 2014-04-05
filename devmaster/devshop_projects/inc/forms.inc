@@ -290,7 +290,6 @@ function devshop_projects_submit_settings($form, &$form_state) {
   }
 
   // Go save all nodes
-  dsm($nodes, 'nodes to save');
   foreach ($nodes as $nid => $node){
     node_save($node);
   }
@@ -326,9 +325,6 @@ function devshop_projects_validate($node, &$form) {
   if (!$node->retry){
     $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
     if ($node->nid != $result->nid){
-
-      dsm($node, 'node');
-      dsm($result, 'result');
 
       form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
     }
