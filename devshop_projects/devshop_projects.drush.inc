@@ -26,7 +26,7 @@ function drush_devshop_projects_pre_hosting_task() {
   // Verify Platform
   // For our platforms, we have to clone it if it has a git_remote
   // If it has a git branch, we should checkout as well.
-  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->environment->git_url)) {
+  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
     drush_devshop_platform_verify();
   }
 
@@ -95,15 +95,18 @@ function drush_devshop_platform_verify(){
 
   $platform = $task->ref;
   $root = $platform->publish_path;
-  $git_remote = $platform->environment->git_url;
   $git_branch = $platform->environment->git_ref;
+
+  $git_remote = $platform->project->git_url;
+  $drupal_path = $platform->project->drupal_path;
+
   $create_branch = FALSE;
 
   $output = '';
 
   //Remove drupal_path to clone.
-  if ($platform->environment->drupal_path) {
-    $root = str_replace($platform->environment->drupal_path, '', $root);
+  if ($drupal_path) {
+    $root = str_replace($drupal_path, '', $root);
   }
 
   // Check if the platform code exists. If it doesn't, clone it.
