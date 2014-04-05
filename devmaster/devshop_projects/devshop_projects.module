@@ -144,7 +144,6 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
   if (is_array($project_node->project->git['branches']) && !empty($project_node->project->git['branches'])) {
     $branch_options = array(
       'Branches' => array_combine($project_node->git_branches, $project_node->git_branches),
-      'Tags' =>  array_combine($project_node->git_tags, $project_node->git_tags),
     );
   }
 
