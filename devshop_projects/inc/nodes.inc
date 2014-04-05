@@ -110,9 +110,11 @@ function devshop_projects_insert($node) {
       $info = new stdClass();
       $info->project_nid = $node->nid;
       $info->environment = $env;
-      $info->git_ref = $environment['git_ref'];
-      $info->site = $environment['site'];
-      $info->platform = $environment['platform'];
+      $info->git_ref = $environment->git_ref;
+      $info->site = $environment->site;
+      $info->platform = $environment->platform;
+
+      unset($environment->data);
       $info->data = serialize($environment);
 
       drupal_write_record('hosting_devshop_project_environment', $info);
@@ -133,53 +135,49 @@ function devshop_projects_update($node) {
     hosting_add_task($node->nid, 'verify');
   }
 
+  $project = $node->project;
+
   $info = new stdClass();
   $info->nid = $node->nid;
-  $info->git_url = $node->project->git_url;
-  $info->code_path = hosting_path_normalize($node->project->code_path);
-  $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
-  $info->base_url = $node->project->base_url;
-  $info->install_profile = $node->project->install_profile;
+  $info->git_url = $project->git_url;
+  $info->code_path = hosting_path_normalize($project->code_path);
+  $info->drupal_path = hosting_path_normalize($project->drupal_path);
+  $info->base_url = $project->base_url;
+  $info->install_profile = $project->install_profile;
 
-  $environments = $node->project->environments;
+  // Save serialized data
+  $info->data = serialize($project->data);
 
-  // Save serialized data, minus environments
-  $data = $node->project;
-  unset($data->environments);
-  $info->data = serialize($data);
-
+  // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
-  // If using environment aliases... save them.
-  devshop_project_save_domain_aliases($node);
-
-
-
   // Save Environment records.
-  if (!empty($environments)) {
+  if (!empty($project->environments )) {
     // Delete existing environment records
     db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
 
     // Save each environment
-    foreach ($environments as $env => $environment){
+    foreach ($project->environments as $name => $environment){
       $info = new stdClass();
       $info->project_nid = $node->nid;
-      $info->environment = $env;
-      $info->git_ref = $environment['git_ref'];
-      $info->site = $environment['site'];
-      $info->platform = $environment['platform'];
+      $info->environment = $name;
+      $info->git_ref = $environment->git_ref;
+      $info->site = $environment->site;
+      $info->platform = $environment->platform;
 
-      unset($environment->data);
-      $info->data = serialize($environment);
+      $info->data = serialize($environment->data);
 
       if (drupal_write_record('hosting_devshop_project_environment', $info)){
-        drupal_set_message(t('Environment %name saved.', array('%name' => $env)));
+        drupal_set_message(t('Environment %name saved.', array('%name' => $name)));
       }
       else {
-        drupal_set_message(t('Something went wrong saving environment %name.', array('%name' => $env)), 'error');
+        drupal_set_message(t('Something went wrong saving environment %name.', array('%name' => $name)), 'error');
       }
     }
   }
+
+  // If using environment aliases... save them.
+  devshop_project_save_domain_aliases($node);
 }
 
 
