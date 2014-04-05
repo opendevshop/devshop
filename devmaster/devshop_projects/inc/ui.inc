@@ -21,41 +21,41 @@ function devshop_projects_projects_page() {
     'Environments',
   );
 
-  $r = db_query("SELECT hdp.* FROM {hosting_devshop_project} hdp LEFT JOIN {node} n ON hdp.nid = n.nid WHERE n.status = 1 ORDER BY n.title");
+  $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = 1 ORDER BY n.changed");
   $rows = array();
 
-  while(($proj = db_fetch_object($r))) {
-    $node = node_load($proj->nid);
-    if (!empty($node->project_objects['platform'])){
-      $platform_node = node_load(key($node->project_objects['platform']));
-    }
+  while ($result = db_fetch_object($query)) {
+    $project_node = node_load($result->nid);
+    $project = $project_node->project;
+
+    // Load an environment for extra info like version.
+    // @TODO: load the chosen live environment.
+    $environment = array_pop($project->environments);
+    $platform_node = node_load($environment->platform);
 
     $row = array();
 
     // Link to Project page
-    $row[] = '<strong>' . l($node->title, "node/$proj->nid") . '</strong>';
+    $row[] = '<strong>' . l($project->title, "node/$project->nid") . '</strong>';
 
     // Install Profile
-    $row[] = $node->install_profile;
+    $row[] = $project->install_profile;
 
     // Drupal Version
     $row[] = $platform_node->release->version;
 
-    // Number of environments
-    $num = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} hdpo LEFT JOIN {hosting_site} hs ON hdpo.object_nid = hs.nid WHERE hdpo.project_nid = %d AND hdpo.object_type='site' AND hs.status=1", $node->nid));
-    $row[] = format_plural($num, t('1 site'), t('!num sites', array('!num' => $num)));
-
     // Git URL
-    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url));
+    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
 
     // Links to all sites
     $actions = array();
     $count = 0;
-    foreach ($node->project->environments as $env => $details){
-      $dev_site_url = url("http://$env.$node->base_url", array('absolute' => TRUE));
+    foreach ($project->environments as $env => $details){
+      // @TODO: Handle aliases.
+      $site_url = url("http://$env.$project->base_url", array('absolute' => TRUE));
       $actions[] = array(
-        'title' => $dev_site_url,
-        'href' => $dev_site_url,
+        'title' => $site_url,
+        'href' => $site_url,
         'attributes' => array('target' => '_blank'),
       );
       $count++;
@@ -63,7 +63,7 @@ function devshop_projects_projects_page() {
     $label = format_plural($count, t('1 Environment'), t('@num Environments', array('@num' => $count)));
     $row[] = theme('ctools_dropdown', $label, $actions);
 
-    $rows[$proj->nid] = $row;
+    $rows[] = $row;
   }
 
   // No Projects
@@ -344,7 +344,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
  */
 function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
   if (!empty($node->environment)){
-    
     // Display Project, Environment and Branch.
     $node->content['info']['project'] = array(
       '#type' => 'item',
@@ -369,7 +368,7 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
     $crumbs = array();
     $crumbs[] = l(t('Home'), '<front>');
     $crumbs[] = l(t('Projects'), 'hosting/projects');
-    $crumbs[] = l($node->project, "node/" . $node->project_nid);
+    $crumbs[] = l($node->environment->project, "node/" . $node->project_nid);
     drupal_set_breadcrumb($crumbs);
   }
 }
