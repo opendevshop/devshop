@@ -32,11 +32,12 @@ function devshop_projects_projects_page() {
     // @TODO: load the chosen live environment.
     $environment = array_pop($project->environments);
     $platform_node = node_load($environment->platform);
+    dsm($environment);
 
     $row = array();
 
     // Link to Project page
-    $row[] = '<strong>' . l($project->title, "node/$project->nid") . '</strong>';
+    $row[] = '<strong>' . l($project->name, "node/$project->nid") . '</strong>';
 
     // Install Profile
     $row[] = $project->install_profile;

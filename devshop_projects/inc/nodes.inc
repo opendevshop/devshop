@@ -39,25 +39,26 @@ function devshop_projects_load($node) {
   $additions['hosting_name'] = 'project_' . db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
 
   // Load project data
-  $project_data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
+  $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
 
   // Load up all project settings, merging db table and serialized data.
-  $data = $project_data['data'];
-  unset($project_data['data']);
-  $project = (object) array_merge((array) $project_data, (array) unserialize($data));
+  $project->data = unserialize($project->data);
 
   // @TODO: Create a good status system.
   // Set status
   // $project->status = devshop_project_status((object) (array_merge($additions, (array) $node)));
 
-  // Load Environments Data
+  // Load Environments
   $query = db_query("SELECT * FROM {hosting_devshop_project_environment} WHERE project_nid = %d ORDER BY environment", $node->nid);
   $environments = array();
-  while ($environment_data = db_fetch_array($query)) {
-    $environment_data['data'] = unserialize($environment_data['data']);
-    $environments[$environment_data['environment']] = $environment_data;
+  while ($environment = db_fetch_object($query)) {
+    $environment->data = unserialize($environment->data);
+    $environments[$environment->environment] = $environment;
   }
   $project->environments = $environments;
+
+  // Make project name available.
+  $project->name = $node->title;
 
   // Save project object be available at $node->project.
   $additions['project'] = $project;
