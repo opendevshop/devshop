@@ -16,7 +16,6 @@ function devshop_projects_projects_page() {
     'Name',
     'Profile',
     'Version',
-    '',
     'Git URL',
     'Environments',
   );
@@ -26,13 +25,13 @@ function devshop_projects_projects_page() {
 
   while ($result = db_fetch_object($query)) {
     $project_node = node_load($result->nid);
+    dsm($project_node, 'project node');
     $project = $project_node->project;
 
     // Load an environment for extra info like version.
     // @TODO: load the chosen live environment.
-    $environment = array_pop($project->environments);
+    $environment = array_shift(array_values($project->environments));
     $platform_node = node_load($environment->platform);
-    dsm($environment);
 
     $row = array();
 
@@ -51,6 +50,7 @@ function devshop_projects_projects_page() {
     // Links to all sites
     $actions = array();
     $count = 0;
+    dsm($project);
     foreach ($project->environments as $env => $details){
       // @TODO: Handle aliases.
       $site_url = url("http://$env.$project->base_url", array('absolute' => TRUE));
@@ -100,6 +100,7 @@ HTML;
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   global $user;
+  $project = $node->project;
 
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
@@ -122,8 +123,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //  '#weight' => -8
   //);
 
-  if (!empty($node->live_domain)) {
-    $url = 'http://' . $node->live_domain;
+  if (!empty($project->live_domain)) {
+    $url = 'http://' . $project->live_domain;
 
     $node->content['info']['live_domain'] = array(
       '#type' => 'item',
@@ -136,13 +137,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $node->content['info']['git_url'] = array(
     '#type' => 'item',
     '#title' => t('Git URL'),
-    '#value' => strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url)),
+    '#value' => strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url)),
     '#weight' => -10
   );
 
   // Branches display
-  if (!empty($node->project->git['branches'])){
-    $items = theme_item_list($node->project->git['branches'], NULL, 'ul', array('class' => 'branches'));
+  if (!empty($project->data->git['branches'])){
+    $items = theme_item_list($project->data->git['branches'], NULL, 'ul', array('class' => 'branches'));
   }
   else {
     $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
@@ -162,21 +163,22 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -8,
   );
 
-  if (!empty($node->install_profile)){
+  // Install profile display
+  if (!empty($project->install_profile)){
     $node->content['info']['install_profile'] = array(
       '#type' => 'item',
       '#title' => t('Install profile'),
-      '#value' => ($node->install_profile),
+      '#value' => ($project->install_profile),
       '#weight' => -7
     );
   }
 
   // Environments
   $rows = array();
-  foreach ($node->project->environments as $env => $environment) {
+  foreach ($project->environments as $env => $environment) {
     
-    $site_nid = $environment['site'];
-    $platform_nid = $environment['platform'];
+    $site_nid = $environment->site;
+    $platform_nid = $environment->platform;
 
     $site = node_load($site_nid);
     $platform = node_load($platform_nid);
@@ -197,7 +199,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     // Display current branch
-    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
+    $row[] = "<span class='branch environment-branch' title='Branch:
+    {$environment->git_ref}'>{$environment->git_ref}</span>";
 
     // Create branch/tag chooser
     // @TODO: Uncomment once we have a link to go to.
@@ -385,8 +388,8 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
  * Our own version of _hosting_site_goto_link()
  */
 function devshop_hosting_site_goto_link($node) {
-  $project = node_load($node->project_nid);
-  $url = "{$node->environment}.{$project->base_url}";
+//  $project = node_load($node->environment->project_nid);
+  $url = "{$node->environment->environment}.{$node->project->base_url}";
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
   if (!is_null($cache) && (time() < $cache->data['expire'])) {
     $title = t("Log in: !url", array('!url' => $url));
