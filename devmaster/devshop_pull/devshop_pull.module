@@ -79,19 +79,12 @@ function devshop_pull_hosting_queues() {
  */
 function devshop_pull_devshop_project_settings(){
   return array(
-    'pull_enabled' => array(
-      '#title' => t('Pull on Commit'),
+    'pull_disabled' => array(
+      '#title' => t('Disable Pull'),
       '#node_type' => 'platform',
       '#type' => 'checkbox',
-      '#description' => t('When DevShop receives commit notification, Pull Code.'),
+      '#description' => t('Disable pulling code on this environment, allowing "live development".'),
     ),
-    // Pull reset won't work until we are storing the settings in the project drush context.
-    //'pull_reset' => array(
-    //  '#title' => t('Reset files'),
-    //  '#node_type' => 'platform',
-    //  '#type' => 'checkbox',
-    //  '#description' => t('When runing a <em>Pull Code</em> task triggered by a git commit, run git reset --hard just before.'),
-    //),
   );
 }
 
@@ -111,49 +104,56 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
     }
 
     //All settings git pull in project page
-    $form['git_settings'] = array(
+    $form['project_settings']['pull'] = array(
       '#type' => 'fieldset',
       '#title' => t('Git Settings'),
     );
 
-    $form['git_settings']['pull_method'] = array(
-      '#title' => 'Automatic Git Pull Method',
-      '#type' => 'radios',
-      '#description' => t('Choose the method of regularly calling "Pull Code". See !link to configure the queue. See !link2 to configure URL Callback.', array(
-        '!link' => l(t('Hosting > Queues'), 'admin/hosting/queues'),
-        '!link2' => l(t('Hosting > DevShop Pull Settings'), 'admin/hosting/devshop_pull')
-      )),
-      '#default_value' => $node->pull_method,
-      '#options' => array(
-        DEVSHOP_PULL_DISABLED => t('Pull disabled.'),
-        DEVSHOP_PULL_QUEUE => t('Pull on queue (every minute).'),
-        DEVSHOP_PULL_CALLBACK => t('Pull on URL Callback (ie. GitHub Webhook)'),
-      ),
-    );
-    module_load_include('inc', 'devshop_pull');
-    $form['git_settings']['pull_url'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Pull Trigger URL'),
-      '#value' => _devshop_pull_callback_url($node),
-      '#description' => t('Configure your repo to hit this URL when it receives a commit.'),
-      '#attributes' => array(
-        'onclick' => 'this.select()',
-      ),
+    $form['project_settings']['pull']['pull_enabled'] = array(
+      '#title' => 'Pull on Commit',
+      '#type' => 'checkbox',
+      '#description' => t('Run a "Pull Code" task when a commit notification is received. All environments set to a branch will have their code updated.'),
+      '#default_value' => $node->project_settings['pull']['pull_enabled'],
     );
 
+//    module_load_include('inc', 'devshop_pull');
+//    $form['project_settings']['pull']['pull_url'] = array(
+//      '#type' => 'textfield',
+//      '#title' => t('Pull Trigger URL'),
+//      '#value' => _devshop_pull_callback_url($node),
+//      '#description' => t('Configure your repo to hit this URL when it receives a commit.'),
+//      '#attributes' => array(
+//        'onclick' => 'this.select()',
+//      ),
+//    );
+
     // @TODO: is there a better way to save certain values? We lose data without these.
-    $form['git_settings']['last_pull'] = array(
+    $form['project_settings']['pull']['last_pull'] = array(
       '#type' => 'value',
-      '#value' => $node->last_pull,
+      '#value' => $node->project_settings['pull']['last_pull'],
     );
-    $form['git_settings']['last_pull_status'] = array(
+    $form['project_settings']['pull']['last_pull_status'] = array(
       '#type' => 'value',
-      '#value' => $node->last_pull_status,
+      '#value' => $node->project_settings['pull']['last_pull_status'],
     );
-    $form['git_settings']['last_pull_ip'] = array(
+    $form['project_settings']['pull']['last_pull_ip'] = array(
       '#type' => 'value',
-      '#value' => $node->last_pull_ip,
+      '#value' => $node->project_settings['pull']['last_pull_ip'],
     );
+
+    $form['project_settings']['pull']['pull_request_environments'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Create Environments for Pull Requests'),
+      '#default_value' => $node->project_settings['pull']['pull_request_environments'],
+      '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
+    );
+    $form['project_settings']['pull']['pull_request_environments_delete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete Pull Request Environments'),
+      '#default_value' => $node->project_settings['pull']['pull_request_environments_delete'],
+      '#description' => t('When Pull Requests are closed, delete the environment.'),
+    );
+
   }
 }
 
@@ -168,26 +168,26 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'project'){
 
     // View Project
-    if ($op == 'view' && $node->pull_method == DEVSHOP_PULL_CALLBACK){
+    if ($op == 'view' && $node->project_settings['pull']['pull_enabled']){
       module_load_include('inc', 'devshop_pull');
       $url = _devshop_pull_callback_url($node);
-      $pull_method .= '<br>' . l(_filter_url_trim($url, 30), $url);
+      $output = '';
 
-      $status = (int) $node->last_pull_status;
+      $status = (int) $node->project_settings['pull']['last_pull_status'];
 
       // If access denied, provide link to settings page
       if ($status == DEVSHOP_PULL_STATUS_ACCESS_DENIED){
         $output = '<strong>' . t('Access Denied') . '</strong><br />';
-        $output .= '<em>' . hosting_format_interval($node->last_pull) . '</em><br />';
+        $output .= '<em>' . hosting_format_interval($node->project_settings['pull']['last_pull']) . '</em><br />';
         $output .= t('Commit notification recieved from %ip, but the IP is not allowed to trigger tasks.  See !link.', array(
           '!link' => l(t('DevShop Pull Settings'), 'admin/hosting/devshop_pull'),
-          '%ip' => $node->last_pull_ip,
+          '%ip' => $node->project_settings['pull']['last_pull_ip'],
         ));
 
       }
       // If OK, show how much time has passed.
       elseif ($status == DEVSHOP_PULL_STATUS_OK) {
-        $output = hosting_format_interval($node->last_pull);
+        $output = hosting_format_interval($node->project_settings['pull']['last_pull']);
       }
       // Otherwise, we assume no commit notification recieved.
       else {
@@ -204,29 +204,29 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 
     // Load Project
     elseif ($op == 'load'){
-      $data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
-      if (!empty($data)) {
-        unset($data['project_nid']);
-        return $data;
-      }
+//      $data = db_fetch_array(db_query('SELECT * FROM {hosting_devshop_pull_projects} WHERE project_nid =  %d', $node->nid));
+//      if (!empty($data)) {
+//        unset($data['project_nid']);
+//        return $data;
+//      }
     }
 
     // Insert Project
     elseif ($op == 'insert'){
-      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, %d, "%s")', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
+//      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, %d, "%s")', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
 
     }
     // Update Project
     elseif ($op == 'update'){
       // We can't update because devshop_pull might have been enabled after
       // project exists
-      db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
-      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, "%s", %d)', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
+//      db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
+//      db_query('INSERT INTO {hosting_devshop_pull_projects} (project_nid, pull_method, last_pull, last_pull_status, last_pull_ip) VALUES (%d, %d, %d, "%s", %d)', $node->nid, $node->pull_method, $node->last_pull, $node->last_pull_status, $node->last_pull_ip);
 
     }
     // Delete Project
     elseif ($op == 'delete'){
-      db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
+//      db_query('DELETE FROM {hosting_devshop_pull_projects} WHERE project_nid = %d', $node->nid);
 
     }
   }
@@ -236,27 +236,27 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
 
     // Load Platform
     if ($node->type == 'platform' && $op == 'load'){
-      $data = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
-      if (!empty($data)){
-        unset($data['project_nid']);
-        return $data;
-      }
+//      $data = db_fetch_array(db_query("SELECT * FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d", $node->nid));
+//      if (!empty($data)){
+//        unset($data['project_nid']);
+//        return $data;
+//      }
     }
 
     // Insert Platform
     elseif ($op == 'insert'){
-      db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
+//      db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
     }
 
     // Update Platform
     elseif ($op == 'update'){
-      db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
-      db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
+//      db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
+//      db_query('INSERT INTO {hosting_devshop_pull_platforms} (platform_nid, project_nid, pull_enabled, pull_reset) VALUES (%d, %d, %d, %d)', $node->nid, $node->project_nid, $node->pull_enabled, $node->pull_reset);
     }
 
     // Delete Project
     elseif ($op == 'delete'){
-      db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
+//      db_query('DELETE FROM {hosting_devshop_pull_platforms} WHERE platform_nid = %d', $node->nid);
     }
   }
 }

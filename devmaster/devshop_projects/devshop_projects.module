@@ -140,9 +140,14 @@ function devshop_projects_menu() {
  */
 function devshop_projects_devshop_project_settings($project_node = NULL){
   if (!empty($project_node->git_branches)){
-    $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
+    $branch_options = array(
+      'Branches' => array_combine($project_node->git_branches, $project_node->git_branches),
+    );
+    if (!empty($project_node->git_tags)){
+      $branch_options['Tags'] = array_combine($project_node->git_tags, $project_node->git_tags);
+    }
   } else {
-    $branch_options = array();
+    $branch_options = array('No branches found. Something went wrong.');
   }
 
   $settings = array();
@@ -155,7 +160,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     '#type' => 'hidden',
   );
   $settings['git_branch'] = array(
-    '#title' => t('Git Branch'),
+    '#title' => t('Git Branch/Tag'),
     '#node_type' => 'platform',
     '#type' => 'select',
     '#options' => $branch_options,

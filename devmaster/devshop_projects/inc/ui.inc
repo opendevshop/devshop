@@ -139,23 +139,27 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -10
   );
 
-  if (!empty($node->git_branches)){
-   $items = theme_item_list($node->git_branches, NULL, 'ul', array('class' => 'branches')); 
-    $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
-    
-    if ($verify_task->task_status == HOSTING_TASK_SUCCESS){    
-      $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-    } else {
-      $refresh_link =  t('Refresh in progress...');
-    }
-    
-    $node->content['info']['git_branches'] = array(
-      '#type' => 'item',
-      '#title' => t('Remote Branches'),
-      '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
-      '#weight' => -8,
-    );
+  // Branches display
+  if (!empty($node->project_settings['git_branches'])){
+    $items = theme_item_list($node->project_settings['git_branches'], NULL, 'ul', array('class' => 'branches'));
   }
+  else {
+    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
+  }
+  $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
+
+  if ($verify_task->task_status == HOSTING_TASK_SUCCESS || $verify_task->task_status == HOSTING_TASK_ERROR){
+    $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+  } else {
+    $refresh_link =  t('Refresh in progress...');
+  }
+
+  $node->content['info']['git_branches'] = array(
+    '#type' => 'item',
+    '#title' => t('Remote Branches'),
+    '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
+    '#weight' => -8,
+  );
 
   if (!empty($node->install_profile)){
     $node->content['info']['install_profile'] = array(
@@ -177,20 +181,41 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $platform = node_load($platform_nid);
     
     // Skip this if it is not enabled.
-    if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
+    if ($site->site_status == HOSTING_SITE_DELETED && $platform->platform_status == HOSTING_PLATFORM_DELETED) {
       continue;
     }
 
     $row = array();
-    $row[] = "<span class='environment'>$site->environment</span>";
-    
+    $row[] = "<span class='environment'>$env</span>";
+
+
     if ($site->site_status == HOSTING_SITE_DISABLED){
       $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
+    } elseif ($site->site_status == HOSTING_SITE_QUEUED){
+      $row[] = '<em>' . t('Installing...') . '</em>';
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
     }
     $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
-    
+
+    /*
+    @TODO: One step at a time ...
+    // Create branch/tag chooser
+    $actions = array();
+    foreach ($node->git_branches as $branch){
+      $actions[] = array(
+        'title' => $branch,
+        'href' => "node/" . $platform_nid . "/deploy",
+      );
+    }
+    foreach ($node->git_tags as $tag){
+      $actions[] = array(
+        'title' => "tag/" . $tag,
+        'href' => "node/" . $platform_nid . "/deploy",
+      );
+    }
+    $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
+    */
 
     if (module_exists('devshop_log')) {
       $row[] =l(t('Commits'), "node/$site->nid/logs/commits");

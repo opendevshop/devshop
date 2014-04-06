@@ -29,12 +29,8 @@ function devshop_pull_callback($project, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  elseif ($project_node->pull_method != DEVSHOP_PULL_CALLBACK){
+  elseif (!$project_node->project_settings['pull']['pull_enabled']){
     $message = "Project $project is NOT configured to use Pull Code URL callback!";
-  }
-  // Make sure the project has platforms with pull enabled.
-  elseif (empty($environments_to_pull)){
-    $message = "Project $project has no environments configured to Pull Code on commit!";
   }
   // Make sure the client's IP address is on the list
   else if (!devshop_pull_ip_match(ip_address(), $allowed_ips)) {
@@ -43,10 +39,7 @@ function devshop_pull_callback($project, $hash) {
   }
   // All checks pass! Server is allowed to trigger tasks!
   else {
-    $status = DEVSHOP_PULL_STATUS_OK;
-
     // @TODO: Make this pluggable.
-
     // Check headers for GitHub Integration
     $headers = getallheaders();
     if (isset($headers['X-GitHub-Event'])) {
@@ -55,29 +48,18 @@ function devshop_pull_callback($project, $hash) {
     else {
       $message = devshop_pull_default_webhook($project_node, $environments_to_pull);
     }
-
-   }
-
-  // Log It, only if there is a status
-  if (isset($status)){
-    $record = new stdClass;
-    $record->project_nid = $project_node->nid;
-    $record->pull_method = $project_node->pull_method;
-    $record->last_pull = time();
-    $record->last_pull_status = $status;
-    $record->last_pull_ip = ip_address();
-
-    drupal_write_record('hosting_devshop_pull_projects', $record, array('project_nid'));
   }
+
+  // Save the project node with last pull info.
+  $project_node->project_settings['pull']['last_pull'] = time();
+  $project_node->project_settings['pull']['last_pull_status'] = DEVSHOP_PULL_STATUS_OK;
+  $project_node->project_settings['pull']['last_pull_ip'] = ip_address();
+  node_save($project_node);
 
   // Output a message, no matter what.
   watchdog('devshop_pull', $message, array(), WATCHDOG_INFO);
 
-  // @TODO: Create a "debug" mode to prevent logging of all payloads
-  watchdog('devshop_pull_debug', 'PAYLOAD: '. $GLOBALS['HTTP_RAW_POST_DATA'], array(), WATCHDOG_INFO);
-  watchdog('devshop_pull_debug', 'HEADERS: '. print_r(getallheaders(), 1), WATCHDOG_INFO);
-
-
+  // @TODO Print an appropriate header.
   print $message;
 
   // Save a variable to help when using the settings page.
@@ -97,68 +79,79 @@ function devshop_pull_default_webhook($project, $environments_to_pull){
   // Always clear cache...
   // @TODO: Should we make this a setting? "What to do on auto-pull?"
   $args['cache'] = 1;
-  hosting_add_task($project_node->nid, 'devshop-pull', $args);
+  hosting_add_task($project->nid, 'devshop-pull', $args);
 
   return "Commit notification received! Running 'Pull Code' on $project->title environments " . $args['environments'];
 }
 
 /**
  * GitHub action to take on webhook init
+ * @TODO: Once it is more pluggable, put this in it's own include, or maybe it's own module.
  */
 function devshop_pull_github_webhook($project){
   $headers = getallheaders();
 
+  // @TODO: Handle form content as well.
   if ($headers['content-type'] == 'application/json'){
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
     
     $args = array();
-//    $args['environments'] = implode(' ', $environments_to_pull);
     $args['cache'] = 1;
 
-   
     switch ($headers['X-GitHub-Event']){
       case 'ping':
         $message = 'Pong!';
         break;
       case 'push':
         // Add a task to pull then project's environments
+        // Check for environments set to pull
+        $environments_to_pull = array();
+        foreach ($project->project_settings['environments'] as $env => $settings) {
+          // Only pull if pull disabled or is tracking a tag.
+          if (!$settings['pull_disabled'] && !in_array($settings['git_branch'], $project->project_settings['git_tags'])) {
+            $environments_to_pull[] = $env;
+          }
+        }
+        $args['environments'] = implode(' ', $environments_to_pull);
         hosting_add_task($project->nid, 'devshop-pull', $args);
         $message = 'Push Received.';
         break;
       case 'pull_request':
         $message = 'Pull Request Received.';
+        $branch = $data->pull_request->head->ref;
+        $environment_name = "pr" . $data->pull_request->number;
 
         if ($data->action == 'opened'){
           // @TODO: Add to project settings.
-          $create_environments_from_pr = TRUE;
-          $branch = $data->pull_request->head->ref;
 
-          $message = "Detected Pull Request for $branch";
-          if ($create_environments_from_pr == TRUE){
-            // Lookup environments by branch
-            foreach ($project->settings as $env => $settings){
-              if ($settings['git_branch'] == $branch){
-                $pull_environment_found = $branch;
-              }
-            }
-            if (empty($pull_environment_found)){
-              $environment_name = strtr($branch, array('-' => '_', '/' => '_'));
-              hosting_create_environment($project, $environment_name, $branch);
+          $message = "Detected Pull Request for $branch \n";
+          if ($project->project_settings['pull']['pull_request_environments']){
+
+            if (isset($project->environments[$environment_name])){
+              $message .= "Environment $environment_name already exists.";
             }
             else {
-              print "Branch already has an environment.";
+              hosting_create_environment($project, $environment_name, $branch);
+              $message .= "Environment $environment_name created for $project->title \n";
             }
+          }
+          // @TODO: synchronize action
+        }
+        elseif ($data->action == 'closed'){
+          $message .= "Pull Request Closed \n";
+          if ($project->project_settings['pull']['pull_request_environments_delete']){
+            hosting_add_task($project->environments[$environment_name]['site'], 'delete');
+            $message .= "Site $environment_name scheduled for deletion.";
           }
         }
         break;
     }
 
-    return $message;
-    
   }
   else {
-    watchdog('devshop_pull', 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json');
+    $message = 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json';
   }
+  return $message;
 }
 
 /**
