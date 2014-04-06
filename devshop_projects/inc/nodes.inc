@@ -138,12 +138,13 @@ function devshop_projects_insert($node) {
     hosting_add_task($node->nid, 'verify');
   }
   
-  $data = array();
+  $data = $node->project_settings;
   $data['git_branches'] = $node->git_branches;
   $data['git_tags'] = $node->git_tags;
-  $data['live_alias'] = $node->live_alias;
-  $data['live_domain'] = $node->live_domain;
-  $data['live_domain_aliases'] = $node->live_domain_aliases;
+
+//  $data['live_alias'] = $node->live_alias;
+//  $data['live_domain'] = $node->live_domain;
+//  $data['live_domain_aliases'] = $node->live_domain_aliases;
 
   $data['live_environment'] = $node->live_environment;
   $data['live_environment_alias'] = $node->live_environment_alias;
@@ -176,21 +177,9 @@ function devshop_projects_insert($node) {
  *
  */
 function devshop_projects_update($node) {
-  
   if (!$node->no_verify) {
     hosting_add_task($node->nid, 'verify');
   }
-  $data = array();
-  
-  // Branches and tags get saved upon verify.
-  $data['git_branches'] = $node->git_branches;
-  $data['git_tags'] = $node->git_tags;
-  $data['live_alias'] = $node->live_alias;
-  $data['live_domain'] = $node->live_domain;
-  $data['live_domain_aliases'] = $node->live_domain_aliases;
-
-  $data['live_environment'] = $node->live_environment;
-  $data['live_environment_alias'] = $node->live_environment_alias;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -199,7 +188,9 @@ function devshop_projects_update($node) {
   $info->drupal_path = hosting_path_normalize($node->drupal_path);
   $info->base_url = $node->base_url;
   $info->install_profile = $node->install_profile;
-  $info->data = serialize($data);
+
+  // Everything in $form['project_settings'] gets serialized and saved.
+  $info->data = serialize($node->project_settings);
 
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
@@ -264,16 +255,13 @@ function devshop_projects_load($node) {
     $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
     $additions += $hosting_name;
   }
-  $data = unserialize($additions['data']);
-  $additions['git_branches'] = $data['git_branches'];
-  $additions['git_tags'] = $data['git_tags'];
-  $additions['live_domain'] = $data['live_domain'];
-  $additions['live_domain_aliases'] = $data['live_domain_aliases'];
 
-  $additions['live_environment'] = $data['live_environment'] == 'other'? '@' . $data['live_environment_alias']: $data['live_environment'];
-  $additions['live_environment_alias'] = $data['live_environment_alias'];
+  // Load up all project settings
+  $additions['project_settings'] = unserialize($additions['data']);
 
-  $additions['project'] = $data;
+  // Make most common attributes available.
+  $additions['git_branches'] = $additions['project_settings']['git_branches'];
+  $additions['git_tags'] = $additions['project_settings']['git_tags'];
 
   $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
 
@@ -282,12 +270,12 @@ function devshop_projects_load($node) {
     // Only load if site or platform is enabled.
     $object_node = node_load($project_object->object_nid);
     
-    if (($object_node->type == 'site' && $object_node->site_status == HOSTING_SITE_ENABLED) ||
-      ($object_node->type == 'platform' && $object_node->platform_status == HOSTING_PLATFORM_ENABLED)
-        ){
+   // if (($object_node->type == 'site' && $object_node->site_status == HOSTING_SITE_ENABLED) ||
+    //  ($object_node->type == 'platform' && $object_node->platform_status == HOSTING_PLATFORM_ENABLED)
+      //  ){
       $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
 
-    }
+    // }
   }
   $additions['project_objects'] = $objects;
 

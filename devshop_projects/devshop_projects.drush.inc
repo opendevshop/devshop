@@ -91,6 +91,8 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
   $git_branch = $platform->git_branch;
   $create_branch = FALSE;
 
+  $output = '';
+
   //Remove drupal_path to clone.
   if ($platform->drupal_path) {
     $root = str_replace($platform->drupal_path, '', $root);
@@ -126,12 +128,15 @@ function drush_devshop_provision_pre_hosting_task_platform_verify(){
       $root = str_replace($platform->drupal_path, '', $root);
     }
 
+    // Run git fetch to ensure we have all branches and tags
+    $output .= _devshop_projects_git_execute('git fetch', $root);
+
     // Build the command string
     $command = "git checkout $git_branch";
   }
 
   // Execute
-  $output =  _devshop_projects_git_execute($command, $root);
+  $output .=  _devshop_projects_git_execute($command, $root);
 
   if ($create_branch) {
     //Create branch.
@@ -266,22 +271,23 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
   }
   
-  // When a project is verified, queue a verification for all platforms  
-  if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
-    $project = node_load($task->ref->nid);
-    $platform_nids = array_keys($project->project_objects['platform']);
-    foreach ($project->project_objects['platform'] as $nid => $name) {
-      //Check if a platform was deleted for exclude from verify.
-      $status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
-      if ($status != HOSTING_PLATFORM_DELETED) {
-        drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
-        hosting_add_task($nid, 'verify');
-      }
-      else {
-        drush_log('[DEVSHOP] Can\'t run verify on project: ' . $name, 'ok');
-      }
-    }
-  }
+  // When a project is verified, queue a verification for all platforms
+  // @TODO: Figure out a better way to verify all the things.
+//  if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
+//    $project = node_load($task->ref->nid);
+//    $platform_nids = array_keys($project->project_objects['platform']);
+//    foreach ($project->project_objects['platform'] as $nid => $name) {
+//      //Check if a platform was deleted for exclude from verify.
+//      $status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
+//      if ($status != HOSTING_PLATFORM_DELETED) {
+//        drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
+//        hosting_add_task($nid, 'verify');
+//      }
+//      else {
+//        drush_log('[DEVSHOP] Can\'t run verify on project: ' . $name, 'ok');
+//      }
+//    }
+//  }
 }
 
 /**
@@ -302,11 +308,14 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   $branches = getBranchesAndTags($task->ref->git_url);
 
-  $task->ref->git_branches = $branches['branches'];
-  $task->ref->git_tags = $branches['tags'];
+  // If something went wrong connecting to the git repo, don't wipe out our branches.
+  if (!empty($branches['branches'])){
+    $task->ref->project_settings['git_branches'] = $branches['branches'];
+    $task->ref->project_settings['git_tags'] = $branches['tags'];
 
-  // Save the project node now that we have branches and tags.
-  node_save($task->ref);
+    // Save the project node now that we have branches and tags.
+    node_save($task->ref);
+  }
 
   $task->context_options['git_branches'] = $branches['branches'];
   $task->context_options['git_tags'] = $branches['tags'];
@@ -333,8 +342,8 @@ function devshop_projects_drush_context_import($context, &$node) {
 
     $node->git_url = $context->git_url;
     $branches = getBranchesAndTags($context->git_url);
-    $node->git_branches = $branches['branches'];
-    $node->git_tags = $branches['tags'];
+    $node->project_settings['git_branches'] = $branches['branches'];
+    $node->project_settings['git_tags'] = $branches['tags'];
   }
 }
 
