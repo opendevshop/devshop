@@ -138,18 +138,13 @@ function devshop_projects_form(&$node) {
     '#weight' => 4,
   );
 
-  // Unchanging Values
-  $form['git_branches'] = array(
-    '#type' => 'value',
-    '#value' => $node->git_branches,
-  );
-  $form['git_tags'] = array(
-    '#type' => 'value',
-    '#value' => $node->git_tags,
+  // Project Settings
+  $form['project_settings'] = array(
+    '#tree' => TRUE,
   );
 
-  // Extensible settings
-  $form['settings'] = array(
+  // Extensible Environment settings
+  $form['project_settings']['environments'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environment Settings'),
     '#theme' => 'devshop_projects_settings_form',
@@ -158,28 +153,39 @@ function devshop_projects_form(&$node) {
 
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project_objects['platform'] as $nid => $environment_name) {
-    $platform = node_load($nid);
-    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
-    if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
-      $form['settings'][$environment_name] = array(
+  // @TODO: Whenever an environment is created, make sure to resave the project so settings are captured in json.
+  foreach ($node->environments as $environment_name => $env) {
+
+    $environment_settings = $node->project_settings['environments'][$environment_name];
+    $platform = node_load($env['platform']);
+    $site = node_load($env['site']);
+    if ($platform->status == HOSTING_PLATFORM_ENABLED && $site->status == HOSTING_PLATFORM_ENABLED) {
+      $form['project_settings']['environments'][$environment_name] = array(
         '#tree' => TRUE,
         '#title' => $name,
         '#type' => 'fieldset',
         '#theme' => 'devshop_projects_settings_table',
       );
-
       foreach ($settings as $setting_id => $setting){
-        $form['settings'][$environment_name][$setting_id] = $setting;
-        $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
-        $form['settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
+        $form['project_settings']['environments'][$environment_name][$setting_id] = $setting;
+        $form['project_settings']['environments'][$environment_name][$setting_id]['#default_value'] = $environment_settings[$setting_id];
+        $form['project_settings']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
-      $site = array_pop($sites);
       $live_alias_options[$environment_name] = $site->hosting_name;
     }
-
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
+
+
+  // Save git branches and tags
+  $form['project_settings']['git_branches'] = array(
+    '#type' => 'value',
+    '#value' => $node->git_branches,
+  );
+  $form['project_settings']['git_tags'] = array(
+    '#type' => 'value',
+    '#value' => $node->git_tags,
+  );
 
 
   // Don't allow editing
@@ -192,54 +198,65 @@ function devshop_projects_form(&$node) {
   }
 
   //All settings git pull in project page
-  $form['live'] = array(
+  $form['project_settings']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live Environment Settings'),
-    '#tree' => FALSE,
   );
 
   // Master Site alias
   $live_alias_options['other'] = 'Other...';
-  $form['live']['live_environment'] = array(
+  if (empty($live_alias_options[$node->project_settings['live']['live_environment']])){
+    // No live environment
+    $live_environment_default_value = '';
+  }
+  elseif (!empty($node->project_settings['live']['live_environment_alias'])){
+    // "other" live environment
+    $live_environment_default_value = 'other';
+  }
+
+  $form['project_settings']['live']['live_environment'] = array(
     '#type' => 'select',
     '#title' => t('Live Environment'),
     '#options' => $live_alias_options,
     '#required' => FALSE,
-    '#default_value' => isset($live_alias_options[$node->live_environment])? $node->live_environment: 'other',
+    '#default_value' => $live_environment_default_value,
     '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
   );
-  $form['live']['live_environment_alias'] = array(
+  $form['project_settings']['live']['live_environment_alias'] = array(
     '#title' => t('Live Site Drush Alias'),
     '#type' => 'textfield',
     '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
     '#field_prefix' => '@',
     '#size' => 40,
-    '#default_value' => $node->live_environment_alias,
+    '#default_value' => $node->project_settings['live']['live_environment_alias'],
     '#size' => 50,
     '#maxlength' => 50,
   );
 
   // Live Domain
-  $form['live']['live_domain'] = array(
+  $form['project_settings']['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live domain'),
     '#description' => t('The live domain for this project. Do not include "www".'),
     '#size' => 40,
-    '#default_value' => $node->live_domain,
+    '#default_value' => $node->project_settings['live']['live_domain'],
     '#weight' => 5,
   );
 
   // Use aliases
-  $form['live']['live_domain_aliases'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Use environment aliases'),
-    '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
-    '#default_value' => $node->live_domain_aliases,
-    '#weight' => 6,
-  );
+  if (module_exists('hosting_alias')){
+    $form['project_settings']['live']['live_domain_aliases'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Use environment aliases'),
+      '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
+      '#default_value' => $node->project_settings['live']['live_domain_aliases'],
+      '#weight' => 6,
+    );
+  }
 
   return $form;
 }
+
 /**
  * Submit function for save data of platforms.
  */
@@ -251,7 +268,7 @@ function devshop_projects_submit_settings($form, &$form_state) {
   $nodes = array();
   
   // Go through each environment
-  foreach ($form_state['values']['settings'] as $environment_name => $settings){
+  foreach ($form_state['values']['environment_settings'] as $environment_name => $settings){
     
     // Then through each setting of each environment
     foreach ($settings as $setting_name => $setting_value){
