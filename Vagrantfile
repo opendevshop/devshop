@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
-Vagrant.require_version ">= 1.5.1"
+Vagrant.require_version ">= 1.5"
 PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
 PATH_TO_ATTRIBUTES = File.dirname(__FILE__) + "/attributes.json"
 
