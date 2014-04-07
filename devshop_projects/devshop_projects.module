@@ -141,23 +141,6 @@ function devshop_projects_menu() {
 function devshop_projects_devshop_project_settings($node = NULL){
   $project = $node->project;
 
-  // Build branch options
-  if (is_array($project->data->git['branches']) && !empty($project->data->git['branches'])) {
-    $branch_options = array(
-      'Branches' => array_combine($project->data->git['branches'], $project->data->git['branches']),
-    );
-  }
-
-  // If there are tags...
-  if (is_array($node->project->git['tags']) && !empty($node->project->git['tags'])) {
-    $branch_options['Tags'] = array_combine($node->project->git['tags'], $node->project->git['tags']);
-  }
-
-  // If there are none...
-  if (empty($branch_options['Tags']) && empty($branch_options['Branches'])){
-    $branch_options = array(t('No branches or tags! Re-validate the project.'));
-  }
-
   $settings = array();
   $settings['site'] = array(
     '#node_type' => 'site',
@@ -171,7 +154,7 @@ function devshop_projects_devshop_project_settings($node = NULL){
     '#title' => t('Git Branch/Tag'),
     '#node_type' => 'platform',
     '#type' => 'select',
-    '#options' => $branch_options,
+    '#options' => devshop_projects_git_options($project),
   );
 
   $http_servers = hosting_get_servers('http');
@@ -402,6 +385,30 @@ function devshop_projects_create_site($project_node, $platform_node, $environmen
     node_save($node);
   }
   return $node;
+}
+
+/**
+ * Helper to get select #options for git ref.
+ */
+function devshop_projects_git_options($project){
+  // Build branch options
+  if (is_array($project->data->git['branches']) && !empty($project->data->git['branches'])) {
+    $options = array(
+      'Branches' => array_combine($project->data->git['branches'], $project->data->git['branches']),
+    );
+  }
+
+  // If there are tags...
+  if (is_array($project->git['tags']) && !empty($project->git['tags'])) {
+    $options['Tags'] = array_combine($project->git['tags'], $project->git['tags']);
+  }
+
+  // If there are none...
+  if (empty($options['Tags']) && empty($options['Branches'])){
+    $options = array(t('No branches or tags! Re-validate the project.'));
+  }
+
+  return $options;
 }
 
 /**
