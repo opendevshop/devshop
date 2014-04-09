@@ -369,9 +369,9 @@ function _devshop_projects_node_create($type, $node = stdClass){
 /**
  * Check if a site has features diff enabled.
  */
-function _devshop_projects_site_has_module($node, $module) {
+function _devshop_projects_site_has_module($nid, $module) {
   $param = array(
-    'rid' => $node->nid,
+    'rid' => $nid,
     'p.short_name' => $module,
   );
   $package = hosting_package_instance_load($param);
@@ -382,12 +382,8 @@ function _devshop_projects_site_has_module($node, $module) {
  * Check if a site has features diff enabled.
  */
 function _devshop_projects_project_has_module($node, $module) {
-  if (is_array($node->project_objects['site'])){
-    $sites = array_flip($node->project_objects['site']);
-  } else {
-    $sites = array();
-  }
-  return _devshop_projects_site_has_module(node_load($sites['dev']), $module);
+  $environment = key($node->project->environments);
+  return _devshop_projects_site_has_module($node->project->environments[$environment]['site'], $module);
 }
 
  /*
