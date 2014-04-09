@@ -257,7 +257,7 @@ function devshop_projects_form(&$node) {
 function devshop_projects_submit_settings($form, &$form_state) {
 
   // Go through and save our settings to site and platform nodes.
-//  $project_node = node_load($form_state['values']['nid']);
+  $project_node = node_load($form_state['values']['nid']);
   $settings_info = module_invoke_all('devshop_project_settings', $project_node);
   $nodes = array();
 
@@ -271,8 +271,8 @@ function devshop_projects_submit_settings($form, &$form_state) {
       $node_type = $settings_info[$setting_name]['#node_type'];
 
       // Load the site or platform node for this environment, then set the value and save.
-      if (!empty($project_node->project->environments[$environment_name][$node_type])){
-        $nid = $project_node->project->environments[$environment_name][$node_type];
+      if (!empty($project_node->project->environments[$environment_name]->{$node_type})){
+        $nid = $project_node->project->environments[$environment_name]->{$node_type};
         $nodes[$nid] = node_load($nid);
         $nodes[$nid]->no_verify = TRUE;
 
