@@ -882,7 +882,7 @@ function devshop_projects_add_status($type = 'platform'){
   // When checking platforms...
   if ($type == 'platform') {
     foreach ($project_node->project->environments as $name => $environment){
-      $nids[] = $environment['platform'];
+      $nids[] = $environment->platform;
     }
   }
 
@@ -909,7 +909,7 @@ function devshop_projects_add_status($type = 'platform'){
  */
 function devshop_form_reloader(&$form, $type = 'platform'){
   // Add JS that reloads the page when tasks finish.
-  $form[$element_id] = array(
+  $form['item'] = array(
     '#type' => 'item',
     '#value' => '',
     '#weight' => 10
