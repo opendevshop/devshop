@@ -138,7 +138,8 @@ function devshop_projects_menu() {
 /**
  * Implements hook_devshop_project_settings
  */
-function devshop_projects_devshop_project_settings($project_node = NULL){
+function devshop_projects_devshop_project_settings($node = NULL){
+  $project = $node->project;
 
   $settings = array();
   $settings['site'] = array(
@@ -153,7 +154,7 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     '#title' => t('Git Branch/Tag'),
     '#node_type' => 'platform',
     '#type' => 'select',
-    '#options' => devshop_project_git_ref_options($project_node->project),
+    '#options' => devshop_project_git_ref_options($project),
   );
 
   $http_servers = hosting_get_servers('http');
@@ -352,6 +353,30 @@ function devshop_projects_create_site($project_node, $platform_node, $environmen
     node_save($node);
   }
   return $node;
+}
+
+/**
+ * Helper to get select #options for git ref.
+ */
+function devshop_projects_git_ref_options($project){
+  // Build branch options
+  if (is_array($project->data->git['branches']) && !empty($project->data->git['branches'])) {
+    $options = array(
+      'Branches' => array_combine($project->data->git['branches'], $project->data->git['branches']),
+    );
+  }
+
+  // If there are tags...
+  if (is_array($project->git['tags']) && !empty($project->git['tags'])) {
+    $options['Tags'] = array_combine($project->git['tags'], $project->git['tags']);
+  }
+
+  // If there are none...
+  if (empty($options['Tags']) && empty($options['Branches'])){
+    $options = array(t('No branches or tags! Re-validate the project.'));
+  }
+
+  return $options;
 }
 
 /**
