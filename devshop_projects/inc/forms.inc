@@ -163,10 +163,10 @@ function devshop_projects_form(&$node) {
       );
       foreach ($settings as $setting_id => $setting){
         $form['project']['environments'][$environment_name][$setting_id] = $setting;
-        $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $node->project->environments[$environment_name][$setting_id];
+        $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $node->project->environments[$environment_name]->{$setting_id};
         $form['project']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
-      $site = node_load($environment['site']);
+      $site = node_load($environment->site);
       $live_alias_options[$environment_name] = $site->hosting_name;
   }
   $form['#submit'] = array('devshop_projects_submit_settings');
@@ -174,11 +174,11 @@ function devshop_projects_form(&$node) {
   // Save git branches and tags
   $form['project']['git']['branches'] = array(
     '#type' => 'value',
-    '#value' => $node->project->git['branches'],
+    '#value' => $node->project->data->git['branches'],
   );
   $form['project']['git']['tags'] = array(
     '#type' => 'value',
-    '#value' => $node->project->git['tags'],
+    '#value' => $node->project->data->git['tags'],
   );
 
 
