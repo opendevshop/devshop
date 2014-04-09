@@ -296,60 +296,7 @@ function devshop_hosting_task_menu_access($node, $task) {
   }
 }
 
-/**
- * Status of Project
- *
- * @TODO: When creating a new platform for an existing project, the status
- * goes back to "platforms not-verified"
- *
- * @param $node
- *   a project node
- */
-function devshop_project_status($node){
 
-  //Project status
-  $platforms_ready = TRUE;
-  $sites_ready = TRUE;
-  $sites_installing = FALSE;
-
-  // PROJECT STATUS
-  if (empty($node->project_objects) && empty($node->git_branches)){
-    return 'preparing-project';
-  }
-
-  // PLATFORMS STATUS: Determine if all platforms are verified.
-  if (isset($node->project_objects['platform'])){
-    foreach ($node->project_objects['platform'] as $nid => $env){
-      $platform_nodes[$env] = node_load($nid);
-      if (!empty($platform_nodes[$env]) && $platform_nodes[$env]->platform_status == 0){
-        $platforms_ready = FALSE;
-      }
-    }
-  } else {
-    $platforms_ready = FALSE;
-  }
-  // SITES STATUS: Determine if sites exist and are enabled
-  if ($platforms_ready && isset($node->project_objects['site'])){
-
-    foreach ($node->project_objects['site'] as $nid => $env){
-      $site_nodes[$env] = node_load($nid);
-      if ($site_nodes[$env]->site_status == 0){
-        $sites_ready = FALSE;
-        $sites_installing = TRUE;
-      }
-    }
-  } else {
-    $sites_ready = FALSE;
-  }
-
-
-  // @TODO: This is so rough!  We can do better.
-  return $sites_ready? 'sites_ready': (
-    $sites_installing? 'sites_installing': (
-      $platforms_ready? 'platforms_ready': 'platforms_verifying'
-    )
-  );
-}
 
 /**
  * Implements hook_hosting_drush_aliases_name()
