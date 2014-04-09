@@ -195,9 +195,9 @@ function devshop_project_save_domain_aliases($project_node) {
     }
     // If live_domain_aliases is checked, remove them from the nodes.
     elseif (!$project_node->live_domain_aliases && count($project_node->project->environments)){
-      foreach ($project_node->project->environments as $env => $details){
+      foreach ($project_node->project->environments as $env => $environment){
         $domain = "$env.$project_node->live_domain";
-        $site_node = node_load($details['site_nid']);
+        $site_node = node_load($environment->site);
         if (!empty($site_node->aliases)){
           $i = array_search($domain, $site_node->aliases);
           if ($i !== FALSE) {

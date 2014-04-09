@@ -466,10 +466,10 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   );
 
   // Ensure a blank row exists (happens when using 'Back' button)
-  if (!is_array($project_node->project->environments['NEW'])){
-    $project_node->project->environments['NEW'] = array();
+  if (!is_array($project->environments['NEW'])){
+    $project->environments['NEW'] = array();
   }
-  foreach ($project_node->project->environments as $env => $env_settings) {
+  foreach ($project->environments as $env => $env_settings) {
     // No platforms exist yet
     if ($env == 'NEW') {
       $env_title = '';
@@ -491,6 +491,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#maxlength' => 64,
       '#attributes' => array(
         'placeholder' => t('name'),
+        'autofocus' => 'autofocus',
       ),
       '#field_prefix' => 'http://',
       '#field_suffix' => "." . $project_node->project->base_url,
@@ -575,14 +576,14 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   foreach ($form_state['values']['project']['environments'] as $name => $environment) {
 
     // If platform exists, it's because user went back in the wizard.
-    $platform_nid = $project_node->project->environments[$name]['platform'];
+    $platform_nid = $project_node->project->environments[$name]->platform;
 
     // If the platform already exists, save it again with new settings.
     if ($platform_nid) {
       $platform_node = node_load($platform_nid);
       foreach ($settings as $setting_name => $element){
         if ($element['#node_type'] == 'platform'){
-          $platform_node->{$setting_name} = $environment[$setting_name];
+          $platform_node->{$setting_name} = $environment->{$setting_name};
         }
       }
       node_save($platform_node);
@@ -591,14 +592,14 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     else {
 
       $platform = new stdClass;
-      $platform->title = $project_node->title . '_' . $environment['title'];
+      $platform->title = $project_node->title . '_' . $name;
 
       // Platform publish_path
       if (!empty($project_node->project->drupal_path)) {
-        $platform->publish_path = $project_node->project->code_path . '/' . $environment['title'] . '/' . $project_node->project->drupal_path;
+        $platform->publish_path = $project_node->project->code_path . '/' . $environment->title . '/' . $project_node->project->drupal_path;
       }
       else {
-        $platform->publish_path = $project_node->project->code_path . '/' . $environment['title'];
+        $platform->publish_path = $project_node->project->code_path . '/' . $environment->title;
       }
 
       // Other attributes
@@ -932,8 +933,14 @@ function devshop_projects_create_wizard_add_new_environment($form, &$form_state)
 
   // All we are doing here is saving the project to cache.
   // devshop_project_create_step_environments_validate() handles putting data in $project.
-  $project = &$form_state['project'];
+  $project = $form_state['project'];
+
+  // Save environment
+  $project->environments = &$form_state['values']['project']['environments'];
+
   ctools_object_cache_set('project', NULL, $project);
+
+
 
   // Go back to the same page.
   drupal_goto('hosting/projects/add/environments');
