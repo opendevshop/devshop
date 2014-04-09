@@ -578,15 +578,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // If platform exists, it's because user went back in the wizard.
     $platform_nid = $project_node->project->environments[$name]->platform;
 
-    // If the platform already exists, save it again with new settings.
+    // If the platform already exists, verify it again.
     if ($platform_nid) {
-      $platform_node = node_load($platform_nid);
-      foreach ($settings as $setting_name => $element){
-        if ($element['#node_type'] == 'platform'){
-          $platform_node->{$setting_name} = $environment->{$setting_name};
-        }
-      }
-      node_save($platform_node);
+      hosting_add_task($platform_nid, 'verify');
     }
     // If platform hasn't been created yet, do so now!
     else {
@@ -935,12 +929,9 @@ function devshop_projects_create_wizard_add_new_environment($form, &$form_state)
   // devshop_project_create_step_environments_validate() handles putting data in $project.
   $project = $form_state['project'];
 
-  // Save environment
+  // Save environment to project cache.
   $project->environments = &$form_state['values']['project']['environments'];
-
   ctools_object_cache_set('project', NULL, $project);
-
-
 
   // Go back to the same page.
   drupal_goto('hosting/projects/add/environments');
