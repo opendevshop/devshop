@@ -44,10 +44,6 @@ function devshop_projects_load($node) {
   // Load up all project settings, merging db table and serialized data.
   $project->data = unserialize($project->data);
 
-  // @TODO: Create a good status system.
-  // Set status
-  // $project->status = devshop_project_status((object) (array_merge($additions, (array) $node)));
-
   // Load Environments
   $query = db_query("SELECT * FROM {hosting_devshop_project_environment} WHERE project_nid = %d ORDER BY environment", $node->nid);
   $environments = array();
