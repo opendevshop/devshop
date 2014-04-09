@@ -218,9 +218,6 @@ function devshop_projects_delete($node) {
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
   db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
 
-  // @TODO: Remove once table is deleted.
-  db_query('DELETE FROM {hosting_devshop_project_object} WHERE project_nid = %d', $node->nid);
-
   hosting_context_delete($node->nid);
 }
 
