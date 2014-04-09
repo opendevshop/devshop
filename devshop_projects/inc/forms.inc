@@ -172,15 +172,14 @@ function devshop_projects_form(&$node) {
   $form['#submit'] = array('devshop_projects_submit_settings');
 
   // Save git branches and tags
-  $form['project']['git']['branches'] = array(
+  $form['project']['data']['git']['branches'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['branches'],
   );
-  $form['project']['git']['tags'] = array(
+  $form['project']['data']['git']['tags'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['tags'],
   );
-
 
   // Don't allow editing
   if ($node->nid) {
