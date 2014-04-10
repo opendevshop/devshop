@@ -938,17 +938,16 @@ function devshop_form_reloader(&$form, $type = 'platform'){
  * Functionality for add a new environment.
  */
 function devshop_projects_create_wizard_add_new_environment($form, &$form_state) {
-  // Get Project Cache
-  ctools_include('wizard');
-  ctools_include('object-cache');
 
-  // All we are doing here is saving the project to cache.
-  // devshop_project_create_step_environments_validate() handles putting data in $project.
-  $project = $form_state['project'];
+  // Load project node
+  $project_node = node_load($form_state['values']['nid']);
+  $environments = $form_state['values']['project']['environments'];
+  unset($environments['NEW']);
 
-  // Save environment to project cache.
-  $project->environments = &$form_state['values']['project']['environments'];
-  ctools_object_cache_set('project', NULL, $project);
+  // Set environments and no_verify
+  $project_node->project->environments = $environments;
+  $project_node->no_verify = TRUE;
+  node_save($project_node);
 
   // Go back to the same page.
   drupal_goto('hosting/projects/add/environments');
