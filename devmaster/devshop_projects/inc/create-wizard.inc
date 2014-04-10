@@ -500,7 +500,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // Add environment settings form elements
     foreach ($settings as $setting_id => $setting){
       $form['project']['environments'][$env]['settings'][$setting_id] = $setting;
-      $form['project']['environments'][$env]['settings'][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
+      $form['project']['environments'][$env]['settings'][$setting_id]['#default_value'] = $project->environments[$env]['settings'][$setting_id];
       $form['project']['environments'][$env]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
       $form['project']['environments'][$env]['settings'][$setting_id]['#description'] = '';
     }
@@ -602,14 +602,12 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       foreach ($settings as $setting_name => $element){
         if ($element['#node_type'] == 'platform'){
-          $platform->{$setting_name} = $environment[$setting_name];
+          $platform->{$setting_name} = $environment['settings'][$setting_name];
         }
       }
       $platform_node = _devshop_projects_node_create('platform', $platform);
     }
 
-
-    dsm($environment, "environment $name");
     $environment['platform'] = $platform_node->nid;
     $project_node->project->environments[$name] = (object) $environment;
   }
