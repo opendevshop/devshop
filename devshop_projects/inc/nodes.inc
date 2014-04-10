@@ -42,7 +42,7 @@ function devshop_projects_load($node) {
   $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
 
   // Load up all project settings, merging db table and serialized data.
-  $project->data = unserialize($project->data);
+  $project->settings = (object) unserialize($project->settings);
 
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
@@ -51,7 +51,7 @@ function devshop_projects_load($node) {
   while ($environment = db_fetch_object($query)) {
 
     // Save to environments array
-    $environment->data = unserialize($environment->data);
+    $environment->settings = (object) unserialize($environment->settings);
     $environments[$environment->name] = $environment;
   }
   $project->environments = $environments;
