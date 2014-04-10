@@ -140,8 +140,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   // Branches display
-  if (!empty($project->data->git['branches'])){
-    $items = theme_item_list($project->data->git['branches'], NULL, 'ul', array('class' => 'branches'));
+  if (!empty($project->settings->git['branches'])){
+    $items = theme_item_list($project->settings->git['branches'], NULL, 'ul', array('class' => 'branches'));
   }
   else {
     $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
