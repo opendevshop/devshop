@@ -118,7 +118,7 @@ function drush_devshop_platform_verify(){
       $command .= " --branch $git_branch";
     }
 
-    // @TODO: Gotta be a better way...
+    // @TODO: Gotta be a better way... I don't want a clone_nid field in devshop_project_objects table.
     // If is set site nid clone from old site and later create a new branch.
 //    if ($platform->clone_nid) {
 //      $site_source = node_load($platform->clone_nid);
@@ -199,22 +199,15 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'platform') {
     drush_log('[DEVSHOP] Platform Verification complete.', 'notice');
     
-    // Get objects
-    $nid = $task->ref->nid;
-    $platform = node_load($nid);
-
     // If this platform isn't in a project, bail.
-    if (empty($platform->project_nid)){
+    $platform = $task->ref;
+    if (empty($platform->project)){
       drush_log('[DEVSHOP] No project found for this platform.', 'notice');
       return;
     }
 
-    // Get the project
-    $project_node = node_load($platform->project_nid);
-    $project = $project_node->project;
-
     // If the project doesn't have an install profile chosen yet, bail.
-    if (empty($project->install_profile)){
+    if (empty($platform->project->install_profile)){
       drush_log('[DEVSHOP] No install profile found for this platform\'s project.', 'notice');
       return;
     }
@@ -234,12 +227,13 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     if ($platform->clone_nid) {
       $servers = hosting_get_servers('db');
       $args['target_platform'] = $platform->nid;
-      $args['new_uri'] = $platform->environment->name .'.'. $project->base_url;
+      $args['new_uri'] = $platform->environment->name .'.'. $platform->project->base_url;
       $args['new_db_server'] = key($servers);
+      drush_log('[DEVSHOP] Cloning site...');
       hosting_add_task($platform->clone_nid, 'clone', $args);
     }
     else {
-      $site_node = devshop_projects_create_site($project_node, $platform, $platform->environment->name);
+      $site_node = devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
       drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. !link', array('!link' => l('node/' . $site_node->nid)));
     }
   }
