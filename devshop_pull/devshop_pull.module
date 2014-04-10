@@ -267,6 +267,12 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
  * @TODO Convert to check pull queue sites.
  */
 function devshop_pull_get_platforms($limit = 5) {
+
+  $results = db_query('SELECT * FROM {hosting_devshop_project}');
+  while ($project = db_fetch_object($results)){
+    $project->data = unserialize($project->data);
+    dsm($project->data);
+  }
   $result = db_query("SELECT COUNT(dpo.object_nid) FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d  AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
   return db_result($result);
 }
