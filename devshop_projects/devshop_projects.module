@@ -7,9 +7,16 @@
 
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
-include_once('inc/tasks.inc');
 include_once('inc/theme.inc');
 include_once('inc/ui.inc');
+
+// Tasks Code
+include_once('tasks/tasks.inc');
+include_once('tasks/commit.inc');
+include_once('tasks/create.inc');
+include_once('tasks/pull.inc');
+include_once('tasks/sync.inc');
+
 
 /**
  * Implementation of hook_init()
