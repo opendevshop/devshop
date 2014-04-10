@@ -1,19 +1,17 @@
 <?php
-
 /**
  * @file devshop_projects.drush.inc
- * Keeping things organized.  All code that is really run via drush commands
- * will go here.
+ * Connects DevShop front-end to provision backend.
  */
 
 /**
  * Implements drush_HOOK_pre_COMMAND()
  *
- * This runs for each tasks during the command
+ * This runs for each task during the command
  *    drush @hostmaster hosting-tasks
  *
  * NOTE: This ONLY runs when being called from a hostmaster task.
- * This hook should ONLY be used to pass Options from a hostmaster task form to
+ * This hook should ONLY be used to pass options from a hostmaster task form to
  * the $task object, or if you don't need this functionality from the command
  * line.
  */
@@ -24,8 +22,9 @@ function drush_devshop_projects_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
 
   // Verify Platform
-  // For our platforms, we have to clone it if it has a git_remote
-  // If it has a git branch, we should checkout as well.
+  // Here is where we hook in and clone the site
+  // @TODO: Backend tasks should be able to do this.
+  // @TODO: Build a "devshop-create-environment" drush command.
   if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
     drush_devshop_platform_verify();
   }
