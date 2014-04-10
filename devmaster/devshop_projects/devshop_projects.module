@@ -326,17 +326,20 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   // Lookup this platforms install profile
   $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project->install_profile));
 
-//  $node->environment = $environment_name;
-//  $node->git_branch = $platform_node->git_branch;
-//  $node->project = $project_node->title;
-
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
 
-  // Save the node
+  // Save the site node
   if ($node = node_submit($node)) {
     node_save($node);
   }
+
+  // Once we have the nid, save the environment object.
+  $project->environments[$environment_name]->site = $node->nid;
+  $project_node = node_load($project->nid);
+  $project_node->project = $project;
+  node_save($project_node);
+
   return $node;
 }
 
