@@ -178,6 +178,7 @@ function devshop_projects_update($node) {
       $info->platform = $environment->platform;
 
       // Remove primary settings from settings array before saving.
+      // @TODO: These values shouldn't show up anymore. Once tested, remove.
       unset($environment->settings['git_ref']);
       unset($environment->settings['site']);
       unset($environment->settings['platform']);
@@ -185,6 +186,43 @@ function devshop_projects_update($node) {
 
       // Save environment record.
       drupal_write_record('hosting_devshop_project_environment', $info);
+
+      // Save aegir objects
+      if ($environment->site){
+        $objects = array();
+        $objects['site'] = node_load($environment->site);
+        $objects['platform'] = node_load($environment->platform);
+        $settings_info = module_invoke_all('devshop_project_settings', $node);
+
+        // Go through each setting, applying it to either the site or the platform.
+        foreach ($settings_info as $setting_name => $setting_value) {
+          $node_type = $settings_info[$setting_name]['#node_type'];
+
+          // Set new value only if it has changed.
+          if ($objects[$node_type]->{$setting_name} != $setting_value){
+            $objects[$node_type]->{$setting_name} = $setting_value;
+            $objects[$node_type]->needs_save = TRUE;
+
+            // If the database server is changed, a "migrate" task is needed.
+            if ($setting_name == 'db_server') {
+              $args = array();
+              $args['target_platform'] = $objects['site']->platform;
+              $args['new_uri'] = $objects['site']->title;
+              $args['new_db_server'] = $setting_value;
+              hosting_add_task($objects['site']->nid, 'migrate', $args);
+            }
+          }
+        }
+
+        // @TODO: If git_ref changed, flag needs_save for platform.
+
+        // Save site and platform if needed.
+        foreach ($objects as $type => $object){
+          if ($object->needs_save) {
+            node_save($object);
+          }
+        }
+      }
     }
   }
 

@@ -180,6 +180,12 @@ function devshop_projects_form(&$node) {
         '#theme' => 'devshop_projects_settings_table',
       );
 
+      // Save current environment settings to detect differences later.
+      $form['project']['environments'][$environment_name]['orig'] = array(
+        '#type' => 'value',
+        '#value' => $environment,
+      );
+
       // Environment properties
       $form['project']['environments'][$environment_name]['site'] = array(
         '#type' => 'value',
@@ -341,12 +347,10 @@ function devshop_projects_validate($node, &$form) {
 
   $node = node_load($node->nid);
 
-  // No validation if op == Delete or project_status == site_ready. The
-  // latter case happens when the user is editing the tests to run fied.
-  if ($node->op == t('Delete') || $node->project_status == 'sites_ready') {
+  // No validation if op == Delete
+  if ($node->op == t('Delete')) {
     return;
   }
-
 
   // Full validation on when a creating a new node
   $add = (arg(1) == 'add' ? TRUE : FALSE);
