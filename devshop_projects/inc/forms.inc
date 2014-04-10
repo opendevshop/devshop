@@ -88,17 +88,16 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
  */
 function devshop_projects_form(&$node) {
 
-  $form['git_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Git URL'),
-    '#required' => TRUE,
-    '#description' => t(''),
-    '#required' => TRUE,
-    '#size' => 40,
-    '#default_value' => $node->git_url,
-    '#maxlength' => 255,
-    '#weight' => 1,
+  $project = $node->project;
+
+  // Project Settings
+  // Every value under $form['project'] gets serialized and saved into a project's "data" column.
+  // @TODO: Add ['data'] so only items under 'data' get serialized.
+  $form['project'] = array(
+    '#tree' => TRUE,
   );
+
+  // Hidden fields that can't change.
   $form['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Project Code Name'),
@@ -108,41 +107,61 @@ function devshop_projects_form(&$node) {
     '#default_value' => $node->title,
     '#maxlength' => 255,
   );
-  $form['code_path'] = array(
+  $form['project']['git_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Git URL'),
+    '#required' => TRUE,
+    '#description' => t(''),
+    '#required' => TRUE,
+    '#size' => 40,
+    '#default_value' => $project->git_url,
+    '#maxlength' => 255,
+    '#weight' => 1,
+  );
+  $form['project']['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
     '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->code_path,
+    '#default_value' => $project->code_path,
     '#maxlength' => 255,
     '#weight' => 2,
   );
-  $form['drupal_path'] = array(
+  $form['project']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
     '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
     '#size' => 40,
-    '#default_value' => $node->drupal_path,
+    '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
     '#weight' => 3,
   );
-  $form['base_url'] = array(
+  $form['project']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Primary Domain'),
     '#description' => t('The domain name all sites will be built under.'),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->base_url,
+    '#default_value' => $project->base_url,
     '#maxlength' => 255,
     '#weight' => 4,
   );
 
-  // Project Settings
-  // Every value under $form['project'] gets serialized and saved into a project's "data" column.
-  $form['project'] = array(
-    '#tree' => TRUE,
-  );
+  // Don't allow editing
+  if ($node->nid) {
+
+    // Title
+    $form['title']['#value'] = $form['title']['#default_value'];
+    $form['title']['#type'] = 'value';
+
+    // Other fields
+    $locked = array('git_url', 'code_path', 'drupal_path', 'base_url');
+    foreach ($locked as $field){
+      $form['project'][$field]['#value'] = $form[$field]['#default_value'];
+      $form['project'][$field]['#type'] = 'value';
+    }
+  }
 
   // Environment settings
   $form['project']['environments'] = array(
@@ -173,31 +192,21 @@ function devshop_projects_form(&$node) {
 
   // Save git branches and tags
   // @TODO: Properly prevent loss of git branches and tags.
-  $form['project']['data']['git']['branches'] = array(
+  $form['project']['git']['branches'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['branches'],
   );
-  $form['project']['data']['git']['tags'] = array(
+  $form['project']['git']['tags'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['tags'],
   );
 
-  // Don't allow editing
-  if ($node->nid) {
-    $locked = array('title', 'git_url', 'code_path', 'drupal_path', 'base_url');
-    foreach ($locked as $field){
-      $form[$field]['#value'] = $form[$field]['#default_value'];
-      $form[$field]['#type'] = 'value';
-    }
-  }
-
-  //All settings git pull in project page
+  // Live Environment settings.
   $form['project']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live Environment Settings'),
   );
 
-  // Master Site alias
   $live_alias_options['other'] = 'Other...';
   if (empty($live_alias_options[$node->project->live['live_environment']])){
     // No live environment
@@ -260,6 +269,9 @@ function devshop_projects_submit_settings($form, &$form_state) {
   $project_node = node_load($form_state['values']['nid']);
   $settings_info = module_invoke_all('devshop_project_settings', $project_node);
   $nodes = array();
+  // Save all items under project to data
+
+  // $form_state['values']['project']['data'] = (object) $form_state['values']['project'];
 
   // Go through each environment
   foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
