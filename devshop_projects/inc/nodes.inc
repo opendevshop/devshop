@@ -58,8 +58,9 @@ function devshop_projects_load($node) {
   }
   $project->environments = $environments;
 
-  // Make project name available.
+  // Make project name and status available.
   $project->name = $node->title;
+  $project->status = $node->status;
 
   // Save project object be available at $node->project.
   $additions['project'] = $project;
@@ -241,7 +242,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $additions = array();
     $additions['environment'] = db_fetch_object(db_query("SELECT e.*, n.title AS project FROM {hosting_devshop_project_environment} e LEFT JOIN {node} n ON e.project_nid = n.nid WHERE {$node->type} = %d", $node->nid));
 
-    $additions['project'] = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $additions['environment']->project_nid));
+    $additions['project'] = db_fetch_object(db_query('SELECT p.*, n.status FROM {hosting_devshop_project} p LEFT JOIN {node} n ON p.nid = n.nid WHERE n.nid = %d', $additions['environment']->project_nid));
 
     $additions['environment']->data = unserialize($additions['environment']->data);
     $additions['project']->data = unserialize($additions['project']->data);
