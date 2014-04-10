@@ -28,7 +28,7 @@ function theme_devshop_projects_settings_form($form) {
   foreach (element_children($form) as $env_name) {
     $row = array();
     $row[] = $env_name;
-    foreach(element_children($form[$env_name]['settings']) as $setting){
+    foreach(element_children($form[$env_name]) as $setting){
       if (!isset($header[$setting])){
         $header[$setting] = $form[$env_name][$setting]['#title'];
       }
