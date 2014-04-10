@@ -612,21 +612,20 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     $project_node->project->environments[$name] = (object) $environment;
   }
 
-  // @TODO: Put this back once creation works.
-//  // For all removed platforms, trigger a delete task
-//  $removed_environments = array_diff_key($project_node->project->environments, $form_state['values']['project']['environments']);
-//
-//  foreach ($removed_environments as $environment_name => $settings) {
-//    // @TODO: Determine what to do here based on task status...
-//    // if verify task hasn't even run yet (and has never run) we can just delete
-//    // the platform node.
-//
-//    // Create 'delete' task for the removed platform
-//    $platform_nid = $settings['platform'];
-//    if ($platform_nid){
-//      hosting_add_task($platform_nid, 'delete');
-//    }
-//  }
+  // For all removed platforms, trigger a delete task
+  $removed_environments = array_diff_key($project_node->project->environments, $form_state['values']['project']['environments']);
+
+  foreach ($removed_environments as $environment_name => $settings) {
+    // @TODO: Determine what to do here based on task status...
+    // if verify task hasn't even run yet (and has never run) we can just delete
+    // the platform node.
+
+    // Create 'delete' task for the removed platform
+    $platform_nid = $settings['platform'];
+    if ($platform_nid){
+      hosting_add_task($platform_nid, 'delete');
+    }
+  }
 
   // Somehow, NEW environment still appears!
   unset($project_node->project->environments['NEW']);
