@@ -670,7 +670,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // Build a table.
     $row = array();
     $row['name'] = $name;
-    $row['branch'] = $platform->git_branch;
+    $row['branch'] = $environment->git_ref;
     $row['version'] = $task->task_status == HOSTING_TASK_SUCCESS? $platform->release->version: t('...');
 
     // If platform verified successfully:
