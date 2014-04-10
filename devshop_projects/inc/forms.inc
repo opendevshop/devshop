@@ -172,6 +172,7 @@ function devshop_projects_form(&$node) {
   $form['#submit'] = array('devshop_projects_submit_settings');
 
   // Save git branches and tags
+  // @TODO: Properly prevent loss of git branches and tags.
   $form['project']['data']['git']['branches'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['branches'],
