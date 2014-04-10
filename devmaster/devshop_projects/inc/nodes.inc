@@ -248,6 +248,8 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     // @TODO: Remove once we change environment schema.
     $additions['environment']->name = $additions['environment']->environment;
+
+    // @TODO: Determine environment status from site status.
     return $additions;
   }
 }
