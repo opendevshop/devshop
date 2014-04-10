@@ -8,6 +8,8 @@
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
  * For "Pull Code" task.
+ *
+ * @see drush_devshop_projects_pre_hosting_task()
  */
 function hosting_task_devshop_pull_form($node) {
 
