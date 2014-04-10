@@ -608,10 +608,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       // Platform publish_path
       if (!empty($project_node->project->drupal_path)) {
-        $platform->publish_path = $project_node->project->code_path . '/' . $environment->title . '/' . $project_node->project->drupal_path;
+        $platform->publish_path = $project_node->project->code_path . '/' . $environment->name . '/' . $project_node->project->drupal_path;
       }
       else {
-        $platform->publish_path = $project_node->project->code_path . '/' . $environment->title;
+        $platform->publish_path = $project_node->project->code_path . '/' . $environment->name;
       }
 
       // Other attributes
