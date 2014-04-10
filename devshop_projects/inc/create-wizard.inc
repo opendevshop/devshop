@@ -608,7 +608,8 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform_node = _devshop_projects_node_create('platform', $platform);
     }
 
-    $environment['settings']['platform'] = $platform_node->nid;
+    $environment['platform'] = $platform_node->nid;
+    $environment['git_ref'] = $environment['settings']['git_ref'];
     $project_node->project->environments[$name] = (object) $environment;
   }
 
