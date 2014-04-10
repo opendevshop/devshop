@@ -137,35 +137,51 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  *   If desired, the environment to fork off of. (Copy the database and create a new branch from)
  */
 function hosting_create_environment($project_node, $environment_name, $branch, $fork_source = NULL) {
+  global $user;
+  $project = $project_node->project;
 
-  $servers = hosting_get_servers('http');
-  $server = variable_get('devshop_projects_default_web_server', key($servers));
-
-  // hosting_platform fields
-  $platform = new stdClass;
+  // First, create a platform node. Only aegir properties are needed.
+  $platform = new stdClass();
+  $platform->type = 'platform';
   $platform->title = $project_node->title . '_' . $environment_name;
-  $platform->publish_path = $project->code_path . '/' . $environment_name;
-  $platform->web_server = $server;
-  $platform->git_branch = $branch;
-  $platform->project = $project->title;
-  $platform->environment = $environment_name;
-  $platform->drupal_path = $project->drupal_path;
+  $platform->status = 1;
+  $platform->uid = $user->uid;
+  $platform->name = $user->name;
 
+  // Set servers
+  $servers = hosting_get_servers('http');
+  $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));;
+
+  // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
     $platform->publish_path = $project->code_path . '/' . $environment_name . '/' . $project->drupal_path;
   }
+  else {
+    $platform->publish_path = $project->code_path . '/' . $environment_name;
+  }
 
-  //Check if we are forking another site.
+  // Check if we are forking another site.
+  // @see ...
   if (isset($project_node->project->environments[$fork_source])) {
     $platform->clone_nid = $project_node->project->environments[$fork_source]['site'];
     $platform->git_branch = $branch;
     $platform->old_branch = $project_node->project->environments[$fork_source]['git_branch'];
   }
 
-  watchdog('debug', 'Attempting to create: ' . print_r($platform,1));
+  // Save the platform node.
+  if ($platform = node_submit($platform)) {
+    node_save($platform);
+  }
 
-  // Create the platform node. The platform and site creation handle it from there.
-  $platform_node = _devshop_projects_node_create('platform', $platform);
+  // Next, add the environment record.
+  $environment = new stdClass();
+  $environment->git_ref = $branch;
+  $environment->platform = $platform->nid;
 
-  return $platform_node;
+  $project->environments[$environment_name] = $environment;
+
+  // Save the project node.
+  $project_node->project = $project;
+  node_save($project_node);
+
 }
