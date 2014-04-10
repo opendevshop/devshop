@@ -180,11 +180,30 @@ function devshop_projects_form(&$node) {
         '#title' => $environment_name,
         '#theme' => 'devshop_projects_settings_table',
       );
+
+      // Environment properties
+      $form['project']['environments'][$environment_name]['site'] = array(
+        '#type' => 'value',
+        '#value' => $environment->site,
+      );
+      $form['project']['environments'][$environment_name]['platform'] = array(
+        '#type' => 'value',
+        '#value' => $environment->platform,
+      );
+      $form['project']['environments'][$environment_name]['git_ref'] = array(
+        '#title' => t('Git Branch/Tag'),
+        '#type' => 'select',
+        '#options' => devshop_projects_git_ref_options($project),
+        '#default_value' => $environment->git_ref,
+      );
+
+      // Environment settings
       foreach ($settings as $setting_id => $setting){
-        $form['project']['environments'][$environment_name][$setting_id] = $setting;
-        $form['project']['environments'][$environment_name][$setting_id]['#default_value'] = $environment->settings->{$setting_id};
-        $form['project']['environments'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
+        $form['project']['environments'][$environment_name]['settings'][$setting_id] = $setting;
+        $form['project']['environments'][$environment_name]['settings'][$setting_id]['#default_value'] = $environment->settings->{$setting_id};
+        $form['project']['environments'][$environment_name]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
       }
+
       $site = node_load($environment->site);
       $live_alias_options[$environment_name] = $site->hosting_name;
   }
@@ -269,12 +288,13 @@ function devshop_projects_submit_settings($form, &$form_state) {
   $project_node = node_load($form_state['values']['nid']);
   $settings_info = module_invoke_all('devshop_project_settings', $project_node);
   $nodes = array();
-  // Save all items under project to data
 
+  // Save all items under project to data
   // $form_state['values']['project']['data'] = (object) $form_state['values']['project'];
 
   // Go through each environment
   foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
+    $form_state['values']['project']['environments'][$environment_name]['settings'] = $form_state['values']['project']['environments'][$environment_name];
 
     // Then through each setting of each environment
     foreach ($settings as $setting_name => $setting_value){
@@ -305,6 +325,8 @@ function devshop_projects_submit_settings($form, &$form_state) {
   foreach ($nodes as $nid => $node){
     node_save($node);
   }
+
+  dsm($form_state['values']);
 }
 
 /**
