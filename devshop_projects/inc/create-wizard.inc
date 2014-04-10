@@ -499,10 +499,10 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
     // Add environment settings form elements
     foreach ($settings as $setting_id => $setting){
-      $form['project']['environments'][$env][$setting_id] = $setting;
-      $form['project']['environments'][$env][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
-      $form['project']['environments'][$env][$setting_id]['#attributes']['title'] = $setting['#description'];
-      $form['project']['environments'][$env][$setting_id]['#description'] = '';
+      $form['project']['environments'][$env]['settings'][$setting_id] = $setting;
+      $form['project']['environments'][$env]['settings'][$setting_id]['#default_value'] = $project->environments[$env][$setting_id];
+      $form['project']['environments'][$env]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
+      $form['project']['environments'][$env]['settings'][$setting_id]['#description'] = '';
     }
 
     //Now add button.
@@ -578,8 +578,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // If platform exists, it's because user went back in the wizard.
     $platform_nid = $project_node->project->environments[$name]->platform;
 
-    // If the platform already exists, verify it again.
+    // If the platform already exists, update settings and verify it again.
     if ($platform_nid) {
+      // @TODO: Apply settings and re-save platform.
       hosting_add_task($platform_nid, 'verify');
     }
     // If platform hasn't been created yet, do so now!
@@ -608,6 +609,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
 
 
+    dsm($environment, "environment $name");
     $environment['platform'] = $platform_node->nid;
     $project_node->project->environments[$name] = (object) $environment;
   }
@@ -626,6 +628,8 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       hosting_add_task($platform_nid, 'delete');
     }
   }
+
+  dsm($project_node->project, 'saving project');
 
   // Somehow, NEW environment still appears!
   unset($project_node->project->environments['NEW']);
