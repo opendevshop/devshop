@@ -45,7 +45,8 @@ function devshop_projects_load($node) {
   $project->data = unserialize($project->data);
 
   // Load Environments
-  $query = db_query("SELECT * FROM {hosting_devshop_project_environment} WHERE project_nid = %d ORDER BY environment", $node->nid);
+  // @TODO: Remove environments where the site has been deleted.
+  $query = db_query("SELECT e.*, s.status FROM {hosting_devshop_project_environment} e  LEFT JOIN {hosting_site} s ON e.site = s.nid WHERE project_nid = %d ORDER BY environment", $node->nid);
   $environments = array();
   while ($environment = db_fetch_object($query)) {
     $environment->data = unserialize($environment->data);
@@ -231,26 +232,21 @@ function devshop_projects_delete($node) {
 
 /**
  * Implementation of hook_nodeapi()
+ * For site and platform nodes, load project and environment objects.
  *
- * Handle project information for Platforms and Sites:
- *   $node->environment: All information about this environment.
+ * @see devshop_projects_load()
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
   // Load environment info into platforms and sites.
   if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
     $additions = array();
-    $additions['environment'] = db_fetch_object(db_query("SELECT e.*, n.title AS project FROM {hosting_devshop_project_environment} e LEFT JOIN {node} n ON e.project_nid = n.nid WHERE {$node->type} = %d", $node->nid));
+    $result = db_fetch_object(db_query("SELECT project_nid, environment FROM {hosting_devshop_project_environment} e WHERE {$node->type} = %d", $node->nid));
 
-    $additions['project'] = db_fetch_object(db_query('SELECT p.*, n.status FROM {hosting_devshop_project} p LEFT JOIN {node} n ON p.nid = n.nid WHERE n.nid = %d', $additions['environment']->project_nid));
-
-    $additions['environment']->data = unserialize($additions['environment']->data);
-    $additions['project']->data = unserialize($additions['project']->data);
-
-    // @TODO: Remove once we change environment schema.
-    $additions['environment']->name = $additions['environment']->environment;
-
-    // @TODO: Determine environment status from site status.
+    // Load project and environment
+    $project_node = node_load($result->project_nid);
+    $additions['project'] = $project_node->project;
+    $additions['environment'] = $project_node->project->environments[$result->environment];
     return $additions;
   }
 }
