@@ -342,21 +342,21 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 }
 
 /**
- * Implements hook_nodeapi_TYPE_OP()
+ * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
  */
 function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
-  if (!empty($node->environment)){
+  if (!empty($node->project)){
     // Display Project, Environment and Branch.
     $node->content['info']['project'] = array(
       '#type' => 'item',
       '#title' => t('Project'),
-      '#value' => l($node->environment->project, "node/{$node->environment->project_nid}"),
+      '#value' => l($node->project->name, "node/{$node->project->nid}"),
       '#weight' => -12,
     );
     $node->content['info']['env'] = array(
       '#type' => 'item',
       '#title' => t('Environment'),
-      '#value' => $node->environment->environment,
+      '#value' => $node->environment->name,
       '#weight' => -11,
     );
     $node->content['info']['branch'] = array(
@@ -370,7 +370,7 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
     $crumbs = array();
     $crumbs[] = l(t('Home'), '<front>');
     $crumbs[] = l(t('Projects'), 'hosting/projects');
-    $crumbs[] = l($node->environment->project, "node/" . $node->project_nid);
+    $crumbs[] = l($node->project->name, "node/" . $node->project->nid);
     drupal_set_breadcrumb($crumbs);
   }
 }
