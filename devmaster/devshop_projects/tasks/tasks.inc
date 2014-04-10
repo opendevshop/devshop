@@ -1,8 +1,7 @@
 <?php
-
 /**
- * @file devshop_project.task.inc DevShop Project Task related hooks and
- * support function include file.
+ * @file devshop_project.task.inc
+ * DevShop Tasks hooks.
  */
 
 /**
