@@ -832,7 +832,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   foreach ($project_node->project->environments as $environment_name => &$environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
     $db_server = $environment->db_server;
-    $site_node = devshop_projects_create_site($project_node, node_load($environment->platform), $environment_name, $db_server);
+    $site_node = devshop_projects_create_site($project_node->project, node_load($environment->platform), $environment_name, $db_server);
     $environment->site = $site_node->nid;
   }
 
