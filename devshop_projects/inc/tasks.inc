@@ -75,60 +75,58 @@ function devshop_projects_tasks_add_environment_to_form(&$form, $node, $descript
  * For "devshop-create" task for creating a platform and site.
  */
 function hosting_task_devshop_create_form($node) {
-  $branch_options = array_combine($node->git_branches, $node->git_branches);
+  global $user;
+  $project = $node->project;
+  $branch_options = devshop_projects_git_ref_options($project);
 
-  $site_nid = arg(3);
-  $site = NULL;
+  dsm($project, 'project');
+  // Look for Site to Fork
+  // @TODO: Do this with hook_menu?
+  $site_to_fork = arg(3);
+  if ($site_to_fork && is_numeric($site_to_fork) && $site = node_load($site_to_fork)) {
+    if (!empty($project->environments[$site->environment->environment])){
 
-  if ($site_nid && is_numeric($site_nid)) {
-    //Sanitize data.
-    $site_nid = check_plain($site_nid);
-
-    //Check is a valid project site.
-    if (!empty($node->project_objects['site'][$site_nid])) {
-       $site = node_load($site_nid);
+      $form['branch_source'] = array(
+        '#type' => 'item',
+        '#title' => t('Fork from'),
+        '#value' => t('!env environment on branch !branch', array('!env' => "<span class='environment'>{$site->environment->name}</span>", '!branch' => "<span class='branch'>{$site->environment->git_ref}</span>")),
+      );
+      $form['fork_source'] = array(
+        '#type' => 'hidden',
+        '#value' => $site->environment->name,
+      );
+      $form['new_branch'] = array(
+        '#title' => t('New branch name'),
+        '#description' => t('Pick a name for your new git branch.'),
+        '#type' => 'textfield',
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+      );
     }
-  } 
-
-  if ($site) {
-    $form['branch_source'] = array(
-      '#type' => 'item',
-      '#title' => t('Fork from'),
-      '#value' => t('!env environment on branch !branch', array('!env' => "<span class='environment'>$site->environment</span>", '!branch' => "<span class='branch'>$site->git_branch</span>")),
-    );
-    $form['fork_source'] = array(
-      '#type' => 'hidden',
-      '#value' => $site->environment,
-    );
-    $form['new_branch'] = array(
-      '#title' => t('New branch name'),
-      '#description' => t('Choose the new Git branch you with to use for this new platform.'),
-      '#type' => 'textfield',
-      '#size' => 60,
-      '#maxlength' => 128,
-      '#required' => TRUE,
-    );
   }
+
   else {
     $form['branch'] = array(
-      '#title' => t('Branch'),
-      '#description' => t('Choose the Git branch you with to use for this new platform.  <em>Note: If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
+      '#title' => t('Branch/Tag'),
+      '#description' => t('Choose the git branch or tag you wish to use for this new environment.  <em>Note: If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
       '#type' => 'select',
       '#options' => $branch_options,
       '#required' => TRUE,
     );
   }
-  // @TODO: Add "create branch" functionality.
   $form['environment_name'] = array(
-    '#title' => t('Environment Name'),
+    '#title' => t('New Environment Name'),
     '#type' => 'textfield',
-    '#description' => t('Enter a system name for your environment.  For consistency, you should make this match the branch name.'),
+    '#description' => t('Enter a system name for your environment.  For consistency, you might want to match the branch name.'),
     '#required' => TRUE,
     '#field_prefix' => 'http://',
-    '#field_suffix' => ".$node->base_url",
+    '#field_suffix' => "." . $node->project->base_url,
     '#size' => 6,
     '#maxlength' => 64,
   );
+
+  // @TODO: I don't think this is needed. hosting_task_devshop_create_form_submit() looks for nid, these values end up in $form_state['values']['paramters'];
   $form['project_nid'] = array(
     '#type' => 'value',
     '#value' => $node->nid,
@@ -142,11 +140,18 @@ function hosting_task_devshop_create_form($node) {
 function hosting_task_devshop_create_form_validate($form, &$form_state){
   $params = $form_state['values']['parameters'];
 
-  // Check for existing environments for this project.
-  $object_nid = db_result(db_query('SELECT object_nid FROM {hosting_devshop_project_object} d LEFT JOIN {hosting_platform} h ON d.object_nid = h.nid WHERE project_nid = %d AND object_type = "%s" AND environment = "%s" AND status != %d', $params['project_nid'], 'platform', $params['environment_name'], HOSTING_PLATFORM_DELETED));
-  
-  if ($object_nid) {
+  // Load Project
+  $node = node_load($form_state['values']['nid']);
+  $project = $node->project;
+
+  // Check existence of the environment name
+  if (!empty($project->environments[$params['environment_name']])){
     form_set_error('environment_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['environment_name'])));
+  }
+
+  // Check existence of the git branch
+  if (in_array($params['new_branch'], $project->data->git['branches'])){
+    form_set_error('new_branch', t("The project already has a branch named %name. Choose a git branch name that doesn't already exist.", array('%name' => $params['new_branch'])));
   }
 
   // Check for illegal chars
