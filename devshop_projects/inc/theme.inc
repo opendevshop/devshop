@@ -28,7 +28,7 @@ function theme_devshop_projects_settings_form($form) {
   foreach (element_children($form) as $env_name) {
     $row = array();
     $row[] = $env_name;
-    foreach(element_children($form[$env_name]) as $setting){
+    foreach(element_children($form[$env_name]['settings']) as $setting){
       if (!isset($header[$setting])){
         $header[$setting] = $form[$env_name][$setting]['#title'];
       }
@@ -43,18 +43,22 @@ function theme_devshop_projects_settings_form($form) {
 
 /**
  * Theme function for create environments settings
+ * @TODO: Fold into theme_devshop_projects_settings_form()
  */
 function theme_devshop_projects_create_settings_form($form) {
   $rows = array();
   $header = array();
   foreach (element_children($form) as $env_name) {
     $row = array();
-    foreach(element_children($form[$env_name]) as $setting){
+    $header['title'] = 'Name';
+    $row[] = drupal_render($form[$env_name]['title']);
+
+    foreach(element_children($form[$env_name]['settings']) as $setting){
       if (!isset($header[$setting])){
-        $header[$setting] = $form[$env_name][$setting]['#title'];
+        $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
       }
-      $form[$env_name][$setting]['#title'] = '';
-      $row[] = drupal_render($form[$env_name][$setting]); 
+      $form[$env_name]['settings'][$setting]['#title'] = '';
+      $row[] = drupal_render($form[$env_name]['settings'][$setting]);
     }
     $rows[] = $row;
   }
