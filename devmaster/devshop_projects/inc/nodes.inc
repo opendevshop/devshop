@@ -49,13 +49,10 @@ function devshop_projects_load($node) {
   $query = db_query("SELECT e.*, s.status FROM {hosting_devshop_project_environment} e  LEFT JOIN {hosting_site} s ON e.site = s.nid WHERE project_nid = %d ORDER BY environment", $node->nid);
   $environments = array();
   while ($environment = db_fetch_object($query)) {
-    $environment->data = unserialize($environment->data);
-
-    // @TODO: Remove when we change the environment schema to be "name"
-    $environment->name = $environment->environment;
 
     // Save to environments array
-    $environments[$environment->environment] = $environment;
+    $environment->data = unserialize($environment->data);
+    $environments[$environment->name] = $environment;
   }
   $project->environments = $environments;
 
