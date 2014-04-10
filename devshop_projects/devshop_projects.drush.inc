@@ -210,7 +210,8 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
 
     // Get the project
-    $project = node_load($platform->project_nid);
+    $project_node = node_load($platform->project_nid);
+    $project = $project_node->project;
 
     // If the project doesn't have an install profile chosen yet, bail.
     if (empty($project->install_profile)){
@@ -229,19 +230,16 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       return;
     }
 
-    // live. Let's create a site based off of this platform.
-    drush_log('[DEVSHOP] Platform verified.  Creating your site.');
-
     //Check if clone or create a new site.
     if ($platform->clone_nid) {
       $servers = hosting_get_servers('db');
       $args['target_platform'] = $platform->nid;
-      $args['new_uri'] = $platform->environment .'.'. $project->base_url;
+      $args['new_uri'] = $platform->environment->name .'.'. $project->base_url;
       $args['new_db_server'] = key($servers);
       hosting_add_task($platform->clone_nid, 'clone', $args);
     }
     else {
-      $site_node = devshop_projects_create_site($project, $platform, $platform->environment);
+      $site_node = devshop_projects_create_site($project_node, $platform, $platform->environment->name);
       drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. !link', array('!link' => l('node/' . $site_node->nid)));
     }
   }
