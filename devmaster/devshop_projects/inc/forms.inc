@@ -158,7 +158,7 @@ function devshop_projects_form(&$node) {
     // Other fields
     $locked = array('git_url', 'code_path', 'drupal_path', 'base_url');
     foreach ($locked as $field){
-      $form['project'][$field]['#value'] = $form[$field]['#default_value'];
+      $form['project'][$field]['#value'] = $form['project'][$field]['#default_value'];
       $form['project'][$field]['#type'] = 'value';
     }
   }
@@ -171,7 +171,6 @@ function devshop_projects_form(&$node) {
     '#tree' => TRUE,
   );
 
-  // @TODO: Whenever an environment is created, make sure to resave the project so settings are captured in json.
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
   foreach ($node->project->environments as $environment_name => $environment) {
@@ -197,6 +196,8 @@ function devshop_projects_form(&$node) {
         '#default_value' => $environment->git_ref,
       );
 
+      $form['project']['environments'][$environment_name]['settings'] = array();
+
       // Environment settings
       foreach ($settings as $setting_id => $setting){
         $form['project']['environments'][$environment_name]['settings'][$setting_id] = $setting;
@@ -207,21 +208,20 @@ function devshop_projects_form(&$node) {
       $site = node_load($environment->site);
       $live_alias_options[$environment_name] = $site->hosting_name;
   }
-  $form['#submit'] = array('devshop_projects_submit_settings');
 
+  // Project Settings
   // Save git branches and tags
-  // @TODO: Properly prevent loss of git branches and tags.
-  $form['project']['git']['branches'] = array(
+  $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['branches'],
   );
-  $form['project']['git']['tags'] = array(
+  $form['project']['settings']['git']['tags'] = array(
     '#type' => 'value',
     '#value' => $node->project->data->git['tags'],
   );
 
   // Live Environment settings.
-  $form['project']['live'] = array(
+  $form['project']['settings']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live Environment Settings'),
   );
@@ -236,7 +236,7 @@ function devshop_projects_form(&$node) {
     $live_environment_default_value = 'other';
   }
 
-  $form['project']['live']['live_environment'] = array(
+  $form['project']['settings']['live']['live_environment'] = array(
     '#type' => 'select',
     '#title' => t('Live Environment'),
     '#options' => $live_alias_options,
@@ -244,7 +244,7 @@ function devshop_projects_form(&$node) {
     '#default_value' => $live_environment_default_value,
     '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
   );
-  $form['project']['live']['live_environment_alias'] = array(
+  $form['project']['settings']['live']['live_environment_alias'] = array(
     '#title' => t('Live Site Drush Alias'),
     '#type' => 'textfield',
     '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
@@ -256,7 +256,7 @@ function devshop_projects_form(&$node) {
   );
 
   // Live Domain
-  $form['project']['live']['live_domain'] = array(
+  $form['project']['settings']['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live domain'),
     '#description' => t('The live domain for this project. Do not include "www".'),
@@ -267,7 +267,7 @@ function devshop_projects_form(&$node) {
 
   // Use aliases
   if (module_exists('hosting_alias')){
-    $form['project']['live']['live_domain_aliases'] = array(
+    $form['project']['settings']['live']['live_domain_aliases'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use environment aliases'),
       '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
@@ -283,50 +283,50 @@ function devshop_projects_form(&$node) {
  * Submit function for save data of platforms.
  */
 function devshop_projects_submit_settings($form, &$form_state) {
-
-  // Go through and save our settings to site and platform nodes.
-  $project_node = node_load($form_state['values']['nid']);
-  $settings_info = module_invoke_all('devshop_project_settings', $project_node);
-  $nodes = array();
-
-  // Save all items under project to data
-  // $form_state['values']['project']['data'] = (object) $form_state['values']['project'];
-
-  // Go through each environment
-  foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
-    $form_state['values']['project']['environments'][$environment_name]['settings'] = $form_state['values']['project']['environments'][$environment_name];
-
-    // Then through each setting of each environment
-    foreach ($settings as $setting_name => $setting_value){
-
-      //Find the node type for this setting.
-      $node_type = $settings_info[$setting_name]['#node_type'];
-
-      // Load the site or platform node for this environment, then set the value and save.
-      if (!empty($project_node->project->environments[$environment_name]->{$node_type})){
-        $nid = $project_node->project->environments[$environment_name]->{$node_type};
-        $nodes[$nid] = node_load($nid);
-        $nodes[$nid]->no_verify = TRUE;
-
-        //If changed database then execute migrate task.
-        if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
-          $args['target_platform'] = $nodes[$nid]->platform;
-          $args['new_uri'] = $nodes[$nid]->title;
-          $args['new_db_server'] = $setting_value;
-
-          hosting_add_task($nid, 'migrate', $args);
-        }
-        $nodes[$nid]->{$setting_name} = $setting_value;
-      }
-    }
-  }
-
-  // Go save all nodes
-  foreach ($nodes as $nid => $node){
-    node_save($node);
-  }
-
-  dsm($form_state['values']);
+//
+//  // Go through and save our settings to site and platform nodes.
+//  $project_node = node_load($form_state['values']['nid']);
+//  $settings_info = module_invoke_all('devshop_project_settings', $project_node);
+//  $nodes = array();
+//
+//  // Save all items under project to data
+//  // $form_state['values']['project']['data'] = (object) $form_state['values']['project'];
+//
+//  // Go through each environment
+//  // @TODO: Move to devshop_project_update();
+//  foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
+//    //$form_state['values']['project']['environments'][$environment_name]['settings'] = $form_state['values']['project']['environments'][$environment_name];
+//
+//    // Then through each setting of each environment
+//    foreach ($settings as $setting_name => $setting_value){
+//
+//      //Find the node type for this setting.
+//      $node_type = $settings_info[$setting_name]['#node_type'];
+//
+//      // Load the site or platform node for this environment, then set the value and save.
+//      if (!empty($project_node->project->environments[$environment_name]->{$node_type})){
+//        $nid = $project_node->project->environments[$environment_name]->{$node_type};
+//        $nodes[$nid] = node_load($nid);
+//        $nodes[$nid]->no_verify = TRUE;
+//
+//        //If changed database then execute migrate task.
+//        if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
+//          $args['target_platform'] = $nodes[$nid]->platform;
+//          $args['new_uri'] = $nodes[$nid]->title;
+//          $args['new_db_server'] = $setting_value;
+//
+//          hosting_add_task($nid, 'migrate', $args);
+//        }
+//        $nodes[$nid]->{$setting_name} = $setting_value;
+//      }
+//    }
+//  }
+//
+//  // Go save all nodes
+//  foreach ($nodes as $nid => $node){
+//    node_save($node);
+//  }
+//
 }
 
 /**
