@@ -243,7 +243,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'project'){
     foreach ($task->ref->project->environments as $environment) {
       drush_log('[DEVSHOP] Running verify on environment ' . $environment->name, 'ok');
-      hosting_add_task($nid, 'verify');
+      hosting_add_task($environment->platform, 'verify');
     }
   }
 }
