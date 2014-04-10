@@ -102,6 +102,8 @@ function devshop_projects_insert($node) {
   // If using environment aliases... save them.
   devshop_project_save_domain_aliases($node);
 
+  // @TODO: The wizard always creates the project before the environments.
+  // Not sure if we need this, but we might to enable importing via drush.
   // Save Environment records.
   if (!empty($node->project->environments)) {
     foreach ($node->project->environments as $name => $environment){
@@ -141,7 +143,7 @@ function devshop_projects_update($node) {
     hosting_add_task($node->nid, 'verify');
   }
 
-  $project = $node->project;
+  $project = (object) $node->project;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -152,7 +154,7 @@ function devshop_projects_update($node) {
   $info->install_profile = $project->install_profile;
 
   // Save serialized data, minus environments
-  $info->settings = serialize($node->project->settings);
+  $info->settings = serialize($project->settings);
 
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');

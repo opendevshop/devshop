@@ -483,6 +483,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#theme' => 'devshop_projects_settings_table',
     );
 
+    // Environment properties
     $form['project']['environments'][$env]['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Environment Name'),
@@ -496,6 +497,22 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#field_prefix' => 'http://',
       '#field_suffix' => "." . $project_node->project->base_url,
     );
+    $form['project']['environments'][$env]['site'] = array(
+      '#type' => 'value',
+      '#value' => $project->environments[$env]->site,
+    );
+    $form['project']['environments'][$env]['platform'] = array(
+      '#type' => 'value',
+      '#value' => $project->environments[$env]->platform,
+    );
+    $form['project']['environments'][$env]['git_ref'] = array(
+      '#title' => t('Git Branch/Tag'),
+      '#type' => 'select',
+      '#options' => devshop_projects_git_ref_options($project),
+      '#default_value' => $project->environments[$env]->git_ref,
+    );
+
+    // Environment settings
 
     // Add environment settings form elements
     foreach ($settings as $setting_id => $setting){
