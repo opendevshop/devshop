@@ -338,6 +338,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   $project->environments[$environment_name]->site = $node->nid;
   $project_node = node_load($project->nid);
   $project_node->project = $project;
+  $project_node->no_verify = TRUE;
   node_save($project_node);
 
   return $node;
