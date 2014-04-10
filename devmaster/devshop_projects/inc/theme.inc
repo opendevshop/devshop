@@ -28,12 +28,14 @@ function theme_devshop_projects_settings_form($form) {
   foreach (element_children($form) as $env_name) {
     $row = array();
     $row[] = $env_name;
-    foreach(element_children($form[$env_name]) as $setting){
+    $row[] = drupal_render($form[$env_name]['git_ref']);
+    $header['git_ref'] = t('Branch/Tag');
+    foreach(element_children($form[$env_name]['settings']) as $setting){
       if (!isset($header[$setting])){
-        $header[$setting] = $form[$env_name][$setting]['#title'];
+        $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
       }
-      $form[$env_name][$setting]['#title'] = '';
-      $row[] = drupal_render($form[$env_name][$setting]); 
+      $form[$env_name]['settings'][$setting]['#title'] = '';
+      $row[] = drupal_render($form[$env_name]['settings'][$setting]);
     }
     $rows[] = $row;
   }
