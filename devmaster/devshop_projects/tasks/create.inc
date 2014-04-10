@@ -84,7 +84,7 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
   }
 
   // Check existence of the git branch
-  if (in_array($params['new_branch'], $project->data->git['branches'])){
+  if (in_array($params['new_branch'], $project->settings->git['branches'])){
     form_set_error('new_branch', t("The project already has a branch named %name. Choose a git branch name that doesn't already exist.", array('%name' => $params['new_branch'])));
   }
 
@@ -149,6 +149,7 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
   $platform->name = $user->name;
 
   // Set servers
+  // @TODO: Respect environment settings.
   $servers = hosting_get_servers('http');
   $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));;
 
@@ -163,9 +164,9 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
   // Check if we are forking another site.
   // @see ...
   if (isset($project_node->project->environments[$fork_source])) {
-    $platform->clone_nid = $project_node->project->environments[$fork_source]['site'];
+    $platform->clone_nid = $project_node->project->environments[$fork_source]->site;
     $platform->git_branch = $branch;
-    $platform->old_branch = $project_node->project->environments[$fork_source]['git_branch'];
+    $platform->old_branch = $project_node->project->environments[$fork_source]->git_ref;
   }
 
   // Save the platform node.
