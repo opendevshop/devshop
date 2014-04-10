@@ -154,29 +154,27 @@ function drush_devshop_platform_verify(){
 }
 
 /**
- * Implementation of hook_post_hosting_TASK_TYPE_task
- *
- * Runs after project delete
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for delete tasks.
  */
 function devshop_projects_post_hosting_delete_task($task, $data) {
+
+  // When a project is deleted...
   if ($task->ref->type == 'project') {
-    // We just trigger site deletion here.
-    // The Post Deletion hook must take care of platforms, since this must finish first.
-    $project = $task->ref;
-    if (!empty($project->project_objects['site'])) {
-      foreach ($project->project_objects['site'] as $nid => $name) {
-        hosting_add_task($nid, 'delete');
-      }
+    // Queue site deletion for each environment.
+    $project = $task->ref->project;
+    foreach ($project->environments as $environment){
+      hosting_add_task($environment->site, 'delete');
     }
 
     // @TODO: Should probably add our own status column
-    // The last step set status = 0 project node
+    // Unpublish the project node.
     $task->ref->status = 0;
     $task->ref->no_verify = TRUE;
     node_save($task->ref);
   }
   
-  // When a site is deleted... delete the platform
+  // When a site is deleted (if it is in a project, delete the platform it is on.
+  // @TODO: Check for another site on this platform?
   if ($task->ref->type == 'site' && !empty($task->ref->project)) {
     // We trigger platform deletion here.
     hosting_add_task($task->ref->platform, 'delete');
@@ -185,35 +183,10 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
   // When a platform is deleted, if it is the last in the project,
   // and the project has been unpublished, delete the directory.
   if ($task->ref->type == 'platform' && !empty($task->ref->project)) {
-    $project = node_load($task->ref->project_nid);
-    drush_log('[DEVSHOP] Checking for other platforms...', 'ok');
-    
-    if ($project->status == 0){
-      // Don't know if this platform is still here or not...
-      unset($project->project_objects['platform'][$task->ref]);
-
-      //Check if all platforms were deleted. If is the last platform delete root folder.       
-      $last = TRUE;
-      if (!empty($node->project_objects['platform'])) {
-        foreach ($project->project_objects['platform'] as $nid => $type) {
-          $platform_status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
-          if ($nid != $task->ref && $platform_status != HOSTING_PLATFORM_DELETED) {
-            $last = FALSE;
-          }
-        }
-      }
-      if ($last) {
-        drush_log('[DEVSHOP] Last Platform! Removing code_path folder.', 'ok');
-
-        //Is the drupal directory isn't empty then we need to delete recursively
-        if ($project->drupal_path) {
-          _devshop_rrmdir($project->code_path);
-        }
-        else {
-          rmdir($project->code_path);
-        }
-      }   
-    } 
+    if ($task->ref->project->status == 0 && count($task->ref->project->environments) == 1){
+      // Delete the project folder.
+      exec("rm -rf {$project->code_path}");
+    }
   }
 }
 
@@ -274,22 +247,13 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
   }
   
   // When a project is verified, queue a verification for all platforms
-  // @TODO: Figure out a better way to verify all the things.
-//  if ($task->ref->type == 'project' && isset($task->ref->project_objects['platform'])){
-//    $project = node_load($task->ref->nid);
-//    $platform_nids = array_keys($project->project_objects['platform']);
-//    foreach ($project->project_objects['platform'] as $nid => $name) {
-//      //Check if a platform was deleted for exclude from verify.
-//      $status = db_result(db_query("SELECT status FROM {hosting_platform} WHERE nid = %d", $nid));
-//      if ($status != HOSTING_PLATFORM_DELETED) {
-//        drush_log('[DEVSHOP] Running verify on project: ' . $name, 'ok');
-//        hosting_add_task($nid, 'verify');
-//      }
-//      else {
-//        drush_log('[DEVSHOP] Can\'t run verify on project: ' . $name, 'ok');
-//      }
-//    }
-//  }
+  // @TODO: Figure out a better way to verify, only when needed.
+  if ($task->ref->type == 'project'){
+    foreach ($task->ref->project->environments as $environment) {
+      drush_log('[DEVSHOP] Running verify on environment ' . $environment->name, 'ok');
+      hosting_add_task($nid, 'verify');
+    }
+  }
 }
 
 /**
