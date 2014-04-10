@@ -608,7 +608,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform_node = _devshop_projects_node_create('platform', $platform);
     }
 
-    $environment['platform'] = $platform_node->nid;
+    $environment['settings']['platform'] = $platform_node->nid;
     $project_node->project->environments[$name] = (object) $environment;
   }
 
@@ -626,8 +626,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       hosting_add_task($platform_nid, 'delete');
     }
   }
-
-  dsm($project_node->project, 'saving project');
 
   // Somehow, NEW environment still appears!
   unset($project_node->project->environments['NEW']);
