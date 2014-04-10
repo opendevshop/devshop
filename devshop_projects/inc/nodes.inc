@@ -105,6 +105,8 @@ function devshop_projects_insert($node) {
   // Save Environment records.
   if (!empty($node->project->environments)) {
     foreach ($node->project->environments as $name => $environment){
+      $environment = (object) $environment;
+
       $info = new stdClass();
       $info->project_nid = $node->nid;
       $info->name = $name;
@@ -160,6 +162,7 @@ function devshop_projects_update($node) {
 
     // Save each environment
     foreach ($project->environments as $name => $environment){
+      $environment = (object) $environment;
       $info = new stdClass();
       $info->project_nid = $node->nid;
       $info->name = $name;
