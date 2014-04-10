@@ -49,6 +49,11 @@ function devshop_projects_load($node) {
   $environments = array();
   while ($environment = db_fetch_object($query)) {
     $environment->data = unserialize($environment->data);
+
+    // @TODO: Remove when we change the environment schema to be "name"
+    $environment->name = $environment->environment;
+
+    // Save to environments array
     $environments[$environment->environment] = $environment;
   }
   $project->environments = $environments;
@@ -241,6 +246,8 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $additions['environment']->data = unserialize($additions['environment']->data);
     $additions['project']->data = unserialize($additions['project']->data);
 
+    // @TODO: Remove once we change environment schema.
+    $additions['environment']->name = $additions['environment']->environment;
     return $additions;
   }
 }
