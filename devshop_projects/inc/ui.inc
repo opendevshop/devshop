@@ -387,7 +387,7 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
  */
 function devshop_hosting_site_goto_link($node) {
 //  $project = node_load($node->environment->project_nid);
-  $url = "{$node->environment->environment}.{$node->project->base_url}";
+  $url = "{$node->environment->name}.{$node->project->base_url}";
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
   if (!is_null($cache) && (time() < $cache->data['expire'])) {
     $title = t("Log in: !url", array('!url' => $url));

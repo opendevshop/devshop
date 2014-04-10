@@ -113,7 +113,7 @@ function devshop_projects_schema() {
         'default' => 0,
       'description' => "The project's Node ID.",
       ),
-      'environment' => array(
+      'name' => array(
         'type' => 'varchar',
         'not null' => TRUE,
         'length' => 64,
