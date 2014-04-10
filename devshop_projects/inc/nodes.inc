@@ -112,9 +112,9 @@ function devshop_projects_insert($node) {
       $info = new stdClass();
       $info->project_nid = $node->nid;
       $info->name = $name;
-      $info->git_ref = $environment->settings['git_ref'];
-      $info->site = $environment->settings['site'];
-      $info->platform = $environment->settings['platform'];
+      $info->git_ref = $environment->git_ref;
+      $info->site = $environment->site;
+      $info->platform = $environment->platform;
 
       // Remove primary settings from settings array before saving.
       unset($environment->settings['git_ref']);
@@ -171,9 +171,9 @@ function devshop_projects_update($node) {
       $info = new stdClass();
       $info->project_nid = $node->nid;
       $info->name = $name;
-      $info->git_ref = $environment->settings['git_ref'];
-      $info->site = $environment->settings['site'];
-      $info->platform = $environment->settings['platform'];
+      $info->git_ref = $environment->git_ref;
+      $info->site = $environment->site;
+      $info->platform = $environment->platform;
 
       // Remove primary settings from settings array before saving.
       unset($environment->settings['git_ref']);
