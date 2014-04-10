@@ -149,20 +149,20 @@ function devshop_projects_devshop_project_settings($node = NULL){
   $project = $node->project;
 
   $settings = array();
-  $settings['site'] = array(
-    '#node_type' => 'site',
-    '#type' => 'hidden',
-  );
-  $settings['platform'] = array(
-    '#node_type' => 'platform',
-    '#type' => 'hidden',
-  );
-  $settings['git_ref'] = array(
-    '#title' => t('Git Branch/Tag'),
-    '#node_type' => 'platform',
-    '#type' => 'select',
-    '#options' => devshop_projects_git_ref_options($project),
-  );
+//  $settings['site'] = array(
+//    '#node_type' => 'site',
+//    '#type' => 'hidden',
+//  );
+//  $settings['platform'] = array(
+//    '#node_type' => 'platform',
+//    '#type' => 'hidden',
+//  );
+//  $settings['git_ref'] = array(
+//    '#title' => t('Git Branch/Tag'),
+//    '#node_type' => 'platform',
+//    '#type' => 'select',
+//    '#options' => devshop_projects_git_ref_options($project),
+//  );
 
   $http_servers = hosting_get_servers('http');
   if (count($http_servers)) {
