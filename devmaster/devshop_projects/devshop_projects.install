@@ -149,7 +149,7 @@ function devshop_projects_schema() {
       ),
     ),
     'indexes' => array(
-      'project_environment' => array('project_nid', 'environment'),
+      'project_environment' => array('project_nid', 'name'),
     ),
   );
   return $schema;
