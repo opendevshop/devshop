@@ -426,12 +426,13 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
  * STEP 3: Form
  */
 function devshop_project_create_step_environments(&$form, &$form_state) {
-  $project = &$form_state['project'];
-  $project_node = node_load($project->project_nid);
+  $project_cache = &$form_state['project'];
+  $project_node = node_load($project_cache->project_nid);
+  $project = $project_node->project;
 
-  if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
+  if ($project_cache->verify_task_status == HOSTING_TASK_QUEUED || $project_cache->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
-    $project->no_next = TRUE;
+    $project_cache->no_next = TRUE;
 
     $form['note'] = array(
       '#type' => 'markup',
@@ -469,22 +470,22 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   if (!is_array($project->environments['NEW'])){
     $project->environments['NEW'] = array();
   }
-  foreach ($project->environments as $env => $env_settings) {
+  foreach ($project->environments as $name => $environment) {
     // No platforms exist yet
-    if ($env == 'NEW') {
+    if ($name == 'NEW') {
       $env_title = '';
     } else {
-      $env_title = $env;
+      $env_title = $name;
     }
 
-    $form['project']['environments'][$env] = array(
+    $form['project']['environments'][$name] = array(
       '#tree' => TRUE,
       '#type' => 'fieldset',
       '#theme' => 'devshop_projects_settings_table',
     );
 
     // Environment properties
-    $form['project']['environments'][$env]['title'] = array(
+    $form['project']['environments'][$name]['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Environment Name'),
       '#default_value' => $env_title,
@@ -495,31 +496,30 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         'autofocus' => 'autofocus',
       ),
       '#field_prefix' => 'http://',
-      '#field_suffix' => "." . $project_node->project->base_url,
+      '#field_suffix' => "." . $project->base_url,
     );
-    $form['project']['environments'][$env]['site'] = array(
+    $form['project']['environments'][$name]['site'] = array(
       '#type' => 'value',
-      '#value' => $project->environments[$env]->site,
+      '#value' => $environment->site,
     );
-    $form['project']['environments'][$env]['platform'] = array(
+    $form['project']['environments'][$name]['platform'] = array(
       '#type' => 'value',
-      '#value' => $project->environments[$env]->platform,
+      '#value' => $environment->platform,
     );
-    $form['project']['environments'][$env]['git_ref'] = array(
+    $form['project']['environments'][$name]['git_ref'] = array(
       '#title' => t('Git Branch/Tag'),
       '#type' => 'select',
       '#options' => devshop_projects_git_ref_options($project),
-      '#default_value' => $project->environments[$env]->git_ref,
+      '#default_value' => $environment->git_ref,
     );
 
     // Environment settings
-
     // Add environment settings form elements
     foreach ($settings as $setting_id => $setting){
-      $form['project']['environments'][$env]['settings'][$setting_id] = $setting;
-      $form['project']['environments'][$env]['settings'][$setting_id]['#default_value'] = $project->environments[$env]['settings'][$setting_id];
-      $form['project']['environments'][$env]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
-      $form['project']['environments'][$env]['settings'][$setting_id]['#description'] = '';
+      $form['project']['environments'][$name]['settings'][$setting_id] = $setting;
+      $form['project']['environments'][$name]['settings'][$setting_id]['#default_value'] = $environment->settings->{$setting_id};
+      $form['project']['environments'][$name]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
+      $form['project']['environments'][$name]['settings'][$setting_id]['#description'] = '';
     }
 
     //Now add button.
@@ -626,7 +626,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
 
     $environment['platform'] = $platform_node->nid;
-    $environment['git_ref'] = $environment['settings']['git_ref'];
+    $environment['git_ref'] = $environment['git_ref'];
     $project_node->project->environments[$name] = (object) $environment;
   }
 
