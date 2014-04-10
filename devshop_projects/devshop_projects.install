@@ -42,11 +42,11 @@ function devshop_projects_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
-      'data' => array(
+      'settings' => array(
         'type' => 'text',
         'not null' => FALSE,
         'size' => 'big',
-        'description' => 'A serialized array of data for this project.',
+        'description' => 'A serialized array of settings for this project.',
       ),
     ),
     'primary key' => array('nid'),
@@ -141,11 +141,11 @@ function devshop_projects_schema() {
         'unsigned' => TRUE,
         'description' => 'The node ID of the platform for this environment.',
       ),
-      'data' => array(
+      'settings' => array(
         'type' => 'text',
         'not null' => FALSE,
         'size' => 'big',
-        'description' => 'A serialized array of data for this project.',
+        'description' => 'A serialized array of settings for this environment.',
       ),
     ),
     'indexes' => array(
@@ -302,4 +302,22 @@ function devshop_projects_update_11() {
 function devshop_projects_update_12() {
   module_enable(array('hosting_alias'));
   return array();
+}
+
+/**
+ * Change "data" column to "settings".
+ */
+function devshop_projects_update_13(){
+  $ret = array();
+  $schema = devshop_projects_schema();
+
+  // Projects schema
+  $spec = $schema['hosting_devshop_project']['fields']['settings'];
+  db_change_field($ret, 'hosting_devshop_project', 'data', 'settings', $spec, $keys_new = array());
+
+  // Environments schema
+  $spec = $schema['hosting_devshop_project_environment']['fields']['settings'];
+  db_change_field($ret, 'hosting_devshop_project_environment', 'data', 'settings', $spec, $keys_new = array());
+
+  return $ret;
 }
