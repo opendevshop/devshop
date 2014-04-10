@@ -213,7 +213,7 @@ function devshop_pull_project($project_nid) {
 
   foreach ($project_node->project->environments as $name => $environment){
     if (!$environment->data->pull_disabled){
-      $args['environments'] .= $environment->environment .' ';
+      $args['environments'] .= $environment->name .' ';
     }
   }
   $args['environments'] = trim($args['environments']);

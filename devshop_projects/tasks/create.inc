@@ -18,7 +18,7 @@ function hosting_task_devshop_create_form($node) {
   // @TODO: Do this with hook_menu?
   $site_to_fork = arg(3);
   if ($site_to_fork && is_numeric($site_to_fork) && $site = node_load($site_to_fork)) {
-    if (!empty($project->environments[$site->environment->environment])){
+    if (!empty($project->environments[$site->environment->name])){
 
       $form['branch_source'] = array(
         '#type' => 'item',
