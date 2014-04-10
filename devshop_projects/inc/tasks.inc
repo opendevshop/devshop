@@ -79,7 +79,6 @@ function hosting_task_devshop_create_form($node) {
   $project = $node->project;
   $branch_options = devshop_projects_git_ref_options($project);
 
-  dsm($project, 'project');
   // Look for Site to Fork
   // @TODO: Do this with hook_menu?
   $site_to_fork = arg(3);
