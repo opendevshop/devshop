@@ -348,20 +348,21 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
  * Helper to get select #options for git ref.
  */
 function devshop_projects_git_ref_options($project){
-  // Build branch options
-  if (is_array($project->data->git['branches']) && !empty($project->data->git['branches'])) {
-    $options = array(
-      'Branches' => array_combine($project->data->git['branches'], $project->data->git['branches']),
-    );
-  }
 
-  // If there are tags...
-  if (is_array($project->git['tags']) && !empty($project->git['tags'])) {
-    $options['Tags'] = array_combine($project->git['tags'], $project->git['tags']);
+  // Build branch options
+  if (is_array($project->settings->git['branches']) && !empty($project->settings->git['branches'])) {
+    $options = array(
+      'Branches' => array_combine($project->settings->git['branches'], $project->settings->git['branches']),
+    );
+
+    // If there are tags...
+    if (is_array($project->settings->git['tags']) && !empty($project->settings->git['tags'])) {
+      $options['Tags'] = array_combine($project->settings->git['tags'], $project->settings->git['tags']);
+    }
   }
 
   // If there are none...
-  if (empty($options['Tags']) && empty($options['Branches'])){
+  if (!isset($options)){
     $options = array(t('No branches or tags! Re-validate the project.'));
   }
 

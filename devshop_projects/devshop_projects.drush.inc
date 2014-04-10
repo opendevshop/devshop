@@ -261,8 +261,8 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   // If something went wrong connecting to the git repo, don't wipe out our branches.
   if (!empty($branches['branches'])){
-    $task->ref->project->data->git['branches'] = $branches['branches'];
-    $task->ref->project->data->git['tags'] = $branches['tags'];
+    $task->ref->project->settings->git['branches'] = $branches['branches'];
+    $task->ref->project->settings->git['tags'] = $branches['tags'];
 
     // Save the project node now that we have branches and tags.
     node_save($task->ref);
