@@ -16,7 +16,6 @@ function devshop_projects_projects_page() {
     'Name',
     'Profile',
     'Version',
-    '',
     'Git URL',
     'Environments',
   );
