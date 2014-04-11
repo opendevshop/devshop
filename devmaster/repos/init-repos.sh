@@ -8,10 +8,13 @@ if [ -z "$1" ]
 fi
 
 # DevShop Repos
-git clone $1@git.drupal.org:project/devshop.git
-git clone $1@git.drupal.org:project/devshop_provision.git
-git clone $1@git.drupal.org:project/devshop_hosting.git
-git clone $1@git.drupal.org:project/provision_git.git
+if [ ! -d "devshop" ]
+  then
+    git clone $1@git.drupal.org:project/devshop.git
+    git clone $1@git.drupal.org:project/devshop_provision.git
+    git clone $1@git.drupal.org:project/devshop_hosting.git
+    git clone $1@git.drupal.org:project/provision_git.git
+fi
 
 # Run vagrant-guest-setup.sh on the guest machine
 vagrant ssh -c 'sudo sh /vagrant/repos/vagrant-guest-setup.sh'
