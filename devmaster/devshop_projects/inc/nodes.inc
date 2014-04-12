@@ -53,6 +53,8 @@ function devshop_projects_load($node) {
     // Save to environments array
     $environment->settings = (object) unserialize($environment->settings);
     $environments[$environment->name] = $environment;
+
+    // @TODO: If something went wrong, load the task status to display errors.
   }
   $project->environments = $environments;
 
