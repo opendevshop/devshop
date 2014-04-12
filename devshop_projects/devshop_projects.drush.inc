@@ -135,6 +135,7 @@ function drush_devshop_platform_verify(){
 
     // Build the command string
     $command = "git checkout $git_branch";
+
   }
 
   // Execute
@@ -194,6 +195,8 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
  * Implementation of hook_post_hosting_TASK_TYPE_task
  */
 function devshop_projects_post_hosting_verify_task($task, $data) {
+  drush_log('[DEVSHOP] devshop_projects_post_hosting_verify_task', 'notice');
+  drush_log(print_r($task, 1), 'notice');
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
@@ -213,28 +216,27 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
 
     // If the platform has a site already, trigger verification, then bail.
-    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
-    if (!empty($sites)){
+    if ($platform->environment->site){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
-      foreach($sites as $site_nid => $site){
-        hosting_add_task($site_nid, 'verify');
-        drush_log(t('[DEVSHOP] Queued verification for !site', array('!site' => $site->title)), 'notice');
-      }
+      hosting_add_task($platform->environment->site, 'verify');
       return;
     }
-
-    //Check if clone or create a new site.
-    if ($platform->clone_nid) {
-      $servers = hosting_get_servers('db');
-      $args['target_platform'] = $platform->nid;
-      $args['new_uri'] = $platform->environment->name .'.'. $platform->project->base_url;
-      $args['new_db_server'] = key($servers);
-      drush_log('[DEVSHOP] Cloning site...');
-      hosting_add_task($platform->clone_nid, 'clone', $args);
-    }
     else {
-      $site_node = devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
-      drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. !link', array('!link' => l('node/' . $site_node->nid)));
+      drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
+
+      //Check if clone or create a new site.
+      //    if ($platform->clone_nid) {
+      //      $servers = hosting_get_servers('db');
+      //      $args['target_platform'] = $platform->nid;
+      //      $args['new_uri'] = $platform->environment->name .'.'. $platform->project->base_url;
+      //      $args['new_db_server'] = key($servers);
+      //      drush_log('[DEVSHOP] Cloning site...');
+      //      hosting_add_task($platform->clone_nid, 'clone', $args);
+      //    }
+      //    else {
+
+      devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
+      drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
     }
   }
   
