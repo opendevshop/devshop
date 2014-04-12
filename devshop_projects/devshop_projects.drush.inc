@@ -112,6 +112,8 @@ function drush_devshop_platform_verify(){
   if (!is_dir($root)) {
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
+    // @TODO: If another environment exists, copy the repo locally,
+    //   git clean, and checkout the proper branch.
     // Build the command string
     $command = "git clone --recursive $git_remote $root";
     if ($git_branch) {
