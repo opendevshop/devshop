@@ -195,8 +195,6 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
  * Implementation of hook_post_hosting_TASK_TYPE_task
  */
 function devshop_projects_post_hosting_verify_task($task, $data) {
-  drush_log('[DEVSHOP] devshop_projects_post_hosting_verify_task', 'notice');
-  drush_log(print_r($task, 1), 'notice');
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
@@ -218,7 +216,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     // If the platform has a site already, trigger verification, then bail.
     if ($platform->environment->site){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
-      hosting_add_task($platform->environment->site, 'verify');
+      // hosting_add_task($platform->environment->site, 'verify');
       return;
     }
     else {
@@ -245,7 +243,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'project'){
     foreach ($task->ref->project->environments as $environment) {
       drush_log('[DEVSHOP] Running verify on environment ' . $environment->name, 'ok');
-      hosting_add_task($environment->platform, 'verify');
+//      hosting_add_task($environment->platform, 'verify');
     }
   }
 }
