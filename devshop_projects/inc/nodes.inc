@@ -46,7 +46,7 @@ function devshop_projects_load($node) {
 
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
-  $query = db_query("SELECT e.*, s.status FROM {hosting_devshop_project_environment} e  LEFT JOIN {hosting_site} s ON e.site = s.nid WHERE project_nid = %d ORDER BY name", $node->nid);
+  $query = db_query("SELECT e.*, s.status as site_status, p.status as platform_status FROM {hosting_devshop_project_environment} e  LEFT JOIN {hosting_site} s ON e.site = s.nid LEFT JOIN {hosting_platform} p ON e.platform = p.nid WHERE project_nid = %d ORDER BY name", $node->nid);
   $environments = array();
   while ($environment = db_fetch_object($query)) {
 
