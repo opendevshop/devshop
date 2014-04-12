@@ -175,22 +175,20 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $rows = array();
   foreach ($project->environments as $env => $environment) {
     
-    $site_nid = $environment->site;
-    $platform_nid = $environment->platform;
 
-    $site = node_load($site_nid);
-    $platform = node_load($platform_nid);
-    
     // Skip this if it is not enabled.
-    if ($site->site_status == HOSTING_SITE_DELETED && $platform->platform_status == HOSTING_PLATFORM_DELETED) {
+    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
       continue;
     }
 
+    // @TODO: Remove. Only devshop_hosting_site_goto_link() requires site node.
+    $site = node_load($environment->site);
+
     $row = array();
     $row[] = "<span class='environment'>$env</span>";
-    if ($site->site_status == HOSTING_SITE_DISABLED){
-      $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
-    } elseif ($site->site_status == HOSTING_SITE_QUEUED){
+    if ($environment->site_status == HOSTING_SITE_DISABLED){
+      $row[] = '<em>' . t('Disabled') . '</em>';
+    } elseif ($environment->site_status == HOSTING_SITE_QUEUED || $environment->site_status == HOSTING_SITE_PROCESSING ){
       $row[] = '<em>' . t('Installing...') . '</em>';
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
@@ -218,20 +216,20 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 //    $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
 
     if (module_exists('devshop_log')) {
-      $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
+      $row[] =l(t('Commits'), "node/$environment->site/logs/commits");
     }
     if (module_exists('hosting_logs')) {
-      $row[] = l(t('Errors'), "node/$site->nid/logs/errors");
+      $row[] = l(t('Errors'), "node/$environment->site/logs/errors");
     }
     if (module_exists('hosting_filemanager')) {
-      $row[] = l(t('Files'), "node/$site->nid/files/platform");
+      $row[] = l(t('Files'), "node/$environment->site/files/platform");
     }
     
     // Create actions dropdown.
     $actions = array();
     $actions[] = array(
       'title' => t('Fork environment'),
-      'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))),
+      'href' => 'node/' . $node->nid . '/project_devshop-create/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
       'attributes' => array(
         'class' => 'hosting-button-dialog',
       ),
@@ -239,7 +237,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     
     
     // Aegir Tasks
-    $site_tasklist = hosting_task_fetch_tasks($site->nid);
+    $site_tasklist = hosting_task_fetch_tasks($environment->site);
     $site_tasklist['restore']['title'] = t('Restore Backups');
 
     // The actions we want
@@ -249,7 +247,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     if (!variable_get('hosting_require_disable_before_delete', TRUE)){
       $site_actions[] = 'delete';
     } else {
-      if ($site->site_status == HOSTING_SITE_DISABLED){
+      if ($environment->site_status == HOSTING_SITE_DISABLED){
         $site_actions[] = 'enable';
         $site_actions[] = 'delete';
       } else {
@@ -262,7 +260,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($site_tasklist[$task_name]['task_permitted']){
         $actions[] = array(
           'title' => $site_tasklist[$task_name]['title'],
-          'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
+          'href' => sprintf("node/%d/%s_%s", $environment->site, 'site', $task_name),
           'query' => array(
             'token' => drupal_get_token($user->uid),
             'destination' => "node/$node->nid",
@@ -278,11 +276,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     if (user_access('administer hosting')){
       $actions[] = array(
         'title' =>  t('Site Dashboard'),
-        'href' => "node/$site->nid",
+        'href' => "node/$environment->site",
       );
       $actions[] = array(
         'title' =>  t('Platform Dashboard'),
-        'href' => "node/$site->platform",
+        'href' => "node/$environment->platform",
       );
     }
     
