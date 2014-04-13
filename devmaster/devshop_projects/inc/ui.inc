@@ -187,7 +187,17 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $row = array();
     $row[] = "<span class='environment'>$env</span>";
     if ($environment->site_status == HOSTING_SITE_DISABLED){
-      $row[] = '<em>' . t('Disabled') . '</em>';
+      $output = '<em>' . t('Disabled') . '</em>';
+
+      // A "disabled" site might be a failed install. Load and display.
+      $task = hosting_get_most_recent_task($environment->site, 'install');
+      if ($task->task_status == HOSTING_TASK_ERROR) {
+        $output = t('Site install failed.');
+        $output .= ' ' . l(t('View the logs and retry'), "node/$task->nid") . '.';
+      }
+
+      $row[] = $output;
+
     } elseif ($environment->site_status == HOSTING_SITE_QUEUED || $environment->site_status == HOSTING_SITE_PROCESSING ){
       $row[] = '<em>' . t('Installing...') . '</em>';
     } else {
