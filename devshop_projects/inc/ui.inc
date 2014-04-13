@@ -195,6 +195,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         $output = t('Site install failed.');
         $output .= ' ' . l(t('View the logs and retry'), "node/$task->nid") . '.';
       }
+      elseif ($task->task_status == HOSTING_TASK_PROCESSING  || $task->task_status == HOSTING_TASK_QUEUED) {
+        $output = '<em>' . t('Installing...') . '</em>';
+      }
 
       $row[] = $output;
 
