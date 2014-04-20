@@ -38,17 +38,6 @@ It is best to use the installers from the websites so you are sure to get the ri
 
   *Any version is probably fine.*
 
-4. Edit your local hosts file.
-  You need to edit your computers `/etc/hosts` file to reach [devshop.local](http://devshop.local).
-  The IP is defined in `attributes.json` and is 10.10.10.10 by default.
-
-  Add this line to your `/etc/hosts` file:
-  
-  ```
-  10.10.10.10  devshop.local
-  ```
-  @TODO: Try out [vagrant-hosts plugin](https://github.com/adrienthebo/vagrant-hosts).
-  
 5. Clone this Repo.
 
   ```
