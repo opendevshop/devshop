@@ -44,6 +44,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   4. Apparently mysql and apache stop for some reason. Vagrant ssh in and
   #      sudo service mysql restart and sudo service apache2 restart
   # @TODO: Figure out how to make this work without this workaround.
-  config.vm.synced_folder "repos/", "/repos", owner: "aegir", group: "aegir"
+  config.vm.synced_folder "repos/", "/repos", owner: "www-data", group: "www-data"
 
 end
