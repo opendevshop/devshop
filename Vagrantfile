@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   attributes = JSON.parse(IO.read(PATH_TO_ATTRIBUTES))
 
   # Networking & hostname
-  config.vm.host_name = attributes["vagrant"]["hostname"]
+  config.vm.hostname = attributes["vagrant"]["hostname"]
 
   # Connect to your internet
   config.vm.network "public_network"
