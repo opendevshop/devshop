@@ -1,8 +1,11 @@
-
 DevShop
 =======
 
-[![Build Status](https://travis-ci.org/drupal-devshop/devshop.png?branch=6.x-1.x)](https://travis-ci.org/drupal-devshop/devshop)
+Welcome to the DevShop Source code.  We've just moved to GitHub so bear with us as we get situated.
+
+
+Contents
+--------
 
 This project contains the three things needed to build a DevShop:
 
