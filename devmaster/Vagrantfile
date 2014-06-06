@@ -11,25 +11,18 @@ PATH_TO_ATTRIBUTES = File.dirname(__FILE__) + "/attributes.json"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # Base Box
+  # Base Box & Config
   config.vm.box = "hashicorp/precise64"
+  config.vm.hostname = attributes["vagrant"]["hostname"]
+  config.vm.network "public_network"
+  config.vm.network "private_network", ip: attributes["vagrant"]["private_network_ip"]
 
   # Attributes are loaded from attributes.json
   if !(File.exists?(PATH_TO_ATTRIBUTES)
     raise NoSettingsException
   end
-
-  # Get attributes from attributes.json
   attributes = JSON.parse(IO.read(PATH_TO_ATTRIBUTES))
 
-  # Networking & hostname
-  config.vm.hostname = attributes["vagrant"]["hostname"]
-
-  # Connect to your internet
-  config.vm.network "public_network"
-
-  # Connect to your computer at the IP in the attributes file.
-  config.vm.network "private_network", ip: attributes["vagrant"]["private_network_ip"]
 
   # Set SH as our provisioner
   config.vm.provision "shell", path: PROVISION_SCRIPT_PATH
