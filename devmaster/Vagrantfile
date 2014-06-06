@@ -15,6 +15,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hashicorp/precise64"
 
   # Attributes are loaded from attributes.json
+  if !(File.exists?("#{File.dirname(__FILE__)}/attributes.json"))
+    raise NoSettingsException
+  end
 
   if !(File.exists?(PATH_TO_ATTRIBUTES))
     warn "Make sure you have an attributes.json file and try again."
@@ -46,4 +49,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # @TODO: Figure out how to make this work without this workaround.
   config.vm.synced_folder "repos/", "/repos", owner: "www-data", group: "www-data"
 
+end
+
+class NoSettingsException < Vagrant::Errors::VagrantError
+  error_message('Project settings file not found. Create attributes.json file then try again.')
 end
