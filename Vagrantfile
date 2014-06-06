@@ -15,13 +15,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hashicorp/precise64"
 
   # Attributes are loaded from attributes.json
-  if !(File.exists?("#{File.dirname(__FILE__)}/attributes.json"))
+  if !(File.exists?(PATH_TO_ATTRIBUTES)
     raise NoSettingsException
-  end
-
-  if !(File.exists?(PATH_TO_ATTRIBUTES))
-    warn "Make sure you have an attributes.json file and try again."
-    exit
   end
 
   # Get attributes from attributes.json
