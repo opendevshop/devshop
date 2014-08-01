@@ -15,9 +15,9 @@ function drush_provision_devshop_sync_init($source = NULL, $destination = NULL) 
     $source = substr($source, 1);
   }
   else {
-    $source = $source . '.' . d()->base_url;
+    $source = $source . '.' . d()->project['base_url'];
   }
-  $destination = $destination . '.' . d()->base_url;
+  $destination = $destination . '.' . d()->project['base_url'];
   return drush_sql_sync_init($source, $destination);
 }
 
@@ -46,16 +46,16 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     $source = substr($source, 1);
   }
   else {
-    $source = $source . '.' . d()->base_url;
+    $source = $source . '.' . d()->project['base_url'];
   }
-  $destination = $destination . '.' . d()->base_url;
+  $destination = $destination . '.' . d()->project['base_url'];
 
   // Aliases
   $source_alias = "@$source";
   $destination_alias = "@$destination";
 
   drush_log(dt("[DEVSHOP] Provision DevShop Sync started from $source to $destination... "), 'ok');
-  $base_url = d()->base_url;
+  $base_url = d()->project['base_url'];
 
   // Fail if base url
   if (empty($base_url)) {
