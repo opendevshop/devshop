@@ -295,13 +295,6 @@ function devshop_projects_form(&$node) {
 }
 
 /**
- * Submit function for save data of platforms.
- */
-function devshop_projects_submit_settings($form, &$form_state) {
-
-}
-
-/**
  * Implementation of hook_validate().
  */
 function devshop_projects_validate($node, &$form) {
