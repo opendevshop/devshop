@@ -12,6 +12,7 @@
 function hosting_task_devshop_sync_form($node) {
   // Get nid
   $nid = $node->nid;
+  $project = $node->project;
 
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the source environment.'), 'source', 'Source');
@@ -22,17 +23,17 @@ function hosting_task_devshop_sync_form($node) {
   $form['destination']['#prefix'] = '<div class="destination">';
   $form['destination']['#suffix'] = '</div></div>';
 
-  if (!empty($form['destination']['#options'][$node->live_environment])){
-    // Remove live site from destination options.
-    unset($form['destination']['#options'][$node->live_environment]);
+  // Look for any production mode sites.
+  foreach ($project->environments as $environment) {
+    if ($environment->settings->production_mode){
+      // Remove live site from destination options.
+      unset($form['destination']['#options'][$environment->name]);
 
-    $source_options = $form['source']['#options'];
-    unset($source_options[$node->live_environment]);
-    $form['source']['#options'] = array_merge(array($node->live_environment => $node->live_environment . " <em>(LIVE ENVIRONMENT)</em>"), $source_options);
-    $form['source']['#default_value'] = $node->live_environment;
-  }
-  elseif (!empty($node->live_environment_alias)){
-    $form['source']['#options']["@" . $node->live_environment_alias] = "@" . $node->live_environment_alias . " <em>(LIVE ENVIRONMENT)</em>";
+      $source_options = $form['source']['#options'];
+      unset($source_options[$environment->name]);
+      $form['source']['#options'] = array_merge(array($environment->name => $environment->name . " <em class='production-mode'>(Production Mode)</em>"), $source_options);
+      $form['source']['#default_value'] = $environment->name;
+    }
   }
 
   $form['database'] = array(
@@ -49,7 +50,7 @@ function hosting_task_devshop_sync_form($node) {
     '#suffix' => '</fieldset>',
   );
 
-
+  // We have to add the fieldset via prefix because of the way aegir handles this form.
   $form['pull'] = array(
     '#title' => t('Pull code on Destination'),
     '#type' => 'checkbox',
@@ -65,18 +66,8 @@ function hosting_task_devshop_sync_form($node) {
     $form['revert'] = array(
       '#title' => t('Revert all features on Destination'),
       '#type' => 'checkbox',
-      '#default_value' => $has_features,
-      '#access' => $has_features,
+      '#default_value' => 1,
     );
-  } else{
-    // I think its better UI just to hide it? If they need features it will be enabled!
-    //$form['actions']['revert'] = array(
-    //  '#title' => t('<em>Revert all features on Destination after content sync?</em>'),
-    //  '#type' => 'checkbox',
-    //  '#description' => t('This site doesn\'t have features.module enabled. Please enable and then "Verify" the site.'),
-    //  '#default_value' => FALSE,
-    //  '#disabled' => TRUE,
-    //  );
   }
   $form['cache'] = array(
     '#title' => t('Clear cache on Destination'),
