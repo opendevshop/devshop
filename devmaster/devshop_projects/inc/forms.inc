@@ -232,37 +232,43 @@ function devshop_projects_form(&$node) {
     '#title' => t('Live Environment Settings'),
   );
 
-  $live_alias_options['other'] = 'Other...';
-  if (empty($live_alias_options[$node->project->settings->live['live_environment']])){
-    // No live environment
-    $live_environment_default_value = '';
-  }
-  elseif (!empty($node->project->settings->live['live_environment_alias'])){
-    // "other" live environment
-    $live_environment_default_value = 'other';
-  }
-  else {
-    $live_environment_default_value = $node->project->settings->live['live_environment'];
-  }
+//  @TODO: Not ready yet!  Rethink this.
+//    1. We should probably allow a "production mode" on environments, disabling sync data destination and allowing for other things.
+//    2. We should break out domain management into it's own thing.  The way this is setup is hard to understand.
+//
 
-  $form['project']['settings']['live']['live_environment'] = array(
-    '#type' => 'select',
-    '#title' => t('Live Environment'),
-    '#options' => $live_alias_options,
-    '#required' => FALSE,
-    '#default_value' => $live_environment_default_value,
-    '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
-  );
-  $form['project']['settings']['live']['live_environment_alias'] = array(
-    '#title' => t('Live Site Drush Alias'),
-    '#type' => 'textfield',
-    '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
-    '#field_prefix' => '@',
-    '#size' => 40,
-    '#default_value' => $node->project->live['live_environment_alias'],
-    '#size' => 50,
-    '#maxlength' => 50,
-  );
+
+//  $live_alias_options['other'] = 'Other...';
+//  if (empty($live_alias_options[$node->project->settings->live['live_environment']])){
+//    // No live environment
+//    $live_environment_default_value = '';
+//  }
+//  elseif (!empty($node->project->settings->live['live_environment_alias'])){
+//    // "other" live environment
+//    $live_environment_default_value = 'other';
+//  }
+//  else {
+//    $live_environment_default_value = $node->project->settings->live['live_environment'];
+//  }
+//
+//  $form['project']['settings']['live']['live_environment'] = array(
+//    '#type' => 'select',
+//    '#title' => t('Live Environment'),
+//    '#options' => $live_alias_options,
+//    '#required' => FALSE,
+//    '#default_value' => $live_environment_default_value,
+//    '#description' => t('Choose which environment is your live production environment. This will prevent users from Syncing data over the live site, and allow easy "Sync From Live" functionality.'),
+//  );
+//  $form['project']['settings']['live']['live_environment_alias'] = array(
+//    '#title' => t('Live Site Drush Alias'),
+//    '#type' => 'textfield',
+//    '#description' => t("If your 'live' site is outside of this server, add a remote alias file to /var/aegir/.drush and enter the alias name here."),
+//    '#field_prefix' => '@',
+//    '#size' => 40,
+//    '#default_value' => $node->project->live['live_environment_alias'],
+//    '#size' => 50,
+//    '#maxlength' => 50,
+//  );
 
   // Live Domain
   $form['project']['settings']['live']['live_domain'] = array(
