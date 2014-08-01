@@ -56,7 +56,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
 
   drush_log(dt("[DEVSHOP] Provision DevShop Sync started from $source to $destination... "), 'ok');
   $base_url = d()->base_url;
-  
+
   // Fail if base url
   if (empty($base_url)) {
     return drush_log(dt('[DEVSHOP] Your project doesn\'t seem to have the base_url saved.  Run project verification.'), 'error');
