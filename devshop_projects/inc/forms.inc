@@ -233,13 +233,16 @@ function devshop_projects_form(&$node) {
   );
 
   $live_alias_options['other'] = 'Other...';
-  if (empty($live_alias_options[$node->project->live['live_environment']])){
+  if (empty($live_alias_options[$node->project->settings->live['live_environment']])){
     // No live environment
     $live_environment_default_value = '';
   }
-  elseif (!empty($node->project->live['live_environment_alias'])){
+  elseif (!empty($node->project->settings->live['live_environment_alias'])){
     // "other" live environment
     $live_environment_default_value = 'other';
+  }
+  else {
+    $live_environment_default_value = $node->project->settings->live['live_environment'];
   }
 
   $form['project']['settings']['live']['live_environment'] = array(
