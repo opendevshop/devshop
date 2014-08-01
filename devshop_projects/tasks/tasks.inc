@@ -37,7 +37,7 @@ function devshop_projects_hosting_tasks() {
   );
   $tasks['project']['devshop-sync'] = array(
     'title' => t('Sync Data'),
-    'description' => t('Copy database and files from one environment to another.',
+    'description' => t('Copy database and files from one environment to another.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
