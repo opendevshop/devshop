@@ -170,6 +170,12 @@ function devshop_projects_devshop_project_settings($node = NULL){
     );
   }
 
+  $settings['production_mode'] = array(
+    '#title' => t('Production Mode'),
+    '#type' => 'checkbox',
+    '#default_value' => 0,
+    '#description' => t('Prevent overwriting of data, disabling, and other interruptive actions.'),
+  );
   return $settings;
 }
 
