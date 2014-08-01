@@ -57,6 +57,9 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   $pull_settings['last_pull'] = time();
   $pull_settings['last_pull_status'] = DEVSHOP_PULL_STATUS_OK;
   $pull_settings['last_pull_ip'] = ip_address();
+
+  $project_node->project->settings->pull = $pull_settings;
+
   node_save($project_node);
 
   // Output a message, no matter what.
