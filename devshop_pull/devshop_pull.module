@@ -225,8 +225,8 @@ function devshop_pull_get_projects($limit = 5) {
     $node = node_load($result->nid);
     $project = $node->project;
 
-    $projects[] = $project;
     if ($project->settings->pull['queue_enabled']){
+      $projects[] = $project;
     }
   }
 
