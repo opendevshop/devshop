@@ -244,11 +244,11 @@ function devshop_projects_form(&$node) {
 
   // Use aliases
   if (module_exists('hosting_alias')){
-    $form['project']['settings']['live']['live_domain_aliases'] = array(
+    $form['project']['settings']['live']['environment_aliases'] = array(
       '#type' => 'checkbox',
       '#title' => t('Environment Subdomains'),
       '#description' => t('Create subdomains under the live domain for all environments..'),
-      '#default_value' => $node->project->settings->live['live_domain_aliases'],
+      '#default_value' => $node->project->settings->live['environment_aliases'],
       '#weight' => 6,
     );
   }
