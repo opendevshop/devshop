@@ -4,10 +4,12 @@
 /**
  * URL callback that is invoked by git to create a code pull task.
  */
-function devshop_pull_callback($project, $hash) {
+function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Load the project node & list of allowed IPs
-  $project_node = hosting_context_load(str_replace('project_', '', $project));
+  $project_node = hosting_context_load(str_replace('project_', '', $project_hosting_context));
+  $pull_settings = $project_node->project->settings->pull;
+
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
 
@@ -29,7 +31,7 @@ function devshop_pull_callback($project, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  elseif (!$project_node->project_settings['pull']['pull_enabled']){
+  elseif (!$pull_settings['pull_enabled']){
     $message = "Project $project is NOT configured to use Pull Code URL callback!";
   }
   // Make sure the client's IP address is on the list
@@ -51,9 +53,9 @@ function devshop_pull_callback($project, $hash) {
   }
 
   // Save the project node with last pull info.
-  $project_node->project_settings['pull']['last_pull'] = time();
-  $project_node->project_settings['pull']['last_pull_status'] = DEVSHOP_PULL_STATUS_OK;
-  $project_node->project_settings['pull']['last_pull_ip'] = ip_address();
+  $pull_settings['last_pull'] = time();
+  $pull_settings['last_pull_status'] = DEVSHOP_PULL_STATUS_OK;
+  $pull_settings['last_pull_ip'] = ip_address();
   node_save($project_node);
 
   // Output a message, no matter what.
