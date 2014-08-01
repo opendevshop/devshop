@@ -121,8 +121,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //  '#weight' => -8
   //);
 
-  if (!empty($project->live_domain)) {
-    $url = 'http://' . $project->live_domain;
+  if (!empty($project->settings->live['live_domain'])) {
+    $url = 'http://' . $project->settings->live['live_domain'];
 
     $node->content['info']['live_domain'] = array(
       '#type' => 'item',
