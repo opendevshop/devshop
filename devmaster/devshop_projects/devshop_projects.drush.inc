@@ -270,7 +270,7 @@ function devshop_projects_hosting_project_context_options(&$task) {
     node_save($task->ref);
   }
 
-  // Save project object to context.
+  // Save project object to drush alias (aegir context).
   if (isset($task->ref->project)) {
     $task->context_options['server'] = '@server_master';
     $task->context_options['project_name'] = $task->ref->title;
@@ -286,18 +286,8 @@ function devshop_projects_hosting_project_context_options(&$task) {
 function devshop_projects_drush_context_import($context, &$node) {
   if ($context->type == 'project') {
     $node->title = $context->project_name;
-    $node->type = $context->type;
-
-    // @TODO: Fix up for $node->project
-    $node->code_path = $context->code_path;
-    $node->drupal_path = $context->drupal_path;
-    $node->base_url = $context->base_url;
-    $node->install_profile = $context->install_profile;
-
-    $node->git_url = $context->git_url;
-    $branches = getBranchesAndTags($context->git_url);
-    $node->project->git['branches'] = $branches['branches'];
-    $node->project->git['tags'] = $branches['tags'];
+    $node->type = 'project';
+    $node->project = $context->project;
   }
 }
 
