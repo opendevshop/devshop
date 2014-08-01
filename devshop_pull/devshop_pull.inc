@@ -8,6 +8,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Load the project node & list of allowed IPs
   $project_node = hosting_context_load(str_replace('project_', '', $project_hosting_context));
+  $project = $project_node->project;
   $pull_settings = $project_node->project->settings->pull;
 
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
@@ -15,9 +16,9 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Check for environments set to pull
   $environments_to_pull = array();
-  foreach ($project_node->settings as $env => $settings) {
-    if ($settings['pull_enabled']) {
-      $environments_to_pull[] = $env;
+  foreach ($project->environments as $environment) {
+    if (!$environment->settings->pull_disabled) {
+      $environments_to_pull[] = $environment->name;
     }
   }
 
