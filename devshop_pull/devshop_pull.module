@@ -66,7 +66,7 @@ function devshop_pull_hosting_queues() {
     'type' => 'batch',
     'name' => t('Pull queue'),
     'description' => t('Run git pull on projects configured to do so.'),
-    'total_items' => devshop_pull_get_platforms(10),
+    'total_items' => count(devshop_pull_get_projects(5)),
     'frequency' => strtotime("1 minute", 0),
     'singular' => t('project'),
     'plural' => t('projects'),
@@ -121,6 +121,14 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
 //        'onclick' => 'this.select()',
 //      ),
 //    );
+    $queues = hosting_get_queues();
+    $form['project']['settings']['pull']['queue_enabled'] = array(
+      '#title' => 'Pull on Queue',
+      '#type' => 'checkbox',
+      '#description' => t('Run a "Pull Code" task on a regular basis using Aegir Queues.'),
+      '#default_value' => $node->project->settings->pull['queue_enabled'],
+      '#access' => $queues['pull']['enabled'],
+    );
 
     // @TODO: is there a better way to save certain values? We lose data without these.
     $form['project']['settings']['pull']['last_pull'] = array(
@@ -207,12 +215,22 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
  * @return
  *   An array of site nodes that have a pull queue enabled.
  *
- * @TODO Convert to check pull queue sites.
  */
-function devshop_pull_get_platforms($limit = 5) {
+function devshop_pull_get_projects($limit = 5) {
 
-  // @TODO: Rethink the pull queue altogether.
-  return 0;
+  $results = db_query("SELECT * FROM {hosting_devshop_project} LIMIT %d", $limit);
+
+  $projects = array();
+  while ($result = db_fetch_object($results)) {
+    $node = node_load($result->nid);
+    $project = $node->project;
+
+    $projects[] = $project;
+    if ($project->settings->pull['queue_enabled']){
+    }
+  }
+
+  return $projects;
 }
 
 /**
@@ -220,24 +238,19 @@ function devshop_pull_get_platforms($limit = 5) {
  */
 function hosting_pull_queue($count) {
 
-  $result = db_query("SELECT d.*  FROM {hosting_devshop_project_object} dpo LEFT JOIN {hosting_devshop_pull_projects}  d ON dpo.project_nid=d.project_nid WHERE d.pull_method = %d AND dpo.object_type='platform' ORDER BY d.last_pull ASC, dpo.object_nid ASC", array(DEVSHOP_PULL_QUEUE));
+  $projects = devshop_pull_get_projects($count);
 
-  while ($project = db_fetch_object($result)) {
-    $project_node = node_load($project->project_nid);
-
-    // Create the hosting task
-    // @TODO: We maybe don't need to pass args here? its saved in the context
-    // Check for environments set to pull
+  foreach ($projects as $project) {
     $environments_to_pull = array();
-    foreach ($project_node->settings as $env => $settings) {
-      if ($settings['pull_enabled']) {
-        $environments_to_pull[] = $env;
+    foreach ($project->environments as $environment) {
+      if (!$environment->settings['pull_disabled']) {
+        $environments_to_pull[] = $environment->name;
       }
     }
     $args = array();
     $args['environments'] = implode(' ', $environments_to_pull);
-    hosting_add_task($project_node->nid, 'devshop-pull', $args);
+    hosting_add_task($project->nid, 'devshop-pull', $args);
 
-    module_invoke_all('devshop_pull', $project_node);
+    module_invoke_all('devshop_pull', $project);
   }
 }
