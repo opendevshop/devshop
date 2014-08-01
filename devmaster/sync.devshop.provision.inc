@@ -32,6 +32,11 @@ function drush_devshop_provision_pre_provision_devshop_sync() {
  * Pre provision-devshop-sync
  */
 function drush_devshop_provision_provision_devshop_sync_validate($source = NULL, $destination = NULL) {
+
+  // Ensure the destination is not in production mode
+  if (d()->project['environments'][$destination]['settings']['production_mode']) {
+    return drush_set_error("Environment $destination is in production mode. You cannot use it as a destination.");
+  }
 }
 
 /**
