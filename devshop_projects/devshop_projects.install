@@ -52,57 +52,6 @@ function devshop_projects_schema() {
     'primary key' => array('nid'),
   );
 
-  // @TODO: Delete this schema once update scripts work.
-  $schema['hosting_devshop_project_object'] = array(
-    'fields' => array(
-      'project_nid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'Project/Node ID.',
-      ),
-      'object_nid' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'Site NID.',
-      ),
-      'object_type' => array(
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'length' => 10,
-        'default' => '',
-        'description' => 'The node ID of the platform.',
-      ),
-      'environment' => array(
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'length' => 64,
-        'default' => '',
-        'description' => 'Environment name.  Either dev test live or platform name.',
-      ),
-      'git_branch' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => FALSE,
-        'description' => 'The current branch of this site or platform.',
-      ),
-      'drupal_path' => array(
-        'type' => 'text',
-        'size' => 'big',
-        'not null' => FALSE,
-      ),
-      'clone_nid' => array(
-        'type' => 'int',
-        'not null' => FALSE,
-        'default' => 0,
-        'unsigned' => TRUE,
-      ),
-    ),
-    'primary key' => array('object_nid'),
-  );
-
   // Table for tracking environments
   $schema['hosting_devshop_project_environment'] = array(
     'fields' => array(
@@ -303,4 +252,13 @@ function devshop_projects_update_11() {
 function devshop_projects_update_12() {
   module_enable(array('hosting_alias'));
   return array();
+}
+
+/**
+ * Remove legacy `hosting_devshop_pull_platforms` table.
+ */
+function devshop_pull_update_13(){
+  $ret = array();
+  db_drop_table($ret, 'hosting_devshop_project_object');
+  return $ret;
 }
