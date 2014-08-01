@@ -297,7 +297,8 @@ function devshop_projects_update_11() {
 }
 
 /**
- * Enable hosting_alias.
+ * Enable hosting_alias module to allow custom domains on sites.
+ *
  */
 function devshop_projects_update_12() {
   module_enable(array('hosting_alias'));
