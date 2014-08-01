@@ -229,7 +229,7 @@ function devshop_projects_form(&$node) {
   // Live Environment settings.
   $form['project']['settings']['live'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Live Environment Settings'),
+    '#title' => t('Live Domain Settings'),
   );
 
 //  @TODO: Not ready yet!  Rethink this.
@@ -284,8 +284,8 @@ function devshop_projects_form(&$node) {
   if (module_exists('hosting_alias')){
     $form['project']['settings']['live']['live_domain_aliases'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Use environment aliases'),
-      '#description' => t('Create aliases for all environments as subdomains of the live domain.'),
+      '#title' => t('Environment Subdomains'),
+      '#description' => t('Create subdomains under the live domain for all environments..'),
       '#default_value' => $node->project->live['live_domain_aliases'],
       '#weight' => 6,
     );
