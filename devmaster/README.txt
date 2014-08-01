@@ -1,11 +1,10 @@
-
 DevShop Provision
 =================
+
 Drupal development infrastructure made easy.
 
-This module provides the backend commands needed to 
-deploy and manage sites using the DevShop git and features 
-based development workflow.
+This module provides the backend commands needed to manage projects, platforms,
+and sites with DevShop Hosting.
 
 About DevShop
 -------------
@@ -19,18 +18,10 @@ The goals of DevShop are...
 
 Installation
 ------------
-To install devshop_provision, simply use drush:
-
-  $ drush dl devshop_provision
-  
-Or, you can download the source code to any available drush commands folder,
-such as /usr/share/drush or ~/.drush
-
-
+For installation instructions, see http://drupal.org/project/devshop
 
 Usage
 -----
-DevShop Provision works by providing a new Provision class called "Project".
 
 To start, you must have a Project drush alias.  Using the DevShop+Hostmaster
 system will make this much easier, but if you wish to only use the backend, you
@@ -46,7 +37,6 @@ Commands
 DevShop contains a set of features that make Drupal site building within a
 version-controlled code workflow quick and easy.
 
-Currently you must create new platforms within a project in hostmaster.  Once created, you can execute the following commands:
 
 1. Pull Code
   $ drush @project_NAME provision-devshop-pull ENVIRONMENT
