@@ -171,26 +171,29 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   if ($node->type == 'project'){
 
     // View Project
-    if ($op == 'view' && $node->project_settings['pull']['pull_enabled']){
+    if ($op == 'view' && $node->project->settings->pull['pull_enabled']){
+
+      $pull_data = $node->project->settings->pull;
+
       module_load_include('inc', 'devshop_pull');
       $url = _devshop_pull_callback_url($node);
       $output = '';
 
-      $status = (int) $node->project_settings['pull']['last_pull_status'];
+      $status = (int) $pull_data['last_pull_status'];
 
       // If access denied, provide link to settings page
       if ($status == DEVSHOP_PULL_STATUS_ACCESS_DENIED){
         $output = '<strong>' . t('Access Denied') . '</strong><br />';
-        $output .= '<em>' . hosting_format_interval($node->project_settings['pull']['last_pull']) . '</em><br />';
+        $output .= '<em>' . hosting_format_interval($pull_data['last_pull']) . '</em><br />';
         $output .= t('Commit notification recieved from %ip, but the IP is not allowed to trigger tasks.  See !link.', array(
           '!link' => l(t('DevShop Pull Settings'), 'admin/hosting/devshop_pull'),
-          '%ip' => $node->project_settings['pull']['last_pull_ip'],
+          '%ip' => $pull_data['last_pull_ip'],
         ));
 
       }
       // If OK, show how much time has passed.
       elseif ($status == DEVSHOP_PULL_STATUS_OK) {
-        $output = hosting_format_interval($node->project_settings['pull']['last_pull']);
+        $output = hosting_format_interval($pull_data['last_pull']);
       }
       // Otherwise, we assume no commit notification recieved.
       else {
