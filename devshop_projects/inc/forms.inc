@@ -232,6 +232,27 @@ function devshop_projects_form(&$node) {
     '#title' => t('Live Domain Settings'),
   );
 
+  // Live Domain
+  $form['project']['settings']['live']['live_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Live domain'),
+    '#description' => t('The live domain for this project. Do not include "www".'),
+    '#size' => 40,
+    '#default_value' => $node->project->live['live_domain'],
+    '#weight' => 5,
+  );
+
+  // Use aliases
+  if (module_exists('hosting_alias')){
+    $form['project']['settings']['live']['live_domain_aliases'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Environment Subdomains'),
+      '#description' => t('Create subdomains under the live domain for all environments..'),
+      '#default_value' => $node->project->live['live_domain_aliases'],
+      '#weight' => 6,
+    );
+  }
+
 //  @TODO: Not ready yet!  Rethink this.
 //    1. We should probably allow a "production mode" on environments, disabling sync data destination and allowing for other things.
 //    2. We should break out domain management into it's own thing.  The way this is setup is hard to understand.
@@ -269,27 +290,6 @@ function devshop_projects_form(&$node) {
 //    '#size' => 50,
 //    '#maxlength' => 50,
 //  );
-
-  // Live Domain
-  $form['project']['settings']['live']['live_domain'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Live domain'),
-    '#description' => t('The live domain for this project. Do not include "www".'),
-    '#size' => 40,
-    '#default_value' => $node->project->live['live_domain'],
-    '#weight' => 5,
-  );
-
-  // Use aliases
-  if (module_exists('hosting_alias')){
-    $form['project']['settings']['live']['live_domain_aliases'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Environment Subdomains'),
-      '#description' => t('Create subdomains under the live domain for all environments..'),
-      '#default_value' => $node->project->live['live_domain_aliases'],
-      '#weight' => 6,
-    );
-  }
 
   return $form;
 }
