@@ -256,7 +256,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $site_tasklist['restore']['title'] = t('Restore Backups');
 
     // The actions we want
-    $site_actions = array('flush_cache', 'login_reset', 'backup', 'restore');
+    $site_actions = array('flush_cache', 'login_reset', 'backup');
+
+    if (!$environment->settings->production_mode){
+      $site_actions[] = 'restore';
+    }
 
     // Add disable or delete task based on hosting variable.
     if (!variable_get('hosting_require_disable_before_delete', TRUE)){
@@ -265,7 +269,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($environment->site_status == HOSTING_SITE_DISABLED){
         $site_actions[] = 'enable';
         $site_actions[] = 'delete';
-      } else {
+      } elseif (!$environment->settings->production_mode){
         $site_actions[] = 'disable';
       }
     }
