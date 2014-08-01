@@ -343,11 +343,4 @@ function devshop_projects_validate($node, &$form) {
     form_set_error('code_path', t('Code path directory already exists.'));
   }
 
-  // If live environment is selected, do not save live environment alias
-  if ($node->live_environment == 'other'){
-    $node->live_environment = $node->live_environment_alias;
-  }
-  else {
-    $node->live_environment_alias = '';
-  }
 }
