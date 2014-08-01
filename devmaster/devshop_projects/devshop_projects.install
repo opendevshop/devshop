@@ -303,21 +303,3 @@ function devshop_projects_update_12() {
   module_enable(array('hosting_alias'));
   return array();
 }
-
-/**
- * Change "data" column to "settings".
- */
-function devshop_projects_update_13(){
-  $ret = array();
-  $schema = devshop_projects_schema();
-
-  // Projects schema
-  $spec = $schema['hosting_devshop_project']['fields']['settings'];
-  db_change_field($ret, 'hosting_devshop_project', 'data', 'settings', $spec, $keys_new = array());
-
-  // Environments schema
-  $spec = $schema['hosting_devshop_project_environment']['fields']['settings'];
-  db_change_field($ret, 'hosting_devshop_project_environment', 'data', 'settings', $spec, $keys_new = array());
-
-  return $ret;
-}
