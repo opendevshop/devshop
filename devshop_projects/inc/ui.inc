@@ -173,6 +173,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // Environments
   $rows = array();
+  $production_rows = array();
+
   foreach ($project->environments as $env => $environment) {
     
 
@@ -298,12 +300,31 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
     
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
-    $rows[] = $row;
+
+    if ($environment->settings->production_mode){
+      $production_rows[] = $row;
+    }
+    else {
+      $rows[] = $row;
+    }
   }
   $header = array();
   $table = theme('table', $header, $rows, array('class' => 'environments-table'));
 
-  $node->content['sites'] = array(
+  $node->content['production_environments'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Production'),
+    '#weight' => 11,
+    '#attributes' => array(
+      'class' => 'project-environments',
+    ),
+  );
+  $node->content['production_environments']['table'] = array(
+    '#type' => 'item',
+    '#value' => theme('table', $header, $production_rows, array('class' => 'environments-table')),
+  );
+
+  $node->content['environments'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environments'),
     '#weight' => 12,
@@ -313,7 +334,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment hosting-button-dialog'), 'query' => array('token' => drupal_get_token($user->uid))));
-  $node->content['sites']['table'] = array(
+  $node->content['environments']['table'] = array(
     '#type' => 'item',
     '#value' => $table,
     '#suffix' => $link,
