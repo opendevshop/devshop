@@ -342,5 +342,4 @@ function devshop_projects_validate($node, &$form) {
   if (!$node->retry && $add && file_exists($cp)) {
     form_set_error('code_path', t('Code path directory already exists.'));
   }
-
 }
