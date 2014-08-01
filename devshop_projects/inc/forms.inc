@@ -298,50 +298,7 @@ function devshop_projects_form(&$node) {
  * Submit function for save data of platforms.
  */
 function devshop_projects_submit_settings($form, &$form_state) {
-//
-//  // Go through and save our settings to site and platform nodes.
-//  $project_node = node_load($form_state['values']['nid']);
-//  $settings_info = module_invoke_all('devshop_project_settings', $project_node);
-//  $nodes = array();
-//
-//  // Save all items under project to data
-//  // $form_state['values']['project']['data'] = (object) $form_state['values']['project'];
-//
-//  // Go through each environment
-//  // @TODO: Move to devshop_project_update();
-//  foreach ($form_state['values']['project']['environments'] as $environment_name => $settings){
-//    //$form_state['values']['project']['environments'][$environment_name]['settings'] = $form_state['values']['project']['environments'][$environment_name];
-//
-//    // Then through each setting of each environment
-//    foreach ($settings as $setting_name => $setting_value){
-//
-//      //Find the node type for this setting.
-//      $node_type = $settings_info[$setting_name]['#node_type'];
-//
-//      // Load the site or platform node for this environment, then set the value and save.
-//      if (!empty($project_node->project->environments[$environment_name]->{$node_type})){
-//        $nid = $project_node->project->environments[$environment_name]->{$node_type};
-//        $nodes[$nid] = node_load($nid);
-//        $nodes[$nid]->no_verify = TRUE;
-//
-//        //If changed database then execute migrate task.
-//        if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
-//          $args['target_platform'] = $nodes[$nid]->platform;
-//          $args['new_uri'] = $nodes[$nid]->title;
-//          $args['new_db_server'] = $setting_value;
-//
-//          hosting_add_task($nid, 'migrate', $args);
-//        }
-//        $nodes[$nid]->{$setting_name} = $setting_value;
-//      }
-//    }
-//  }
-//
-//  // Go save all nodes
-//  foreach ($nodes as $nid => $node){
-//    node_save($node);
-//  }
-//
+
 }
 
 /**
