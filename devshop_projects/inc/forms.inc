@@ -229,7 +229,7 @@ function devshop_projects_form(&$node) {
   // Live Environment settings.
   $form['project']['settings']['live'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Live Domain Settings'),
+    '#title' => t('Domain Name Settings'),
   );
 
   // Live Domain
@@ -238,7 +238,7 @@ function devshop_projects_form(&$node) {
     '#title' => t('Live domain'),
     '#description' => t('The live domain for this project. Do not include "www".'),
     '#size' => 40,
-    '#default_value' => $node->project->live['live_domain'],
+    '#default_value' => $node->project->settings->live['live_domain'],
     '#weight' => 5,
   );
 
@@ -248,7 +248,7 @@ function devshop_projects_form(&$node) {
       '#type' => 'checkbox',
       '#title' => t('Environment Subdomains'),
       '#description' => t('Create subdomains under the live domain for all environments..'),
-      '#default_value' => $node->project->live['live_domain_aliases'],
+      '#default_value' => $node->project->settings->live['live_domain_aliases'],
       '#weight' => 6,
     );
   }
