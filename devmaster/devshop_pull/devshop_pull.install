@@ -38,32 +38,6 @@ function devshop_pull_schema() {
     ),
     'primary key' => array('project_nid'),
   );
-  $schema['hosting_devshop_pull_platforms'] = array(
-    'fields' => array(
-      'project_nid' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'platform_nid' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'pull_enabled' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'pull_reset' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-    ),
-    'primary key' => array('platform_nid'),
-  );
-
   return $schema;
 }
 
