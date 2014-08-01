@@ -255,7 +255,7 @@ function devshop_projects_update_12() {
 }
 
 /**
- * Remove legacy `hosting_devshop_pull_platforms` table.
+ * Remove legacy `hosting_devshop_project_object` table.
  */
 function devshop_projects_update_13(){
   $ret = array();
