@@ -244,7 +244,7 @@ function devshop_projects_update($node) {
         // Save site and platform if needed.
         foreach ($objects as $type => $object){
           if ($object->needs_save) {
-            drupal_set_message("Saving $type " . $object->title);
+            // drupal_set_message("Saving $type " . $object->title);
             node_save($object);
           }
         }
