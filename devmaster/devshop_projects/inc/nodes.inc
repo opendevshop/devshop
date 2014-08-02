@@ -99,9 +99,6 @@ function devshop_projects_insert($node) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
   }
 
-  // If using environment aliases... save them.
-  devshop_project_save_domain_aliases($node);
-
   // @TODO: The wizard always creates the project before the environments.
   // Not sure if we need this, but we might to enable importing via drush.
   // Save Environment records.
@@ -144,6 +141,7 @@ function devshop_projects_update($node) {
   }
 
   $project = (object) $node->project;
+  $project->settings = (object) $project->settings;
 
   $info = new stdClass();
   $info->nid = $node->nid;
@@ -221,8 +219,8 @@ function devshop_projects_update($node) {
         }
 
         // Save environment aliases
-        if (!empty($project->settings['live']['live_domain']) && $project->settings['live']['environment_aliases']) {
-          $domain = $name . '.' . $project->settings['live']['live_domain'];
+        if (!empty($project->settings->live['live_domain']) && $project->settings->live['environment_aliases']) {
+          $domain = $name . '.' . $project->settings->live['live_domain'];
           if (array_search($domain, $objects['site']->aliases) === FALSE) {
             $objects['site']->aliases[] = $domain;
             $objects['site']->needs_save = TRUE;
@@ -230,9 +228,9 @@ function devshop_projects_update($node) {
         }
 
         // If environment_aliases is NOT checked, remove them from the nodes.
-        elseif (!$project->settings['live']['environment_aliases'] && count($project->environments)){
+        elseif (!$project->settings->live['environment_aliases'] && count($project->environments)){
           foreach ($project->environments as $env => $environment){
-            $domain = $name . '.' . $project->settings['live']['live_domain'];
+            $domain = $name . '.' . $project->settings->live['live_domain'];
             if (!empty($objects['site']->aliases)){
               $i = array_search($domain, $objects['site']->aliases);
               if ($i !== FALSE) {
