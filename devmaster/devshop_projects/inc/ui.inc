@@ -134,10 +134,17 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   $node->content['info']['git_url'] = array(
     '#type' => 'item',
-    '#title' => t('Git URL'),
+    '#title' => t('Git Repository'),
     '#value' => strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url)),
     '#weight' => -10
   );
+
+  // Detect GitHub
+  // @TODO: Detect other web URLs for other git hosts.
+  if (strpos($project->git_url, 'github.com') !== FALSE) {
+    $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
+    $node->content['info']['git_url']['#value'] .= l(t('View on GitHub.com'), $url, array('target' => '_blank'));
+  }
 
   // Branches display
   if (!empty($project->settings->git['branches'])){
