@@ -80,10 +80,10 @@ function devshop_pull_hosting_queues() {
 function devshop_pull_devshop_project_settings(){
   return array(
     'pull_disabled' => array(
-      '#title' => t('Disable Pull'),
+      '#title' => t('Disable Pull on Commit'),
       '#node_type' => 'platform',
       '#type' => 'checkbox',
-      '#description' => t('Disable pulling code on this environment, allowing "live development".'),
+      '#description' => t('Turn off automatic code updates for this environment.'),
     ),
   );
 }
