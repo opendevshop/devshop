@@ -220,47 +220,34 @@ function devshop_projects_update($node) {
           $objects['platform']->needs_save = TRUE;
         }
 
+        // Save environment aliases
+        if (!empty($project->settings['live']['live_domain']) && $project->settings['live']['environment_aliases']) {
+          $domain = $name . '.' . $project->settings['live']['live_domain'];
+          if (array_search($domain, $objects['site']->aliases) === FALSE) {
+            $objects['site']->aliases[] = $domain;
+            $objects['site']->needs_save = TRUE;
+          }
+        }
+
+        // If environment_aliases is NOT checked, remove them from the nodes.
+        elseif (!$project->settings['live']['environment_aliases'] && count($project->environments)){
+          foreach ($project->environments as $env => $environment){
+            $domain = $name . '.' . $project->settings['live']['live_domain'];
+            if (!empty($objects['site']->aliases)){
+              $i = array_search($domain, $objects['site']->aliases);
+              if ($i !== FALSE) {
+                unset($objects['site']->aliases[$i]);
+                $objects['site']->needs_save = TRUE;
+              }
+            }
+          }
+        }
+
         // Save site and platform if needed.
         foreach ($objects as $type => $object){
           if ($object->needs_save) {
+            drupal_set_message("Saving $type " . $object->title);
             node_save($object);
-          }
-        }
-      }
-    }
-  }
-
-  // If using environment aliases... save them.
-  devshop_project_save_domain_aliases($node);
-}
-
-
-/**
- * Helper to add a domain alias to a site node. Makes sure not to add the same
- * alias twice.
- */
-function devshop_project_save_domain_aliases($project_node) {
-  if (module_exists('hosting_alias')){
-    if (!empty($project_node->live_domain) && $project_node->live_domain_aliases) {
-      foreach ($project_node->project->environments as $env => $details){
-        $domain = "$env.$project_node->live_domain";
-        $site_node = node_load($details['site_nid']);
-        if (array_search($domain, $site_node->aliases) === FALSE) {
-          $site_node->aliases[] = $domain;
-          node_save($site_node);
-        }
-      }
-    }
-    // If live_domain_aliases is checked, remove them from the nodes.
-    elseif (!$project_node->live_domain_aliases && count($project_node->project->environments)){
-      foreach ($project_node->project->environments as $env => $environment){
-        $domain = "$env.$project_node->live_domain";
-        $site_node = node_load($environment->site);
-        if (!empty($site_node->aliases)){
-          $i = array_search($domain, $site_node->aliases);
-          if ($i !== FALSE) {
-            unset($site_node->aliases[$i]);
-            node_save($site_node);
           }
         }
       }
