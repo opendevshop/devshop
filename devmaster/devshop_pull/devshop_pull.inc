@@ -131,7 +131,7 @@ function devshop_pull_github_webhook($project){
           // @TODO: Add to project settings.
 
           $message = "Detected Pull Request for $branch \n";
-          if ($project->project_settings['pull']['pull_request_environments']){
+          if ($project->settings->github['pull_request_environments']){
 
             if (isset($project->environments[$environment_name])){
               $message .= "Environment $environment_name already exists.";
@@ -145,7 +145,7 @@ function devshop_pull_github_webhook($project){
         }
         elseif ($data->action == 'closed'){
           $message .= "Pull Request Closed \n";
-          if ($project->project_settings['pull']['pull_request_environments_delete']){
+          if ($project->settings->github['pull_request_environments_delete']){
             hosting_add_task($project->environments[$environment_name]['site'], 'delete');
             $message .= "Site $environment_name scheduled for deletion.";
           }

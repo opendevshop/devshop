@@ -153,13 +153,27 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#value' => $node->project->settings->pull['last_pull_ip'],
     );
 
-    $form['project']['settings']['pull']['pull_request_environments'] = array(
+    // @TODO: Make this more abstract and extensible.
+    $is_github = (strpos($node->project->git_url, 'github.com') !== FALSE);
+
+    //All settings git pull in project page
+    $form['project']['settings']['github'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('GitHub Integration'),
+      '#access' => $is_github,
+    );
+
+    // Pull Requests create environments?
+    $form['project']['settings']['github']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
       '#default_value' => $node->project->settings->pull['pull_request_environments'],
       '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
+      '#access' => $is_github,
     );
-    $form['project']['settings']['pull_request_environments_delete'] = array(
+
+    // Delete Pull Request environments?
+    $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Delete Pull Request Environments'),
       '#default_value' => $node->project->settings->pull['pull_request_environments_delete'],
