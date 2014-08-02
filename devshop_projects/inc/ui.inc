@@ -143,7 +143,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   // @TODO: Detect other web URLs for other git hosts.
   if (strpos($project->git_url, 'github.com') !== FALSE) {
     $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
-    $node->content['info']['git_url']['#value'] .= l(t('View on GitHub.com'), $url, array('target' => '_blank'));
+    $node->content['info']['git_url']['#value'] .= l(t('View on GitHub.com'), $url, array('attributes' => array('target' => '_blank')));
   }
 
   // Branches display
