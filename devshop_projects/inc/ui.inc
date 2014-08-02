@@ -315,18 +315,21 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $header = array();
   $table = theme('table', $header, $rows, array('class' => 'environments-table'));
 
-  $node->content['production_environments'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Production'),
-    '#weight' => 11,
-    '#attributes' => array(
-      'class' => 'project-environments',
-    ),
-  );
-  $node->content['production_environments']['table'] = array(
-    '#type' => 'item',
-    '#value' => theme('table', $header, $production_rows, array('class' => 'environments-table')),
-  );
+  // Show production environments separately.
+  if (count($production_rows)){
+    $node->content['production_environments'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Production'),
+      '#weight' => 11,
+      '#attributes' => array(
+        'class' => 'project-environments',
+      ),
+    );
+    $node->content['production_environments']['table'] = array(
+      '#type' => 'item',
+      '#value' => theme('table', $header, $production_rows, array('class' => 'environments-table')),
+    );
+  }
 
   $node->content['environments'] = array(
     '#type' => 'fieldset',
