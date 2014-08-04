@@ -239,7 +239,6 @@ function devshop_projects_form(&$node) {
     '#description' => t('The live domain for this project. Do not include "www".'),
     '#size' => 40,
     '#default_value' => $node->project->settings->live['live_domain'],
-    '#weight' => 5,
   );
 
   // Live Environment
@@ -252,19 +251,23 @@ function devshop_projects_form(&$node) {
     '#description' => t('The environment for the live website.'),
     '#options' => $environments_options,
     '#default_value' => $node->project->settings->live['live_environment'],
-    '#weight' => 5,
+  );
+
+  // Use www
+  $form['project']['settings']['live']['live_domain_www'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add www as a ServerAlias for Live Environment'),
+    '#description' => t('Access the site at http://livedomain.com and http://www.livedomain.com'),
+    '#default_value' => $node->project->settings->live['live_domain_www'],
   );
 
   // Use aliases
-  if (module_exists('hosting_alias')){
-    $form['project']['settings']['live']['environment_aliases'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Environment Subdomains'),
-      '#description' => t('Create subdomains under the live domain for all environments..'),
-      '#default_value' => $node->project->settings->live['environment_aliases'],
-      '#weight' => 6,
-    );
-  }
+  $form['project']['settings']['live']['environment_aliases'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Environment Subdomains'),
+    '#description' => t('Create subdomains under the live domain for all environments.'),
+    '#default_value' => $node->project->settings->live['environment_aliases'],
+  );
 
   return $form;
 }
