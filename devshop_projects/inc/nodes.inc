@@ -166,6 +166,7 @@ function devshop_projects_update($node) {
     foreach ($project->environments as $name => $environment){
       // Ensure correct data types
       $environment = (object) $environment;
+      $environment->name = $name;
       $environment->settings = (array) $environment->settings;
 
       $info = new stdClass();
@@ -187,9 +188,14 @@ function devshop_projects_update($node) {
 
       // Save aegir objects
       if (!empty($environment->site)){
+        $site = node_load($environment->site);
+        $platform = node_load($environment->platform);
+
+        // Save to array so we can apply values for settings.
         $objects = array();
-        $objects['site'] = node_load($environment->site);
-        $objects['platform'] = node_load($environment->platform);
+        $objects['site'] = &$site;
+        $objects['platform'] = &$platform;
+
         $settings_info = module_invoke_all('devshop_project_settings', $node);
 
         // Go through each setting, applying it to either the site or the platform.
@@ -205,48 +211,60 @@ function devshop_projects_update($node) {
             // If the database server is changed, a "migrate" task is needed.
             if ($setting_name == 'db_server') {
               $args = array();
-              $args['target_platform'] = $objects['site']->platform;
-              $args['new_uri'] = $objects['site']->title;
+              $args['target_platform'] = $site->platform;
+              $args['new_uri'] = $site->title;
               $args['new_db_server'] = $environment->settings['db_server'];
-              hosting_add_task($objects['site']->nid, 'migrate', $args);
+              hosting_add_task($site->nid, 'migrate', $args);
             }
           }
         }
 
         // If git_ref changed, flag needs_save for platform.
         if ($environment->orig->git_ref != $environment->git_ref){
-          $objects['platform']->needs_save = TRUE;
+          $platform->needs_save = TRUE;
         }
 
-        // Save environment aliases
-        if (!empty($project->settings->live['live_domain']) && $project->settings->live['environment_aliases']) {
-          $domain = $name . '.' . $project->settings->live['live_domain'];
-          if (array_search($domain, $objects['site']->aliases) === FALSE) {
-            $objects['site']->aliases[] = $domain;
-            $objects['site']->needs_save = TRUE;
+        // If there's a live domain
+        if (!empty($project->settings->live['live_domain'])) {
+
+          // Save the live environment
+          // @TODO: Remove the alias from the old "live" environment
+          if ($project->settings->live['live_environment'] == $environment->name) {
+            if (array_search($project->settings->live['live_domain'], $site->aliases) === FALSE) {
+              $site->aliases[] = $project->settings->live['live_domain'];
+              $site->needs_save = TRUE;
+            }
+          }
+          // Save other environment aliases if environment_aliases is checked.
+          elseif ($project->settings->live['environment_aliases']) {
+          $domain = $environment->name . '.' . $project->settings->live['live_domain'];
+            if (array_search($domain, $site->aliases) === FALSE) {
+              $site->aliases[] = $domain;
+              $site->needs_save = TRUE;
+            }
           }
         }
 
         // If environment_aliases is NOT checked, remove them from the nodes.
         elseif (!$project->settings->live['environment_aliases'] && count($project->environments)){
           foreach ($project->environments as $env => $environment){
-            $domain = $name . '.' . $project->settings->live['live_domain'];
-            if (!empty($objects['site']->aliases)){
-              $i = array_search($domain, $objects['site']->aliases);
+            $domain = $environment->name . '.' . $project->settings->live['live_domain'];
+            if (!empty($site->aliases)){
+              $i = array_search($domain, $site->aliases);
               if ($i !== FALSE) {
-                unset($objects['site']->aliases[$i]);
-                $objects['site']->needs_save = TRUE;
+                unset($site->aliases[$i]);
+                $site->needs_save = TRUE;
               }
             }
           }
         }
 
         // Save site and platform if needed.
-        foreach ($objects as $type => $object){
-          if ($object->needs_save) {
-            // drupal_set_message("Saving $type " . $object->title);
-            node_save($object);
-          }
+        if ($platform->needs_save) {
+          node_save($platform);
+        }
+        if ($site->needs_save) {
+          node_save($site);
         }
       }
     }
