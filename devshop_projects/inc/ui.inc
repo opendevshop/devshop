@@ -217,8 +217,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     // Display current branch
-    $row[] = "<span class='branch environment-branch' title='Branch:
-    {$environment->git_ref}'>{$environment->git_ref}</span>";
+    $row[] = "<span class='branch environment-branch'>{$environment->git_ref}</span>";
 
     // Create branch/tag chooser
     // @TODO: Uncomment once we have a link to go to.
