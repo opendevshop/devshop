@@ -135,7 +135,6 @@ function devshop_projects_insert($node) {
  *
  */
 function devshop_projects_update($node) {
-
   if (!$node->no_verify) {
     hosting_add_task($node->nid, 'verify');
   }
@@ -229,6 +228,7 @@ function devshop_projects_update($node) {
 
           // Save the live environment
           // @TODO: Remove the alias from the old "live" environment
+
           if ($project->settings->live['live_environment'] == $environment->name) {
             if (array_search($project->settings->live['live_domain'], $site->aliases) === FALSE) {
               $site->aliases[] = $project->settings->live['live_domain'];
