@@ -226,13 +226,21 @@ function devshop_projects_update($node) {
         // If there's a live domain
         if (!empty($project->settings->live['live_domain'])) {
 
-          // Save the live environment
+          // Save the live domain
           // @TODO: Remove the alias from the old "live" environment
-
           if ($project->settings->live['live_environment'] == $environment->name) {
             if (array_search($project->settings->live['live_domain'], $site->aliases) === FALSE) {
               $site->aliases[] = $project->settings->live['live_domain'];
               $site->needs_save = TRUE;
+            }
+
+            // Save www version
+            if ($project->settings->live['live_domain_www']) {
+              $site->aliases[] = 'www.' . $project->settings->live['live_domain'];
+              $site->needs_save = TRUE;
+            }
+            else {
+              $site->aliases = array_diff($site->aliases, array('www' . $project->settings->live['live_domain']));
             }
           }
           // Save other environment aliases if environment_aliases is checked.
