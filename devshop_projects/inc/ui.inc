@@ -103,7 +103,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
   $project_wizard_cache = ctools_object_cache_get('project', NULL);
-  if ($node->nid == $project_wizard_cache->project_nid){
+  if (isset($project_wizard_cache->project_nid) && $node->nid == $project_wizard_cache->project_nid){
     drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
   }
 
