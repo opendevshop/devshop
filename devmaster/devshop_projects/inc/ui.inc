@@ -249,13 +249,20 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     // Create actions dropdown.
     $actions = array();
     $actions[] = array(
-      'title' => t('Fork environment'),
-      'href' => 'node/' . $node->nid . '/project_devshop-create/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
+      'title' => t('Clone environment'),
+      'href' => 'node/' . $node->nid . '/project_devshop-create/clone/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
       'attributes' => array(
         'class' => 'hosting-button-dialog',
       ),
     );
-    
+     $actions[] = array(
+      'title' => t('Fork environment'),
+      'href' => 'node/' . $node->nid . '/project_devshop-create/fork/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
+      'attributes' => array(
+        'class' => 'hosting-button-dialog',
+      ),
+    );
+
     
     // Aegir Tasks
     $site_tasklist = hosting_task_fetch_tasks($environment->site);
