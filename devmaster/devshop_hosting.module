@@ -259,6 +259,8 @@ function devshop_hosting_task_queue_block() {
     // Build Strings
     $link = l('Tasks Logs', 'hosting/queues/tasks', array('attributes' => array('class' => 'task-logs-link')));
 
+    $headers = array();
+
     if ($rows){
       $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
     }
