@@ -120,12 +120,15 @@ function drush_devshop_platform_verify(){
       $command .= " --branch $git_branch";
     }
 
-    // @TODO: Gotta be a better way... I don't want a clone_nid field in devshop_project_objects table.
-    // If is set site nid clone from old site and later create a new branch.
-//    if ($platform->clone_nid) {
-//      $site_source = node_load($platform->clone_nid);
-//      $git_branch = $site_source->git_branch;
-//      $create_branch = TRUE;
+    // If we are cloning or forking an environment
+//    if ($platform->site_to_clone) {
+//      $site_source = node_load($platform->site_to_clone);
+//      $git_branch = $platform->environment->git_ref;
+//
+//      // If branch doesn't exist yet... create it.
+//      if (!in_array($git_branch, $platform->project->settings->git['branches'])){
+//        $create_branch = TRUE;
+//      }
 //    }
   }
   // If the platform has been verified and has a branch and git url
@@ -224,19 +227,22 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     else {
       drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
-      //Check if clone or create a new site.
-      //    if ($platform->clone_nid) {
-      //      $servers = hosting_get_servers('db');
-      //      $args['target_platform'] = $platform->nid;
-      //      $args['new_uri'] = $platform->environment->name .'.'. $platform->project->base_url;
-      //      $args['new_db_server'] = key($servers);
-      //      drush_log('[DEVSHOP] Cloning site...');
-      //      hosting_add_task($platform->clone_nid, 'clone', $args);
-      //    }
-      //    else {
+      // Check for site to clone
+      if ($platform->environment->site_to_clone) {
+        $servers = hosting_get_servers('db');
 
-      devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
-      drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
+        $args['target_platform'] = $platform->nid;
+        $args['new_uri'] = $platform->environment->name .'.'. $platform->project->base_url;
+
+        // @TODO: Match settings of cloned environment.
+        $args['new_db_server'] = key($servers);
+        drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
+        hosting_add_task($platform->environment->site_to_clone, 'clone', $args);
+      }
+      else {
+        devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
+        drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
+      }
     }
   }
 }
