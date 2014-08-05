@@ -229,7 +229,7 @@ function devshop_hosting_task_queue_block() {
     drupal_add_js($settings, 'setting');
 
     $tasks['processing'] = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING, 5);
-    $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE, 5);
+    $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE);
 
     $total_tasks = count($tasks['queued']) + count($tasks['processing']);
     $status = format_plural($total_tasks, '1 active task.', '@count active tasks.');
