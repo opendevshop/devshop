@@ -261,7 +261,7 @@ function devshop_hosting_task_queue_block() {
 
     $headers = array();
 
-    if ($rows){
+    if (isset($rows)){
       $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
     }
 
