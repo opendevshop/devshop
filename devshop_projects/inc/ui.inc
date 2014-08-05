@@ -291,7 +291,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
             'destination' => "node/$node->nid",
           ),
           'attributes' => array(
-            'class' => $site_tasklist[$task_name]['dialog']? 'hosting-button-dialog': '',
+            'class' => isset($site_tasklist[$task_name]['dialog'])? 'hosting-button-dialog': '',
           ),
         );
       }
