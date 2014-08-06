@@ -94,7 +94,7 @@ function drush_devshop_platform_verify(){
 
   $platform = $task->ref;
   $root = $platform->publish_path;
-  $git_branch = $platform->environment->git_ref;
+  $git_ref = $platform->environment->git_ref;
 
   $git_remote = $platform->project->git_url;
   $drupal_path = $platform->project->drupal_path;
@@ -108,51 +108,47 @@ function drush_devshop_platform_verify(){
     $root = str_replace($drupal_path, '', $root);
   }
 
+  // If there is a branch to fork, set the branch_to_fork as git_ref
+  if (!empty($platform->environment->branch_to_fork)) {
+    $git_ref = $platform->environment->branch_to_fork;
+    $create_branch = TRUE;
+  }
+
   // Check if the platform code exists. If it doesn't, clone it.
   if (!is_dir($root)) {
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
-    // @TODO: If another environment exists, copy the repo locally,
-    //   git clean, and checkout the proper branch.
-    // Build the command string
+    // Build the clone command string
     $command = "git clone --recursive $git_remote $root";
-    if ($git_branch) {
-      $command .= " --branch $git_branch";
-    }
 
-    // If we are cloning or forking an environment
-//    if ($platform->site_to_clone) {
-//      $site_source = node_load($platform->site_to_clone);
-//      $git_branch = $platform->environment->git_ref;
-//
-//      // If branch doesn't exist yet... create it.
-//      if (!in_array($git_branch, $platform->project->settings->git['branches'])){
-//        $create_branch = TRUE;
-//      }
-//    }
+    // If a branch is selected, add --branch to the command.
+    // @TODO: Won't the platform ALWAYS have a git_branch?
+    if ($git_ref) {
+      $command .= " --branch $git_ref";
+    }
   }
   // If the platform has been verified and has a branch and git url
   else {
-    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_branch, '!root' => $root)));
+    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
 
     // Run git fetch to ensure we have all branches and tags
     $output .= _devshop_projects_git_execute('git fetch', $root);
 
     // Build the command string
-    $command = "git checkout $git_branch";
-
+    $command = "git checkout $git_ref";
   }
 
-  // Execute
+  // Execute clone or checkout.
   $output .=  _devshop_projects_git_execute($command, $root);
 
+  // If branch needs to be created (for "fork environment")
   if ($create_branch) {
-    //Create branch.
-    $command = "git checkout -b $git_branch";
+    // Checkout the new branch.
+    $command = "git checkout -b {$platform->environment->git_ref}";
     $output .=  _devshop_projects_git_execute($command, $root);
 
-    //Push the branch
-    $command = "git push -u origin $git_branch";
+    // Push the branch
+    $command = "git push -u origin {$platform->environment->git_ref}";
     $output .=  _devshop_projects_git_execute($command, $root);
   }
 
