@@ -204,7 +204,7 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
     // Copy settings from source environment.
     $environment->settings = $source_environment->settings;
 
-    // Clone/fork specific data.
+    // Save Clone/fork specific data to the environment
     $environment->site_to_clone = $source_environment->site;
     $environment->branch_to_fork = $source_environment->git_ref;
 
