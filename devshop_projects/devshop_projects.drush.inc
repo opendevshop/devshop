@@ -109,8 +109,8 @@ function drush_devshop_platform_verify(){
   }
 
   // If there is a branch to fork, set the branch_to_fork as git_ref
-  if (!empty($platform->environment->branch_to_fork)) {
-    $git_ref = $platform->environment->branch_to_fork;
+  if (!empty($platform->environment->settings->branch_to_fork)) {
+    $git_ref = $platform->environment->settings->branch_to_fork;
     $create_branch = TRUE;
   }
 
@@ -224,7 +224,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
       // Check for site to clone
-      if ($platform->environment->site_to_clone) {
+      if ($platform->environment->settings->site_to_clone) {
         $servers = hosting_get_servers('db');
 
         $args['target_platform'] = $platform->nid;
@@ -233,7 +233,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         // @TODO: Match settings of cloned environment.
         $args['new_db_server'] = key($servers);
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
-        hosting_add_task($platform->environment->site_to_clone, 'clone', $args);
+        hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
       }
       else {
         devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
