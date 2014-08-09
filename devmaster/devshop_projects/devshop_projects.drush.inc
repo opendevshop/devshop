@@ -38,6 +38,16 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['force'] = FALSE;
   }
 
+  // Deploy
+  if ($task->ref->type == 'project' && $task->task_type == 'devshop-deploy') {
+    $task->args['git_ref'] = $task->task_args['git_ref'];
+    $task->args['environment'] = $task->task_args['environment'];
+    $task->options['update'] = $task->task_args['update'];
+    $task->options['revert'] = !empty($task->task_args['revert']);
+    $task->options['cache'] = $task->task_args['cache'];
+    $task->options['force'] = FALSE;
+  }
+
   // Commit
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-commit') {
     $task->args['environment'] = $task->task_args['environment'];
