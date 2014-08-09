@@ -53,7 +53,7 @@ function drush_devshop_provision_provision_devshop_deploy($environment, $git_ref
   drush_log(dt('[DEVSHOP] Git working copy stashed.'), 'ok');
 
   // Pull latest version of site
-  if (drush_shell_cd_and_exec($repo_path, "git checkout $git_ref && git pull")) {
+  if (drush_shell_cd_and_exec($repo_path, "git fetch; git checkout $git_ref")) {
     drush_log(dt("[DEVSHOP] Git Ref $git_ref checked out to $environment environment, located at $repo_path."), 'ok');
     $output = drush_shell_exec_output();
     drush_log(implode("\n", drush_shell_exec_output()), 'ok');
