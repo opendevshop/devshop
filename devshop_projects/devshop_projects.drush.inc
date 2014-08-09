@@ -260,6 +260,8 @@ function devshop_projects_hosting_project_context_options(&$task) {
     $task->ref->project->settings->git['tags'] = $branches['tags'];
 
     // Save the project node now that we have branches and tags.
+    // Don't verify again, this is the verification process.
+    $task->ref->no_verify = TRUE;
     node_save($task->ref);
   }
 
