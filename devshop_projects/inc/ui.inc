@@ -312,11 +312,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     
     // Grant access to Aegir pages
     if (user_access('administer hosting')){
-      $actions[] = array(
-        'title' =>  t('Site Settings'),
-        'href' => "node/$environment->site/edit",
-        'query' =>  drupal_get_destination(),
-      );
+      if ($environment->site){
+        $actions[] = array(
+          'title' =>  t('Site Settings'),
+          'href' => "node/$environment->site/edit",
+          'query' =>  drupal_get_destination(),
+        );
+      }
       $actions[] = array(
         'title' =>  t('Platform Settings'),
         'href' => "node/$environment->platform/edit",
