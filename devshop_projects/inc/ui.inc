@@ -183,7 +183,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   $production_rows = array();
 
   foreach ($project->environments as $env => $environment) {
-    
+    $site_installed = false;
 
     // Skip this if it is not enabled.
     if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
@@ -197,6 +197,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $row[] = "<span class='environment'>$env</span>";
     if ($environment->site_status == HOSTING_SITE_DISABLED){
       $output = '<em>' . t('Disabled') . '</em>';
+      $site_installed = TRUE;
 
       // A "disabled" site might be a failed install. Load and display.
       $task = hosting_get_most_recent_task($environment->site, 'install');
@@ -214,6 +215,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $row[] = '<em>' . t('Installing...') . '</em>';
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
+      $site_installed = TRUE;
     }
 
     // Display current branch
@@ -265,8 +267,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
     
     // Aegir Tasks
-    $site_tasklist = hosting_task_fetch_tasks($environment->site);
-    $site_tasklist['restore']['title'] = t('Restore Backups');
+    if ($site_installed){
+      $site_tasklist = hosting_task_fetch_tasks($environment->site);
+      $site_tasklist['restore']['title'] = t('Restore Backups');
+    }
+    else {
+      $site_tasklist = array();
+    }
 
     // The actions we want
     $site_actions = array('flush_cache', 'login_reset', 'backup');
@@ -289,7 +296,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     
     // Build links to tasks
     foreach ($site_actions as $task_name) {
-      if ($site_tasklist[$task_name]['task_permitted']){
+      if (isset($site_tasklist[$task_name]) && $site_tasklist[$task_name]['task_permitted']){
         $actions[] = array(
           'title' => $site_tasklist[$task_name]['title'],
           'href' => sprintf("node/%d/%s_%s", $environment->site, 'site', $task_name),
@@ -306,11 +313,13 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     
     // Grant access to Aegir pages
     if (user_access('administer hosting')){
-      $actions[] = array(
-        'title' =>  t('Site Settings'),
-        'href' => "node/$environment->site/edit",
-        'query' =>  drupal_get_destination(),
-      );
+      if ($environment->site){
+        $actions[] = array(
+          'title' =>  t('Site Settings'),
+          'href' => "node/$environment->site/edit",
+          'query' =>  drupal_get_destination(),
+        );
+      }
       $actions[] = array(
         'title' =>  t('Platform Settings'),
         'href' => "node/$environment->platform/edit",

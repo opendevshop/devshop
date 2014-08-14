@@ -119,8 +119,8 @@ function drush_devshop_platform_verify(){
   }
 
   // If there is a branch to fork, set the branch_to_fork as git_ref
-  if (!empty($platform->environment->branch_to_fork)) {
-    $git_ref = $platform->environment->branch_to_fork;
+  if (!empty($platform->environment->settings->branch_to_fork)) {
+    $git_ref = $platform->environment->settings->branch_to_fork;
     $create_branch = TRUE;
   }
 
@@ -234,7 +234,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
       // Check for site to clone
-      if ($platform->environment->site_to_clone) {
+      if ($platform->environment->settings->site_to_clone) {
         $servers = hosting_get_servers('db');
 
         $args['target_platform'] = $platform->nid;
@@ -243,12 +243,37 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         // @TODO: Match settings of cloned environment.
         $args['new_db_server'] = key($servers);
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
-        hosting_add_task($platform->environment->site_to_clone, 'clone', $args);
+
+        // Queue the Cloning of the site.
+        // @see devshop_projects_post_hosting_import_task().
+        hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
       }
       else {
         devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
         drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
       }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task()
+ *
+ * Ensures that cloned sites that are on project platforms inherit the project.
+ */
+function devshop_projects_post_hosting_import_task($task, $data) {
+
+  // If this is a new platform created by a project, we will create a site here.
+  if ($task->ref->type == 'site') {
+    drush_log('[DEVSHOP] Existing site has been imported!');
+
+    $site = $task->ref;
+    $platform = node_load($site->platform);
+
+    if ($platform->environment->name) {
+      drush_log('[DEVSHOP] Project & Environment found:' . $platform->project->name . '.' . $platform->environment->name);
+      $return = db_query('UPDATE {hosting_devshop_project_environment} SET site = %d WHERE project_nid = %d AND name = "%s"', $site->nid, $platform->project->nid, $platform->environment->name);
+      drush_log('[DEVSHOP] Site saved to environment.');
     }
   }
 }
