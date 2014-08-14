@@ -197,6 +197,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $row[] = "<span class='environment'>$env</span>";
     if ($environment->site_status == HOSTING_SITE_DISABLED){
       $output = '<em>' . t('Disabled') . '</em>';
+      $site_installed = TRUE;
 
       // A "disabled" site might be a failed install. Load and display.
       $task = hosting_get_most_recent_task($environment->site, 'install');
