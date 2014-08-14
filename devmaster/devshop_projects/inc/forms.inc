@@ -174,6 +174,12 @@ function devshop_projects_form(&$node) {
   $live_alias_options = array('<none>');
   $settings = module_invoke_all('devshop_project_settings', $node);
   foreach ($node->project->environments as $environment_name => $environment) {
+
+    // Skip this if it is not enabled.
+    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
+      continue;
+    }
+
       $form['project']['environments'][$environment_name] = array(
         '#tree' => TRUE,
         '#title' => $environment_name,
