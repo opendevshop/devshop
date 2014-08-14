@@ -262,3 +262,16 @@ function devshop_projects_update_13(){
   db_drop_table($ret, 'hosting_devshop_project_object');
   return $ret;
 }
+
+/**
+ * Change "data" column to "settings" column.
+ */
+function devshop_projects_update_14(){
+  $ret = array();
+  db_change_column($ret, 'hosting_devshop_project', 'data', 'settings', 'text', array(
+    'not null' => FALSE,
+    'size' => 'big',
+    'description' => 'A serialized array of settings for this project.',
+  ));
+  return $ret;
+}
