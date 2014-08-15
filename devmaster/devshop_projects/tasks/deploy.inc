@@ -52,8 +52,14 @@ function hosting_task_devshop_deploy_form($node) {
   return $form;
 }
 
+/**
+ * @TODO:
+ * 1. Save environment with new current git ref to hostmaster using post hosting task.
+ *
+ * To go the route of creating new platforms and migrating...
+ * we will need to:
+ * 2. Create a new platform with the new git_ref.
+ * 3. When platform is complete, migrate the environment's site to it.
+ */
 
-// @TODO:
-//  1. Save environment with new current git ref.
-//  2. Create a new platform with the new git_ref
-//  3. When platform is complete, migrate the environment's site to it.
+
