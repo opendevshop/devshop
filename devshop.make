@@ -16,12 +16,8 @@ projects[hosting_queue_runner][subdir] = contrib
 projects[hosting_solr][subdir] = contrib
 projects[hosting_tasks_extra][subdir] = contrib
 
-; @TODO: Remove once 1.12 is out.
-projects[jquery_update][subdir] = contrib
-
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
 
 projects[hostmaster][type] = "profile"
-projects[hostmaster][version] = "1.11"
-projects[hostmaster][patch][] = "https://drupal.org/files/issues/2193065-modalframe-version-1.x-6.patch"
+projects[hostmaster][version] = "1.12"
