@@ -116,10 +116,6 @@ if  [ ! `which drush` ]; then
   su - aegir -c "$COMMAND"
 fi
 
-  # @TODO: Should we move this to top so it is "configurable"?
-  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$DEVSHOP_MAKEFILE --profile=devshop -y"
-  echo "Running...  $COMMAND"
-  su - aegir -c "$COMMAND"
 # Adding Supervisor
 if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   then
