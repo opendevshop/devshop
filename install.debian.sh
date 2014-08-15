@@ -13,10 +13,10 @@
 #.
 #
 
-DEVSHOP_VERSION='6.x-1.x'
-DEVSHOP_PROVISION_VERSION='6.x-1.x'
-DEVSHOP_HOSTING_VERSION='6.x-1.x'
-PROVISION_GIT_VERSION='6.x-1.x'
+DEVSHOP_VERSION='6.x-1.0-alpha3'
+DEVSHOP_PROVISION_VERSION='6.x-1.9-beta7'
+DEVSHOP_HOSTING_VERSION='6.x-1.9-beta4'
+PROVISION_GIT_VERSION='6.x-1.0-beta2'
 
 # Fail if not running as root (sudo)
 if [[ $EUID -ne 0 ]]; then
