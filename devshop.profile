@@ -15,7 +15,7 @@ function devshop_profile_modules() {
   return array(
     /* core */ 'block', 'color', 'filter', 'help', 'menu', 'node', 'system', 'user', 'update',
     /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate',
-    /* other contrib */ 'install_profile_api' /* needs >= 2.1 */, 'jquery_ui', 'jquery_update', 'modalframe', 'admin_menu',
+    /* other contrib */ 'install_profile_api' /* needs >= 2.1 */, 'jquery_ui', 'jquery_update', 'modalframe', 'admin_menu', 'adminrole',
 
     /* DEVSHOP DEPENDENCIES */
     'ctools',
@@ -263,7 +263,11 @@ function devshop_task_finalize() {
   install_remove_permissions(install_get_rid('authenticated user'), array('access content', 'access all views'));
   install_add_permissions(install_get_rid('anonymous user'), array('access disabled sites'));
   install_add_permissions(install_get_rid('authenticated user'), array('access disabled sites'));
-  //install_add_role('aegir client');
+
+  // Create administrator role
+  $rid = install_add_role('administrator');
+  variable_set('user_admin_role', $rid);
+
 
   node_access_rebuild();
 }
