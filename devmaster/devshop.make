@@ -5,7 +5,7 @@ projects[drupal][type] = "core"
 
 ; DevShop modules
 projects[devshop_hosting][subdir] = devshop
-projects[devshop_hosting][version] = 6.x-1.9-beta4
+projects[devshop_hosting][version] = 6.x-1.x
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
@@ -21,4 +21,4 @@ projects[hosting_tasks_extra][subdir] = contrib
 ; This includes all hostmaster contrib and libraries!
 
 projects[hostmaster][type] = "profile"
-projects[hostmaster][version] = "1.12"
+projects[hostmaster][version] = "1.x"
