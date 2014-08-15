@@ -13,10 +13,12 @@
 #.
 #
 
-DEVSHOP_VERSION='6.x-1.0-alpha4'
+DEVSHOP_VERSION='6.x-1.x'
 DEVSHOP_PROVISION_VERSION='6.x-1.9-beta8'
 DEVSHOP_HOSTING_VERSION='6.x-1.9-beta4'
 PROVISION_GIT_VERSION='6.x-1.0-beta2'
+
+DEVSHOP_MAKEFILE="http://cgit.drupalcode.org/devshop/plain/build-devshop.make?id=$DEVSHOP_VERSION"
 
 # Fail if not running as root (sudo)
 if [[ $EUID -ne 0 ]]; then
@@ -109,12 +111,15 @@ if  [ ! `which drush` ]; then
   su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
 
   # @TODO: Should we move this to top so it is "configurable"?
-  MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
+  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$DEVSHOP_MAKEFILE --profile=devshop -y"
   echo "Running...  $COMMAND"
   su - aegir -c "$COMMAND"
 fi
 
+  # @TODO: Should we move this to top so it is "configurable"?
+  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$DEVSHOP_MAKEFILE --profile=devshop -y"
+  echo "Running...  $COMMAND"
+  su - aegir -c "$COMMAND"
 # Adding Supervisor
 if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   then
