@@ -40,8 +40,8 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Deploy
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-deploy') {
-    $task->args['git_ref'] = $task->task_args['git_ref'];
-    $task->args['environment'] = $task->task_args['environment'];
+    $task->options['git_ref'] = $task->task_args['git_ref'];
+    $task->options['environment'] = $task->task_args['environment'];
     $task->options['update'] = $task->task_args['update'];
     $task->options['revert'] = !empty($task->task_args['revert']);
     $task->options['cache'] = $task->task_args['cache'];
@@ -293,6 +293,7 @@ function devshop_projects_hosting_project_context_options(&$task) {
   if (!empty($branches['branches'])){
     $task->ref->project->settings->git['branches'] = $branches['branches'];
     $task->ref->project->settings->git['tags'] = $branches['tags'];
+    $task->ref->project->settings->git['refs'] = $branches['refs'];
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
@@ -356,6 +357,7 @@ function getBranchesAndTags($git_url = NULL){
   // Build tag and branch list
   $branches = array();
   $tags = array();
+  $refs = array();
 
   foreach ($exec_output AS $line_string){
 
@@ -364,16 +366,19 @@ function getBranchesAndTags($git_url = NULL){
     // 9fc5727c0823d8d3300ba5aae3328d5998033e45 refs/heads/3-00
     $line = trim(substr($line_string, 40));
     $ref = explode("/", $line);
-    $branch = array_pop($ref);
+    $git_ref = array_pop($ref);
 
     if ($ref[1] == 'heads') {
-      $branches[] = $branch;
+      $branches[] = $git_ref;
+      $refs[$git_ref] = 'branch';
     } else if ($ref[1] == 'tags') {
-      $tags[] = $branch;
+      $tags[] = $git_ref;
+      $refs[$git_ref] = 'tag';
     }
+
   }
   drush_log(dt('[DEVSHOP] Found !b branches and !t tags.', array('!b' => count($branches), '!t' => count($tags), )), 'ok');
-  return array('branches' => $branches, 'tags' => $tags);
+  return array('branches' => $branches, 'tags' => $tags, 'refs' => $refs);
 }
 
 /**
