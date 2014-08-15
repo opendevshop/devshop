@@ -18,6 +18,7 @@ function drush_devshop_provision_provision_devshop_deploy() {
   // Get options
   $environment = drush_get_option('environment');
   $git_ref = drush_get_option('git_ref');
+  $tag_or_branch = d()->project['settings']['git']['refs'][$git_ref];
 
   // Get post deploy options
   $revert = drush_get_option('revert');
@@ -70,6 +71,14 @@ function drush_devshop_provision_provision_devshop_deploy() {
     drush_log(dt("[DEVSHOP] Git Ref $git_ref checked out to $environment environment, located at $repo_path."), 'ok');
     $output = drush_shell_exec_output();
     drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+
+    // Run Git Pull
+    if ($tag_or_branch == 'branch') {
+      drush_shell_cd_and_exec($repo_path, "git pull");
+      $output = drush_shell_exec_output();
+      drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+    }
+
   }
   else {
     drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $repo_path, '!errors' => implode("\n", drush_shell_exec_output()))));
