@@ -13,6 +13,11 @@
 #.
 #
 
+DEVSHOP_VERSION='6.x-1.0-alpha2'
+DEVSHOP_PROVISION_VERSION='6.x-1.9-beta5'
+DEVSHOP_HOSTING_VERSION='6.x-1.9-beta4'
+PROVISION_GIT_VERSION='6.x-1.0-beta2'
+
 # Fail if not running as root (sudo)
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2
@@ -100,12 +105,12 @@ if  [ ! `which drush` ]; then
   # Using drush, install provision_git, provision_logs, provisions_tasks_extra
   # @TODO: Figure out a nicer way to setup a lot of drush projects. Is is possible with drush makefiles?
   # @TODO: Make VERSION a variable, see hostmaster-install.
-  su - aegir -c "drush dl provision_git-6.x devshop_provision-6.x --destination=/var/aegir/.drush -y"
+  su - aegir -c "drush dl provision_git-$PROVISION_GIT_VERSION devshop_provision-$DEVSHOP_PROVISION_VERSION --destination=/var/aegir/.drush -y"
   su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
 
   # @TODO: Should we move this to top so it is "configurable"?
   MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-  COMMAND="drush devshop-install --version=6.x-1.x --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
+  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
   echo "Running...  $COMMAND"
   su - aegir -c "$COMMAND"
 fi
@@ -116,7 +121,7 @@ if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   # Following instructions from hosting_queue_runner README:
   # http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
   # Copy sh script and chown
-  cp /var/aegir/devshop-6.x-1.x/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh /var/aegir
+  cp "/var/aegir/devshop-${DEVSHOP_VERSION}/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh" /var/aegir
   chown aegir:aegir /var/aegir/hosting_queue_runner.sh
   chmod 700 /var/aegir/hosting_queue_runner.sh
 
