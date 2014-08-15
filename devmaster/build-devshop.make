@@ -9,4 +9,4 @@ projects[drupal][type] = "core"
 
 projects[devshop][type] = "profile"
 projects[devshop][download][type] = "git"
-projects[devshop][download][tag] = "6.x-1.0-alpha3"
+projects[devshop][download][tag] = "6.x-1.0-alpha4"
