@@ -1,8 +1,7 @@
 DevShop
 =======
 
-Welcome to the DevShop Source code.  We've just moved to GitHub so bear with us as we get situated.
-
+Welcome to the DevShop Source code.
 
 Contents
 --------
