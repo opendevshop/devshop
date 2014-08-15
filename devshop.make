@@ -16,6 +16,7 @@ projects[hosting_logs][subdir] = contrib
 projects[hosting_queue_runner][subdir] = contrib
 projects[hosting_solr][subdir] = contrib
 projects[hosting_tasks_extra][subdir] = contrib
+projects[jquery_update][subdir] = contrib
 
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
