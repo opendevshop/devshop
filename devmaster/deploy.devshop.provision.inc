@@ -12,27 +12,39 @@ function drush_devshop_provision_pre_provision_devshop_deploy(){
 }
 
 /**
- * Implements the provision-devshop-pull command.
+ * Implements the provision-devshop-deploy command.
  */
-function drush_devshop_provision_provision_devshop_deploy($environment, $git_ref) {
-//  $args = func_get_args();
+function drush_devshop_provision_provision_devshop_deploy() {
+  // Get options
+  $environment = drush_get_option('environment');
+  $git_ref = drush_get_option('git_ref');
 
-  // Detect the string argument and change it into the list of args.
-  // @TODO: Aegir, why do we need this?  When run from drush, $args contain all
-  //  arguments.
-  // Detect spaces
-  if (strpos($args[0], ' ') !== FALSE){
-    // if there is a list of environments, break it up and add it to a new $args
-    $args = explode(' ', $args[0]);
-  }
-
-  // Get global options
+  // Get post deploy options
   $revert = drush_get_option('revert');
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
   $force = drush_get_option('force');
-  
-  drush_log(dt('[DEVSHOP] Provision DevShop Deploy: Git Ref ' . $git_ref . ' to Environment ' . $environment), 'ok');
+
+  // Find repo path
+  $repo_path = d()->project['code_path'] . '/' . $environment;
+
+  // @TODO: Add to a drush verify hook
+
+  // Check that environment exists
+  if (!isset(d()->project['environments'][$environment])) {
+    return drush_set_error('DRUSH_ERROR', dt("Environment !env does not exist in project !proj.", array('!env' => $environment, '!proj' => d()->project['name'])));
+  }
+
+  // Verify the project so we have all the git refs.
+  // @TODO! Hostmaster hook runs the git ref lookup! move that code to devshop provision
+  //  provision_backend_invoke(d()->name, 'provision-verify');
+
+  // Check that the git ref exists
+  if (!isset(d()->project['settings']['git']['refs'][$git_ref])) {
+    return drush_set_error('DRUSH_ERROR', dt("Git reference !git does not exist in the git remote !remote.", array('!git' => $git_ref, '!remote' => d()->project['git_url'])));
+  }
+
+  drush_log(dt('[DEVSHOP] Deploy: Git Ref "' . $git_ref . '" to Environment "' . $environment . '"'), 'ok');
 
   // Get platform & site object
   $project_name = d()->project_name;
@@ -42,8 +54,6 @@ function drush_devshop_provision_provision_devshop_deploy($environment, $git_ref
   $site_alias = '@' . $environment . '.' . d()->project['base_url'];
   $site = d($site_alias);
 
-  // Find repo path
-  $repo_path = $platform->root;
 
   // Ensure it's a git repo.
   provision_git_is_repo($repo_path);
@@ -52,8 +62,11 @@ function drush_devshop_provision_provision_devshop_deploy($environment, $git_ref
   drush_shell_cd_and_exec($repo_path, 'git stash');
   drush_log(dt('[DEVSHOP] Git working copy stashed.'), 'ok');
 
+  drush_shell_cd_and_exec($repo_path, "git fetch");
+  drush_log(dt('[DEVSHOP] Git fetch called.'), 'ok');
+
   // Pull latest version of site
-  if (drush_shell_cd_and_exec($repo_path, "git fetch; git checkout $git_ref")) {
+  if (drush_shell_cd_and_exec($repo_path, "git checkout $git_ref")) {
     drush_log(dt("[DEVSHOP] Git Ref $git_ref checked out to $environment environment, located at $repo_path."), 'ok');
     $output = drush_shell_exec_output();
     drush_log(implode("\n", drush_shell_exec_output()), 'ok');
@@ -100,5 +113,8 @@ function drush_devshop_provision_provision_devshop_deploy($environment, $git_ref
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
   }
+
+  drush_shell_cd_and_exec($repo_path, "git status");
+
 }
 
