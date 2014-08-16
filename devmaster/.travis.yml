@@ -4,6 +4,7 @@ install:
 
 script:
   - wget http://localhost.localdomain/
+  - sudo su - aegir -c 'drush @hostmaster status'
 
 # configure notifications (email, IRC, campfire etc)
 notifications:
