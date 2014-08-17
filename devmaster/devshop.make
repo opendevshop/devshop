@@ -5,7 +5,7 @@ projects[drupal][type] = "core"
 
 ; DevShop modules
 projects[devshop_hosting][subdir] = devshop
-projects[devshop_hosting][version] = 1.9-beta4
+projects[devshop_hosting][version] = 1.x
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
