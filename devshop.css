@@ -148,3 +148,12 @@ body.node-type-project a.hosting-goto-site-link {
   font-size: 10pt;
   text-transform: uppercase;
 }
+
+div.node div.content ul, div#console div.messages ul {
+  padding-left: 0 !important;
+}
+
+ul.dropdown-menu > li,
+div.node div.content ul li {
+  list-style: none !important;
+}
