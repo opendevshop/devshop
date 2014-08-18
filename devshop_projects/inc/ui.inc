@@ -238,7 +238,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $actions[] = array(
         'title' => $tag,
         'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $tag,
-        'query' => array('token' => drupal_get_token($user->uid)),
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+          'environment' => $environment->name,
+        ),
         'attributes' => array(
           'class' => 'hosting-button-dialog git-tag',
           'title' => t('Deploy tag %ref to %environment environment', array('ref' => $tag)),

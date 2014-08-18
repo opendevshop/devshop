@@ -202,6 +202,28 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
   }
 }
 
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
+ */
+function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
+
+  // Save the deployed git ref to the environment record.
+  drush_log('[DEVSHOP] Environment Deployed.  Saving record.');
+
+  $environment = $task->task_args['environment'];
+  $git_ref = $task->task_args['git_ref'];
+
+  $return = db_query('UPDATE {hosting_devshop_project_environment} SET git_ref = "%s" WHERE project_nid = %d AND name = "%s"', $git_ref, $task->ref->nid, $environment);
+
+  if ($return) {
+    drush_log('[DEVSHOP] New git ref saved to environment..');
+  }
+  else {
+    return drush_set_error('[DEVSHOP] Environment update failed!');
+  }
+}
+
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task
  */
