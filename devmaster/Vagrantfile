@@ -3,11 +3,7 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5"
-PROVISION_SCRIPT_PATH = "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh"
 PATH_TO_ATTRIBUTES = File.dirname(__FILE__) + "/attributes.json"
-
-# For Development, uncomment
-# PROVISION_SCRIPT_PATH = "repos/devshop/install.debian.sh"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -37,7 +33,7 @@ SCRIPT
   end
 
   # Set SH as our provisioner
-  config.vm.provision "shell", path: PROVISION_SCRIPT_PATH
+  config.vm.provision "shell", path: attributes['vagrant']['install_script']
 
   # To develop DevShop
   #   1. `vagrant up` with the synced folder commented out.

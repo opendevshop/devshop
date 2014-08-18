@@ -1,6 +1,8 @@
 {
   "vagrant": {
     "hostname": "devshop.local",
-    "private_network_ip": "10.10.10.10"
+    "private_network_ip": "10.10.10.10",
+    "install_script": "http://drupalcode.org/project/devshop.git/blob_plain/HEAD:/install.debian.sh",
+    "private_key_path": "~/.ssh/id_rsa"
   }
 }
