@@ -237,7 +237,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
       // Detect current ref
       if ($environment->git_ref == $branch){
-        $icon = 'code-fork';
+        $current_ref = 'Branch';
       }
     }
     foreach ($project->settings->git['tags'] as $tag){
@@ -257,21 +257,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
       // Detect current ref
       if ($environment->git_ref == $tag){
-        $icon = 'tag';
+        $current_ref = 'Tag';
       }
     }
-
-    // Render as a Bootstrap dropdown.
-    $links = theme('links', $actions, array('class' => 'dropdown-menu', 'role' => 'menu'));
-    $html = <<<HTML
-    <div class="btn-group">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-      <i class="fa fa-$icon"></i> {$environment->git_ref} <span class="caret"></span>
-  </button>
-  $links
-</div>
-HTML;
-    $row[] = $html;
+    $row[] = theme('ctools_dropdown', $current_ref . ': ' . $environment->git_ref, $actions);
 
     if (module_exists('devshop_log')) {
       $row[] =l(t('Commits'), "node/$environment->site/logs/commits");
