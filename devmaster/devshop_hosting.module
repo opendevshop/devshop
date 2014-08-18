@@ -18,6 +18,14 @@ function devshop_hosting_init(){
   drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">');
 
 
+  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"" rel="stylesheet">');
+
+}
+
+function devshop_hosting_footer(){
+  return '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>';
 }
 
 /**
