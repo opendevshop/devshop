@@ -94,8 +94,9 @@ function devshop_pull_default_webhook($project, $environments_to_pull){
  * GitHub action to take on webhook init
  * @TODO: Once it is more pluggable, put this in it's own include, or maybe it's own module.
  */
-function devshop_pull_github_webhook($project){
+function devshop_pull_github_webhook($project_node){
   $headers = getallheaders();
+  $project = $project_node->project;
 
   // @TODO: Handle form content as well.
   if ($headers['content-type'] == 'application/json'){
@@ -112,42 +113,45 @@ function devshop_pull_github_webhook($project){
         // Add a task to pull then project's environments
         // Check for environments set to pull
         $environments_to_pull = array();
-        foreach ($project->project_settings['environments'] as $env => $settings) {
+        foreach ($project->environments as $environment_name => $environment) {
           // Only pull if pull disabled or is tracking a tag.
-          if (!$settings['pull_disabled'] && !in_array($settings['git_branch'], $project->project_settings['git_tags'])) {
-            $environments_to_pull[] = $env;
+          if (!$environment->settings['pull_disabled'] && !in_array($environment->git_ref, $project->settings['git']['tags'])) {
+            $environments_to_pull[] = $environment_name;
           }
         }
         $args['environments'] = implode(' ', $environments_to_pull);
-        hosting_add_task($project->nid, 'devshop-pull', $args);
+        hosting_add_task($project_node->nid, 'devshop-pull', $args);
         $message = 'Push Received.';
         break;
+
       case 'pull_request':
-        $message = 'Pull Request Received.';
-        $branch = $data->pull_request->head->ref;
-        $environment_name = "pr" . $data->pull_request->number;
+        // If pull request environments is enabled...
+        if ($project->settings->github['pull_request_environments']){
+          $message = 'Pull Request Received.';
 
-        if ($data->action == 'opened'){
-          // @TODO: Add to project settings.
+          // @TODO: Handle forks?
+          $branch = $data->pull_request->head->ref;
 
-          $message = "Detected Pull Request for $branch \n";
-          if ($project->settings->github['pull_request_environments']){
+          // Determine environment branch.
+          // @TODO: Make Configurable, allow branch names to be env name
+          $environment_name = "pr" . $data->pull_request->number;
 
-            if (isset($project->environments[$environment_name])){
-              $message .= "Environment $environment_name already exists.";
-            }
-            else {
-              hosting_create_environment($project, $environment_name, $branch);
-              $message .= "Environment $environment_name created for $project->title \n";
-            }
+          // When PR is opened... create new environment.
+          if ($data->action == 'opened'){
+            $message = "Detected Pull Request creation for $branch \n";
+
+            // @TODO: Allow cloning from "live" (or other) environment.
+            hosting_create_environment($project_node, $environment_name, $branch);
+            $message .= "Environment $environment_name created for $project_node->title \n";
           }
-          // @TODO: synchronize action
-        }
-        elseif ($data->action == 'closed'){
-          $message .= "Pull Request Closed \n";
-          if ($project->settings->github['pull_request_environments_delete']){
-            hosting_add_task($project->environments[$environment_name]['site'], 'delete');
-            $message .= "Site $environment_name scheduled for deletion.";
+
+          // When PR is cloded, delete environment.
+          elseif ($data->action == 'closed'){
+            $message .= "Pull Request Closed \n";
+            if ($project->settings->github['pull_request_environments_delete']){
+              hosting_add_task($project->environments[$environment_name]->site, 'delete');
+              $message .= "Site $environment_name scheduled for deletion.";
+            }
           }
         }
         break;
