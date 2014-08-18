@@ -9,26 +9,27 @@ function devshop_projects_settings_form() {
   $form = array();
 
   $form['devshop_project_default_path'] = array(
-    '#title' => t('Default Project Path'),
+    '#title' => t('Projects Base Path'),
     '#type' => 'textfield',
-    '#description' => t('Used in Code Path'),
+    '#description' => t('The folder that all projects will be created in.  Each project gets their own folder, inside that is a folder for each environment.'),
     '#default_value' => variable_get('devshop_project_default_path', '/var/aegir/projects'),
   );
   $form['devshop_project_default_drupal_path'] = array(
-    '#title' => t('Default Project Drupal Path'),
+    '#title' => t('Default path to Drupal'),
     '#type' => 'textfield',
-    '#description' => t('Used in Drupal Code Path'),
+    '#description' => t("If index.php isn't in the root of the git repo, you can edit the 'Path to Drupal' setting on each project.  Set a default 'Path to Drupal' here. (For example, an Acquia hosted repo uses 'docroot'.)"),
     '#default_value' => variable_get('devshop_project_default_drupal_path', ''),
   );
+  // @TODO: Add @environment as a replacement pattern.
   $form['devshop_project_default_base_url_pattern'] = array(
-    '#title' => t('Default Primary Domain Pattern'),
+    '#title' => t('Domain Name Pattern'),
     '#type' => 'textfield',
-    '#description' => t('Used in Primary Domain. You can use @project for project name and @hostname for server name.'),
+    '#description' => t('Each environment (aegir site) gets an initial URL. You can use @project for project name and @hostname for %host. Environments are put underneath this URL as subdomains.', array('%host' => $_SERVER['hostname'])),
     '#default_value' => variable_get('devshop_project_default_base_url_pattern', '@project.@hostname'),
   );
   $form['devshop_projects_skip_settings'] = array(
-    '#title' => t('Skip Settings Page'),
-    '#description' => t('when starting a new project'),
+    '#title' => t('Block Code Path and Path to Drupal settings.'),
+    '#description' => t('When starting a new project, you can skip the "Code Path" and "Path to Drupal" settings, using the defaults set on this page.  Check this box to block these settings from being changed.'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_skip_settings', TRUE),
   );
