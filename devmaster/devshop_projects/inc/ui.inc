@@ -218,25 +218,34 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $site_installed = TRUE;
     }
 
-    // Display current branch
-    $row[] = "<span class='branch environment-branch'>{$environment->git_ref}</span>";
-
     // Create branch/tag chooser
-    // @TODO: Uncomment once we have a link to go to.
-//    $actions = array();
-//    foreach ($node->project->git['branches'] as $branch){
-//      $actions[] = array(
-//        'title' => $branch,
-//        'href' => "node/" . $platform_nid . "/deploy",
-//      );
-//    }
-//    foreach ($node->project->git['tags'] as $tag){
-//      $actions[] = array(
-//        'title' => "tag/" . $tag,
-//        'href' => "node/" . $platform_nid . "/deploy",
-//      );
-//    }
-//    $row[] = theme('ctools_dropdown', $site->git_branch, $actions);
+    $actions = array();
+    foreach ($project->settings->git['branches'] as $branch){
+      $actions[] = array(
+        'title' => $branch,
+        'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $branch,
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+          'environment' => $environment->name,
+        ),
+        'attributes' => array(
+          'class' => 'hosting-button-dialog git-branch',
+          'title' => t('Deploy branch %ref to %environment environment', array('%ref' => $branch, '%environment' => $environment->name)),
+        ),
+      );
+    }
+    foreach ($project->settings->git['tags'] as $tag){
+      $actions[] = array(
+        'title' => $tag,
+        'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $tag,
+        'query' => array('token' => drupal_get_token($user->uid)),
+        'attributes' => array(
+          'class' => 'hosting-button-dialog git-tag',
+          'title' => t('Deploy tag %ref to %environment environment', array('ref' => $tag)),
+        ),
+      );
+    }
+    $row[] = theme('ctools_dropdown', $environment->git_ref, $actions);
 
     if (module_exists('devshop_log')) {
       $row[] =l(t('Commits'), "node/$environment->site/logs/commits");
