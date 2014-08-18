@@ -98,7 +98,10 @@ function devshop_pull_github_webhook($project_node){
   $headers = getallheaders();
   $project = $project_node->project;
 
-  // @TODO: Handle form content as well.
+  // @TODO: This only works with GitHub now!!! IMMEDIATELY complete issue https://www.drupal.org/node/2322593
+  // so we don't leave all other git hosts in the dark :(
+
+  // @TODO: Handle form content from github as well.
   if ($headers['content-type'] == 'application/json'){
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
     
@@ -110,7 +113,9 @@ function devshop_pull_github_webhook($project_node){
         $message = 'Pong!';
         break;
       case 'push':
-        // Add a task to pull then project's environments
+
+        // @TODO: Limit "Pull" tasks to only run for the branches we have new code for..
+
         // Check for environments set to pull
         $environments_to_pull = array();
         foreach ($project->environments as $environment_name => $environment) {
@@ -119,6 +124,8 @@ function devshop_pull_github_webhook($project_node){
             $environments_to_pull[] = $environment_name;
           }
         }
+
+        // Set arguments and create "Pull" task.
         $args['environments'] = implode(' ', $environments_to_pull);
         hosting_add_task($project_node->nid, 'devshop-pull', $args);
         $message = 'Push Received.';
