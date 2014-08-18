@@ -20,6 +20,25 @@ function devshop_provision_drush_init(){
  * Provides provision commands for all devshop tasks.
  */
 function devshop_provision_drush_command() {
+  $items['provision-devshop-deploy'] = array(
+    'description' => 'Deploys a tag or branch to an environment and (optionally) run update.php, clear cache, and revert features.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'options' => array(
+      'update' => 'Run update.php after code pull.',
+      'revert' => 'Revert all features after code pull.',
+      'cache' => 'Clear all caches after code pull.',
+      'reset' => 'Runs "git reset --hard" before pulling.',
+      'force' => 'Runs always update,revert and cache options',
+    ),
+    'arguments' => array(
+      'git_ref' => 'The git branch or tag to deploy.',
+      'environment' => 'The environment to deploy to.',
+    ),
+    'examples' => array(
+      'drush @project_mysite provision-devshop-deploy master dev --cache --update' => 'Triggers a git checkout & pull of branch master to the dev environment, clearing caches and running updates.',
+    ),
+    'aliases' => array('pdd'),
+  );
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
