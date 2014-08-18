@@ -18,7 +18,7 @@ DEVSHOP_PROVISION_VERSION='6.x-1.x'
 DEVSHOP_HOSTING_VERSION='6.x-1.x'
 PROVISION_GIT_VERSION='6.x-1.x'
 
-DEVSHOP_MAKEFILE="http://cgit.drupalcode.org/devshop/plain/build-devshop.make?id=$DEVSHOP_VERSION"
+DEVSHOP_MAKEFILE="https://raw.githubusercontent.com/drupalprojects/devshop/$DEVSHOP_VERSION/build-devshop.make"
 
 # Fail if not running as root (sudo)
 if [[ $EUID -ne 0 ]]; then
