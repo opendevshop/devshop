@@ -21,7 +21,7 @@ PROVISION_GIT_VERSION='6.x-1.x'
 DEVSHOP_MAKEFILE="https://raw.githubusercontent.com/drupalprojects/devshop/$DEVSHOP_VERSION/build-devshop.make"
 
 # Fail if not running as root (sudo)
-if [[ $EUID -ne 0 ]]; then
+if [ $EUID -ne 0 ]; then
    echo "This script must be run as root" 1>&2
    exit 1
 fi
