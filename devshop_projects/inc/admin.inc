@@ -28,7 +28,7 @@ function devshop_projects_settings_form() {
     '#default_value' => variable_get('devshop_project_default_base_url_pattern', '@project.@hostname'),
   );
   $form['devshop_projects_skip_settings'] = array(
-    '#title' => t('Block Code Path and Path to Drupal settings.'),
+    '#title' => t('Block users from editing the "Code Path" and "Path to Drupal" settings.'),
     '#description' => t('When starting a new project, you can skip the "Code Path" and "Path to Drupal" settings, using the defaults set on this page.  Check this box to block these settings from being changed.'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_skip_settings', TRUE),
