@@ -32,7 +32,6 @@ function hosting_task_devshop_deploy_form($node) {
 
   $form['environment']['#default_value'] =  isset($_GET['environment'])? $_GET['environment']: '';
 
-
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
