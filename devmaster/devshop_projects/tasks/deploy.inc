@@ -28,7 +28,7 @@ function hosting_task_devshop_deploy_form($node) {
     '#default_value' => arg(3) == 'ref'? arg(4): '',
   );
 
-  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to deploy the chosen git branch or tag to.'), 'environment', 'Environment', 'select');
+  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to deploy the chosen git branch or tag to.'), 'environment', 'Environment', 'radios');
 
   $form['environment']['#default_value'] =  isset($_GET['environment'])? $_GET['environment']: '';
 
