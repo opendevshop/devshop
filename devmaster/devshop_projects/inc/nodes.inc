@@ -36,12 +36,14 @@ function devshop_projects_node_info() {
 function devshop_projects_load($node) {
 
   // Load the "hosting context". The unique name in the aegir system.
-  $additions['hosting_name'] = 'project_' . db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
+  $name = db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
+  $additions['hosting_name'] = 'project_' . $name;
 
   // Load project data
   $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
 
   // Load up all project settings.
+  $project->name = $name;
   $project->settings = (object) unserialize($project->settings);
 
   // Load Environments
@@ -57,6 +59,12 @@ function devshop_projects_load($node) {
 
     // Save to environments array
     $environment->settings = (object) unserialize($environment->settings);
+
+    // Environments URL:
+    // @TODO: Use aegir generated link
+    $environment->url = 'http://' . $environment->name . '.' . $project->name . '.' . $_SERVER['HTTP_HOST'];
+    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
+
     $environments[$environment->name] = $environment;
   }
   $project->environments = $environments;
