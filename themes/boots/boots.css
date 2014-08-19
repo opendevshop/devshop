@@ -1,7 +1,6 @@
-body.admin-menu .navbar {
+body.admin-menu .navbar-static-top {
   margin-top: 20px !important;
   z-index: 0;
 }
 
-.btn-git-ref {
-}
+
