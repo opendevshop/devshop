@@ -13,6 +13,8 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
   <?php print $styles ?>
 
 </head>
@@ -34,9 +36,9 @@
         <?php foreach ($primary_links as $link):?>
           <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
         <?php endforeach; ?>
-      </ul>
-     <ul class="nav navbar-nav navbar-right">
         <?php foreach ($secondary_links as $link):?>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
           <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
         <?php endforeach; ?>
       </ul>
@@ -50,7 +52,12 @@
     <div class="main col-md-12">
       <?php if ($title): ?>
       <div class="page-header">
-        <h1><?php print $title ?></h1>
+        <h1>
+          <?php print $title ?>
+          <?php if ($subtitle): ?>
+            <?php print $subtitle ?>
+          <?php endif; ?>
+        </h1>
       </div>
       <?php endif; ?>
 
