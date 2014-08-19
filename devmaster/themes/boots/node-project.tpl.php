@@ -87,7 +87,7 @@
     <div class="navbar-form navbar-right form-group">
       <div class="input-group">
 
-        <?php if (!isset($github_url)): ?>
+        <?php if (isset($github_url)): ?>
         <a class="input-group-addon" href="<?php print $github_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github-alt"></i></a>
         <?php else: ?>
           <div class="input-group-addon"><i class="fa fa-git"></i></div>
