@@ -68,9 +68,9 @@
   <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 
     <div class="list-group">
-      <a href="#" class="list-group-item list-group-item-info">
-        <?php print $environment->name; ?>
-        <span class="pull-right">http://env.proj.url.com</span>
+      <a href="<?php print $environment->url ?>" target="_blank" class="list-group-item list-group-item-info">
+        <strong><?php print $environment->name; ?></strong>
+        <small class="text-muted"> <i class="fa fa-globe"></i> <?php print $environment->url ?></small>
       </a>
       <div class="list-group-item">
 
