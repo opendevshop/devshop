@@ -4,3 +4,7 @@ body.admin-menu .navbar-static-top {
 }
 
 
+.devshop-environment .list-group-item.active .text-muted {
+  color: white;
+
+}

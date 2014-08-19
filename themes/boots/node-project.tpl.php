@@ -103,11 +103,37 @@
 </nav>
 <div class="row placeholders">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
+
+  <?php
+  if ($environment->site_status == HOSTING_SITE_DISABLED){
+    $environment_class = 'disabled';
+  }
+  elseif ($environment->settings->production_mode){
+    $environment_class = ' active';
+  }
+  else {
+    $environment_class = 'info';
+  }
+  ?>
+
 <!--    {% for id, environment in project.environments %}-->
   <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 
-    <div class="list-group">
-      <a href="<?php print $environment->url ?>" target="_blank" class="list-group-item list-group-item-info">
+    <div class="list-group devshop-environment">
+      <a href="<?php print $environment->url ?>" target="_blank" class="list-group-item list-group-item-<?php print $environment_class ?>">
+
+        <?php if ($environment->settings->production_mode): ?>
+        <i class="fa fa-lock pull-right" title="Production Mode"></i>
+        <?php endif; ?>
+
+        <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+        <i class="fa fa-bolt pull-right" title="Live Environment"></i>
+        <?php endif; ?>
+
+        <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+          <span class="pull-right text-muted">Disabled</span>
+        <?php endif; ?>
+
         <strong><?php print $environment->name; ?></strong><br />
         <small class="text-muted"><?php print $environment->url ?></small>
       </a>
@@ -132,7 +158,6 @@
                 <?php endforeach; ?>
               </ul>
             </div>
-
 
             <!-- SYNC DATA -->
             <div class="btn-group">
