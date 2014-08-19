@@ -63,6 +63,8 @@ function devshop_projects_load($node) {
     // Environments URL:
     // @TODO: Use aegir generated link
     $environment->url = 'http://' . $environment->name . '.' . $project->name . '.' . $_SERVER['HTTP_HOST'];
+    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
+
     $environments[$environment->name] = $environment;
   }
   $project->environments = $environments;
