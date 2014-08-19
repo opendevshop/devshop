@@ -31,37 +31,44 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-left">
-        <?php foreach ($primary_links as $link): ?>
-          <li><?php print l($link['title'], $link['href']); ?> </li>
+        <?php foreach ($primary_links as $link):?>
+          <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
+        <?php endforeach; ?>
+      </ul>
+     <ul class="nav navbar-nav navbar-right">
+        <?php foreach ($secondary_links as $link):?>
+          <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
         <?php endforeach; ?>
       </ul>
     </div>
   </div>
-</div>
-<div class="breadcrumb">
-  <?php if ($breadcrumb) print $breadcrumb; ?>
 </div>
 
 
 <div class="container-fluid">
   <div class="row">
     <div class="main col-md-12">
+      <?php if ($title): ?>
+      <div class="page-header">
+        <h1><?php print $title ?></h1>
+      </div>
+      <?php endif; ?>
 
+      <?php if ($tabs) print $tabs ?>
+      <?php if (isset($tabs2)) print $tabs2 ?>
 
-<?php if ($help): print $help; endif; ?>
-<?php print $content ?>
+      <?php if ($help): print $help; endif; ?>
+
+      <?php print $content ?>
     </div>
   </div>
 </div>
 
 
 
-<div id="footer" class='reverse'><div class='limiter clear-block'>
-    <?php print $footer; ?>
-    <?php if ($secondary_links) print theme('links', $secondary_links, array('class' => 'links secondary-links')) ?>
+  <div id="footer">
     <div class='footer-message'><?php print $footer_message ?></div>
-  </div></div>
-
+  </div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
