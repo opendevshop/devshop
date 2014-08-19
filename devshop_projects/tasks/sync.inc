@@ -36,6 +36,32 @@ function hosting_task_devshop_sync_form($node) {
     }
   }
 
+  // Detect pre-selected environments
+  if ($_GET['source']) {
+    $form['source']['#default_value'] = $_GET['source'];
+    $form['destination']['#default_value'] = $_GET['destination'];
+
+    $form['source']['#type'] = 'value';
+    $form['destination']['#type'] = 'value';
+
+    $form['source_label'] = array(
+      '#type' => 'item',
+      '#title' => t('Source Environment'),
+      '#value' => $_GET['source'],
+      '#description' => t('The environment to copy data from.'),
+      '#prefix' => '<div class="sync-envs"><div class="source">',
+      '#suffix' => '</div>',
+    );
+    $form['destination_label'] = array(
+      '#type' => 'item',
+      '#title' => t('Destination Environment'),
+      '#value' => $_GET['destination'],
+      '#description' => t("This environment's data will be DESTROYED, replaced with data from the Source."),
+      '#prefix' => '<div class="destination">',
+      '#suffix' => '</div>',
+    );
+  }
+
   $form['database'] = array(
     '#title' => t('Copy database from source to destination.'),
     '#type' => 'checkbox',
