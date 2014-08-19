@@ -69,19 +69,19 @@
 
     <div class="list-group">
       <a href="<?php print $environment->url ?>" target="_blank" class="list-group-item list-group-item-info">
-        <strong><?php print $environment->name; ?></strong>
-        <small class="text-muted"> <i class="fa fa-globe"></i> <?php print $environment->url ?></small>
+        <strong><?php print $environment->name; ?></strong><br />
+        <small class="text-muted"><?php print $environment->url ?></small>
       </a>
       <div class="list-group-item">
 
         <div class="input-group">
           <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code-fork"></i> <span class="caret"></span></button>
+            <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-<?php print  $environment->git_ref_type == 'branch'? 'code-fork': 'tag' ?>"></i> <span class="caret"></span></button>
             <ul class="dropdown-menu btn-git-ref" role="menu">
               <li><p class="text-muted">Deploy a tag or branch:</p></li>
               <li class="divider"></li>
               <?php foreach ($node->project->settings->git['branches'] as $branch): ?>
-                <li><a href="#"><?php print $branch; ?></a></li>
+                <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/ref/<?php print $branch ?>/?environment=<?php print $environment->name ?>"><?php print $branch; ?></a></li>
               <?php endforeach; ?>
               <li class="divider"></li>
               <?php foreach ($node->project->settings->git['tags'] as $tag): ?>
