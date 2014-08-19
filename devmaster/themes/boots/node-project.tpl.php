@@ -48,19 +48,58 @@
  */
 ?>
 
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <a class="navbar-brand" href="<?php print $node_url ?>"><?php print $title ?></a>
+      <ul class="nav navbar-nav">
+        <!-- Live Domain -->
+        <li><a href='<?php print $live_domain_url; ?>' target="_blank"><i class="fa fa-globe"></i> <?php print $live_domain_text; ?></a></li>
+
+        <!-- Branches -->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print $branches_label; ?>">
+            <small>
+              <i class="fa fa-code-fork"></i> <?php print $branches_count; ?>
+            </small>
+            &nbsp;
+            <?php if ($tags_count): ?>
+            <small>
+              <i class="fa fa-tag"></i> <?php print $tags_count; ?>
+            </small>
+            <?php endif; ?>
+
+            <span class="caret"></span></a>
+          <ul class="dropdown-menu ref-list" role="menu">
+            <?php foreach ($project->settings->git['branches'] as $branch): ?>
+              <li><a href='#'><i class="fa fa-code-fork"></i> <?php print $branch; ?></a></li>
+            <?php endforeach; ?>
+            <li class="divider"></li>
+            <?php foreach ($project->settings->git['tags'] as $tag): ?>
+              <li><a href='#'><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
+            <?php endforeach; ?>
+          </ul>
+        </li>
+      </ul>
     </div>
+
     <div class="navbar-form navbar-right form-group">
       <div class="input-group">
-        <div class="input-group-addon"><i class="fa fa-code-fork"></i></div>
-        <input type="text" class="form-control" size="40" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
+
+        <?php if (!isset($github_url)): ?>
+        <a class="input-group-addon" href="<?php print $github_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <?php else: ?>
+          <div class="input-group-addon"><i class="fa fa-git"></i></div>
+        <?php endif; ?>
+
+        <input type="text" class="form-control" size="30" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
+
+
+        <a href='<?php print url("node/$nid/edit"); ?>' type="button" class="btn btn-default navbar-btn input-group-addon"><i class="fa fa-gear"></i> <?php print t('Settings'); ?></a>
       </div>
     </div>
-  </div>
+</div>
 </nav>
 <div class="row placeholders">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
@@ -73,29 +112,42 @@
         <small class="text-muted"><?php print $environment->url ?></small>
       </a>
       <div class="list-group-item">
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-<?php print  $environment->git_ref_type == 'branch'? 'code-fork': 'tag' ?>"></i>
 
-        <div class="input-group">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-<?php print  $environment->git_ref_type == 'branch'? 'code-fork': 'tag' ?>"></i> <span class="caret"></span></button>
-            <ul class="dropdown-menu btn-git-ref" role="menu">
-              <li><p class="text-muted">Deploy a tag or branch:</p></li>
-              <li class="divider"></li>
-              <?php foreach ($node->project->settings->git['branches'] as $branch): ?>
-                <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/ref/<?php print $branch ?>/?environment=<?php print $environment->name ?>"><?php print $branch; ?></a></li>
-              <?php endforeach; ?>
-              <li class="divider"></li>
-              <?php foreach ($node->project->settings->git['tags'] as $tag): ?>
-                <li><a href="#"><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
-              <?php endforeach; ?>
-            </ul>
-          </div>
-          <input type="text" class="form-control" size="40" value="<?php print $environment->git_ref; ?>" onclick="this.select()">
+                <?php print $environment->git_ref; ?>
+
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu btn-git-ref" role="menu">
+                <li><p class="text-muted">Deploy a tag or branch:</p></li>
+                <li class="divider"></li>
+                <?php foreach ($node->project->settings->git['branches'] as $branch): ?>
+                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/ref/<?php print $branch ?>/?environment=<?php print $environment->name ?>"><?php print $branch; ?></a></li>
+                <?php endforeach; ?>
+                <li class="divider"></li>
+                <?php foreach ($node->project->settings->git['tags'] as $tag): ?>
+                  <li><a href="#"><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+
+
+            <!-- SYNC DATA -->
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
+                <?php print t('Sync Data') ?>
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu btn-git-ref" role="menu">
+                <?php foreach ($project->environments as $env): ?>
+                  <?php if ($env->settings->production_mode || $env->name == $environment->name) continue; ?>
+                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&destination=<?php print $env->name ?>"><?php print t('to') . ' ' . $env->name; ?></a></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
         </div>
-      </div>
-      <div class="list-group-item">
-        <p>
-          Last Deploy: <a href="logs">2 min ago</a>
-        </p>
       </div>
       <ul class="list-group-item nav nav-pills nav-justified">
         <li class="dropdown">
