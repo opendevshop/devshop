@@ -108,7 +108,7 @@
   if ($environment->site_status == HOSTING_SITE_DISABLED){
     $environment_class = 'disabled';
   }
-  elseif ($environment->settings->production_mode){
+  elseif ($environment->name == $project->settings->live['live_environment']){
     $environment_class = ' active';
   }
   else {
