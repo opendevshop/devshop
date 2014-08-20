@@ -279,6 +279,15 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 }
 
 /**
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for `clone` task.
+ *
+ * Ensures that cloned sites that are on project platforms inherit the project.
+ */
+function devshop_projects_post_hosting_clone_task($task, $data) {
+  devshop_projects_post_hosting_import_task($task, $data);
+}
+
+/**
  * Implementation of hook_post_hosting_TASK_TYPE_task()
  *
  * Ensures that cloned sites that are on project platforms inherit the project.
