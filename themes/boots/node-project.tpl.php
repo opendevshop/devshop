@@ -189,10 +189,7 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             Actions <span class="caret"></span>
           </a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Clone</a></li>
-            <li><a href="#">Fork</a></li>
-          </ul>
+          <?php print theme('links', $node->environment_actions[$environment->name], array('class' => 'dropdown-menu')); ?>
         </li>
       </ul>
     </div>
