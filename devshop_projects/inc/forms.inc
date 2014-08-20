@@ -190,10 +190,8 @@ function devshop_projects_form(&$node) {
         '#value' => $environment->platform,
       );
       $form['project']['environments'][$environment_name]['git_ref'] = array(
-        '#title' => t('Git Branch/Tag'),
-        '#type' => 'select',
-        '#options' => devshop_projects_git_ref_options($project),
-        '#default_value' => $environment->git_ref,
+        '#type' => 'value',
+        '#value' => $environment->git_ref,
       );
 
       $form['project']['environments'][$environment_name]['settings'] = array();
