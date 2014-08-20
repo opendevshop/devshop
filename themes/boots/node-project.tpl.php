@@ -180,9 +180,9 @@
             Logs <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu">
-            <li class="active"><a href="#">Commits</a></li>
-            <li><a href="#">Errors</a></li>
-            <li><a href="#">Files</a></li>
+            <li><a href="<?php print url("node/$environment->site/logs/commits"); ?>">Commits</a></li>
+            <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
+            <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
           </ul>
         </li>
         <li class="dropdown">
