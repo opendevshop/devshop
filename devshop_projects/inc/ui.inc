@@ -350,6 +350,8 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         'query' =>  drupal_get_destination(),
       );
     }
+
+    $node->environment_actions[$environment->name] = $actions;
     
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
 
