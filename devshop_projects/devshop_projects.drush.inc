@@ -191,6 +191,11 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // We trigger platform deletion here.
     hosting_add_task($task->ref->platform, 'delete');
   }
+
+  // When a platform is deleted (if it is in a project), delete the environment record.
+  if ($task->ref->type == 'platform' && !empty($task->ref->project)) {
+    db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d AND platform = %d', $task->ref->project->nid, $task->ref->platform);
+  }
   
   // When a platform is deleted, if it is the last in the project,
   // and the project has been unpublished, delete the directory.
