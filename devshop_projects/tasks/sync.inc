@@ -58,7 +58,7 @@ function hosting_task_devshop_sync_form($node) {
       '#value' => $_GET['destination'],
       '#description' => t("This environment's data will be DESTROYED, replaced with data from the Source."),
       '#prefix' => '<div class="destination">',
-      '#suffix' => '</div>',
+      '#suffix' => '</div></div>',
     );
   }
 
