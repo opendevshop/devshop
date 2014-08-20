@@ -27,9 +27,7 @@ function theme_devshop_projects_settings_form($form) {
   $header[] = t('Environment');
   foreach (element_children($form) as $env_name) {
     $row = array();
-    $row[] = $env_name;
-    $row[] = drupal_render($form[$env_name]['git_ref']);
-    $header['git_ref'] = t('Branch/Tag');
+    $row[] = $env_name . drupal_render($form[$env_name]['git_ref']);
     foreach(element_children($form[$env_name]['settings']) as $setting){
       if (!isset($header[$setting])){
         $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
