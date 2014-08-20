@@ -150,11 +150,11 @@
                 <li><p class="text-muted">Deploy a tag or branch:</p></li>
                 <li class="divider"></li>
                 <?php foreach ($node->project->settings->git['branches'] as $branch): ?>
-                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/ref/<?php print $branch ?>/?environment=<?php print $environment->name ?>"><?php print $branch; ?></a></li>
+                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/?git_ref=<?php print $branch ?>&environment=<?php print $environment->name ?>"><?php print $branch; ?></a></li>
                 <?php endforeach; ?>
                 <li class="divider"></li>
                 <?php foreach ($node->project->settings->git['tags'] as $tag): ?>
-                  <li><a href="#"><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
+                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/?git_ref=<?php print $tag ?>&environment=<?php print $environment->name ?>"><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
                 <?php endforeach; ?>
               </ul>
             </div>
