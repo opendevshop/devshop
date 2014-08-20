@@ -32,6 +32,32 @@ function hosting_task_devshop_deploy_form($node) {
 
   $form['environment']['#default_value'] =  isset($_GET['environment'])? $_GET['environment']: '';
 
+  // Detect pre-selected environments
+  if ($_GET['environment']) {
+    $form['environment']['#type'] = 'value';
+    $form['environment']['#value'] =  $_GET['environment'];
+
+    $form['git_ref']['#type'] = 'value';
+    $form['git_ref']['#value'] =  $_GET['git_ref'];
+
+    $form['environment_label'] = array(
+      '#type' => 'item',
+      '#title' => t('Environment'),
+      '#value' => $_GET['environment'],
+      '#description' => t('The environment to deploy code to.'),
+      '#prefix' => '<div class="sync-envs"><div class="source">',
+      '#suffix' => '</div>',
+    );
+    $form['git_ref_label'] = array(
+      '#type' => 'item',
+      '#title' => t('Git Reference'),
+      '#value' => $_GET['git_ref'],
+      '#description' => t("The Git branch or tag to deploy."),
+      '#prefix' => '<div class="destination">',
+      '#suffix' => '</div></div>',
+    );
+  }
+
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
