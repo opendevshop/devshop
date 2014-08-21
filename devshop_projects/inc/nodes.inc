@@ -70,6 +70,19 @@ function devshop_projects_load($node) {
     $release = hosting_package_instance_load($iid);
     $environment->version = $release->version;
 
+    // Get servers
+    $environment->servers['http'] = db_result(db_query("SELECT n.title FROM {hosting_platform} p
+     LEFT JOIN {node} n on n.nid = p.web_server
+       WHERE p.nid = %d
+     ", $environment->platform));
+
+    // HTTP Server
+    $environment->servers['db'] = db_result(db_query("SELECT n.title FROM {hosting_site} p
+     LEFT JOIN {node} n on n.nid = p.db_server
+       WHERE p.nid = %d
+     ", $environment->site));
+
+    // Save to project environments collection.
     $environments[$environment->name] = $environment;
   }
   $project->environments = $environments;
