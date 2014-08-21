@@ -56,5 +56,10 @@ function boots_preprocess_node(&$vars){
     if ($vars['tags_count']){
       $vars['branches_label'] .= ' &amp; ' . format_plural($vars['tags_count'], t('1 Tag'), t('!count Tags', array('!count' => $vars['tags_count'])));
     }
+
+    // Get the platform node to get the version
+    $environment = array_shift(array_values($project->environments));
+    $platform_node = node_load($environment->platform);
+    $vars['version'] = $platform_node->release->version;
   }
 }

@@ -52,6 +52,8 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="<?php print $node_url ?>"><?php print $title ?></a>
+    </div>
+    <div class="navbar-left navbar-collapse">
       <ul class="nav navbar-nav">
 
         <!-- Live Domain -->
@@ -83,6 +85,12 @@
             <?php endforeach; ?>
           </ul>
         </li>
+
+        <!-- Install Profile -->
+        <li class="navbar-text">
+          <?php print $version; ?> <?php print $project->install_profile ?>
+        </li>
+
       </ul>
     </div>
 
