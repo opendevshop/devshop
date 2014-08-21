@@ -38,8 +38,7 @@ function boots_preprocess_node(&$vars){
       $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
     }
     else {
-      $vars['live_domain_url'] =  url('node/' . $node->nid . '/edit');
-      $vars['live_domain_text'] =  t('Set a "live domain"');
+      $vars['live_domain_url'] =  '';
     }
 
     // @TODO: Detect other web URLs for other git hosts.
