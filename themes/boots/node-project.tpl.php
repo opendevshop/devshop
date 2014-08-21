@@ -183,7 +183,7 @@
               <ul class="dropdown-menu btn-git-ref" role="menu">
                 <?php foreach ($project->environments as $env): ?>
                   <?php if ($env->settings->production_mode || $env->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&destination=<?php print $env->name ?>"><?php print t('to') . ' ' . $env->name; ?></a></li>
+                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('to') . ' ' . $env->name; ?></a></li>
                 <?php endforeach; ?>
               </ul>
             </div>
