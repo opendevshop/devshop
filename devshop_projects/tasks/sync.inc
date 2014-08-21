@@ -39,7 +39,7 @@ function hosting_task_devshop_sync_form($node) {
   // Detect pre-selected environments
   if ($_GET['source']) {
     $form['source']['#default_value'] = $_GET['source'];
-    $form['destination']['#default_value'] = $_GET['destination'];
+    $form['destination']['#default_value'] = $_GET['dest'];
 
     $form['source']['#type'] = 'value';
     $form['destination']['#type'] = 'value';
@@ -55,7 +55,7 @@ function hosting_task_devshop_sync_form($node) {
     $form['destination_label'] = array(
       '#type' => 'item',
       '#title' => t('Destination Environment'),
-      '#value' => $_GET['destination'],
+      '#value' => $_GET['dest'],
       '#description' => t("This environment's data will be DESTROYED, replaced with data from the Source."),
       '#prefix' => '<div class="destination">',
       '#suffix' => '</div></div>',
