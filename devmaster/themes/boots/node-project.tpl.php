@@ -50,12 +50,14 @@
 
 <nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <a class="navbar-brand" href="<?php print $node_url ?>"><?php print $title ?></a>
       <ul class="nav navbar-nav">
+
         <!-- Live Domain -->
+        <?php if ($live_domain_url): ?>
         <li><a href='<?php print $live_domain_url; ?>' target="_blank"><i class="fa fa-globe"></i> <?php print $live_domain_text; ?></a></li>
+        <?php endif; ?>
 
         <!-- Branches -->
         <li class="dropdown">
