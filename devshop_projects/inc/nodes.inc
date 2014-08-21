@@ -65,6 +65,11 @@ function devshop_projects_load($node) {
     $environment->url = 'http://' . $environment->name . '.' . $project->name . '.' . $_SERVER['HTTP_HOST'];
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
+    // Environment version
+    $iid = db_result(db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type='platform' AND i.rid=%d", $environment->platform));
+    $release = hosting_package_instance_load($iid);
+    $environment->version = $release->version;
+
     $environments[$environment->name] = $environment;
   }
   $project->environments = $environments;
