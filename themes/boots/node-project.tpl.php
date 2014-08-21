@@ -130,7 +130,7 @@
   <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 
     <div class="list-group devshop-environment">
-      <a href="<?php print $environment->url ?>" target="_blank" class="list-group-item list-group-item-<?php print $environment_class ?>">
+      <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $environment_class ?>">
 
         <?php if ($environment->settings->production_mode): ?>
         <i class="fa fa-lock pull-right" title="Production Mode"></i>

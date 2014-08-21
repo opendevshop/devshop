@@ -9,3 +9,7 @@ body.admin-menu .navbar-static-top {
 
 }
 
+.devshop-environment > a.site-link {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
