@@ -88,7 +88,7 @@
 
         <!-- Install Profile -->
         <li class="navbar-text">
-          <?php print $version; ?> <?php print $project->install_profile ?>
+          <i class="fa fa-drupal"></i>  <?php print $project->install_profile ?>
         </li>
 
       </ul>
@@ -130,7 +130,11 @@
   <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 
     <div class="list-group devshop-environment">
-      <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $environment_class ?>">
+      <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $environment_class ?>"  data-toggle="tooltip" data-placement="bottom" title="<?php print t('Visit !url', array('!url' => $environment->url)); ?>">
+
+        <small class="text-muted pull-right" title="Drupal version <?php print $environment->version; ?>">
+          <?php print $environment->version; ?>
+        </small>
 
         <?php if ($environment->settings->production_mode): ?>
         <i class="fa fa-lock pull-right" title="Production Mode"></i>
@@ -144,7 +148,8 @@
           <span class="pull-right text-muted">Disabled</span>
         <?php endif; ?>
 
-        <strong><?php print $environment->name; ?></strong><br />
+        <strong><?php print $environment->name; ?></strong>
+         <br />
         <small class="text-muted"><?php print $environment->url ?></small>
       </a>
       <div class="list-group-item">
