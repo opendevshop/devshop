@@ -58,8 +58,12 @@
             <?php print $subtitle ?>
           <?php endif; ?>
         </h1>
+
+
       </div>
       <?php endif; ?>
+
+      <?php print $messages; ?>
 
       <?php if ($tabs) print $tabs ?>
       <?php if (isset($tabs2)) print $tabs2 ?>
