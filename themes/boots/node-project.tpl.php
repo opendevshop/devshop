@@ -154,6 +154,8 @@
       </a>
       <div class="list-group-item">
           <div class="btn-group btn-group-justified">
+
+            <!-- Git Select -->
             <div class="btn-group">
               <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-<?php print  $environment->git_ref_type == 'branch'? 'code-fork': 'tag' ?>"></i>
 
@@ -174,22 +176,105 @@
               </ul>
             </div>
 
-            <!-- SYNC DATA -->
+
+            <!-- Data Actions & Servers  -->
+
+            <!-- Database Servers -->
             <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
-                <?php print t('Sync Data') ?>
+              <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
+                <i class="fa fa-database" ?></i>
                 <span class="caret"></span>
               </button>
-              <ul class="dropdown-menu btn-git-ref" role="menu">
-                <?php foreach ($project->environments as $env): ?>
-                  <?php if ($env->settings->production_mode || $env->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('to') . ' ' . $env->name; ?></a></li>
+
+              <ul class="dropdown-menu btn-db-server" role="menu">
+                <li>
+                  <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
+                    <strong><?php print t('DB Server'); ?>:</strong> <?php print $environment->servers['db']['name']; ; ?></a>
+                  </a>
+                </li>
+                <li class="divider"></li>
+
+                <li class="">
+                  <?php print t('Change Database Server:'); ?>
+                </li>
+                <li class="divider"></li>
+
+                <?php foreach (hosting_get_servers('db') as $server): ?>
+                <li>
+                  <a href="/node/<?php print $environment->site ?>/site_migrate/?db_server=<?php print $server ?>"
+                    <?php if ($environment->db_server == $server): ?>
+                    <i class="fa fa-check-square-o"></i>
+                    <?php else: ?>
+                    <i class="fa fa-square-o"></i>
+                    <?php endif; ?>
+
+                  <?php print $server ?>
+                   </a>
+                </li>
                 <?php endforeach; ?>
               </ul>
             </div>
+
+            <!-- Web Servers  -->
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
+                <i class="fa fa-cube" ?></i>
+
+
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu btn-db-server" role="menu">
+                <li>
+                  <a href="<?php print url('node/' . $environment->servers['http']['nid']); ?>">
+                     <strong><?php print t('HTTP Server'); ?>:</strong> <?php print $environment->web_server; ?></a>
+                  </a>
+                </li>
+                <li class="divider"></li>
+
+                <?php foreach (hosting_get_servers('http') as $server):
+
+                  if ($environment->web_server == $server) {
+                    $url = url('node/' . $environment->servers['http']['nid']);
+                    $icon = 'check-square-o';
+                  }
+                else {
+                  $url = url('node/' . $environment->platform . '/edit/?web_server=' . $server);
+                  $icon = 'square-o';
+                }
+                ?>
+              <li>
+                <a href="<?php print $url; ?>"
+                  <i class="fa fa-<?php print $icon; ?>"></i>
+                  <?php print $server ?>
+                </a>
+              </li>
+              <?php endforeach; ?>
+
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
       <ul class="list-group-item nav nav-pills nav-justified">
+
+        <!-- SYNC DATA -->
+        <li class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
+            <?php print t('Sync Data') ?>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu btn-git-ref" role="menu">
+            <?php foreach ($project->environments as $env): ?>
+              <?php if ($env->settings->production_mode || $env->name == $environment->name) continue; ?>
+              <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
+            <?php endforeach; ?>
+
+            <!-- Sync from Live -->
+            <li class="divider"></li>
+            <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $project->settings->live['live_environment'] ?>&dest=<?php print $env->name ?>"><?php print t('Copy data from') . ' ' . $project->settings->live['live_environment'] ; ?></a></li>
+          </ul>
+        </li>
+
+        <!-- Logs, Actions & Settings -->
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             Logs <span class="caret"></span>
