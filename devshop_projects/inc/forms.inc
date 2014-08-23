@@ -72,7 +72,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
           // Set URI value
           $form['parameters']['new_uri']['#type'] = 'value';
           $form['parameters']['new_uri']['#value'] = $form['parameters']['new_uri']['#default_value'];
-dsm($form);
           // Display something helpful
           $form['old'] = array(
             '#type' => 'item',
