@@ -99,7 +99,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
   // Platform "Edit" page.
   if ($form_id == 'platform_node_form') {
-   dsm($form);
 
     $platform_node = node_load($form['nid']['#value']);
     $environment = $platform_node->environment;
