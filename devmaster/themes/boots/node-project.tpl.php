@@ -153,7 +153,7 @@
         <small class="text-muted"><?php print $environment->url ?></small>
       </a>
       <div class="list-group-item">
-          <div class="btn-group btn-group-justified">
+          <div class="btn-group inline">
 
             <!-- Git Select -->
             <div class="btn-group">
@@ -175,10 +175,9 @@
                 <?php endforeach; ?>
               </ul>
             </div>
+          </div>
 
-
-            <!-- Data Actions & Servers  -->
-
+          <div class="btn-group inline pull-right">
             <!-- Database Servers -->
             <div class="btn-group">
               <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
@@ -189,29 +188,28 @@
               <ul class="dropdown-menu btn-db-server" role="menu">
                 <li>
                   <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
-                    <strong><?php print t('DB Server'); ?>:</strong> <?php print $environment->servers['db']['name']; ; ?></a>
+                    <strong><?php print t('DB Server'); ?>:</strong> <?php print $environment->servers['db']['name']; ; ?>
                   </a>
                 </li>
-                <li class="divider"></li>
 
-                <li class="">
-                  <?php print t('Change Database Server:'); ?>
+
+                <?php if (count($db_servers) > 1): ?>
+                <li class="divider"></li>
+                <li class="bg-warning btn-text">
+                  <p><?php print t('Move database to:'); ?></p>
                 </li>
-                <li class="divider"></li>
 
-                <?php foreach (hosting_get_servers('db') as $server): ?>
+                <?php foreach ($db_servers as $server):
+                    if ($environment->db_server == $server) continue;
+                  ?>
                 <li>
-                  <a href="/node/<?php print $environment->site ?>/site_migrate/?db_server=<?php print $server ?>"
-                    <?php if ($environment->db_server == $server): ?>
-                    <i class="fa fa-check-square-o"></i>
-                    <?php else: ?>
-                    <i class="fa fa-square-o"></i>
-                    <?php endif; ?>
-
-                  <?php print $server ?>
+                  <a href="/node/<?php print $environment->site ?>/site_migrate/?db_server=<?php print $server ?>" class="text-muted">
+                    <i class="fa fa-database"></i>
+                    <?php print $server ?>
                    </a>
                 </li>
                 <?php endforeach; ?>
+                <?php endif; ?>
               </ul>
             </div>
 
@@ -229,26 +227,24 @@
                      <strong><?php print t('HTTP Server'); ?>:</strong> <?php print $environment->web_server; ?></a>
                   </a>
                 </li>
-                <li class="divider"></li>
 
-                <?php foreach (hosting_get_servers('http') as $server):
+                <?php if (count($web_servers) > 1): ?>
+                  <li class="divider"></li>
+                  <li class="bg-warning btn-text">
+                    <p><?php print t('Change web server:'); ?></p>
+                  </li>
 
-                  if ($environment->web_server == $server) {
-                    $url = url('node/' . $environment->servers['http']['nid']);
-                    $icon = 'check-square-o';
-                  }
-                else {
-                  $url = url('node/' . $environment->platform . '/edit/?web_server=' . $server);
-                  $icon = 'square-o';
-                }
-                ?>
-              <li>
-                <a href="<?php print $url; ?>"
-                  <i class="fa fa-<?php print $icon; ?>"></i>
-                  <?php print $server ?>
-                </a>
-              </li>
-              <?php endforeach; ?>
+                  <?php foreach ($web_servers as $server):
+                    if ($environment->web_server == $server) continue;
+                    ?>
+                    <li>
+                      <a href="/node/<?php print $environment->platform ?>/edit?web_server=<?php print $server ?>" class="text-muted">
+                        <i class="fa fa-cube"></i>
+                        <?php print $server ?>
+                      </a>
+                    </li>
+                  <?php endforeach; ?>
+                <?php endif; ?>
 
               </ul>
             </div>
@@ -269,8 +265,10 @@
             <?php endforeach; ?>
 
             <!-- Sync from Live -->
+            <?php if ($environment->name != $project->settings->live['live_environment'] ): ?>
             <li class="divider"></li>
             <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $project->settings->live['live_environment'] ?>&dest=<?php print $env->name ?>"><?php print t('Copy data from') . ' ' . $project->settings->live['live_environment'] ; ?></a></li>
+            <?php endif; ?>
           </ul>
         </li>
 
