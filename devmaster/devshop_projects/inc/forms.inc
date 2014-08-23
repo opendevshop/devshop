@@ -77,7 +77,7 @@ dsm($form);
           $form['old'] = array(
             '#type' => 'item',
             '#title' => t('Current Database Server'),
-            '#value' => l($environment->servers['db']['name'], 'node/' . $environment->servers['db']['name']),
+            '#value' => l($environment->servers['db']['name'], 'node/' . $environment->servers['db']['nid']),
             '#weight' => '-1',
           );
 
