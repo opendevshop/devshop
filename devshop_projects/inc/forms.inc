@@ -96,6 +96,56 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         break;
     }
   }
+
+  // Platform "Edit" page.
+  if ($form_id == 'platform_node_form') {
+   dsm($form);
+
+    $platform_node = node_load($form['nid']['#value']);
+    $environment = $platform_node->environment;
+    $form['help'] = array(
+      '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
+      '#weight' => -10,
+    );
+
+    // Set to values
+    $form['title']['#type'] = 'value';
+    $form['makefile']['#type'] = 'value';
+    unset($form['info']);
+
+    if ($_GET['web_server']){
+      $web_server = $_GET['web_server'];
+      $web_server_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "server" && title = "%s"', $web_server));
+
+      // Set values
+      $form['web_server']['#default_value'] = $web_server_nid;
+      $form['web_server']['#type'] = 'hidden';
+
+      // Load servers to display IP addresses.
+      $old_server = node_load($environment->servers['http']['nid']);
+      $new_server = node_load($web_server_nid);
+
+      // Display something helpful
+      $form['old'] = array(
+        '#type' => 'item',
+        '#title' => t('Current Web Server'),
+        '#value' => l($environment->servers['http']['name'], 'node/' . $environment->servers['http']['nid']) . '<br />' . implode($old_server->ip_addresses, '<br />'),
+        '#weight' => '-1',
+      );
+
+      // Display something helpful
+      $form['new'] = array(
+        '#type' => 'item',
+        '#title' => t('New Web Server'),
+        '#value' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
+        '#weight' => '0',
+      );
+
+
+    }
+
+
+  }
 }
 
 
