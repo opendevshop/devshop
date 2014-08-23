@@ -43,30 +43,59 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     }
   }
   
-  // On Hosting Task: Create Project form, do our own submission.
-  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-create'){
-    drupal_set_title(t('Create new environment'));
-    $form['#submit'] = array('hosting_task_devshop_create_form_submit');
-  }
+  // Hosting Task Forms
+  if ($form_id == 'hosting_task_confirm_form') {
+    switch($form['task']['#value']) {
 
-   // On Hosting Task: Delete Project form, do our own submission.
-  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-delete') {
-    $node = node_load($form['nid']['#value']);
+      // Create Environment form.
+      case 'devshop-create':
+        drupal_set_title(t('Create new environment'));
+        $form['#submit'] = array('hosting_task_devshop_create_form_submit');
+        break;
 
-    if ($node->type == 'project') {
-      $form['#submit'] = array('hosting_task_devshop_delete_form_submit');
+      // Migrate Form: used for changing database server.
+      case 'migrate':
+
+        // To change the database server, we use the migrate form.
+        if ($_GET['db_server']) {
+          drupal_set_title(t('Migrate Database'));
+          $site_node = node_load($form['nid']['#value']);
+          $environment = $site_node->environment;
+          $form['help']['#value'] = t("Are you sure you want to change this site's database server?");
+
+          // Set DB Server values
+          $form['parameters']['new_db_server']['#type'] = 'value';
+          $db_server = $_GET['db_server'];
+          $db_server_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "server" && title = "%s"', $db_server));
+          $form['parameters']['new_db_server']['#default_value'] = $db_server_nid;
+
+          // Set URI value
+          $form['parameters']['new_uri']['#type'] = 'value';
+          $form['parameters']['new_uri']['#value'] = $form['parameters']['new_uri']['#default_value'];
+dsm($form);
+          // Display something helpful
+          $form['old'] = array(
+            '#type' => 'item',
+            '#title' => t('Current Database Server'),
+            '#value' => l($environment->servers['db']['name'], 'node/' . $environment->servers['db']['name']),
+            '#weight' => '-1',
+          );
+
+          // Display something helpful
+          $form['new'] = array(
+            '#type' => 'item',
+            '#title' => t('New Database Server'),
+            '#value' => l($db_server, "node/$db_server_nid"),
+            '#weight' => '0',
+          );
+
+          // @TODO: not sure how to hide the radios.  We'll just use CSS for now.
+          $form['parameters']['#prefix'] = '<div class="hidden">';
+          $form['parameters']['#suffix'] = '</div>';
+
+        }
+        break;
     }
-  }
-
-
-  // If not a part of a project, bail out.
-  if (empty($form['#node']->nid)){
-    return;
-  }
-
-  // Save values that need to be saved.
-  if ($form_id == 'platform_node_form' || $form_id == 'site_node_form'){
-    $node = $form['#node'];
   }
 }
 

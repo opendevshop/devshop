@@ -48,7 +48,20 @@ function devshop_projects_load($node) {
 
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
-  $query = db_query("SELECT e.*, s.status as site_status, p.status as platform_status FROM {hosting_devshop_project_environment} e  LEFT JOIN {hosting_site} s ON e.site = s.nid LEFT JOIN {hosting_platform} p ON e.platform = p.nid WHERE project_nid = %d ORDER BY name", $node->nid);
+  $query = db_query("
+    SELECT
+        e.*,
+        s.status as site_status,
+        p.status as platform_status,
+        http.title as web_server,
+        db.title as db_server
+      FROM {hosting_devshop_project_environment} e
+      LEFT JOIN {hosting_site} s ON e.site = s.nid
+      LEFT JOIN {hosting_platform} p ON e.platform = p.nid
+      LEFT JOIN {node} http ON p.web_server = http.nid
+      LEFT JOIN {node} db ON s.db_server = db.nid
+      WHERE project_nid = %d
+      ORDER BY name;   ", $node->nid);
   $environments = array();
   while ($environment = db_fetch_object($query)) {
 
@@ -70,17 +83,17 @@ function devshop_projects_load($node) {
     $release = hosting_package_instance_load($iid);
     $environment->version = $release->version;
 
-    // Get servers
-    $environment->servers['http'] = db_result(db_query("SELECT n.title FROM {hosting_platform} p
-     LEFT JOIN {node} n on n.nid = p.web_server
-       WHERE p.nid = %d
-     ", $environment->platform));
+    // Get extra server info
+    $environment->servers['http'] = array(
+      'nid' => $environment->settings->web_server,
+      'name' => $environment->web_server
+    );
 
     // HTTP Server
-    $environment->servers['db'] = db_result(db_query("SELECT n.title FROM {hosting_site} p
-     LEFT JOIN {node} n on n.nid = p.db_server
-       WHERE p.nid = %d
-     ", $environment->site));
+    $environment->servers['db'] = array(
+      'nid' => $environment->settings->db_server,
+      'name' => $environment->db_server
+    );
 
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
