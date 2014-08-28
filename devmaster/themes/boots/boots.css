@@ -13,3 +13,12 @@ body.admin-menu .navbar-static-top {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.table-controls {
+  border: 1px solid #ddd;
+  margin: 0px;
+}
+
+.btn-env-buttons {
+  min-width: 92px;
+}
