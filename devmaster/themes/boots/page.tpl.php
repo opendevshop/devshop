@@ -49,19 +49,22 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="main col-md-12">
+    <div class="main col-md-6">
       <?php if ($title): ?>
-      <div class="page-header">
-        <h1>
-          <?php print $title ?>
-          <?php if ($subtitle): ?>
-            <?php print $subtitle ?>
-          <?php endif; ?>
-        </h1>
-
-
-      </div>
+      <h1>
+        <?php print $title ?>
+        <?php if ($subtitle): ?>
+          <small><?php print $subtitle ?></small>
+        <?php endif; ?>
+      </h1>
       <?php endif; ?>
+    </div>
+    <div class="main col-md-6">
+      <?php print $header; ?>
+    </div>
+  </div>
+  <div class="row">
+    <div class="main col-md-12">
 
       <?php print $messages; ?>
 
