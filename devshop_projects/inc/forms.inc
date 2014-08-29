@@ -198,9 +198,14 @@ function devshop_projects_form(&$node) {
 
   $project = $node->project;
 
+  // Save last project data
+  $form['old'] = array(
+    '#value' => $node,
+    '#type' => 'value',
+  );
+
   // Project Settings
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
-  // @TODO: Add ['data'] so only items under 'data' get serialized.
   $form['project'] = array(
     '#tree' => TRUE,
   );
