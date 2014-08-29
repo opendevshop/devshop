@@ -50,63 +50,62 @@
 
 <nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="<?php print $node_url ?>"><?php print $title ?></a>
-    </div>
-    <div class="navbar-left navbar-collapse">
-      <ul class="nav navbar-nav">
+    <!-- First Links -->
+    <ul class="nav navbar-nav">
 
-        <!-- Live Domain -->
-        <?php if ($live_domain_url): ?>
-        <li><a href='<?php print $live_domain_url; ?>' target="_blank"><i class="fa fa-globe"></i> <?php print $live_domain_text; ?></a></li>
-        <?php endif; ?>
+      <!-- Dashboard -->
+        <li><a href='<?php print url("node/$node->nid"); ?>'><i class="fa fa-cubes"></i> <?php print t('Dashboard'); ?></a></li>
 
-        <!-- Branches -->
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print $branches_label; ?>">
-            <small>
-              <i class="fa fa-code-fork"></i> <?php print $branches_count; ?>
-            </small>
-            &nbsp;
-            <?php if ($tags_count): ?>
-            <small>
-              <i class="fa fa-tag"></i> <?php print $tags_count; ?>
-            </small>
-            <?php endif; ?>
+      <!-- Settings -->
+      <?php if (node_access('update', $node)): ?>
+        <li><a href='<?php print url("node/$node->nid/edit"); ?>'><i class="fa fa-gear"></i> <?php print t('Settings'); ?></a></li>
+      <?php endif; ?>
 
-            <span class="caret"></span></a>
-          <ul class="dropdown-menu ref-list" role="menu">
-            <?php foreach ($project->settings->git['branches'] as $branch): ?>
-              <li><a href='#'><i class="fa fa-code-fork"></i> <?php print $branch; ?></a></li>
-            <?php endforeach; ?>
-            <li class="divider"></li>
-            <?php foreach ($project->settings->git['tags'] as $tag): ?>
-              <li><a href='#'><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
+    </ul>
 
-        <!-- Install Profile -->
-        <li class="navbar-text">
-          <i class="fa fa-drupal"></i>  <?php print $project->install_profile ?>
-        </li>
-
-      </ul>
-    </div>
-
+    <!-- Git Info -->
     <div class="navbar-form navbar-right form-group">
       <div class="input-group">
 
+        <!-- Link to github or an icon -->
         <?php if (isset($github_url)): ?>
         <a class="input-group-addon" href="<?php print $github_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github-alt"></i></a>
         <?php else: ?>
           <div class="input-group-addon"><i class="fa fa-git"></i></div>
         <?php endif; ?>
 
+
+        <!-- Git URL -->
         <input type="text" class="form-control" size="30" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
 
+        <!-- Branch & Tag List -->
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="<?php print $branches_label; ?>">
+            <small>
+              <i class="fa fa-code-fork"></i> <?php print $branches_count; ?>
+            </small>
+            &nbsp;
+            <?php if ($tags_count): ?>
+              <small>
+                <i class="fa fa-tag"></i> <?php print $tags_count; ?>
+              </small>
+            <?php endif; ?>
 
-        <a href='<?php print url("node/$nid/edit"); ?>' type="button" class="btn btn-default navbar-btn input-group-addon"><i class="fa fa-gear"></i> <?php print t('Settings'); ?></a>
+            <span class="caret"></span></button>
+          <ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <?php foreach ($project->settings->git['branches'] as $branch):
+            $href = isset($github_url)? "$github_url/tree/$branch" :'#';
+            ?>
+              <li>
+                <a href='<?php print $href; ?>'><i class="fa fa-code-fork"></i> <?php print $branch; ?></a>
+              </li>
+            <?php endforeach; ?>
+            <li class="divider"></li>
+            <?php foreach ($project->settings->git['tags'] as $tag): ?>
+              <li><a href='#'><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
+            <?php endforeach; ?>
+          </ul>
+        </div><!-- /btn-group -->
       </div>
     </div>
 </div>
