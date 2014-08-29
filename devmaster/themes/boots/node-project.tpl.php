@@ -216,31 +216,12 @@
 
         </div>
       </div>
+        <!-- Logs, Errors, commits -->
         <ul class="list-group-item nav nav-pills nav-justified">
-
-        <!-- SYNC DATA -->
-        <li class="btn-group">
-
-        </li>
-
-        <!-- Logs, Actions & Settings -->
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            Logs <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu" role="menu">
             <li><a href="<?php print url("node/$environment->site/logs/commits"); ?>">Commits</a></li>
             <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
             <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
           </ul>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            Actions <span class="caret"></span>
-          </a>
-          <?php print theme('links', $node->environment_actions[$environment->name], array('class' => 'dropdown-menu')); ?>
-        </li>
-      </ul>
     </div>
   </div>
 <?php endforeach; ?>
