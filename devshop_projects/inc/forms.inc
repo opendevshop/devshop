@@ -331,50 +331,10 @@ function devshop_projects_form(&$node) {
 
 /**
  * Implementation of hook_validate().
+ *
+ * This function is no longer used since we have a ctools wizard for
+ * project creation.
  */
 function devshop_projects_validate($node, &$form) {
 
-  // It may look find of strange that we are doing a node load when the
-  // exact node we want is passed in here. But if this is an edit of an
-  // existing node, not all of the node fields (like project_status) have
-  // been initialized yet.
-
-  $node = node_load($node->nid);
-
-  // No validation if op == Delete
-  if ($node->op == t('Delete')) {
-    return;
-  }
-
-  // Full validation on when a creating a new node
-  $add = (arg(1) == 'add' ? TRUE : FALSE);
-
-  // Title (project code) must not have any spaces
-  if(strpos($node->title, ' ') != FALSE) {
-    form_set_error('title', t('Project code name must not contain any white spaces.'));
-  }
-  // The project code name must not be in the hosting_context table
-  if (!$node->retry){
-    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
-    if ($node->nid != $result->nid){
-
-      form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
-    }
-  }
-
-  // The project code name must be unique
-  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND nid <> %d", $node->title, $node->nid)))) {
-    form_set_error('title', t('Project code name is already is use by another project'));
-  }
-
-  // Make sure the path is unique.
-  $cp = hosting_path_normalize($node->code_path);
-  if (!$node->retry && $add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
-    form_set_error('code_path', t('Code path is already in use by another project'));
-  }
-
-  // Directory must not exist
-  if (!$node->retry && $add && file_exists($cp)) {
-    form_set_error('code_path', t('Code path directory already exists.'));
-  }
 }
