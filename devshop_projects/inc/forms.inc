@@ -342,4 +342,6 @@ function devshop_projects_form(&$node) {
  */
 function devshop_projects_validate($node, &$form) {
 
+  // @TODO: if there is no "live domain url" then unset the values for environment aliases
+
 }
