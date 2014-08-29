@@ -183,7 +183,7 @@
           </button>
           <ul class="dropdown-menu">
             <li>
-              <a href="<?php print url('node/' . $environment->site . '/edit', array('query'=> drupal_get_destination())); ?>">
+              <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>">
                 <i class="fa fa-gear" ?></i> Environment Settings
               </a>
             </li>
