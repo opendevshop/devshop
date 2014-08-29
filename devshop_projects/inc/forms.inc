@@ -141,12 +141,53 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         '#value' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
         '#weight' => '0',
       );
-
-
     }
-
-
   }
+
+  // Site "Edit" page.  This is our environment settings page..
+  if ($form_id == 'site_node_form') {
+
+    $node = $form['#node'];
+    $environment = $node->environment;
+
+    unset($form['info']);
+
+    $form['settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Environment Settings'),
+      '#weight' => -10,
+      '#tree' => true,
+    );
+
+    $form['settings']['note'] = array(
+      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),
+    );
+
+    $form['settings']['production_mode'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Production Mode'),
+      '#default_value' => $environment->settings->production_mode,
+      '#description' => t('Prevent devshop users from overwriting the database.'),
+    );
+
+    $form['settings']['pull_disabled'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Disable Pull on Commit'),
+      '#default_value' => $environment->settings->pull_disabled,
+      '#description' => t('Do not pull code to the server on commit & push.'),
+    );
+
+    // Add our own submit handler
+    $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
+  }
+}
+
+/**
+ * Submit handler for site/environment settings page.
+ */
+function devshop_projects_environment_settings_submit($form, &$form_state){
+  // @TODO: OSave the environment's data array.
+//  dsm($form_state);
 }
 
 
