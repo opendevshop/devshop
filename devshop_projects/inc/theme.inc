@@ -69,3 +69,20 @@ function theme_devshop_projects_create_settings_form($form) {
 
   return $output; 
 }
+
+/**
+ * Preprocess page
+ */
+function devshop_projects_preprocess_page(&$vars){
+
+  // On project node edit page
+  if (isset($vars['node']) && $vars['node']->type == 'project' && arg(2) == 'edit'){
+
+    $links = array();
+    $node = node_load($vars['node']->nid);
+    foreach ($node->project->environments as $environment){
+      $links[] = l($environment->name, 'node/' . $node->nid . '/edit/' . $environment->name);
+    }
+    $vars['tabs2'] = theme('item_list', $links, '', 'ul', array('class' => 'tabs secondary'));
+  }
+}
