@@ -271,62 +271,6 @@ function devshop_projects_form(&$node) {
     }
   }
 
-  // Environment settings
-  $form['project']['environments'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Environment Settings'),
-    '#theme' => 'devshop_projects_settings_form',
-    '#tree' => TRUE,
-  );
-
-  $live_alias_options = array('<none>');
-  $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project->environments as $environment_name => $environment) {
-
-    // Skip this if it is not enabled.
-    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
-      continue;
-    }
-
-      $form['project']['environments'][$environment_name] = array(
-        '#tree' => TRUE,
-        '#title' => $environment_name,
-        '#theme' => 'devshop_projects_settings_table',
-      );
-
-      // Save current environment settings to detect differences later.
-      $form['project']['environments'][$environment_name]['orig'] = array(
-        '#type' => 'value',
-        '#value' => $environment,
-      );
-
-      // Environment properties
-      $form['project']['environments'][$environment_name]['site'] = array(
-        '#type' => 'value',
-        '#value' => $environment->site,
-      );
-      $form['project']['environments'][$environment_name]['platform'] = array(
-        '#type' => 'value',
-        '#value' => $environment->platform,
-      );
-      $form['project']['environments'][$environment_name]['git_ref'] = array(
-        '#type' => 'value',
-        '#value' => $environment->git_ref,
-      );
-
-      $form['project']['environments'][$environment_name]['settings'] = array();
-
-      // Environment settings
-      foreach ($settings as $setting_id => $setting){
-        $form['project']['environments'][$environment_name]['settings'][$setting_id] = $setting;
-        $form['project']['environments'][$environment_name]['settings'][$setting_id]['#default_value'] = $environment->settings->{$setting_id};
-        $form['project']['environments'][$environment_name]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
-      }
-
-      $site = node_load($environment->site);
-      $live_alias_options[$environment_name] = $site->hosting_name;
-  }
-
   // Project Settings
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
