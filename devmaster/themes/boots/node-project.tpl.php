@@ -190,7 +190,7 @@
             <li class="divider"></li>
             <?php foreach ($node->environment_actions[$environment->name] as $link): ?>
               <li>
-                <a href="<?php print $link['href']; ?>"><?php print $link['title']; ?></a>
+                <a href="<?php print url($link['href']); ?>"><?php print $link['title']; ?></a>
               </li>
             <?php endforeach; ?>
           </ul>
