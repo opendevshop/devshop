@@ -201,15 +201,35 @@ function devshop_projects_update($node) {
 
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
+  dsm($node, 'node');
 
-  dsm($node,'project node on update');
+  $project_old = $node->old->project;
 
-  // If the live domain was removed...
-  // @TODO: Get "old node" values to detect removal
-  if (empty($project->settings->live['live_domain'])) {
+  // If the live domain was added...
+  if (!empty($project->settings->live['live_domain']) && empty($node->old->project->settings->live['live_domain'])) {
+
+    // If there is a live environment, save the live domain as an alias to the live site.
+
+    // If "environment aliases" is checked, save aliases to all environments
+//    drupal_set_message(t('You have added a live domain. Domain aliases have been saved to all environments.'));
+
 
   }
 
+  // If the live domain was removed.
+  elseif (empty($project->settings->live['live_domain']) && !empty($node->old->project->settings->live['live_domain'])) {
+
+    // Remove the old alias from all sites.
+
+    drupal_set_message(t('You have removed the live domain. Aliases have been removed.'));
+
+
+
+  }
+  elseif ($project->settings->live['live_domain'] != $node->old->project->settings->live['live_domain']) {
+    drupal_set_message(t('You have changed the live domain.'));
+
+  }
 
 //
 //    // Save the live domain to live environment
