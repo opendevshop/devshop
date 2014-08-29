@@ -125,7 +125,6 @@
   }
   ?>
 
-<!--    {% for id, environment in project.environments %}-->
   <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 
     <div class="list-group devshop-environment">
