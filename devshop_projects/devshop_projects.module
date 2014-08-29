@@ -165,7 +165,7 @@ function devshop_project_environment_settings_page($project_node, $environment){
 
   $site_node = node_load($project_node->project->environments[$environment]->site);
 
-  drupal_set_title($project_node);
+  drupal_set_title($project_node->title);
   return drupal_get_form($site_node->type . '_node_form', $site_node);
 }
 
