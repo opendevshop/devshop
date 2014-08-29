@@ -17,6 +17,10 @@ function boots_preprocess_page(&$vars){
     // Set subtitle
     if ($vars['node']->type == 'project'){
       $vars['subtitle'] = t('Project');
+
+      unset($vars['tabs']);
+
+      $vars['title'] = l($vars['title'], "node/" . $vars['node']->nid);
     }
   }
 }
