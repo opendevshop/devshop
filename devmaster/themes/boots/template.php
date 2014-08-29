@@ -14,8 +14,10 @@ function boots_preprocess_page(&$vars){
     $vars['scripts'] = $js;
 
 
-
-
+    // Set subtitle
+    if ($vars['node']->type == 'project'){
+      $vars['subtitle'] = t('Project');
+    }
   }
 }
 
