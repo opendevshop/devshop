@@ -150,27 +150,59 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     $node = $form['#node'];
     $environment = $node->environment;
 
+    // Remove aegir's helpful info panel.
     unset($form['info']);
 
-    $form['settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Environment Settings'),
-      '#weight' => -10,
+    // Help Text
+    $form['note'] = array(
+      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
+    );
+
+    $form['environment'] = array(
+      '#weight' => -9,
       '#tree' => true,
     );
 
-    $form['settings']['note'] = array(
-      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),
+    // Values
+    $form['environment']['project_nid'] = array(
+      '#value' => $environment->project_nid,
+      '#type' => 'value',
+    );
+    $form['environment']['project_name'] = array(
+      '#value' => $environment->project_name,
+      '#type' => 'value',
+    );
+    $form['environment']['name'] = array(
+      '#value' => $environment->name,
+      '#type' => 'value',
+    );
+    $form['environment']['git_ref'] = array(
+      '#value' => $environment->git_ref,
+      '#type' => 'value',
+    );
+    $form['environment']['site'] = array(
+      '#value' => $environment->site,
+      '#type' => 'value',
+    );
+    $form['environment']['platform'] = array(
+      '#value' => $environment->platform,
+      '#type' => 'value',
     );
 
-    $form['settings']['production_mode'] = array(
+    // User-configurable Settings
+    $form['environment']['settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Environment Settings'),
+      '#tree' => true,
+    );
+    $form['environment']['settings']['production_mode'] = array(
       '#type' => 'checkbox',
       '#title' => t('Production Mode'),
       '#default_value' => $environment->settings->production_mode,
       '#description' => t('Prevent devshop users from overwriting the database.'),
     );
 
-    $form['settings']['pull_disabled'] = array(
+    $form['environment']['settings']['pull_disabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Disable Pull on Commit'),
       '#default_value' => $environment->settings->pull_disabled,
@@ -186,8 +218,37 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
  * Submit handler for site/environment settings page.
  */
 function devshop_projects_environment_settings_submit($form, &$form_state){
-  // @TODO: OSave the environment's data array.
-//  dsm($form_state);
+
+  // Save the environment record.
+  // @TODO: Replace with an $environment->save();
+
+  // Ensure correct data types
+  $environment = (object) $form_state['values']['environment'];
+  $environment->settings = (array) $environment->settings;
+
+  // Prepare record for saving
+  $info = new stdClass();
+  $info->project_nid = $environment->project_nid;
+  $info->name = $environment->name;
+  $info->git_ref = $environment->git_ref;
+  $info->site = $environment->site;
+  $info->platform = $environment->platform;
+  $info->settings = serialize($environment->settings);
+
+  // Save environment record.
+  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
+
+    // Remove the "Site dev.drupal.devshop.local has been updated.
+    drupal_get_messages('status');
+
+    // Send our own message
+    drupal_set_message(t('Environment settings saved for %env in project %project', array('%env' => $environment->name, '%project' => $environment->project_name)));
+  }
+  else {
+    watchdog('error', 'Environment record not saved: ' . print_r($info, 1));
+  }
+
+  $form_state['redirect'] = 'node/' . $environment->project_nid;
 }
 
 
