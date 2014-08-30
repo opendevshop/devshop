@@ -42,7 +42,7 @@ function boots_preprocess_page(&$vars){
       $text .= ' <small>' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
 
       $items[] =  array(
-        'data' => l($text, 'node/' . $task->ref->nid, array(
+        'data' => l($text, 'node/' . $task->rid, array(
           'html' => TRUE,
         )),
         'class' => $item_class,
