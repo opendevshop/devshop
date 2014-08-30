@@ -2,6 +2,65 @@
 
 function boots_preprocess_page(&$vars){
 
+  // Tasks
+  $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
+  $vars['tasks_count'] = count($tasks);
+
+  $tasks = hosting_get_tasks('task_status');
+
+  if ($vars['tasks_count'] > 0) {
+    $vars['task_class'] = 'fa-spin active-task-gear';
+  }
+
+  if (!empty($tasks)) {
+    $items = array();
+
+    foreach ($tasks as $task) {
+      $item = l($task->title, 'node/' . $task->nid);
+
+      switch ($task->task_status){
+        case HOSTING_TASK_SUCCESS:
+          $icon = 'check text-success';
+          $item_class = 'bg-success';
+          break;
+
+        case HOSTING_TASK_ERROR;
+          $icon = 'exclamation-circle text-danger';
+          $item_class = 'bg-danger';
+          break;
+
+        case HOSTING_TASK_PROCESSING;
+        case HOSTING_TASK_QUEUED;
+          $icon = 'cog fa-spin text-info';
+          $item_class = 'bg-info';
+          break;
+
+
+      }
+      $text = '<i class="fa fa-' . $icon . '"></i> ';
+      $text .= $task->title;
+      $text .= ' <small>' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
+
+      $items[] =  array(
+        'data' => l($text, 'node/' . $task->ref->nid, array(
+          'html' => TRUE,
+        )),
+        'class' => $item_class,
+      );
+    }
+  }
+  else {
+    $items[] = t('No Active Tasks');
+  }
+  $items[] = array(
+    'class' => 'divider',
+  );
+
+  $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
+  $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
+
+  $vars['tasks'] = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu', 'role' => 'menu'));
+
   if ($vars['node']) {
 
     // Removing conflicting scripts.
@@ -12,7 +71,6 @@ function boots_preprocess_page(&$vars){
     unset($js['core']);
     unset($js['module']);
     $vars['scripts'] = $js;
-
 
     // Set subtitle
     if ($vars['node']->type == 'project'){
@@ -69,4 +127,51 @@ function boots_preprocess_node(&$vars){
 
 
   }
+}
+
+/**
+ * Override for item_list
+ */
+function boots_item_list($items = array(), $title = NULL, $type = 'ul', $attributes = NULL) {
+  $output = '';
+  if (!empty($title)) {
+    $output .= '<h3>' . $title . '</h3>';
+  }
+
+  if (!empty($items)) {
+    $output .= "<$type" . drupal_attributes($attributes) . '>';
+    $num_items = count($items);
+    foreach ($items as $i => $item) {
+      $attributes = array();
+      $children = array();
+      if (is_array($item)) {
+        foreach ($item as $key => $value) {
+          if ($key == 'data') {
+            $data = $value;
+          }
+          elseif ($key == 'children') {
+            $children = $value;
+          }
+          else {
+            $attributes[$key] = $value;
+          }
+        }
+      }
+      else {
+        $data = $item;
+      }
+      if (count($children) > 0) {
+        $data .= theme_item_list($children, NULL, $type, $attributes); // Render nested list
+      }
+      if ($i == 0) {
+        $attributes['class'] = empty($attributes['class']) ? 'first' : ($attributes['class'] . ' first');
+      }
+      if ($i == $num_items - 1) {
+        $attributes['class'] = empty($attributes['class']) ? 'last' : ($attributes['class'] . ' last');
+      }
+      $output .= '<li' . drupal_attributes($attributes) . '>' . $data . "</li>\n";
+    }
+    $output .= "</$type>";
+  }
+  return $output;
 }
