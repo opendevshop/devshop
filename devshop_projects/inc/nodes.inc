@@ -201,7 +201,6 @@ function devshop_projects_update($node) {
 
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
-  dsm($node, 'node');
 
   $project_old = $node->old->project;
 
