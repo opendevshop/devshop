@@ -54,7 +54,7 @@
     <ul class="nav navbar-nav">
 
       <!-- Dashboard -->
-        <li><a href='<?php print url("node/$node->nid"); ?>'><i class="fa fa-cubes"></i> <?php print t('Dashboard'); ?></a></li>
+        <li class="active"><a href='<?php print url("node/$node->nid"); ?>' ><i class="fa fa-cubes"></i> <?php print t('Dashboard'); ?></a></li>
 
       <!-- Settings -->
       <?php if (node_access('update', $node)): ?>
