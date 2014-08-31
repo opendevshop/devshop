@@ -80,29 +80,29 @@
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="<?php print $branches_label; ?>">
-            <small>
-              <i class="fa fa-code-fork"></i> <?php print $branches_count; ?>
-            </small>
-            &nbsp;
-            <?php if ($tags_count): ?>
+          <button type="button" class="btn btn-default dropdown-toggle <?php print $branches_class ?>" data-toggle="dropdown" title="<?php print $branches_label; ?>">
+
+            <?php if ($branches_show_label): ?>
+              <i class="fa fa-<?php print $branches_icon; ?>"></i>
+              <?php print $branches_label; ?>
+            <?php else: ?>
               <small>
-                <i class="fa fa-tag"></i> <?php print $tags_count; ?>
+                <i class="fa fa-code-fork"></i> <?php print $branches_count; ?>
               </small>
-            <?php endif; ?>
+
+              &nbsp;
+              <?php if ($tags_count): ?>
+                <small>
+                  <i class="fa fa-tag"></i> <?php print $tags_count; ?>
+                </small>
+              <?php endif; ?>
+
+            <?php endif; // branches_show label ?>
 
             <span class="caret"></span></button>
           <ul class="dropdown-menu dropdown-menu-right" role="menu">
-            <?php foreach ($project->settings->git['branches'] as $branch):
-            $href = isset($github_url)? "$github_url/tree/$branch" :'#';
-            ?>
-              <li>
-                <a href='<?php print $href; ?>'><i class="fa fa-code-fork"></i> <?php print $branch; ?></a>
-              </li>
-            <?php endforeach; ?>
-            <li class="divider"></li>
-            <?php foreach ($project->settings->git['tags'] as $tag): ?>
-              <li><a href='#'><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
+            <?php foreach ($branches_items as $item): ?>
+              <li><?php print $item; ?></li>
             <?php endforeach; ?>
           </ul>
         </div><!-- /btn-group -->
