@@ -58,7 +58,7 @@
 
       <!-- Settings -->
       <?php if (node_access('update', $node)): ?>
-        <li><a href='<?php print url("node/$node->nid/edit"); ?>'><i class="fa fa-gear"></i> <?php print t('Settings'); ?></a></li>
+        <li><a href='<?php print url("node/$node->nid/edit"); ?>'><i class="fa fa-sliders"></i> <?php print t('Settings'); ?></a></li>
       <?php endif; ?>
 
     </ul>
@@ -125,7 +125,7 @@
   }
   ?>
 
-  <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+  <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
     <div class="list-group devshop-environment">
       <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $environment_class ?>"  data-toggle="tooltip" data-placement="bottom" title="<?php print t('Visit !url', array('!url' => $environment->url)); ?>">
@@ -147,6 +147,9 @@
         <?php endif; ?>
 
         <strong><?php print $environment->name; ?></strong>
+        <small class="environment-git-ref">
+          <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i> <?php print $environment->git_ref; ?>
+        </small>
          <br />
         <small class="text-muted"><?php print $environment->url ?></small>
       </a>
@@ -154,9 +157,9 @@
 
         <!-- Git Select -->
         <div class="btn-group btn-git">
-          <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-<?php print  $environment->git_ref_type == 'branch'? 'code-fork': 'tag' ?>"></i>
+          <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
 
-            <?php print $environment->git_ref; ?>
+            <?php print t('Deploy'); ?>
 
             <span class="caret"></span>
           </button>
@@ -175,45 +178,38 @@
           </ul>
         </div>
 
-        <!-- Settings -->
-        <div class="btn-group btn-settings">
+        <!-- Tasks -->
+        <div class="btn-group btn-tasks">
           <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
-            <i class="fa fa-gear" ?></i>
+            <i class="fa fa-tasks" ></i>
+              <?php print t('Tasks'); ?>
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
-            <li>
-              <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>">
-                <i class="fa fa-gear" ?></i> Environment Settings
-              </a>
-            </li>
-            <li class="divider"></li>
             <?php foreach ($node->environment_actions[$environment->name] as $link): ?>
               <li>
                 <a href="<?php print url($link['href']); ?>"><?php print $link['title']; ?></a>
               </li>
             <?php endforeach; ?>
-          </ul>
-        </div>
+            <li class="divider"></li>
+            <li class="text-muted"><?php print t('Sync Data:'); ?></li>
 
-        <!-- Sync Stuff -->
-        <div class="btn-group btn-sync">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-exchange"></i>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu btn-git-ref" role="menu">
             <?php foreach ($project->environments as $env): ?>
               <?php if ($env->settings->production_mode || $env->name == $environment->name) continue; ?>
               <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
             <?php endforeach; ?>
 
-            <!-- Sync from Live -->
-            <?php if ($environment->name != $project->settings->live['live_environment'] ): ?>
-              <li class="divider"></li>
-              <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $project->settings->live['live_environment'] ?>&dest=<?php print $env->name ?>"><?php print t('Copy data from') . ' ' . $project->settings->live['live_environment'] ; ?></a></li>
-            <?php endif; ?>
-          </ul>
 
+
+          </ul>
+        </div>
+
+
+        <!-- Settings -->
+        <div class="btn-group btn-settings">
+          <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default">
+            <i class="fa fa-sliders" ?></i> Settings
+          </a>
         </div>
       </div>
         <!-- Logs, Errors, commits -->
