@@ -26,3 +26,16 @@ body.admin-menu .navbar-static-top {
 .active-task-gear {
   color: #ffffaa;
 }
+
+.environment-git-ref {
+  font-family: monospace;
+  margin: 0px 5px;
+  padding: 3px;
+  color: #777;
+  font-size: .7em;
+
+}
+.devshop-environment .active .environment-git-ref {
+  color: white;
+
+}
