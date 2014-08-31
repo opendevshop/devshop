@@ -115,11 +115,6 @@ function boots_preprocess_node(&$vars){
     $vars['branches_count'] = count($project->settings->git['branches']);
     $vars['tags_count'] = count($project->settings->git['tags']);
     $vars['branches_items'] = array();
-
-    if ($node->verify->task_status == HOSTING_TASK_ERROR){
-      drupal_set_message('BAD PROJECT!' . $vars['branches_count'], 'error');
-    }
-
     $vars['branches_icon'] = 'code-fork';
 
     if ($vars['branches_count'] == 0){
@@ -169,6 +164,40 @@ function boots_preprocess_node(&$vars){
         $href = isset($vars['github_url'])? $vars['github_url'] . '/tree/' . $branch: '#';
         $vars['branches_items'][] = "<a href='$href'><i class='fa fa-tag'></i> $branch </a>";
         $vars['git_refs'][] = $branch;
+      }
+    }
+
+
+    $vars['git_refs'] = array();
+
+    if (empty($node->project->settings->git['refs'])){
+      $vars['deploy_label'] = '';
+
+      if ($node->verify->task_status == HOSTING_TASK_ERROR) {
+        $vars['deploy_label'] = t('There was a problem refreshing branches and tags.');
+        $vars['git_refs'][] = l(t('View task log'), 'node/' . $node->verify->nid);
+        $vars['git_refs'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+      }
+      elseif ($node->verify->task_status == HOSTING_TASK_QUEUED || $node->verify->task_status == HOSTING_TASK_PROCESSING) {
+        $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
+      }
+    }
+    else {
+      $vars['deploy_label'] = t('Deploy a tag or branch');
+
+      foreach ($node->project->settings->git['refs'] as $ref => $type){
+        $href = url('node/' . $node->nid . '/project_devshop-deploy', array(
+          'query' =>array(
+            'git_ref' => $ref,
+            'environment' => '{ENV}',
+          )
+        ));
+        $icon = $type == 'tag'? 'tag': 'code-fork';
+
+        $vars['git_refs'][] = "<a href='$href'>
+          <i class='fa fa-$icon'></i>
+          $ref
+        </a>";
       }
     }
 

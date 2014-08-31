@@ -161,15 +161,17 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu btn-git-ref" role="menu">
-            <li><p class="text-muted">Deploy a tag or branch:</p></li>
+            <li><p class="text-muted"><?php print $deploy_label; ?></p></li>
+
+            <?php if (count($git_refs)): ?>
             <li class="divider"></li>
-            <?php foreach ($node->project->settings->git['branches'] as $branch): ?>
-              <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/?git_ref=<?php print $branch ?>&environment=<?php print $environment->name ?>"><?php print $branch; ?></a></li>
+
+            <?php foreach ($git_refs as $item): ?>
+              <li>
+                <?php print $item; ?>
+              </li>
             <?php endforeach; ?>
-            <li class="divider"></li>
-            <?php foreach ($node->project->settings->git['tags'] as $tag): ?>
-              <li><a href="/node/<?php print $node->nid ?>/project_devshop-deploy/?git_ref=<?php print $tag ?>&environment=<?php print $environment->name ?>"><i class="fa fa-tag"></i> <?php print $tag; ?></a></li>
-            <?php endforeach; ?>
+            <?php endif; ?>
           </ul>
         </div>
 
