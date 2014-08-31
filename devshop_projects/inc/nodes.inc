@@ -110,7 +110,8 @@ function devshop_projects_load($node) {
   $additions['project'] = $project;
 
   // Load verification status
-  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d ORDER BY delta DESC', $node->nid));
+  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d ORDER BY vid DESC', $node->nid));
+  $task->task_status = (int) $task->task_status;
   $additions['verify'] = $task;
 
   return $additions;
