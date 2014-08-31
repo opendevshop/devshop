@@ -203,16 +203,15 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       $output = '';
 
       $status = (int) $pull_data['last_pull_status'];
+      $node->pull_status = $status;
 
       // If access denied, provide link to settings page
       if ($status == DEVSHOP_PULL_STATUS_ACCESS_DENIED){
-        $output = '<strong>' . t('Access Denied') . '</strong><br />';
-        $output .= '<em>' . hosting_format_interval($pull_data['last_pull']) . '</em><br />';
-        $output .= t('Commit notification recieved from %ip, but the IP is not allowed to trigger tasks.  See !link.', array(
-          '!link' => l(t('DevShop Pull Settings'), 'admin/hosting/devshop_pull'),
+        $output .= t('Commit notification received %ago from %ip, but that IP is not allowed to trigger tasks.  See !link.', array(
+          '!link' => l(t('DevShop Pull Settings'), '/admin/hosting/devshop/pull'),
           '%ip' => $pull_data['last_pull_ip'],
+          '%ago' => hosting_format_interval($pull_data['last_pull'])
         ));
-
       }
       // If OK, show how much time has passed.
       elseif ($status == DEVSHOP_PULL_STATUS_OK) {
@@ -220,8 +219,8 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
       }
       // Otherwise, we assume no commit notification recieved.
       else {
-        $output .= t('No commit notifications received.  Setup your Git host to ping');
-        $output .= strtr(" <input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $url));
+        $output .= t('No commit notifications received.  Setup a webhook on your Git host to ping: ');
+        $output .= strtr(" <input type='textfield' value='!url' onclick='this.select();' size='63'/>", array('!url' => $url));
       }
       $node->content['info']['last_pull'] = array(
         '#type' => 'item',
@@ -229,6 +228,7 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
         '#weight' => 32,
         '#value' => $output,
       );
+      $node->pull_message = $output;
     }
   }
 }
