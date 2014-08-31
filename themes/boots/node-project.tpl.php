@@ -168,7 +168,7 @@
 
             <?php foreach ($git_refs as $item): ?>
               <li>
-                <?php print $item; ?>
+                <?php print str_replace('ENV', $environment->name, $item); ?>
               </li>
             <?php endforeach; ?>
             <?php endif; ?>

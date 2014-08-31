@@ -189,7 +189,7 @@ function boots_preprocess_node(&$vars){
         $href = url('node/' . $node->nid . '/project_devshop-deploy', array(
           'query' =>array(
             'git_ref' => $ref,
-            'environment' => '{ENV}',
+            'environment' => 'ENV',
           )
         ));
         $icon = $type == 'tag'? 'tag': 'code-fork';
