@@ -260,7 +260,9 @@
   </div>
 <?php endforeach; ?>
 
-  <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3 placeholder add-project-button">
-    <a href="/node/<?php print $node->nid; ?>/project_devshop-create" class="btn btn-lg btn-success"><i class="glyphicon glyphicon-plus"></i> <?php print t('Create New Environment'); ?></a>
+  <div class="placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
+    <a href="/node/<?php print $node->nid; ?>/project_devshop-create" class="btn btn-lg btn-success">
+      <i class="fa fa-plus-square"></i><br />
+      <?php print t('Create New Environment'); ?></a>
   </div>
 </div>

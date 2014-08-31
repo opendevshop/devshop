@@ -44,3 +44,24 @@ body.admin-menu .navbar-static-top {
   margin-top: -10px;
   padding: .5em;
 }
+
+.add-project-button .btn {
+  height: 9.5em;
+  padding: 3em 0em;
+  background: white;
+  color: #4cae4c;
+  width: 100%;
+}
+.add-project-button .btn:hover,
+.add-project-button .btn:active {
+  background: inherit;
+  color: inherit;
+
+  color: white;
+  background: #4cae4c;
+}
+
+.add-project-button .fa {
+  font-size: 2em;
+  margin-bottom: .25em;
+}
