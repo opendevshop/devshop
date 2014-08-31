@@ -61,6 +61,11 @@
         <li><a href='<?php print url("node/$node->nid/edit"); ?>'><i class="fa fa-sliders"></i> <?php print t('Settings'); ?></a></li>
       <?php endif; ?>
 
+      <!-- Logs-->
+      <?php if (user_access('access project logs')): ?>
+        <li><a href='<?php print url("node/$node->nid/logs"); ?>'><i class="fa fa-list-alt"></i> <?php print t('Logs'); ?></a></li>
+      <?php endif; ?>
+
     </ul>
 
     <ul class="nav navbar-nav navbar-right">
