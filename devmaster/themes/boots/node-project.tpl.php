@@ -63,6 +63,20 @@
 
     </ul>
 
+    <!-- Drush Aliases -->
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print t('Drush Aliases'); ?>">
+          <i class="fa fa-drupal"></i>
+          <span class="caret"></span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+          <textarea>
+            <?php print $drush_aliases; ?>
+          </textarea>
+        </div>
+    </ul>
+
     <!-- Git Info -->
     <div class="navbar-form navbar-right form-group">
       <div class="input-group">
@@ -105,7 +119,7 @@
               <li><?php print $item; ?></li>
             <?php endforeach; ?>
           </ul>
-        </div><!-- /btn-group -->
+        </div>
       </div>
     </div>
 </div>

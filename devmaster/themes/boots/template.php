@@ -206,6 +206,9 @@ function boots_preprocess_node(&$vars){
     $vars['db_servers'] = hosting_get_servers('db');
 
 
+    // Get Drush aliases
+    $vars['drush_aliases'] = 'COMING SOON';
+
   }
 }
 
