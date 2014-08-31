@@ -124,6 +124,30 @@
     </div>
 </div>
 </nav>
+
+<!-- STATUS/INFO -->
+<div id="project-info">
+  <ul class="list-inline">
+    <li>
+      <strong>Install Profile</strong>
+      <small><?php print $project->install_profile ?></small>
+    </li>
+    <li>
+      <strong>Last Commit</strong>
+      <small><?php print hosting_format_interval($project->settings->pull['last_pull']); ?></small>
+    </li>
+  </ul>
+</div>
+
+<?php if ($node->pull_status != DEVSHOP_PULL_STATUS_OK): ?>
+<!-- Git WebHook -->
+<div class="alert alert-warning" role="alert">
+  <i class="fa fa-code"></i>
+  <strong>Warning: </strong> <?php print $node->pull_message; ?>
+</div>
+<?php endif; ?>
+
+<!-- ENVIRONMENTS-->
 <div class="row placeholders">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
