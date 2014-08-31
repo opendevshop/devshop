@@ -100,7 +100,18 @@ function devshop_projects_load($node) {
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
   }
-  $project->environments = $environments;
+
+  // Put live environment at the top.
+  if ($project->settings->live['live_environment']) {
+    $live_env = $project->settings->live['live_environment'];
+    $project->environments = array();
+    $project->environments[$live_env] = $environments[$live_env];
+    unset($environments[$live_env]);
+    $project->environments += $environments;
+  }
+  else {
+    $project->environments = $environments;
+  }
 
   // Make project name and status available.
   $project->name = $node->title;
