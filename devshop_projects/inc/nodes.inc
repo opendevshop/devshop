@@ -109,6 +109,10 @@ function devshop_projects_load($node) {
   // Save project object be available at $node->project.
   $additions['project'] = $project;
 
+  // Load verification status
+  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d ORDER BY delta DESC', $node->nid));
+  $additions['verify'] = $task;
+
   return $additions;
 }
 
