@@ -164,7 +164,7 @@ function devshop_provision_pre_flight($platform_name = NULL){
  *
  * @see provisionConfig_drupal_settings
  */
-function drush_devshop_provision_provision_drupal_config($uri, $data, $config) {
+function devshop_provision_provision_drupal_config($uri, $data, $config) {
   return <<<PHP
 
  # Additional platform-wide configuration settings.
