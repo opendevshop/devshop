@@ -148,3 +148,30 @@ function devshop_provision_pre_flight($platform_name = NULL){
     return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, 'All provision-devshop-* commands must be run on a project alias.');
   }
 }
+
+/**
+ * Append PHP code to Drupal's settings.php file.
+ *
+ * To use templating, return an include statement for the template.
+ *
+ * @param $uri
+ *   URI for the site.
+ * @param $data
+ *   Associative array of data from provisionConfig_drupal_settings::data.
+ *
+ * @return
+ *   Lines to add to the site's settings.php file.
+ *
+ * @see provisionConfig_drupal_settings
+ */
+function drush_devshop_provision_provision_drupal_config($uri, $data, $config) {
+  return <<<PHP
+
+ # Additional platform-wide configuration settings.
+  if (file_exists('../sites/all/global.settings.php')) {
+    include_once('../sites/all/global.settings.php');
+  }
+
+PHP;
+;
+}
