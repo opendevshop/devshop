@@ -41,7 +41,9 @@ SCRIPT
   #   3. Upon reload, mysql and apache may stop for some reason. Vagrant ssh in and
   #      sudo service mysql restart and sudo service apache2 restart
   # @TODO: Figure out how to make this work without this workaround.
-  config.vm.synced_folder "repos/", "/repos", owner: "www-data", group: "www-data"
+  config.vm.synced_folder "repos/", "/repos",
+    owner: "www-data", group: "www-data",
+    mount_options: ['dmode=775', 'fmode=775']
 
   # Remove code and replace with links to our sources.
   $script = <<SCRIPT
