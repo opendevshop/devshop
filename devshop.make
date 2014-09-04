@@ -5,8 +5,8 @@ projects[drupal][type] = "core"
 
 ; DevShop modules
 projects[devshop_hosting][subdir] = devshop
-projects[hosting_solr][download][type] = git
-projects[hosting_solr][download][branch] = 6.x-1.x
+projects[devshop_hosting][download][type] = git
+projects[devshop_hosting][download][branch] = 6.x-1.x
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
