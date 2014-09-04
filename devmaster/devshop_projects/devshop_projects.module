@@ -113,7 +113,7 @@ function devshop_projects_menu() {
     'access arguments' => array('create project'),
     'description' => 'Start a new Drupal website project.',
     'file' => 'create.inc',
-    'file path' => drupal_get_path('module', 'devshop_projects') . '/create',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc/create',
   );
 
   // Ajax endpoint for reloads
@@ -121,8 +121,8 @@ function devshop_projects_menu() {
     'page callback' => 'devshop_projects_add_status',
     'access callback' => 'node_access',
     'access arguments' => array('create', 'project'),
-    'file' => 'create-wizard.inc',
-    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+    'file' => 'create.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc/create',
   );
 
   // hosting tasks ajax pages.
