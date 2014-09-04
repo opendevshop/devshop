@@ -216,11 +216,16 @@ function devshop_projects_update_9() {
   return $ret;
 }
 
+/**
+ * 6.x-1.9-beta4 -^
+ *
+ * 6.x-1.9-rc1 -v (FUTURE RELEASE)
+ */
 
 /**
- * Remove live_domain from hosting_devshop_project schema and disable devshop_live if needed.
+ * Remove live_domain from hosting_devshop_project schema.
  */
-function devshop_projects_update_10() {
+function devshop_projects_update_6000() {
   $ret = array();
   if (db_column_exists('hosting_devshop_project', 'live_domain')){
     $ret[] = db_drop_field($ret, 'hosting_devshop_project', 'live_domain');
@@ -231,7 +236,7 @@ function devshop_projects_update_10() {
 /**
  * Create new hosting_devshop_environment table.
  */
-function devshop_projects_update_11() {
+function devshop_projects_update_6001() {
   // Create only the new table
   // Clone of drupal_install_schema('devshop_projects');
   $module = 'devshop_projects';
@@ -247,9 +252,8 @@ function devshop_projects_update_11() {
 
 /**
  * Enable hosting_alias module to allow custom domains on sites.
- *
  */
-function devshop_projects_update_12() {
+function devshop_projects_update_6002() {
   module_enable(array('hosting_alias'));
   return array();
 }
@@ -257,7 +261,7 @@ function devshop_projects_update_12() {
 /**
  * Remove legacy `hosting_devshop_project_object` table.
  */
-function devshop_projects_update_13(){
+function devshop_projects_update_6003(){
   $ret = array();
   db_drop_table($ret, 'hosting_devshop_project_object');
   return $ret;
@@ -266,7 +270,7 @@ function devshop_projects_update_13(){
 /**
  * Change "data" column to "settings" column.
  */
-function devshop_projects_update_14(){
+function devshop_projects_update_6004(){
   $ret = array();
   db_change_column($ret, 'hosting_devshop_project', 'data', 'settings', 'text', array(
     'not null' => FALSE,
