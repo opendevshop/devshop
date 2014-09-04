@@ -112,8 +112,8 @@ function devshop_projects_menu() {
     'page arguments' => array(3),
     'access arguments' => array('create project'),
     'description' => 'Start a new Drupal website project.',
-    'file' => 'create-wizard.inc',
-    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+    'file' => 'create.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/create',
   );
 
   // Ajax endpoint for reloads
