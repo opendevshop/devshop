@@ -341,11 +341,11 @@ function devshop_projects_form(&$node) {
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
-    '#value' => $node->project->data->git['branches'],
+    '#value' => $project->settings->git['branches'],
   );
   $form['project']['settings']['git']['tags'] = array(
     '#type' => 'value',
-    '#value' => $node->project->data->git['tags'],
+    '#value' => $project->settings->git['tags'],
   );
 
   // Live Environment settings.
@@ -364,7 +364,7 @@ function devshop_projects_form(&$node) {
   );
 
   // Live Environment
-  $environments = array_keys($node->project->environments);
+  $environments = array_keys($project->environments);
   $environments_options = array_combine($environments, $environments);
   $environments_options[''] = t('No live environment');
 
@@ -373,7 +373,7 @@ function devshop_projects_form(&$node) {
     '#title' => t('Live environment'),
     '#description' => t('The environment for the live website.'),
     '#options' => $environments_options,
-    '#default_value' => $node->project->settings->live['live_environment'],
+    '#default_value' => $project->settings->live['live_environment'],
   );
 
   // Use www
@@ -381,7 +381,7 @@ function devshop_projects_form(&$node) {
     '#type' => 'checkbox',
     '#title' => t('Add www as a ServerAlias for Live Environment'),
     '#description' => t('Access the site at http://livedomain.com and http://www.livedomain.com'),
-    '#default_value' => $node->project->settings->live['live_domain_www'],
+    '#default_value' => $project->settings->live['live_domain_www'],
   );
 
   // Use aliases
@@ -389,7 +389,7 @@ function devshop_projects_form(&$node) {
     '#type' => 'checkbox',
     '#title' => t('Environment Subdomains'),
     '#description' => t('Create subdomains under the live domain for all environments.'),
-    '#default_value' => $node->project->settings->live['environment_aliases'],
+    '#default_value' => $project->settings->live['environment_aliases'],
   );
 
   return $form;
