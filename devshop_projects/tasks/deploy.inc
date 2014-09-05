@@ -34,6 +34,11 @@ function hosting_task_devshop_deploy_form($node) {
 
   // Detect pre-selected environments
   if ($_GET['environment']) {
+
+    // @TODO: Check that Git ref exists!
+    // @TODO: Display current branch!
+    // @TODO: Display timestamps for the last commit in the two Git Refs!
+
     $form['environment']['#type'] = 'value';
     $form['environment']['#value'] =  $_GET['environment'];
 

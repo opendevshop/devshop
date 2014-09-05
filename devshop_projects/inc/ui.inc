@@ -220,46 +220,61 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
     // Create branch/tag chooser
     $actions = array();
-    foreach ($project->settings->git['branches'] as $branch){
-      $actions[] = array(
-        'title' => '<i class="fa fa-code-fork"></i> ' . $branch,
-        'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $branch,
-        'query' => array(
-          'token' => drupal_get_token($user->uid),
-          'environment' => $environment->name,
-        ),
-        'html' => TRUE,
-        'attributes' => array(
-          'class' => 'hosting-button-dialog git-branch',
-          'title' => t('Deploy branch %ref to %environment environment', array('%ref' => $branch, '%environment' => $environment->name)),
-        ),
-      );
+    if (!empty($project->settings->git['branches'])) {
+      foreach ($project->settings->git['branches'] as $branch){
+        $actions[] = array(
+          'title' => '<i class="fa fa-code-fork"></i> ' . $branch,
+          'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $branch,
+          'query' => array(
+            'token' => drupal_get_token($user->uid),
+            'environment' => $environment->name,
+          ),
+          'html' => TRUE,
+          'attributes' => array(
+            'class' => 'hosting-button-dialog git-branch',
+            'title' => t('Deploy branch %ref to %environment environment', array('%ref' => $branch, '%environment' => $environment->name)),
+          ),
+        );
 
-      // Detect current ref
-      if ($environment->git_ref == $branch){
-        $current_ref = 'Branch';
+        // Detect current ref
+        if ($environment->git_ref == $branch){
+          $current_ref = 'Branch';
+        }
       }
     }
-    foreach ($project->settings->git['tags'] as $tag){
+    else {
       $actions[] = array(
-        'title' => '<i class="fa fa-tag"></i> ' . $tag,
-        'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $tag,
+        'title' => t('No branches found.  Click to Refresh.'),
+        'href' => 'node/' . $node->nid . '/project_verify',
         'query' => array(
           'token' => drupal_get_token($user->uid),
-          'environment' => $environment->name,
-        ),
-        'html' => TRUE,
-        'attributes' => array(
-          'class' => 'hosting-button-dialog git-tag',
-          'title' => t('Deploy tag %ref to %environment environment', array('ref' => $tag)),
         ),
       );
+    }
 
-      // Detect current ref
-      if ($environment->git_ref == $tag){
-        $current_ref = 'Tag';
+    if (!empty($project->settings->git['tags'])) {
+      foreach ($project->settings->git['tags'] as $tag){
+        $actions[] = array(
+          'title' => '<i class="fa fa-tag"></i> ' . $tag,
+          'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $tag,
+          'query' => array(
+            'token' => drupal_get_token($user->uid),
+            'environment' => $environment->name,
+          ),
+          'html' => TRUE,
+          'attributes' => array(
+            'class' => 'hosting-button-dialog git-tag',
+            'title' => t('Deploy tag %ref to %environment environment', array('ref' => $tag)),
+          ),
+        );
+
+        // Detect current ref
+        if ($environment->git_ref == $tag){
+          $current_ref = 'Tag';
+        }
       }
     }
+
     $row[] = theme('ctools_dropdown', $current_ref . ': ' . $environment->git_ref, $actions);
 
     if (module_exists('devshop_log')) {
@@ -333,22 +348,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
           ),
         );
       }
-    }
-    
-    // Grant access to Aegir pages
-    if (user_access('administer hosting')){
-      if ($environment->site){
-        $actions[] = array(
-          'title' =>  t('Site Settings'),
-          'href' => "node/$environment->site/edit",
-          'query' =>  drupal_get_destination(),
-        );
-      }
-      $actions[] = array(
-        'title' =>  t('Platform Settings'),
-        'href' => "node/$environment->platform/edit",
-        'query' =>  drupal_get_destination(),
-      );
     }
 
     $node->environment_actions[$environment->name] = $actions;
