@@ -203,7 +203,7 @@ function devshop_projects_update($node) {
   // Save Environment records.
   if (!empty($project->environments )) {
     // Delete existing environment records
-    db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
+    // db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
 
     // Save each environment
     foreach ($project->environments as $name => $environment){
@@ -226,8 +226,16 @@ function devshop_projects_update($node) {
       unset($environment->settings['platform']);
       $info->settings = serialize($environment->settings);
 
+      // Detect existing environment record
+      if (db_result(db_query('SELECT name FROM {hosting_devshop_project_environment} WHERE project_nid = %d AND name = "%s"', $node->nid, $environment->name))) {
+        $update = array('project_nid', 'name');
+      }
+      else {
+        $update = array();
+      }
+
       // Save environment record.
-      drupal_write_record('hosting_devshop_project_environment', $info);
+      drupal_write_record('hosting_devshop_project_environment', $info, $update);
 
       // Save aegir objects
       if (!empty($environment->site)){
