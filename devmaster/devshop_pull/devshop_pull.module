@@ -110,16 +110,8 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Run a "Pull Code" task when a commit notification is received. All environments set to a branch will have their code updated.'),
       '#default_value' => $node->project->settings->pull['pull_enabled'],
       '#attributes' => array(
-        'onclick' => 'if ($(this).attr("checked")) { $("#pull-url").show(); } else { $("#pull-url").hide(); }',
       ),
     );
-
-    if (!$node->project->settings->pull['pull_enabled']){
-      $display_none = 'style="display:none;"';
-    }
-    else {
-      $display_none = '';
-    }
 
     module_load_include('inc', 'devshop_pull');
     $form['project']['settings']['pull']['pull_url'] = array(
