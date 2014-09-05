@@ -69,7 +69,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
 
     // Environment properties
-    $form['project']['environments'][$name]['title'] = array(
+    $form['project']['environments'][$name]['name'] = array(
       '#type' => 'textfield',
       '#title' => t('Environment Name'),
       '#default_value' => $env_title,
@@ -128,8 +128,8 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   $values = &$form_state['values'];
 
 // Changes NEW environment data to $title
-  if ($values['project']['environments']['NEW']['title']) {
-    $new_env = $values['project']['environments']['NEW']['title'];
+  if ($values['project']['environments']['NEW']['name']) {
+    $new_env = $values['project']['environments']['NEW']['name'];
     $new_env_settings = $values['project']['environments']['NEW'];
     $values['project']['environments'][$new_env] = $new_env_settings;
 
@@ -147,9 +147,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 // Check environment titles
   foreach ($values['project']['environments'] as $env => $env_settings) {
 // Check for illegal chars
-    if ($env != 'NEW' && !empty($env_settings['title'])) {
-      if (!preg_match('!^[a-z0-9_]+$!', $env_settings['title'])) {
-        $form_item = 'environments][' . $env . '][title';
+    if ($env != 'NEW' && !empty($env_settings['name'])) {
+      if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
+        $form_item = 'environments][' . $env . '][name';
         form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
       }
     }
@@ -158,9 +158,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 // Reject if empty
   if (count($values['project']['environments']) < 1) {
     if ($form_state['clicked_button']['#name'] == 'add_environment') {
-      form_set_error('project][environments][NEW][title', t('Name this environment before you add another.'));
+      form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
     } else {
-      form_set_error('project][environments][NEW][title', t('You must add at least one environment.'));
+      form_set_error('project][environments][NEW][name', t('You must add at least one environment.'));
     }
   }
 }
