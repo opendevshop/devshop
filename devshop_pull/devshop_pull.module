@@ -75,20 +75,6 @@ function devshop_pull_hosting_queues() {
 }
 
 /**
- * Implements hook_devshop_project_settings()
- */
-function devshop_pull_devshop_project_settings(){
-  return array(
-    'pull_disabled' => array(
-      '#title' => t('Disable Pull on Commit'),
-      '#node_type' => 'platform',
-      '#type' => 'checkbox',
-      '#description' => t('Turn off automatic code updates for this environment.'),
-    ),
-  );
-}
-
-/**
  * Implements hook_form_alter().
  */
 function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
@@ -172,6 +158,17 @@ function devshop_pull_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('When Pull Requests are closed, delete the environment.'),
     );
 
+  }
+
+  // "Environment Settings" form.
+  if ($form_id == 'site_node_form' && isset($form['#node']->project)) {
+    $form['environment']['settings']['pull_disabled'] = array(
+      '#title' => t('Disable Pull on Commit'),
+      '#node_type' => 'platform',
+      '#type' => 'checkbox',
+      '#description' => t('Turn off automatic code updates for this environment.'),
+      '#default_value' => $form['#node']->environment->settings->pull_disabled,
+    );
   }
 }
 
