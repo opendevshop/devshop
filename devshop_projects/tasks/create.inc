@@ -92,6 +92,12 @@ function hosting_task_devshop_create_form($node) {
     '#type' => 'value',
     '#value' => $node->nid,
   );
+
+  // Load in environment settings
+  // Load project and it's form
+//  $site_form = array();
+  $form_state = array();
+  devshop_projects_form_alter($form, $form_state, 'site_node_form');
   return $form;
 }
 
@@ -136,8 +142,9 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $environment_name = $form_state['values']['parameters']['environment_name'];
   $branch = !empty($form_state['values']['parameters']['new_branch'])? $form_state['values']['parameters']['new_branch']: $form_state['values']['parameters']['branch'];
   $environment_source = $form_state['values']['parameters']['environment_source'];
+  $environment_settings = $form_state['values']['parameters']['project']['environment']['settings'];
 
-  hosting_create_environment($project, $environment_name, $branch, $environment_source);
+  hosting_create_environment($project, $environment_name, $branch, $environment_source, $environment_settings);
 
   // We are replacing hosting_confirm_form_submit here, so just do what it does,
   // minus the hosting task creation!
@@ -163,7 +170,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  * @param $fork_source
  *   If desired, the environment to fork off of. (Copy the database and create a new branch from)
  */
-function hosting_create_environment($project_node, $environment_name, $branch, $fork_source = NULL) {
+function hosting_create_environment($project_node, $environment_name, $branch, $fork_source = NULL, $settings = NULL) {
   global $user;
   $project = $project_node->project;
 
@@ -176,7 +183,7 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
   $platform->name = $user->name;
 
   // Set servers
-  // @TODO: Respect environment settings.
+  // @TODO: Use $settings to retrieve these.
   $servers = hosting_get_servers('http');
   $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));;
 
@@ -214,8 +221,9 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
     $environment = new stdClass();
     $environment->git_ref = $branch;
     $environment->platform = $platform->nid;
-    // @TODO: Implement default environment settings.
 
+    // Use settings passed in to this function.
+    $environment->settings = $settings;
   }
 
   $project->environments[$environment_name] = $environment;
