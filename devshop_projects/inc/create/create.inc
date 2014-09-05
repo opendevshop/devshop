@@ -20,16 +20,6 @@ function devshop_projects_create_wizard($step = NULL){
     'cache name' => NULL,
   );
 
-  // Skip step 2 if needed
-  $skip = variable_get('devshop_projects_skip_settings', TRUE);
-  if ($skip) {
-    $form_info['order'] = array(
-      'git_url' => t('Step 1: Source'),
-      'environments' => t('Step 2: Environments'),
-      'sites' => t('Step 3: Install Profile'),
-    );
-  }
-
   // Setup project
   $project = ctools_object_cache_get('project', NULL);
 
@@ -46,8 +36,11 @@ function devshop_projects_create_wizard($step = NULL){
     $project->step = $step;
     $project->git_url = '';
     $project->project_nid = NULL;
-    $project->title = '';
-    $project->environments = array('NEW' => array());
+    $project->name = '';
+
+    // These are empty until we have our project name
+    $project->code_path = '';
+    $project->base_url = '';
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
