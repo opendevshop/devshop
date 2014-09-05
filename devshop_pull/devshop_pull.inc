@@ -42,6 +42,8 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   }
   // All checks pass! Server is allowed to trigger tasks!
   else {
+    $status = DEVSHOP_PULL_STATUS_OK;
+
     // @TODO: Make this pluggable.
     // Check headers for GitHub Integration
     $headers = getallheaders();
@@ -55,7 +57,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Save the project node with last pull info.
   $pull_settings['last_pull'] = time();
-  $pull_settings['last_pull_status'] = DEVSHOP_PULL_STATUS_OK;
+  $pull_settings['last_pull_status'] = $status;
   $pull_settings['last_pull_ip'] = ip_address();
 
   $project_node->project->settings->pull = $pull_settings;

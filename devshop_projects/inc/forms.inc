@@ -100,19 +100,21 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   // Platform "Edit" page.
   if ($form_id == 'platform_node_form') {
 
-    $platform_node = node_load($form['nid']['#value']);
-    $environment = $platform_node->environment;
-    $form['help'] = array(
-      '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
-      '#weight' => -10,
-    );
-
     // Set to values
     $form['title']['#type'] = 'value';
     $form['makefile']['#type'] = 'value';
     unset($form['info']);
 
+    // If switching webservers...
     if ($_GET['web_server']){
+
+      $platform_node = node_load($form['nid']['#value']);
+      $environment = $platform_node->environment;
+      $form['help'] = array(
+        '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
+        '#weight' => -10,
+      );
+
       $web_server = $_GET['web_server'];
       $web_server_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "server" && title = "%s"', $web_server));
 
@@ -139,12 +141,114 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         '#value' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
         '#weight' => '0',
       );
-
-
     }
-
-
   }
+
+  // Site "Edit" page.  This is our environment settings page..
+  if ($form_id == 'site_node_form') {
+
+    $node = $form['#node'];
+    $environment = $node->environment;
+
+    // Remove aegir's helpful info panel.
+    unset($form['info']);
+
+    // Help Text
+    $form['note'] = array(
+      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
+    );
+
+    $form['environment'] = array(
+      '#weight' => -9,
+      '#tree' => true,
+    );
+
+    // Values
+    $form['environment']['project_nid'] = array(
+      '#value' => $environment->project_nid,
+      '#type' => 'value',
+    );
+    $form['environment']['project_name'] = array(
+      '#value' => $environment->project_name,
+      '#type' => 'value',
+    );
+    $form['environment']['name'] = array(
+      '#value' => $environment->name,
+      '#type' => 'value',
+    );
+    $form['environment']['git_ref'] = array(
+      '#value' => $environment->git_ref,
+      '#type' => 'value',
+    );
+    $form['environment']['site'] = array(
+      '#value' => $environment->site,
+      '#type' => 'value',
+    );
+    $form['environment']['platform'] = array(
+      '#value' => $environment->platform,
+      '#type' => 'value',
+    );
+
+    // User-configurable Settings
+    $form['environment']['settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Environment Settings'),
+      '#tree' => true,
+    );
+    $form['environment']['settings']['production_mode'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Production Mode'),
+      '#default_value' => $environment->settings->production_mode,
+      '#description' => t('Prevent devshop users from overwriting the database.'),
+    );
+
+    $form['environment']['settings']['pull_disabled'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Disable Pull on Commit'),
+      '#default_value' => $environment->settings->pull_disabled,
+      '#description' => t('Do not pull code to the server on commit & push.'),
+    );
+
+    // Add our own submit handler
+    $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
+  }
+}
+
+/**
+ * Submit handler for site/environment settings page.
+ */
+function devshop_projects_environment_settings_submit($form, &$form_state){
+
+  // Save the environment record.
+  // @TODO: Replace with an $environment->save();
+
+  // Ensure correct data types
+  $environment = (object) $form_state['values']['environment'];
+  $environment->settings = (array) $environment->settings;
+
+  // Prepare record for saving
+  $info = new stdClass();
+  $info->project_nid = $environment->project_nid;
+  $info->name = $environment->name;
+  $info->git_ref = $environment->git_ref;
+  $info->site = $environment->site;
+  $info->platform = $environment->platform;
+  $info->settings = serialize($environment->settings);
+
+  // Save environment record.
+  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
+
+    // Remove the "Site dev.drupal.devshop.local has been updated.
+    drupal_get_messages('status');
+
+    // Send our own message
+    drupal_set_message(t('Environment settings saved for %env in project %project', array('%env' => $environment->name, '%project' => $environment->project_name)));
+  }
+  else {
+    watchdog('error', 'Environment record not saved: ' . print_r($info, 1));
+  }
+
+  $form_state['redirect'] = 'node/' . $environment->project_nid;
 }
 
 
@@ -155,9 +259,14 @@ function devshop_projects_form(&$node) {
 
   $project = $node->project;
 
+  // Save last project data
+  $form['old'] = array(
+    '#value' => $node,
+    '#type' => 'value',
+  );
+
   // Project Settings
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
-  // @TODO: Add ['data'] so only items under 'data' get serialized.
   $form['project'] = array(
     '#tree' => TRUE,
   );
@@ -228,62 +337,6 @@ function devshop_projects_form(&$node) {
     }
   }
 
-  // Environment settings
-  $form['project']['environments'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Environment Settings'),
-    '#theme' => 'devshop_projects_settings_form',
-    '#tree' => TRUE,
-  );
-
-  $live_alias_options = array('<none>');
-  $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project->environments as $environment_name => $environment) {
-
-    // Skip this if it is not enabled.
-    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
-      continue;
-    }
-
-      $form['project']['environments'][$environment_name] = array(
-        '#tree' => TRUE,
-        '#title' => $environment_name,
-        '#theme' => 'devshop_projects_settings_table',
-      );
-
-      // Save current environment settings to detect differences later.
-      $form['project']['environments'][$environment_name]['orig'] = array(
-        '#type' => 'value',
-        '#value' => $environment,
-      );
-
-      // Environment properties
-      $form['project']['environments'][$environment_name]['site'] = array(
-        '#type' => 'value',
-        '#value' => $environment->site,
-      );
-      $form['project']['environments'][$environment_name]['platform'] = array(
-        '#type' => 'value',
-        '#value' => $environment->platform,
-      );
-      $form['project']['environments'][$environment_name]['git_ref'] = array(
-        '#type' => 'value',
-        '#value' => $environment->git_ref,
-      );
-
-      $form['project']['environments'][$environment_name]['settings'] = array();
-
-      // Environment settings
-      foreach ($settings as $setting_id => $setting){
-        $form['project']['environments'][$environment_name]['settings'][$setting_id] = $setting;
-        $form['project']['environments'][$environment_name]['settings'][$setting_id]['#default_value'] = $environment->settings->{$setting_id};
-        $form['project']['environments'][$environment_name]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
-      }
-
-      $site = node_load($environment->site);
-      $live_alias_options[$environment_name] = $site->hosting_name;
-  }
-
   // Project Settings
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
@@ -344,50 +397,12 @@ function devshop_projects_form(&$node) {
 
 /**
  * Implementation of hook_validate().
+ *
+ * This function is no longer used since we have a ctools wizard for
+ * project creation.
  */
 function devshop_projects_validate($node, &$form) {
 
-  // It may look find of strange that we are doing a node load when the
-  // exact node we want is passed in here. But if this is an edit of an
-  // existing node, not all of the node fields (like project_status) have
-  // been initialized yet.
+  // @TODO: if there is no "live domain url" then unset the values for environment aliases
 
-  $node = node_load($node->nid);
-
-  // No validation if op == Delete
-  if ($node->op == t('Delete')) {
-    return;
-  }
-
-  // Full validation on when a creating a new node
-  $add = (arg(1) == 'add' ? TRUE : FALSE);
-
-  // Title (project code) must not have any spaces
-  if(strpos($node->title, ' ') != FALSE) {
-    form_set_error('title', t('Project code name must not contain any white spaces.'));
-  }
-  // The project code name must not be in the hosting_context table
-  if (!$node->retry){
-    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
-    if ($node->nid != $result->nid){
-
-      form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
-    }
-  }
-
-  // The project code name must be unique
-  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND nid <> %d", $node->title, $node->nid)))) {
-    form_set_error('title', t('Project code name is already is use by another project'));
-  }
-
-  // Make sure the path is unique.
-  $cp = hosting_path_normalize($node->code_path);
-  if (!$node->retry && $add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
-    form_set_error('code_path', t('Code path is already in use by another project'));
-  }
-
-  // Directory must not exist
-  if (!$node->retry && $add && file_exists($cp)) {
-    form_set_error('code_path', t('Code path directory already exists.'));
-  }
 }
