@@ -50,9 +50,9 @@ function theme_devshop_projects_create_settings_form($form) {
   $header = array();
   foreach (element_children($form) as $env_name) {
     $row = array();
-    $header['title'] = 'Name';
+    $header['name'] = 'Name';
     $header['git_ref'] = t('Branch/Tag');
-    $row[] = drupal_render($form[$env_name]['title']);
+    $row[] = drupal_render($form[$env_name]['name']);
     $row[] = drupal_render($form[$env_name]['git_ref']);
 
     foreach(element_children($form[$env_name]['settings']) as $setting){
