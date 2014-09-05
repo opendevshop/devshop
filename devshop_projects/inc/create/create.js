@@ -1,4 +1,8 @@
-
+/**
+ * Start New Project:
+ *
+ * Step 1: Takes the entered name and creates a base url and code path from it.
+ */
 Drupal.behaviors.createStep1 = function() {
     $( "#edit-title" ).keyup(function(event) {
 
@@ -11,4 +15,27 @@ Drupal.behaviors.createStep1 = function() {
       $('#edit-base-url').val(base_url);
 
     });
+}
+
+/**
+ * Step 2: Settings
+ */
+Drupal.behaviors.createStep2 = function() {
+
+  // Hide unless
+  $('#edit-project-settings-live-live-domain-www-wrapper').hide();
+  $('#edit-project-settings-live-environment-aliases-wrapper').hide();
+
+
+  $('#edit-project-settings-live-live-domain').keyup(function(){
+    if ($(this).val()){
+      $('#edit-project-settings-live-live-domain-www-wrapper').show();
+      $('#edit-project-settings-live-environment-aliases-wrapper').show();
+    }
+    else {
+      $('#edit-project-settings-live-live-domain-www-wrapper').hide();
+      $('#edit-project-settings-live-environment-aliases-wrapper').hide();
+    }
+  });
+
 }
