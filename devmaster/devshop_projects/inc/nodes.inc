@@ -54,12 +54,14 @@ function devshop_projects_load($node) {
         s.status as site_status,
         p.status as platform_status,
         http.title as web_server,
-        db.title as db_server
+        db.title as db_server,
+        n.title as project_name
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
       LEFT JOIN {hosting_platform} p ON e.platform = p.nid
       LEFT JOIN {node} http ON p.web_server = http.nid
       LEFT JOIN {node} db ON s.db_server = db.nid
+      LEFT JOIN {node} n ON e.project_nid = n.nid
       WHERE project_nid = %d
       ORDER BY name;   ", $node->nid);
   $environments = array();
@@ -98,7 +100,18 @@ function devshop_projects_load($node) {
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
   }
-  $project->environments = $environments;
+
+  // Put live environment at the top.
+  if ($project->settings->live['live_environment']) {
+    $live_env = $project->settings->live['live_environment'];
+    $project->environments = array();
+    $project->environments[$live_env] = $environments[$live_env];
+    unset($environments[$live_env]);
+    $project->environments += $environments;
+  }
+  else {
+    $project->environments = $environments;
+  }
 
   // Make project name and status available.
   $project->name = $node->title;
@@ -106,6 +119,11 @@ function devshop_projects_load($node) {
 
   // Save project object be available at $node->project.
   $additions['project'] = $project;
+
+  // Load verification status
+  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d ORDER BY vid DESC', $node->nid));
+  $task->task_status = (int) $task->task_status;
+  $additions['verify'] = $task;
 
   return $additions;
 }
@@ -236,97 +254,6 @@ function devshop_projects_update($node) {
 
       // Save environment record.
       drupal_write_record('hosting_devshop_project_environment', $info, $update);
-
-      // Save aegir objects
-      if (!empty($environment->site)){
-        $site = node_load($environment->site);
-        $platform = node_load($environment->platform);
-
-        // Save to array so we can apply values for settings.
-        $objects = array();
-        $objects['site'] = &$site;
-        $objects['platform'] = &$platform;
-
-        $settings_info = module_invoke_all('devshop_project_settings', $node);
-
-        // Go through each setting, applying it to either the site or the platform.
-        foreach ($settings_info as $setting_name => $setting_element) {
-          $node_type = $settings_info[$setting_name]['#node_type'];
-
-          // Set new value only if it has changed.
-          $old_value = $environment->orig->settings->{$setting_name};
-          if (isset($old_value) && $objects[$node_type]->{$setting_name} != $old_value){
-            $objects[$node_type]->{$setting_name} = $environment->settings[$setting_name];
-            $objects[$node_type]->needs_save = TRUE;
-
-            // If the database server is changed, a "migrate" task is needed.
-            if ($setting_name == 'db_server') {
-              $args = array();
-              $args['target_platform'] = $site->platform;
-              $args['new_uri'] = $site->title;
-              $args['new_db_server'] = $environment->settings['db_server'];
-              hosting_add_task($site->nid, 'migrate', $args);
-            }
-          }
-        }
-
-        // If git_ref changed, flag needs_save for platform.
-        if ($environment->orig->git_ref != $environment->git_ref){
-          $platform->needs_save = TRUE;
-        }
-
-        // If there's a live domain
-        if (!empty($project->settings->live['live_domain'])) {
-
-          // Save the live domain
-          // @TODO: Remove the alias from the old "live" environment
-          if ($project->settings->live['live_environment'] == $environment->name) {
-            if (array_search($project->settings->live['live_domain'], $site->aliases) === FALSE) {
-              $site->aliases[] = $project->settings->live['live_domain'];
-              $site->needs_save = TRUE;
-            }
-
-            // Save www version
-            if ($project->settings->live['live_domain_www']) {
-              $site->aliases[] = 'www.' . $project->settings->live['live_domain'];
-              $site->needs_save = TRUE;
-            }
-            else {
-              $site->aliases = array_diff($site->aliases, array('www' . $project->settings->live['live_domain']));
-            }
-          }
-          // Save other environment aliases if environment_aliases is checked.
-          elseif ($project->settings->live['environment_aliases']) {
-          $domain = $environment->name . '.' . $project->settings->live['live_domain'];
-            if (array_search($domain, $site->aliases) === FALSE) {
-              $site->aliases[] = $domain;
-              $site->needs_save = TRUE;
-            }
-          }
-        }
-
-        // If environment_aliases is NOT checked, remove them from the nodes.
-        elseif (!$project->settings->live['environment_aliases'] && count($project->environments)){
-          foreach ($project->environments as $env => $environment){
-            $domain = $environment->name . '.' . $project->settings->live['live_domain'];
-            if (!empty($site->aliases)){
-              $i = array_search($domain, $site->aliases);
-              if ($i !== FALSE) {
-                unset($site->aliases[$i]);
-                $site->needs_save = TRUE;
-              }
-            }
-          }
-        }
-
-        // Save site and platform if needed.
-        if ($platform->needs_save) {
-          node_save($platform);
-        }
-        if ($site->needs_save) {
-          node_save($site);
-        }
-      }
     }
   }
 }
