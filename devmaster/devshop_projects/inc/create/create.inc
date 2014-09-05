@@ -13,6 +13,7 @@ function devshop_projects_create_wizard($step = NULL){
   ctools_include('wizard');
   ctools_include('object-cache');
   drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
+  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
   // Setup form info
   $form_info = devshop_projects_create_wizard_info();
