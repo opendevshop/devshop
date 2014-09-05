@@ -279,3 +279,12 @@ function devshop_projects_update_6004(){
   ));
   return $ret;
 }
+
+/**
+ * Turn on the new Boots theme.
+ * Uncomment once the theme is ready.
+function devshop_projects_update_600X() {
+  variable_set('theme_default','boots');
+  return array();
+}
+ */
