@@ -65,3 +65,27 @@ body.admin-menu .navbar-static-top {
   font-size: 2em;
   margin-bottom: .25em;
 }
+
+.navbar-project > .container-fluid {
+    padding-left: .5em;
+    padding-right: .5em;
+}
+.main-project-nav {
+  margin: .5em 0;
+}
+
+.navbar-project .nav-pills a.active {
+    background: white;
+    border: 1px solid whitesmoke;
+}
+
+
+.project-stuff {
+    position: absolute;
+    right: 0px;
+    top: -45px;
+}
+
+.project-stuff a {
+    color: #777;
+}

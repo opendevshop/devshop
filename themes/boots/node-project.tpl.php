@@ -48,50 +48,52 @@
  */
 ?>
 
+  <ul class="nav nav-pills project-stuff">
+    <!-- Drush Aliases -->
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print t('Drush Aliases'); ?>">
+        <i class="fa fa-drupal"></i>
+        <span class="caret"></span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <textarea>
+          <?php print $drush_aliases; ?>
+        </textarea>
+      </div>
+    </li>
+    <!-- TASKS -->
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print t('Tasks'); ?>">
+        <i class="fa fa-cog <?php print $spinner; ?>"></i> <?php print "0"; ?>
+        <span class="caret"></span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        TASKS (coming soon.)
+      </div>
+    </li>
+  </ul>
+
 <nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
     <!-- First Links -->
-    <ul class="nav navbar-nav">
+    <div class="nav navbar-text main-project-nav">
+      <ul class="nav nav-pills">
 
-      <!-- Dashboard -->
-        <li class="active"><a href='<?php print url("node/$node->nid"); ?>' ><i class="fa fa-cubes"></i> <?php print t('Dashboard'); ?></a></li>
+        <!-- Dashboard -->
+        <li><a href='<?php print url("node/$node->nid"); ?>' class="active"><i class="fa fa-cubes"></i> <?php print t('Dashboard'); ?></a></li>
 
-      <!-- Settings -->
-      <?php if (node_access('update', $node)): ?>
-        <li><a href='<?php print url("node/$node->nid/edit"); ?>'><i class="fa fa-sliders"></i> <?php print t('Settings'); ?></a></li>
-      <?php endif; ?>
+        <!-- Settings -->
+        <?php if (node_access('update', $node)): ?>
+          <li><a href='<?php print url("node/$node->nid/edit"); ?>'><i class="fa fa-sliders"></i> <?php print t('Settings'); ?></a></li>
+        <?php endif; ?>
 
-      <!-- Logs-->
-      <?php if (user_access('access project logs')): ?>
-        <li><a href='<?php print url("node/$node->nid/logs"); ?>'><i class="fa fa-list-alt"></i> <?php print t('Logs'); ?></a></li>
-      <?php endif; ?>
+        <!-- Logs-->
+        <?php if (user_access('access project logs')): ?>
+          <li><a href='<?php print url("node/$node->nid/logs"); ?>'><i class="fa fa-list-alt"></i> <?php print t('Logs'); ?></a></li>
+        <?php endif; ?>
 
-    </ul>
-
-    <ul class="nav navbar-nav navbar-right">
-      <!-- Drush Aliases -->
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print t('Drush Aliases'); ?>">
-          <i class="fa fa-drupal"></i>
-          <span class="caret"></span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right">
-          <textarea>
-            <?php print $drush_aliases; ?>
-          </textarea>
-        </div>
-      </li>
-      <!-- TASKS -->
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print t('Tasks'); ?>">
-          <i class="fa fa-cog <?php print $spinner; ?>"></i> <?php print "0"; ?>
-          <span class="caret"></span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right">
-          TASKS (coming soon.)
-        </div>
-      </li>
-    </ul>
+      </ul>
+    </div>
 
     <!-- Git Info -->
     <div class="navbar-form navbar-right form-group">
@@ -106,7 +108,7 @@
 
 
         <!-- Git URL -->
-        <input type="text" class="form-control" size="30" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
+        <input type="text" class="form-control" size="26" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">
@@ -138,6 +140,7 @@
         </div>
       </div>
     </div>
+  </div>
 </div>
 </nav>
 
