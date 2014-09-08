@@ -42,6 +42,7 @@ function devshop_projects_perm() {
     'create devshop-pull task',
     'create devshop-sync task',
     'create devshop-delete task',
+    'create devshop-deploy task',
     'create project',
     'view project',
     'edit project',
