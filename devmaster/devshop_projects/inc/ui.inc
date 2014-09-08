@@ -350,6 +350,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       }
     }
 
+    // Generate URLs for all actions.
+    foreach ($actions as &$action) {
+      $action['url'] = url($action['href'], $action);
+    }
+
     $node->environment_actions[$environment->name] = $actions;
     
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
