@@ -25,26 +25,24 @@
     <div class="navbar-header">
       <a class="navbar-brand" href="/"><b class="text-primary"><?php print $site_name ?></b></a>
     </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-left">
-        <?php foreach ($primary_links as $link):?>
-          <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
-        <?php endforeach; ?>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-gear <?php print $task_class; ?>"></i>
-              <?php print $tasks_count; ?>
-              <span class="caret"></span>
-            </a>
-            <?php print $tasks; ?>
-          </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <?php foreach ($secondary_links as $link):?>
-          <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
-        <?php endforeach; ?>
-      </ul>
-    </div>
+    <ul class="nav navbar-nav navbar-left">
+      <?php foreach ($primary_links as $link):?>
+        <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
+      <?php endforeach; ?>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-gear <?php print $task_class; ?>"></i>
+            <?php print $tasks_count; ?>
+            <span class="caret"></span>
+          </a>
+          <?php print $tasks; ?>
+        </li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <?php foreach ($secondary_links as $link):?>
+        <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
+      <?php endforeach; ?>
+    </ul>
   </div>
 </div>
 
