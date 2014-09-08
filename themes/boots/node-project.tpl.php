@@ -269,12 +269,12 @@
           </a>
         </div>
       </div>
-        <!-- Logs, Errors, commits -->
-        <ul class="list-group-item nav nav-pills nav-justified">
-            <li><a href="<?php print url("node/$environment->site/logs/commits"); ?>">Commits</a></li>
-            <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
-            <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
-          </ul>
+      <!-- Logs, Errors, commits -->
+      <ul class="list-group-item nav nav-pills nav-justified">
+        <li><a href="<?php print url("node/$environment->site/logs/commits"); ?>">Commits</a></li>
+        <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
+        <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
+      </ul>
     </div>
   </div>
 <?php endforeach; ?>
