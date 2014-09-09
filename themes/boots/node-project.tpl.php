@@ -293,10 +293,17 @@
       </div>
       <!-- Logs, Errors, commits -->
       <ul class="list-group-item nav nav-pills">
-        <li><a href="<?php print url("node/$environment->site/logs/commits"); ?>">Commits</a></li>
+        <li></li>
         <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
         <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
       </ul>
+
+      <!-- Last  -->
+      <div class="list-group-item">
+        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
+          <?php print $environment->git_current; ?>
+        </a>
+      </div>
 
       <!-- Tasks -->
       <div class="tasks-button">
