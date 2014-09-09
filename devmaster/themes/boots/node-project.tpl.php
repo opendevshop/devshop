@@ -145,7 +145,7 @@
 </nav>
 
 <!-- STATUS/INFO -->
-<div id="project-info">
+<div id="project-info" class="col-md-12">
   <ul class="list-inline">
     <li>
       <strong>Install Profile</strong>
@@ -153,21 +153,19 @@
     </li>
     <li>
       <strong>Last Commit</strong>
-      <small><?php print hosting_format_interval($project->settings->pull['last_pull']); ?></small>
+      <?php if ($node->pull_status != DEVSHOP_PULL_STATUS_OK): ?>
+        <small class="text-danger">
+          <?php print $node->pull_message; ?>
+        </small>
+      <?php else: ?>
+        <small><?php print hosting_format_interval($project->settings->pull['last_pull']); ?></small>
+      <?php endif; ?>
     </li>
   </ul>
 </div>
 
-<?php if ($node->pull_status != DEVSHOP_PULL_STATUS_OK): ?>
-<!-- Git WebHook -->
-<div class="alert alert-warning" role="alert">
-  <i class="fa fa-code"></i>
-  <strong>Warning: </strong> <?php print $node->pull_message; ?>
-</div>
-<?php endif; ?>
-
 <!-- ENVIRONMENTS-->
-<div class="row placeholders">
+<div class="row placeholders col-md-12">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
   <?php
@@ -234,7 +232,7 @@
           </div>
         </div>
       </a>
-      <div class="list-group-item btn-group btn-group-justified">
+      <div class="environment-tasks list-group-item btn-group btn-group-justified">
 
         <!-- Git Select -->
         <div class="btn-group btn-git">

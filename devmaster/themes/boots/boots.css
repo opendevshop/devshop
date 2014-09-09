@@ -53,8 +53,7 @@ body.admin-menu .navbar-static-top {
 }
 
 #project-info {
-  margin-top: -10px;
-  padding: .5em;
+  padding-bottom: .5em;
 }
 
 .add-project-button .btn {
@@ -158,3 +157,22 @@ body.admin-menu .navbar-static-top {
     color:  white !important;
     text-decoration: none;
 }
+
+.environment-tasks {
+    padding: 0px;
+}
+.environment-tasks a.btn {
+  margin: 0px 3px;
+  background: transparent !important;
+
+}
+
+.environment-tasks .btn,
+.environment-tasks.btn-group > .btn-group {
+    font-size: 1.0em;
+    color: #777;
+    border: none !important;
+    border-radius: 0px;
+    background: transparent !important;
+}
+
