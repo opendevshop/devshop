@@ -160,7 +160,6 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
  */
 function devshop_project_create_step_git_submit(&$from, &$form_state) {
   global $user;
-dsm($form_state);
 
   $project = &$form_state['project'];
 
