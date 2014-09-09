@@ -209,6 +209,29 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       '#description' => t('Do not pull code to the server on commit & push.'),
     );
 
+    $form['environment']['settings']['pull'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Automatic Code Pull'),
+      '#description' => t('When code is automatically pulled to this environment, do the following:'),
+    );
+    $form['environment']['settings']['pull']['pull_revert'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Revert all features.'),
+      '#default_value' => $environment->settings->pull['pull_revert'],
+      '#description' => t(''),
+    );
+
+    $form['environment']['settings']['pull']['pull_update'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run database updates.'),
+      '#default_value' => $environment->settings->pull['pull_update'],
+    );
+    $form['environment']['settings']['pull']['pull_cache'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Clear all caches.'),
+      '#default_value' => $environment->settings->pull['pull_cache'],
+    );
+
     // Add our own submit handler
     $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
