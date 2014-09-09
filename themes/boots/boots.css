@@ -4,7 +4,7 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.devshop-environment .list-group-item.active .text-muted {
+.devshop-environment.live-environment .text-muted {
   color: white;
 
 }
@@ -23,7 +23,7 @@ body.admin-menu .navbar-static-top {
   min-width: 92px;
 }
 
-.active-task-gear {
+#navbar-main .active-task-gear {
   color: #ffffaa;
 }
 
@@ -33,11 +33,23 @@ body.admin-menu .navbar-static-top {
   padding: 3px;
   color: #777;
   font-size: .7em;
-
 }
-.devshop-environment .active .environment-git-ref {
+
+.environment-meta-data {
+    font-family: monospace;
+    margin: 0px 5px;
+    padding: 3px;
+    color: #777;
+    font-size: .7em;
+}
+
+.devshop-environment.live-environment .environment-git-ref {
   color: white;
 
+}
+
+.devshop-environment.live-environment .environment-meta-data {
+    color: white;
 }
 
 #project-info {
@@ -96,4 +108,46 @@ body.admin-menu .navbar-static-top {
 
 .project-stuff a {
     color: #777;
+}
+
+.devshop-environment .tasks-button {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+}
+
+
+.devshop-environment .tasks-button > a {
+    padding: 19px 5px;
+    height: 4.4em;
+}
+.devshop-environment .tasks-button > a:hover,
+.devshop-environment .tasks-button.open > a {
+    background: #428bca;
+    color: white;
+    text-decoration: none;
+}
+
+.devshop-environment .progress {
+    height: 10px;
+    border-radius: 0px;
+    margin: 5px -15px -15px;
+}
+
+.devshop-environment .progress .progress-bar.inactive {
+    background: #d9edf7 !important;
+}
+
+.devshop-environment.active {
+    background-color: #fcf8e3 !important;
+    color: #8a6d3b;
+}
+.devshop-environment.active .tasks-button > a {
+    color: #8a6d3b !important;
+}
+.devshop-environment.active .tasks-button > a:hover,
+.devshop-environment.active .tasks-button.open > a {
+    background: #8a6d3b;
+    color:  white !important;
+    text-decoration: none;
 }

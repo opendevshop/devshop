@@ -173,23 +173,30 @@
   <?php
   if ($environment->site_status == HOSTING_SITE_DISABLED){
     $environment_class = 'disabled';
+    $list_item_class = 'disabled';
   }
   elseif ($environment->name == $project->settings->live['live_environment']){
-    $environment_class = ' active';
+    $environment_class = ' live-environment';
+    $list_item_class = 'info active';
   }
   else {
-    $environment_class = 'info';
+    $environment_class = '';
+    $list_item_class = 'info';
+  }
+
+  // Active?
+  if ($environment->active_tasks > 0) {
+    $environment_class .= ' active';
+    $list_item_class = 'warning';
   }
   ?>
 
   <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
-    <div class="list-group devshop-environment">
-      <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $environment_class ?>"  data-toggle="tooltip" data-placement="bottom" title="<?php print t('Visit !url', array('!url' => $environment->url)); ?>">
+    <div class="list-group devshop-environment <?php print $environment_class ?>">
+      <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $list_item_class ?>"  data-toggle="tooltip" data-placement="bottom" title="<?php print t('Visit !url', array('!url' => $environment->url)); ?>">
 
-        <small class="text-muted pull-right" title="Drupal version <?php print $environment->version; ?>">
-          <?php print $environment->version; ?>
-        </small>
+
 
         <?php if ($environment->settings->production_mode): ?>
         <i class="fa fa-lock pull-right" title="Production Mode"></i>
@@ -204,11 +211,26 @@
         <?php endif; ?>
 
         <strong><?php print $environment->name; ?></strong>
-        <small class="environment-git-ref">
+
+        <small class="environment-meta-data">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i> <?php print $environment->git_ref; ?>
         </small>
+
+        <?php if ($environment->version): ?>
+        <small class="environment-meta-data" title="Drupal version <?php print $environment->version; ?>">
+          <i class="fa fa-drupal"></i>
+          <?php print $environment->version; ?>
+        </small>
+        <?php endif; ?>
          <br />
         <small class="text-muted"><?php print $environment->url ?></small>
+
+
+        <div class="progress">
+          <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+            <span class="sr-only">45% Complete</span>
+          </div>
+        </div>
       </a>
       <div class="list-group-item btn-group btn-group-justified">
 
@@ -275,6 +297,11 @@
         <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
         <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
       </ul>
+
+      <!-- Tasks -->
+      <div class="tasks-button">
+        <?php print $environment->tasks_list; ?>
+      </div>
     </div>
   </div>
 <?php endforeach; ?>

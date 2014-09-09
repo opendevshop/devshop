@@ -20,7 +20,7 @@
 </head>
 <body class='<?php print $body_classes ?>'>
 
-<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+<div id="navbar-main" class="navbar navbar-inverse navbar-static-top" role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="/"><b class="text-primary"><?php print $site_name ?></b></a>
@@ -29,12 +29,7 @@
       <?php foreach ($primary_links as $link):?>
         <li class="<?php if ($_GET['q'] == $link['href']) print 'active'; ?>"><?php print l($link['title'], $link['href']); ?> </li>
       <?php endforeach; ?>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-gear <?php print $task_class; ?>"></i>
-            <?php print $tasks_count; ?>
-            <span class="caret"></span>
-          </a>
+        <li>
           <?php print $tasks; ?>
         </li>
     </ul>
