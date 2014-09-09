@@ -232,6 +232,28 @@
           </div>
         </div>
       </a>
+
+      <!-- Last  -->
+      <div class="list-group-item">
+        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
+          <?php print $environment->git_current; ?>
+        </a>
+      </div>
+
+      <!-- Logs, Errors, commits -->
+      <div class="environment-info list-group-item btn-group btn-group-justified">
+        <a href="<?php print url("node/$environment->site/logs/errors"); ?>"  class="btn btn-default">
+          <i class="fa fa-warning"></i> <?php print t('Errors'); ?>
+        </a>
+        <a href="<?php print url("node/$environment->site/files/platform"); ?>"  class="btn btn-default">
+          <i class="fa fa-file"></i> <?php print t('Files'); ?>
+        </a>
+        <!-- Settings -->
+        <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default">
+          <i class="fa fa-sliders" ?></i> Settings
+        </a>
+      </div>
+
       <div class="environment-tasks list-group-item btn-group btn-group-justified">
 
         <!-- Git Select -->
@@ -283,26 +305,19 @@
           </ul>
         </div>
 
-
-        <!-- Settings -->
-        <div class="btn-group btn-settings">
-          <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default">
-            <i class="fa fa-sliders" ?></i> Settings
-          </a>
+        <!-- Servers -->
+        <div class="btn-group btn-tasks">
+          <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
+            <i class="fa fa-cube" ></i>
+            <?php print t('Servers'); ?>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            COMING SOON
+          </ul>
         </div>
-      </div>
-      <!-- Logs, Errors, commits -->
-      <ul class="list-group-item nav nav-pills">
-        <li></li>
-        <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
-        <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
-      </ul>
 
-      <!-- Last  -->
-      <div class="list-group-item">
-        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
-          <?php print $environment->git_current; ?>
-        </a>
+
       </div>
 
       <!-- Tasks -->
