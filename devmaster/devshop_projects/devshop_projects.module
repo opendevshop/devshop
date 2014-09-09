@@ -441,10 +441,16 @@ function devshop_projects_url($name, $environment = NULL){
   }
   else {
     $pattern = variable_get('devshop_project_environment_url_pattern', "@environment.@project.@hostname");
-    return strtr($pattern, array(
+
+    $replacements = array(
       '@environment' => $environment,
       '@project' => $name,
       '@hostname' => $_SERVER['SERVER_NAME'],
-    ));
+    );
+
+    if (is_null($environment)){
+      $replacements['@environment.'] = '';
+    }
+    return strtr($pattern, $replacements);
   }
 }
