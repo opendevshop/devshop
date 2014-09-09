@@ -1,22 +1,39 @@
 <?php
 
-function boots_preprocess_page(&$vars){
+/**
+ * A simple function to output tasks exactly as we need them.
+ *
+ * Tired of drupal 6 theme system, going as fast as I can.
+ *
+ * @param $tasks
+ *
+ * Usage:
+ * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
+ * print boots_render_tasks($tasks);
+ */
+function boots_render_tasks($tasks = NULL, $class = ''){
 
-  // Tasks
-  $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
-  $vars['tasks_count'] = count($tasks);
+  if (is_null($tasks)){
+    // Tasks
+    $tasks = hosting_get_tasks(null, null, 100);
+  }
 
-  $tasks = hosting_get_tasks('task_status');
+  // Get active or queued
+  $tasks_count = 0;
+  foreach ($tasks as $task){
+    if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
+      $tasks_count++;
+    }
+  }
 
-  if ($vars['tasks_count'] > 0) {
-    $vars['task_class'] = 'fa-spin active-task-gear';
+  if ($tasks_count > 0) {
+    $task_class = 'fa-spin active-task-gear';
   }
 
   if (!empty($tasks)) {
     $items = array();
 
     foreach ($tasks as $task) {
-      $item = l($task->title, 'node/' . $task->nid);
 
       switch ($task->task_status){
         case HOSTING_TASK_SUCCESS:
@@ -59,7 +76,26 @@ function boots_preprocess_page(&$vars){
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
   $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
 
-  $vars['tasks'] = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu', 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu', 'role' => 'menu'));
+
+  return <<<HTML
+    <a href="#" class="dropdown-toggle $class" data-toggle="dropdown">
+      <i class="fa fa-gear $task_class"></i>
+        $tasks_count
+      <span class="caret"></span>
+    </a>
+    $tasks
+HTML;
+
+}
+
+/**
+ * Implements hook_preprocess_page()
+ * @param $vars
+ */
+function boots_preprocess_page(&$vars){
+
+  $vars['tasks'] = boots_render_tasks();
 
   if ($vars['node']) {
 
