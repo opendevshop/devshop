@@ -177,3 +177,7 @@ body.admin-menu .navbar-static-top {
     background: transparent !important;
 }
 
+.devshop-environment .last-commit {
+    display: block;
+    color: #777;
+}
