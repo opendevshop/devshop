@@ -367,7 +367,12 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     // Environment Tasks
-    $environment->tasks = hosting_get_tasks('rid', $environment->site);
+    if ($environment->site) {
+      $environment->tasks = hosting_get_tasks('rid', $environment->site);
+    }
+    else {
+      $environment->tasks = hosting_get_tasks('rid', $environment->platform);
+    }
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
 
