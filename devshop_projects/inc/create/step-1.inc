@@ -62,7 +62,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#type' => variable_get('devshop_projects_allow_custom_code_path', FALSE)? 'textfield': 'value',
     '#title' => t('Code path'),
     '#description' => t('The absolute path on the filesystem that will be used to create all platforms within this project. There must not be a file or directory at this path.'),
-    '#required' => TRUE,
+    '#required' => variable_get('devshop_projects_allow_custom_code_path', FALSE),
     '#size' => 40,
     '#default_value' => $project->code_path,
     '#maxlength' => 255,
@@ -76,7 +76,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#type' => variable_get('devshop_projects_allow_custom_base_url', FALSE)? 'textfield': 'value',
     '#title' => t('Base URL'),
     '#description' => t('All sites will be under a subdomain of this domain.'),
-    '#required' => TRUE,
+    '#required' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
     '#size' => 40,
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
@@ -146,12 +146,12 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
 
   // If custom code paths are not allowed, set the value here using the project name.
   if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)){
-    form_set_value($form['code_path'], $form_state['values']['code_path'] . '/' . $project_name, $form_state);
+    form_set_value($form['code_path'], variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project_name, $form_state);
   }
 
   // If custom base URLs are not allowed, set the value here using the project name.
-  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)){
-    form_set_value($form['base_url'], $form_state['values']['base_url'] . '/' . $project_name, $form_state);
+  if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)){
+    form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
   }
 }
 
@@ -160,6 +160,7 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
  */
 function devshop_project_create_step_git_submit(&$from, &$form_state) {
   global $user;
+dsm($form_state);
 
   $project = &$form_state['project'];
 
