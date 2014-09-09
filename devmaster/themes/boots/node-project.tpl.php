@@ -206,9 +206,6 @@
         <i class="fa fa-bolt pull-right" title="Live Environment"></i>
         <?php endif; ?>
 
-        <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-          <span class="pull-right text-muted">Disabled</span>
-        <?php endif; ?>
 
         <strong><?php print $environment->name; ?></strong>
 
@@ -222,6 +219,11 @@
           <?php print $environment->version; ?>
         </small>
         <?php endif; ?>
+
+        <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+          <span class="environment-meta-data">Disabled</span>
+        <?php endif; ?>
+
          <br />
         <small class="text-muted"><?php print $environment->url ?></small>
 
