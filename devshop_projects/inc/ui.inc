@@ -382,7 +382,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     // Progress Bar
-    if (rand(0,1) || $environment->active_tasks > 0){
+    if ($environment->active_tasks > 0){
       $environment->progress_classes = 'progress-bar-striped progress-bar-warning active';
       $environment->active_tasks++;
     } else {
