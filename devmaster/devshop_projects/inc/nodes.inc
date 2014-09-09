@@ -100,7 +100,7 @@ function devshop_projects_load($node) {
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
 //    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small><br /> <small >%s</small>' HEAD^...HEAD");
-    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small>' HEAD^...HEAD");
+    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small>' --max-count=1");
 
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
