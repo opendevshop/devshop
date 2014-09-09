@@ -365,6 +365,29 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     else {
       $rows[] = $row;
     }
+
+    // Environment Tasks
+    $environment->tasks = hosting_get_tasks('rid', $environment->site);
+    $environment->task_count = count($environment->tasks);
+    $environment->active_tasks = 0;
+
+    if (function_exists('boots_render_tasks')){
+      $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
+    }
+
+    foreach ($environment->tasks as &$task) {
+      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
+        $environment->active_tasks++;
+      }
+    }
+
+    // Progress Bar
+    if (rand(0,1) || $environment->active_tasks > 0){
+      $environment->progress_classes = 'progress-bar-striped progress-bar-warning active';
+      $environment->active_tasks++;
+    } else {
+      $environment->progress_classes = 'inactive';
+    }
   }
   $header = array();
   $table = theme('table', $header, $rows, array('class' => 'environments-table'));
