@@ -292,7 +292,7 @@
         </div>
       </div>
       <!-- Logs, Errors, commits -->
-      <ul class="list-group-item nav nav-pills nav-justified">
+      <ul class="list-group-item nav nav-pills">
         <li><a href="<?php print url("node/$environment->site/logs/commits"); ?>">Commits</a></li>
         <li><a href="<?php print url("node/$environment->site/logs/errors"); ?>">Errors</a></li>
         <li><a href="<?php print url("node/$environment->site/files/platform"); ?>">Files</a></li>
