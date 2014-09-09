@@ -159,23 +159,29 @@ body.admin-menu .navbar-static-top {
     text-decoration: none;
 }
 
-.environment-tasks {
+.devshop-environment > .list-group-item.btn-group {
     padding: 0px;
 }
-.environment-tasks a.btn {
-  margin: 0px 3px;
-  background: transparent !important;
-
+.devshop-environment > .list-group-item.btn-group a.btn {
+    margin: 0px 3px;
+    background: transparent !important;
 }
 
-.environment-tasks .btn,
-.environment-tasks.btn-group > .btn-group {
+.devshop-environment > .list-group-item.btn-group .btn,
+.devshop-environment > .list-group-item.btn-group > .btn-group {
     font-size: 1.0em;
     color: #777;
     border: none !important;
     border-radius: 0px;
     background: transparent !important;
 }
+
+
+.devshop-environment > .list-group-item.btn-group > a:hover {
+    color: #111 !important;
+    background-color: whitesmoke;
+}
+
 
 .devshop-environment .last-commit {
     display: block;
