@@ -4,11 +4,6 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.devshop-environment.live-environment .text-muted {
-  color: white;
-
-}
-
 .devshop-environment > a.site-link {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -43,13 +38,24 @@ body.admin-menu .navbar-static-top {
     font-size: .7em;
 }
 
+.devshop-environment.live-environment .text-muted {
+    color: white;
+}
+
 .devshop-environment.live-environment .environment-git-ref {
   color: white;
 
 }
-
 .devshop-environment.live-environment .environment-meta-data {
     color: white;
+}
+
+.devshop-environment.live-environment.active .environment-meta-data {
+    color: #8a6d3b;
+}
+
+.devshop-environment.live-environment.active .text-muted {
+    color: #8a6d3b;
 }
 
 #project-info {
