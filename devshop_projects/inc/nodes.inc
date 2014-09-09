@@ -102,6 +102,10 @@ function devshop_projects_load($node) {
 //    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small><br /> <small >%s</small>' HEAD^...HEAD");
     $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small>' --max-count=1");
 
+    if (empty($environment->git_current)){
+      $environment->git_current = t('Cloning in progress...');
+    }
+
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
   }
