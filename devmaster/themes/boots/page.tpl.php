@@ -56,11 +56,15 @@
     </div>
   </div>
   <div class="row">
+    <div class="pre-content col-md-12">
+      <?php print $pre_content ?>
+    </div>
+  </div>
+  <div class="row">
     <div class="main col-md-12">
 
       <?php print $messages; ?>
 
-      <?php print $pre_content ?>
 
       <?php if ($tabs) print $tabs ?>
       <?php if (isset($tabs2)) print $tabs2 ?>
