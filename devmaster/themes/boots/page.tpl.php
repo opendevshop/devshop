@@ -60,6 +60,8 @@
 
       <?php print $messages; ?>
 
+      <?php print $pre_content ?>
+
       <?php if ($tabs) print $tabs ?>
       <?php if (isset($tabs2)) print $tabs2 ?>
 
