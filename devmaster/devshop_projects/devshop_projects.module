@@ -158,6 +158,39 @@ function devshop_projects_menu() {
 
 
 /**
+ * Implements hook_block()
+ *
+ * Provides three blocks:
+ *  - DevShop Tasks
+ *  - Created by ThinkDrop
+ *  - Powered by Aegir
+ */
+function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['project_nav'] = array(
+        'info' => t('DevShop Project Nav'),
+        'weight' => '-10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'pre_content',
+      );
+      return $blocks;
+      break;
+
+    case 'view':
+      if ($delta == 'project_nav'){
+        $node = menu_get_object('node');
+        if ($node->type == 'project') {
+          $block['subject'] = '';
+          $block['content'] = theme('devshop_project_nav', $node);
+        }
+      }
+      return $block;
+  }
+}
+
+/**
  * Environment settings page menu callback.
  *
  * Pulls in the node edit form for the site of the project.
