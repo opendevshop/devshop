@@ -141,69 +141,6 @@ function boots_preprocess_node(&$vars){
       $vars['live_domain_url'] =  '';
     }
 
-    // @TODO: Detect other web URLs for other git hosts.
-    if (strpos($project->git_url, 'github.com') !== FALSE) {
-      $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
-      $vars['github_url'] = $url;
-    }
-
-    // Generate branches/tags lists
-    $vars['branches_count'] = count($project->settings->git['branches']);
-    $vars['tags_count'] = count($project->settings->git['tags']);
-    $vars['branches_items'] = array();
-    $vars['branches_icon'] = 'code-fork';
-
-    if ($vars['branches_count'] == 0){
-      // If branches are 0 and last verifying is queued...
-      if ($node->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status == HOSTING_TASK_QUEUED) {
-        $vars['branches_show_label'] = TRUE;
-        $vars['branches_label'] = t('Refreshing...');
-        $vars['branches_class'] = 'btn-warning';
-        $vars['branches_icon'] = 'gear fa-spin';
-        $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->verify->nid);
-
-      }
-      // If branches are 0 and last verifying failed...
-      elseif ($node->verify->task_status == HOSTING_TASK_ERROR) {
-        $vars['branches_show_label'] = TRUE;
-        $vars['branches_label'] = t('Error');
-        $vars['branches_class'] = 'btn-danger';
-        $vars['branches_items'][] = t('There was a problem refreshing branches and tags.');
-        $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->verify->nid);
-        $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-      }
-      // If branches are 0 and last verifying has completed... This should never happen, because the task would error out.
-      elseif ($node->verify->task_status == HOSTING_TASK_SUCCESS) {
-        $vars['branches_show_label'] = TRUE;
-        $vars['branches_label'] = t('No branches found!');
-        $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-      }
-    }
-    // If there are branches... build the branch items
-    else {
-      $vars['branches_show_label'] = FALSE;
-      $vars['branches_label'] = format_plural($vars['branches_count'], t('1 Branch'), t('!count Branches', array('!count' => $vars['branches_count'])));
-
-      foreach ($project->settings->git['branches'] as $branch){
-        $href = isset($vars['github_url'])? $vars['github_url'] . '/tree/' . $branch: '#';
-        $vars['branches_items'][] = "<a href='$href'><i class='fa fa-code-fork'></i> $branch </a>";
-      }
-    }
-
-    if ($vars['tags_count']){
-//      <li class="divider"></li>
-
-      $vars['branches_label'] .= ' &amp; ' . format_plural($vars['tags_count'], t('1 Tag'), t('!count Tags', array('!count' => $vars['tags_count'])));
-
-
-      foreach ($project->settings->git['tags'] as $branch){
-        $href = isset($vars['github_url'])? $vars['github_url'] . '/tree/' . $branch: '#';
-        $vars['branches_items'][] = "<a href='$href'><i class='fa fa-tag'></i> $branch </a>";
-        $vars['git_refs'][] = $branch;
-      }
-    }
-
-
     $vars['git_refs'] = array();
 
     if (empty($node->project->settings->git['refs'])){
