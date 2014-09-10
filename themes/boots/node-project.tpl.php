@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file node.tpl.php
  *
@@ -10,7 +9,8 @@
  * - $content: Node body or teaser depending on $teaser flag.
  * - $picture: The authors picture of the node output from
  *   theme_user_picture().
- * - $date: Formatted creation date (use $created to reformat with
+ * -
+ * $date: Formatted creation date (use $created to reformat with
  *   format_date()).
  * - $links: Themed links like "Read more", "Add new comment", etc. output
  *   from theme_links().
@@ -69,7 +69,7 @@
 </div>
 
 <!-- ENVIRONMENTS-->
-<div class="row placeholders col-md-12">
+<div class="row placeholders">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
   <?php
@@ -182,7 +182,54 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
-            COMING SOON
+            <li>
+              <i class="fa fa-database" ?></i> <strong><?php print t('Database'); ?></strong></database>
+              <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
+                <?php print $environment->servers['db']['name']; ; ?>
+              </a>
+            </li>
+
+            <?php if (count($db_servers) > 1): ?>
+              <li class="divider"></li>
+              <li>
+                <p class="bg-warning btn-text"><?php print t('Move database to:'); ?></p>
+              </li>
+              <?php foreach ($db_servers as $server):
+                if ($environment->db_server == $server) continue;
+                ?>
+                <li>
+                  <a href="/node/<?php print $environment->site ?>/site_migrate/?db_server=<?php print $server ?>">
+                    <i class="fa fa-database"></i>
+                    <?php print $server ?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            <?php endif; ?>
+
+            <li class="divider"></li>
+
+            <li>
+              <i class="fa fa-cube" ?></i> <strong><?php print t('Web'); ?></strong>
+              <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
+                <?php print $environment->servers['http']['name']; ; ?>
+              </a>
+            </li>
+            <?php if (count($web_servers) > 1): ?>
+              <li class="divider"></li>
+              <li>
+                <p class="bg-warning btn-text"><?php print t('Move database to:'); ?></p>
+              </li>
+              <?php foreach ($web_servers as $server):
+                if ($environment->http_server == $server) continue;
+                ?>
+                <li>
+                  <a href="/node/<?php print $environment->platform ?>/edit/?http_server=<?php print $server ?>">
+                    <i class="fa fa-cube"></i>
+                    <?php print $server ?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </ul>
         </div>
 
@@ -214,7 +261,6 @@
         </div>
 
       </div>
-
       <!-- Tasks -->
       <div class="tasks-button">
         <?php print $environment->tasks_list; ?>
