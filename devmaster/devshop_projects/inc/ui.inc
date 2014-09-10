@@ -85,8 +85,8 @@ HTML;
     if (empty($data['header'])){
       $data['header'] = $header;
     }
-  
-    $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));  
+
+    $output = theme('table', $data['header'], $data['rows'], array('class' => 'table'));
   }
   return $output;
 }
