@@ -76,7 +76,7 @@ function boots_render_tasks($tasks = NULL, $class = ''){
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
   $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu', 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu dropdown-menu-right', 'role' => 'menu'));
 
   return <<<HTML
     <a href="#" class="dropdown-toggle $class" data-toggle="dropdown">

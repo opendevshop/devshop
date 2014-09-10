@@ -193,3 +193,8 @@ body.admin-menu .navbar-static-top {
     display: block;
     color: #777;
 }
+
+.btn.settings {
+    margin: -5px 0px;
+    border:none;
+}
