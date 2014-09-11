@@ -95,7 +95,9 @@ HTML;
  */
 function boots_preprocess_page(&$vars){
 
-  $vars['tasks'] = boots_render_tasks();
+  if (user_access('access task logs')){
+    $vars['tasks'] = boots_render_tasks();
+  }
 
   if ($vars['node']) {
 
