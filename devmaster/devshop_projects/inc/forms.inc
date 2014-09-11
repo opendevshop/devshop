@@ -388,8 +388,13 @@ function devshop_projects_form(&$node) {
 
   // Live Environment
   $environments = array_keys($project->environments);
-  $environments_options = array_combine($environments, $environments);
-  $environments_options[''] = t('No live environment');
+  if (empty($environments)){
+    $environments_options= array();
+  }
+  else {
+    $environments_options = array_combine($environments, $environments);
+    $environments_options[''] = t('No live environment');
+  }
 
   $form['project']['settings']['live']['live_environment'] = array(
     '#type' => 'select',
