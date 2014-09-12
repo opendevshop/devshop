@@ -11,11 +11,11 @@
  * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
  * print boots_render_tasks($tasks);
  */
-function boots_render_tasks($tasks = NULL, $class = ''){
+function boots_render_tasks($tasks = NULL, $class = '', $direction = 'left'){
 
   if (is_null($tasks)){
     // Tasks
-    $tasks = hosting_get_tasks(null, null, 100);
+    $tasks = hosting_get_tasks(null, null, 10);
   }
 
   // Get active or queued
@@ -76,7 +76,7 @@ function boots_render_tasks($tasks = NULL, $class = ''){
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
   $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu dropdown-menu-right', 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu dropdown-menu-' . $direction, 'role' => 'menu'));
 
   return <<<HTML
     <a href="#" class="dropdown-toggle $class" data-toggle="dropdown">
