@@ -69,7 +69,7 @@
 </div>
 
 <!-- ENVIRONMENTS-->
-<div class="row placeholders">
+<div class="row placeholders col-md-12">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
   <?php
