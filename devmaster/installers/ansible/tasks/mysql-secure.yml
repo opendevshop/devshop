@@ -30,3 +30,7 @@
 
 - name: MySQL | Remove the MySQL test database
   action: mysql_db db=test state=absent
+
+- name: MySQL | Save a file to indicate mysql has been secured.
+  file: path=/var/mysql-secured state=touch
+
