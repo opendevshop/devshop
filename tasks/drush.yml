@@ -1,0 +1,23 @@
+---
+##
+# Install drush
+#
+- name: Drush | Install PHP PEAR
+  action: apt pkg=php-pear state=installed
+  tags: drush
+
+- name: Drush | Update PEAR
+  action: command pear upgrade-all
+  tags: drush
+
+- name: Drush | Setup PEAR channel
+  action: command pear channel-discover pear.drush.org creates=/usr/share/php/.channels/pear.drush.org.reg
+  tags: drush
+
+- name: Drush | Install drush
+  action: command pear install drush/drush-4.6.0 creates=/usr/bin/drush
+  tags: drush
+
+- name: Drush | Run drush once so it downloads it's dependencies
+  action: command drush
+  tags: drush
