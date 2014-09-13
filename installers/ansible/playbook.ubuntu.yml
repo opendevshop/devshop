@@ -81,8 +81,13 @@
         dest=/etc/mysql/my.cnf
         mode=0644
 
+    - name: Check for secured installation of MySQL
+      stat: path=/var/mysql-secured
+      register: mysqlsecured
+
     - name: Install MySQL Securely
       include: ./tasks/mysql-secure.yml
+      when: not mysqlsecured.stat.exists
 
     - name: Restart MySQL
       command: /etc/init.d/mysql restart
