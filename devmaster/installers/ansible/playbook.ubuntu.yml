@@ -1,0 +1,126 @@
+##
+# DevShop
+#
+
+---
+- hosts: default
+  user: root
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    - hostname: name={{ server_hostname }}
+
+    - name: Setup | Message of the day.
+      action: template src=templates/motd.j2 dest=/etc/update-motd.d/95-ansible mode=755
+
+    - name: Setup | Install required packages.
+      action: apt pkg={{ item }} state=installed update_cache=yes
+      when: ansible_os_family == "Debian"
+      with_items:
+        - apache2
+        - mysql-server
+        - php5
+        - php5-cli
+        - php5-curl
+        - php5-gd
+        - php5-mysql
+        - php-pear
+        - postfix
+        - sudo
+        - rsync
+        - git-core
+        - unzip
+        - vim
+        - git
+        - supervisor
+        - drush=4.5-6
+        - python-mysqldb
+
+    - name: Create Aegir user
+      user:
+        name=aegir
+        shell=/bin/bash
+        groups=www-data
+        append=yes
+        system=yes
+        home=/var/aegir
+        move_home=yes
+        generate_ssh_key=yes
+
+    - name: Setup SSH config for aegir user.
+      template:
+        src=templates/ssh-config.j2
+        dest=/var/aegir/.ssh/config
+        mode=0600
+        owner=aegir
+        group=aegir
+
+    - name: Enable mod rewrite
+      command: a2enmod rewrite
+
+    # TODO: Conditional on ubuntu verison. This folder changed in 14.04
+    - name: Symbolic link
+      file:
+        src=/var/aegir/config/apache.conf
+        dest=/etc/apache2/conf.d/aegir.conf
+        state=link
+        force=yes
+
+    - name: Write php.ini file.
+      template:
+        src=templates/php.ini.j2
+        dest=/etc/php5/apache2/php.ini
+        mode=0644
+
+    - name: Write my.cnf file.
+      template:
+        src=templates/my.cnf.j2
+        dest=/etc/mysql/my.cnf
+        mode=0644
+
+    - name: Install MySQL Securely
+      include: ./tasks/mysql-secure.yml
+
+    - name: Restart MySQL
+      command: /etc/init.d/mysql restart
+
+    - name: Add aegir to sudoers for restarting apache.
+      template:
+        src=templates/sudoers-d-aegir.j2
+        dest=/etc/sudoers.d/aegir
+        mode=0440
+
+    - name: Install drush tools.
+      command: drush dl {{ item }}  --destination=/var/aegir/.drush -y
+      sudo_user: aegir
+      with_items:
+        - provision-{{ provision_version }}
+        - provision_git-{{ provision_git_version }}
+        - devshop_provision-{{ devshop_provision_version }}
+        - provision_logs-{{ provision_logs_version }}
+        - provision_solr-{{ provision_solr_version }}
+        - provision_tasks_extra-{{ provision_tasks_extra_version }}
+
+    - name: Install Devmaster
+      command: drush devshop-install --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+
+    - name: Set up queue runner script
+      template:
+        src=templates/hosting-queue-runner.j2
+        dest=/usr/bin/hosting-queue-runner
+        mode=0700
+        owner=aegir
+        group=aegir
+
+    - name: Set up supervisor job
+      template:
+        src=templates/supervisor-hosting-queue-runner.conf.j2
+        dest=/etc/supervisor/conf.d/hosting_queue_runner.conf
+        mode=0644
+
+    - name: Restart supervisor
+      command: service supervisor stop
+      command: service supervisor start
