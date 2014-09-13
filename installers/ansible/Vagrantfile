@@ -19,6 +19,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
   ssh_public_key = IO.read("#{Dir.home}/.ssh/id_rsa.pub").strip!
 
+  config.vm.hostname = settings['server_hostname']
+
   # ONLY WORKS if ansible is setup on the HOST machine.
   # See https://github.com/mitchellh/vagrant/issues/2103
   config.vm.provision "ansible" do |ansible|
