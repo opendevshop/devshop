@@ -100,6 +100,7 @@
 
     - name: Install drush tools.
       command: drush dl {{ item }}  --destination=/var/aegir/.drush -y
+      sudo: yes
       sudo_user: aegir
       with_items:
         - provision-{{ provision_version }}
@@ -110,6 +111,8 @@
         - provision_tasks_extra-{{ provision_tasks_extra_version }}
 
     - name: Install Devmaster
+      sudo: yes
+      sudo_user: aegir
       command: drush devshop-install --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
 
     - name: Set up queue runner script
