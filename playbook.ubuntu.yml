@@ -69,7 +69,7 @@
         state=link
         force=yes
 
-    - name: Write php.ini file.
+    - name: Write php.ini file. @TODO: Restart apache if changed.
       template:
         src=templates/php.ini.j2
         dest=/etc/php5/apache2/php.ini
@@ -89,17 +89,20 @@
       include: ./tasks/mysql-secure.yml
       when: not mysqlsecured.stat.exists
 
-    - name: Restart MySQL
-      command: /etc/init.d/mysql restart
-
     - name: Add aegir to sudoers for restarting apache.
       template:
         src=templates/sudoers-d-aegir.j2
         dest=/etc/sudoers.d/aegir
         mode=0440
 
+    - name: Create /var/aegir/.drush
+      file:
+        path=/var/aegir/.drush
+        owner=aegir group=aegir mode=0744
+        state=directory
+
     - name: Install drush tools.
-      command: drush dl {{ item }}  --destination=/var/aegir/.drush -y
+      command: drush dl {{ item }}  --destination=/var/aegir/.drush -y --package-handler=git_drupalorg
       sudo: yes
       sudo_user: aegir
       with_items:
@@ -109,11 +112,16 @@
         - provision_logs-{{ provision_logs_version }}
         - provision_solr-{{ provision_solr_version }}
         - provision_tasks_extra-{{ provision_tasks_extra_version }}
+        - drush_make-6.x-2.3
+      args:
+        creates: /var/aegir/.drush/drush_make/drush_make.drush.inc
 
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
       command: drush devshop-install --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+      args:
+        creates: /var/aegir/devshop-{{ devshop_version }}/index.php
 
     - name: Set up queue runner script
       template:
@@ -123,12 +131,15 @@
         owner=aegir
         group=aegir
 
-    - name: Set up supervisor job
+    - name: Set up supervisor config file.
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
-        dest=/etc/supervisor/conf.d/hosting_queue_runner.conf
+        dest=/var/aegir/config/supervisord.conf
         mode=0644
 
-    - name: Restart supervisor
-      command: service supervisor stop
-      command: service supervisor start
+    - name: Set up supervisor job
+      supervisorctl:
+        name=hosting-queued
+        state=restarted
+        config=/var/aegir/config/supervisord.conf
+
