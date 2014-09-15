@@ -69,7 +69,7 @@
         state=link
         force=yes
 
-    - name: Write php.ini file. @TODO: Restart apache if changed.
+    - name: Write php.ini file. # @TODO: Restart apache if changed.
       template:
         src=templates/php.ini.j2
         dest=/etc/php5/apache2/php.ini
@@ -134,12 +134,11 @@
     - name: Set up supervisor config file.
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
-        dest=/var/aegir/config/supervisord.conf
+        dest=/etc/supervisor/conf.d/hosting-queue-runner.conf
         mode=0644
+      notify:
+        - restart supervisor
 
-    - name: Set up supervisor job
-      supervisorctl:
-        name=hosting-queued
-        state=restarted
-        config=/var/aegir/config/supervisord.conf
-
+  handlers:
+    - name: restart supervisor
+      service: name=supervisor state=restarted
