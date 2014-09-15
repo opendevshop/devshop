@@ -34,3 +34,5 @@
 - name: MySQL | Save a file to indicate mysql has been secured.
   file: path=/var/mysql-secured state=touch
 
+- name: MySQL | Restart
+  command: /etc/init.d/mysql restart
