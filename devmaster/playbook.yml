@@ -56,12 +56,14 @@
       with_items:
 #      httpd php php-mysql php-cli php-gd php-process sudo rsync git postfix
         - httpd
+        - mysql
         - php
         - php-mysql
         - php-cli
         - php-gd
         - php-process
         - php-pear
+        - php-xml
         - postfix
         - sudo
         - rsync
@@ -70,6 +72,7 @@
         - vim
         - git
         - cronie
+        - MySQL-python
 
     - name: Setup | Install supervisor
       easy_install: name=supervisor
@@ -98,29 +101,36 @@
         owner=aegir
         group=aegir
 
+    # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
+      when: ansible_os_family == "Debian"
 
     # TODO: Conditional on ubuntu verison. This folder changed in 14.04
     - name: Symbolic link
-      when: ansible_os_family == "Debian" and {{ ansible_distribution_version | version_compare('12.04', '<=') }}
       file:
         src=/var/aegir/config/apache.conf
-        dest=/etc/apache2/conf.d/aegir.conf
+        dest={{ apache_confd_path }}
         state=link
         force=yes
 
     - name: Write php.ini file. # @TODO: Restart apache if changed.
       template:
         src=templates/php.ini.j2
-        dest=/etc/php5/apache2/php.ini
+        dest={{ php_ini_path }}
         mode=0644
 
     - name: Write my.cnf file.
       template:
         src=templates/my.cnf.j2
-        dest=/etc/mysql/my.cnf
+        dest={{ mysql_cnf_path }}
         mode=0644
+
+    - name: Create mysql/conf.d folder in RedHat
+      when: ansible_os_family == "RedHat"
+      file:
+        path=/etc/mysql/conf.d/
+        state=directory
 
     - name: Check for secured installation of MySQL
       stat: path=/var/mysql-secured
