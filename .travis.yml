@@ -1,0 +1,12 @@
+---
+language: python
+python: "2.7"
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq python-apt python-pycurl
+install:
+  - pip install ansible
+script:
+  - echo localhost > inventory
+  - ansible-playbook -i inventory --syntax-check playbook.yml
+  - ansible-playbook -i inventory playbook.yml
