@@ -4,22 +4,14 @@
 #
 # This is only used for RedHat family.  Debian uses the apt package.
 
-- name: Drush | Update PEAR
-  action: command pear upgrade-all
-  tags: drush
-
 - name: Drush | Setup PEAR channel
   action: command pear channel-discover pear.drush.org creates=/usr/share/pear/.channels/pear.drush.org.reg
-  tags: drush
 
 - name: Drush | Install Console_Table
   action: command pear install Console_Table creates=/usr/share/tests/pear/Console_Table
-  tags: drush
 
 - name: Drush | Install drush
   action: command pear install drush/drush-4.6.0 creates=/usr/bin/drush
-  tags: drush
 
 - name: Drush | Run drush once so it downloads it's dependencies
-  action: command drush
-  tags: drush
+  action: command drush --version
