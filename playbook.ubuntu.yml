@@ -13,9 +13,18 @@
 
     - hostname: name={{ server_hostname }}
 
+    # DEBIAN
     - name: Setup | Message of the day.
       action: template src=templates/motd.j2 dest=/etc/update-motd.d/95-ansible mode=755
+      when: ansible_os_family == "Debian"
 
+    # REDHAT
+    - name: Setup | Message of the day.
+      action: template src=templates/motd.j2 dest=/etc/motd mode=755
+      when: ansible_os_family == "RedHat"
+
+
+    # DEBIAN
     - name: Setup | Install required packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian"
@@ -38,6 +47,36 @@
         - supervisor
         - drush=4.5-6
         - python-mysqldb
+
+    # REDHAT
+    - name: Setup | Install required packages.
+      action: yum name={{ item }} state=present
+      when: ansible_os_family == "RedHat"
+      with_items:
+#      httpd php php-mysql php-cli php-gd php-process sudo rsync git postfix
+        - httpd
+        - php
+        - php-mysql
+        - php-cli
+        - php-gd
+        - php-process
+        - php-pear
+        - postfix
+        - sudo
+        - rsync
+        - git-core
+        - unzip
+        - vim
+        - git
+        - cronie
+
+    - name: Setup | Install supervisor
+      easy_install: name=supervisor
+
+#    # REDHAT
+#    - name: Setup | Install Drush
+#      action: pear install drush/drush-4.5-6
+#      when: ansible_os_family == "RedHat"
 
     - name: Create Aegir user
       user:
@@ -63,6 +102,7 @@
 
     # TODO: Conditional on ubuntu verison. This folder changed in 14.04
     - name: Symbolic link
+      when: ansible_os_family == "Debian" and {{ ansible_distribution_version | version_compare('12.04', '<=') }}
       file:
         src=/var/aegir/config/apache.conf
         dest=/etc/apache2/conf.d/aegir.conf
