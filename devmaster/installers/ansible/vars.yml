@@ -3,7 +3,7 @@ server_hostname: devshop.ansible
 mysql_root_password: RandomizeThisToBeSecure
 php_memory_limit: 256M
 
-ansible_playbook: playbook.ubuntu.yml
+ansible_playbook: playbook.yml
 
 devshop_version:            6.x-1.x
 devshop_provision_version:  6.x-1.x
