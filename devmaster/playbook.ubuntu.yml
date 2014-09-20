@@ -73,10 +73,10 @@
     - name: Setup | Install supervisor
       easy_install: name=supervisor
 
-#    # REDHAT
-#    - name: Setup | Install Drush
-#      action: pear install drush/drush-4.5-6
-#      when: ansible_os_family == "RedHat"
+    # REDHAT
+    - name: Setup | Install Drush
+      include: tasks/drush.yml
+      when: ansible_os_family == "RedHat"
 
     - name: Create Aegir user
       user:
