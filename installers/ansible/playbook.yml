@@ -56,7 +56,6 @@
       with_items:
 #      httpd php php-mysql php-cli php-gd php-process sudo rsync git postfix
         - httpd
-        - mysql
         - php
         - php-mysql
         - php-cli
@@ -72,6 +71,8 @@
         - vim
         - git
         - cronie
+        - mariadb
+        - mariadb-server
         - MySQL-python
 
     - name: Setup | Install supervisor
@@ -122,15 +123,15 @@
 
     - name: Write my.cnf file.
       template:
-        src=templates/my.cnf.j2
+        src=templates/my.cnf.{{ ansible_os_family }}.j2
         dest={{ mysql_cnf_path }}
         mode=0644
 
-    - name: Create mysql/conf.d folder in RedHat
-      when: ansible_os_family == "RedHat"
-      file:
-        path=/etc/mysql/conf.d/
-        state=directory
+    - name: Ensure MySQL is started and enabled on boot.
+      service:
+        name={{ mysql_daemon }}
+        state=started
+        enabled=yes
 
     - name: Check for secured installation of MySQL
       stat: path=/var/mysql-secured
@@ -193,3 +194,8 @@
   handlers:
     - name: restart supervisor
       service: name=supervisor state=restarted
+
+    - name: restart mysql
+      service: >
+        name={{ mysql_daemon }}
+        state=restarted
