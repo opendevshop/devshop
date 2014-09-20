@@ -1,0 +1,3 @@
+---
+# for vars.RedHat.yml
+apache_user: apache

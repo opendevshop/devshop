@@ -8,6 +8,7 @@
 
   vars_files:
     - vars.yml
+    - vars.{{ ansible_os_family }}.yml
 
   tasks:
 
@@ -82,7 +83,7 @@
       user:
         name=aegir
         shell=/bin/bash
-        groups=www-data
+        groups={{ apache_user }}
         append=yes
         system=yes
         home=/var/aegir
