@@ -6,14 +6,11 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # config.vm.box = "chef/centos-7.0"
-  config.vm.box = "hashicorp/precise64"
+  config.vm.box = "chef/centos-7.0"
+  # config.vm.box = "hashicorp/precise64"
 
   config.vm.network "private_network", ip: "20.20.20.20"
   config.vm.network "public_network"
-
-  # config.vm.provision "shell",
-  #    path: "../repos/devshop/install.centos.sh"
 
   require 'yaml'
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
