@@ -74,14 +74,19 @@
         - mariadb
         - mariadb-server
         - MySQL-python
-
-    - name: Setup | Install supervisor
-      easy_install: name=supervisor
+        - epel-release
+        - supervisor
 
     # REDHAT
     - name: Setup | Install Drush
       include: tasks/drush.yml
       when: ansible_os_family == "RedHat"
+
+    - name: Service | Ensure Supervisor is started and enabled
+      service:
+        name={{ supervisor_daemon }}
+        state=started
+        enabled=yes
 
     - name: Create Aegir user
       user:
@@ -168,14 +173,14 @@
       args:
         creates: /var/aegir/.drush/drush_make/drush_make.drush.inc
 
-    - name: Install Devmaster
-      sudo: yes
-      sudo_user: aegir
-      command: drush devshop-install --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
-      args:
-        creates: /var/aegir/devshop-{{ devshop_version }}/index.php
+#    - name: Install Devmaster
+#      sudo: yes
+#      sudo_user: aegir
+#      command: drush devshop-install --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+#      args:
+#        creates: /var/aegir/devshop-{{ devshop_version }}/index.php
 
-    - name: Set up queue runner script
+    - name: Supervisor | Set up queue runner script
       template:
         src=templates/hosting-queue-runner.j2
         dest=/usr/bin/hosting-queue-runner
@@ -183,17 +188,19 @@
         owner=aegir
         group=aegir
 
-    - name: Set up supervisor config file.
+    - name: Supervisor | Set up supervisor job
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
-        dest=/etc/supervisor/conf.d/hosting-queue-runner.conf
+        dest={{ supervisor_conf_path }}/hosting-queue-runner.conf
         mode=0644
       notify:
         - restart supervisor
 
   handlers:
     - name: restart supervisor
-      service: name=supervisor state=restarted
+      service:
+        name={{ supervisor_daemon}}
+        state=restarted
 
     - name: restart mysql
       service: >
