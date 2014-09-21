@@ -2,7 +2,7 @@
 # for vars.Debian.yml
 apache_user: www-data
 apache_confd_path: /etc/apache2/conf.d/aegir.conf
-apache_control: /usr/sbin/apachectl
+apache_control: /usr/sbin/apache2ctl
 
 php_ini_path: /etc/php5/apache2/php.ini
 mysql_cnf_path: /etc/mysql/my.cnf
