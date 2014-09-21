@@ -45,6 +45,7 @@ ssh as root in and follow these instructions:
 
 3. Run `ansible-playbook`:
 
+  ```
   $ sudo ansible-playbook -i inventory playbook.yml --connection=local --sudo
   ```
 
