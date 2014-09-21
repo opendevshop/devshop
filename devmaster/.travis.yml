@@ -13,7 +13,7 @@ install:
   # Install Ansible
   - pip install ansible
 script:
-  - echo localhost > inventory
+  - echo localhost.localdomain > inventory
 
   # Syntax Check
   - ansible-playbook -i inventory --syntax-check playbook.yml
