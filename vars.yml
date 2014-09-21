@@ -1,5 +1,5 @@
 
-server_hostname: devshop.ansible
+server_hostname: localhost
 mysql_root_password: RandomizeThisToBeSecure
 php_memory_limit: 256M
 php_timezone: America/New_York
