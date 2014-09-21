@@ -7,3 +7,6 @@ apache_control: /usr/sbin/apache2ctl
 php_ini_path: /etc/php.ini
 mysql_cnf_path: /etc/my.cnf
 mysql_daemon: mariadb.service
+
+supervisor_daemon: supervisord
+supervisor_conf_path: /etc/supervisord.d

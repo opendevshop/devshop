@@ -7,3 +7,6 @@ apache_control: /usr/sbin/apachectl
 php_ini_path: /etc/php5/apache2/php.ini
 mysql_cnf_path: /etc/mysql/my.cnf
 mysql_daemon: mysql
+
+supervisor_daemon: supervisor
+supervisor_conf_path: /etc/supervisor/conf.d
