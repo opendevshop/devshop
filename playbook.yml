@@ -3,7 +3,7 @@
 #
 
 ---
-- hosts: default
+- hosts: all
   user: root
 
   vars_files:
