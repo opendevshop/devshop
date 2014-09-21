@@ -10,3 +10,5 @@ mysql_daemon: mysql
 
 supervisor_daemon: supervisor
 supervisor_conf_path: /etc/supervisor/conf.d
+
+motd_path: /etc/update-motd.d/95-ansible
