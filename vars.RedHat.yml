@@ -2,7 +2,7 @@
 # for vars.RedHat.yml
 apache_user: apache
 apache_confd_path: /etc/httpd/conf.d/aegir.conf
-apache_control: /usr/sbin/apache2ctl
+apache_control: /usr/sbin/apachectl
 
 php_ini_path: /etc/php.ini
 mysql_cnf_path: /etc/my.cnf
