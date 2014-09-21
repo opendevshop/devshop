@@ -14,16 +14,8 @@
 
     - hostname: name={{ server_hostname }}
 
-    # DEBIAN
     - name: Setup | Message of the day.
-      action: template src=templates/motd.j2 dest=/etc/update-motd.d/95-ansible mode=755
-      when: ansible_os_family == "Debian"
-
-    # REDHAT
-    - name: Setup | Message of the day.
-      action: template src=templates/motd.j2 dest=/etc/motd mode=755
-      when: ansible_os_family == "RedHat"
-
+      action: template src=templates/motd.j2 dest={{ motd_path }} mode=755
 
     # DEBIAN
     - name: Setup | Install required packages.

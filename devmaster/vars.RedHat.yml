@@ -10,3 +10,5 @@ mysql_daemon: mariadb.service
 
 supervisor_daemon: supervisord
 supervisor_conf_path: /etc/supervisord.d
+
+motd_path: /etc/motd
