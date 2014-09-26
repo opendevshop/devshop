@@ -38,37 +38,6 @@ function devshop_pull_schema() {
     ),
     'primary key' => array('project_nid'),
   );
-  $schema['hosting_devshop_pull_platforms'] = array(
-    'fields' => array(
-      'project_nid' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'platform_nid' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'pull_enabled' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'pull_reset' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'last_pull_ip' => array(
-        'type' => 'varchar',
-        'length' => 15,
-        'not null' => TRUE,
-      ),
-    ),
-    'primary key' => array('platform_nid'),
-  );
-
   return $schema;
 }
 
@@ -105,14 +74,10 @@ function devshop_pull_update_6001(){
 }
 
 /**
- * Add last_pull_ip column to our hosting_devshop_pull_platforms table.
- *
- * This was broken in devshop_pull_update_6000() and mistakenly removed completely instead of fixed.
+ * Remove legacy `hosting_devshop_pull_platforms` table.
  */
-function devshop_pull_update_6201() {
+function devshop_pull_update_6002(){
   $ret = array();
-  if (!db_column_exists('hosting_devshop_pull_platforms', 'last_pull_ip')) {
-    db_add_field($ret, 'hosting_devshop_pull_platforms', 'last_pull_ip', array('type' => 'varchar', 'not null' => TRUE, 'default' => '', 'length' => 15));
-  }
+  db_drop_table($ret, 'hosting_devshop_pull_platforms');
   return $ret;
 }

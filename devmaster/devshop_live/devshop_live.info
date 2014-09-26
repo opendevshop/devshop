@@ -1,6 +1,0 @@
-name = DevShop Live
-description = Add a live domain to projects.
-core = 6.x
-package = DevShop
-dependencies[] = devshop_projects
-dependencies[] = hosting_alias

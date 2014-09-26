@@ -4,7 +4,6 @@
  *
  * DevShop Project Node related hooks and support functions.
  *
- * @TODO: Add default http and db servers to project nodes.
  */
 
 /**
@@ -25,94 +24,117 @@ function devshop_projects_node_info() {
   return $types;
 }
 
+
 /**
- * Implementation of hook_nodeapi()
+ * Implementation of hook_load().
  *
- * Handle project information for Platforms and Sites:
- *   $node->project : The context name of the project.
- *   $node->environment: The type of environment this platform or site is:
- *	can be dev, test, or live.
- *   $node->git_branch: The current git branch the project lives on.
+ * Loads data for project and environments.
+ *
+ * @param node
+ *    Node object
  */
-function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
+function devshop_projects_load($node) {
 
-  if ($node->type == 'project' && isset($node->git_branches)) {
-    // Settings are added here, since $git_branches hadn't been added to the
-    // node yet in devshop_projects_load().
-    $settings = module_invoke_all('devshop_project_settings', $node);
+  // Load the "hosting context". The unique name in the aegir system.
+  $name = db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
+  $additions['hosting_name'] = 'project_' . $name;
 
-    foreach ($settings as $setting_name => $setting) {
-      $setting_node_type = $setting['#node_type'];
-      foreach ((array) $node->project_objects[$setting_node_type] as $nid => $environment_name) {
-        $object = node_load($nid);
-        $node->settings[$environment_name][$setting_name] = $object->{$setting_name};
-      }
+  // Load project data
+  $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
+
+  // Load up all project settings.
+  $project->name = $name;
+  $project->settings = (object) unserialize($project->settings);
+
+  // Load Environments
+  // @TODO: Remove environments where the site has been deleted.
+  $query = db_query("
+    SELECT
+        e.*,
+        s.status as site_status,
+        p.status as platform_status,
+        http.title as web_server,
+        db.title as db_server,
+        n.title as project_name
+      FROM {hosting_devshop_project_environment} e
+      LEFT JOIN {hosting_site} s ON e.site = s.nid
+      LEFT JOIN {hosting_platform} p ON e.platform = p.nid
+      LEFT JOIN {node} http ON p.web_server = http.nid
+      LEFT JOIN {node} db ON s.db_server = db.nid
+      LEFT JOIN {node} n ON e.project_nid = n.nid
+      WHERE project_nid = %d
+      ORDER BY name;   ", $node->nid);
+  $environments = array();
+  while ($environment = db_fetch_object($query)) {
+
+    // Skip this if it is not enabled.
+    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
+      continue;
     }
+
+    // Save to environments array
+    $environment->settings = (object) unserialize($environment->settings);
+
+    // Environments URL:
+    // @TODO: Use aegir generated link
+    $environment->url = 'http://' . $environment->name . '.' . $project->name . '.' . $_SERVER['HTTP_HOST'];
+    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
+
+    // Environment version
+    $iid = db_result(db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type='platform' AND i.rid=%d", $environment->platform));
+    $release = hosting_package_instance_load($iid);
+    $environment->version = $release->version;
+
+    // Get extra server info
+    $environment->servers['http'] = array(
+      'nid' => $environment->settings->web_server,
+      'name' => $environment->web_server
+    );
+
+    // HTTP Server
+    $environment->servers['db'] = array(
+      'nid' => $environment->settings->db_server,
+      'name' => $environment->db_server
+    );
+
+    // Last commit
+    $path = $project->code_path . '/' . $environment->name;
+//    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small><br /> <small >%s</small>' HEAD^...HEAD");
+    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small>' --max-count=1");
+
+    if (empty($environment->git_current)){
+      $environment->git_current = t('Cloning in progress...');
+    }
+
+    // Save to project environments collection.
+    $environments[$environment->name] = $environment;
   }
 
-  // Project-enabled platforms get
-  if ($node->type == 'platform' || $node->type == 'site') {
-    // On Load: load this object's project and environment type
-    if ($op == 'load') {
-      $data = db_fetch_array(db_query('SELECT d.project_nid, environment, n.title as project, git_url, git_branch, d.drupal_path, d.clone_nid FROM {hosting_devshop_project_object} d LEFT JOIN {node} n ON n.nid = d.project_nid LEFT JOIN {hosting_devshop_project} p ON n.nid = p.nid WHERE object_nid = %d', $node->nid));
-      return $data;
-    }
-
-    // On insert or update, insert records saving this objects project and environment
-    if ($op == 'update' || $op == 'insert') {
-      //Special case for migrate site. Is need copy the information to the new site.
-      if ($op == 'insert' && $node->type == 'site' && $node->import && !$node->verified) {
-        $platform = node_load($node->platform);
-        $node->project = $platform->project;
-        $node->project_nid = $platform->project_nid;
-        $node->environment = $platform->environment;
-        $node->git_branch = $platform->git_branch;
-        $node->drupal_path = $platform->drupal_path;
-        $node->clone_nid = $platform->clone_nid;
-      }
-      if (!empty($node->project) && !empty($node->environment)) {
-        // Get the project node by name.
-        $project = hosting_context_load($node->project);
-
-        // Save to table
-        $data = new stdClass();
-        $data->project_nid = $project->nid;
-        $data->object_nid = $node->nid;
-        $data->object_type = $node->type;
-        $data->environment = $node->environment;
-        $data->git_branch = $node->git_branch;
-        $data->drupal_path = $node->drupal_path;
-
-        //Site used for cloned the new site or platorm
-        if (isset($node->clone_nid)) {
-          $data->clone_nid = $node->clone_nid;
-        }
-
-        if ($op == 'insert') {
-          drupal_write_record('hosting_devshop_project_object', $data);
-        }
-        else {
-          drupal_write_record('hosting_devshop_project_object', $data, 'object_nid');
-        }
-
-        //If we are updating or inserting a platform, update all sites with the correct git_branch and environment
-        if ($node->type == 'platform') {
-          $result = db_query("SELECT nid FROM {hosting_site} WHERE platform = %d", $node->nid);
-          while ($site = db_fetch_object($result)) {
-            db_query('UPDATE {hosting_devshop_project_object} SET git_branch = "%s", environment = "%s", drupal_path = "%s" WHERE object_nid = %d', $node->git_branch, $node->environment, $node->drupal_path, $site->nid);
-          } 
-        }
-      }
-    }
+  // Put live environment at the top.
+  if ($project->settings->live['live_environment']) {
+    $live_env = $project->settings->live['live_environment'];
+    $project->environments = array();
+    $project->environments[$live_env] = $environments[$live_env];
+    unset($environments[$live_env]);
+    $project->environments += $environments;
   }
-}
+  else {
+    $project->environments = $environments;
+  }
 
-/**
- * Helper to load a project node by code path.
- */
-function devshop_project_load_by_path($project_path){
-  $nid = db_result(db_query('SELECT nid FROM {hosting_devshop_project} WHERE code_path = "%s"', array($project_path)));
-  return node_load($nid);
+  // Make project name and status available.
+  $project->name = $node->title;
+  $project->status = $node->status;
+
+  // Save project object be available at $node->project.
+  $additions['project'] = $project;
+
+  // Load verification status
+  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d ORDER BY vid DESC', $node->nid));
+  $task->task_status = (int) $task->task_status;
+  $additions['verify'] = $task;
+
+  return $additions;
 }
 
 /**
@@ -125,29 +147,54 @@ function devshop_project_load_by_path($project_path){
  *  @see hosting_platform_insert()
  */
 function devshop_projects_insert($node) {
+
   if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
   
-  $data = array();
-  $data['git_branches'] = $node->git_branches;
-  $data['git_tags'] = $node->git_tags;
-
   $info = new stdClass();
   $info->nid = $node->nid;
-  $info->git_url = $node->git_url;
-  $info->code_path = hosting_path_normalize($node->code_path);
-  $info->drupal_path = hosting_path_normalize($node->drupal_path);
-  $info->base_url = $node->base_url;
-  $info->install_profile = $node->install_profile;
-  $info->live_domain = $node->live_domain;
-  $info->data = serialize($data);
+  $info->git_url = $node->project->git_url;
+  $info->code_path = hosting_path_normalize($node->project->code_path);
+  $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
+  $info->base_url = $node->project->base_url;
+  $info->install_profile = $node->project->install_profile;
+
+  // Save serialized data, minus environments
+  $info->settings = serialize($node->project->settings);
 
   drupal_write_record('hosting_devshop_project', $info);
 
   // Save hosting context
-  if ((!$node->old_vid)) {
+  if (!$node->old_vid) {
     hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
+  }
+
+  // @TODO: The wizard always creates the project before the environments.
+  // Not sure if we need this, but we might to enable importing via drush.
+  // Save Environment records.
+  if (!empty($node->project->environments)) {
+    foreach ($node->project->environments as $name => $environment){
+      // Ensure correct data types
+      $environment = (object) $environment;
+      $environment->settings = (array) $environment->settings;
+
+      $info = new stdClass();
+      $info->project_nid = $node->nid;
+      $info->name = $name;
+      $info->git_ref = $environment->git_ref;
+      $info->site = $environment->site;
+      $info->platform = $environment->platform;
+
+      // Remove primary settings from settings array before saving.
+      unset($environment->settings['git_ref']);
+      unset($environment->settings['site']);
+      unset($environment->settings['platform']);
+      $info->settings = serialize($environment->settings);
+
+      // Save environment record.
+      drupal_write_record('hosting_devshop_project_environment', $info);
+    }
   }
 }
 
@@ -159,27 +206,66 @@ function devshop_projects_insert($node) {
  *
  */
 function devshop_projects_update($node) {
-  
+
   if (!isset($node->no_verify) || $node->no_verify == FALSE) {
     hosting_add_task($node->nid, 'verify');
   }
-  $data = array();
-  
-  // Branches and tags get saved upon verify.
-  $data['git_branches'] = $node->git_branches;
-  $data['git_tags'] = $node->git_tags;
+
+  $project = (object) $node->project;
+  $project->settings = (object) $project->settings;
 
   $info = new stdClass();
   $info->nid = $node->nid;
-  $info->git_url = $node->git_url;
-  $info->code_path = hosting_path_normalize($node->code_path);
-  $info->drupal_path = hosting_path_normalize($node->drupal_path);
-  $info->base_url = $node->base_url;
-  $info->install_profile = $node->install_profile;
-  $info->live_domain = $node->live_domain;
-  $info->data = serialize($data);
+  $info->git_url = $project->git_url;
+  $info->code_path = hosting_path_normalize($project->code_path);
+  $info->drupal_path = hosting_path_normalize($project->drupal_path);
+  $info->base_url = $project->base_url;
+  $info->install_profile = $project->install_profile;
 
+  // Save serialized data, minus environments
+  $info->settings = serialize($project->settings);
+
+  // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
+
+  // Save Environment records.
+  if (!empty($project->environments )) {
+    // Delete existing environment records
+    // db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
+
+    // Save each environment
+    foreach ($project->environments as $name => $environment){
+      // Ensure correct data types
+      $environment = (object) $environment;
+      $environment->name = $name;
+      $environment->settings = (array) $environment->settings;
+
+      $info = new stdClass();
+      $info->project_nid = $node->nid;
+      $info->name = $name;
+      $info->git_ref = $environment->git_ref;
+      $info->site = $environment->site;
+      $info->platform = $environment->platform;
+
+      // Remove primary settings from settings array before saving.
+      // @TODO: These values shouldn't show up anymore. Once tested, remove.
+      unset($environment->settings['git_ref']);
+      unset($environment->settings['site']);
+      unset($environment->settings['platform']);
+      $info->settings = serialize($environment->settings);
+
+      // Detect existing environment record
+      if (db_result(db_query('SELECT name FROM {hosting_devshop_project_environment} WHERE project_nid = %d AND name = "%s"', $node->nid, $environment->name))) {
+        $update = array('project_nid', 'name');
+      }
+      else {
+        $update = array();
+      }
+
+      // Save environment record.
+      drupal_write_record('hosting_devshop_project_environment', $info, $update);
+    }
+  }
 }
 
 /**
@@ -188,67 +274,30 @@ function devshop_projects_update($node) {
 function devshop_projects_delete($node) {
 
   db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
-  db_query('DELETE FROM {hosting_devshop_project_object} WHERE project_nid = %d', $node->nid);
+  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
 
   hosting_context_delete($node->nid);
 }
 
+
+
 /**
- * Implementation of hook_load().
+ * Implementation of hook_nodeapi()
+ * For site and platform nodes, load project and environment objects.
  *
- * @param node
- *    Node object
+ * @see devshop_projects_load()
  */
-function devshop_projects_load($node) {
-  $additions = db_fetch_array(db_query('SELECT * ' .
-                                        'FROM {hosting_devshop_project} ' .
-                                        'WHERE nid = %d', $node->nid));
-  $hosting_name = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
-  if (is_array($hosting_name) && is_array($additions)) {
-    $hosting_name['hosting_name'] = 'project_' . $hosting_name['hosting_name'];
-    $additions += $hosting_name;
+function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
+
+  // Load environment info into platforms and sites.
+  if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
+    $additions = array();
+    $result = db_fetch_object(db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE {$node->type} = %d", $node->nid));
+
+    // Load project and environment
+    $project_node = node_load($result->project_nid);
+    $additions['project'] = $project_node->project;
+    $additions['environment'] = $project_node->project->environments[$result->name];
+    return $additions;
   }
-  $data = unserialize($additions['data']);
-  $additions['git_branches'] = $data['git_branches'];
-  $additions['git_tags'] = $data['git_tags'];
-
-  $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d", $node->nid);
-
-  $objects = array();
-  while($project_object = db_fetch_object($query)) {
-    // Only load if site or platform is enabled.
-    $object_node = node_load($project_object->object_nid);
-    
-    if (($object_node->type == 'site' && $object_node->site_status == HOSTING_SITE_ENABLED) ||
-      ($object_node->type == 'platform' && $object_node->platform_status == HOSTING_PLATFORM_ENABLED)
-        ){
-      $objects[$project_object->object_type][$project_object->object_nid] = $project_object->environment;
-
-    }
-  }
-  $additions['project_objects'] = $objects;
-
-  // Set status
-  $additions['project_status'] = devshop_project_status((object) (array_merge($additions, (array) $node)));
-
-  // Environments Array
-  // @TODO: Remove the above code, after refactoring out of the rest of the system.
-  $query = db_query("SELECT * FROM {hosting_devshop_project_object} WHERE project_nid = %d ORDER BY environment", $node->nid);
-
-  $environments = array();
-  while ($obj = db_fetch_object($query)) {
-    $object_node = node_load($obj->object_nid);
-    
-    if (($object_node->type == 'site' && $object_node->site_status != HOSTING_SITE_DELETED) ||
-      ($object_node->type == 'platform' && $object_node->platform_status != HOSTING_PLATFORM_DELETED)
-        ){
-      $environments[$obj->environment][$obj->object_type] = $obj->object_nid;
-    }
-  }
-  $additions['environments'] = $environments;
-  
-  // Settings are added in devshop_projects_nodeapi
-
-  return $additions;
 }
-

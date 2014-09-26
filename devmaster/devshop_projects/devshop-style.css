@@ -30,14 +30,9 @@ span.branch.environment-branch {
 span.environment,
 table * span.environment {
   color:#777777;
-	font-weight:bold;
-	padding:0px 6px;
+  font-weight:bold;
+  padding:0px 6px;
   margin: 0px 5px 5px 0px;
-  border: 1px solid #dfdfdf;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	display:inline-block;
-  background-color:#fefefe;
   font-size: 1.5em;
 }
 
@@ -88,6 +83,10 @@ form .sync-envs div.form-item-labeled label {
   left: 0px;
 }
 
+#hosting-task-confirm-form fieldset {
+    clear: both;
+}
+
 .path-hosting-projects-add-environments #right {
   display: none;
 }
@@ -120,4 +119,18 @@ p.error {
 }
 #edit-add-environment {
   background: #999;
+}
+#edit-parameters-environment-name-wrapper input.form-text {
+    width: inherit;
+}
+#edit-live-environment-alias-wrapper input.form-text {
+    width: inherit;
+    display: inline;
+}
+body.aegir fieldset {
+    margin-left: 40px !important;
+}
+body.aegir fieldset > legend,
+body.aegir fieldset > table {
+    margin-left: -40px !important;
 }
