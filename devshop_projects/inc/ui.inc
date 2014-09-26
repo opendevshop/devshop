@@ -16,47 +16,53 @@ function devshop_projects_projects_page() {
     'Name',
     'Profile',
     'Version',
-    '',
     'Git URL',
-    'Dev Site',
+    'Environments',
   );
 
-  $r = db_query("SELECT hdp.* FROM {hosting_devshop_project} hdp LEFT JOIN {node} n ON hdp.nid = n.nid WHERE n.status = 1 ORDER BY n.title");
+  $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = 1 ORDER BY n.changed");
   $rows = array();
 
-  while(($proj = db_fetch_object($r))) {
-    $node = node_load($proj->nid);
-    if (!empty($node->project_objects['platform'])){
-      $platform_node = node_load(key($node->project_objects['platform']));
-    }
+  while ($result = db_fetch_object($query)) {
+    $project_node = node_load($result->nid);
+    $project = $project_node->project;
+
+    // Load an environment for extra info like version.
+    // @TODO: load the chosen live environment.
+    $environment = array_shift(array_values($project->environments));
+    $platform_node = node_load($environment->platform);
 
     $row = array();
-    $link_options = array('attributes' => array('target' => '_blank'));
 
     // Link to Project page
-    $row[] = '<strong>' . l($node->title, "node/$proj->nid") . '</strong>';
+    $row[] = '<strong>' . l($project->name, "node/$project->nid") . '</strong>';
 
     // Install Profile
-    $row[] = $node->install_profile;
+    $row[] = $project->install_profile;
 
     // Drupal Version
     $row[] = $platform_node->release->version;
 
-    // Number of environments
-    $num = db_result(db_query("SELECT COUNT(*) FROM {hosting_devshop_project_object} hdpo LEFT JOIN {hosting_site} hs ON hdpo.object_nid = hs.nid WHERE hdpo.project_nid = %d AND hdpo.object_type='site' AND hs.status=1", $node->nid));
-    $row[] = format_plural($num, t('1 site'), t('!num sites', array('!num' => $num)));
-
-
-
     // Git URL
-    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url));
+    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
 
-    // Link to Dev Site
-    $dev_site_url = url("http://dev." . $node->base_url, array('absolute' => TRUE));
-    $row[] = l($dev_site_url, $dev_site_url, $link_options);
+    // Links to all sites
+    $actions = array();
+    $count = 0;
+    foreach ($project->environments as $env => $details){
+      // @TODO: Handle aliases.
+      $site_url = url("http://$env.$project->base_url", array('absolute' => TRUE));
+      $actions[] = array(
+        'title' => $site_url,
+        'href' => $site_url,
+        'attributes' => array('target' => '_blank'),
+      );
+      $count++;
+    }
+    $label = format_plural($count, t('1 Environment'), t('@num Environments', array('@num' => $count)));
+    $row[] = theme('ctools_dropdown', $label, $actions);
 
-
-    $rows[$proj->nid] = $row;
+    $rows[] = $row;
   }
 
   // No Projects
@@ -79,8 +85,8 @@ HTML;
     if (empty($data['header'])){
       $data['header'] = $header;
     }
-  
-    $output = theme('table', $data['header'], $data['rows'], array('class' => 'hosting-table'));  
+
+    $output = theme('table', $data['header'], $data['rows'], array('class' => 'table'));
   }
   return $output;
 }
@@ -92,11 +98,12 @@ HTML;
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   global $user;
+  $project = $node->project;
 
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
   $project_wizard_cache = ctools_object_cache_get('project', NULL);
-  if ($node->nid == $project_wizard_cache->project_nid){
+  if (isset($project_wizard_cache->project_nid) && $node->nid == $project_wizard_cache->project_nid){
     drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
   }
 
@@ -113,151 +120,300 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   //  '#value' => filter_xss($node->code_path),
   //  '#weight' => -8
   //);
-  //
-  //$url = 'http://dev.' . $node->base_url;
-  //$node->content['info']['base_url'] = array(
-  //  '#type' => 'item',
-  //  '#title' => t('Dev Site'),
-  //  '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
-  //  '#weight' => -10
-  //);
 
-  $node->content['info']['git_url'] = array(
-    '#type' => 'item',
-    '#title' => t('Git URL'),
-    '#value' => strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $node->git_url)),
-    '#weight' => -10
-  );
+  if (!empty($project->settings->live['live_domain'])) {
+    $url = 'http://' . $project->settings->live['live_domain'];
 
-  if (!empty($node->git_branches)){
-   $items = theme_item_list($node->git_branches, NULL, 'ul', array('class' => 'branches')); 
-    $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
-    
-    if ($verify_task->task_status == HOSTING_TASK_SUCCESS){    
-      $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-    } else {
-      $refresh_link =  t('Refresh in progress...');
-    }
-    
-    $node->content['info']['git_branches'] = array(
+    $node->content['info']['live_domain'] = array(
       '#type' => 'item',
-      '#title' => t('Remote Branches'),
-      '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
-      '#weight' => -8,
+      '#title' => t('Live Site'),
+      '#value' => l($url, $url, array('attributes' => array('target' => '_blank'))),
+      '#weight' => -9,
     );
   }
 
-  if (!empty($node->install_profile)){
+  $node->content['info']['git_url'] = array(
+    '#type' => 'item',
+    '#title' => t('Git Repository'),
+    '#value' => strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url)),
+    '#weight' => -10
+  );
+
+  // Detect GitHub
+  // @TODO: Detect other web URLs for other git hosts.
+  if (strpos($project->git_url, 'github.com') !== FALSE) {
+    $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
+    $node->content['info']['git_url']['#value'] .= l(t('View on GitHub.com'), $url, array('attributes' => array('target' => '_blank')));
+  }
+
+  // Branches display
+  if (!empty($project->settings->git['branches'])){
+    $items = theme_item_list($project->settings->git['branches'], NULL, 'ul', array('class' => 'branches'));
+  }
+  else {
+    $items = theme_item_list(array('No Branches Found!'), NULL, 'ul', array('class' => 'branches'));
+  }
+  $verify_task = hosting_get_most_recent_task($node->nid, 'verify');
+
+  if ($verify_task->task_status == HOSTING_TASK_SUCCESS || $verify_task->task_status == HOSTING_TASK_ERROR){
+    $refresh_link =  l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+  } else {
+    $refresh_link =  t('Refresh in progress...');
+  }
+
+  $node->content['info']['git_branches'] = array(
+    '#type' => 'item',
+    '#title' => t('Remote Branches'),
+    '#value' => '<div class="branches-list">' . $items . $refresh_link . '</div>',
+    '#weight' => -8,
+  );
+
+  // Install profile display
+  if (!empty($project->install_profile)){
     $node->content['info']['install_profile'] = array(
       '#type' => 'item',
       '#title' => t('Install profile'),
-      '#value' => ($node->install_profile),
+      '#value' => ($project->install_profile),
       '#weight' => -7
     );
   }
 
   // Environments
   $rows = array();
-  foreach($node->environments as $env => $environment) {
-    
-    $site_nid = $environment['site'];
-    $platform_nid = $environment['platform'];
+  $production_rows = array();
 
-    $site = node_load($site_nid);
-    $platform = node_load($platform_nid);
-    
+  foreach ($project->environments as $env => $environment) {
+    $site_installed = false;
+
     // Skip this if it is not enabled.
-    if ($site->site_status != HOSTING_SITE_ENABLED && $platform->platform_status != HOSTING_PLATFORM_ENABLED) {
+    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
       continue;
     }
-    
+
+    // @TODO: Remove. Only devshop_hosting_site_goto_link() requires site node.
+    $site = node_load($environment->site);
+
     $row = array();
-    $row[] = "<span class='environment'>$site->environment</span>";
-    
-    if ($site->site_status == HOSTING_SITE_DISABLED){
-      $row[] = devshop_hosting_site_goto_link($site) . '<em>' . t('Disabled') . '</em>';
+    $row[] = "<span class='environment'>$env</span>";
+    if ($environment->site_status == HOSTING_SITE_DISABLED){
+      $output = '<em>' . t('Disabled') . '</em>';
+      $site_installed = TRUE;
+
+      // A "disabled" site might be a failed install. Load and display.
+      $task = hosting_get_most_recent_task($environment->site, 'install');
+      if ($task->task_status == HOSTING_TASK_ERROR) {
+        $output = t('Site install failed.');
+        $output .= ' ' . l(t('View the logs and retry'), "node/$task->nid") . '.';
+      }
+      elseif ($task->task_status == HOSTING_TASK_PROCESSING  || $task->task_status == HOSTING_TASK_QUEUED) {
+        $output = '<em>' . t('Installing...') . '</em>';
+      }
+
+      $row[] = $output;
+
+    } elseif ($environment->site_status == HOSTING_SITE_QUEUED || $environment->site_status == HOSTING_SITE_PROCESSING ){
+      $row[] = '<em>' . t('Installing...') . '</em>';
     } else {
       $row[] = devshop_hosting_site_goto_link($site);
+      $site_installed = TRUE;
     }
-    $row[] = "<span class='branch environment-branch' title='Branch: $site->git_branch'>$site->git_branch</span>";
-    
+
+    // Create branch/tag chooser
+    $actions = array();
+    if (!empty($project->settings->git['branches'])) {
+      foreach ($project->settings->git['branches'] as $branch){
+        $actions[] = array(
+          'title' => '<i class="fa fa-code-fork"></i> ' . $branch,
+          'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $branch,
+          'query' => array(
+            'token' => drupal_get_token($user->uid),
+            'environment' => $environment->name,
+          ),
+          'html' => TRUE,
+          'attributes' => array(
+            'class' => 'hosting-button-dialog git-branch',
+            'title' => t('Deploy branch %ref to %environment environment', array('%ref' => $branch, '%environment' => $environment->name)),
+          ),
+        );
+
+        // Detect current ref
+        if ($environment->git_ref == $branch){
+          $current_ref = 'Branch';
+        }
+      }
+    }
+    else {
+      $actions[] = array(
+        'title' => t('No branches found.  Click to Refresh.'),
+        'href' => 'node/' . $node->nid . '/project_verify',
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+        ),
+      );
+    }
+
+    if (!empty($project->settings->git['tags'])) {
+      foreach ($project->settings->git['tags'] as $tag){
+        $actions[] = array(
+          'title' => '<i class="fa fa-tag"></i> ' . $tag,
+          'href' => 'node/' . $node->nid . '/project_devshop-deploy/ref/' . $tag,
+          'query' => array(
+            'token' => drupal_get_token($user->uid),
+            'environment' => $environment->name,
+          ),
+          'html' => TRUE,
+          'attributes' => array(
+            'class' => 'hosting-button-dialog git-tag',
+            'title' => t('Deploy tag %ref to %environment environment', array('ref' => $tag)),
+          ),
+        );
+
+        // Detect current ref
+        if ($environment->git_ref == $tag){
+          $current_ref = 'Tag';
+        }
+      }
+    }
+
+    $row[] = theme('ctools_dropdown', $current_ref . ': ' . $environment->git_ref, $actions);
 
     if (module_exists('devshop_log')) {
-      $row[] =l(t('Commits'), "node/$site->nid/logs/commits");
+      $row[] =l(t('Commits'), "node/$environment->site/logs/commits");
     }
     if (module_exists('hosting_logs')) {
-      $row[] = l(t('Errors'), "node/$site->nid/logs/errors");
+      $row[] = l(t('Errors'), "node/$environment->site/logs/errors");
     }
     if (module_exists('hosting_filemanager')) {
-      $row[] = l(t('Files'), "node/$site->nid/files/platform");
+      $row[] = l(t('Files'), "node/$environment->site/files/platform");
     }
     
     // Create actions dropdown.
     $actions = array();
     $actions[] = array(
-      'title' => t('Fork environment'),
-      'href' => 'node/' . $node->nid . '/project_devshop-create/' . $site->nid, array( 'query' => array('token' => drupal_get_token($user->uid))),
+      'title' => t('Clone environment'),
+      'href' => 'node/' . $node->nid . '/project_devshop-create/clone/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
       'attributes' => array(
         'class' => 'hosting-button-dialog',
       ),
     );
-    
+     $actions[] = array(
+      'title' => t('Fork environment'),
+      'href' => 'node/' . $node->nid . '/project_devshop-create/fork/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
+      'attributes' => array(
+        'class' => 'hosting-button-dialog',
+      ),
+    );
+
     
     // Aegir Tasks
-    $site_tasklist = hosting_task_fetch_tasks($site->nid);
-    $site_tasklist['restore']['title'] = t('Restore Backups');
+    if ($site_installed){
+      $site_tasklist = hosting_task_fetch_tasks($environment->site);
+      $site_tasklist['restore']['title'] = t('Restore Backups');
+    }
+    else {
+      $site_tasklist = array();
+    }
 
     // The actions we want
-    $site_actions = array('flush_cache', 'login_reset', 'backup', 'restore');
+    $site_actions = array('flush_cache', 'login_reset', 'backup');
+
+    if (!$environment->settings->production_mode){
+      $site_actions[] = 'restore';
+    }
 
     // Add disable or delete task based on hosting variable.
     if (!variable_get('hosting_require_disable_before_delete', TRUE)){
       $site_actions[] = 'delete';
     } else {
-      if ($site->site_status == HOSTING_SITE_DISABLED){
+      if ($environment->site_status == HOSTING_SITE_DISABLED){
         $site_actions[] = 'enable';
         $site_actions[] = 'delete';
-      } else {
+      } elseif (!$environment->settings->production_mode){
         $site_actions[] = 'disable';
       }
     }
     
     // Build links to tasks
     foreach ($site_actions as $task_name) {
-      if ($site_tasklist[$task_name]['task_permitted']){
+      if (isset($site_tasklist[$task_name]) && $site_tasklist[$task_name]['task_permitted']){
         $actions[] = array(
           'title' => $site_tasklist[$task_name]['title'],
-          'href' => sprintf("node/%d/%s_%s", $site->nid, $site->type, $task_name),
+          'href' => sprintf("node/%d/%s_%s", $environment->site, 'site', $task_name),
           'query' => array(
             'token' => drupal_get_token($user->uid),
             'destination' => "node/$node->nid",
           ),
           'attributes' => array(
-            'class' => $site_tasklist[$task_name]['dialog']? 'hosting-button-dialog': '',
+            'class' => isset($site_tasklist[$task_name]['dialog'])? 'hosting-button-dialog': '',
           ),
         );
       }
     }
-    
-    // Grant access to Aegir pages
-    if (user_access('administer hosting')){
-      $actions[] = array(
-        'title' =>  t('Site Dashboard'),
-        'href' => "node/$site->nid",
-      );
-      $actions[] = array(
-        'title' =>  t('Platform Dashboard'),
-        'href' => "node/$site->platform",
-      );
+
+    // Generate URLs for all actions.
+    foreach ($actions as &$action) {
+      $action['url'] = url($action['href'], $action);
     }
+
+    $node->environment_actions[$environment->name] = $actions;
     
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
-    $rows[] = $row;
+
+    if ($environment->settings->production_mode){
+      $production_rows[] = $row;
+    }
+    else {
+      $rows[] = $row;
+    }
+
+    // Environment Tasks
+    if ($environment->site) {
+      $environment->tasks = hosting_get_tasks('rid', $environment->site);
+    }
+    else {
+      $environment->tasks = hosting_get_tasks('rid', $environment->platform);
+    }
+    $environment->task_count = count($environment->tasks);
+    $environment->active_tasks = 0;
+
+    if (function_exists('boots_render_tasks')){
+      $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
+    }
+
+    foreach ($environment->tasks as &$task) {
+      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
+        $environment->active_tasks++;
+      }
+    }
+
+    // Progress Bar
+    if ($environment->active_tasks > 0){
+      $environment->progress_classes = 'progress-bar-striped progress-bar-warning active';
+      $environment->active_tasks++;
+    } else {
+      $environment->progress_classes = 'inactive';
+    }
   }
   $header = array();
-  $table = theme('table', $header, $rows);
+  $table = theme('table', $header, $rows, array('class' => 'environments-table'));
 
-  $node->content['sites'] = array(
+  // Show production environments separately.
+  if (count($production_rows)){
+    $node->content['production_environments'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Production'),
+      '#weight' => 11,
+      '#attributes' => array(
+        'class' => 'project-environments',
+      ),
+    );
+    $node->content['production_environments']['table'] = array(
+      '#type' => 'item',
+      '#value' => theme('table', $header, $production_rows, array('class' => 'environments-table')),
+    );
+  }
+
+  $node->content['environments'] = array(
     '#type' => 'fieldset',
     '#title' => t('Environments'),
     '#weight' => 12,
@@ -267,7 +423,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   );
 
   $link = l(t('Create New Environment'), 'node/' . $node->nid . '/project_devshop-create', array('attributes' => array('class' => 'create-new-environment hosting-button-dialog'), 'query' => array('token' => drupal_get_token($user->uid))));
-  $node->content['sites']['table'] = array(
+  $node->content['environments']['table'] = array(
     '#type' => 'item',
     '#value' => $table,
     '#suffix' => $link,
@@ -307,29 +463,27 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 }
 
 /**
- * Implements hook_nodeapi_TYPE_OP()
+ * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
  */
 function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
   if (!empty($node->project)){
-    
-    
     // Display Project, Environment and Branch.
     $node->content['info']['project'] = array(
       '#type' => 'item',
       '#title' => t('Project'),
-      '#value' => l($node->project, "node/{$node->project_nid}"),
+      '#value' => l($node->project->name, "node/{$node->project->nid}"),
       '#weight' => -12,
     );
     $node->content['info']['env'] = array(
       '#type' => 'item',
       '#title' => t('Environment'),
-      '#value' => $node->environment,
+      '#value' => $node->environment->name,
       '#weight' => -11,
     );
     $node->content['info']['branch'] = array(
       '#type' => 'item',
-      '#title' => t('Branch'),
-      '#value' => $node->git_branch,
+      '#title' => t('Branch/Tag'),
+      '#value' => $node->environment->git_ref,
       '#weight' => -11,
     );
     
@@ -337,7 +491,7 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
     $crumbs = array();
     $crumbs[] = l(t('Home'), '<front>');
     $crumbs[] = l(t('Projects'), 'hosting/projects');
-    $crumbs[] = l($node->project, "node/" . $node->project_nid);
+    $crumbs[] = l($node->project->name, "node/" . $node->project->nid);
     drupal_set_breadcrumb($crumbs);
   }
 }
@@ -353,12 +507,28 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
  * Our own version of _hosting_site_goto_link()
  */
 function devshop_hosting_site_goto_link($node) {
+//  $project = node_load($node->environment->project_nid);
+
+  // If this is the live environment, use the live domain.
+  if ($node->environment->name == $node->project->settings->live['live_environment']) {
+    $url = $node->project->settings->live['live_domain'];
+  }
+  // If environment aliases are enabled
+  elseif ($node->project->settings->live['environment_aliases']) {
+    $url = "{$node->environment->name}.{$node->project->settings->live['live_domain']}";
+  }
+  // Otherwise use the base_url
+  else {
+    $url = "{$node->environment->name}.{$node->project->base_url}";
+  }
+
+  // Get the link from cache.
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
   if (!is_null($cache) && (time() < $cache->data['expire'])) {
-    $title = t("Log in: !url", array('!url' => $node->title));
+    $title = t("Log in: !url", array('!url' => $url));
   }
   else {
-    $title = t("!url", array('!url' => $node->title));
+    $title = t("!url", array('!url' => $url));
   }
   $options['attributes']['target'] = '_blank';
   $options['attributes']['class'] = 'hosting-goto-site-link';

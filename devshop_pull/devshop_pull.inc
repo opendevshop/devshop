@@ -4,18 +4,21 @@
 /**
  * URL callback that is invoked by git to create a code pull task.
  */
-function devshop_pull_callback($project, $hash) {
+function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Load the project node & list of allowed IPs
-  $project_node = hosting_context_load(str_replace('project_', '', $project));
+  $project_node = hosting_context_load(str_replace('project_', '', $project_hosting_context));
+  $project = $project_node->project;
+  $pull_settings = $project_node->project->settings->pull;
+
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
 
   // Check for environments set to pull
   $environments_to_pull = array();
-  foreach ($project_node->settings as $env => $settings) {
-    if ($settings['pull_enabled']) {
-      $environments_to_pull[] = $env;
+  foreach ($project->environments as $environment) {
+    if (!$environment->settings->pull_disabled) {
+      $environments_to_pull[] = $environment->name;
     }
   }
 
@@ -29,12 +32,8 @@ function devshop_pull_callback($project, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  elseif ($project_node->pull_method != DEVSHOP_PULL_CALLBACK){
+  elseif (!$pull_settings['pull_enabled']){
     $message = "Project $project is NOT configured to use Pull Code URL callback!";
-  }
-  // Make sure the project has platforms with pull enabled.
-  elseif (empty($environments_to_pull)){
-    $message = "Project $project has no environments configured to Pull Code on commit!";
   }
   // Make sure the client's IP address is on the list
   else if (!devshop_pull_ip_match(ip_address(), $allowed_ips)) {
@@ -43,42 +42,135 @@ function devshop_pull_callback($project, $hash) {
   }
   // All checks pass! Server is allowed to trigger tasks!
   else {
-    $message = "Commit Received! Invoked by " . ip_address();
     $status = DEVSHOP_PULL_STATUS_OK;
 
-    // @TODO: Check Payload Here... If we see a GitHub payload with branches,
-    // filter out the $environments_to_pull based on those branches.
-
-    // Create the hosting task
-    // We need to pass environments so we can control what envs to pull based
-    // on the data coming back from github!
-    $args = array();
-    $args['environments'] = implode(' ', $environments_to_pull);
-
-    // Always clear cache...
-    // @TODO: Should we make this a setting? "What to do on auto-pull?"
-    $args['cache'] = 1;
-    hosting_add_task($project_node->nid, 'devshop-pull', $args);
+    // @TODO: Make this pluggable.
+    // Check headers for GitHub Integration
+    $headers = getallheaders();
+    if (isset($headers['X-GitHub-Event'])) {
+      $message = devshop_pull_github_webhook($project_node, $environments_to_pull);
+    }
+    else {
+      $message = devshop_pull_default_webhook($project_node, $environments_to_pull);
+    }
   }
 
-  // Log It, only if there is a status
-  if (isset($status)){
-    $record = new stdClass;
-    $record->project_nid = $project_node->nid;
-    $record->pull_method = $project_node->pull_method;
-    $record->last_pull = time();
-    $record->last_pull_status = $status;
-    $record->last_pull_ip = ip_address();
+  // Save the project node with last pull info.
+  $pull_settings['last_pull'] = time();
+  $pull_settings['last_pull_status'] = $status;
+  $pull_settings['last_pull_ip'] = ip_address();
 
-    drupal_write_record('hosting_devshop_pull_projects', $record, array('project_nid'));
-  }
+  $project_node->project->settings->pull = $pull_settings;
+
+  node_save($project_node);
 
   // Output a message, no matter what.
   watchdog('devshop_pull', $message, array(), WATCHDOG_INFO);
+
+  // @TODO Print an appropriate header.
   print $message;
 
   // Save a variable to help when using the settings page.
   variable_set('devshop_pull_last_ip', ip_address());
+}
+
+/**
+ * Default action to take on webhook init.
+ */
+function devshop_pull_default_webhook($project, $environments_to_pull){
+  // Create the hosting task
+  // We need to pass environments so we can control what envs to pull based
+  // on the data coming back from github!
+  $args = array();
+  $args['environments'] = implode(' ', $environments_to_pull);
+
+  // Always clear cache...
+  // @TODO: Should we make this a setting? "What to do on auto-pull?"
+  $args['cache'] = 1;
+  hosting_add_task($project->nid, 'devshop-pull', $args);
+
+  return "Commit notification received! Running 'Pull Code' on $project->title environments " . $args['environments'];
+}
+
+/**
+ * GitHub action to take on webhook init
+ * @TODO: Once it is more pluggable, put this in it's own include, or maybe it's own module.
+ */
+function devshop_pull_github_webhook($project_node){
+  $headers = getallheaders();
+  $project = $project_node->project;
+
+  // @TODO: This only works with GitHub now!!! IMMEDIATELY complete issue https://www.drupal.org/node/2322593
+  // so we don't leave all other git hosts in the dark :(
+
+  // @TODO: Handle form content from github as well.
+  if ($headers['content-type'] == 'application/json'){
+    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
+    
+    $args = array();
+    $args['cache'] = 1;
+
+    switch ($headers['X-GitHub-Event']){
+      case 'ping':
+        $message = 'Pong!';
+        break;
+      case 'push':
+
+        // @TODO: Limit "Pull" tasks to only run for the branches we have new code for..
+
+        // Check for environments set to pull
+        $environments_to_pull = array();
+        foreach ($project->environments as $environment_name => $environment) {
+          // Only pull if pull disabled or is tracking a tag.
+          if (!$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
+            $environments_to_pull[] = $environment_name;
+          }
+        }
+
+        // Set arguments and create "Pull" task.
+        $args['environments'] = implode(' ', $environments_to_pull);
+        hosting_add_task($project_node->nid, 'devshop-pull', $args);
+        $message = 'Push Received. Deploying code to environments: ' . $args['environments'];
+        break;
+
+      case 'pull_request':
+        // If pull request environments is enabled...
+        if ($project->settings->github['pull_request_environments']){
+          $message = 'Pull Request Received.';
+
+          // @TODO: Handle forks?
+          $branch = $data->pull_request->head->ref;
+
+          // Determine environment branch.
+          // @TODO: Make Configurable, allow branch names to be env name
+          $environment_name = "pr" . $data->pull_request->number;
+
+          // When PR is opened... create new environment.
+          if ($data->action == 'opened'){
+            $message = "Detected Pull Request creation for $branch \n";
+
+            // @TODO: Allow cloning from "live" (or other) environment.
+            hosting_create_environment($project_node, $environment_name, $branch);
+            $message .= "Environment $environment_name created for $project_node->title \n";
+          }
+
+          // When PR is cloded, delete environment.
+          elseif ($data->action == 'closed'){
+            $message .= "Pull Request Closed \n";
+            if ($project->settings->github['pull_request_environments_delete']){
+              hosting_add_task($project->environments[$environment_name]->site, 'delete');
+              $message .= "Site $environment_name scheduled for deletion.";
+            }
+          }
+        }
+        break;
+    }
+
+  }
+  else {
+    $message = 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json';
+  }
+  return $message;
 }
 
 /**
@@ -133,13 +225,15 @@ function _devshop_pull_hash_create($node) {
  * Platforms in a project must be enabled to have this command run on them.
  */
 function devshop_pull_project($project_nid) {
-  // Search platforms with pull enabled for this project
-  $results = db_query("SELECT environment FROM {hosting_devshop_pull_platforms} p LEFT JOIN {hosting_devshop_project_object} o ON p.platform_nid = o.object_nid WHERE pull_enabled = 1 AND p.project_nid = %d", $project_nid);
+
+  $project_node = node_load($project_nid);
 
   $args = array('environments' => '');
 
-  while ($info = db_fetch_object($results)){
-    $args['environments'] .= $info->environment .' ';
+  foreach ($project_node->project->environments as $name => $environment){
+    if (!$environment->data->pull_disabled){
+      $args['environments'] .= $environment->name .' ';
+    }
   }
   $args['environments'] = trim($args['environments']);
   if (!empty($args['environments'])){
@@ -148,3 +242,4 @@ function devshop_pull_project($project_nid) {
     print "No environments configured to pull! Aborting.";
   }
 }
+

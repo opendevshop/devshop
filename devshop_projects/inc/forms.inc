@@ -43,246 +43,394 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     }
   }
   
-  // On Hosting Task: Create Project form, do our own submission.
-  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-create'){
-    drupal_set_title(t('Create new environment'));
-    $form['#submit'] = array('hosting_task_devshop_create_form_submit');
-  }
+  // Hosting Task Forms
+  if ($form_id == 'hosting_task_confirm_form') {
+    switch($form['task']['#value']) {
 
-   // On Hosting Task: Delete Project form, do our own submission.
-  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-delete') {
-    $node = node_load($form['nid']['#value']);
+      // Create Environment form.
+      case 'devshop-create':
+        drupal_set_title(t('Create new environment'));
+        $form['#submit'] = array('hosting_task_devshop_create_form_submit');
+        break;
 
-    if ($node->type == 'project') {
-      $form['#submit'] = array('hosting_task_devshop_delete_form_submit');
+      // Migrate Form: used for changing database server.
+      case 'migrate':
+
+        // To change the database server, we use the migrate form.
+        if ($_GET['db_server']) {
+          drupal_set_title(t('Migrate Database'));
+          $site_node = node_load($form['nid']['#value']);
+          $environment = $site_node->environment;
+          $form['help']['#value'] = t("Are you sure you want to change this site's database server?");
+
+          // Set DB Server values
+          $form['parameters']['new_db_server']['#type'] = 'value';
+          $db_server = $_GET['db_server'];
+          $db_server_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "server" && title = "%s"', $db_server));
+          $form['parameters']['new_db_server']['#default_value'] = $db_server_nid;
+
+          // Set URI value
+          $form['parameters']['new_uri']['#type'] = 'value';
+          $form['parameters']['new_uri']['#value'] = $form['parameters']['new_uri']['#default_value'];
+          // Display something helpful
+          $form['old'] = array(
+            '#type' => 'item',
+            '#title' => t('Current Database Server'),
+            '#value' => l($environment->servers['db']['name'], 'node/' . $environment->servers['db']['nid']),
+            '#weight' => '-1',
+          );
+
+          // Display something helpful
+          $form['new'] = array(
+            '#type' => 'item',
+            '#title' => t('New Database Server'),
+            '#value' => l($db_server, "node/$db_server_nid"),
+            '#weight' => '0',
+          );
+
+          // @TODO: not sure how to hide the radios.  We'll just use CSS for now.
+          $form['parameters']['#prefix'] = '<div class="hidden">';
+          $form['parameters']['#suffix'] = '</div>';
+
+        }
+        break;
     }
   }
 
+  // Platform "Edit" page.
+  if ($form_id == 'platform_node_form') {
 
-  // If not a part of a project, bail out.
-  if (empty($form['#node']->nid)){
-    return;
+    // Set to values
+    $form['title']['#type'] = 'value';
+    $form['makefile']['#type'] = 'value';
+    unset($form['info']);
+
+    // If switching webservers...
+    if ($_GET['web_server']){
+
+      $platform_node = node_load($form['nid']['#value']);
+      $environment = $platform_node->environment;
+      $form['help'] = array(
+        '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
+        '#weight' => -10,
+      );
+
+      $web_server = $_GET['web_server'];
+      $web_server_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "server" && title = "%s"', $web_server));
+
+      // Set values
+      $form['web_server']['#default_value'] = $web_server_nid;
+      $form['web_server']['#type'] = 'hidden';
+
+      // Load servers to display IP addresses.
+      $old_server = node_load($environment->servers['http']['nid']);
+      $new_server = node_load($web_server_nid);
+
+      // Display something helpful
+      $form['old'] = array(
+        '#type' => 'item',
+        '#title' => t('Current Web Server'),
+        '#value' => l($environment->servers['http']['name'], 'node/' . $environment->servers['http']['nid']) . '<br />' . implode($old_server->ip_addresses, '<br />'),
+        '#weight' => '-1',
+      );
+
+      // Display something helpful
+      $form['new'] = array(
+        '#type' => 'item',
+        '#title' => t('New Web Server'),
+        '#value' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
+        '#weight' => '0',
+      );
+    }
   }
 
-  // Save values that need to be saved.
-  if ($form_id == 'platform_node_form' || $form_id == 'site_node_form'){
+  // Site "Edit" page.  This is our environment settings page..
+  if ($form_id == 'site_node_form') {
+
     $node = $form['#node'];
-    $form['project'] = array(
-      '#type' => 'value',
-      '#value' => $node->project,
+    $environment = $node->environment;
+
+    // Remove aegir's helpful info panel.
+    unset($form['info']);
+
+    // Help Text
+    $form['note'] = array(
+      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
     );
+
     $form['environment'] = array(
-      '#type' => 'value',
-      '#value' => $node->environment,
+      '#weight' => -9,
+      '#tree' => true,
     );
-    $form['git_branch'] = array(
+
+    // Values
+    $form['environment']['project_nid'] = array(
+      '#value' => $environment->project_nid,
       '#type' => 'value',
-      '#value' => $node->git_branch,
     );
+    $form['environment']['project_name'] = array(
+      '#value' => $environment->project_name,
+      '#type' => 'value',
+    );
+    $form['environment']['name'] = array(
+      '#value' => $environment->name,
+      '#type' => 'value',
+    );
+    $form['environment']['git_ref'] = array(
+      '#value' => $environment->git_ref,
+      '#type' => 'value',
+    );
+    $form['environment']['site'] = array(
+      '#value' => $environment->site,
+      '#type' => 'value',
+    );
+    $form['environment']['platform'] = array(
+      '#value' => $environment->platform,
+      '#type' => 'value',
+    );
+
+    // User-configurable Settings
+    $form['environment']['settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Environment Settings'),
+      '#tree' => true,
+    );
+    $form['environment']['settings']['production_mode'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Production Mode'),
+      '#default_value' => $environment->settings->production_mode,
+      '#description' => t('Prevent devshop users from overwriting the database.'),
+    );
+
+    $form['environment']['settings']['pull_disabled'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Disable Pull on Commit'),
+      '#default_value' => $environment->settings->pull_disabled,
+      '#description' => t('Do not pull code to the server on commit & push.'),
+    );
+
+    $form['environment']['settings']['pull'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Automatic Code Pull'),
+      '#description' => t('When code is automatically pulled to this environment, do the following:'),
+    );
+    $form['environment']['settings']['pull']['pull_revert'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Revert all features.'),
+      '#default_value' => $environment->settings->pull['pull_revert'],
+      '#description' => t(''),
+    );
+
+    $form['environment']['settings']['pull']['pull_update'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run database updates.'),
+      '#default_value' => $environment->settings->pull['pull_update'],
+    );
+    $form['environment']['settings']['pull']['pull_cache'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Clear all caches.'),
+      '#default_value' => $environment->settings->pull['pull_cache'],
+    );
+
+    // Add our own submit handler
+    $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
 }
+
+/**
+ * Submit handler for site/environment settings page.
+ */
+function devshop_projects_environment_settings_submit($form, &$form_state){
+
+  // Save the environment record.
+  // @TODO: Replace with an $environment->save();
+
+  // Ensure correct data types
+  $environment = (object) $form_state['values']['environment'];
+  $environment->settings = (array) $environment->settings;
+
+  // Prepare record for saving
+  $info = new stdClass();
+  $info->project_nid = $environment->project_nid;
+  $info->name = $environment->name;
+  $info->git_ref = $environment->git_ref;
+  $info->site = $environment->site;
+  $info->platform = $environment->platform;
+  $info->settings = serialize($environment->settings);
+
+  // Save environment record.
+  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
+
+    // Remove the "Site dev.drupal.devshop.local has been updated.
+    drupal_get_messages('status');
+
+    // Send our own message
+    drupal_set_message(t('Environment settings saved for %env in project %project', array('%env' => $environment->name, '%project' => $environment->project_name)));
+  }
+  else {
+    watchdog('error', 'Environment record not saved: ' . print_r($info, 1));
+  }
+
+  $form_state['redirect'] = 'node/' . $environment->project_nid;
+}
+
 
 /**
  * Implementation of hook_form().
  */
 function devshop_projects_form(&$node) {
 
-  $form['git_url'] = array(
+  $project = $node->project;
+
+  // Save last project data
+  $form['old'] = array(
+    '#value' => $node,
+    '#type' => 'value',
+  );
+
+  // Project Settings
+  // Every value under $form['project'] gets serialized and saved into a project's "data" column.
+  $form['project'] = array(
+    '#tree' => TRUE,
+  );
+
+  // Hidden fields that can't change.
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Project Code Name'),
+    '#required' => TRUE,
+    '#description' => t('Choose a unique name for your project.'),
+    '#size' => 40,
+    '#default_value' => $node->title,
+    '#maxlength' => 255,
+  );
+  $form['project']['git_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Git URL'),
     '#required' => TRUE,
     '#description' => t(''),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->git_url,
+    '#default_value' => $project->git_url,
     '#maxlength' => 255,
     '#weight' => 1,
   );
-  $form['title'] = array(
-    '#type' => 'textfield',
-     '#title' => t('Project Code Name'),
-     '#required' => TRUE,
-     '#description' => t('Choose a unique name for your project.'),
-     '#size' => 40,
-     '#default_value' => $node->title,
-     '#maxlength' => 255,
-  );
-  $form['code_path'] = array(
+  $form['project']['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
     '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->code_path,
+    '#default_value' => $project->code_path,
     '#maxlength' => 255,
     '#weight' => 2,
   );
-  $form['drupal_path'] = array(
+  $form['project']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
     '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
     '#size' => 40,
-    '#default_value' => $node->drupal_path,
+    '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
     '#weight' => 3,
   );
-  $form['base_url'] = array(
+  $form['project']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Primary Domain'),
     '#description' => t('The domain name all sites will be built under.'),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->base_url,
+    '#default_value' => $project->base_url,
     '#maxlength' => 255,
     '#weight' => 4,
   );
-  
-  // Unchanging Values
-  $form['git_branches'] = array(
-    '#type' => 'value',
-    '#value' => $node->git_branches,
-  );
-  $form['git_tags'] = array(
-    '#type' => 'value',
-    '#value' => $node->git_tags,
-  );
-  
-  // Extensible settings
-  $form['settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Environment Settings'),
-    '#theme' => 'devshop_projects_settings_form',
-    '#tree' => TRUE,
-  );
-  
-  $settings = module_invoke_all('devshop_project_settings', $node);
-  foreach ($node->project_objects['platform'] as $nid => $environment_name) {
-    $platform = node_load($nid);
-    $sites = hosting_get_sites_by_status($platform->nid, HOSTING_SITE_ENABLED);
-
-    if ($platform->status == HOSTING_PLATFORM_ENABLED && !empty($sites)) {
-      $form['settings'][$environment_name] = array(
-        '#tree' => TRUE,
-        '#title' => $name,
-        '#type' => 'fieldset',
-        '#theme' => 'devshop_projects_settings_table',
-      );
-
-      foreach ($settings as $setting_id => $setting){
-        $form['settings'][$environment_name][$setting_id] = $setting;
-        $form['settings'][$environment_name][$setting_id]['#default_value'] = $node->settings[$environment_name][$setting_id];
-        $form['settings'][$environment_name][$setting_id]['#attributes']['title'] = $setting['#description'];
-      }
-    }
-  }
-  $form['#submit'] = array('devshop_projects_submit_settings');
-
 
   // Don't allow editing
   if ($node->nid) {
-    $locked = array('title', 'git_url', 'code_path', 'drupal_path', 'base_url');
+
+    // Title
+    $form['title']['#value'] = $form['title']['#default_value'];
+    $form['title']['#type'] = 'value';
+
+    // Other fields
+    $locked = array('git_url', 'code_path', 'drupal_path', 'base_url');
     foreach ($locked as $field){
-      $form[$field]['#value'] = $form[$field]['#default_value'];
-      $form[$field]['#type'] = 'value';
+      $form['project'][$field]['#value'] = $form['project'][$field]['#default_value'];
+      $form['project'][$field]['#type'] = 'value';
     }
   }
+
+  // Project Settings
+  // Save git branches and tags
+  $form['project']['settings']['git']['branches'] = array(
+    '#type' => 'value',
+    '#value' => $project->settings->git['branches'],
+  );
+  $form['project']['settings']['git']['tags'] = array(
+    '#type' => 'value',
+    '#value' => $project->settings->git['tags'],
+  );
+
+  // Live Environment settings.
+  $form['project']['settings']['live'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Domain Name Settings'),
+  );
+
+  // Live Domain
+  $form['project']['settings']['live']['live_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Live domain'),
+    '#description' => t('The live domain for this project. Do not include "www".'),
+    '#size' => 40,
+    '#default_value' => $node->project->settings->live['live_domain'],
+  );
+
+  // Live Environment
+  $environments = array_keys($project->environments);
+  if (empty($environments)){
+    $environments_options= array();
+  }
+  else {
+    $environments_options = array_combine($environments, $environments);
+    $environments_options[''] = t('No live environment');
+  }
+
+  $form['project']['settings']['live']['live_environment'] = array(
+    '#type' => 'select',
+    '#title' => t('Live environment'),
+    '#description' => t('The environment for the live website.'),
+    '#options' => $environments_options,
+    '#default_value' => $project->settings->live['live_environment'],
+  );
+
+  // Use www
+  $form['project']['settings']['live']['live_domain_www'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add www as a ServerAlias for Live Environment'),
+    '#description' => t('Access the site at http://livedomain.com and http://www.livedomain.com'),
+    '#default_value' => $project->settings->live['live_domain_www'],
+  );
+
+  // Use aliases
+  $form['project']['settings']['live']['environment_aliases'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Environment Subdomains'),
+    '#description' => t('Create subdomains under the live domain for all environments.'),
+    '#default_value' => $project->settings->live['environment_aliases'],
+  );
+
   return $form;
 }
 
 /**
- * Submit function for save data of platforms.
- */
-function devshop_projects_submit_settings($form, &$form_state) {
-  
-
-  // Go through and save our settings
-  $project_node = node_load($form_state['values']['nid']);
-  $settings_info = module_invoke_all('devshop_project_settings', $project_node);
-  $nodes = array();
-  
-  // Go through each environment
-  foreach ($form_state['values']['settings'] as $environment_name => $settings){
-    
-    // Then through each setting of each environment
-    foreach ($settings as $setting_name => $setting_value){
-      
-      //Find the node type for this setting.
-      $node_type = $settings_info[$setting_name]['#node_type'];
-      $nids = array_flip($project_node->project_objects[$node_type]);
-      
-      // Load the site or platform node for this environment, then set the value and save.
-      $nid = $nids[$environment_name];
-      if (empty($nodes[$nid])){
-        $nodes[$nid] = node_load($nid);
-        $nodes[$nid]->no_verify = TRUE;
-      }
-
-      //If changed database then execute migrate task.
-      if ($setting_name == 'db_server' && $nodes[$nid]->{$setting_name} != $setting_value) {
-        $args['target_platform'] = $nodes[$nid]->platform;
-        $args['new_uri'] = $nodes[$nid]->title;
-        $args['new_db_server'] = $setting_value;
-
-        hosting_add_task($nid, 'migrate', $args);
-      }
-      $nodes[$nid]->{$setting_name} = $setting_value;
-    }
-  }
-  
-  // Go save all nodes
-  foreach ($nodes as $nid => $node){
-    node_save($node);
-  }
-}
-
-/**
  * Implementation of hook_validate().
+ *
+ * This function is no longer used since we have a ctools wizard for
+ * project creation.
  */
 function devshop_projects_validate($node, &$form) {
 
-  // It may look find of strange that we are doing a node load when the
-  // exact node we want is passed in here. But if this is an edit of an
-  // existing node, not all of the node fields (like project_status) have
-  // been initialized yet.
+  // @TODO: if there is no "live domain url" then unset the values for environment aliases
 
-  $node = node_load($node->nid);
-
-  // No validation if op == Delete or project_status == site_ready. The
-  // latter case happens when the user is editing the tests to run fied.
-  if ($node->op == t('Delete') || $node->project_status == 'sites_ready') {
-    return;
-  }
-
-
-  // Full validation on when a creating a new node
-  $add = (arg(1) == 'add' ? TRUE : FALSE);
-
-  // Title (project code) must not have any spaces
-  if(strpos($node->title, ' ') != FALSE) {
-    form_set_error('title', t('Project code name must not contain any white spaces.'));
-  }
-
-  // The project code name must not be in the hosting_context table
-  if (!$node->retry){
-    $result = db_fetch_object(db_query("SELECT name, nid FROM {hosting_context} WHERE name = '%s'", $node->title));
-    if ($node->nid != $result->nid){
-      form_set_error('title', t('Project code name is unavailable.  Please choose another.'));
-    }
-  }
-
-  // The project code name must be unique
-  if (!$node->retry && ($result = db_fetch_object(db_query("SELECT title FROM {node} WHERE title = '%s' AND type = 'devshop_project' AND	nid <> %d", $node->title, $node->nid)))) {
-    form_set_error('title', t('Project code name is already is use by another project'));
-  }
-
-  // Make sure the path is unique.
-  $cp = hosting_path_normalize($node->code_path);
-  if (!$node->retry && $add && $result = db_fetch_object(db_query("SELECT code_path FROM {hosting_devshop_project} WHERE code_path = '%s' AND nid <> %d", $cp, $node->nid))) {
-    form_set_error('code_path', t('Code path is already in use by another project'));
-  }
-
-  // Directory must not exist
-  if (!$node->retry && $add && file_exists($cp)) {
-    form_set_error('code_path', t('Code path directory already exists.'));
-  }
 }

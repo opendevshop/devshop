@@ -32,6 +32,7 @@ fieldset.project-environments {
 }
 .empty {
   text-align: center;
+  min-height: 165px;
 }
 .empty .empty-message {
   padding:30px;
