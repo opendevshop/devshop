@@ -1,0 +1,200 @@
+body.admin-menu .navbar-static-top {
+  margin-top: 20px !important;
+  z-index: 3;
+}
+
+
+.devshop-environment > a.site-link {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-controls {
+  border: 1px solid #ddd;
+  margin: 0px;
+}
+
+.btn-env-buttons {
+  min-width: 92px;
+}
+
+#navbar-main .active-task-gear {
+  color: #ffffaa;
+}
+
+.environment-git-ref {
+  font-family: monospace;
+  margin: 0px 5px;
+  padding: 3px;
+  color: #777;
+  font-size: .7em;
+}
+
+.environment-meta-data {
+    font-family: monospace;
+    margin: 0px 5px;
+    padding: 3px;
+    color: #777;
+    font-size: .7em;
+}
+
+.devshop-environment.live-environment .text-muted {
+    color: white;
+}
+
+.devshop-environment.live-environment .environment-git-ref {
+  color: white;
+
+}
+.devshop-environment.live-environment .environment-meta-data {
+    color: white;
+}
+
+.devshop-environment.live-environment.active .environment-meta-data {
+    color: #8a6d3b;
+}
+
+.devshop-environment.live-environment.active .text-muted {
+    color: #8a6d3b;
+}
+
+#project-info {
+  padding-bottom: .5em;
+}
+
+.add-project-button .btn {
+  height: 9.5em;
+  padding: 3em 0em;
+  background: white;
+  color: #4cae4c;
+  width: 100%;
+}
+.add-project-button .btn:hover,
+.add-project-button .btn:active {
+  background: inherit;
+  color: inherit;
+
+  color: white;
+  background: #4cae4c;
+}
+
+.add-project-button .fa {
+  font-size: 2em;
+  margin-bottom: .25em;
+}
+
+.navbar-nav {
+    margin: 0;
+}
+
+.navbar-left > li,
+.navbar-header {
+    float: left!important;
+}
+.navbar-project > .container-fluid {
+    padding-left: .5em;
+    padding-right: .5em;
+}
+.main-project-nav {
+  margin: .5em 0;
+}
+
+.navbar-project .nav-pills a.active {
+    background: white;
+    border: 1px solid whitesmoke;
+}
+
+
+.project-stuff {
+    position: absolute;
+    right: 0px;
+    top: -45px;
+}
+
+.project-stuff a {
+    color: #777;
+}
+
+.devshop-environment .tasks-button {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+}
+
+
+.devshop-environment .tasks-button > a {
+    padding: 19px 5px;
+    height: 4.4em;
+}
+.devshop-environment .tasks-button > a:hover,
+.devshop-environment .tasks-button.open > a {
+    background: #428bca;
+    color: white;
+    text-decoration: none;
+}
+
+.devshop-environment .progress {
+    height: 10px;
+    border-radius: 0px;
+    margin: 5px -15px -15px;
+}
+
+.devshop-environment .progress .progress-bar.inactive {
+    background: #d9edf7 !important;
+}
+.devshop-environment.disabled .progress .progress-bar {
+    background: white !important;
+}
+
+.devshop-environment > a.site-link:hover .progress .progress-bar {
+
+}
+
+.devshop-environment.active {
+    background-color: #fcf8e3 !important;
+    color: #8a6d3b;
+}
+.devshop-environment.active .tasks-button > a {
+    color: #8a6d3b !important;
+}
+.devshop-environment.active .tasks-button > a:hover,
+.devshop-environment.active .tasks-button > a:active,
+.devshop-environment.active .tasks-button.open > a {
+    background: #8a6d3b;
+    color:  white !important;
+    text-decoration: none;
+}
+
+.devshop-environment > .list-group-item.btn-group {
+    padding: 0px;
+}
+.devshop-environment > .list-group-item.btn-group a.btn {
+    margin: 0px 3px;
+    background: transparent !important;
+}
+
+.devshop-environment > .list-group-item.btn-group .btn,
+.devshop-environment > .list-group-item.btn-group > .btn-group {
+    font-size: 1.0em;
+    color: #777;
+    border: none !important;
+    border-radius: 0px;
+    background: transparent !important;
+}
+
+
+.devshop-environment > .list-group-item.btn-group > a:hover {
+    color: #111 !important;
+    background-color: whitesmoke;
+}
+
+
+.devshop-environment .last-commit {
+    display: block;
+    color: #777;
+}
+
+.btn.settings {
+    margin: -5px 0px;
+    border:none;
+}
