@@ -90,34 +90,6 @@ else
   exit 1
 fi
 
-<<<<<<< HEAD
-if  [ ! -d '/var/aegir' ]; then
-  # Install aegir-provision and other tools
-#  apt-get install drush -y
-  apt-get install php5 php5-gd unzip git supervisor -y
-fi
-#
-## Download DevShop backend projects (devshop_provision and provision_git)
-#if [ ! -d '/var/aegir/.drush/provision_git' ]
-#  then
-#  su - aegir -c "drush dl provision_git-6.x devshop_provision-$DEVSHOP_VERSION --destination=/var/aegir/.drush -y"
-#  su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
-#fi
-
-# Install Aegir with makefile setting.
-if [ ! -d "/var/aegir/devshop-$DEVSHOP_VERSION/" ]
-  then
-#  MAKEFILE="/var/aegir/.drush/devshop_provision/build-devshop.make"
-  MAKEFILE="http://drupalcode.org/project/devshop_provision.git/blob_plain/HEAD:/build-devshop.make"
-  echo debconf aegir/makefile string $MAKEFILE | debconf-set-selections
-
-  apt-get install aegir2 -y
-
-#
-#  COMMAND="drush aegir-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
-#  echo "Running...  $COMMAND"
-#  su - aegir -c "$COMMAND"
-=======
 # Check anonymous mysql access
 echo "Checking anonyous Database Access... This MUST result in access denied..."
 if mysql -u "NotARealUser"; then
@@ -142,7 +114,6 @@ if  [ ! `which drush` ]; then
   COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$DEVSHOP_MAKEFILE --profile=devshop -y"
   echo "Running...  $COMMAND"
   su - aegir -c "$COMMAND"
->>>>>>> 6.x-1.x
 fi
 
 
@@ -152,11 +123,7 @@ if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   # Following instructions from hosting_queue_runner README:
   # http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
   # Copy sh script and chown
-<<<<<<< HEAD
-  cp "/var/aegir/devshop-$DEVSHOP_VERSION/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh" /var/aegir
-=======
   cp "/var/aegir/devshop-${DEVSHOP_VERSION}/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh" /var/aegir
->>>>>>> 6.x-1.x
   chown aegir:aegir /var/aegir/hosting_queue_runner.sh
   chmod 700 /var/aegir/hosting_queue_runner.sh
 
