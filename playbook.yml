@@ -37,8 +37,8 @@
         - unzip
         - vim
         - git
+        - curl
         - supervisor
-        - drush=4.5-6
         - python-mysqldb
 
     # REDHAT
@@ -69,17 +69,6 @@
         - epel-release
         - supervisor
 
-    # REDHAT
-    - name: Setup | Install Drush
-      include: tasks/drush.yml
-      when: ansible_os_family == "RedHat"
-
-    - name: Service | Ensure Supervisor is started and enabled
-      service:
-        name={{ supervisor_daemon }}
-        state=started
-        enabled=yes
-
     - name: Create Aegir user
       user:
         name=aegir
@@ -98,6 +87,20 @@
         mode=0600
         owner=aegir
         group=aegir
+
+    - name: Setup | Install Composer
+      shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
+
+    - name: Setup | Prepare composer directory
+      file:
+        path=/usr/share/composer
+        state=directory
+
+    - name: Setup | Install Drush
+      shell: composer global require drush/drush:6.* -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
+
+    - name: Setup | Add composer bin to path
+      command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' /etc/bash.bashrc
 
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
@@ -171,6 +174,12 @@
       command: drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
       args:
         creates: /var/aegir/devshop-{{ devshop_version }}/index.php
+
+    - name: Service | Ensure Supervisor is started and enabled
+      service:
+        name={{ supervisor_daemon }}
+        state=started
+        enabled=yes
 
     - name: Supervisor | Set up queue runner script
       template:
