@@ -7,9 +7,17 @@
 
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
-include_once('inc/tasks.inc');
 include_once('inc/theme.inc');
 include_once('inc/ui.inc');
+
+// Tasks Code
+include_once('tasks/tasks.inc');
+include_once('tasks/commit.inc');
+include_once('tasks/create.inc');
+include_once('tasks/pull.inc');
+include_once('tasks/sync.inc');
+include_once('tasks/deploy.inc');
+
 
 /**
  * Implementation of hook_init()
@@ -34,6 +42,7 @@ function devshop_projects_perm() {
     'create devshop-pull task',
     'create devshop-sync task',
     'create devshop-delete task',
+    'create devshop-deploy task',
     'create project',
     'view project',
     'edit project',
@@ -104,8 +113,8 @@ function devshop_projects_menu() {
     'page arguments' => array(3),
     'access arguments' => array('create project'),
     'description' => 'Start a new Drupal website project.',
-    'file' => 'create-wizard.inc',
-    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+    'file' => 'create.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc/create',
   );
 
   // Ajax endpoint for reloads
@@ -113,8 +122,8 @@ function devshop_projects_menu() {
     'page callback' => 'devshop_projects_add_status',
     'access callback' => 'node_access',
     'access arguments' => array('create', 'project'),
-    'file' => 'create-wizard.inc',
-    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+    'file' => 'create.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc/create',
   );
 
   // hosting tasks ajax pages.
@@ -131,27 +140,77 @@ function devshop_projects_menu() {
     );
     $items[$path] = array_merge($items[$path], $info);
   }
+
+  // Environment settings pages
+  $items['node/%node/edit/%'] = array(
+    'title' => 'Edit',
+    'page callback' => 'devshop_project_environment_settings_page',
+    'page arguments' => array(1, 3),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 1),
+    'weight' => 1,
+    'file' => 'node.pages.inc',
+    'file path' => drupal_get_path('module', 'node'),
+    'type' => MENU_LOCAL_TASK,
+  );
   return $items;
+}
+
+
+/**
+ * Implements hook_block()
+ *
+ * Provides three blocks:
+ *  - DevShop Tasks
+ *  - Created by ThinkDrop
+ *  - Powered by Aegir
+ */
+function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['project_nav'] = array(
+        'info' => t('DevShop Project Nav'),
+        'weight' => '-10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'pre_content',
+      );
+      return $blocks;
+      break;
+
+    case 'view':
+      if ($delta == 'project_nav'){
+        $node = menu_get_object('node');
+        if ($node->type == 'project') {
+          $block['subject'] = '';
+          $block['content'] = theme('devshop_project_nav', $node);
+        }
+      }
+      return $block;
+  }
+}
+
+/**
+ * Environment settings page menu callback.
+ *
+ * Pulls in the node edit form for the site of the project.
+ */
+function devshop_project_environment_settings_page($project_node, $environment){
+
+  $site_node = node_load($project_node->project->environments[$environment]->site);
+
+  drupal_set_title($project_node->title);
+  return drupal_get_form($site_node->type . '_node_form', $site_node);
 }
 
 
 /**
  * Implements hook_devshop_project_settings
  */
-function devshop_projects_devshop_project_settings($project_node = NULL){
-  if (!empty($project_node->git_branches)){
-    $branch_options = array_combine($project_node->git_branches, $project_node->git_branches);
-  } else {
-    $branch_options = array();
-  }
+function devshop_projects_devshop_project_settings($node = NULL){
+  $project = $node->project;
 
   $settings = array();
-  $settings['git_branch'] = array(
-    '#title' => t('Git Branch'),
-    '#node_type' => 'platform',
-    '#type' => 'select',
-    '#options' => $branch_options,
-  );
 
   $http_servers = hosting_get_servers('http');
   if (count($http_servers)) {
@@ -173,9 +232,14 @@ function devshop_projects_devshop_project_settings($project_node = NULL){
     );
   }
 
+  $settings['production_mode'] = array(
+    '#title' => t('Production Mode'),
+    '#type' => 'checkbox',
+    '#default_value' => 0,
+    '#description' => t('Prevent overwriting of data, disabling, and other interruptive actions.'),
+  );
   return $settings;
 }
-
 
 /**
  * Page Callback for hosting/projects/add
@@ -277,60 +341,7 @@ function devshop_hosting_task_menu_access($node, $task) {
   }
 }
 
-/**
- * Status of Project
- *
- * @TODO: When creating a new platform for an existing project, the status
- * goes back to "platforms not-verified"
- *
- * @param $node
- *   a project node
- */
-function devshop_project_status($node){
 
-  //Project status
-  $platforms_ready = TRUE;
-  $sites_ready = TRUE;
-  $sites_installing = FALSE;
-
-  // PROJECT STATUS
-  if (empty($node->project_objects) && empty($node->git_branches)){
-    return 'preparing-project';
-  }
-
-  // PLATFORMS STATUS: Determine if all platforms are verified.
-  if (isset($node->project_objects['platform'])){
-    foreach ($node->project_objects['platform'] as $nid => $env){
-      $platform_nodes[$env] = node_load($nid);
-      if (!empty($platform_nodes[$env]) && $platform_nodes[$env]->platform_status == 0){
-        $platforms_ready = FALSE;
-      }
-    }
-  } else {
-    $platforms_ready = FALSE;
-  }
-  // SITES STATUS: Determine if sites exist and are enabled
-  if ($platforms_ready && isset($node->project_objects['site'])){
-
-    foreach ($node->project_objects['site'] as $nid => $env){
-      $site_nodes[$env] = node_load($nid);
-      if ($site_nodes[$env]->site_status == 0){
-        $sites_ready = FALSE;
-        $sites_installing = TRUE;
-      }
-    }
-  } else {
-    $sites_ready = FALSE;
-  }
-
-
-  // @TODO: This is so rough!  We can do better.
-  return $sites_ready? 'sites_ready': (
-    $sites_installing? 'sites_installing': (
-      $platforms_ready? 'platforms_ready': 'platforms_verifying'
-    )
-  );
-}
 
 /**
  * Implements hook_hosting_drush_aliases_name()
@@ -347,7 +358,7 @@ function devshop_projects_hosting_drush_aliases_name($node) {
  * Helper function to create a site in a project.
  * Used by Wizard & "Create Platform" > Post Verify
  */
-function devshop_projects_create_site($project_node, $platform_node, $platform_name, $db_server = NULL) {
+function devshop_projects_create_site($project, $platform_node, $environment_name, $db_server = NULL) {
   global $user;
 
   // Create the site nodes
@@ -355,7 +366,7 @@ function devshop_projects_create_site($project_node, $platform_node, $platform_n
   $node->type = 'site';
   $node->status = 1;
   $node->uid = $user->uid;
-  $node->title = $platform_name .'.'. $project_node->base_url;
+  $node->title = $environment_name .'.'. $project->base_url;
 
   // Aegir properties
   // @TODO: better client & DB support
@@ -367,20 +378,49 @@ function devshop_projects_create_site($project_node, $platform_node, $platform_n
   $node->platform = $platform_node->nid;
 
   // Lookup this platforms install profile
-  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project_node->install_profile));
-
-  $node->environment = $platform_name;
-  $node->git_branch = $platform_node->git_branch;
-  $node->project = $project_node->title;
+  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project->install_profile));
 
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
 
-  // Save the node
+  // Save the site node
   if ($node = node_submit($node)) {
     node_save($node);
   }
+
+  // Once we have the nid, save the environment object.
+  $project->environments[$environment_name]->site = $node->nid;
+  $project_node = node_load($project->nid);
+  $project_node->project = $project;
+  $project_node->no_verify = TRUE;
+  node_save($project_node);
+
   return $node;
+}
+
+/**
+ * Helper to get select #options for git ref.
+ */
+function devshop_projects_git_ref_options($project){
+
+  // Build branch options
+  if (is_array($project->settings->git['branches']) && !empty($project->settings->git['branches'])) {
+    $options = array(
+      'Branches' => array_combine($project->settings->git['branches'], $project->settings->git['branches']),
+    );
+
+    // If there are tags...
+    if (is_array($project->settings->git['tags']) && !empty($project->settings->git['tags'])) {
+      $options['Tags'] = array_combine($project->settings->git['tags'], $project->settings->git['tags']);
+    }
+  }
+
+  // If there are none...
+  if (!isset($options)){
+    $options = array(t('No branches or tags! Re-validate the project.'));
+  }
+
+  return $options;
 }
 
 /**
@@ -403,9 +443,9 @@ function _devshop_projects_node_create($type, $node = stdClass){
 /**
  * Check if a site has features diff enabled.
  */
-function _devshop_projects_site_has_module($node, $module) {
+function _devshop_projects_site_has_module($nid, $module) {
   $param = array(
-    'rid' => $node->nid,
+    'rid' => $nid,
     'p.short_name' => $module,
   );
   $package = hosting_package_instance_load($param);
@@ -416,26 +456,34 @@ function _devshop_projects_site_has_module($node, $module) {
  * Check if a site has features diff enabled.
  */
 function _devshop_projects_project_has_module($node, $module) {
-  if (is_array($node->project_objects['site'])){
-    $sites = array_flip($node->project_objects['site']);
-  } else {
-    $sites = array();
-  }
-  return _devshop_projects_site_has_module(node_load($sites['dev']), $module);
+  $environment = key($node->project->environments);
+  return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
 }
 
- /*
- * Delete a directory recursively
+/**
+ * Helper function to generate the URL for an environment.
+ * @param $name
+ * @param $environment
+ * @return string
  */
-function _devshop_rrmdir($dir) {
-  if (is_dir($dir)) {
-     $objects = scandir($dir);
-     foreach ($objects as $object) {
-       if ($object != "." && $object != "..") {
-         if (filetype($dir."/".$object) == "dir") _devshop_rrmdir($dir."/".$object); else unlink($dir."/".$object);
-       }
-     }
-     reset($objects);
-     rmdir($dir);
-   }
+function devshop_projects_url($name, $environment = NULL){
+
+  // If we don't have a name yet, just return the server name.
+  if (empty($name)){
+    return $_SERVER['SERVER_NAME'];
+  }
+  else {
+    $pattern = variable_get('devshop_project_environment_url_pattern', "@environment.@project.@hostname");
+
+    $replacements = array(
+      '@environment' => $environment,
+      '@project' => $name,
+      '@hostname' => $_SERVER['SERVER_NAME'],
+    );
+
+    if (is_null($environment)){
+      $replacements['@environment.'] = '';
+    }
+    return strtr($pattern, $replacements);
+  }
 }

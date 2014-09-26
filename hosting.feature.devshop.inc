@@ -40,12 +40,5 @@ function devshop_hosting_hosting_feature() {
     'module' => 'devshop_log',
     'group' => 'devshop',
   );
-  $features['devshop_live'] = array(
-    'title' => t('DevShop Live'),
-    'description' => t('Provides tools for going live.'),
-    'status' => HOSTING_FEATURE_DISABLED,
-    'module' => 'devshop_live',
-    'group' => 'devshop',
-  );
   return $features;
 }

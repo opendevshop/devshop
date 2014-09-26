@@ -11,6 +11,7 @@
 function devshop_log_perm() {
   return array(
     'view git commit logs',
+    'access project logs',
   );
 }
 
@@ -146,5 +147,5 @@ function devshop_log_page($nid) {
   }
 
   // return the output
-  return $output;
+  return check_markup($output);
 }

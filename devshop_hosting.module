@@ -14,6 +14,10 @@ function devshop_hosting_init(){
   drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
   $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
   drupal_set_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
+
+  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">');
+
+
 }
 
 /**
@@ -66,6 +70,79 @@ function devshop_hosting_menu_alter(&$items){
     'weight' => -1,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
+
+  $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
+}
+
+/**
+ * Override for hosting_site_goto().
+ * @param $node
+ */
+function devshop_hosting_site_goto($node) {
+  $cid = "hosting:site:" . $node->nid . ":login_link";
+  $cache = cache_get($cid);
+  if (user_access('create login-reset task') && !is_null($cache) && (time() < $cache->data['expire'])) {
+    $theurl = $cache->data['link'];
+    cache_clear_all($cid, 'cache');
+  }
+  else {
+    $theurl = devshop_hosting_site_url($node);
+  }
+
+  drupal_goto($theurl);
+  exit();
+}
+
+/**
+ * Override for _hosting_site_url().
+ * @param $node
+ *
+ * Allows us to check for project live domain alias.
+ */
+function devshop_hosting_site_url($node) {
+  $schema = 'http';
+  $port = null;
+
+  if (isset($node->project_nid)){
+    $project = node_load($node->project_nid);
+    $url = "{$node->environment}.{$project->base_url}";
+  }
+  else {
+    $url = strtolower(trim($node->title));
+  }
+
+  $platform = node_load($node->platform);
+  $server = node_load($platform->web_server);
+
+
+  if ($server->services['http']->has_port()) {
+    $port = $server->services['http']->port;
+    if ($port == 80) {
+      $port = null;
+    }
+  }
+
+  /**
+   * This is part of the ssl feature, but is better to implement here.
+   */
+  if (isset($node->ssl_enabled) && ($node->ssl_enabled == 2)) {
+    // this is a bit of a magic number, because we cant rely on the constant being available yet.
+    // 2 == Only SSL is enabled.
+    $schema = 'https';
+
+    if ($server->services['http']->has_port()) {
+      $port = $server->services['http']->ssl_port;
+      if ($port == 443) {
+        $port = null;
+      }
+    }
+  }
+
+  if (is_numeric($port)) {
+    return "{$schema}://{$url}:{$port}";
+  }
+
+  return "{$schema}://{$url}";
 }
 
 /**
@@ -156,7 +233,7 @@ function devshop_hosting_task_queue_block() {
     drupal_add_js($settings, 'setting');
 
     $tasks['processing'] = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING, 5);
-    $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE, 5);
+    $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE);
 
     $total_tasks = count($tasks['queued']) + count($tasks['processing']);
     $status = format_plural($total_tasks, '1 active task.', '@count active tasks.');
@@ -186,7 +263,9 @@ function devshop_hosting_task_queue_block() {
     // Build Strings
     $link = l('Tasks Logs', 'hosting/queues/tasks', array('attributes' => array('class' => 'task-logs-link')));
 
-    if ($rows){
+    $headers = array();
+
+    if (isset($rows)){
       $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
     }
 
