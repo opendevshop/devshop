@@ -24,6 +24,8 @@ function drush_devshop_provision_devshop_install_validate($site = NULL) {
   drush_set_default('aegir_db_user', 'root');
   drush_set_default('client_name', 'admin');
   $aegir_db_user = drush_get_option('aegir_db_user');
+
+  // @TODO: Default now fails that build-devshop.make is in the devshop project.
   drush_set_default('makefile', dirname(__FILE__) . '/build-devshop.make');
 
   drush_print("DEVSHOP automated install script");
@@ -216,16 +218,8 @@ function drush_devshop_provision_devshop_install($site = NULL) {
   provision_backend_invoke($site_name, 'hosting-setup');
 
   drush_print("");
-  drush_print("==============================================================================");
-  drush_print("");
-  drush_print("");
-  drush_print(dt("Congratulations, DEVSHOP has now been installed."));
-  drush_print("");
-  drush_print(dt("You should now log in to the DEVSHOP frontend by opening the following link in your web browser:"));
-  drush_print("");
-  drush_print($data['context']['login_link']);
-  drush_print("");
-  drush_print("");
-  drush_print("==============================================================================");
+  drush_print("=====================================");
+  drush_print(dt("Aegir DevShop has now been installed."));
+  drush_print("=====================================");
   drush_print("");
 }
