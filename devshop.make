@@ -6,7 +6,7 @@ projects[drupal][type] = "core"
 ; DevShop modules
 projects[devshop_hosting][subdir] = devshop
 projects[devshop_hosting][download][type] = git
-projects[devshop_hosting][download][branch] = 6.x-1.x
+projects[devshop_hosting][download][branch] = 6.x-2.x
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
@@ -28,10 +28,10 @@ projects[hosting_drush_aliases][download][type] = git
 projects[hosting_drush_aliases][download][branch] = 6.x-1.x
 
 projects[hosting_logs][subdir] = contrib
-projects[hosting_drush_aliases][download][type] = git
-projects[hosting_drush_aliases][download][branch] = 6.x-1.x
+projects[hosting_logs][download][type] = git
+projects[hosting_logs][download][branch] = 6.x-1.x
 
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
 projects[hostmaster][type] = profile
-projects[hostmaster][version] = 1.12
+projects[hostmaster][version] = 2.x
