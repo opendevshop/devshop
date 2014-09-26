@@ -1,0 +1,16 @@
+name = Boots
+description = Bootstrap-powered theme for devshop.
+core = 6.x
+engine = phptemplate
+stylesheets[all][] = bootstrap.min.css
+stylesheets[all][] = boots.css
+
+scripts[] = js/jquery.min.js
+scripts[] = js/bootstrap.min.js
+
+scripts[] = https://oss.maxcdn.com/respond/1.4.2/respond.min.js
+
+regions[header] = Header
+regions[pre_content] = Pre-content
+regions[content] = Content
+regions[footer] = Footer

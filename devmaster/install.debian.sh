@@ -13,10 +13,15 @@
 #.
 #
 
-DEVSHOP_VERSION=6.x-2.x
+DEVSHOP_VERSION='6.x-1.x'
+DEVSHOP_PROVISION_VERSION='6.x-1.x'
+DEVSHOP_HOSTING_VERSION='6.x-1.x'
+PROVISION_GIT_VERSION='6.x-1.x'
+
+DEVSHOP_MAKEFILE="https://raw.githubusercontent.com/drupalprojects/devshop/$DEVSHOP_VERSION/build-devshop.make"
 
 # Fail if not running as root (sudo)
-if [[ $EUID -ne 0 ]]; then
+if [ $EUID -ne 0 ]; then
    echo "This script must be run as root" 1>&2
    exit 1
 fi
@@ -39,14 +44,10 @@ else
 fi
 
 # Check for travis
-if [[ $TRAVIS ]]; then
+if [ "$TRAVIS" = "true" ]; then
   echo "TRAVIS DETECTED! Setting 'travis' user password."
   MYSQL_ROOT_PASSWORD=password
   MYSQL_ROOT_USER=root
-
-  # MySQL Secure Installation.  Aegir doesn't like users without passwords.
-  mysql -u root -e "DELETE FROM mysql.user WHERE User='';" -p"$MYSQL_ROOT_PASSWORD"
-  mysql -u root -e "USE mysql;\nUPDATE user SET password=PASSWORD('password');\nFLUSH PRIVILEGES;\n" -p"$MYSQL_ROOT_PASSWORD"
 fi
 
 # Add aegir debian sources
@@ -60,7 +61,7 @@ else
 fi
 
 # Setup MySQL
-if [ ! -d '/etc/mysql' ]; then
+if [ ! `which mysql` ] || [ "$TRAVIS" = "true" ]; then
   # Pre-set mysql root pw
   echo debconf mysql-server/root_password select $MYSQL_ROOT_PASSWORD | debconf-set-selections
   echo debconf mysql-server/root_password_again select $MYSQL_ROOT_PASSWORD | debconf-set-selections
@@ -70,12 +71,12 @@ if [ ! -d '/etc/mysql' ]; then
 
   # MySQL Secure Installation
   # Delete anonymous users
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM user WHERE User='' OR Password='';"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM user WHERE User='' OR Password='';"
 
   # Delete test table records
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DROP DATABASE test;"
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
-  mysql -u $MYSQL_ROOT_USER -p'"$MYSQL_ROOT_PASSWORD"' -D mysql -e "FLUSH PRIVILEGES;"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DROP DATABASE test;"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "DELETE FROM mysql.db WHERE Db LIKE 'test%';"
+  mysql -u "$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -D mysql -e "FLUSH PRIVILEGES;"
 
   echo 'Secured' > /etc/mysql-secured
 fi
@@ -89,6 +90,7 @@ else
   exit 1
 fi
 
+<<<<<<< HEAD
 if  [ ! -d '/var/aegir' ]; then
   # Install aegir-provision and other tools
 #  apt-get install drush -y
@@ -115,6 +117,32 @@ if [ ! -d "/var/aegir/devshop-$DEVSHOP_VERSION/" ]
 #  COMMAND="drush aegir-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$MAKEFILE --profile=devshop -y"
 #  echo "Running...  $COMMAND"
 #  su - aegir -c "$COMMAND"
+=======
+# Check anonymous mysql access
+echo "Checking anonyous Database Access... This MUST result in access denied..."
+if mysql -u "NotARealUser"; then
+  echo "Database is accessible by 'NotARealUser'. This means the mysql installation is not secure!"
+  exit 1
+fi
+
+if  [ ! `which drush` ]; then
+  # Install drush
+  apt-get install drush=4.5-6 -y
+
+  # Install Provision, git, supervisor
+  apt-get install aegir-provision php5 php5-gd unzip git supervisor -y
+
+  # Using drush, install provision_git, provision_logs, provisions_tasks_extra
+  # @TODO: Figure out a nicer way to setup a lot of drush projects. Is is possible with drush makefiles?
+  # @TODO: Make VERSION a variable, see hostmaster-install.
+  su - aegir -c "drush dl provision_git-$PROVISION_GIT_VERSION devshop_provision-$DEVSHOP_PROVISION_VERSION --destination=/var/aegir/.drush -y"
+  su - aegir -c "drush dl provision_logs-6.x provision_solr-6.x provision_tasks_extra-6.x --destination=/var/aegir/.drush -y"
+
+  # @TODO: Should we move this to top so it is "configurable"?
+  COMMAND="drush devshop-install --version=$DEVSHOP_VERSION --aegir_db_pass=$MYSQL_ROOT_PASSWORD --aegir_db_user=$MYSQL_ROOT_USER --makefile=$DEVSHOP_MAKEFILE --profile=devshop -y"
+  echo "Running...  $COMMAND"
+  su - aegir -c "$COMMAND"
+>>>>>>> 6.x-1.x
 fi
 
 
@@ -124,12 +152,16 @@ if [ ! -f '/etc/supervisor/conf.d/hosting_queue_runner.conf' ]
   # Following instructions from hosting_queue_runner README:
   # http://drupalcode.org/project/hosting_queue_runner.git/blob_plain/HEAD:/README.txt
   # Copy sh script and chown
+<<<<<<< HEAD
   cp "/var/aegir/devshop-$DEVSHOP_VERSION/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh" /var/aegir
+=======
+  cp "/var/aegir/devshop-${DEVSHOP_VERSION}/profiles/devshop/modules/contrib/hosting_queue_runner/hosting_queue_runner.sh" /var/aegir
+>>>>>>> 6.x-1.x
   chown aegir:aegir /var/aegir/hosting_queue_runner.sh
   chmod 700 /var/aegir/hosting_queue_runner.sh
 
   # Setup config
-  echo "[program:hosting_queue_runner]
+  echo '[program:hosting_queue_runner]
 ; Adjust the next line to point to where you copied the script.
 command=/var/aegir/hosting_queue_runner.sh
 user=aegir
@@ -138,7 +170,7 @@ stdout_logfile=/var/log/hosting_queue_runner
 autostart=TRUE
 autorestart=TRUE
 ; Tweak the next line to match your environment.
-environment=HOME=\"/var/aegir\",USER=\"aegir\",DRUSH_COMMAND=\"/usr/bin/drush\"" > /etc/supervisor/conf.d/hosting_queue_runner.conf
+environment=HOME="/var/aegir",USER="aegir",DRUSH_COMMAND="/usr/bin/drush"' > /etc/supervisor/conf.d/hosting_queue_runner.conf
   service supervisor stop
   service supervisor start
 fi
@@ -196,7 +228,7 @@ else
   echo "║  Supervisor is running Hosting Queue Runner.                  ║"
   echo "╠═══════════════════════════════════════════════════════════════╣"
   echo "║ Use this link to login:                                       ║"
-  echo "║ `su - aegir -c"drush @hostmaster uli"`                        ║"
   echo "╚═══════════════════════════════════════════════════════════════╝"
+  echo " `su - aegir -c"drush @hostmaster uli"`    "
 
 fi
