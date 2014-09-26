@@ -51,7 +51,7 @@ function drush_devshop_provision_provision_devshop_pull() {
     $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
     $platform = d($platform_alias);
     
-    $site_alias = '@' . $platform_name . '.' . d()->base_url;
+    $site_alias = '@' . $platform_name . '.' . d()->project['base_url'];
     $site = d($site_alias);
   
     // Find repo path
@@ -61,7 +61,7 @@ function drush_devshop_provision_provision_devshop_pull() {
     provision_git_is_repo($repo_path);
     
     // Determine revert setting from project settings (or if set as option, always)
-    $reset = drush_get_option('reset') ? drush_get_option('reset') : d()->settings[$platform_name]['pull_reset'];
+    $reset = drush_get_option('reset') ? drush_get_option('reset') : FALSE;
   
     // If reset is true, do a git reset --hard first.
     if ($reset) {

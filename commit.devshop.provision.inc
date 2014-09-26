@@ -25,7 +25,7 @@ function drush_devshop_provision_provision_devshop_commit($platform_name = NULL)
   
   // Get platform & site object
   $project_name = d()->project_name;
-  $site_alias = '@' . $platform_name . '.' . d()->base_url;
+  $site_alias = '@' . $platform_name . '.' . d()->project['base_url'];
   $platform = d();
   
   $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
