@@ -131,7 +131,8 @@ function devshop_provision_drush_command() {
      'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => _provision_default_web_group())),
      'version' => dt('The version of this released. (default: %version)', array('%version' => provision_version())),
      'aegir_root' => dt('Install aegir in this home directory (default: %home). Do not change unless you know what you are doing.', array('%home' => drush_server_home())),
-     'makefile' => dt('The Drupal installation profile to use for installing the front-end (default: hostmaster)'),
+     'makefile' => dt('The Drupal makefile to use to build the front end.'),
+     'profile' => dt('The Drupal installation profile to use for installing the front-end (default: hostmaster)'),
     ),
   );
 
