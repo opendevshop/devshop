@@ -16,7 +16,6 @@ projects[jquery_update][subdir] = contrib
 ; Aegir Contrib
 projects[hosting_filemanager][subdir] = contrib
 projects[hosting_tasks_extra][subdir] = contrib
-projects[hosting_queue_runner][subdir] = contrib
 
 ; Aegir Contrib maintained by devshop maintainers
 projects[hosting_solr][subdir] = contrib
