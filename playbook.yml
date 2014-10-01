@@ -90,6 +90,8 @@
 
     - name: Setup | Install Composer
       shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
+      args:
+        creates: /usr/local/bin/composer
 
     - name: Setup | Prepare composer directory
       file:
@@ -168,12 +170,6 @@
       args:
         creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
 
-    - name: Clear the drush cache.
-      command: drush cc drush
-      sudo: yes
-      sudo_user: aegir
-
-
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
@@ -202,6 +198,16 @@
         mode=0644
       notify:
         - restart supervisor
+
+    - name: Save SSH key as variable
+      command: drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
+      sudo: yes
+      sudo_user: aegir
+
+    - name: Clear the drush cache.
+      command: drush cc drush
+      sudo: yes
+      sudo_user: aegir
 
     - name: Get Login Link
       command: drush @hostmaster uli
