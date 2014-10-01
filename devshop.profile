@@ -242,11 +242,10 @@ function devshop_task_finalize() {
 
   menu_rebuild();
 
-
-  $theme = 'eldir';
-  drupal_set_message(st('Configuring Eldir theme'));
+  $theme = 'boots';
+  drupal_set_message(st('Enabling "boots" theme'));
   install_disable_theme('garland');
-  install_default_theme('eldir');
+  install_default_theme('boots');
   system_theme_data();
 
   db_query("DELETE FROM {cache}");
