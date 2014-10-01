@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "debian" do |debian|
     debian.vm.box = "hashicorp/precise64"
     debian.vm.network "private_network", ip: "20.20.20.20"
-    debian.vm.hostname = "devshop.localhost"
+    debian.vm.hostname = "devshop.local"
 
     debian.vm.provision "ansible" do |ansible|
       ansible.playbook = settings['ansible_playbook']

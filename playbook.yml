@@ -162,11 +162,17 @@
         - provision_git-{{ provision_git_version }}
         - devshop_provision-{{ devshop_provision_version }}
         - provision_logs-{{ provision_logs_version }}
-        - provision_solr-{{ provision_solr_version }}
+# Commented out until functional
+#        - provision_solr-{{ provision_solr_version }}
         - provision_tasks_extra-{{ provision_tasks_extra_version }}
-        - drush_make-6.x-2.3
       args:
-        creates: /var/aegir/.drush/drush_make/drush_make.drush.inc
+        creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
+
+    - name: Clear the drush cache.
+      command: drush cc drush
+      sudo: yes
+      sudo_user: aegir
+
 
     - name: Install Devmaster
       sudo: yes
