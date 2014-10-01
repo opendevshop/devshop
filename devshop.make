@@ -3,6 +3,10 @@ api = 2
 
 projects[drupal][type] = "core"
 
+; this makefile will make sure we get the development code from the
+; aegir modules instead of the tagged releases
+includes[devshop] = "drupal-org.make"
+
 ; DevShop modules
 projects[devshop_hosting][subdir] = devshop
 projects[devshop_hosting][download][type] = git
