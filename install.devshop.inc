@@ -56,7 +56,7 @@ function drush_provision_devshop_install_validate($site = NULL) {
     $makefile_msg = '';
   }
   else {
-    drush_set_default('makefile', dirname(__FILE__) . '/aegir.make');
+    drush_set_default('makefile', dirname(__FILE__) . '/devshop-dev.make');
     $makefile_msg = dt("Aegir makefile: !makefile\n", array('!makefile' => drush_get_option('makefile')));
   }
 
