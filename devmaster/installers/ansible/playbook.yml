@@ -1,0 +1,228 @@
+##
+# DevShop
+#
+
+---
+- hosts: all
+  user: root
+
+  vars_files:
+    - vars.yml
+    - vars.{{ ansible_os_family }}.yml
+
+  tasks:
+
+    - hostname: name={{ server_hostname }}
+
+    - name: Setup | Message of the day.
+      action: template src=templates/motd.j2 dest={{ motd_path }} mode=755
+
+    # DEBIAN
+    - name: Setup | Install required packages.
+      action: apt pkg={{ item }} state=installed update_cache=yes
+      when: ansible_os_family == "Debian"
+      with_items:
+        - apache2
+        - mysql-server
+        - php5
+        - php5-cli
+        - php5-curl
+        - php5-gd
+        - php5-mysql
+        - php-pear
+        - postfix
+        - sudo
+        - rsync
+        - git-core
+        - unzip
+        - vim
+        - git
+        - curl
+        - supervisor
+        - python-mysqldb
+
+    # REDHAT
+    - name: Setup | Install required packages.
+      action: yum name={{ item }} state=present
+      when: ansible_os_family == "RedHat"
+      with_items:
+#      httpd php php-mysql php-cli php-gd php-process sudo rsync git postfix
+        - httpd
+        - php
+        - php-mysql
+        - php-cli
+        - php-gd
+        - php-process
+        - php-pear
+        - php-xml
+        - postfix
+        - sudo
+        - rsync
+        - git-core
+        - unzip
+        - vim
+        - git
+        - cronie
+        - mariadb
+        - mariadb-server
+        - MySQL-python
+        - epel-release
+        - supervisor
+
+    - name: Create Aegir user
+      user:
+        name=aegir
+        shell=/bin/bash
+        groups={{ apache_user }}
+        append=yes
+        system=yes
+        home=/var/aegir
+        move_home=yes
+        generate_ssh_key=yes
+
+    - name: Setup SSH config for aegir user.
+      template:
+        src=templates/ssh-config.j2
+        dest=/var/aegir/.ssh/config
+        mode=0600
+        owner=aegir
+        group=aegir
+
+    - name: Setup | Install Composer
+      shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
+      args:
+        creates: /usr/local/bin/composer
+
+    - name: Setup | Prepare composer directory
+      file:
+        path=/usr/share/composer
+        state=directory
+
+    - name: Setup | Install Drush
+      shell: composer global require drush/drush:6.* -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
+
+    - name: Setup | Add composer bin to path
+      command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' /etc/bash.bashrc
+
+    # DEBIAN only.  RedHat has rewrite enabled by default.
+    - name: Enable mod rewrite
+      command: a2enmod rewrite
+      when: ansible_os_family == "Debian"
+
+    # TODO: Conditional on ubuntu verison. This folder changed in 14.04
+    - name: Symbolic link
+      file:
+        src=/var/aegir/config/apache.conf
+        dest={{ apache_confd_path }}
+        state=link
+        force=yes
+
+    - name: Write php.ini file. # @TODO: Restart apache if changed.
+      template:
+        src=templates/php.ini.j2
+        dest={{ php_ini_path }}
+        mode=0644
+
+    - name: Write my.cnf file.
+      template:
+        src=templates/my.cnf.{{ ansible_os_family }}.j2
+        dest={{ mysql_cnf_path }}
+        mode=0644
+
+    - name: Ensure MySQL is started and enabled on boot.
+      service:
+        name={{ mysql_daemon }}
+        state=started
+        enabled=yes
+
+    - name: Check for secured installation of MySQL
+      stat: path=/var/mysql-secured
+      register: mysqlsecured
+
+    - name: Install MySQL Securely
+      include: ./tasks/mysql-secure.yml
+      when: not mysqlsecured.stat.exists
+
+    - name: Add aegir to sudoers for restarting apache.
+      template:
+        src=templates/sudoers-d-aegir.j2
+        dest=/etc/sudoers.d/aegir
+        mode=0440
+
+    - name: Create /var/aegir/.drush
+      file:
+        path=/var/aegir/.drush
+        owner=aegir group=aegir mode=0744
+        state=directory
+
+    - name: Install drush tools.
+      command: drush dl {{ item }}  --destination=/var/aegir/.drush -y --package-handler=git_drupalorg
+      sudo: yes
+      sudo_user: aegir
+      with_items:
+        - provision-{{ provision_version }}
+        - provision_git-{{ provision_git_version }}
+        - devshop_provision-{{ devshop_provision_version }}
+        - provision_logs-{{ provision_logs_version }}
+# Commented out until functional
+#        - provision_solr-{{ provision_solr_version }}
+        - provision_tasks_extra-{{ provision_tasks_extra_version }}
+      args:
+        creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
+
+    - name: Install Devmaster
+      sudo: yes
+      sudo_user: aegir
+      command: drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+      args:
+        creates: /var/aegir/devshop-{{ devshop_version }}/index.php
+
+    - name: Service | Ensure Supervisor is started and enabled
+      service:
+        name={{ supervisor_daemon }}
+        state=started
+        enabled=yes
+
+    - name: Supervisor | Set up queue runner script
+      template:
+        src=templates/hosting-queue-runner.j2
+        dest=/usr/bin/hosting-queue-runner
+        mode=0700
+        owner=aegir
+        group=aegir
+
+    - name: Supervisor | Set up supervisor job
+      template:
+        src=templates/supervisor-hosting-queue-runner.conf.j2
+        dest={{ supervisor_conf_path }}/hosting-queue-runner.conf
+        mode=0644
+      notify:
+        - restart supervisor
+
+    - name: Save SSH key as variable
+      command: drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
+      sudo: yes
+      sudo_user: aegir
+
+    - name: Clear the drush cache.
+      command: drush cc drush
+      sudo: yes
+      sudo_user: aegir
+
+    - name: Get Login Link
+      command: drush @hostmaster uli
+      sudo: yes
+      sudo_user: aegir
+      register: uli
+    - debug: var=uli.stdout_lines
+
+  handlers:
+    - name: restart supervisor
+      service:
+        name={{ supervisor_daemon}}
+        state=restarted
+
+    - name: restart mysql
+      service: >
+        name={{ mysql_daemon }}
+        state=restarted
