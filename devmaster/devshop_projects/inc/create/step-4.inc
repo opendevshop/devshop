@@ -44,16 +44,19 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $row = array();
     $row['name'] = $name;
     $row['branch'] = $environment->git_ref;
-    $row['version'] = $task->task_status == HOSTING_TASK_SUCCESS ? $platform->release->version : t('...');
+    $row['version'] = t('...');
 
     // If platform verified successfully:
-    if ($task->task_status == HOSTING_TASK_SUCCESS) {
+    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_WARNING) {
 
       // It's not really ready until we get a version.
       if (empty($platform->release->version)) {
         $completed = FALSE;
         $row['version'] = '...';
         $row['profiles'] = '...';
+      }
+      else {
+        $row['version'] = $platform->release->version;
       }
 
       // Collect install profiles
