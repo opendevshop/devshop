@@ -77,7 +77,6 @@
         append=yes
         system=yes
         home=/var/aegir
-        move_home=yes
         generate_ssh_key=yes
 
     - name: Setup SSH config for aegir user.
