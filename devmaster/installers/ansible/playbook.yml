@@ -155,7 +155,7 @@
         state=directory
 
     - name: Install drush tools.
-      command: /usr/share/composer/vendor/bin/drush dl {{ item }}  --destination=/var/aegir/.drush -y --package-handler=git_drupalorg
+      command: /usr/share/composer/vendor/bin/drush dl {{ item }}  --destination=/var/aegir/.drush -y
       sudo: yes
       sudo_user: aegir
       with_items:
