@@ -29,6 +29,9 @@ if [ $EUID -ne 0 ]; then
     exit 1
 fi
 
+# Install git
+apt-get install git -y
+
 # If ansible command is not available, install it.
 if [ ! `which ansible` ]; then
     echo " Installing Ansible..."
@@ -40,7 +43,7 @@ if [ ! `which ansible` ]; then
         PACKAGE=python-software-properties
     fi
 
-    apt-get install $PACKAGE git -y
+    apt-get install $PACKAGE -y
     apt-add-repository ppa:ansible/ansible -y
     apt-get update
     apt-get install ansible -y
@@ -69,10 +72,8 @@ echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo $LINE
 
 # Clone the installer code
-mkdir /tmp/devshop-install
-cd /tmp/devshop-install
-git clone http://git.drupal.org/project/devshop.git
-cd devshop/installers/ansible
+git clone http://git.drupal.org/project/devshop.git /tmp/devshop-install
+cd /tmp/devshop-install/installers/ansible
 
 # Create inventory file
 echo $HOSTNAME > inventory
