@@ -21,10 +21,19 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
-. /etc/os-release
-OS=$ID
-VERSION=$VERSION_ID
-HOSTNAME_FQDN=`hostname --fqdn`
+
+if [ -f '/etc/os-release' ]; then
+    . /etc/os-release
+    OS=$ID
+    VERSION="$VERSION_ID"
+    HOSTNAME_FQDN=`hostname --fqdn`
+
+elif [ -f '/etc/lsb-release' ]; then
+    . /etc/lsb-release
+    OS=$DISTRIB_ID
+    VERSION="$DISTRIB_RELEASE"
+    HOSTNAME_FQDN=`hostname --fqdn`
+fi
 
 LINE=---------------------------------------------
 
@@ -55,10 +64,10 @@ if [ ! `which ansible` ]; then
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
 
         # Detect ubuntu version and switch package.
-        if [ $DISTRIB_RELEASE == '14.04' ]; then
-            PACKAGE=software-properties-common
-        else
+        if [ $VERSION == '12.04' ]; then
             PACKAGE=python-software-properties
+        else
+            PACKAGE=software-properties-common
         fi
 
         apt-get install git -y
@@ -124,7 +133,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD"
+ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD devshop_makefile=$PLAYBOOK_PATH/../../build-devshop.make"
 
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
