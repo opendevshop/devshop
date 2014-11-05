@@ -17,6 +17,9 @@
 #
 #    $ sudo ./install.sh /vagrant/installers/ansible
 #
+#  If using a playbook path option, the makefile used to build devmaster is defined
+#  in the vars.yml file: devshop_makefile.
+#
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
@@ -116,6 +119,9 @@ echo $LINE
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   git clone http://git.drupal.org/project/devshop.git $PLAYBOOK_PATH
   PLAYBOOK_PATH=/tmp/devshop-install/installers/ansible
+  MAKEFILE_PATH=/tmp/devshop-install/build-devshop.make
+  echo $LINE
+
 fi
 
 cd $PLAYBOOK_PATH
@@ -133,7 +139,13 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD devshop_makefile=$PLAYBOOK_PATH/../../build-devshop.make"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD devshop_makefile=$MAKEFILE_PATH"
+
+if [ $MAKEFILE_PATH ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
+fi
+
+ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "$ANSIBLE_EXTRA_VARS"
 
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
