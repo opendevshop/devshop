@@ -17,15 +17,15 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
-. /etc/lsb-release
-OS=$DISTRIB_ID
-VER=$DISTRIB_RELEASE
+. /etc/os-release
+OS=$ID
+VERSION=$VERSION_ID
 HOSTNAME_FQDN=`hostname --fqdn`
 
 LINE=---------------------------------------------
 
-echo " OS: $DISTRIB_ID"
-echo " Version: $DISTRIB_RELEASE"
+echo " OS: $OS"
+echo " Version: $VERSION"
 echo " Hostname: $HOSTNAME_FQDN"
 echo $LINE
 
@@ -44,24 +44,31 @@ if [ $EUID -ne 0 ]; then
     exit 1
 fi
 
-# Install git
-apt-get install git -y
-
 # If ansible command is not available, install it.
 if [ ! `which ansible` ]; then
     echo " Installing Ansible..."
 
-    # Detect ubuntu version and switch package.
-    if [ $DISTRIB_RELEASE == '14.04' ]; then
-        PACKAGE=software-properties-common
-    else
-        PACKAGE=python-software-properties
-    fi
+    if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
 
-    apt-get install $PACKAGE -y
-    apt-add-repository ppa:ansible/ansible -y
-    apt-get update
-    apt-get install ansible -y
+        # Detect ubuntu version and switch package.
+        if [ $DISTRIB_RELEASE == '14.04' ]; then
+            PACKAGE=software-properties-common
+        else
+            PACKAGE=python-software-properties
+        fi
+
+        apt-get install git -y
+        apt-get install $PACKAGE -y
+        apt-add-repository ppa:ansible/ansible -y
+        apt-get update
+        apt-get install ansible -y
+
+    elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
+
+        yum install git -y
+        yum install epel-release -y
+        yum install ansible -y
+    fi
 
     echo $LINE
 
@@ -71,7 +78,7 @@ else
 fi
 
 # Generate MySQL Password
-if [ "$TRAVIS" = "true" ]; then
+if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
