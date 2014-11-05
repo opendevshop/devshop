@@ -164,6 +164,7 @@ if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
   echo "║ It appears something failed during installation.                    ║"
   echo "║ There is no '/var/aegir/.drush/hostmaster.alias.drushrc.php' file.  ║"
   echo "╚═════════════════════════════════════════════════════════════════════╝"
+  exit 1
 else
 
   echo "╔═══════════════════════════════════════════════════════════════╗"
