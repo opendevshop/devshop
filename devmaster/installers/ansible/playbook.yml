@@ -105,7 +105,7 @@
 
     - name: Make drush available globally.
       file:
-        src=drush
+        src=/usr/share/composer/vendor/bin/drush
         dest=/usr/local/bin/drush
         state=link
         force=yes
