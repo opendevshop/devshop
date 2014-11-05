@@ -107,3 +107,36 @@ echo " Installing with Ansible..."
 echo $LINE
 
 ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME mysql_root_password=$MYSQL_ROOT_PASSWORD"
+
+# DevShop Installed!
+if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
+
+  echo "╔═════════════════════════════════════════════════════════════════════╗"
+  echo "║ It appears something failed during installation.                    ║"
+  echo "║ There is no '/var/aegir/.drush/hostmaster.alias.drushrc.php' file.  ║"
+  echo "╚═════════════════════════════════════════════════════════════════════╝"
+else
+
+  echo "╔═══════════════════════════════════════════════════════════════╗"
+  echo "║           ____  Welcome to  ____  _                           ║"
+  echo "║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║"
+  echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
+  echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
+  echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
+  echo "║                                              |_|              ║"
+  echo "╟───────────────────────────────────────────────────────────────╢"
+  echo "║ Submit an issues to                                           ║"
+  echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
+  echo "╟───────────────────────────────────────────────────────────────╢"
+  echo "║ NOTES                                                         ║"
+  echo "║ Your MySQL root password was set as a long secure string.     ║"
+  echo "║   You shouldn't need it again.                                ║"
+  echo "║                                                               ║"
+  echo "║ An SSH keypair has been created in /var/aegir/.ssh            ║"
+  echo "║                                                               ║"
+  echo "║ Supervisor is running Hosting Queue Runner.                   ║"
+  echo "╠═══════════════════════════════════════════════════════════════╣"
+  echo "║ You can use this link to login:                               ║"
+  echo "╚═══════════════════════════════════════════════════════════════╝"
+  sudo su - aegir -c "drush @hostmaster uli"
+fi
