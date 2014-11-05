@@ -88,4 +88,4 @@ echo $LINE
 echo " Installing with Ansible..."
 echo $LINE
 
-ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME mysq_root_password=$MYSQL_ROOT_PASSWORD"
+ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME mysql_root_password=$MYSQL_ROOT_PASSWORD"
