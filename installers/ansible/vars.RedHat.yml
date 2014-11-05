@@ -12,3 +12,5 @@ supervisor_daemon: supervisord
 supervisor_conf_path: /etc/supervisord.d
 
 motd_path: /etc/motd
+
+bashrc_path: /etc/bashrc
