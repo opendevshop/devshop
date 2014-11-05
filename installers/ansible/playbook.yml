@@ -208,13 +208,6 @@
       sudo: yes
       sudo_user: aegir
 
-    - name: Get Login Link
-      command: drush @hostmaster uli
-      sudo: yes
-      sudo_user: aegir
-      register: uli
-    - debug: var=uli.stdout_lines
-
   handlers:
     - name: restart supervisor
       service:
