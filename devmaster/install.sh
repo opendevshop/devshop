@@ -70,7 +70,13 @@ else
     echo $LINE
 fi
 
-# Generate our attributes
+# Generate MySQL Password
+if [ "$TRAVIS" = "true" ]; then
+  echo "TRAVIS DETECTED! Setting 'root' user password."
+  MYSQL_ROOT_PASSWORD=''
+  echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+fi
+
 if [ -f '/tmp/mysql_root_password' ]
 then
   MYSQL_ROOT_PASSWORD=$(cat /tmp/mysql_root_password)
