@@ -5,9 +5,13 @@
 #
 #  Install DevShop with Ansible.
 #
+#  To clone devshop playbook from source:
+#
 #    $ sudo ./install.sh
 #
-#  This script installs Ansible.  For more information see http://ansible.com
+#  To use a local playbook: (use the directory path, do not include playbook.yml)
+#
+#    $ sudo ./install.sh /path/to/playbook
 #
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -22,6 +26,15 @@ LINE=---------------------------------------------
 echo " OS: $DISTRIB_ID"
 echo " Version: $DISTRIB_RELEASE"
 echo $LINE
+
+# Detect playbook path option
+if [ $1 ]; then
+    PLAYBOOK_PATH=$1
+    echo " Using playbook $1/playbook.yml "
+    echo $LINE
+else
+    PLAYBOOK_PATH=/tmp/devshop-install
+fi
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
@@ -61,7 +74,7 @@ then
   MYSQL_ROOT_PASSWORD=$(cat /tmp/mysql_root_password)
   echo "Password found, using $MYSQL_ROOT_PASSWORD"
 else
-  MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;)
+  MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
   echo "Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
@@ -71,9 +84,13 @@ echo " Hostname: $HOSTNAME"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo $LINE
 
-# Clone the installer code
-git clone http://git.drupal.org/project/devshop.git /tmp/devshop-install
-cd /tmp/devshop-install/installers/ansible
+# Clone the installer code if a playbook path was not set.
+if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
+  git clone http://git.drupal.org/project/devshop.git $PLAYBOOK_PATH
+  PLAYBOOK_PATH=/tmp/devshop-install/installers/ansible
+fi
+
+cd $PLAYBOOK_PATH
 
 # Create inventory file
 echo $HOSTNAME > inventory
