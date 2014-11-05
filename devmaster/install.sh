@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#  DevShop Install Script
-#  ======================
+#  DevShop Standalone Install Script
+#  =================================
 #
 #  Install DevShop with Ansible.
 #
@@ -24,7 +24,7 @@ if [ ! `which ansible` ]; then
     echo " Installing Ansible..."
 
     apt-get update -qq
-    apt-get install -qq python-apt python-pycurl -y
+    apt-get install -qq git python-apt python-pycurl -y
     pip install ansible
     echo "----------------------------------"
 
@@ -49,12 +49,13 @@ echo " Hostname: $HOSTNAME"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo "----------------------------------"
 
-if [ VAGRANT_CWD ]; then
-  cd $VAGRANT_CWD installers/ansible
+# Clone the installer code
+mkdir /tmp/devshop-install
+cd /tmp/devshop-install
+git clone git@git.drupal.org:project/devshop.git
+cd devshop/installers/ansible
 
-fi
-
-cd installers/ansible
+# Create inventory file
 echo $HOSTNAME > inventory
 
 # If ansible playbook fails syntax check, report it and exit.
