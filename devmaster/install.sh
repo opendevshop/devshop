@@ -13,6 +13,10 @@
 #
 #    $ sudo ./install.sh /path/to/playbook
 #
+#  For example, if using vagrant:
+#
+#    $ sudo ./install.sh /vagrant/installers/ansible
+#
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
