@@ -20,11 +20,13 @@ echo "============================================="
 . /etc/lsb-release
 OS=$DISTRIB_ID
 VER=$DISTRIB_RELEASE
+HOSTNAME_FQDN=`hostname --fqdn`
 
 LINE=---------------------------------------------
 
 echo " OS: $DISTRIB_ID"
 echo " Version: $DISTRIB_RELEASE"
+echo " Hostname: $HOSTNAME_FQDN"
 echo $LINE
 
 # Detect playbook path option
@@ -80,7 +82,7 @@ else
 fi
 
 echo $LINE
-echo " Hostname: $HOSTNAME"
+echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo $LINE
 
@@ -93,7 +95,7 @@ fi
 cd $PLAYBOOK_PATH
 
 # Create inventory file
-echo $HOSTNAME > inventory
+echo $HOSTNAME_FQDN > inventory
 
 # If ansible playbook fails syntax check, report it and exit.
 if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
@@ -106,7 +108,7 @@ echo $LINE
 echo " Installing with Ansible..."
 echo $LINE
 
-ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME mysql_root_password=$MYSQL_ROOT_PASSWORD"
+ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD"
 
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
