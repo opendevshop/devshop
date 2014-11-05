@@ -194,7 +194,7 @@
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
-      command: /usr/local/bin/drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+      command: /usr/local/bin/drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop --aegir_host={{ server_hostname }} -y
       args:
         creates: /var/aegir/devshop-{{ devshop_version }}/index.php
 
