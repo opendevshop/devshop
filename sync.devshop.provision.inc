@@ -100,7 +100,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     drush_log(dt('[DEVSHOP] Syncing databases...'), 'ok');
     
     // Sync the databases
-    drush_backend_invoke('sql-sync', array($source_alias, $destination_alias));
+    drush_invoke_process(drush_sitealias_get_record('@self'), 'sql-sync', array($source_alias, $destination_alias));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing databases...'), 'ok');
@@ -112,7 +112,7 @@ function drush_devshop_provision_provision_devshop_sync($source = NULL, $destina
     
     // Sync the files
     // @TODO: Use %files aliases?
-    drush_backend_invoke('rsync', array("$source_alias:sites/$source/files/", "$destination_alias:sites/$destination/files/"));
+    drush_invoke_process(drush_sitealias_get_record('@self'), 'rsync', array("$source_alias:sites/$source/files/", "$destination_alias:sites/$destination/files/"));
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped syncing files...'), 'ok');
