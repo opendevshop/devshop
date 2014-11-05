@@ -204,7 +204,7 @@
         - restart supervisor
 
     - name: Save SSH key as variable
-      command: drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
+      command: /usr/share/composer/vendor/bin/drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
       sudo: yes
       sudo_user: aegir
 
