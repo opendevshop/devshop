@@ -124,6 +124,8 @@
         dest={{ apache_confd_path }}
         state=link
         force=yes
+      notify:
+        - restart apache
 
     # Apache Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Apache Config (When ubuntu < 14.04)
@@ -133,6 +135,8 @@
         dest=/etc/apache2/conf.d/aegir.conf
         state=link
         force=yes
+      notify:
+        - restart apache
 
     - name: Write php.ini file. # @TODO: Restart apache if changed.
       template:
