@@ -120,6 +120,7 @@ echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo $LINE
 
 # Clone the installer code if a playbook path was not set.
+MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone http://git.drupal.org/project/devshop.git $PLAYBOOK_PATH
@@ -150,7 +151,7 @@ echo $LINE
 
 ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD devshop_makefile=$MAKEFILE_PATH"
 
-if [ $MAKEFILE_PATH ]; then
+if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
