@@ -104,7 +104,6 @@ if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
 fi
 
 # Run the playbook.
-echo $LINE
 echo " Installing with Ansible..."
 echo $LINE
 
