@@ -118,6 +118,7 @@
       when: ansible_os_family == "Debian"
 
     - name: Symbolic link to Aegir's Apache Config
+      when: ansible_distribution != "Ubuntu" or ansible_lsb.major_release|int >= 14
       file:
         src=/var/aegir/config/apache.conf
         dest={{ apache_confd_path }}
