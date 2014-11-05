@@ -233,10 +233,15 @@
   handlers:
     - name: restart supervisor
       service:
-        name={{ supervisor_daemon}}
+        name={{ supervisor_daemon }}
         state=restarted
 
     - name: restart mysql
       service: >
         name={{ mysql_daemon }}
+        state=restarted
+
+    - name: restart apache
+      service:
+        name={{ apache_daemon }}
         state=restarted
