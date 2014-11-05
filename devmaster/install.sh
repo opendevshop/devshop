@@ -13,6 +13,16 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
+. /etc/lsb-release
+OS=$DISTRIB_ID
+VER=$DISTRIB_RELEASE
+
+LINE=---------------------------------------------
+
+echo " OS: $DISTRIB_ID"
+echo " Version: $DISTRIB_RELEASE"
+echo $LINE
+
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
     echo "This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
@@ -23,14 +33,23 @@ fi
 if [ ! `which ansible` ]; then
     echo " Installing Ansible..."
 
-    apt-get update -qq
-    apt-get install -qq git python-apt python-pycurl -y
-    pip install ansible
-    echo "----------------------------------"
+    # Detect ubuntu version and switch package.
+    if [ $DISTRIB_RELEASE == '14.04' ]; then
+        PACKAGE=software-properties-common
+    else
+        PACKAGE=python-software-properties
+    fi
+
+    apt-get install $PACKAGE git -y
+    apt-add-repository ppa:ansible/ansible -y
+    apt-get update
+    apt-get install ansible -y
+
+    echo $LINE
 
 else
     echo " Ansible already installed. Skipping installation."
-    echo "----------------------------------"
+    echo $LINE
 fi
 
 # Generate our attributes
@@ -44,15 +63,15 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
-echo "----------------------------------"
+echo $LINE
 echo " Hostname: $HOSTNAME"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-echo "----------------------------------"
+echo $LINE
 
 # Clone the installer code
 mkdir /tmp/devshop-install
 cd /tmp/devshop-install
-git clone git@git.drupal.org:project/devshop.git
+git clone http://git.drupal.org/project/devshop.git
 cd devshop/installers/ansible
 
 # Create inventory file
@@ -65,8 +84,8 @@ if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
 fi
 
 # Run the playbook.
-echo "----------------------------------"
+echo $LINE
 echo " Installing with Ansible..."
-echo "----------------------------------"
+echo $LINE
 
 ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "server_hostname=$HOSTNAME mysq_root_password=$MYSQL_ROOT_PASSWORD"
