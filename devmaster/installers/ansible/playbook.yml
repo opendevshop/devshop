@@ -124,7 +124,7 @@
 
     # Apache Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Apache Config (When ubuntu < 14.04)
-      when: ansible_os_family == "Debian" and ansible_lsb.major_release|int < "14"
+      when: ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14
       file:
         src=/var/aegir/config/apache.conf
         dest=/etc/apache2/conf.d/aegir.conf
