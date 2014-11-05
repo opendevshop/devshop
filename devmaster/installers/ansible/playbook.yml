@@ -103,6 +103,13 @@
     - name: Setup | Add composer bin to path
       command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' /etc/bash.bashrc
 
+    - name: Make drush available globally.
+      file:
+        src=drush
+        dest=/usr/local/bin/drush
+        state=link
+        force=yes
+
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
@@ -155,7 +162,7 @@
         state=directory
 
     - name: Install drush tools.
-      command: /usr/share/composer/vendor/bin/drush dl {{ item }}  --destination=/var/aegir/.drush -y
+      command: drush dl {{ item }}  --destination=/var/aegir/.drush -y
       sudo: yes
       sudo_user: aegir
       with_items:
@@ -170,14 +177,14 @@
         creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
 
     - name: Clear the drush cache.
-      command: /usr/share/composer/vendor/bin/drush cc drush
+      command: drush cc drush
       sudo: yes
       sudo_user: aegir
 
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
-      command: /usr/share/composer/vendor/bin/drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+      command: drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
       args:
         creates: /var/aegir/devshop-{{ devshop_version }}/index.php
 
@@ -204,7 +211,7 @@
         - restart supervisor
 
     - name: Save SSH key as variable
-      command: /usr/share/composer/vendor/bin/drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
+      command: drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
       sudo: yes
       sudo_user: aegir
 
