@@ -8,7 +8,7 @@ Contents
 
 This project contains the four things needed to build a DevShop:
 
-1. install-devshop.sh
+1. install.sh
   A bash script to go from zero to DevShop.  All you need is a new Ubuntu
   12.04 server and this script.
 
@@ -29,10 +29,10 @@ Installation
 2. Set the hostname to match the fully qualified domain you would like to use
  for your DevShop front-end.
 3. Add a DNS A record to point that domain to the IP address of your server.
-4. Run the DevShop Install script. (install-devshop.sh)
+4. Run the DevShop Install script. (install.sh)
 
-    wget http://drupalcode.org/project/devshop.git/blob_plain/refs/heads/6.x-1.x:/install.debian.sh
-    sudo sh install.debian.sh
+    wget http://drupalcode.org/project/devshop.git/blob_plain/refs/heads/6.x-1.x:/install.sh
+    sudo sh install.sh
 
 The only question you will have to answer is the Postfix configuration.  The
 default options are fine:
