@@ -170,7 +170,7 @@
         creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
 
     - name: Clear the drush cache.
-      command: drush cc drush
+      command: /usr/share/composer/vendor/bin/drush cc drush
       sudo: yes
       sudo_user: aegir
 
