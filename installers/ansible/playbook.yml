@@ -115,11 +115,19 @@
       command: a2enmod rewrite
       when: ansible_os_family == "Debian"
 
-    # TODO: Conditional on ubuntu verison. This folder changed in 14.04
-    - name: Symbolic link
+    - name: Symbolic link to Aegir's Apache Config
       file:
         src=/var/aegir/config/apache.conf
         dest={{ apache_confd_path }}
+        state=link
+        force=yes
+
+    # Apache Symlink for 14.04 and higher.
+    - name: Symbolic link to Aegir's Apache Config (When ubuntu < 14.04)
+      when: ansible_os_family == "Debian" and ansible_lsb.major_release|int < "14"
+      file:
+        src=/var/aegir/config/apache.conf
+        dest=/etc/apache2/conf.d/aegir.conf
         state=link
         force=yes
 
