@@ -36,6 +36,10 @@ elif [ -f '/etc/lsb-release' ]; then
     OS=$DISTRIB_ID
     VERSION="$DISTRIB_RELEASE"
     HOSTNAME_FQDN=`hostname --fqdn`
+
+    if [ $OS == "Ubuntu" ]; then
+      OS=ubuntu
+    fi
 fi
 
 LINE=---------------------------------------------
