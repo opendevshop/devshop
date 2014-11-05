@@ -9,9 +9,9 @@
 #
 #  This script installs Ansible.  For more information see http://ansible.com
 #
-echo "=================================="
-echo " Welcome to the DevShop Installer"
-echo "=================================="
+echo "============================================="
+echo " Welcome to the DevShop Standalone Installer "
+echo "============================================="
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
