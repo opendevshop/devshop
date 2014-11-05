@@ -3,6 +3,8 @@ DevShop
 
 Welcome to the DevShop Source code.
 
+[![Build Status](https://travis-ci.org/drupalprojects/devshop.svg?branch=6.x-1.x)](https://travis-ci.org/drupalprojects/devshop)
+
 Contents
 --------
 
@@ -56,5 +58,5 @@ Use drush to access any of your sites.  Use `drush sa` to see the list of availa
 Testing
 -------
 
-Very rudimentary testing is happening on TravisCI at http://travisci.org/drupalproject/devshop
+Very rudimentary testing is happening on TravisCI at http://travisci.org/drupalprojects/devshop
 
