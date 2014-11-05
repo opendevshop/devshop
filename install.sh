@@ -121,7 +121,12 @@ echo $LINE
 
 # Clone the installer code if a playbook path was not set.
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
-  git clone http://git.drupal.org/project/devshop.git $PLAYBOOK_PATH
+  if [ ! -d "$PLAYBOOK_PATH" ]; then
+    git clone http://git.drupal.org/project/devshop.git $PLAYBOOK_PATH
+  else
+    cd $PLAYBOOK_PATH
+    git pull
+  fi
   PLAYBOOK_PATH=/tmp/devshop-install/installers/ansible
   MAKEFILE_PATH=/tmp/devshop-install/build-devshop.make
   echo $LINE
