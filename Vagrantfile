@@ -19,7 +19,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "private_network", ip: attributes["vagrant"]["private_network_ip"]
 
   # Set SH as our provisioner
-  config.vm.provision "shell", path: attributes['vagrant']['install_script']
+  config.vm.provision "shell",
+    path: attributes['vagrant']['install_script'],
+    args: "/vagrant/installers/ansible"
 
 end
 
