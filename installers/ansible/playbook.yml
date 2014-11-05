@@ -162,7 +162,7 @@
         state=directory
 
     - name: Install drush tools.
-      command: drush dl {{ item }}  --destination=/var/aegir/.drush -y
+      command: /usr/local/bin/drush dl {{ item }}  --destination=/var/aegir/.drush -y
       sudo: yes
       sudo_user: aegir
       with_items:
@@ -177,14 +177,14 @@
         creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
 
     - name: Clear the drush cache.
-      command: drush cc drush
+      command: /usr/local/bin/drush cc drush
       sudo: yes
       sudo_user: aegir
 
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
-      command: drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
+      command: /usr/local/bin/drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop -y
       args:
         creates: /var/aegir/devshop-{{ devshop_version }}/index.php
 
@@ -211,7 +211,7 @@
         - restart supervisor
 
     - name: Save SSH key as variable
-      command: drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
+      command: /usr/local/bin/drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
       sudo: yes
       sudo_user: aegir
 

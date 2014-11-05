@@ -11,8 +11,7 @@ Contents
 This project contains the four things needed to build a DevShop:
 
 1. install.sh
-  A bash script to go from zero to DevShop.  All you need is a new Ubuntu
-  12.04 server and this script.
+  A bash script to go from zero to DevShop.  All you need is a new server and this script.
 
 2. devshop.make
   The makefile used to build a DevShop instance.  It does NOT include itself as
@@ -60,3 +59,7 @@ Testing
 
 Very rudimentary testing is happening on TravisCI at http://travisci.org/drupalprojects/devshop
 
+The install script has been tested on:
+
+  - ubuntu 12.04
+  - centos 7.0
