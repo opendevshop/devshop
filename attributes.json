@@ -2,8 +2,6 @@
   "vagrant": {
     "hostname": "devshop.local",
     "private_network_ip": "10.10.10.10",
-    "network_bridge": "wlan",
-    "install_script": "repos/devshop/install.debian.sh",
-    "private_key_path": "~/.ssh/id_rsa"
+    "install_script": "install.sh"
   }
 }
