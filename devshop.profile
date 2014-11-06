@@ -268,6 +268,9 @@ function devshop_task_finalize() {
   $rid = install_add_role('administrator');
   variable_set('user_admin_role', $rid);
 
+  // Hide errors from the screen.
+  variable_set('error_level', 0);
+
 
   node_access_rebuild();
 }
