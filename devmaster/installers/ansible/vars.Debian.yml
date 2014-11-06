@@ -10,8 +10,10 @@ mysql_cnf_path: /etc/mysql/my.cnf
 mysql_daemon: mysql
 
 supervisor_daemon: supervisor
-supervisor_conf_path: /etc/supervisor/conf.d
+supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner.conf
 
 motd_path: /etc/update-motd.d/95-ansible
 
 bashrc_path: /etc/bash.bashrc
+
+drush_path: /usr/local/bin/drush
