@@ -84,7 +84,7 @@
       file:
         path=/var/aegir
         state=directory
-        mode=0744
+        mode=0755
         recurse=yes
       when: ansible_os_family == "RedHat"
 
@@ -118,7 +118,7 @@
     - name: Make drush available globally.
       file:
         src=/usr/share/composer/vendor/bin/drush
-        dest=/usr/local/bin/drush
+        dest={{ drush_path }}
         state=link
         force=yes
 

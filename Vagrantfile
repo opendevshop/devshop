@@ -16,17 +16,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Base Box & Config
   # Uncomment to test with other types of boxes.
   # config.vm.box = "hashicorp/precise64"
-  config.vm.box = "ubuntu/trusty64"
+  # config.vm.box = "ubuntu/trusty64"
   # config.vm.box = "chef/centos-6.5"
-  # config.vm.box = "chef/centos-7.0"
+   config.vm.box = "chef/centos-7.0"
 
   config.vm.hostname = attributes["vagrant"]["hostname"]
   config.vm.network "private_network", ip: attributes["vagrant"]["private_network_ip"]
 
   # Set SH as our provisioner
   config.vm.provision "shell",
-    path: attributes['vagrant']['install_script'],
-    args: "/vagrant/installers/ansible"
+    path: attributes['vagrant']['install_script']
 
 end
 
