@@ -271,6 +271,8 @@ function devshop_task_finalize() {
   // Hide errors from the screen.
   variable_set('error_level', 0);
 
+  // Make sure blocks are setup properly.
+  _block_rehash();
 
   node_access_rebuild();
 }
