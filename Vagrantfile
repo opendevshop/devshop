@@ -25,7 +25,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Set SH as our provisioner
   config.vm.provision "shell",
-    path: attributes['vagrant']['install_script']
+    path: attributes['vagrant']['install_script'],
+    args: "/vagrant/installers/ansible"
 
 end
 
