@@ -3,7 +3,7 @@
 apache_user: apache
 apache_confd_path: /etc/httpd/conf.d/aegir.conf
 apache_control: /usr/sbin/apachectl
-apache_daemon: apache
+apache_daemon: httpd
 
 php_ini_path: /etc/php.ini
 mysql_cnf_path: /etc/my.cnf
