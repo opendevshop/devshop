@@ -6,7 +6,7 @@ python: "2.7"
 install:
 
   # Install DevShop with the standalone installer, using local playbooks.
-  - sudo bash install.sh installers/ansible
+  - sudo bash install.sh
 
 script:
 
