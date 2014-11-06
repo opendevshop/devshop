@@ -79,6 +79,16 @@
         home=/var/aegir
         generate_ssh_key=yes
 
+    # Aegir's CentOS installation requires this.
+    - name: Set appropriate permissions for Aegir's home folder.
+      file:
+        path=/var/aegir
+        state=directory
+        mode=0744
+        recurse=yes
+      when: ansible_os_family == "RedHat"
+
+
     - name: Setup SSH config for aegir user.
       template:
         src=templates/ssh-config.j2
