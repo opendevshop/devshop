@@ -81,11 +81,7 @@
 
     # Aegir's CentOS installation requires this.
     - name: Set appropriate permissions for Aegir's home folder.
-      file:
-        path=/var/aegir
-        state=directory
-        mode=0755
-        recurse=yes
+      command: chmod -R 755 /var/aegir
       when: ansible_os_family == "RedHat"
 
 
@@ -187,7 +183,7 @@
         state=directory
 
     - name: Install drush tools.
-      command: /usr/local/bin/drush dl {{ item }}  --destination=/var/aegir/.drush -y
+      command: "{{ drush_path }} dl {{ item }}  --destination=/var/aegir/.drush -y"
       sudo: yes
       sudo_user: aegir
       with_items:
@@ -202,14 +198,14 @@
         creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
 
     - name: Clear the drush cache.
-      command: /usr/local/bin/drush cc drush
+      command: "{{ drush_path }} cc drush"
       sudo: yes
       sudo_user: aegir
 
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
-      command: /usr/local/bin/drush devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop --aegir_host={{ server_hostname }} -y
+      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop --aegir_host={{ server_hostname }} -y"
       args:
         creates: /var/aegir/devshop-{{ devshop_version }}/index.php
 
@@ -230,13 +226,13 @@
     - name: Supervisor | Set up supervisor job
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
-        dest={{ supervisor_conf_path }}/hosting-queue-runner.conf
+        dest={{ supervisor_hosting_queued_conf_path }}
         mode=0644
       notify:
         - restart supervisor
 
     - name: Save SSH key as variable
-      shell: /usr/local/bin/drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes
+      shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
       sudo: yes
       sudo_user: aegir
 
