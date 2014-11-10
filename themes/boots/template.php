@@ -233,3 +233,35 @@ function boots_item_list($items = array(), $title = NULL, $type = 'ul', $attribu
   }
   return $output;
 }
+
+/**
+ * Implements hook_status_messages()
+ */
+function boots_status_messages($display = NULL) {
+  $output = '';
+  foreach (drupal_get_messages($display) as $type => $messages) {
+    if ($type == 'status') {
+      $class = "alert alert-success";
+    }
+    elseif ($type == 'warning') {
+      $class = "alert alert-warning";
+    }
+    elseif ($type == 'error') {
+      $class = "alert alert-danger";
+    }
+
+    $output .= "<div class=\"$class\">\n";
+    if (count($messages) > 1) {
+      $output .= " <ul>\n";
+      foreach ($messages as $message) {
+        $output .= '  <li>' . $message . "</li>\n";
+      }
+      $output .= " </ul>\n";
+    }
+    else {
+      $output .= $messages[0];
+    }
+    $output .= "</div>\n";
+  }
+  return $output;
+}
