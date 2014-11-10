@@ -2,6 +2,7 @@
   "vagrant": {
     "hostname": "devshop.local",
     "private_network_ip": "10.10.10.10",
-    "install_script": "install.sh"
+    "install_script": "install.sh",
+    "development": true
   }
 }

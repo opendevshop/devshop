@@ -29,6 +29,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     path: attributes['vagrant']['install_script'],
     args: "/vagrant/installers/ansible"
 
+  # Prepare development environment
+  if (attributes['vagrant']['development'])
+      config.vm.synced_folder "repos/", "/repos",
+          mount_options: ["uid=33,gid=33"]
+
+      system('bash prepare-development.sh')
+      config.vm.provision "shell",
+          path: 'prepare-development-vagrant.sh'
+  end
+
 end
 
 class NoSettingsException < Vagrant::Errors::VagrantError
