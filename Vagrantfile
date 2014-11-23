@@ -35,10 +35,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
           mount_options: ["uid=12345,gid=12345"]
 
-      system('bash ' + File.dirname(__FILE__) + '/prepare-development.sh ' + File.dirname(__FILE__))
+      system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__))
 
       config.vm.provision "shell",
-        path: 'prepare-development-vagrant.sh'
+        path: 'vagrant-prepare-guest.sh'
   end
 
 end
