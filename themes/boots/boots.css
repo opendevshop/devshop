@@ -4,7 +4,7 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.devshop-environment > a.site-link {
+.devshop-environment > .environment-header {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -123,8 +123,8 @@ body.admin-menu .navbar-static-top {
 
 
 .devshop-environment .tasks-button > a {
-    padding: 19px 5px;
-    height: 4.4em;
+    padding: 10px 5px;
+    height: 3em;
 }
 .devshop-environment .tasks-button > a:hover,
 .devshop-environment .tasks-button.open > a {
@@ -146,9 +146,6 @@ body.admin-menu .navbar-static-top {
     background: white !important;
 }
 
-.devshop-environment > a.site-link:hover .progress .progress-bar {
-
-}
 
 .devshop-environment.active {
     background-color: #fcf8e3 !important;
@@ -188,6 +185,14 @@ body.admin-menu .navbar-static-top {
     background-color: whitesmoke;
 }
 
+.environment-domains button {
+    display: inline-block;
+}
+
+
+.environment-domains.btn-group-justified>.btn-group .btn {
+    width: auto;
+}
 
 .devshop-environment .last-commit {
     display: block;
