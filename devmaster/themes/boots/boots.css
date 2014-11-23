@@ -194,6 +194,17 @@ body.admin-menu .navbar-static-top {
     width: auto;
 }
 
+.environment-domains a,
+.environment-domains button {
+    margin: 0px 5px;
+    padding: 3px;
+    color: #777;
+    font-size: .8em !important;
+}
+.environment-domains a:hover,
+.environment-domains button:hover {
+  text-decoration: underline;
+}
 .devshop-environment .last-commit {
     display: block;
     color: #777;
