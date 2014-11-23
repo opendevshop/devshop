@@ -64,15 +64,17 @@
 
     </div>
   </div>
-  <div class="row">
-    <div class="main col-md-12">
+  <div class="container-content container-fluid">
+    <div class="row">
+      <div class="main col-md-12 container-fluid">
 
-      <?php if ($tabs) print $tabs ?>
-      <?php if (isset($tabs2)) print $tabs2 ?>
+        <?php if ($tabs) print $tabs ?>
+        <?php if (isset($tabs2)) print $tabs2 ?>
 
-      <?php if ($help): print $help; endif; ?>
+        <?php if ($help): print $help; endif; ?>
 
-      <?php print $content ?>
+        <?php print $content ?>
+      </div>
     </div>
   </div>
 </div>
