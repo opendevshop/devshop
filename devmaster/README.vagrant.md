@@ -53,7 +53,7 @@ It is best to use the installers from the websites so you are sure to get the ri
   
   *NOTE:* If you wish to change the IP or hostname, edit `vagrant.vars.yml` before you call vagrant up for the first time.
 
-7. If you wish to develop devshop, edit `vagrant.vars.yml` and set development to TRUE:
+7. If you wish to test a "pure" devshop install, edit `vagrant.vars.yml` and set development to FALSE:
 
   ```yml
   # Set to TRUE if you wish to develop devshop.
@@ -63,8 +63,11 @@ It is best to use the installers from the websites so you are sure to get the ri
   install_script: install.sh
   ```
 
-  Setting `development: true` will clone the source code to this folder and setup synced folders to vagrant.  
+  Keeping `development: true` will clone the source code to this folder and setup synced folders to vagrant.  
   Once installed, you can edit any file in `source` to work on devshop.
+  
+  Setting `development: false` will provision the machine with just the install.sh script, 
+  the same way you would do it on a real server.  This is useful for testing.
 
 Usage
 -----
