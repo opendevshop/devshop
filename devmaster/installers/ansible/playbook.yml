@@ -78,6 +78,7 @@
         system=yes
         home=/var/aegir
         generate_ssh_key=yes
+        uid={{ aegir_user_uid }}
 
     # Aegir's CentOS installation requires this.
     - name: Set appropriate permissions for Aegir's home folder.
@@ -183,7 +184,7 @@
         state=directory
 
     - name: Install drush tools.
-      command: "{{ drush_path }} dl {{ item }}  --destination=/var/aegir/.drush -y"
+      command: "{{ drush_path }} dl {{ item }}  --destination=/var/aegir/.drush/commands -y"
       sudo: yes
       sudo_user: aegir
       with_items:
@@ -195,7 +196,7 @@
 #        - provision_solr-{{ provision_solr_version }}
         - provision_tasks_extra-{{ provision_tasks_extra_version }}
       args:
-        creates: /var/aegir/.drush/provision_tasks_extra/provision_tasks_extra.drush.inc
+        creates: /var/aegir/.drush/commands/provision_tasks_extra/provision_tasks_extra.drush.inc
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
@@ -207,7 +208,7 @@
       sudo_user: aegir
       command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devshop --aegir_host={{ server_hostname }} -y"
       args:
-        creates: /var/aegir/devshop-{{ devshop_version }}/index.php
+        creates: /var/aegir/devshop-{{ devshop_version }}/sites/{{ server_hostname }}/settings.php
 
     - name: Service | Ensure Supervisor is started and enabled
       service:
