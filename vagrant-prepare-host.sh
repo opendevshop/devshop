@@ -6,8 +6,14 @@
 # This script is run automatically on `vagrant up`.  You do not need to this manually.
 #
 
-# Passed argument
+# Passed argument is Vagrant Home folder.
 cd $1
+
+if [ ! -d source ]; then
+  mkdir source
+fi
+
+cd source
 
 # Build a full devshop frontend on the host with drush make, with working-copy option.
 if [ ! -d devshop-6.x-1.x ]; then
@@ -20,10 +26,11 @@ fi
 # Clone drush packages.
 if [ ! -d drush ]; then
     mkdir drush
-    git clone git@git.drupal.org:project/provision.git drush/provision --branch 6.x-2.x
-    git clone git@git.drupal.org:project/provision_git.git drush/provision_git
-    git clone git@git.drupal.org:project/devshop_provision.git drush/devshop_provision
-    git clone git@git.drupal.org:project/provision_logs.git drush/provision_logs --branch 6.x-1.x
-    git clone git@git.drupal.org:project/provision_logs.git drush/provision_tasks_extra --branch 6.x-1.x
-
+    cd drush
+    git clone git@git.drupal.org:project/provision.git --branch 6.x-2.x
+    git clone git@git.drupal.org:project/provision_git.git --branch 6.x-1.x
+    git clone git@git.drupal.org:project/devshop_provision.git --branch 6.x-1.x
+    git clone git@git.drupal.org:project/provision_logs.git --branch 6.x-1.x
+    git clone git@git.drupal.org:project/provision_solr.git --branch 6.x-1.x
+    git clone git@git.drupal.org:project/provision_tasks_extra.git --branch 6.x-1.x
 fi

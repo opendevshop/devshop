@@ -29,10 +29,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Prepare development environment
   if (settings["development"])
-      config.vm.synced_folder "devshop-6.x-1.x", "/var/aegir/devshop-6.x-1.x",
+      config.vm.synced_folder "source/devshop-6.x-1.x", "/var/aegir/devshop-6.x-1.x",
           mount_options: ["uid=12345,gid=12345"]
 
-      config.vm.synced_folder "drush", "/var/aegir/.drush/commands",
+      config.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
           mount_options: ["uid=12345,gid=12345"]
 
       system('bash ' + File.dirname(__FILE__) + '/prepare-development.sh ' + File.dirname(__FILE__))
