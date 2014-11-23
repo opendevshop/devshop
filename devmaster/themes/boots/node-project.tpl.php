@@ -136,16 +136,16 @@
         <div class="btn-group">
           <?php if (count($environment->domains) > 1): ?>
 
-            <a type="button" class="btn btn-default" href="<?php print $environment->url ?>" target="_blank">
+            <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
               <i class="fa fa-globe"></i> <?php print $environment->url ?>
             </a>
-            <button type="button" class="btn btn-default dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-xs dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
               <span class="caret"></span>
-              <?php print count($environment->domains); ?> <?php print t('Domain Aliases'); ?>
-              <span class="sr-only">Domain Aliases</span>
+              <?php print count($environment->domains); ?> <?php print t('Domains'); ?>
+              <span class="sr-only">Domains</span>
             </button>
           <?php else: ?>
-            <a type="button" class="btn btn-default" href="<?php print $environment->url ?>" target="_blank">
+            <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
               <i class="fa fa-globe"></i> <?php print $environment->url ?>
             </a>
           <?php endif;?>
@@ -155,6 +155,8 @@
             <?php foreach ($environment->domains as $domain): ?>
             <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
             <?php endforeach; ?>
+            <li class="divider">&nbsp;</li>
+            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit'); ?></li>
           </ul>
           <?php endif; ?>
         </div>
