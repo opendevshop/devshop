@@ -1,9 +1,6 @@
 
 # devshop repos
-repos/*
-!repos/README.md
-!repos/init-repos.sh
-!repos/vagrant-guest-setup.sh
+source
 
 # Local config
 .vagrant
