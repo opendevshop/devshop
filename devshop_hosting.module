@@ -59,6 +59,7 @@ function devshop_hosting_menu_alter(&$items){
   $items['user/password']['type'] = MENU_CALLBACK;
   unset($items['hosting/sites']);
   unset($items['hosting/platforms']);
+  unset($items['hosting/clients']);
 
   $items['hosting/servers/add'] = $items['node/add/server'];
   $items['hosting/servers/add']['title'] = t('Add new Server');
@@ -72,6 +73,11 @@ function devshop_hosting_menu_alter(&$items){
   );
 
   $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
+
+  // Order primary links
+  $items['hosting/projects']['weight'] = 1;
+  $items['hosting/servers']['weight'] = 2;
+  $items['logout']['weight'] = 3;
 }
 
 /**
