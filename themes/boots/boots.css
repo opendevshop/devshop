@@ -202,7 +202,9 @@ body.admin-menu .navbar-static-top {
     font-size: .8em !important;
 }
 .environment-domains a:hover,
-.environment-domains button:hover {
+.environment-domains button:hover,
+.environment-meta-data:hover,
+.environment-meta-data button:hover {
   text-decoration: underline;
 }
 .devshop-environment .last-commit {

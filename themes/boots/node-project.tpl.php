@@ -107,17 +107,18 @@
         <?php endif; ?>
 
 
-        <strong><?php print $environment->name; ?></strong>
+        <strong><?php print l($environment->name, "node/{$environment->site}"); ?></strong>
 
-        <small class="environment-meta-data">
+        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data btn btn-text">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i> <?php print $environment->git_ref; ?>
-        </small>
+        </a>
 
         <?php if ($environment->version): ?>
-        <small class="environment-meta-data" title="Drupal version <?php print $environment->version; ?>">
+          <a href="https://www.drupal.org/drupal-<?php print $environment->version ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text" target="_blank">
           <i class="fa fa-drupal"></i>
           <?php print $environment->version; ?>
-        </small>
+        </a>
+
         <?php endif; ?>
 
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
