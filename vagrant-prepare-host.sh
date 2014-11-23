@@ -31,6 +31,5 @@ if [ ! -d drush ]; then
     git clone git@git.drupal.org:project/provision_git.git --branch 6.x-1.x
     git clone git@git.drupal.org:project/devshop_provision.git --branch 6.x-1.x
     git clone git@git.drupal.org:project/provision_logs.git --branch 6.x-1.x
-    git clone git@git.drupal.org:project/provision_solr.git --branch 6.x-1.x
     git clone git@git.drupal.org:project/provision_tasks_extra.git --branch 6.x-1.x
 fi
