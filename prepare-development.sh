@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $1
 if [ ! -d devshop-6.x-1.x ]; then
    drush make build-devshop.make devshop-6.x-1.x --working-copy --no-gitinfofile
    cp devshop-6.x-1.x/sites/default/default.settings.php devshop-6.x-1.x/sites/default/settings.php
