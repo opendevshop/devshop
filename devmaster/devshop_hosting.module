@@ -74,10 +74,6 @@ function devshop_hosting_menu_alter(&$items){
 
   $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
 
-  // Order primary links
-  $items['hosting/projects']['weight'] = 1;
-  $items['hosting/servers']['weight'] = 2;
-  $items['logout']['weight'] = 3;
 }
 
 /**
