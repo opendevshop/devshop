@@ -17,3 +17,5 @@ provision_tasks_extra_version: 6.x-2.x
 
 
 devshop_makefile: https://raw.githubusercontent.com/drupalprojects/devshop/{{ devshop_version }}/build-devshop.make
+
+aegir_user_uid: 12345
