@@ -104,9 +104,9 @@ if [ "$TRAVIS" == "true" ]; then
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
-if [ -f '/tmp/mysql_root_password' ]
+if [ -f '/root/.my.cnf' ]
 then
-  MYSQL_ROOT_PASSWORD=$(cat /tmp/mysql_root_password)
+  MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
   echo "Password found, using $MYSQL_ROOT_PASSWORD"
 else
   MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
