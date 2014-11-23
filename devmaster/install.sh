@@ -107,10 +107,10 @@ fi
 if [ -f '/root/.my.cnf' ]
 then
   MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
-  echo "Password found, using $MYSQL_ROOT_PASSWORD"
+  echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
 else
   MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
-  echo "Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
+  echo " Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
