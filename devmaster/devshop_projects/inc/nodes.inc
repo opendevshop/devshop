@@ -55,9 +55,12 @@ function devshop_projects_load($node) {
         p.status as platform_status,
         http.title as web_server,
         db.title as db_server,
-        n.title as project_name
+        n.title as project_name,
+        s.vid,
+        sn.title as default_domain
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
+      LEFT JOIN {node} sn ON s.vid = sn.vid
       LEFT JOIN {hosting_platform} p ON e.platform = p.nid
       LEFT JOIN {node} http ON p.web_server = http.nid
       LEFT JOIN {node} db ON s.db_server = db.nid
@@ -76,8 +79,9 @@ function devshop_projects_load($node) {
     $environment->settings = (object) unserialize($environment->settings);
 
     // Environments URL:
-    // @TODO: Use aegir generated link
-    $environment->url = 'http://' . $environment->name . '.' . $project->name . '.' . $_SERVER['HTTP_HOST'];
+    // @TODO: Check for http or https.
+    // @TODO: Load a login URL if available.
+    $environment->url = 'http://' . $environment->default_domain;
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
     // Environment version
@@ -105,6 +109,10 @@ function devshop_projects_load($node) {
     if (empty($environment->git_current)){
       $environment->git_current = t('Cloning in progress...');
     }
+
+    // Get Domain aliases
+    $environment->domains = hosting_alias_get_aliases($environment);
+    array_unshift($environment->domains, $environment->default_domain);
 
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
