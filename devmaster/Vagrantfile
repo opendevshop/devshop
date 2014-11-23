@@ -37,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.synced_folder "drush", "/var/aegir/.drush/commands",
           mount_options: ["uid=12345,gid=12345"]
 
-      system('bash prepare-development.sh')
+      system('bash ' + File.dirname(__FILE__) + '/prepare-development.sh ' + File.dirname(__FILE__))
   end
 
 end
