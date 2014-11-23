@@ -3,7 +3,7 @@ DevShop Vagrant
 
 This project contains a Vagrantfile for launching a devshop virtual machine.
 
-It uses the stock [install-ubuntu.sh](https://github.com/drupaldevshop/devshop/blob/6.x-1.x/install.debian.sh)
+It uses the stock [install.sh](https://github.com/drupalprojects/devshop/blob/6.x-1.x/install.sh)
 file in the devshop project so that deployed servers and vagrant boxes are the same.
 
 Dependencies
@@ -38,43 +38,65 @@ It is best to use the installers from the websites so you are sure to get the ri
 
   *Any version is probably fine.*
 
-5. Clone this Repo.
+5. Clone this Repo and change to it's directory.
 
   ```
-  git clone git@github.com:drupaldevshop/devshop_vagrant.git
+  git clone git@git.drupal.org:project/devshop.git
+  cd devshop_vagrant
   ```
+  
+6. Edit your /etc/hosts file, adding the line:
+  
+  ```
+  10.10.10.10  devshop.local
+  ```
+  
+  *NOTE:* If you wish to change the IP or hostname, edit `vagrant.vars.yml` before you call vagrant up for the first time.
+
+7. If you wish to develop devshop, edit `vagrant.vars.yml` and set development to TRUE:
+
+  ```yml
+  # Set to TRUE if you wish to develop devshop.
+  development: true
+  server_hostname: devshop.local
+  private_network_ip: 10.10.10.10
+  install_script: install.sh
+  ```
+
+  Setting `development: true` will clone the source code to this folder and setup synced folders to vagrant.  
+  Once installed, you can edit any file in `source` to work on devshop.
 
 Usage
 -----
 
-Once that's all done you can launch (and destroy) the devshop VM any time you wish with:
+Once that's all done you can launch and destroy the devshop VM with vagrant commands.
+
+The first time you `vagrant up` it will install devshop. 
 
   ```
-  cd devshop_vagrant
   vagrant up
   ```
-Once up, you can ssh into the VM with:
-  ```
-  vagrant ssh
-  ```
-
-### DevShop Installer
-
-The first time you `vagrant up` it will install devshop.  Once the install script finished you should 
-see the stock DevShop Install Success output with a link to login to your devshop front-end.
-
-*You must use that link to login.* The admin password is automatically generated.
   
-See "DevShop Management" for instructions for accessing the server to do things like
-reset the password.
+Once the install script is finished you should see the "Welcome to DevShop" message with a link to login to your 
+devshop front-end.
+  
+You can ssh into the VM (and then switch to the aegir user) with:
+
+  ```
+  $ vagrant ssh
+  vagrant@devshop:~$ sudo su - aegir
+  aegir@devshop:~$ 
+  ```
+  
+If you need another login link to the front-end, simply call:
+
+  ```
+  aegir@devshop:~$ drush @hostmaster uli
+  ```
 
 DevShop Management
 ------------------
 
-  To access the server simply use `vagrant ssh`, then switch to the `aegir` user:
-  ```
-  sudo su - aegir
-  ```
   Once you are the aegir user, you can interact with the devshop front-end with drush.  For example, 
   to get another login link, use the `drush uli` command:
   ```
@@ -88,17 +110,5 @@ DevShop Management
   ```
   
 *NOTE: When you create new projects and environments, you will need to add those URIs to your 
-hosts file as well, or you will not be able to access them.*
+hosts file as well, or you will not be able to access them from your host machine.*
 
-Development
------------
-
-If you are interested in developing devshop, there are a few more steps you need to take.
-
-  1. `vagrant up` with the synced folder commented out.
-  2. Uncomment line 45 in `Vagrantfile` (the line with config.vm.synced_folder), and run `vagrant reload`.
-  3. Upon reload, mysql and apache may stop for some reason. Vagrant ssh in and
-     `sudo service mysql restart` and `sudo service apache2 restart`
-
-The reasoning here is that the synced_file must be owned by `aegir`, but the user doesn't exist until
-the provisioner runs.  There is currently now way around this problem, that I know of.
