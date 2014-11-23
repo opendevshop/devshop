@@ -11,7 +11,7 @@
  * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
  * print boots_render_tasks($tasks);
  */
-function boots_render_tasks($tasks = NULL, $class = '', $direction = 'left'){
+function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
 
   if (is_null($tasks)){
     // Tasks
