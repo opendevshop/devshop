@@ -7,11 +7,9 @@ PATH_TO_ATTRIBUTES = File.dirname(__FILE__) + "/attributes.json"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # Load Attributes
-  if !(File.exists?(PATH_TO_ATTRIBUTES))
-    raise NoSettingsException
-  end
-  attributes = JSON.parse(IO.read(PATH_TO_ATTRIBUTES))
+  # Load Variables
+  require 'yaml'
+  settings = YAML.load_file(File.dirname(__FILE__) + "/vagrant.vars.yml")
 
   # Base Box & Config
   config.vm.box = "hashicorp/precise64"
@@ -21,16 +19,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.box = "chef/centos-6.5"
   # config.vm.box = "chef/centos-7.0"
 
-  config.vm.hostname = attributes["vagrant"]["hostname"]
-  config.vm.network "private_network", ip: attributes["vagrant"]["private_network_ip"]
+  config.vm.hostname = settings["server_hostname"]
+  config.vm.network "private_network", ip: settings["private_network_ip"]
 
   # Set SH as our provisioner
   config.vm.provision "shell",
-    path: attributes['vagrant']['install_script'],
+    path: settings["install_script"],
     args: "/vagrant/installers/ansible"
 
   # Prepare development environment
-  if (attributes['vagrant']['development'])
+  if (settings["development"])
       config.vm.synced_folder "devshop-6.x-1.x", "/var/aegir/devshop-6.x-1.x",
           mount_options: ["uid=12345,gid=12345"]
 
