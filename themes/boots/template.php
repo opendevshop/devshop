@@ -45,6 +45,10 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'left'){
           $icon = 'exclamation-circle text-danger';
           $item_class = 'bg-danger';
           break;
+        case HOSTING_TASK_WARNING:
+          $icon = 'warning text-warning';
+          $item_class = 'bg-warning';
+          break;
 
         case HOSTING_TASK_PROCESSING;
         case HOSTING_TASK_QUEUED;
