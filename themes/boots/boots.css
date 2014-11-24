@@ -47,9 +47,6 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
-.devshop-environment.live-environment .text-muted {
-    color: white;
-}
 .devshop-environment.live-environment .environment-header a {
     color: white;
 }
