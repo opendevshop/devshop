@@ -351,12 +351,8 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
     node_save($node);
   }
 
-  // Once we have the nid, save the environment object.
-  $project->environments[$environment_name]->site = $node->nid;
-  $project_node = node_load($project->nid);
-  $project_node->project = $project;
-  $project_node->no_verify = TRUE;
-  node_save($project_node);
+  // Update environment with our site
+  db_query('UPDATE {hosting_devshop_project_environment} SET site = %d WHERE project_nid = %d AND name = "%s"', $node->nid, $project->nid, $environment_name);
 
   return $node;
 }
