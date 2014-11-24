@@ -76,7 +76,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#maxlength' => 64,
       '#attributes' => array(
         'placeholder' => t('name'),
-        'autofocus' => 'autofocus',
       ),
       '#field_prefix' => 'http://',
       '#field_suffix' => "." . $project->base_url,
@@ -102,6 +101,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#title' => t('Web server'),
         '#type' => 'select',
         '#options' => $http_servers,
+        '#default_value' => $environment->settings->http_server,
       );
     }
 
@@ -112,6 +112,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#title' => t('Database server'),
         '#type' => 'select',
         '#options' => $db_servers,
+        '#default_value' => $environment->settings->db_server,
       );
     }
 
@@ -120,11 +121,12 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#type' => 'submit',
       '#value' => t('Add environment'),
       '#name' => 'add_environment',
-      '#submit' => array('devshop_projects_create_wizard_add_new_environment'),
+      '#submit' => array('devshop_projects_save_environments'),
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',
     );
   }
+  $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
 }
 
 
@@ -136,26 +138,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 
   $values = &$form_state['values'];
 
-// Changes NEW environment data to $title
-  if ($values['project']['environments']['NEW']['name']) {
-    $new_env = $values['project']['environments']['NEW']['name'];
-    $new_env_settings = $values['project']['environments']['NEW'];
-    $values['project']['environments'][$new_env] = $new_env_settings;
-
-// Create the next NEW environment.  Unset makes sure its always last.
-    unset($values['project']['environments']['NEW']);
-
-// If "add environment" button clicked, add another row.
-    if ($form_state['clicked_button']['#name'] == 'add_environment') {
-      $values['project']['environments']['NEW'] = array();
-    }
-  } else {
-    unset($values['project']['environments']['NEW']);
-  }
-
-// Check environment titles
+  // Check environment titles
   foreach ($values['project']['environments'] as $env => $env_settings) {
-// Check for illegal chars
+    // Check for illegal chars
     if ($env != 'NEW' && !empty($env_settings['name'])) {
       if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
         $form_item = 'environments][' . $env . '][name';
@@ -164,7 +149,7 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     }
   }
 
-// Reject if empty
+  // Reject if empty
   if (count($values['project']['environments']) < 1) {
     if ($form_state['clicked_button']['#name'] == 'add_environment') {
       form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
@@ -175,17 +160,49 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 }
 
 /**
+ * Functionality for add a new environment.
+ */
+function devshop_projects_save_environments($form, &$form_state) {
+
+  $environments = $form_state['values']['project']['environments'];
+
+  if (!empty($environments['NEW']['name'])) {
+    $new_environment_name = $environments['NEW']['name'];
+    $environments[$new_environment_name] = $environments['NEW'];
+  }
+  unset($environments['NEW']);
+
+  // Delete all environments
+  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $form_state['values']['nid']);
+
+  // Create all environments
+  foreach ($environments as $environment) {
+    $name = trim($environment['name']);
+    if (!empty($name)) {
+      dsm(db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $form_state['values']['nid'], $environment['name'], $environment['git_ref'], $environment['platform'], serialize($environment['settings'])), 'insert ok?');
+    }
+  }
+
+  // Go back to the same page.
+  if ($form_state['clicked_button']['#name'] == 'add_environment') {
+    drupal_goto('hosting/projects/add/environments');
+  }
+}
+
+/**
  * STEP 3: SUBMIT
  */
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
+
+  // Save all environments.
+  devshop_projects_save_environments($form, $form_state);
+
   // Get project and reset properties..
-  $project = $form_state['project'];
-  $project_node = node_load($project->project_nid);
+  $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
+  $project = $project_node->project;
 
   // Create these platforms, if they don't exist yet
-  foreach ($form_state['values']['project']['environments'] as $name => $environment) {
-
-    $environment = (object) $environment;
+  foreach ($project->environments as $name => $environment) {
 
     // If platform exists, it's because user went back in the wizard.
     $platform_nid = $project->environments[$name]->platform;
@@ -194,6 +211,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     if ($platform_nid) {
       // @TODO: Apply settings and re-save platform.
       hosting_add_task($platform_nid, 'verify');
+      $environment->platform = $platform_nid;
     }
 
     // If platform hasn't been created yet, do so now!
@@ -211,33 +229,29 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       }
 
       // Other attributes
-      $platform->web_server = $environment->settings['web_server'];
+      $platform->web_server = $environment->settings->web_server;
       $platform_node = _devshop_projects_node_create('platform', $platform);
+      $environment->platform = $platform_node->nid;
     }
-    $environment->platform = $platform_node->nid;
-    $project->environments[$name] = (object) $environment;
-  }
 
-  // Somehow, NEW environment still appears!
-  unset($project_node->project->environments['NEW']);
+    // Update environment with our platform
+    db_query('UPDATE {hosting_devshop_project_environment} SET platform = %d WHERE project_nid = %d AND name = %d', $environment->platform, $form_state['values']['nid'], $environment->name);
+  }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments = array_diff_key($project_node->project->environments, $form_state['values']['project']['environments']);
+  $removed_environments = array_diff_key($project->environments, $form_state['values']['project']['environments']);
 
-  foreach ($removed_environments as $environment_name => $settings) {
-    // @TODO: Determine what to do here based on task status...
-    // if verify task hasn't even run yet (and has never run) we can just delete
-    // the platform node.
-
-    // Create 'delete' task for the removed platform
-    $platform_nid = $settings['platform'];
-    if ($platform_nid) {
-      hosting_add_task($platform_nid, 'delete');
-    }
-  }
-
-  // Save the project node but don't verify.  This triggers environment saving.
-  $project_node->project = $project;
-  $project_node->no_verify = TRUE;
-  node_save($project_node);
+//  dsm($removed_environments, 'removed_envs');
+//
+//  foreach ($removed_environments as $environment_name => $settings) {
+//    // @TODO: Determine what to do here based on task status...
+//    // if verify task hasn't even run yet (and has never run) we can just delete
+//    // the platform node.
+//
+//    // Create 'delete' task for the removed platform
+//    $platform_nid = $settings['platform'];
+//    if ($platform_nid) {
+//      hosting_add_task($platform_nid, 'delete');
+//    }
+//  }
 }
