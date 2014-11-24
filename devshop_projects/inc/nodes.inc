@@ -238,9 +238,6 @@ function devshop_projects_update($node) {
 
   // Save Environment records.
   if (!empty($project->environments )) {
-    // Delete existing environment records
-    // db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
-
     // Save each environment
     foreach ($project->environments as $name => $environment){
       // Ensure correct data types
