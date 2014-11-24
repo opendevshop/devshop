@@ -178,7 +178,7 @@ function devshop_projects_save_environments($form, &$form_state) {
   foreach ($environments as $environment) {
     $name = trim($environment['name']);
     if (!empty($name)) {
-      dsm(db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $form_state['values']['nid'], $environment['name'], $environment['git_ref'], $environment['platform'], serialize($environment['settings'])), 'insert ok?');
+      db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $form_state['values']['nid'], $environment['name'], $environment['git_ref'], $environment['platform'], serialize($environment['settings']));
     }
   }
 
