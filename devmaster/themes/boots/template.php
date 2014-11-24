@@ -11,7 +11,7 @@
  * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
  * print boots_render_tasks($tasks);
  */
-function boots_render_tasks($tasks = NULL, $class = '', $direction = 'left'){
+function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
 
   if (is_null($tasks)){
     // Tasks
@@ -45,6 +45,10 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'left'){
           $icon = 'exclamation-circle text-danger';
           $item_class = 'bg-danger';
           break;
+        case HOSTING_TASK_WARNING:
+          $icon = 'warning text-warning';
+          $item_class = 'bg-warning';
+          break;
 
         case HOSTING_TASK_PROCESSING;
         case HOSTING_TASK_QUEUED;
@@ -76,7 +80,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'left'){
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
   $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'dropdown-menu dropdown-menu-' . $direction, 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'tasks dropdown-menu dropdown-menu-' . $direction, 'role' => 'menu'));
 
   return <<<HTML
     <a href="#" class="dropdown-toggle $class" data-toggle="dropdown">

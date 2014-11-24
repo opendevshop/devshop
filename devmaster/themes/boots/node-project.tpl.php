@@ -96,9 +96,7 @@
   <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
     <div class="list-group devshop-environment <?php print $environment_class ?>">
-      <a href="<?php print $environment->url ?>" target="_blank" class="site-link list-group-item list-group-item-<?php print $list_item_class ?>"  data-toggle="tooltip" data-placement="bottom" title="<?php print t('Visit !url', array('!url' => $environment->url)); ?>">
-
-
+      <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
         <?php if ($environment->settings->production_mode): ?>
         <i class="fa fa-lock pull-right" title="Production Mode"></i>
@@ -109,33 +107,70 @@
         <?php endif; ?>
 
 
-        <strong><?php print $environment->name; ?></strong>
+        <strong><?php print l($environment->name, "node/{$environment->site}"); ?></strong>
 
-        <small class="environment-meta-data">
+        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data btn btn-text">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i> <?php print $environment->git_ref; ?>
-        </small>
+        </a>
 
         <?php if ($environment->version): ?>
-        <small class="environment-meta-data" title="Drupal version <?php print $environment->version; ?>">
+          <a href="https://www.drupal.org/drupal-<?php print $environment->version ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text" target="_blank">
           <i class="fa fa-drupal"></i>
           <?php print $environment->version; ?>
-        </small>
+        </a>
+
         <?php endif; ?>
 
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
           <span class="environment-meta-data">Disabled</span>
         <?php endif; ?>
 
-         <br />
-        <small class="text-muted"><?php print $environment->url ?></small>
-
-
         <div class="progress">
           <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-            <span class="sr-only">45% Complete</span>
+            <span class="sr-only">In Progress</span>
           </div>
         </div>
-      </a>
+      </div>
+
+      <!-- URLs -->
+      <div class="environment-domains list-group-item btn-group btn-group-justified">
+        <div class="btn-group">
+          <?php if (count($environment->domains) > 1): ?>
+
+            <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
+              <i class="fa fa-globe"></i> <?php print $environment->url ?>
+            </a>
+            <button type="button" class="btn btn-xs dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
+              <span class="caret"></span>
+              <?php print count($environment->domains); ?> <?php print t('Domains'); ?>
+              <span class="sr-only">Domains</span>
+            </button>
+          <?php else: ?>
+            <?php if (!empty($environment->url)): ?>
+              <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
+                <i class="fa fa-globe"></i>
+                <?php print $environment->url ?>
+              </a>
+            <?php else: ?>
+              <button class="btn btn-xs">
+                <i class="fa fa-globe"></i>
+                <em>Not Available</em>
+              </button>
+            <?php endif;?>
+          <?php endif;?>
+
+          <?php if (count($environment->domains) > 1): ?>
+          <ul class="dropdown-menu pull-right" role="menu">
+            <?php foreach ($environment->domains as $domain): ?>
+            <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
+            <?php endforeach; ?>
+            <li class="divider">&nbsp;</li>
+            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit'); ?></li>
+          </ul>
+          <?php endif; ?>
+        </div>
+      </div>
+
 
       <!-- Last  -->
       <div class="list-group-item">

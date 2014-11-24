@@ -4,7 +4,7 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.devshop-environment > a.site-link {
+.devshop-environment > .environment-header {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -123,8 +123,8 @@ body.admin-menu .navbar-static-top {
 
 
 .devshop-environment .tasks-button > a {
-    padding: 19px 5px;
-    height: 4.4em;
+    padding: 10px 5px;
+    height: 3em;
 }
 .devshop-environment .tasks-button > a:hover,
 .devshop-environment .tasks-button.open > a {
@@ -146,15 +146,12 @@ body.admin-menu .navbar-static-top {
     background: white !important;
 }
 
-.devshop-environment > a.site-link:hover .progress .progress-bar {
-
-}
 
 .devshop-environment.active {
     background-color: #fcf8e3 !important;
     color: #8a6d3b;
 }
-.devshop-environment.active .tasks-button > a {
+.devshop-environment.active .environment-header a {
     color: #8a6d3b !important;
 }
 .devshop-environment.active .tasks-button > a:hover,
@@ -163,6 +160,10 @@ body.admin-menu .navbar-static-top {
     background: #8a6d3b;
     color:  white !important;
     text-decoration: none;
+}
+
+.devshop-environment.active ul a {
+  color: #777;
 }
 
 .devshop-environment > .list-group-item.btn-group {
@@ -188,7 +189,28 @@ body.admin-menu .navbar-static-top {
     background-color: whitesmoke;
 }
 
+.environment-domains button {
+    display: inline-block;
+}
 
+
+.environment-domains.btn-group-justified>.btn-group .btn {
+    width: auto;
+}
+
+.environment-domains a,
+.environment-domains button {
+    margin: 0px 5px;
+    padding: 3px;
+    color: #777;
+    font-size: .8em !important;
+}
+.environment-domains a:hover,
+.environment-domains button:hover,
+.environment-meta-data:hover,
+.environment-meta-data button:hover {
+  text-decoration: underline;
+}
 .devshop-environment .last-commit {
     display: block;
     color: #777;
@@ -197,4 +219,11 @@ body.admin-menu .navbar-static-top {
 .btn.settings {
     margin: -5px 0px;
     border:none;
+}
+
+.environment-tasks .tasks {
+    width: 30px;
+}
+.dropdown-menu>li>a {
+    white-space: normal;
 }
