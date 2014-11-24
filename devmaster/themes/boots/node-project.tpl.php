@@ -51,6 +51,12 @@
 <!-- STATUS/INFO -->
 <div id="project-info" class="col-md-12">
   <ul class="list-inline">
+    <?php if ($project->settings->live['live_domain']): ?>
+    <li>
+      <strong>Live Site</strong>
+      <small><a href="http://<?php print $project->settings->live['live_domain']; ?>" target="_blank">http://<?php print $project->settings->live['live_domain']; ?></a></small>
+    </li>
+    <?php endif; ?>
     <li>
       <strong>Install Profile</strong>
       <small><?php print $project->install_profile ?></small>
