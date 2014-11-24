@@ -70,7 +70,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // Environment properties
     $form['project']['environments'][$name]['name'] = array(
       '#type' => 'textfield',
-      '#title' => t('Environment Name'),
       '#default_value' => $env_title,
       '#size' => 6,
       '#maxlength' => 64,
