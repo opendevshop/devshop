@@ -105,8 +105,8 @@
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
         <!-- Environment Status Indicators -->
-        <?php if ($environment->settings->production_mode): ?>
-        <i class="fa fa-lock pull-right" title="Production Mode"></i>
+        <?php if ($environment->settings->locked): ?>
+        <i class="fa fa-lock pull-right" title="Locked"></i>
         <?php endif; ?>
 
         <?php if ($environment->name == $project->settings->live['live_environment']): ?>
@@ -297,7 +297,7 @@
             <li class="text-muted"><?php print t('Sync Data:'); ?></li>
 
             <?php foreach ($project->environments as $env): ?>
-              <?php if ($env->settings->production_mode || $env->name == $environment->name) continue; ?>
+              <?php if ($env->settings->locked || $env->name == $environment->name) continue; ?>
               <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
             <?php endforeach; ?>
 
