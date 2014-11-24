@@ -90,7 +90,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#value' => $environment->platform,
     );
     $form['project']['environments'][$name]['git_ref'] = array(
-      '#title' => t('Git Branch/Tag'),
       '#type' => 'select',
       '#options' => devshop_projects_git_ref_options($project),
       '#default_value' => $environment->git_ref,
@@ -101,7 +100,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     if (count($http_servers)) {
       $form['project']['environments'][$name]['settings']['web_server'] = array(
         '#title' => t('Web server'),
-        '#node_type' => 'platform',
         '#type' => 'select',
         '#options' => $http_servers,
       );
@@ -112,7 +110,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     if (count($db_servers)) {
       $form['project']['environments'][$name]['settings']['db_server'] = array(
         '#title' => t('Database server'),
-        '#node_type' => 'site',
         '#type' => 'select',
         '#options' => $db_servers,
       );
