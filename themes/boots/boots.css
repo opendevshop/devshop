@@ -37,7 +37,9 @@ body.admin-menu .navbar-static-top {
     color: #777;
     font-size: .7em;
 }
-
+.environment-indicators {
+    margin-right: 35px;
+}
 .environment-meta-data i.fa {
     margin-right: .5em;
 }

@@ -105,13 +105,15 @@
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
         <!-- Environment Status Indicators -->
-        <?php if ($environment->settings->locked): ?>
-        <i class="fa fa-lock pull-right" title="Locked"></i>
-        <?php endif; ?>
+        <div class="environment-indicators pull-right">
+          <?php if ($environment->settings->locked): ?>
+            <i class="fa fa-lock" title="Locked"></i>
+          <?php endif; ?>
 
-        <?php if ($environment->name == $project->settings->live['live_environment']): ?>
-        <i class="fa fa-bolt pull-right" title="Live Environment"></i>
-        <?php endif; ?>
+          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+            <i class="fa fa-bolt" title="Live Environment"></i>
+          <?php endif; ?>
+        </div>
 
         <!-- Environment Links -->
         <a href="<?php print url("node/$environment->site"); ?>" class="environment-link">
