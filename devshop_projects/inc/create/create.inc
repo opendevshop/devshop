@@ -270,22 +270,3 @@ function devshop_form_reloader(&$form, $type = 'platform'){
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js');
 }
-
-/**
- * Functionality for add a new environment.
- */
-function devshop_projects_create_wizard_add_new_environment($form, &$form_state) {
-
-  // Load project node
-  $project_node = node_load($form_state['values']['nid']);
-  $environments = $form_state['values']['project']['environments'];
-  unset($environments['NEW']);
-
-  // Set environments and no_verify
-  $project_node->project->environments = $environments;
-  $project_node->no_verify = TRUE;
-  node_save($project_node);
-
-  // Go back to the same page.
-  drupal_goto('hosting/projects/add/environments');
-}
