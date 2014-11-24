@@ -326,15 +326,6 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     $aliases = array();
 
-    // If site is the live site for an environment
-    if ($settings->live->live_environment == $result->name) {
-      // Save alias
-      $aliases[] = $settings->live->live_environment;
-
-      // If "www" alias is enabled
-      $aliases[] = 'www.' . $settings->live->live_environment;
-    }
-
     // If environment subdomains are enabled...
     if ($settings->live->environment_aliases) {
       $aliases[] = $environment . "." . $settings->live->live_environment;
