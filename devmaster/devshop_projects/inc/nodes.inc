@@ -364,11 +364,11 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     if ($settings->live->environment_aliases) {
       $aliases[] = $environment . "." . $settings->live->live_environment;
     }
-  }
 
-  // Save aliases if the are allowed.
-  foreach ($aliases as $alias) {
-    devshop_hosting_save_domain($alias, $node);
+    // Save aliases if the are allowed.
+    foreach ($aliases as $alias) {
+      devshop_hosting_save_domain($alias, $node);
+    }
   }
 }
 
