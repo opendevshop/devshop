@@ -35,7 +35,6 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
   $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
   drupal_add_js($path);
 
-  $settings = module_invoke_all('devshop_project_settings', $project_node);
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project_node->nid,
@@ -97,16 +96,29 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
       '#default_value' => $environment->git_ref,
     );
 
-    // Environment settings
-    // Add environment settings form elements
-    foreach ($settings as $setting_id => $setting) {
-      $form['project']['environments'][$name]['settings'][$setting_id] = $setting;
-      $form['project']['environments'][$name]['settings'][$setting_id]['#default_value'] = $environment->settings->{$setting_id};
-      $form['project']['environments'][$name]['settings'][$setting_id]['#attributes']['title'] = $setting['#description'];
-      $form['project']['environments'][$name]['settings'][$setting_id]['#description'] = '';
+    // HTTP Server select.
+    $http_servers = hosting_get_servers('http');
+    if (count($http_servers)) {
+      $form['project']['environments'][$name]['settings']['web_server'] = array(
+        '#title' => t('Web server'),
+        '#node_type' => 'platform',
+        '#type' => 'select',
+        '#options' => $http_servers,
+      );
     }
 
-//Now add button.
+    // DB Server select.
+    $db_servers = hosting_get_servers('db');
+    if (count($db_servers)) {
+      $form['project']['environments'][$name]['settings']['db_server'] = array(
+        '#title' => t('Database server'),
+        '#node_type' => 'site',
+        '#type' => 'select',
+        '#options' => $db_servers,
+      );
+    }
+
+    // Add Environment
     $form['add_environment'] = array(
       '#type' => 'submit',
       '#value' => t('Add environment'),
@@ -173,8 +185,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project = $form_state['project'];
   $project_node = node_load($project->project_nid);
 
-  $settings = module_invoke_all('devshop_project_settings', $project_node);
-
   // Create these platforms, if they don't exist yet
   foreach ($form_state['values']['project']['environments'] as $name => $environment) {
 
@@ -205,11 +215,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       // Other attributes
       $platform->web_server = $environment->settings['web_server'];
-      foreach ($settings as $setting_name => $element) {
-        if ($element['#node_type'] == 'platform') {
-          $platform->{$setting_name} = $environment->settings[$setting_name];
-        }
-      }
       $platform_node = _devshop_projects_node_create('platform', $platform);
     }
     $environment->platform = $platform_node->nid;
