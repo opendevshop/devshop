@@ -236,39 +236,73 @@ function devshop_projects_update($node) {
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
 
-  // Save Environment records.
-  if (!empty($project->environments )) {
-    // Save each environment
-    foreach ($project->environments as $name => $environment){
-      // Ensure correct data types
-      $environment = (object) $environment;
-      $environment->name = $name;
-      $environment->settings = (array) $environment->settings;
+  // Update the project environments domain aliases based on the live settings.
+  devshop_project_update_domains($node);
+}
 
-      $info = new stdClass();
-      $info->project_nid = $node->nid;
-      $info->name = $name;
-      $info->git_ref = $environment->git_ref;
-      $info->site = $environment->site;
-      $info->platform = $environment->platform;
+/**
+ * Function for updating a project's alias
+ */
+function devshop_project_update_domains($project_node) {
+  $project = $project_node->project;
+  $old_project = $project_node->old->project;
 
-      // Remove primary settings from settings array before saving.
-      // @TODO: These values shouldn't show up anymore. Once tested, remove.
-      unset($environment->settings['git_ref']);
-      unset($environment->settings['site']);
-      unset($environment->settings['platform']);
-      $info->settings = serialize($environment->settings);
+  // If there is a live environment, AND live domain was entered:
+  if ($project->settings->live['live_environment'] && $project->settings->live['live_domain']) {
 
-      // Detect existing environment record
-      if (db_result(db_query('SELECT name FROM {hosting_devshop_project_environment} WHERE project_nid = %d AND name = "%s"', $node->nid, $environment->name))) {
-        $update = array('project_nid', 'name');
+    // ...and if the Live Domain changed:
+    if ($project->settings->live['live_domain'] != $old_project->settings->live['live_domain']) {
+
+      // Save live domain alias to the live environment
+      $live_environment = $project->settings->live['live_environment'];
+      $live_site_node = node_load($project->environment[$live_environment]->site);
+      devshop_hosting_save_domain($project->settings->live['live_domain'], $live_site_node);
+
+      // Save live domain alias with www prefix.
+      if ($project->settings->live['live_domain_www']) {
+        devshop_hosting_save_domain('www.' . $project->settings->live['live_domain'], $live_site_node);
       }
+
+      // Delete all the old live domain aliases for all environments, and save new ones.
+      $project_node_loaded = node_load($project_node->nid);
+      foreach ($project_node_loaded->project['environments'] as $name => $environment) {
+        $site_node = node_load($project->environment[$live_environment]->site);
+
+        devshop_hosting_delete_domain($name . "." . $project->settings->live['live_domain'], $site_node);
+        devshop_hosting_save_domain($name . "." . $project->settings->live['live_domain'], $site_node);
+      }
+    }
+
+    // ... or if the Live Environment changed.
+    if ($project->settings->live['live_environment'] != $old_project->settings->live['live_environment']) {
+      $live_environment = $project->settings->live['live_environment'];
+      $live_site_node = node_load($project->environment[$live_environment]->site);
+
+      $old_live_environment = $old_project->settings->live['live_environment'];
+      $old_live_site_node = node_load($project->environment[$old_live_environment]->site);
+
+      // If the live domain also changed, delete the old domain from the old environment).
+      if ($project->settings->live['live_domain'] != $old_project->settings->live['live_domain']) {
+        devshop_hosting_delete_domain($old_project->settings->live['live_domain'], $old_live_site_node);
+
+        // If project had www aliases, delete that alias as well.
+        if ($old_project->settings->live['live_domain_www']) {
+          devshop_hosting_delete_domain("www." . $old_project->settings->live['live_domain'], $old_live_site_node);
+        }
+      }
+      // ... if the live domain did not change, delete the current live domain alias.
       else {
-        $update = array();
+        devshop_hosting_delete_domain($project->settings->live['live_domain'], $live_site_node);
+        if ($old_project->settings->live['live_domain_www']) {
+          devshop_hosting_delete_domain("www." . $old_project->settings->live['live_domain'], $live_site_node);
+        }
       }
 
-      // Save environment record.
-      drupal_write_record('hosting_devshop_project_environment', $info, $update);
+      // Save the domain aliases to the new live environment
+      devshop_hosting_save_domain($project->settings->live['live_domain'], $live_site_node);
+      if ($project->settings->live['live_domain_www']) {
+        devshop_hosting_save_domain("www." . $project->settings->live['live_domain'], $live_site_node);
+      }
     }
   }
 }
@@ -334,8 +368,22 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
   // Save aliases if the are allowed.
   foreach ($aliases as $alias) {
-    if (hosting_domain_allowed($alias, array('nid' => $node->nid)) && $alias != $node->title) {
-      db_query("INSERT INTO {hosting_site_alias} (vid, nid, alias, automatic, redirection) VALUES (%d, %d, '%s', %d, '%s')", $node->vid, $node->nid, $alias, HOSTING_ALIAS_CUSTOM, '');
-    }
+    devshop_hosting_save_domain($alias, $node);
   }
+}
+
+/**
+ * Helper for saving a site domain for a site, includes the allow check.
+ */
+function devshop_hosting_save_domain($alias, $site) {
+  if (hosting_domain_allowed($alias, array('nid' => $site->nid)) && $alias != $site->title) {
+    db_query("INSERT INTO {hosting_site_alias} (vid, nid, alias, automatic, redirection) VALUES (%d, %d, '%s', %d, '%s')", $site->vid, $site->nid, $alias, HOSTING_ALIAS_CUSTOM, '');
+  }
+}
+
+/**
+ * Helper for deleting a site domain for a site, includes the allow check.
+ */
+function devshop_hosting_delete_domain($alias, $site) {
+  db_query("DELETE FROM {hosting_site_alias} WHERE vid = %d AND alias = '%s';", $site->vid, $alias);
 }
