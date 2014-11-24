@@ -65,7 +65,8 @@ function devshop_projects_load($node) {
       LEFT JOIN {node} http ON p.web_server = http.nid
       LEFT JOIN {node} db ON s.db_server = db.nid
       LEFT JOIN {node} n ON e.project_nid = n.nid
-      WHERE project_nid = %d
+      WHERE project_nid = %d AND
+      e.name != ''
       ORDER BY name;   ", $node->nid);
   $environments = array();
   while ($environment = db_fetch_object($query)) {
