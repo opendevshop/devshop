@@ -180,7 +180,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
   // Environments
   $rows = array();
-  $production_rows = array();
 
   foreach ($project->environments as $env => $environment) {
     $site_installed = false;
@@ -317,7 +316,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     // The actions we want
     $site_actions = array('flush_cache', 'login_reset', 'backup');
 
-    if (!$environment->settings->production_mode){
+    if (!$environment->settings->locked){
       $site_actions[] = 'restore';
     }
 
@@ -328,7 +327,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       if ($environment->site_status == HOSTING_SITE_DISABLED){
         $site_actions[] = 'enable';
         $site_actions[] = 'delete';
-      } elseif (!$environment->settings->production_mode){
+      } elseif (!$environment->settings->locked){
         $site_actions[] = 'disable';
       }
     }
@@ -358,13 +357,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $node->environment_actions[$environment->name] = $actions;
     
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
-
-    if ($environment->settings->production_mode){
-      $production_rows[] = $row;
-    }
-    else {
-      $rows[] = $row;
-    }
+    $rows[] = $row;
 
     // Environment Tasks
     if ($environment->site) {
@@ -396,22 +389,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   }
   $header = array();
   $table = theme('table', $header, $rows, array('class' => 'environments-table'));
-
-  // Show production environments separately.
-  if (count($production_rows)){
-    $node->content['production_environments'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Production'),
-      '#weight' => 11,
-      '#attributes' => array(
-        'class' => 'project-environments',
-      ),
-    );
-    $node->content['production_environments']['table'] = array(
-      '#type' => 'item',
-      '#value' => theme('table', $header, $production_rows, array('class' => 'environments-table')),
-    );
-  }
 
   $node->content['environments'] = array(
     '#type' => 'fieldset',

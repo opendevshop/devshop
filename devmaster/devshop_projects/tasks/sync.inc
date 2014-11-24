@@ -23,15 +23,15 @@ function hosting_task_devshop_sync_form($node) {
   $form['destination']['#prefix'] = '<div class="destination">';
   $form['destination']['#suffix'] = '</div></div>';
 
-  // Look for any production mode sites.
+  // Look for any locked sites.
   foreach ($project->environments as $environment) {
-    if ($environment->settings->production_mode){
+    if ($environment->settings->locked){
       // Remove live site from destination options.
       unset($form['destination']['#options'][$environment->name]);
 
       $source_options = $form['source']['#options'];
       unset($source_options[$environment->name]);
-      $form['source']['#options'] = array_merge(array($environment->name => $environment->name . " <em class='production-mode'>(Production Mode)</em>"), $source_options);
+      $form['source']['#options'] = array_merge(array($environment->name => $environment->name . " <em class='production-mode'>(Locked)</em>"), $source_options);
       $form['source']['#default_value'] = $environment->name;
     }
   }

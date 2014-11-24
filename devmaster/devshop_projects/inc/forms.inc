@@ -195,10 +195,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       '#title' => t('Environment Settings'),
       '#tree' => true,
     );
-    $form['environment']['settings']['production_mode'] = array(
+    $form['environment']['settings']['locked'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Production Mode'),
-      '#default_value' => $environment->settings->production_mode,
+      '#title' => t('Locked'),
+      '#default_value' => $environment->settings->locked,
       '#description' => t('Prevent devshop users from overwriting the database.'),
     );
 
