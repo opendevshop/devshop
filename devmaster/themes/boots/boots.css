@@ -151,7 +151,7 @@ body.admin-menu .navbar-static-top {
     background-color: #fcf8e3 !important;
     color: #8a6d3b;
 }
-.devshop-environment.active .tasks-button > a {
+.devshop-environment.active a {
     color: #8a6d3b !important;
 }
 .devshop-environment.active .tasks-button > a:hover,
