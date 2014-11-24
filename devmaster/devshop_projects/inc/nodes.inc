@@ -305,4 +305,46 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $additions['environment'] = $project_node->project->environments[$result->name];
     return $additions;
   }
+
+  // When creating a site, look for project live domain setting, and
+  // "environment subdomains" setting to save domain aliases.
+  if ($op == 'insert' && $node->type == 'site') {
+
+    $result = db_fetch_object(db_query('
+      SELECT p.settings, e.name AS environment FROM {hosting_devshop_project} p
+        LEFT JOIN {hosting_devshop_project_environment} e ON p.nid = e.project_nid
+        WHERE e.site = %d
+        ', $node->nid));
+
+    $settings = unserialize($result->settings);
+    $environment = $result->environment;
+
+    // Bail out if no environment name found.
+    if (empty($result->name)) {
+      return;
+    }
+
+    $aliases = array();
+
+    // If site is the live site for an environment
+    if ($settings->live->live_environment == $result->name) {
+      // Save alias
+      $aliases[] = $settings->live->live_environment;
+
+      // If "www" alias is enabled
+      $aliases[] = 'www.' . $settings->live->live_environment;
+    }
+
+    // If environment subdomains are enabled...
+    if ($settings->live->environment_aliases) {
+      $aliases[] = $environment . "." . $settings->live->live_environment;
+    }
+  }
+
+  // Save aliases if the are allowed.
+  foreach ($aliases as $alias) {
+    if (hosting_domain_allowed($alias, array('nid' => $node->nid)) && $alias != $node->title) {
+      db_query("INSERT INTO {hosting_site_alias} (vid, nid, alias, automatic, redirection) VALUES (%d, %d, '%s', %d, '%s')", $node->vid, $node->nid, $alias, HOSTING_ALIAS_CUSTOM, '');
+    }
+  }
 }
