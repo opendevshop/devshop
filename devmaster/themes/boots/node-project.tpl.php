@@ -148,8 +148,9 @@
               <i class="fa fa-globe"></i> <?php print $environment->url ?>
             </a>
             <button type="button" class="btn btn-xs dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-globe"></i>
+              <?php print count($environment->domains); ?>
               <span class="caret"></span>
-              <?php print count($environment->domains); ?> <?php print t('Domains'); ?>
               <span class="sr-only">Domains</span>
             </button>
           <?php else: ?>
@@ -164,6 +165,9 @@
                 <em>Not Available</em>
               </button>
             <?php endif;?>
+            <a type="button" class="btn btn-xs pull-right" href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" title="<?php print t("Add Domain"); ?>">
+              <i class="fa fa-plus"></i>
+            </a>
           <?php endif;?>
 
           <?php if (count($environment->domains) > 1): ?>
@@ -172,7 +176,7 @@
             <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
             <?php endforeach; ?>
             <li class="divider">&nbsp;</li>
-            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit'); ?></li>
+            <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
           </ul>
           <?php endif; ?>
         </div>
