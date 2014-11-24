@@ -9,8 +9,8 @@
  * STEP 4: Form
  */
 function devshop_project_create_step_sites(&$form, &$form_state) {
-  $project = &$form_state['project'];
-  $project_node = node_load($project->project_nid);
+  $project_node = node_load($form_state['project']->project_nid);
+  $project = $project_node->project;
 
   $profiles = array();
   $available_profiles = array();
@@ -32,7 +32,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   );
   $all_tasks_queued = TRUE;
   $all_tasks_succeeded = TRUE;
-  foreach ($project_node->project->environments as $name => $environment) {
+  foreach ($project->environments as $name => $environment) {
 
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
@@ -173,8 +173,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
  * STEP 4: Validate
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
-  $project = &$form_state['project'];
-
   if (empty($form_state['values']['install_profile'])) {
     form_set_error('install_profile', t('You must choose an install profile'));
   }
