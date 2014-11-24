@@ -204,7 +204,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   foreach ($project->environments as $name => $environment) {
 
     // If platform exists, it's because user went back in the wizard.
-    $platform_nid = $project->environments[$name]->platform;
+    $platform_nid = $environment->platform;
 
     // If the platform already exists, update settings and verify it again.
     if ($platform_nid) {
@@ -234,7 +234,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
 
     // Update environment with our platform
-    db_query('UPDATE {hosting_devshop_project_environment} SET platform = %d WHERE project_nid = %d AND name = %d', $environment->platform, $form_state['values']['nid'], $environment->name);
+    db_query('UPDATE {hosting_devshop_project_environment} SET platform = %d WHERE project_nid = %d AND name = "%s"', $environment->platform, $form_state['values']['nid'], $environment->name);
   }
 
   // For all removed platforms, trigger a delete task
