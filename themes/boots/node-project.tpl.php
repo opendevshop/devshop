@@ -146,9 +146,17 @@
               <span class="sr-only">Domains</span>
             </button>
           <?php else: ?>
-            <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
-              <i class="fa fa-globe"></i> <?php print $environment->url ?>
-            </a>
+            <?php if (!empty($environment->url)): ?>
+              <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
+                <i class="fa fa-globe"></i>
+                <?php print $environment->url ?>
+              </a>
+            <?php else: ?>
+              <button class="btn btn-xs">
+                <i class="fa fa-globe"></i>
+                <em>Not Available</em>
+              </button>
+            <?php endif;?>
           <?php endif;?>
 
           <?php if (count($environment->domains) > 1): ?>
