@@ -162,6 +162,10 @@ body.admin-menu .navbar-static-top {
     text-decoration: none;
 }
 
+.devshop-environment.active ul a {
+  color: #777;
+}
+
 .devshop-environment > .list-group-item.btn-group {
     padding: 0px;
 }
