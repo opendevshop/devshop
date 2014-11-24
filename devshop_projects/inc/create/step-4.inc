@@ -32,7 +32,6 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   );
   $all_tasks_queued = TRUE;
   $all_tasks_succeeded = TRUE;
-
   foreach ($project_node->project->environments as $name => $environment) {
 
     // Get platform and latest verify task.

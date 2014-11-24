@@ -81,7 +81,11 @@ function devshop_projects_load($node) {
     // Environments URL:
     // @TODO: Check for http or https.
     // @TODO: Load a login URL if available.
-    $environment->url = 'http://' . $environment->default_domain;
+    if ($environment->default_domain) {
+      $environment->url = 'http://' . $environment->default_domain;
+    } else {
+      $environment->url = '';
+    }
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
     // Environment version
