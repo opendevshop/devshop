@@ -98,6 +98,7 @@
     <div class="list-group devshop-environment <?php print $environment_class ?>">
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
+        <!-- Environment Status Indicators -->
         <?php if ($environment->settings->production_mode): ?>
         <i class="fa fa-lock pull-right" title="Production Mode"></i>
         <?php endif; ?>
@@ -106,17 +107,17 @@
         <i class="fa fa-bolt pull-right" title="Live Environment"></i>
         <?php endif; ?>
 
-
-        <strong><?php print l($environment->name, "node/{$environment->site}"); ?></strong>
+        <!-- Environment Links -->
+        <a href="<?php print url("node/$environment->site"); ?>" class="environment-link">
+          <?php print $environment->name; ?></a>
 
         <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data btn btn-text">
-          <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i> <?php print $environment->git_ref; ?>
+          <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
 
         <?php if ($environment->version): ?>
           <a href="https://www.drupal.org/drupal-<?php print $environment->version ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text" target="_blank">
-          <i class="fa fa-drupal"></i>
-          <?php print $environment->version; ?>
+          <i class="fa fa-drupal"></i><?php print $environment->version; ?>
         </a>
 
         <?php endif; ?>
