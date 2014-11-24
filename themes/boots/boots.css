@@ -216,3 +216,10 @@ body.admin-menu .navbar-static-top {
     margin: -5px 0px;
     border:none;
 }
+
+.environment-tasks .tasks {
+    width: 260px;
+}
+.dropdown-menu>li>a {
+    white-space: normal;
+}
