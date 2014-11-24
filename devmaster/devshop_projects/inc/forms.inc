@@ -375,6 +375,7 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Domain Name Settings'),
+    '#description' => '<em>NOTE: Automatic domain setup is not yet functional. Edit domains in the Environment settings.</em>'
   );
 
   // Live Domain
@@ -399,7 +400,7 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['live']['live_environment'] = array(
     '#type' => 'select',
     '#title' => t('Live environment'),
-    '#description' => t('The environment for the live website.'),
+    '#description' => t('The environment for the live website.  The <em>Live Domain</em> will be saved to the <em>live environment</em> automatically.'),
     '#options' => $environments_options,
     '#default_value' => $project->settings->live['live_environment'],
   );
@@ -407,8 +408,8 @@ function devshop_projects_form(&$node) {
   // Use www
   $form['project']['settings']['live']['live_domain_www'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Add www as a ServerAlias for Live Environment'),
-    '#description' => t('Access the site at http://livedomain.com and http://www.livedomain.com'),
+    '#title' => t('Add a Domain Alias with "www" to the Live Environment.'),
+    '#description' => t('Access the live site at http://example.com and http://www.example.com.'),
     '#default_value' => $project->settings->live['live_domain_www'],
   );
 
