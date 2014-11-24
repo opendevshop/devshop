@@ -205,6 +205,7 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
     $source_environment = $project_node->project->environments[$fork_source];
 
     $environment = new stdClass();
+    $environment->name = $environment_name;
     $environment->git_ref = $branch;
     $environment->platform = $platform->nid;
 
@@ -219,6 +220,7 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
   else {
     // Next, add the environment record.
     $environment = new stdClass();
+    $environment->name = $environment_name;
     $environment->git_ref = $branch;
     $environment->platform = $platform->nid;
 
@@ -226,9 +228,6 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
     $environment->settings = $settings;
   }
 
-  $project->environments[$environment_name] = $environment;
+  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $project_node->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings));
 
-  // Save the project node.
-  $project_node->project = $project;
-  node_save($project_node);
 }
