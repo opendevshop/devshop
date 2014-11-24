@@ -3,6 +3,9 @@ body.admin-menu .navbar-static-top {
   z-index: 3;
 }
 
+.environment-wrapper {
+  min-width: 321px;
+}
 
 .devshop-environment > .environment-header {
   overflow: hidden;
@@ -49,7 +52,8 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
-.devshop-environment.live-environment .environment-header a {
+.devshop-environment.live-environment .environment-header a,
+.devshop-environment.live-environment .environment-header a.btn-text {
     color: white;
 }
 
@@ -120,20 +124,33 @@ body.admin-menu .navbar-static-top {
 
 .devshop-environment .tasks-button {
     position: absolute;
-    top: 0px;
+    top: 1px;
     right: 15px;
+    z-index: 2;
 }
 
 
 .devshop-environment .tasks-button > a {
     padding: 10px 5px;
-    height: 3em;
+    height: 3.2em;
 }
+
 .devshop-environment .tasks-button > a:hover,
 .devshop-environment .tasks-button.open > a {
     background: #428bca;
     color: white;
     text-decoration: none;
+    border-radius: 4px;
+}
+
+.devshop-environment.live-environment .tasks-button > a {
+    color: white;
+}
+
+.devshop-environment.live-environment .tasks-button > a:hover,
+.devshop-environment.live-environment .tasks-button.open > a {
+  background: #d9edf7;
+  color:  #428bca;
 }
 
 .devshop-environment .progress {

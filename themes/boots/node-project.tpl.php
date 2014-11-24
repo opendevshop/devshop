@@ -99,7 +99,7 @@
   }
   ?>
 
-  <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
     <div class="list-group devshop-environment <?php print $environment_class ?>">
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
