@@ -16,30 +16,6 @@ function devshop_log_perm() {
 }
 
 /**
- * Implements hook_devshop_project_settings()
- *
- * Exposes hosting_logs settings to project settings.
- */
-function devshop_log_devshop_project_settings($project_node = NULL){
-  if (module_exists('hosting_logs')){
-    return array(
-      'logs_enabled' => array(
-        '#title' => '',
-        '#node_type' => 'site',
-        '#type' => 'hidden',
-        '#value' => TRUE,
-      ),
-      'logs_available' => array(
-        '#title' => t('Visible Error Logs'),
-        '#node_type' => 'site',
-        '#type' => 'checkbox',
-        '#description' => t('Make error logs available at http://mysite/error.log'),
-      ),
-    );
-  }
-}
-
-/**
  * Implementation of hook_menu()
  */
 function devshop_log_menu() {

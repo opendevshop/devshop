@@ -203,44 +203,6 @@ function devshop_project_environment_settings_page($project_node, $environment){
   return drupal_get_form($site_node->type . '_node_form', $site_node);
 }
 
-
-/**
- * Implements hook_devshop_project_settings
- */
-function devshop_projects_devshop_project_settings($node = NULL){
-  $project = $node->project;
-
-  $settings = array();
-
-  $http_servers = hosting_get_servers('http');
-  if (count($http_servers)) {
-    $settings['web_server'] = array(
-      '#title' => t('Web server'),
-      '#node_type' => 'platform',
-      '#type' => 'select',
-      '#options' => $http_servers,
-    );
-  }
-
-  $db_servers = hosting_get_servers('db');
-  if (count($db_servers)) {
-    $settings['db_server'] = array(
-      '#title' => t('Database server'),
-      '#node_type' => 'site',
-      '#type' => 'select',
-      '#options' => $db_servers,
-    );
-  }
-
-  $settings['production_mode'] = array(
-    '#title' => t('Production Mode'),
-    '#type' => 'checkbox',
-    '#default_value' => 0,
-    '#description' => t('Prevent overwriting of data, disabling, and other interruptive actions.'),
-  );
-  return $settings;
-}
-
 /**
  * Page Callback for hosting/projects/add
  */
@@ -255,6 +217,7 @@ function devshop_projects_add($step = NULL){
   }
   return devshop_projects_create_wizard($step);
 }
+
 /**
  * Replacement for hosting_task_confirm_form()
  *
