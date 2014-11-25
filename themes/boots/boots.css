@@ -149,8 +149,7 @@ body.admin-menu .navbar-static-top {
 
 .devshop-environment.live-environment .tasks-button > a:hover,
 .devshop-environment.live-environment .tasks-button.open > a {
-  background: #d9edf7;
-  color:  #428bca;
+  text-decoration: underline;
 }
 
 .devshop-environment .progress {
