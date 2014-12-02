@@ -400,7 +400,7 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live Domain'),
-    '#description' => t('The live domain for this project. Do not include "www". Used only for links. <em>You must still add the Domain to your live environment manually.'),
+    '#description' => t('The live domain for this project. Used only for links. <em>You must still add the Domain to your live environment manually.'),
     '#size' => 40,
     '#default_value' => $node->project->settings->live['live_domain'],
   );
