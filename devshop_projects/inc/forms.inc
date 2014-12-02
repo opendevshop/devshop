@@ -378,15 +378,6 @@ function devshop_projects_form(&$node) {
     '#description' => '<em>NOTE: Automatic domain setup is not yet functional. Edit domains in the Environment settings.</em>'
   );
 
-  // Live Domain
-  $form['project']['settings']['live']['live_domain'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Live domain'),
-    '#description' => t('The live domain for this project. Do not include "www".'),
-    '#size' => 40,
-    '#default_value' => $node->project->settings->live['live_domain'],
-  );
-
   // Live Environment
   $environments = array_keys($project->environments);
   if (empty($environments)){
@@ -400,24 +391,25 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['live']['live_environment'] = array(
     '#type' => 'select',
     '#title' => t('Live environment'),
-    '#description' => t('The environment for the live website.  The <em>Live Domain</em> will be saved to the <em>live environment</em> automatically.'),
+    '#description' => t('The environment for the live website.  This locks the live environment from overwrites and disabling, and allows syncing to other environments.'),
     '#options' => $environments_options,
     '#default_value' => $project->settings->live['live_environment'],
   );
 
-  // Use www
-  $form['project']['settings']['live']['live_domain_www'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Add a Domain Alias with "www" to the Live Environment.'),
-    '#description' => t('Access the live site at http://example.com and http://www.example.com.'),
-    '#default_value' => $project->settings->live['live_domain_www'],
+  // Live Domain
+  $form['project']['settings']['live']['live_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Live Domain'),
+    '#description' => t('The live domain for this project. Do not include "www". Used only for links. <em>You must still add the Domain to your live environment manually.'),
+    '#size' => 40,
+    '#default_value' => $node->project->settings->live['live_domain'],
   );
 
   // Use aliases
   $form['project']['settings']['live']['environment_aliases'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Environment Subdomains'),
-    '#description' => t('Create subdomains under the live domain for all environments.'),
+    '#title' => t('Create subdomains under Live Domain for new environments.'),
+    '#description' => t('When new environments are created, automatically add a domain name such as http://ENVIRONMENT.LIVEDOMAIN.com. <em>Does not affect existing environments. Does not remove domains when disabled.</em>'),
     '#default_value' => $project->settings->live['environment_aliases'],
   );
 
