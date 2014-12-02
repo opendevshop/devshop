@@ -346,6 +346,11 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language)? $user->language: 'en';
 
+  // Subdomain alias, if configured.
+  if ($project->settings->live['environment_aliases'] && !empty($project->settings->live['live_domain'])) {
+    $node->aliases = array($environment_name . '.' . $project->settings->live['live_domain']);
+  }
+
   // Save the site node
   if ($node = node_submit($node)) {
     node_save($node);
