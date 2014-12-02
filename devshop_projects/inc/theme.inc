@@ -70,7 +70,7 @@ function theme_devshop_projects_create_settings_form($form) {
     }
     $rows[] = $row;
   }
-  $output = theme('table', $header, $rows, array('id' => 'project-settings-table'));
+  $output = theme('table', $header, $rows, array('id' => 'project-settings-table', 'class' => 'table'));
   $output .= '<p>'. t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') .'</p>';
 
   return $output; 
