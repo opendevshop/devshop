@@ -375,7 +375,6 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['live'] = array(
     '#type' => 'fieldset',
     '#title' => t('Domain Name Settings'),
-    '#description' => '<em>NOTE: Automatic domain setup is not yet functional. Edit domains in the Environment settings.</em>'
   );
 
   // Live Environment
