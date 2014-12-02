@@ -124,7 +124,7 @@
         </a>
 
         <?php if ($environment->version): ?>
-          <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text" target="_blank">
+          <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text">
           <i class="fa fa-drupal"></i><?php print $environment->version; ?>
         </a>
 
