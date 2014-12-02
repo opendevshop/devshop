@@ -116,7 +116,7 @@
         </div>
 
         <!-- Environment Links -->
-        <a href="<?php print url("node/$environment->site"); ?>" class="environment-link">
+        <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
           <?php print $environment->name; ?></a>
 
         <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data btn btn-text">
@@ -124,7 +124,7 @@
         </a>
 
         <?php if ($environment->version): ?>
-          <a href="https://www.drupal.org/drupal-<?php print $environment->version ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text" target="_blank">
+          <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text" target="_blank">
           <i class="fa fa-drupal"></i><?php print $environment->version; ?>
         </a>
 
@@ -164,7 +164,7 @@
             <?php else: ?>
               <button class="btn btn-xs">
                 <i class="fa fa-globe"></i>
-                <em>Not Available</em>
+                <em>&nbsp;</em>
               </button>
             <?php endif;?>
             <a type="button" class="btn btn-xs pull-right" href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" title="<?php print t("Add Domain"); ?>">
