@@ -55,12 +55,9 @@ textarea#rsa {
 .form-submit {
   margin-top: 10px;
 }
-#edit-return, #edit-next {
+#edit-cancel {
   float: right;
-  font-size: 2.0em;
-  height: 2.0em;
 }
-
 .command input {
   font-family: Courier New, monospace;
   width: 100%;
