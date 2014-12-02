@@ -117,7 +117,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
-    '#value' => theme('table', $header, $rows),
+    '#value' => theme('table', $header, $rows, array('class' => 'table')),
   );
 
   // Not completed means show all tasks are not completed (or errored)
