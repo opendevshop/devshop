@@ -41,6 +41,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
      if ($form_state['project']->no_next){
       unset($form['buttons']['next']);
     }
+    $form['buttons']['next']['#attributes'] =
+    $form['buttons']['return']['#attributes'] = array(
+      'class' => 'btn btn-success',
+    );
+    $form['buttons']['previous']['#attributes'] = array(
+      'class' => 'btn btn-default',
+    );
+    $form['buttons']['cancel']['#attributes'] = array(
+      'class' => 'btn btn-link',
+    );
+
   }
   
   // Hosting Task Forms
