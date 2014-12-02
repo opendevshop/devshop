@@ -79,14 +79,6 @@ function devshop_projects_load($node) {
     // Save to environments array
     $environment->settings = (object) unserialize($environment->settings);
 
-    // Environments URL:
-    // @TODO: Check for http or https.
-    // @TODO: Load a login URL if available.
-    if ($environment->default_domain) {
-      $environment->url = 'http://' . $environment->default_domain;
-    } else {
-      $environment->url = '';
-    }
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
     // Environment version
@@ -115,9 +107,27 @@ function devshop_projects_load($node) {
       $environment->git_current = t('Cloning in progress...');
     }
 
+    // Environments URL
+    // @TODO: Check for http or https.
+    // @TODO: Load a login URL if available.
+    if ($environment->default_domain) {
+      $environment->url = 'http://' . $environment->default_domain;
+    } else {
+      $environment->url = '';
+    }
+
     // Get Domain aliases
     $environment->domains = hosting_alias_get_aliases($environment);
     array_unshift($environment->domains, $environment->default_domain);
+
+    // Make the live domain the primary
+    if ($project->settings->live['environment_aliases'] && !empty($project->settings->live['live_domain'])) {
+      foreach ($environment->domains as $domain) {
+        if (strpos($domain, $project->settings->live['live_domain']) !== FALSE){
+          $environment->url = 'http://' . $domain;
+        }
+      }
+    }
 
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
