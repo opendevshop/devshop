@@ -87,6 +87,15 @@ function hosting_task_devshop_create_form($node) {
     '#maxlength' => 64,
   );
 
+  if ($project->settings->live['environment_aliases'] && $node->project->settings->live['live_domain']) {
+    $form['environment_alias'] = array(
+      '#title' => t('Additional Domain'),
+      '#type' => 'item',
+      '#description' => t('Your environment will get an additional Domain.'),
+      '#value' => 'http://ENVIRONMENTNAME.' . $node->project->settings->live['live_domain'],
+    );
+  }
+
   // @TODO: I don't think this is needed. hosting_task_devshop_create_form_submit() looks for nid, these values end up in $form_state['values']['paramters'];
   $form['project_nid'] = array(
     '#type' => 'value',
