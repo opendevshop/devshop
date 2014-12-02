@@ -87,7 +87,7 @@ function hosting_task_devshop_create_form($node) {
     '#maxlength' => 64,
   );
 
-  if ($project->settings->live['environment_aliases'] && $node->project->settings->live['live_domain']) {
+  if ($project->settings->live['environment_aliases'] && !empty($node->project->settings->live['live_domain'])) {
     $form['environment_alias'] = array(
       '#title' => t('Additional Domain'),
       '#type' => 'item',

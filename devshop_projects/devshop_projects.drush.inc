@@ -307,9 +307,19 @@ function devshop_projects_post_hosting_import_task($task, $data) {
     $platform = node_load($site->platform);
 
     if ($platform->environment->name) {
+
+      // Save environment record.
       drush_log('[DEVSHOP] Project & Environment found:' . $platform->project->name . '.' . $platform->environment->name);
       $return = db_query('UPDATE {hosting_devshop_project_environment} SET site = %d WHERE project_nid = %d AND name = "%s"', $site->nid, $platform->project->nid, $platform->environment->name);
       drush_log('[DEVSHOP] Site saved to environment.');
+
+      // Save aliases if needed.
+      if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
+        $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
+        $site->aliases = array($domain);
+        drush_log('[DEVSHOP] Saving domain to the environment:' . $domain);
+        node_save($site);
+      }
     }
   }
 }
