@@ -400,7 +400,7 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['live']['live_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Live Domain'),
-    '#description' => t('The live domain for this project. Used only for links. <em>You must still add the Domain to your live environment manually.'),
+    '#description' => t('The live domain for this project. Used only for links and when creating subdomain aliases for other environments. <em>You must still add the Domain to your live environment manually.</em>'),
     '#size' => 40,
     '#default_value' => $node->project->settings->live['live_domain'],
   );
@@ -408,7 +408,7 @@ function devshop_projects_form(&$node) {
   // Use aliases
   $form['project']['settings']['live']['environment_aliases'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Create subdomains under Live Domain for new environments.'),
+    '#title' => t('For new environments, create subdomains under Live Domain.'),
     '#description' => t('When new environments are created, automatically add a domain name such as http://ENVIRONMENT.LIVEDOMAIN.com. <em>Does not affect existing environments. Does not remove domains when disabled.</em>'),
     '#default_value' => $project->settings->live['environment_aliases'],
   );
