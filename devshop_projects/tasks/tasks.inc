@@ -48,7 +48,7 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
     'hidden' => TRUE,
   );
-  $tasks['project']['devshop-deploy'] = array(
+  $tasks['site']['devshop-deploy'] = array(
     'title' => t('Deploy'),
     'description' => t('Deploy a tag or branch to an environment, and (optionally) run update.php, clear cache, and revert features.'),
     'access callback' => 'devshop_hosting_task_menu_access',
