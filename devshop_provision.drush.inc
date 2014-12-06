@@ -36,14 +36,13 @@ function devshop_provision_drush_command() {
       'revert' => 'Revert all features after code pull.',
       'cache' => 'Clear all caches after code pull.',
       'reset' => 'Runs "git reset --hard" before pulling.',
-      'force' => 'Runs always update,revert and cache options',
+      'force' => "Runs always update,revert and cache options, even if files don't change.",
     ),
     'arguments' => array(
       'git_ref' => 'The git branch or tag to deploy.',
-      'environment' => 'The environment to deploy to.',
     ),
     'examples' => array(
-      'drush @project_mysite provision-devshop-deploy master dev --cache --update' => 'Triggers a git checkout & pull of branch master to the dev environment, clearing caches and running updates.',
+      'drush @env.project.domain.com provision-devshop-deploy master --cache --update' => 'Triggers a git checkout & pull of branch master to the dev environment, clearing caches and running updates.',
     ),
     'aliases' => array('pdd'),
   );
