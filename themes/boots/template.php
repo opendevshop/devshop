@@ -172,7 +172,7 @@ function boots_preprocess_node(&$vars){
         ));
         $icon = $type == 'tag'? 'tag': 'code-fork';
 
-        $vars['git_refs'][] = "<a href='$href'>
+        $vars['git_refs'][$ref] = "<a href='$href'>
           <i class='fa fa-$icon'></i>
           $ref
         </a>";
