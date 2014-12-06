@@ -105,6 +105,13 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
         }
         break;
+
+      // Alter title of deploy task.
+      case 'devshop-deploy':
+        $node = node_load($form['nid']['#value']);
+        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)));
+        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
+        break;
     }
   }
 
