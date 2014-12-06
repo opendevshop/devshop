@@ -20,15 +20,18 @@ function hosting_task_devshop_deploy_form($node) {
 
   // Detect pre-selected git ref.
   if (!empty($_GET['git_ref'])) {
+
+    $ref_type = $project->settings->git['refs'][$_GET['git_ref']];
+
     $form['git_ref'] = array(
       '#type' => 'value',
       '#value' => $_GET['git_ref'],
     );
     $form['git_ref_label'] = array(
       '#type' => 'item',
-      '#title' => t('Git Reference'),
-      '#value' => $_GET['git_ref'],
-      '#description' => t("The Git branch or tag to deploy."),
+      '#title' => t('Git @ref', array('@ref' => $ref_type)),
+      '#value' => '<i class="fa fa-tag"></i> ' . $_GET['git_ref'],
+      '#description' => t("This git reference will be checked out in this environment."),
     );
   }
   else {
