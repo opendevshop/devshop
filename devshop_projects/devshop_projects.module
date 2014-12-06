@@ -292,14 +292,12 @@ function devshop_hosting_task_menu_access($node, $task) {
   }
 
   if (user_access("create " . $task . " task")) {
-    if ($node->type == 'project') {
 
-      // If Commit Features task, make sure features module is present
-      if ($task == 'devshop-commit'){
-        return _devshop_projects_project_has_module($node, 'features');
-      } else {
-        return TRUE;
-      }
+    // If Commit Features task, make sure features module is present
+    if ($task == 'devshop-commit'){
+      return _devshop_projects_project_has_module($node, 'features');
+    } else {
+      return TRUE;
     }
   }
 }
@@ -365,7 +363,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
 /**
  * Helper to get select #options for git ref.
  */
-function devshop_projects_git_ref_options($project){
+function devshop_projects_git_ref_options($project, $current_ref = ''){
 
   // Build branch options
   if (is_array($project->settings->git['branches']) && !empty($project->settings->git['branches'])) {
@@ -383,6 +381,15 @@ function devshop_projects_git_ref_options($project){
   if (!isset($options)){
     $options = array(t('No branches or tags! Re-validate the project.'));
   }
+
+  // Set "current" label.
+  if (isset($options['Branches'][$current_ref])) {
+    $options['Branches'][$current_ref] .= ' (' . t('current') . ')';
+  }
+  elseif (isset($options['Tags'][$current_ref])) {
+    $options['Tags'][$current_ref] .= ' (' . t('current') . ')';
+  }
+
 
   return $options;
 }
