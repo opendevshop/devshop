@@ -46,6 +46,13 @@ function devshop_projects_load($node) {
   $project->name = $name;
   $project->settings = (object) unserialize($project->settings);
 
+  // Create "refs" array to determine ref type.
+  foreach ($project->settings->git as $type => $refs) {
+    foreach ($refs as $ref) {
+      $project->settings->git['refs'][$ref] = $type == 'branches'? 'branch': 'tag';
+    }
+  }
+
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
   $query = db_query("
@@ -76,12 +83,13 @@ function devshop_projects_load($node) {
       continue;
     }
 
-    // Save to environments array
+    // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
 
+    // Get the current git ref type.
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
-    // Environment version
+    // Environment Drupal version.
     $iid = db_result(db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type='platform' AND i.rid=%d", $environment->platform));
     $release = hosting_package_instance_load($iid);
     $environment->version = $release->version;
