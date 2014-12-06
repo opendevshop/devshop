@@ -165,10 +165,9 @@ function boots_preprocess_node(&$vars){
       $vars['deploy_label'] = t('Deploy a tag or branch');
 
       foreach ($node->project->settings->git['refs'] as $ref => $type){
-        $href = url('node/' . $node->nid . '/project_devshop-deploy', array(
+        $href = url('node/ENV_NID/site_devshop-deploy', array(
           'query' =>array(
             'git_ref' => $ref,
-            'environment' => 'ENV',
           )
         ));
         $icon = $type == 'tag'? 'tag': 'code-fork';

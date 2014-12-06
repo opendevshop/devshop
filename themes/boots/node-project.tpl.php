@@ -199,7 +199,7 @@
 
       <div class="environment-tasks list-group-item btn-group btn-group-justified">
 
-        <!-- Git Select -->
+        <!-- Deploy: Git Select -->
         <div class="btn-group btn-git">
           <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
 
@@ -215,7 +215,7 @@
 
             <?php foreach ($git_refs as $item): ?>
               <li>
-                <?php print str_replace('ENV', $environment->name, $item); ?>
+                <?php print str_replace('ENV_NID', $environment->site, $item); ?>
               </li>
             <?php endforeach; ?>
             <?php endif; ?>
