@@ -9,10 +9,18 @@
  * - Ensures that provision is loaded before devshop_provision
  */
 function devshop_provision_drush_init(){
-  $list = drush_commandfile_list();
-  $provision_drush_inc = $list['provision'];
-  include_once($provision_drush_inc);
-  include_once('devshop_provision.context.project.inc');
+  devshop_provision_register_autoload();
+}
+
+/**
+ * Register our directory as a place to find provision classes.
+ */
+function devshop_provision_register_autoload() {
+  static $loaded = FALSE;
+  if (!$loaded) {
+    $loaded = TRUE;
+    provision_autoload_register_prefix('Provision_', dirname(__FILE__));
+  }
 }
 
 /**
