@@ -356,6 +356,20 @@ function devshop_projects_hosting_project_context_options(&$task) {
 }
 
 /**
+ * Implements hook_hosting_site_context_options()
+ *
+ * Save environment name, project name, and git ref to site aliases.
+ */
+function devshop_projects_hosting_site_context_options(&$task) {
+
+  if (isset($task->ref->environment)) {
+    $task->context_options['environment'] = $task->ref->environment->name;
+    $task->context_options['project'] = $task->ref->environment->project_name;
+    $task->context_options['git_ref'] = $task->ref->environment->git_ref;
+  }
+}
+
+/**
  * Implements hook_drush_context_import()
  *
  * This allows project nodes to be created from contexts (aliases)
