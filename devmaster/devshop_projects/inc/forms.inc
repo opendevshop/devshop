@@ -460,52 +460,46 @@ function devshop_projects_form(&$node) {
     '#default_value' => $project->settings->deploy['method'],
   );
 
-  $form['project']['settings']['deploy']['method'][] = array(
-    '#type' => 'radio',
-    '#title' => t('Commit Webhook'),
-    '#description' => t('Recommended. Pull code when a webhook is invoked from your git repository host.'),
-    '#return_value' => 'webhook',
-    '#default_value' => $project->settings->pull['method'] == 'webhook',
-    '#parents' => array('method'),
-    '#spawned' => TRUE,
-  );
+  // Commit Webhook
+  $form['project']['settings']['deploy']['method']['#options']['webhook'] = t('Immediate Deployment');
+  $form['project']['settings']['deploy']['method']['#options']['webhook'] .= '<div class="description">' . t('Recommended. Deploy code as it is delivered to your repository.') . ' <em>' . t('Requires setting up a webhook with your git repository host.') . '</em>' . '</div>';
 
-  // Add pull queue option, if it is enabled.
+  // Queue
   $queues = hosting_get_queues();
   if ($queues['pull']['enabled']) {
-    $form['project']['settings']['deploy']['method'][] = array(
-      '#type' => 'radio',
-      '#title' => t('Pull on Queue'),
-      '#description' => t('Pull code on a regular basis.  Use if you cannot setup a commit webhook.'),
-      '#return_value' => 'queue',
-      '#default_value' => $project->settings->deploy['method'] == 'queue',
-      '#parents' => array('method'),
-      '#spawned' => TRUE,
-      '#disabled' => !$queues['pull']['enabled'],
-    );
+    $form['project']['settings']['deploy']['method']['#options']['queue'] = t('Queued Deployment');
+
+    $form['project']['settings']['deploy']['method']['#options']['queue'] .= '<div class="description">';
+    $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Use only if repository webhooks are not available.');
+
+
+    if (user_access('administer hosting queues')) {
+      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' '. l(t("Deploy Queue configured to run every @freq.", array('@freq' => format_interval($queues['pull']['frequency'], 1))), 'admin/hosting/queues');
+    } else {
+      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' '. t("Deploy Queue configured to run every @freq.", array('@freq' => format_interval($queues['pull']['frequency'], 1)));
+
+    }
+
+    $form['project']['settings']['deploy']['method']['#options']['queue'] .= '</div>';
+
   }
 
+  // Manual Pull
+  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Manual Deploy');
+  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Pull Code to servers manually via devshop or drush.');
+
+  $form['project']['settings']['deploy']['method']['#options']['manual'] .= ' <em>' . t('Rarely recommended. Branch environments must be manually updated.') . '</em>'. '</div>';
+
+  // Add link to hosting queues admin if the user can access them.
   if (!$queues['pull']['enabled'] && user_access('administer hosting queues')){
     $form['project']['settings']['deploy']['queue_admin'] = array(
-      '#value' => t('The !link is disabled. Enable it to allow projects to pull code on a regular basis.', array(
+      '#value' => t('The !link is disabled. Enable it to allow projects to pull code in the queue.', array(
         '!link' => l(t('Pull Queue'), 'admin/hosting/queues'),
       )),
       '#prefix' => '<p>',
       '#suffix' => '</p>',
     );
   }
-
-  $form['project']['settings']['deploy']['method'][] = array(
-    '#type' => 'radio',
-    '#title' => t('Manual Pull Only'),
-    '#description' => t('Pull Code to servers manually via devshop or drush only.', array(
-      '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'),
-    )),
-    '#return_value' => 'manual',
-    '#default_value' => $project->settings->deploy['method'] == 'manual',
-    '#parents' => array('method'),
-    '#spawned' => TRUE,
-  );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
   $form['project']['settings']['pull']['last_pull'] = array(
