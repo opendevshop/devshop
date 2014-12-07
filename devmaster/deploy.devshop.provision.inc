@@ -38,18 +38,12 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
   // Get info
   $environment = d()->environment;
-  $project = (object) d( '@project_' . d()->project)->project;
-  drush_log("[{$project->name}] Deploying '{$git_ref}' to '{$environment}'.", 'ok');
+  $project = (object) d('@project_' . d()->project)->project;
   $project_name = $project->name;
+  drush_log("[{$project_name}] Deploying '{$git_ref}' to '{$environment}'.", 'ok');
 
 
   $tag_or_branch = $project->settings['git']['refs'][$git_ref];
-
-  // Get post deploy options
-  $revert = drush_get_option('revert');
-  $update = drush_get_option('update');
-  $cache = drush_get_option('cache');
-  $force = drush_get_option('force');
 
   // Find repo path
   $repo_path = $project->code_path . '/' . $environment;
@@ -78,34 +72,42 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
     }
   }
   else {
-    drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $repo_path, '!errors' => implode("\n", drush_shell_exec_output()))));
+    drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array(
+          '!path' => $repo_path,
+          '!errors' => implode("\n", drush_shell_exec_output())
+        )));
     return;
   }
   drush_log('==========================================', 'ok');
   drush_log('$ git status', 'ok');
   drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+}
 
-//  // If no new files were detected... and force is false then skip out.
-//  if (count($output) == 1 && !$force) {
-//    drush_log('[DEVSHOP] No changes detected. Nothing else needs to be done', 'ok');
-//    return;
-//  }
-//
-//  $platform_alias = "@platform_{$project_name}_{$environment}";
-//  $site_alias = ;
-//  $site_alias = '@' . $environment . '.' . d()->project['base_url'];
-//
-//  // Verify the platform.
-//  provision_backend_invoke($platform_alias, 'provision-verify');
-//
-//  // update db, unless option is false.
-//  if ($update){
-//    drush_log(dt('[DEVSHOP] Updating database...'), 'ok');
-//    provision_backend_invoke(d(), 'updb');
-//  }
-//  else {
-//    drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
-//  }
+/**
+ * Post provision-devshop-deploy
+ */
+function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
+
+  // Get post deploy options
+  $revert = drush_get_option('revert');
+  $update = drush_get_option('update');
+  $cache = drush_get_option('cache');
+
+  $environment = d()->environment;
+  $project = (object) d('@project_' . d()->project)->project;
+  $project_name = $project->name;
+
+  drush_log("[{$project_name}] $environment: " . dt('Running deploy hooks.'), 'notice');
+
+  // Built in Hooks
+  if ($update) {
+    drush_log("[{$project_name}] $environment:" . dt('Running updb...'), 'notice');
+    provision_backend_invoke(d()->name, 'updb');
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
+  }
+}
 //
 //  // Revert All Features, unless option is false
 //  if ($revert){
@@ -129,5 +131,5 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
 //
 //  drush_shell_cd_and_exec($repo_path, "git status");
 
-}
+//}
 
