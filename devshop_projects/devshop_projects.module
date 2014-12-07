@@ -159,11 +159,6 @@ function devshop_projects_menu() {
 
 /**
  * Implements hook_block()
- *
- * Provides three blocks:
- *  - DevShop Tasks
- *  - Created by ThinkDrop
- *  - Powered by Aegir
  */
 function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
   switch ($op) {
@@ -180,7 +175,7 @@ function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
 
     case 'view':
       if ($delta == 'project_nav'){
-        $node = menu_get_object('node');
+        $node = node_load(arg(1));
         if ($node->type == 'project') {
           $block['subject'] = '';
           $block['content'] = theme('devshop_project_nav', $node);
