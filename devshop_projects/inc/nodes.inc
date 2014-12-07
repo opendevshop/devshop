@@ -47,9 +47,10 @@ function devshop_projects_load($node) {
   $project->settings = (object) unserialize($project->settings);
 
   // Create "refs" array to determine ref type.
+  $project->settings->git['refs'] = array();
   foreach ($project->settings->git as $type => $refs) {
     foreach ($refs as $ref) {
-      $project->settings->git['refs'][$ref] = $type == 'branches'? 'branch': 'tag';
+      $project->settings->git['refs'][$ref] = ($type == 'branches')? 'branch': 'tag';
     }
   }
 
