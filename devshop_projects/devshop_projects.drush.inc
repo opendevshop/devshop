@@ -39,9 +39,13 @@ function drush_devshop_projects_pre_hosting_task() {
   }
 
   // Deploy
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-deploy') {
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy') {
     $task->options['git_ref'] = $task->task_args['git_ref'];
-    $task->options['environment'] = $task->task_args['environment'];
+    $task->options['git_ref_type'] = $task->task_args['git_ref_type'];
+    $task->options['environment'] = $task->ref->environment->name;
+    $task->options['settings'] = $task->ref->environment->settings;
+
+    // @TODO: Convert this to something more robust.
     $task->options['update'] = $task->task_args['update'];
     $task->options['revert'] = !empty($task->task_args['revert']);
     $task->options['cache'] = $task->task_args['cache'];
