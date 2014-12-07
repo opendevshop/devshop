@@ -44,7 +44,7 @@ function devshop_provision_drush_command() {
     'examples' => array(
       'drush @env.project.domain.com provision-devshop-deploy master --cache --update' => 'Triggers a git checkout & pull of branch master to the dev environment, clearing caches and running updates.',
     ),
-    'aliases' => array('pdd'),
+    'aliases' => array('deploy'),
   );
   $items['provision-devshop-pull'] = array(
     'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
