@@ -34,6 +34,7 @@ function devshop_projects_hosting_project_context_options(&$task) {
 /**
  * Implements hook_hosting_site_context_options()
  *
+ * Runs on verify task. Passes data to the drush alias.
  * Save environment name, project name, and git ref to site aliases.
  */
 function devshop_projects_hosting_site_context_options(&$task) {
