@@ -107,29 +107,26 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   else {
     drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
   }
-}
-//
-//  // Revert All Features, unless option is false
-//  if ($revert){
-//    drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
-//    provision_backend_invoke($site_alias, 'features-revert-all');
-//  }
-//  else {
-//    drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
-//  }
-//
-//  // Clear the whole cache, unless option is false
-//  // Seriously, lets do this twice.  Go Drupal!
-//  if ($cache){
-//    drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
-//    provision_backend_invoke($site_alias, 'cc all');
-//    provision_backend_invoke($site_alias, 'cc all');
-//  }
-//  else {
-//    drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
-//  }
-//
-//  drush_shell_cd_and_exec($repo_path, "git status");
 
-//}
+
+  // Revert All Features, unless option is false
+  if ($revert) {
+    drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
+    provision_backend_invoke(d()->name, 'features-revert-all');
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
+  }
+
+  // Clear the whole cache, unless option is false
+  // Seriously, lets do this twice.  Go Drupal!
+  if ($cache) {
+    drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
+    provision_backend_invoke(d()->name, 'cc all');
+    provision_backend_invoke(d()->name, 'cc all');
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
+  }
+}
 
