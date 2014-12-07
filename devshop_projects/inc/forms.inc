@@ -446,6 +446,107 @@ function devshop_projects_form(&$node) {
     '#default_value' => $project->settings->live['environment_aliases'],
   );
 
+  // Pull Code Method
+  $form['project']['settings']['deploy'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Deploy Settings'),
+    '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
+  );
+
+  $form['project']['settings']['deploy']['method'] = array(
+    '#title' => 'Deploy Code Method',
+    '#type' => 'radios',
+    '#description' => t('Choose the method used to deploy code to the server.'),
+    '#default_value' => $project->settings->deploy['method'],
+  );
+
+  $form['project']['settings']['deploy']['method'][] = array(
+    '#type' => 'radio',
+    '#title' => t('Commit Webhook'),
+    '#description' => t('Recommended. Pull code when a webhook is invoked from your git repository host.'),
+    '#return_value' => 'webhook',
+    '#default_value' => $project->settings->pull['method'] == 'webhook',
+    '#parents' => array('method'),
+    '#spawned' => TRUE,
+  );
+
+  // Add pull queue option, if it is enabled.
+  $queues = hosting_get_queues();
+  if ($queues['pull']['enabled']) {
+    $form['project']['settings']['deploy']['method'][] = array(
+      '#type' => 'radio',
+      '#title' => t('Pull on Queue'),
+      '#description' => t('Pull code on a regular basis.  Use if you cannot setup a commit webhook.'),
+      '#return_value' => 'queue',
+      '#default_value' => $project->settings->deploy['method'] == 'queue',
+      '#parents' => array('method'),
+      '#spawned' => TRUE,
+      '#disabled' => !$queues['pull']['enabled'],
+    );
+  }
+
+  if (!$queues['pull']['enabled'] && user_access('administer hosting queues')){
+    $form['project']['settings']['deploy']['queue_admin'] = array(
+      '#value' => t('The !link is disabled. Enable it to allow projects to pull code on a regular basis.', array(
+        '!link' => l(t('Pull Queue'), 'admin/hosting/queues'),
+      )),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
+  }
+
+  $form['project']['settings']['deploy']['method'][] = array(
+    '#type' => 'radio',
+    '#title' => t('Manual Pull Only'),
+    '#description' => t('Pull Code to servers manually via devshop or drush only.', array(
+      '!link' => l(t('Hosting Queues'), 'admin/hosting/queues'),
+    )),
+    '#return_value' => 'manual',
+    '#default_value' => $project->settings->deploy['method'] == 'manual',
+    '#parents' => array('method'),
+    '#spawned' => TRUE,
+  );
+
+  // @TODO: is there a better way to save certain values? We lose data without these.
+  $form['project']['settings']['pull']['last_pull'] = array(
+    '#type' => 'value',
+    '#value' => $node->project->settings->pull['last_pull'],
+  );
+  $form['project']['settings']['pull']['last_pull_status'] = array(
+    '#type' => 'value',
+    '#value' => $node->project->settings->pull['last_pull_status'],
+  );
+  $form['project']['settings']['pull']['last_pull_ip'] = array(
+    '#type' => 'value',
+    '#value' => $node->project->settings->pull['last_pull_ip'],
+  );
+
+  // @TODO: Make this more abstract and extensible.
+  $is_github = (strpos($node->project->git_url, 'github.com') !== FALSE);
+
+  //All settings git pull in project page
+  $form['project']['settings']['github'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('GitHub Integration'),
+    '#access' => $is_github,
+  );
+
+  // Pull Requests create environments?
+  $form['project']['settings']['github']['pull_request_environments'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Create Environments for Pull Requests'),
+    '#default_value' => $node->project->settings->github['pull_request_environments'],
+    '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
+    '#access' => $is_github,
+  );
+
+  // Delete Pull Request environments?
+  $form['project']['settings']['github']['pull_request_environments_delete'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Delete Pull Request Environments'),
+    '#default_value' => $node->project->settings->github['pull_request_environments_delete'],
+    '#description' => t('When Pull Requests are closed, delete the environment.'),
+  );
   return $form;
 }
 
