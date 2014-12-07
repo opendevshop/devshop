@@ -220,13 +220,12 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
   // Doing this post deploy ensures it was actually checked out.
   drush_log('[DEVSHOP] Environment Deployed.  Saving new git ref to project settings.');
 
-  $environment = $task->ref->environment->name;
   $git_ref = $task->task_args['git_ref'];
 
-  $return = db_query('UPDATE {hosting_devshop_project_environment} SET git_ref = "%s" WHERE project_nid = %d AND name = "%s"', $git_ref, $task->ref->nid, $environment);
+  $return = db_query('UPDATE {hosting_devshop_project_environment} SET git_ref = "%s" WHERE project_nid = %d AND name = "%s"', $git_ref, $task->ref->environment->project_nid, $task->ref->environment->name);
 
   if ($return) {
-    drush_log('[DEVSHOP] New git ref saved to environment.');
+    drush_log("[DEVSHOP] Git reference {$git_ref} saved to {$task->ref->environment->name} environment record.");
   }
   else {
     return drush_set_error('[DEVSHOP] Environment update failed!');
