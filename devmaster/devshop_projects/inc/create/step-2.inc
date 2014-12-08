@@ -15,7 +15,6 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $node = node_load($project->project_nid);
   $form += devshop_projects_form($node);
   $form['#node'] = $node;
-  devshop_pull_form_alter($form, $form_state, 'project_node_form');
 
   // Remove "environment" selector.
   $form['project']['settings']['live']['live_environment']['#type'] = 'value';
