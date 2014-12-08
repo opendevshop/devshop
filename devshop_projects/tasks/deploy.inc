@@ -61,20 +61,24 @@ function hosting_task_devshop_deploy_form($node) {
   $form['update'] = array(
     '#title' => t('Run update.php after code pull?'),
     '#type' => 'checkbox',
-    '#default_value' => 1,
+    '#default_value' => $node->environment->settings->deploy['update'],
   );
 
-  if (_devshop_projects_project_has_module($node, 'features')){
-    $form['revert'] = array(
-      '#title' => t('Revert all features after code pull?'),
-      '#type' => 'checkbox',
-      '#default_value' => 1,
-    );
+  $form['revert'] = array(
+    '#title' => t('Revert all features after code pull?'),
+    '#type' => 'checkbox',
+    '#default_value' => $node->environment->settings->deploy['revert'],
+  );
+
+  if (!_devshop_projects_site_has_module($node->nid, 'features')){
+    $form['revert']['#description'] .= ' ' . t('Features module is not enabled in this environment.');
+    $form['revert']['#disabled'] = 'disabled';
   }
+
   $form['cache'] = array(
     '#title' => t('Clear cache after code pull?'),
     '#type' => 'checkbox',
-    '#default_value' => 1,
+    '#default_value' => $node->environment->settings->deploy['cache'],
   );
 
   return $form;
