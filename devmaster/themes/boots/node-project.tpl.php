@@ -69,7 +69,7 @@
           <?php if (empty($project->settings->deploy['last_webhook_time'])): ?>
 
             <span><?php print t('Webhook not received'); ?></span>
-            <a type="button" class="btn btn-xs btn-warning" data-toggle="popover" title="<?php print t('Webhook not received'); ?>" href="#">Add a Webhook</a> for <input value="<?php print $project->webhook_url; ?>"></a>
+            <a type="button" class="btn btn-xs btn-warning" data-toggle="popover" title="<?php print t('Webhook not received'); ?>" href="<?php print $add_webhook_url?>"><i class="fa fa-<?php print $add_webhook_icon?>"></i> Add a Webhook</a> to <input value="<?php print  $project->webhook_url; ?>"></a>
           <?php endif; ?>
         <?php endif; ?>
       </small>

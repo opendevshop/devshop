@@ -187,6 +187,18 @@ function boots_preprocess_node(&$vars){
     // Get Drush aliases
     $vars['drush_aliases'] = 'COMING SOON';
 
+    if ($project->git_provider == 'github') {
+      $url = strtr($project->git_url, array(
+        'git@github.com:' => 'http://github.com/',
+        '.git' => '',
+      )) . '/settings/hooks';
+      $vars['add_webhook_url'] = $url;
+      $vars['add_webhook_icon'] = 'github';
+    }
+    else {
+      $vars['add_webhook_url'] = '#';
+      $vars['add_webhook_icon'] = 'warning';
+    }
   }
 }
 
