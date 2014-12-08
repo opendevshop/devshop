@@ -103,7 +103,7 @@ function template_preprocess_devshop_project_nav(&$vars){
   $project = $vars['node']->project;
 
   // @TODO: Detect other web URLs for other git hosts.
-  if (strpos($project->git_url, 'github.com') !== FALSE) {
+  if ($project->git_provider == 'github') {
     $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
     $vars['github_url'] = $url;
   }
@@ -170,7 +170,7 @@ function template_preprocess_devshop_project_nav(&$vars){
     $vars['settings_link'] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/$node->nid/edit", array('html' => TRUE));
   }
 
-  if (user_access('access project logs')){
-    $vars['logs_link'] = l('<i class="fa fa-list-alt"></i> ' . t('Logs'), "node/$node->nid/logs", array('html' => TRUE));
-  }
+//  if (user_access('access project logs')){
+//    $vars['logs_link'] = l('<i class="fa fa-list-alt"></i> ' . t('Logs'), "node/$node->nid/logs", array('html' => TRUE));
+//  }
 }
