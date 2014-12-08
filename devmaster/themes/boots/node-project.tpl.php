@@ -62,14 +62,17 @@
       <small><?php print $project->install_profile ?></small>
     </li>
     <li>
-      <strong>Last Commit</strong>
-      <?php if ($node->pull_status != DEVSHOP_PULL_STATUS_OK): ?>
-        <small class="text-danger">
-          <?php print $node->pull_message; ?>
-        </small>
-      <?php else: ?>
-        <small><?php print hosting_format_interval($project->settings->pull['last_pull']); ?></small>
-      <?php endif; ?>
+    <li>
+      <strong><?php print t('Deploy'); ?></strong>
+      <small>
+        <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
+          <?php if (empty($project->settings->deploy['last_webhook_time'])): ?>
+
+            <span><?php print t('Webhook not received'); ?></span>
+            <a type="button" class="btn btn-xs btn-warning" data-toggle="popover" title="<?php print t('Webhook not received'); ?>" href="#">Add a Webhook</a> for <input value="<?php print $project->webhook_url; ?>"></a>
+          <?php endif; ?>
+        <?php endif; ?>
+      </small>
     </li>
   </ul>
 </div>
