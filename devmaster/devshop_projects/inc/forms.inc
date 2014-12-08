@@ -541,6 +541,18 @@ function devshop_projects_form(&$node) {
     '#default_value' => $node->project->settings->github['pull_request_environments_delete'],
     '#description' => t('When Pull Requests are closed, delete the environment.'),
   );
+
+  // Pull Request Environment method.
+  $form['project']['settings']['github']['pull_request_environments_method'] = array(
+    '#type' => 'radios',
+    '#title' => t('Pull Request Environment Deploy Method'),
+    '#default_value' => $node->project->settings->github['pull_request_environments_method'],
+    '#description' => t('Select the method for creating the pull request environments.'),
+    '#options' => array(
+      'install' => t('Run the install profile %profile', array('%profile' =>  $project->install_profile)),
+      'clone_live' => t('Clone the live environment: %live', array('%live' => $project->settings->live['live_environment'])),
+    )
+  );
   return $form;
 }
 
