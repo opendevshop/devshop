@@ -7,6 +7,7 @@
 
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
+include_once('inc/queue.inc');
 include_once('inc/theme.inc');
 include_once('inc/ui.inc');
 
