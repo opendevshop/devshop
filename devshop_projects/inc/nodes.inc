@@ -164,6 +164,18 @@ function devshop_projects_load($node) {
   module_load_include('inc', 'devshop_pull');
   $project->webhook_url = _devshop_pull_callback_url($node);
 
+  // Git Repo Host
+  if (strpos($project->git_url, 'github.com') !== FALSE) {
+    $project->git_provider = 'github';
+  }
+  else {
+    $project->git_provider = 'git';
+  }
+  // @TODO: Set git providers for most common here, then add a hook to detect.
+
+//  dsm($project);
+
+
   // Save project object be available at $node->project.
   $additions['project'] = $project;
 
