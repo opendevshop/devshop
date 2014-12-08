@@ -469,11 +469,11 @@ function devshop_projects_form(&$node) {
 
   // Queue
   $queues = hosting_get_queues();
-  if ($queues['pull']['enabled']) {
+  if ($queues['deploy']['enabled']) {
     $form['project']['settings']['deploy']['method']['#options']['queue'] = t('Queued Deployment');
 
     $t = array();
-    $t['@freq'] = format_interval($queues['pull']['frequency'], 1);
+    $t['@freq'] = format_interval($queues['deploy']['frequency'], 1);
 
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= '<div class="description">';
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Pulls code every @freq. Only runs deploy hooks if code has changed.  Use only if repository webhooks are not available.', $t);
@@ -497,7 +497,7 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['deploy']['method']['#options']['manual'] .= ' <em>' . t('Rarely recommended. Branch environments must be manually updated.') . '</em>'. '</div>';
 
   // Add link to hosting queues admin if the user can access them.
-  if (!$queues['pull']['enabled'] && user_access('administer hosting queues')){
+  if (!$queues['deploy']['enabled'] && user_access('administer hosting queues')){
     $form['project']['settings']['deploy']['queue_admin'] = array(
       '#value' => t('The !link is disabled. Enable it to allow projects to pull code in the queue.', array(
         '!link' => l(t('Pull Queue'), 'admin/hosting/queues'),
