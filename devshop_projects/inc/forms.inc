@@ -476,7 +476,7 @@ function devshop_projects_form(&$node) {
     $t['@freq'] = format_interval($queues['deploy']['frequency'], 1);
 
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= '<div class="description">';
-    $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Pulls code every @freq. Only runs deploy hooks if code has changed.  Use only if repository webhooks are not available.', $t);
+    $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Deploy code every @freq. Only runs deploy hooks if code has changed.  Use only if repository webhooks are not available.', $t);
 
 
     if (user_access('administer hosting queues')) {
@@ -491,10 +491,10 @@ function devshop_projects_form(&$node) {
   }
 
   // Manual Pull
-  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Manual Deploy');
-  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Pull Code to servers manually via devshop or drush.');
+  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Manual Deployment');
+  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Deploy code to servers manually via devshop or drush.');
 
-  $form['project']['settings']['deploy']['method']['#options']['manual'] .= ' <em>' . t('Rarely recommended. Branch environments must be manually updated.') . '</em>'. '</div>';
+  $form['project']['settings']['deploy']['method']['#options']['manual'] .= ' <em>' . t('Not recommended. All environments must be manually updated.') . '</em>'. '</div>';
 
   // Add link to hosting queues admin if the user can access them.
   if (!$queues['deploy']['enabled'] && user_access('administer hosting queues')){
