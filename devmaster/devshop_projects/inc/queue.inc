@@ -9,7 +9,7 @@ function devshop_projects_hosting_queues() {
     'name' => t('Deploy Queue'),
     'description' => t('Runs git pull and deploy hooks on projects configured to do so.'),
     'total_items' => count(devshop_projects_get_deploy_queue_environments()),
-    'frequency' => strtotime("1 minute", 0),
+    'frequency' => strtotime("5 minutes", 0),
     'singular' => t('environment'),
     'plural' => t('environments'),
   );
