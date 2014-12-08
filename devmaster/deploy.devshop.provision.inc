@@ -68,7 +68,14 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
     if ($tag_or_branch == 'branch') {
       drush_shell_cd_and_exec($repo_path, "git pull");
       $output = drush_shell_exec_output();
-      drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+
+      // If no changes are detected, block hooks and return.
+      if ($output[0] = 'Already up-to-date.') {
+        drush_set_context('devshop_block_deploy_hooks', TRUE);
+        return;
+      }
+
+      drush_log(implode("\n", $output), 'ok');
     }
   }
   else {
@@ -89,6 +96,11 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
  * Post provision-devshop-deploy
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
+
+  if (drush_get_context('devshop_block_deploy_hooks')){
+    drush_log(dt('[DEVSHOP] Skipping deploy hooks. No changes detected.'), 'ok');
+    return;
+  }
 
   // Get post deploy options
   $revert = drush_get_option('revert');
