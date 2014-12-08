@@ -57,22 +57,22 @@ function devshop_pull_menu() {
   );
   return $items;
 }
-
-/**
- * Implements hook_hosting_queues()
- */
-function devshop_pull_hosting_queues() {
-  $items['pull'] = array(
-    'type' => 'batch',
-    'name' => t('Pull queue'),
-    'description' => t('Run git pull on projects configured to do so.'),
-    'total_items' => count(devshop_pull_get_projects(5)),
-    'frequency' => strtotime("1 minute", 0),
-    'singular' => t('project'),
-    'plural' => t('projects'),
-  );
-  return $items;
-}
+//
+///**
+// * Implements hook_hosting_queues()
+// */
+//function devshop_pull_hosting_queues() {
+//  $items['pull'] = array(
+//    'type' => 'batch',
+//    'name' => t('Pull queue'),
+//    'description' => t('Run git pull on projects configured to do so.'),
+//    'total_items' => count(devshop_pull_get_projects(5)),
+//    'frequency' => strtotime("1 minute", 0),
+//    'singular' => t('project'),
+//    'plural' => t('projects'),
+//  );
+//  return $items;
+//}
 
 ///**
 // * Implements hook_form_alter().
@@ -194,50 +194,50 @@ function devshop_pull_nodeapi(&$node, $op, $a3 = null) {
   }
 }
 
-/**
- * Get a number of platforms that have their pull queue enabled.
- *
- * @param $limit
- *   Limit to a maximum of this number of platforms.
- * @return
- *   An array of site nodes that have a pull queue enabled.
- *
- */
-function devshop_pull_get_projects($limit = 5) {
-
-  $results = db_query("SELECT * FROM {hosting_devshop_project} LIMIT %d", $limit);
-
-  $projects = array();
-  while ($result = db_fetch_object($results)) {
-    $node = node_load($result->nid);
-    $project = $node->project;
-
-    if ($project->settings->pull['queue_enabled']){
-      $projects[] = $project;
-    }
-  }
-
-  return $projects;
-}
-
-/**
- * Implements hosting_QUEUE_TYPE_queue().
- */
-function hosting_pull_queue($count) {
-
-  $projects = devshop_pull_get_projects($count);
-
-  foreach ($projects as $project) {
-    $environments_to_pull = array();
-    foreach ($project->environments as $environment) {
-      if (!$environment->settings['pull_disabled']) {
-        $environments_to_pull[] = $environment->name;
-      }
-    }
-    $args = array();
-    $args['environments'] = implode(' ', $environments_to_pull);
-    hosting_add_task($project->nid, 'devshop-pull', $args);
-
-    module_invoke_all('devshop_pull', $project);
-  }
-}
+///**
+// * Get a number of platforms that have their pull queue enabled.
+// *
+// * @param $limit
+// *   Limit to a maximum of this number of platforms.
+// * @return
+// *   An array of site nodes that have a pull queue enabled.
+// *
+// */
+//function devshop_pull_get_projects($limit = 5) {
+//
+//  $results = db_query("SELECT * FROM {hosting_devshop_project} LIMIT %d", $limit);
+//
+//  $projects = array();
+//  while ($result = db_fetch_object($results)) {
+//    $node = node_load($result->nid);
+//    $project = $node->project;
+//
+//    if ($project->settings->pull['queue_enabled']){
+//      $projects[] = $project;
+//    }
+//  }
+//
+//  return $projects;
+//}
+//
+///**
+// * Implements hosting_QUEUE_TYPE_queue().
+// */
+//function hosting_pull_queue($count) {
+//
+//  $projects = devshop_pull_get_projects($count);
+//
+//  foreach ($projects as $project) {
+//    $environments_to_pull = array();
+//    foreach ($project->environments as $environment) {
+//      if (!$environment->settings['pull_disabled']) {
+//        $environments_to_pull[] = $environment->name;
+//      }
+//    }
+//    $args = array();
+//    $args['environments'] = implode(' ', $environments_to_pull);
+//    hosting_add_task($project->nid, 'devshop-pull', $args);
+//
+//    module_invoke_all('devshop_pull', $project);
+//  }
+//}
