@@ -223,32 +223,31 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
     $form['environment']['settings']['pull_disabled'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Disable Pull on Commit'),
+      '#title' => t('Disable Deploy on Commit'),
       '#default_value' => $environment->settings->pull_disabled,
       '#description' => t('Do not pull code to the server on commit & push.'),
     );
 
-    $form['environment']['settings']['pull'] = array(
+    $form['environment']['settings']['deploy'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Automatic Code Pull'),
-      '#description' => t('When code is automatically pulled to this environment, do the following:'),
+      '#title' => t('Deployment Hooks'),
+      '#description' => t('When code is deployed to this environment, do the following:'),
     );
-    $form['environment']['settings']['pull']['pull_revert'] = array(
+    $form['environment']['settings']['deploy']['revert'] = array(
       '#type' => 'checkbox',
       '#title' => t('Revert all features.'),
-      '#default_value' => $environment->settings->pull['pull_revert'],
+      '#default_value' => $environment->settings->deploy['revert'],
       '#description' => t(''),
     );
-
-    $form['environment']['settings']['pull']['pull_update'] = array(
+    $form['environment']['settings']['deploy']['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
-      '#default_value' => $environment->settings->pull['pull_update'],
+      '#default_value' => $environment->settings->deploy['update'],
     );
-    $form['environment']['settings']['pull']['pull_cache'] = array(
+    $form['environment']['settings']['deploy']['cache'] = array(
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
-      '#default_value' => $environment->settings->pull['pull_cache'],
+      '#default_value' => $environment->settings->deploy['cache'],
     );
 
     // Add our own submit handler
