@@ -158,6 +158,12 @@ function devshop_projects_load($node) {
   $project->name = $node->title;
   $project->status = $node->status;
 
+  // Webhook Status
+  // @TODO: Create Hosting Webhooks module.
+  // @TODO: Remove devshop_pull.
+  module_load_include('inc', 'devshop_pull');
+  $project->webhook_url = _devshop_pull_callback_url($node);
+
   // Save project object be available at $node->project.
   $additions['project'] = $project;
 
