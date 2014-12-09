@@ -162,8 +162,14 @@ function devshop_pull_github_webhook($project_node){
           if ($data->action == 'opened'){
             $message = "Detected Pull Request creation for $branch \n";
 
-            // @TODO: Allow cloning from "live" (or other) environment.
-            hosting_create_environment($project_node, $environment_name, $branch);
+            // If method is "install"...
+            if ($project->settings->github['pull_request_environments_method'] == 'install') {
+              hosting_create_environment($project_node, $environment_name, $branch);
+            }
+            // Otherwise, it is a clone from live.
+            else {
+              hosting_create_environment($project_node, $environment_name, $branch, $project->settings->live['live_environment']);
+            }
             $message .= "Environment $environment_name created for $project_node->title \n";
           }
 
