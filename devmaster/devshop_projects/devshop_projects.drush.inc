@@ -137,7 +137,7 @@ function drush_devshop_platform_verify(){
     // If a branch is selected, add --branch to the command.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
-      $command .= " --branch $git_ref";
+      $command .= " && git checkout $git_ref";
     }
   }
   // If the platform has been verified and has a branch and git url
