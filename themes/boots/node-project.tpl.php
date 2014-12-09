@@ -66,9 +66,14 @@
       <strong><?php print t('Deploy'); ?></strong>
       <small>
         <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
+          <!-- Webhook -->
           <?php if (empty($project->settings->deploy['last_webhook'])): ?>
+            <!-- Not Received -->
             <span><?php print t('Webhook not received'); ?></span>
             <a type="button" class="btn btn-xs btn-warning" data-toggle="popover" title="<?php print t('Webhook not received'); ?>" href="<?php print $add_webhook_url?>"><i class="fa fa-<?php print $add_webhook_icon?>"></i> Add a Webhook</a> to <input value="<?php print  $project->webhook_url; ?>" class="form-control webhook-url small" onclick="this.select()"></a>
+          <?php else: ?>
+            <!-- Last Received -->
+            <span title="<?php print t('Last webhook receieved.'); ?>"><?php print $webhook_ago; ?></span>
           <?php endif; ?>
         <?php endif; ?>
       </small>

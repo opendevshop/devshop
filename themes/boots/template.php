@@ -187,6 +187,7 @@ function boots_preprocess_node(&$vars){
     // Get Drush aliases
     $vars['drush_aliases'] = 'COMING SOON';
 
+    // React to git provider
     if ($project->git_provider == 'github') {
       $url = strtr($project->git_url, array(
         'git@github.com:' => 'http://github.com/',
@@ -199,6 +200,14 @@ function boots_preprocess_node(&$vars){
       $vars['add_webhook_url'] = '#';
       $vars['add_webhook_icon'] = 'warning';
     }
+
+    // Set webhook interval
+    if ($project->settings->deploy['method'] && $project->settings->deploy['last_webhook']){
+      $interval = format_interval(time() - $project->settings->deploy['last_webhook']);
+      $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
+    }
+
+
   }
 }
 
