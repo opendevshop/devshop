@@ -23,8 +23,10 @@ function hosting_task_devshop_create_form($node) {
       $site_to_fork = arg(4);
       if ($site_to_fork && is_numeric($site_to_fork) && $site = node_load($site_to_fork)) {
         if (!empty($project->environments[$site->environment->name])){
-
-          $form['branch_source'] = array(
+          $form['action'] = array(
+            '#value' => 'fork'
+          );
+          $form['branch_parent'] = array(
             '#type' => 'item',
             '#title' => t('Fork from'),
             '#value' => t('!env environment on branch !branch', array('!env' => "<span class='environment'>{$site->environment->name}</span>", '!branch' => "<span class='branch'>{$site->environment->git_ref}</span>")),
@@ -33,7 +35,7 @@ function hosting_task_devshop_create_form($node) {
             '#type' => 'hidden',
             '#value' => $site->environment->name,
           );
-          $form['new_branch'] = array(
+          $form['branch'] = array(
             '#title' => t('New branch name'),
             '#description' => t('Pick a name for your new git branch.'),
             '#type' => 'textfield',
@@ -50,6 +52,9 @@ function hosting_task_devshop_create_form($node) {
       if ($site_to_clone && is_numeric($site_to_clone) && $site = node_load($site_to_clone)) {
 
         if (!empty($project->environments[$site->environment->name])){
+          $form['action'] = array(
+            '#value' => 'clone'
+          );
           $form['environment_source_display'] = array(
             '#type' => 'item',
             '#title' => t('Clone'),
@@ -68,6 +73,9 @@ function hosting_task_devshop_create_form($node) {
     }
   }
   else {
+    $form['action'] = array(
+      '#value' => 'create'
+    );
     $form['branch'] = array(
       '#title' => t('Branch/Tag'),
       '#description' => t('Choose the git branch or tag you wish to use for this new environment.  <em>Note: If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
@@ -143,17 +151,27 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
 /**
  * Extra submit function for hosting_task_confirm_form()
  *
- * @see devshop_projects_form_alter().  We had to add the submit hadler there.
+ * @see devshop_projects_form_alter().  We had to add the submit handler there.
  */
 function hosting_task_devshop_create_form_submit($form, &$form_state) {
 
   $project = node_load($form_state['values']['nid']);
   $environment_name = $form_state['values']['parameters']['environment_name'];
-  $branch = !empty($form_state['values']['parameters']['new_branch'])? $form_state['values']['parameters']['new_branch']: $form_state['values']['parameters']['branch'];
-  $environment_source = $form_state['values']['parameters']['environment_source'];
   $environment_settings = $form_state['values']['parameters']['project']['environment']['settings'];
 
-  hosting_create_environment($project, $environment_name, $branch, $environment_source, $environment_settings);
+  $action = $form_state['values']['parameters']['action'];
+  $branch = $form_state['values']['parameters']['branch'];
+
+  if ($action == 'clone') {
+
+  }
+  elseif ($action == 'create') {
+  }
+  elseif ($action == 'fork') {
+    $branch_parent = $form_state['values']['parameters']['branch_parent'];
+  }
+
+  hosting_create_environment($project, $environment_name, $branch, $form_state['values']['parameters']['environment_source'], $environment_settings);
 
   // We are replacing hosting_confirm_form_submit here, so just do what it does,
   // minus the hosting task creation!
@@ -172,21 +190,21 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  * @TODO: Add more options like web server, etc.
  * @param $project
  *   A full project node (for now. @TODO Allow project name (and/or nid) as parameters.
- * @param $environment_name
+ * @param $new_environment_name
  *   A new name for the environment
- * @param $branch
- *   What git branch to track.
- * @param $fork_source
- *   If desired, the environment to fork off of. (Copy the database and create a new branch from)
+ * @param $new_environment_branch
+ *   What git branch to track. If FALSE, will not fork.
+ * @param $source_environment
+ *   If desired, the environment to clone. (Copy the database and create a new branch from)
  */
-function hosting_create_environment($project_node, $environment_name, $branch, $fork_source = NULL, $settings = NULL) {
+function hosting_create_environment($project_node, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $fork_source_environment = NULL, $settings = NULL) {
   global $user;
   $project = $project_node->project;
 
   // First, create a platform node. Only aegir properties are needed.
   $platform = new stdClass();
   $platform->type = 'platform';
-  $platform->title = $project_node->title . '_' . $environment_name;
+  $platform->title = $project_node->title . '_' . $new_environment_name;
   $platform->status = 1;
   $platform->uid = $user->uid;
   $platform->name = $user->name;
@@ -198,10 +216,10 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
 
   // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
-    $platform->publish_path = $project->code_path . '/' . $environment_name . '/' . $project->drupal_path;
+    $platform->publish_path = $project->code_path . '/' . $new_environment_name . '/' . $project->drupal_path;
   }
   else {
-    $platform->publish_path = $project->code_path . '/' . $environment_name;
+    $platform->publish_path = $project->code_path . '/' . $new_environment_name;
   }
 
   // Save the platform node.
@@ -209,12 +227,24 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
     node_save($platform);
   }
 
+  // If no new branch specified and fork source is present, set branch to forked environment's branch.
+  if (empty($new_environment_branch) && $source_environment) {
+    $branch = $project->environments[$source_environment]->git_ref;
+  }
+  // If no new branch and fork source not mentioned, return false.
+  elseif (empty($new_environment_branch) && empty($source_environment)) {
+    return FALSE;
+  }
+  else {
+    $branch = $new_environment_branch;
+  }
+
   // If cloning or forking, check if source environment exists...
-  if (isset($project_node->project->environments[$fork_source])) {
-    $source_environment = $project_node->project->environments[$fork_source];
+  if (isset($project_node->project->environments[$source_environment])) {
+    $source_environment = $project_node->project->environments[$source_environment];
 
     $environment = new stdClass();
-    $environment->name = $environment_name;
+    $environment->name = $new_environment_name;
     $environment->git_ref = $branch;
     $environment->platform = $platform->nid;
 
@@ -223,13 +253,15 @@ function hosting_create_environment($project_node, $environment_name, $branch, $
 
     // Save Clone/fork specific data to the environment
     $environment->settings->site_to_clone = $source_environment->site;
-    $environment->settings->branch_to_fork = $source_environment->git_ref;
 
+    if ($action == 'fork') {
+      $environment->settings->branch_to_fork = $source_environment->git_ref;
+    }
   }
   else {
     // Next, add the environment record.
     $environment = new stdClass();
-    $environment->name = $environment_name;
+    $environment->name = $new_environment_name;
     $environment->git_ref = $branch;
     $environment->platform = $platform->nid;
 
