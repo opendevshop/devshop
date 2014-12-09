@@ -508,17 +508,17 @@ function devshop_projects_form(&$node) {
   }
 
   // @TODO: is there a better way to save certain values? We lose data without these.
-  $form['project']['settings']['pull']['last_pull'] = array(
+  $form['project']['settings']['deploy']['webhook_'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->pull['last_pull'],
+    '#value' => $node->project->settings->deploy['last_webhook'],
   );
-  $form['project']['settings']['pull']['last_pull_status'] = array(
+  $form['project']['settings']['deploy']['last_webhook_status'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->pull['last_pull_status'],
+    '#value' => $node->project->settings->deploy['last_webhook_status'],
   );
-  $form['project']['settings']['pull']['last_pull_ip'] = array(
+  $form['project']['settings']['deploy']['last_webhook_ip'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->pull['last_pull_ip'],
+    '#value' => $node->project->settings->deploy['last_webhook_ip'],
   );
 
   // @TODO: Make this more abstract and extensible.
