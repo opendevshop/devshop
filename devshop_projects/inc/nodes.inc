@@ -173,9 +173,6 @@ function devshop_projects_load($node) {
   }
   // @TODO: Set git providers for most common here, then add a hook to detect.
 
-//  dsm($project);
-
-
   // Save project object be available at $node->project.
   $additions['project'] = $project;
 
