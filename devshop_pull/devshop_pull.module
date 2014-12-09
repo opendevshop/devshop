@@ -25,7 +25,7 @@ define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS',"
 ");
 
 // The base URL to use for the Post Commit callback.
-define('DEVSHOP_PULL_CALLBACK_URL', 'devshop/pull');
+define('DEVSHOP_PULL_CALLBACK_URL', 'webhook');
 
 /**
  * Implements hook_perm()

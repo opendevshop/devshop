@@ -204,7 +204,7 @@ function devshop_pull_ip_match($ip, $list) {
  */
 function _devshop_pull_callback_url($node) {
   return url(DEVSHOP_PULL_CALLBACK_URL
-    . '/' . $node->hosting_name
+    . '/' . $node->title
     . '/' . _devshop_pull_hash_create($node),
     array('absolute' => TRUE));
 }
