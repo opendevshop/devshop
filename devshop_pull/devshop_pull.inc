@@ -7,9 +7,9 @@
 function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Load the project node & list of allowed IPs
-  $project_node = hosting_context_load(str_replace('project_', '', $project_hosting_context));
+  $project_node = hosting_context_load($project_hosting_context);
   $project = $project_node->project;
-  $pull_settings = $project_node->project->settings->pull;
+  $deploy_settings = $project_node->project->settings->deploy;
 
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
@@ -32,12 +32,12 @@ function devshop_pull_callback($project_hosting_context, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  elseif (!$pull_settings['pull_enabled']){
-    $message = "Project $project is NOT configured to use Pull Code URL callback!";
+  if ($deploy_settings['method'] != 'webhook') {
+    $message = "Project not configured to use webhook deployment.";
   }
   // Make sure the client's IP address is on the list
   else if (!devshop_pull_ip_match(ip_address(), $allowed_ips)) {
-    $message = ip_address() . " is not authorized to invoke a Pull Code request.";
+    $message = ip_address() . " is not authorized to invoke a webhook request.";
     $status = DEVSHOP_PULL_STATUS_ACCESS_DENIED;
   }
   // All checks pass! Server is allowed to trigger tasks!
@@ -56,11 +56,12 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   }
 
   // Save the project node with last pull info.
-  $pull_settings['last_pull'] = time();
-  $pull_settings['last_pull_status'] = $status;
-  $pull_settings['last_pull_ip'] = ip_address();
+  $deploy_settings['last_webhook'] = time();
+  $deploy_settings['last_webhook_status'] = $status;
+  $deploy_settings['last_webhook_ip'] = ip_address();
 
-  $project_node->project->settings->pull = $pull_settings;
+  $project_node->project->settings->deploy = $deploy_settings;
+  $project_node->no_verify;
 
   node_save($project_node);
 
@@ -77,19 +78,26 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 /**
  * Default action to take on webhook init.
  */
-function devshop_pull_default_webhook($project, $environments_to_pull){
-  // Create the hosting task
-  // We need to pass environments so we can control what envs to pull based
-  // on the data coming back from github!
-  $args = array();
-  $args['environments'] = implode(' ', $environments_to_pull);
+function devshop_pull_default_webhook($project_node){
+  $project = $project_node->project;
+  foreach ($project->environments as $environment) {
 
-  // Always clear cache...
-  // @TODO: Should we make this a setting? "What to do on auto-pull?"
-  $args['cache'] = 1;
-  hosting_add_task($project->nid, 'devshop-pull', $args);
+    // Respect pull disabled setting.
+    if ($environment->settings->pull_disabled) {
+      continue;
+    }
+    $environments_to_pull[] = $environment->name;
 
-  return "Commit notification received! Running 'Pull Code' on $project->title environments " . $args['environments'];
+    $args = array();
+    $args['git_ref'] = $environment->git_ref;
+    $args['update'] = $environment->settings->deploy['update'];
+    $args['revert'] = $environment->settings->deploy['revert'];
+    $args['cache'] = $environment->settings->deploy['cache'];
+
+    hosting_add_task($environment->site, 'devshop-deploy', $args);
+  }
+
+  return "Commit notification received! Running 'Deploy' on $project->title environments " . implode(', ', $environments_to_pull);
 }
 
 /**
@@ -213,7 +221,7 @@ function _devshop_pull_callback_url($node) {
  * Create a security hash code based on the platform node
  */
 function _devshop_pull_hash_create($node) {
-  return md5($node->hosting_name . $node->nid);
+  return md5($node->title . $node->nid);
 }
 
 /**
