@@ -27,16 +27,16 @@ function hosting_task_devshop_create_form($node) {
             '#type' => 'value',
             '#value' => 'fork'
           );
-          $form['branch_parent'] = array(
+          $form['fork_display'] = array(
             '#type' => 'item',
             '#title' => t('Fork from'),
             '#value' => t('!env environment on branch !branch', array('!env' => "<span class='environment'>{$site->environment->name}</span>", '!branch' => "<span class='branch'>{$site->environment->git_ref}</span>")),
           );
           $form['environment_source'] = array(
-            '#type' => 'hidden',
+            '#type' => 'value',
             '#value' => $site->environment->name,
           );
-          $form['branch'] = array(
+          $form['git_ref'] = array(
             '#title' => t('New branch name'),
             '#description' => t('Pick a name for your new git branch.'),
             '#type' => 'textfield',
@@ -63,11 +63,11 @@ function hosting_task_devshop_create_form($node) {
             '#value' => t('!env environment', array('!env' => "<span class='environment'>{$site->environment->name}</span>")),
           );
           $form['environment_source'] = array(
-            '#type' => 'hidden',
+            '#type' => 'value',
             '#value' => $site->environment->name,
           );
-          $form['branch'] = array(
-            '#type' => 'hidden',
+          $form['git_ref'] = array(
+            '#type' => 'value',
             '#value' => $site->environment->git_ref,
           );
         }
@@ -79,12 +79,16 @@ function hosting_task_devshop_create_form($node) {
       '#type' => 'value',
       '#value' => 'create',
     );
-    $form['branch'] = array(
+    $form['git_ref'] = array(
       '#title' => t('Branch/Tag'),
       '#description' => t('Choose the git branch or tag you wish to use for this new environment.  <em>Note: If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
       '#type' => 'select',
       '#options' => $branch_options,
       '#required' => TRUE,
+    );
+    $form['environment_source'] = array(
+      '#type' => 'value',
+      '#value' => NULL,
     );
   }
   $form['environment_name'] = array(
@@ -158,34 +162,24 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
  */
 function hosting_task_devshop_create_form_submit($form, &$form_state) {
 
-  $project = node_load($form_state['values']['nid']);
+  $project_node = node_load($form_state['values']['nid']);
   $environment_name = $form_state['values']['parameters']['environment_name'];
-  $environment_settings = $form_state['values']['parameters']['project']['environment']['settings'];
+  $environment_settings = $form_state['values']['parameters']['environment']['settings'];
 
   $action = $form_state['values']['parameters']['action'];
-  $branch = $form_state['values']['parameters']['branch'];
+  $git_ref = $form_state['values']['parameters']['git_ref'];
+  $environment_to_clone = $form_state['values']['parameters']['environment_source'];
 
-  if ($action == 'clone') {
-
-  }
-  elseif ($action == 'create') {
-  }
-  elseif ($action == 'fork') {
-    $branch_parent = $form_state['values']['parameters']['branch_parent'];
-  }
-
-  hosting_create_environment($project, $environment_name, $branch, $form_state['values']['parameters']['environment_source'], $environment_settings);
+  hosting_create_environment($project_node->project, $environment_name, $git_ref, $environment_to_clone, $environment_settings, $action);
 
   // We are replacing hosting_confirm_form_submit here, so just do what it does,
   // minus the hosting task creation!
   $values = $form_state['values'];
   $form_state['redirect'] = 'node/' . $values['nid'];
-  modalframe_close_dialog();
 
   // Friendly message
   drupal_set_message(t('Your environment is being created.'));
 }
-
 
 /**
  * API-level function for creating a new environment.
@@ -200,14 +194,14 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  * @param $source_environment
  *   If desired, the environment to clone. (Copy the database and create a new branch from)
  */
-function hosting_create_environment($project_node, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $fork_source_environment = NULL, $settings = NULL) {
+function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create') {
+
   global $user;
-  $project = $project_node->project;
 
   // First, create a platform node. Only aegir properties are needed.
   $platform = new stdClass();
   $platform->type = 'platform';
-  $platform->title = $project_node->title . '_' . $new_environment_name;
+  $platform->title = $project->name . '_' . $new_environment_name;
   $platform->status = 1;
   $platform->uid = $user->uid;
   $platform->name = $user->name;
@@ -243,8 +237,8 @@ function hosting_create_environment($project_node, $new_environment_name, $new_e
   }
 
   // If cloning or forking, check if source environment exists...
-  if (isset($project_node->project->environments[$source_environment])) {
-    $source_environment = $project_node->project->environments[$source_environment];
+  if (isset($project->environments[$source_environment])) {
+    $source_environment = $project->environments[$source_environment];
 
     $environment = new stdClass();
     $environment->name = $new_environment_name;
@@ -272,6 +266,6 @@ function hosting_create_environment($project_node, $new_environment_name, $new_e
     $environment->settings = $settings;
   }
 
-  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $project_node->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings));
+  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $project->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings));
 
 }
