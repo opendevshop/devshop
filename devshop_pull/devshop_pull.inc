@@ -131,14 +131,19 @@ function devshop_pull_github_webhook($project_node){
         foreach ($project->environments as $environment_name => $environment) {
           // Only pull if pull disabled or is tracking a tag.
           if (!$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
-            $environments_to_pull[] = $environment_name;
+            $environments_to_pull[] = $environment->name;
+
+            $args = array();
+            $args['git_ref'] = $environment->git_ref;
+            $args['update'] = $environment->settings->deploy['update'];
+            $args['revert'] = $environment->settings->deploy['revert'];
+            $args['cache'] = $environment->settings->deploy['cache'];
+
+            hosting_add_task($environment->site, 'devshop-deploy', $args);
           }
         }
 
-        // Set arguments and create "Pull" task.
-        $args['environments'] = implode(' ', $environments_to_pull);
-        hosting_add_task($project_node->nid, 'devshop-pull', $args);
-        $message = 'Push Received. Deploying code to environments: ' . $args['environments'];
+        $message = 'Push Received. Deploying code to environments: ' . implode(', ', $environments_to_pull);
         break;
 
       case 'pull_request':
