@@ -227,7 +227,6 @@
             <li class="divider"></li>
 
             <?php foreach ($git_refs as $ref => $item): ?>
-              <?php if ($ref == $environment->git_ref) continue; ?>
               <li>
                 <?php print str_replace('ENV_NID', $environment->site, $item); ?>
               </li>
