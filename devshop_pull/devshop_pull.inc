@@ -61,7 +61,6 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   $deploy_settings['last_webhook_ip'] = ip_address();
 
   $project_node->project->settings->deploy = $deploy_settings;
-  $project_node->no_verify;
 
   node_save($project_node);
 
