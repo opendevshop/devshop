@@ -248,3 +248,9 @@ body.admin-menu .navbar-static-top {
 .dropdown-menu>li>a {
     white-space: normal;
 }
+
+input.form-control.webhook-url {
+  display: inline;
+  width: 36em;
+
+}
