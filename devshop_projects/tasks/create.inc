@@ -24,6 +24,7 @@ function hosting_task_devshop_create_form($node) {
       if ($site_to_fork && is_numeric($site_to_fork) && $site = node_load($site_to_fork)) {
         if (!empty($project->environments[$site->environment->name])){
           $form['action'] = array(
+            '#type' => 'value',
             '#value' => 'fork'
           );
           $form['branch_parent'] = array(
@@ -53,6 +54,7 @@ function hosting_task_devshop_create_form($node) {
 
         if (!empty($project->environments[$site->environment->name])){
           $form['action'] = array(
+            '#type' => 'value',
             '#value' => 'clone'
           );
           $form['environment_source_display'] = array(
@@ -74,7 +76,8 @@ function hosting_task_devshop_create_form($node) {
   }
   else {
     $form['action'] = array(
-      '#value' => 'create'
+      '#type' => 'value',
+      '#value' => 'create',
     );
     $form['branch'] = array(
       '#title' => t('Branch/Tag'),
@@ -104,11 +107,11 @@ function hosting_task_devshop_create_form($node) {
     );
   }
 
-  // @TODO: I don't think this is needed. hosting_task_devshop_create_form_submit() looks for nid, these values end up in $form_state['values']['paramters'];
-  $form['project_nid'] = array(
-    '#type' => 'value',
-    '#value' => $node->nid,
-  );
+//  // @TODO: I don't think this is needed. hosting_task_devshop_create_form_submit() looks for nid, these values end up in $form_state['values']['paramters'];
+//  $form['project_nid'] = array(
+//    '#type' => 'value',
+//    '#value' => $node->nid,
+//  );
 
   // Load in environment settings
   // Load project and it's form
