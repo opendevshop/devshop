@@ -62,6 +62,7 @@
       <small><?php print $project->install_profile ?></small>
     </li>
     <li>
+    <?php if ($project->settings->deploy['method'] != 'manual'): ?>
     <li>
       <strong><?php print t('Deploy'); ?></strong>
       <small>
@@ -75,9 +76,14 @@
             <!-- Last Received -->
             <span title="<?php print t('Last webhook receieved.'); ?>"><?php print $webhook_ago; ?></span>
           <?php endif; ?>
-        <?php endif; ?>
+        <?php elseif ($project->settings->deploy['method'] == 'queue'): ?>
+        <!-- Queue -->
+          <span><?php print t('Queue'); ?></span>
+          <em><?php print $queued_ago; ?></em>
+       <?php endif; ?>
       </small>
     </li>
+    <?php endif; ?>
   </ul>
 </div>
 

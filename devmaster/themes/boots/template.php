@@ -202,12 +202,14 @@ function boots_preprocess_node(&$vars){
     }
 
     // Set webhook interval
-    if ($project->settings->deploy['method'] && $project->settings->deploy['last_webhook']){
+    if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
       $interval = format_interval(time() - $project->settings->deploy['last_webhook']);
       $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
     }
 
-
+    if ($project->settings->deploy['method'] == 'queue') {
+      $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_deploy_last_run', FALSE));
+    }
   }
 }
 
