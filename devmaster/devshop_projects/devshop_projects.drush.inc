@@ -115,6 +115,7 @@ function drush_devshop_platform_verify(){
   $create_branch = FALSE;
 
   $output = '';
+  $commands = array();
 
   //Remove drupal_path to clone.
   if ($drupal_path) {
@@ -132,12 +133,12 @@ function drush_devshop_platform_verify(){
     drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
     // Build the clone command string
-    $command = "git clone --recursive $git_remote $root";
+    $commands[] = "git clone --recursive $git_remote $root";
 
     // If a branch is selected, add --branch to the command.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
-      $command .= " && git checkout $git_ref";
+      $commands[] = "git checkout $git_ref";
     }
   }
   // If the platform has been verified and has a branch and git url
@@ -148,21 +149,21 @@ function drush_devshop_platform_verify(){
     $output .= _devshop_projects_git_execute('git fetch', $root);
 
     // Build the command string
-    $command = "git checkout $git_ref";
+    $commands[] = "git checkout $git_ref";
   }
 
   // Execute clone or checkout.
-  $output .=  _devshop_projects_git_execute($command, $root);
+  $output .=  _devshop_projects_git_execute($commands, $root);
 
   // If branch needs to be created (for "fork environment")
   if ($create_branch) {
+    $commands = array();
     // Checkout the new branch.
-    $command = "git checkout -b {$platform->environment->git_ref}";
-    $output .=  _devshop_projects_git_execute($command, $root);
+    $commands[] = "git checkout -b {$platform->environment->git_ref}";
 
     // Push the branch
-    $command = "git push -u origin {$platform->environment->git_ref}";
-    $output .=  _devshop_projects_git_execute($command, $root);
+    $commands[] = "git push -u origin {$platform->environment->git_ref}";
+    $output .=  _devshop_projects_git_execute($commands, $root);
   }
 
   return $output;
@@ -333,24 +334,28 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 /**
  * Utility for execute git commands.
  */
-function _devshop_projects_git_execute($command, $root) {
+function _devshop_projects_git_execute($commands, $root) {
   // Execute
-  if (!empty($command)){
-     drush_log('[DEVSHOP] Running: ' . $command);
+  $return = '';
+  foreach ($commands as $command) {
+    if (!empty($command)){
+      drush_log('[DEVSHOP] Running: ' . $command);
 
-    // @TODO: Create a d()->server->shell_cd_and_exec() function
-    //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
-    // So instead, this is the code from d()->server->shell_exec
-    // d()->server->shell_exec($cmd);
-    if (provision_is_local_host(d()->server->remote_host)) {
-      drush_shell_cd_and_exec($root, escapeshellcmd($command));
-    }
-    else {
-      drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
-    }
+      // @TODO: Create a d()->server->shell_cd_and_exec() function
+      //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
+      // So instead, this is the code from d()->server->shell_exec
+      // d()->server->shell_exec($cmd);
+      if (provision_is_local_host(d()->server->remote_host)) {
+        drush_shell_cd_and_exec($root, escapeshellcmd($command));
+      }
+      else {
+        drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
+      }
 
-    $output = drush_shell_exec_output();
-    drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
-    return $output;
+      $output = drush_shell_exec_output();
+      drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
+      $return .= $output;
+    }
   }
+  return $return;
 }
