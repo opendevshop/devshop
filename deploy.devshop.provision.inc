@@ -37,9 +37,9 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
  */
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
   // Get info
-  $environment = d()->environment;
+  $environment = (object) d()->environment;
   $project_name = d()->project;
-  $project = d("@project_{$project_name}");
+  $project = (object) d("@project_{$project_name}")->project;
 
   drush_log("[{$project_name}] Deploying '{$git_ref}' to '{$environment->name}'.", 'ok');
 
@@ -108,7 +108,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
 
-  $environment = d()->environment;
+  $environment = (object) d()->environment;
   $project_name = d()->project;
 
   drush_log("[{$project_name}] {$environment->name}: " . dt('Running deploy hooks.'), 'notice');
