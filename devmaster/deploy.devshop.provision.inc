@@ -38,15 +38,15 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
   // Get info
   $environment = d()->environment;
-  $project = (object) d('@project_' . d()->project)->project;
+  $project =  d()->project;
   $project_name = $project->name;
-  drush_log("[{$project_name}] Deploying '{$git_ref}' to '{$environment}'.", 'ok');
+  drush_log("[{$project_name}] Deploying '{$git_ref}' to '{$environment->name}'.", 'ok');
 
 
   $tag_or_branch = $environment->git_ref_type;
 
   // Find repo path
-  $repo_path = $project->code_path . '/' . $environment;
+  $repo_path = $project->code_path . '/' . $environment->name;
 
   // Ensure it's a git repo.
   provision_git_is_repo($repo_path);
@@ -60,7 +60,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
 
   // Check the desired git_ref
   if (drush_shell_cd_and_exec($repo_path, "git checkout $git_ref")) {
-    drush_log(dt("[DEVSHOP] Git $tag_or_branch $git_ref checked out to $environment environment, located at $repo_path."), 'ok');
+    drush_log(dt("[DEVSHOP] Git {$tag_or_branch} {$git_ref} checked out to {$environment->name} environment, located at {$repo_path}."), 'ok');
     $output = drush_shell_exec_output();
     drush_log(implode("\n", $output), 'ok');
 
@@ -108,14 +108,14 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $cache = drush_get_option('cache');
 
   $environment = d()->environment;
-  $project = (object) d('@project_' . d()->project)->project;
+  $project = d()->project;
   $project_name = $project->name;
 
-  drush_log("[{$project_name}] $environment: " . dt('Running deploy hooks.'), 'notice');
+  drush_log("[{$project_name}] {$environment->name}: " . dt('Running deploy hooks.'), 'notice');
 
   // Built in Hooks
   if ($update) {
-    drush_log("[{$project_name}] $environment:" . dt('Running updb...'), 'notice');
+    drush_log("[{$project_name}] {$environment->name}:" . dt('Running updb...'), 'notice');
     provision_backend_invoke(d()->name, 'updb');
   }
   else {
