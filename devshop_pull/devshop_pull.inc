@@ -123,13 +123,15 @@ function devshop_pull_github_webhook($project_node){
         break;
       case 'push':
 
-        // @TODO: Limit "Pull" tasks to only run for the branches we have new code for..
+        // Limit "Deploy" tasks to only run for the branches we have new code for..
+        $git_ref = strtr($data->ref, array('refs/tags/' => '', 'refs/heads/' => ''));
 
         // Check for environments set to pull
         $environments_to_pull = array();
         foreach ($project->environments as $environment_name => $environment) {
-          // Only pull if pull disabled or is tracking a tag.
-          if (!$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
+
+          // Only pull if deploy is not disabled or if environment is tracking a tag.
+          if ($git_ref == $environment->git_ref && !$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
             $environments_to_pull[] = $environment->name;
 
             $args = array();
@@ -142,7 +144,7 @@ function devshop_pull_github_webhook($project_node){
           }
         }
 
-        $message = 'Push Received. Deploying code to environments: ' . implode(', ', $environments_to_pull);
+        $message = "Push Received for git ref $git_ref. Deploying code to environments: " . implode(', ', $environments_to_pull);
         break;
 
       case 'pull_request':
