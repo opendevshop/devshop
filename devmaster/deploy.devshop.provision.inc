@@ -43,7 +43,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
   drush_log("[{$project_name}] Deploying '{$git_ref}' to '{$environment}'.", 'ok');
 
 
-  $tag_or_branch = $project->settings['git']['refs'][$git_ref];
+  $tag_or_branch = $environment->git_ref_type;
 
   // Find repo path
   $repo_path = $project->code_path . '/' . $environment;
@@ -60,22 +60,22 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
 
   // Check the desired git_ref
   if (drush_shell_cd_and_exec($repo_path, "git checkout $git_ref")) {
-    drush_log(dt("[DEVSHOP] Git Ref $git_ref checked out to $environment environment, located at $repo_path."), 'ok');
+    drush_log(dt("[DEVSHOP] Git $tag_or_branch $git_ref checked out to $environment environment, located at $repo_path."), 'ok');
     $output = drush_shell_exec_output();
-    drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+    drush_log(implode("\n", $output), 'ok');
 
     // Run Git Pull
     if ($tag_or_branch == 'branch') {
       drush_shell_cd_and_exec($repo_path, "git pull");
       $output = drush_shell_exec_output();
 
-      // If no changes are detected, block hooks and return.
-      if ($output[0] = 'Already up-to-date.') {
-        drush_set_context('devshop_block_deploy_hooks', TRUE);
-        return;
-      }
-
       drush_log(implode("\n", $output), 'ok');
+    }
+
+    // If no changes are detected, block hooks and return.
+    if ($output[0] = 'Already up-to-date.') {
+      drush_set_context('devshop_block_deploy_hooks', TRUE);
+      return;
     }
   }
   else {
