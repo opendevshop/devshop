@@ -71,10 +71,15 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
       $output = drush_shell_exec_output();
 
       drush_log(implode("\n", $output), 'ok');
-    }
 
-    // If no changes are detected, block hooks and return.
-    if ($output[0] = 'Already up-to-date.') {
+      // If on a branch and there are no changes it says "Already up-to-date."
+      if ($output[0] == 'Already up-to-date.') {
+        drush_set_context('devshop_block_deploy_hooks', TRUE);
+        return;
+      }
+    }
+    // If on a tag, and there are no changes, it outputs one line with the current ref.
+    elseif ($tag_or_branch == 'tag' && count($output) == 1) {
       drush_set_context('devshop_block_deploy_hooks', TRUE);
       return;
     }
