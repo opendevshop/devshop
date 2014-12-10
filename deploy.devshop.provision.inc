@@ -91,9 +91,12 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
         )));
     return;
   }
+  drush_shell_cd_and_exec($repo_path, "git status");
+  $output = drush_shell_exec_output();
+
   drush_log('----------------------------------------', 'ok');
   drush_log('$ git status', 'ok');
-  drush_log(implode("\n", _devshop_projects_git_execute(array('git status'), $repo_path)), 'ok');
+  drush_log(implode("\n", $output), 'ok');
   drush_log('----------------------------------------', 'ok');
 
 }
