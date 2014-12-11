@@ -100,7 +100,7 @@ function template_preprocess_devshop_project_nav(&$vars){
 
   global $user;
   $node = $vars['node'];
-  $project = $vars['node']->project;
+  $project = $vars['project'] = $vars['node']->project;
 
   // @TODO: Detect other web URLs for other git hosts.
   if ($project->git_provider == 'github') {
@@ -175,4 +175,5 @@ function template_preprocess_devshop_project_nav(&$vars){
 //  }
 
   $vars['drush_aliases'] = devshop_project_aliases($project);
+  $vars['aliases_url'] = url("node/{$node->nid}/aliases");
 }
