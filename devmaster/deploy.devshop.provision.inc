@@ -106,9 +106,11 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
+  // Verify the site.
+  provision_backend_invoke(d()->name, 'provision-verify');
+
   if (drush_get_context('devshop_block_deploy_hooks')){
     drush_log(dt('[DEVSHOP] Skipping deploy hooks. No changes detected.'), 'ok');
-    return;
   }
   else {
     drush_log(dt('[DEVSHOP] Preparing to run deploy hooks...'), 'ok');
@@ -153,9 +155,5 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
   }
-
-  // Verify the site.
-  provision_backend_invoke(d()->name, 'provision-verify');
-
 }
 
