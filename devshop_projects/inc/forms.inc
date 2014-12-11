@@ -246,18 +246,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       '#type' => 'checkbox',
       '#title' => t('Revert all features.'),
       '#description' => t('If features is enabled, revert all of them.'),
-      '#default_value' => $environment->settings->deploy['revert'],
+      '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['revert'],
     );
-
     $form['environment']['settings']['deploy']['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
-      '#default_value' => $environment->settings->deploy['update'],
+      '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['update'],
     );
     $form['environment']['settings']['deploy']['cache'] = array(
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
-      '#default_value' => $environment->settings->deploy['cache'],
+      '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['cache'],
     );
 
     // Add our own submit handler
