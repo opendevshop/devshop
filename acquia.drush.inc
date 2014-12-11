@@ -51,7 +51,7 @@ function drush_acquia_post_provision_devshop_deploy() {
     foreach ($scripts as $file) {
       drush_log('[DEVSHOP] Running Acquia Cloud Hook: ' . $file, 'ok');
 
-      if (drush_shell_exec("sh $file {$project_name} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type devshop") !== 0) {
+      if (drush_shell_exec("sh $file {$project_name} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type devshop $environment->url") !== 0) {
         $output = drush_shell_exec_output();
         drush_log(implode("\n", $output), 'ok');
       }
