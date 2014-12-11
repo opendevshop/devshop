@@ -153,5 +153,9 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
   }
+
+  // Verify the site.
+  provision_backend_invoke(d()->name, 'provision-verify');
+
 }
 
