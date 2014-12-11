@@ -36,13 +36,15 @@ function drush_acquia_post_provision_devshop_deploy($branch) {
       $script = realpath($cloud_hooks_path . '/common/post-code-update/' . $script);
     }
 
-    // Environment scripts.
+    // Environment scripts: Post Code Update
     if (file_exists($cloud_hooks_path . '/' . $environment->name)) {
       $scripts += array_diff(scandir($cloud_hooks_path . '/' . $environment->name . '/post-code-update'), array('..', '.'));
       foreach ($scripts as &$script) {
         $script = realpath($cloud_hooks_path . '/' . $environment->name . '/post-code-update/' . $script);
       }
     }
+
+    // @TODO: Post Code Deploy & Post DB Copy
 
     drush_log(implode("\n", $scripts), 'ok');
 
