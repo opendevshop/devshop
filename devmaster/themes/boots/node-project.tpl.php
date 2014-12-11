@@ -72,6 +72,15 @@
             <!-- Not Received -->
             <span><?php print t('Webhook not received'); ?></span>
             <a type="button" class="btn btn-xs btn-warning" data-toggle="popover" title="<?php print t('Webhook not received'); ?>" href="<?php print $add_webhook_url?>"><i class="fa fa-<?php print $add_webhook_icon?>"></i> Add a Webhook</a> to <input value="<?php print  $project->webhook_url; ?>" class="form-control webhook-url small" onclick="this.select()"></a>
+
+          <?php elseif ($project->settings->deploy['last_webhook_status'] == DEVSHOP_PULL_STATUS_ACCESS_DENIED): ?>
+            <!-- Last Received -->
+            <span class="text-danger">
+              <i class="fa fa-warning"></i> <?php print t('Webhook Access Denied'); ?>
+            </span>
+            <a href="<?php print url('admin/hosting/devshop/pull')?>">
+              <?php print t('Configure DevShop Webhook Receiver'); ?>
+            </a>
           <?php else: ?>
             <!-- Last Received -->
             <span title="<?php print t('Last webhook receieved.'); ?>"><?php print $webhook_ago; ?></span>
