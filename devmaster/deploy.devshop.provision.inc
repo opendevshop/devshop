@@ -107,6 +107,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Verify the site.
+  drush_log(dt('[DEVSHOP] Verifying the site.'), 'ok');
   provision_backend_invoke(d()->name, 'provision-verify');
 
   if (drush_get_context('devshop_block_deploy_hooks')){
