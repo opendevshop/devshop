@@ -234,6 +234,7 @@ function boots_preprocess_node(&$vars){
   if ($project->git_provider == 'github') {
     $suffix = t('GitHub will ping this URL after each code push to keep the servers up to date, and can create environments on Pull Request.');
     $suffix2 = t('Copy the link above, then click the link below to go to the webhooks page for this project.');
+    $suffix3 = t('DevShop only has support for Push and Pull Request events.  Set content type to <em>application/json</em>.');
 
     if (empty($project->settings->deploy['last_webhook'])){
       $github_button_text = t('Add a Webhook at GitHub.com');
@@ -276,6 +277,9 @@ data-target="#webhook-modal" title="Webhook URL">
                   </p>
                   <p>
                     $suffix2
+                  </p>
+                  <p>
+                    $suffix3
                   </p>
                   $button
                   </div>
