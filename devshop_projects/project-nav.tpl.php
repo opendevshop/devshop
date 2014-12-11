@@ -46,6 +46,10 @@
 
               <textarea cols="40" rows="10" class='form-control' onlick="this.select()"><?php print $drush_aliases; ?></textarea>
 
+              <p>
+                <?php print $access_note; ?>
+              </p>
+
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
