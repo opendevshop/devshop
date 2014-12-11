@@ -6,6 +6,7 @@
 function devshop_project_aliases($project) {
   $output = '<?php
 ';
+
   foreach ($project->environments as $name => $environment) {
 
     $remote_user = 'aegir';
@@ -25,4 +26,16 @@ PHP;
   }
 
   return $output;
+}
+
+
+/**
+ * Downloads the drush aliases for this site.
+ * @param $project
+ */
+function devshop_project_drush_aliases_page($node) {
+  $project = $node->project;
+  $filename = $project->name . '.aliases.drushrc.php';
+  header("Content-Disposition: attachment; filename='$filename'");
+  print devshop_project_aliases($project);
 }
