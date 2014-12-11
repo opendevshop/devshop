@@ -72,6 +72,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Save a variable to help when using the settings page.
   variable_set('devshop_pull_last_ip', ip_address());
+  variable_set('devshop_pull_last_status', $status);
 }
 
 /**
