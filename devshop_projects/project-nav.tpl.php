@@ -2,13 +2,15 @@
 <ul class="nav nav-pills project-stuff">
   <!-- Drush Aliases -->
   <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php print t('Drush Aliases'); ?>">
-      <i class="fa fa-drupal"></i>
+    <a href="#" class="dropdown-toggle drush-aliases" data-toggle="dropdown" title="<?php print t('Drush Aliases'); ?>">
+        <i class="fa fa-drupal"></i>
+      </span>
       <span class="caret"></span>
     </a>
     <div class="dropdown-menu dropdown-menu-right">
-      <textarea>
-        <?php print $drush_aliases; ?>
+      Save to <pre class="inline">~/.drush/<?php print $project->name; ?>.aliases.drushrc.php</pre>
+      <textarea cols="40" rows="10" class='form-control' onlick="this.select()">
+<?php print $drush_aliases; ?>
       </textarea>
     </div>
   </li>
