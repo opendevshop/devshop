@@ -19,7 +19,7 @@ function drush_acquia_post_provision_devshop_deploy() {
     $project = (object) d("@project_{$project_name}")->project;
 
     // If project has no path to drupal, we know it's not acquia.
-    if ($project->drupal_path != 'drupal') {
+    if ($project->drupal_path != 'docroot') {
       return;
     }
 
