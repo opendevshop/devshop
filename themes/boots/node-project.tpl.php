@@ -62,27 +62,52 @@
       <small><?php print $project->install_profile ?></small>
     </li>
     <li>
-    <?php if ($project->settings->deploy['method'] != 'manual'): ?>
+    <?php if ($project->settings->deploy['method'] == 'manual'): ?>
+      <strong><?php print t('Manual Deployment Only'); ?></strong>
+    <?php else: ?>
     <li>
-      <strong><?php print t('Deploy'); ?></strong>
-      <small>
+        <!-- Webhook -->
         <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
-          <!-- Webhook -->
+
+
+      <strong><?php print t('Webhook'); ?></strong>
+          <small>
           <?php if (empty($project->settings->deploy['last_webhook'])): ?>
             <!-- Not Received -->
-            <span><?php print t('Webhook not received'); ?></span>
-            <a type="button" class="btn btn-xs btn-warning" data-toggle="popover" title="<?php print t('Webhook not received'); ?>" href="<?php print $add_webhook_url?>"><i class="fa fa-<?php print $add_webhook_icon?>"></i> Add a Webhook</a> to <input value="<?php print  $project->webhook_url; ?>" class="form-control webhook-url small" onclick="this.select()"></a>
+            <span class="text-danger"><i class="fa fa-warning"></i> <?php print t('Not Received'); ?></span>
+          <?php elseif ($project->settings->deploy['last_webhook_status'] == DEVSHOP_PULL_STATUS_ACCESS_DENIED): ?>
+            <!-- Last Received -->
+            <span class="text-danger">
+              <i class="fa fa-warning"></i> <?php print t('Access Denied'); ?>
+            </span>
+            <a href="<?php print url('admin/hosting/devshop/pull')?>">
+              <?php print t('Configure Webhook Access'); ?>
+            </a>
           <?php else: ?>
             <!-- Last Received -->
             <span title="<?php print t('Last webhook receieved.'); ?>"><?php print $webhook_ago; ?></span>
           <?php endif; ?>
+          </small>
+
         <?php elseif ($project->settings->deploy['method'] == 'queue'): ?>
         <!-- Queue -->
-          <span><?php print t('Queue'); ?></span>
-          <em><?php print $queued_ago; ?></em>
-       <?php endif; ?>
-      </small>
+        <strong><?php print t('Queue'); ?>:</strong>
+        <small>
+          <?php print $queued_ago; ?>
+        </small>
+          <?php if (user_access('administer hosting queues')): ?>
+              <?php print $hosting_queue_admin_link; ?>
+          <?php endif; ?>
+        <?php endif; ?>
     </li>
+
+    <!-- Webhook -->
+    <?php if ($project->settings->deploy['method'] == 'webhook'):
+
+        $float = empty($project->settings->deploy['last_webhook'])? 'inline': 'pull-right';
+      ?>
+      <li class="<?php print $float; ?>"><?php print $webhook_url; ?></li>
+    <?php endif; ?>
     <?php endif; ?>
   </ul>
 </div>
