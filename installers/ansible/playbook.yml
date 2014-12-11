@@ -228,6 +228,7 @@
       service:
         name={{ supervisor_daemon }}
         state=started
+        sleep=3
         enabled=yes
 
     - name: Supervisor | Set up queue runner script
