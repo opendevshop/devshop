@@ -44,7 +44,7 @@ function theme_devshop_projects_settings_form($form) {
     $rows[] = $row;
   }
   $output = theme('table', $header, $rows, array('id' => 'project-settings-table'));
-  return $output; 
+  return $output;
 }
 
 /**
@@ -173,4 +173,6 @@ function template_preprocess_devshop_project_nav(&$vars){
 //  if (user_access('access project logs')){
 //    $vars['logs_link'] = l('<i class="fa fa-list-alt"></i> ' . t('Logs'), "node/$node->nid/logs", array('html' => TRUE));
 //  }
+
+  $vars['drush_aliases'] = devshop_project_aliases($project);
 }
