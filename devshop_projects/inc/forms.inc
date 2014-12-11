@@ -245,12 +245,9 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     $form['environment']['settings']['deploy']['revert'] = array(
       '#type' => 'checkbox',
       '#title' => t('Revert all features.'),
+      '#description' => t('If features is enabled, revert all of them.'),
       '#default_value' => $environment->settings->deploy['revert'],
     );
-    if (!_devshop_projects_site_has_module($environment->site, 'features')){
-      $form['environment']['settings']['deploy']['revert']['#description'] .= ' ' . t('Features module is not enabled in this environment.');
-      $form['environment']['settings']['deploy']['revert']['#disabled'] = 'disabled';
-    }
 
     $form['environment']['settings']['deploy']['update'] = array(
       '#type' => 'checkbox',
