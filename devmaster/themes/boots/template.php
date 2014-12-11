@@ -192,7 +192,13 @@ function boots_preprocess_node(&$vars){
       $url = strtr($project->git_url, array(
         'git@github.com:' => 'http://github.com/',
         '.git' => '',
-      )) . '/settings/hooks/new';
+      ));
+      if (empty($project->settings->deploy['last_webhook'])){
+        $url .= '/settings/hooks/new';
+      }
+      else {
+        $url .= '/settings/hooks';
+      }
       $vars['add_webhook_url'] = $url;
       $vars['add_webhook_icon'] = 'github';
     }
@@ -228,7 +234,14 @@ function boots_preprocess_node(&$vars){
   if ($project->git_provider == 'github') {
     $suffix = t('GitHub will ping this URL after each code push to keep the servers up to date, and can create environments on Pull Request.');
     $suffix2 = t('Copy the link above, then click the link below to go to the webhooks page for this project.');
-    $button = l(t('Add a Webhook at GitHub.com'), $vars['add_webhook_url'], array('attributes'=> array('class' => 'btn btn-primary', 'target' => '_blank')));
+
+    if (empty($project->settings->deploy['last_webhook'])){
+      $github_button_text = t('Add a Webhook at GitHub.com');
+    }
+    else {
+      $github_button_text = t('Manage Webhooks at GitHub.com');
+    }
+    $button = l($github_button_text, $vars['add_webhook_url'], array('attributes'=> array('class' => 'btn btn-primary', 'target' => '_blank')));
   }
   else {
     $suffix = t('Ping this URL after each code push to keep the servers up to date.');
