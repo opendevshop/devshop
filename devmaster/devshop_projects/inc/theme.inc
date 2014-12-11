@@ -176,4 +176,6 @@ function template_preprocess_devshop_project_nav(&$vars){
 
   $vars['drush_aliases'] = devshop_project_aliases($project);
   $vars['aliases_url'] = url("node/{$node->nid}/aliases");
+
+  $vars['access_note'] = t('NOTE: To grant users authorization to access these environments with drush remotely, you must put their private key into the file <code>/var/aegir/.ssh/authorized_keys</code>.');
 }
