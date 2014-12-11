@@ -4,7 +4,8 @@
  * @param $project
  */
 function devshop_project_aliases($project) {
-  $output = '';
+  $output = '<?php
+';
   foreach ($project->environments as $name => $environment) {
 
     $remote_user = 'aegir';
@@ -13,7 +14,6 @@ function devshop_project_aliases($project) {
     $uri = $environment->default_domain;
 
     $output .= <<<PHP
-<?php
 \$aliases['$name'] = array(
   'root' => '$root',
   'uri' => '$uri',
