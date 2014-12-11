@@ -192,7 +192,13 @@ function boots_preprocess_node(&$vars){
       $url = strtr($project->git_url, array(
         'git@github.com:' => 'http://github.com/',
         '.git' => '',
-      )) . '/settings/hooks';
+      ));
+      if (empty($project->settings->deploy['last_webhook'])){
+        $url .= '/settings/hooks/new';
+      }
+      else {
+        $url .= '/settings/hooks';
+      }
       $vars['add_webhook_url'] = $url;
       $vars['add_webhook_icon'] = 'github';
     }
@@ -211,6 +217,81 @@ function boots_preprocess_node(&$vars){
       $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_deploy_last_run', FALSE));
     }
   }
+
+  // Webhook status output.
+  if (empty($node->project->settings->deploy['last_webhook'])) {
+    $button_text = t('Setup Webhook');
+    $class = 'btn-warning';
+  }
+  else {
+    $button_text =  t('Webhook URL');
+    $class = 'text-muted';
+  }
+
+  $title = t('Webhook for project %name', array('%name' => $node->title));
+  $prefix = t('Deploy code to your environments with an incoming webhook with the following URL:');
+
+  if ($project->git_provider == 'github') {
+    $suffix = t('GitHub will ping this URL after each code push to keep the servers up to date, and can create environments on Pull Request.');
+    $suffix2 = t('Copy the link above, then click the link below to go to the webhooks page for this project.');
+    $suffix3 = t('DevShop only has support for Push and Pull Request events.  Set content type to <em>application/json</em>.');
+
+    if (empty($project->settings->deploy['last_webhook'])){
+      $github_button_text = t('Add a Webhook at GitHub.com');
+    }
+    else {
+      $github_button_text = t('Manage Webhooks at GitHub.com');
+    }
+    $button = l($github_button_text, $vars['add_webhook_url'], array('attributes'=> array('class' => 'btn btn-primary', 'target' => '_blank')));
+  }
+  else {
+    $suffix = t('Ping this URL after each code push to keep the servers up to date.');
+    $button = '';
+    //@TODO: Link to more help such as example scripts.
+  }
+
+  $url =  $node->project->webhook_url;
+  $project_name = $node->title;
+  $vars['webhook_url'] = <<<HTML
+
+            <a href="#" data-toggle="modal" class="btn btn-xs $class"
+data-target="#webhook-modal" title="Webhook URL">
+              <i class="fa fa-chain"></i> $button_text
+            </a>
+
+            <!-- Modal -->
+            <div class="modal fade" id="webhook-modal" tabindex="-1" role="dialog" aria-labelledby="webhook-modal" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="drush-alias-modal">$title</h4>
+                  </div>
+                  <div class="modal-body">
+                  <p>
+                    $prefix
+                  </p>
+                  <p><input class="form-control" value="$url" onclick="this.select()"></p>
+                  <p>
+                    $suffix
+                  </p>
+                  <p>
+                    $suffix2
+                  </p>
+                  <p>
+                    $suffix3
+                  </p>
+                  $button
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+HTML;
+
+  $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 }
 
 /**

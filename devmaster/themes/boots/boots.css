@@ -254,3 +254,9 @@ input.form-control.webhook-url {
   width: 36em;
 
 }
+
+@media (max-width: 640px) {
+    body.admin-menu {
+        margin-top: 40px !important;
+    }
+}
