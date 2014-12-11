@@ -114,6 +114,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#suffix' => '</div>'
   );
 
+  $node->content['info'] = array(
+    '#value' => devshop_project_aliases($node->project),
+  );
+
   //$node->content['info']['code_path'] = array(
   //  '#type' => 'item',
   //  '#title' => t('Code path'),
