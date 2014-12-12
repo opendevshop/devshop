@@ -189,10 +189,6 @@ function boots_preprocess_node(&$vars){
     $vars['web_servers'] = hosting_get_servers('http');
     $vars['db_servers'] = hosting_get_servers('db');
 
-
-    // Get Drush aliases
-    $vars['drush_aliases'] = 'COMING SOON';
-
     // React to git provider
     if ($project->git_provider == 'github') {
       $url = strtr($project->git_url, array(
