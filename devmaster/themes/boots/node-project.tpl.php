@@ -235,92 +235,99 @@
         </a>
       </div>
 
-      <div class="environment-tasks list-group-item btn-group btn-group-justified">
+      <div class="environment-deploy list-group-item">
 
         <!-- Deploy: Git Select -->
-        <div class="btn-group btn-git">
-          <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
+        <span><?php print t('Deploy'); ?></span>
+        <div class="btn-group btn-toolbar" role="toolbar">
+          <div class="btn-group btn-deploy-code" role="group">
+            <button type="button" class="btn btn-sm btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
+              <?php print t('Code'); ?>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu btn-git-ref" role="menu">
+              <li><p class="text-muted"><?php print $deploy_label; ?></p></li>
 
-            <?php print t('Deploy'); ?>
+              <?php if (count($git_refs)): ?>
+              <li class="divider"></li>
 
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu btn-git-ref" role="menu">
-            <li><p class="text-muted"><?php print $deploy_label; ?></p></li>
+              <?php foreach ($git_refs as $ref => $item): ?>
+                <li>
+                  <?php print str_replace('ENV_NID', $environment->site, $item); ?>
+                </li>
+              <?php endforeach; ?>
+              <?php endif; ?>
+            </ul>
+          </div>
+          <div class="btn-group btn-deploy-database" role="group">
 
-            <?php if (count($git_refs)): ?>
-            <li class="divider"></li>
+            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
+              <?php print t('Data'); ?>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <?php if (count($project->environments) == 1): ?>
+              <li><p><?php print t('No other environments to deploy data from.'); ?></p></li>
+              <?php endif; ?>
+                <?php foreach ($project->environments as $env): ?>
+                  <?php if ($env->settings->locked || $env->name == $environment->name) continue; ?>
+                  <li><a href="/node/<?php print $node->nid ?>/sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
+                <?php endforeach; ?>
+            </ul>
+          </div>
+          <div class="btn-group btn-deploy-servers" role="group">
 
-            <?php foreach ($git_refs as $ref => $item): ?>
-              <li>
-                <?php print str_replace('ENV_NID', $environment->site, $item); ?>
-              </li>
-            <?php endforeach; ?>
-            <?php endif; ?>
-          </ul>
+            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i>
+              <?php print t('Stack'); ?>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <?php foreach ($environment->servers as $type => $server):
+                  if ($type == 'db') {
+                    $icon = 'database';
+                  }
+                  elseif ($type == 'http') {
+                    $icon = 'cube';
+                  }
+                  elseif ($type == 'solr') {
+                    $icon = 'sun';
+                  }
+                  ?>
+                  <li>
+                    <a href="/node/<?php print $server['nid'] ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
+                      <i class="fa fa-<?php print $icon; ?>"></i>
+                      <?php print $type; ?>
+                      <small><?php print $server['name']; ?></small>
+                    </a>
+                  </li>
+                <?php endforeach; ?>
+            </ul>
+          </div>
         </div>
+      </div>
 
-        <!-- Servers -->
-        <div class="btn-group btn-tasks">
-          <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
-            <i class="fa fa-cube" ></i>
-            <?php print t('Servers'); ?>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
+      <!-- Servers -->
+      <div class="environment-servers list-group-item">
+        <div class="btn-group btn-toolbar" role="toolbar">
+          <ul class="list-inline">
             <li>
-              <i class="fa fa-database" ?></i> <strong><?php print t('Database'); ?></strong></database>
-              <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
-                <?php print $environment->servers['db']['name']; ; ?>
+              <a href="<?php print url('node/' . $environment->servers['http']['nid']); ?>">
+                <i class="fa fa-cube"></i>
+                <?php print $environment->servers['http']['name']; ?>
               </a>
             </li>
-
-            <?php if (count($db_servers) > 1): ?>
-              <li class="divider"></li>
-              <li>
-                <p class="bg-warning btn-text"><?php print t('Move database to:'); ?></p>
-              </li>
-              <?php foreach ($db_servers as $server):
-                if ($environment->db_server == $server) continue;
-                ?>
-                <li>
-                  <a href="/node/<?php print $environment->site ?>/site_migrate/?db_server=<?php print $server ?>">
-                    <i class="fa fa-database"></i>
-                    <?php print $server ?>
-                  </a>
-                </li>
-              <?php endforeach; ?>
-            <?php endif; ?>
-
-            <li class="divider"></li>
-
             <li>
-              <i class="fa fa-cube" ?></i> <strong><?php print t('Web'); ?></strong>
               <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
-                <?php print $environment->servers['http']['name']; ; ?>
+                <i class="fa fa-database"></i>
+                <?php print $environment->servers['db']['name']; ?>
               </a>
             </li>
-            <?php if (count($web_servers) > 1): ?>
-              <li class="divider"></li>
-              <li>
-                <p class="bg-warning btn-text"><?php print t('Move database to:'); ?></p>
-              </li>
-              <?php foreach ($web_servers as $server):
-                if ($environment->http_server == $server) continue;
-                ?>
-                <li>
-                  <a href="/node/<?php print $environment->platform ?>/edit/?http_server=<?php print $server ?>">
-                    <i class="fa fa-cube"></i>
-                    <?php print $server ?>
-                  </a>
-                </li>
-              <?php endforeach; ?>
-            <?php endif; ?>
           </ul>
         </div>
 
 
         <!-- Tasks -->
+        <!--
         <div class="btn-group btn-tasks">
           <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
             <i class="fa fa-tasks" ></i>
@@ -345,6 +352,7 @@
 
           </ul>
         </div>
+        -->
 
       </div>
       <!-- Tasks -->

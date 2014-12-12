@@ -260,3 +260,11 @@ input.form-control.webhook-url {
         margin-top: 40px !important;
     }
 }
+
+.environment-deploy > span {
+  font-size: .7em;
+    text-transform: uppercase;
+    color: grey;
+    font-weight: bold;
+    margin-right: 10px;
+}
