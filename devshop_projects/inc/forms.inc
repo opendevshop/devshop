@@ -115,12 +115,68 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         }
         break;
 
-      // Alter title of deploy task.
+      // Deploy task form
       case 'devshop-deploy':
+
+        // Alter title of deploy task.
         $node = node_load($form['nid']['#value']);
         drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)));
         $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
         $form['#submit'][] = 'devshop_deploy_redirect_to_project';
+        break;
+
+      // Sync task form
+      case 'sync':
+        if (isset($_GET['source'])) {
+          $node = node_load($form['nid']['#value']);
+          $source = node_load($_GET['source']);
+
+          if (empty($source) || $source->type != 'site') {
+            break;
+          }
+
+          drupal_set_title(t('Deploy data to Environment "@env"', array('@env' => $node->environment->name)));
+          $environment = $node->environment;
+          $source_environment = $source->environment;
+          $form['#submit'][] = 'devshop_deploy_redirect_to_project';
+
+          $form['help'] = array(
+            '#prefix' => '<div class="alert alert-warning" role="alert">',
+            '#suffix' => '</div>',
+
+            'source' => array(
+              '#value' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
+              '#prefix' => '<p>',
+              '#suffix' => '</p>',
+            ),
+            'target' => array(
+              '#value' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
+              '#prefix' => '<p class="text-danger">',
+              '#suffix' => '</p>',
+            ),
+          );
+
+          // Alter the "source" item
+          $form['parameters']['source'] = array(
+            '#type' => 'value',
+            '#value' => $source->environment->drush_alias,
+          );
+
+          // Don't copy modules and themes.
+          unset($form['parameters']['modules']);
+          unset($form['parameters']['themes']);
+          unset($form['parameters']['libraries']);
+
+          // Better output
+          $form['parameters']['database']['#prefix'] = '<label>' . t('What to Deploy?') . '</label>';
+          $form['parameters']['registry-rebuild']['#prefix'] = '<label>' . t('Run Deploy Hooks?') . '</label>';
+          $form['parameters']['backup']['#weight'] = -11;
+
+          $form['actions']['submit']['#value'] = t('Deploy Data');
+          $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
+
+          $form['warning']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+        }
         break;
     }
   }
