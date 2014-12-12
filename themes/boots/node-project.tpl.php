@@ -139,7 +139,7 @@
 
   <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
-    <div class="list-group devshop-environment <?php print $environment_class ?>">
+    <div class="list-group environment <?php print $environment_class ?>">
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
 
@@ -231,7 +231,7 @@
       <div class="environment-deploy list-group-item">
 
         <!-- Deploy: Git Select -->
-        <span><?php print t('Deploy'); ?></span>
+        <label><?php print t('Deploy'); ?></label>
         <div class="btn-group btn-toolbar" role="toolbar">
           <div class="btn-group btn-deploy-code" role="group">
             <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
@@ -255,14 +255,14 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li><p><?php print t('Deploy data from:'); ?></p></li>
+              <li><label><?php print t('Deploy data from:'); ?></label></li>
               <li class="divider"></li>
               <?php if (count($project->environments) == 1): ?>
               <li><p><?php print t('No other environments to deploy data from.'); ?></p></li>
               <?php endif; ?>
                 <?php foreach ($project->environments as $source): ?>
                   <?php if ($env->settings->locked || $source->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $environment->site ?>/sync/?source=<?php print $source->name ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
+                  <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->name ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
                 <?php endforeach; ?>
             </ul>
           </div>
