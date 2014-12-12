@@ -4,7 +4,7 @@ body.admin-menu .navbar-static-top {
 }
 
 .environment-wrapper {
-  min-width: 321px;
+  min-width: 342px;
 }
 
 .table-controls {
@@ -263,14 +263,15 @@ input.form-control.webhook-url {
     }
 }
 .environment-deploy {
-    padding: 0px 15px;
+    padding: 0px;
 }
 .environment-deploy > span {
   font-size: .7em;
-    text-transform: uppercase;
-    color: grey;
-    font-weight: bold;
-    margin-right: 10px;
+  text-transform: uppercase;
+  color: grey;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .environment-deploy button {
