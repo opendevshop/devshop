@@ -66,7 +66,9 @@ function devshop_projects_load($node) {
         sn.title as uri,
         sn.title as drush_alias,
         http.title as web_server,
+        http.nid as web_server_nid,
         db.title as db_server,
+        db.nid as db_server_nid,
         n.title as project_name,
         s.vid,
         sn.title as default_domain
@@ -104,13 +106,13 @@ function devshop_projects_load($node) {
 
     // Get extra server info
     $environment->servers['http'] = array(
-      'nid' => $environment->settings->web_server,
+      'nid' => $environment->web_server_nid,
       'name' => $environment->web_server
     );
 
     // HTTP Server
     $environment->servers['db'] = array(
-      'nid' => $environment->settings->db_server,
+      'nid' => $environment->db_server,
       'name' => $environment->db_server
     );
 
