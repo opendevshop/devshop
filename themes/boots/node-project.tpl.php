@@ -239,7 +239,7 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu btn-git-ref" role="menu">
-              <li><label><?php print t('Deploy a branch or tag'); ?></label></li>
+              <li><label><?php print t('Deploy branch or tag'); ?></label></li>
               <?php if (count($git_refs)): ?>
               <?php foreach ($git_refs as $ref => $item): ?>
                 <li>
@@ -256,14 +256,17 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li><label><?php print t('Deploy data from'); ?></label></li>
-              <?php if (count($project->environments) == 1): ?>
-              <li><p><?php print t('No other environments to deploy data from.'); ?></p></li>
-              <?php endif; ?>
-                <?php foreach ($project->environments as $source): ?>
-                  <?php if ($env->settings->locked || $source->name == $environment->name) continue; ?>
+              <?php if ($environment->settings->locked): ?>
+                <li><label><?php print t('This environment is locked. You cannot deploy data here.'); ?></label></li>
+              <?php elseif (count($target_environments) == 1): ?>
+                <li><label><?php print t('No other environments available.'); ?></label></li>
+              <?php else: ?>
+                <li><label><?php print t('Deploy data from'); ?></label></li>
+                <?php foreach ($source_environments as $source): ?>
+                  <?php if ($source->name == $environment->name) continue; ?>
                   <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
                 <?php endforeach; ?>
+              <?php endif; ?>
             </ul>
           </div>
           <div class="btn-group btn-deploy-servers" role="group">

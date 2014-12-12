@@ -295,6 +295,9 @@ HTML;
 
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 
+  // Available deploy data targets.
+  $vars['target_environments'];
+
   foreach ($vars['node']->project->environments as &$environment) {
 
     // Environment Tasks
@@ -308,7 +311,12 @@ HTML;
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
     $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
+
+    if ($environment->site) {
+      $vars['source_environments'][$environment->name] = $environment;
+    }
   }
+
 }
 
 /**
