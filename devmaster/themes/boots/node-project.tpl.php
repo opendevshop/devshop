@@ -49,7 +49,7 @@
 ?>
 
 <!-- STATUS/INFO -->
-<div id="project-info" class="col-md-12">
+<div id="project-info">
   <ul class="list-inline">
     <?php if ($project->settings->live['live_domain']): ?>
     <li>
@@ -113,7 +113,7 @@
 </div>
 
 <!-- ENVIRONMENTS-->
-<div class="row placeholders col-md-12">
+<div class="row">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
   <?php
@@ -299,35 +299,6 @@
           </div>
         </div>
       </div>
-
-        <!-- Tasks -->
-        <!--
-        <div class="btn-group btn-tasks">
-          <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown">
-            <i class="fa fa-tasks" ></i>
-            <?php print t('Tasks'); ?>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <?php foreach ($node->environment_actions[$environment->name] as $link): ?>
-              <li>
-                <a href="<?php print $link['url'] ?>"><?php print $link['title']; ?></a>
-              </li>
-            <?php endforeach; ?>
-            <li class="divider"></li>
-            <li class="text-muted"><?php print t('Sync Data:'); ?></li>
-
-            <?php foreach ($project->environments as $env): ?>
-              <?php if ($env->settings->locked || $env->name == $environment->name) continue; ?>
-              <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
-            <?php endforeach; ?>
-
-
-
-          </ul>
-        </div>
-        -->
-        <!-- Last  -->
         <div class="list-group-item">
           <!-- Settings -->
           <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default pull-right settings">
@@ -341,7 +312,6 @@
 
       </div>
     </div>
-  </div>
 <?php endforeach; ?>
 
   <div class="placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
