@@ -83,12 +83,14 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
   $tasks = theme('item_list', $items, '', 'ul', array('class' => 'tasks dropdown-menu dropdown-menu-' . $direction, 'role' => 'menu'));
 
   return <<<HTML
-    <a href="#" class="dropdown-toggle $class" data-toggle="dropdown">
-      <i class="fa fa-gear $task_class"></i>
-        $tasks_count
-      <span class="caret"></span>
-    </a>
-    $tasks
+    <div class="task-list btn-group">
+      <button type="button" class="btn btn-link dropdown-toggle $class" data-toggle="dropdown">
+        <i class="fa fa-gear $task_class"></i>
+          $tasks_count
+        <span class="caret"></span>
+      </button>
+      $tasks
+    </div>
 HTML;
 
 }
@@ -292,6 +294,22 @@ data-target="#webhook-modal" title="Webhook URL">
 HTML;
 
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
+
+  foreach ($vars['node']->project->environments as &$environment) {
+
+    // Environment Tasks
+    if ($environment->site) {
+      $environment->tasks = hosting_get_tasks('rid', $environment->site);
+    }
+    else {
+      $environment->tasks = hosting_get_tasks('rid', $environment->platform);
+    }
+
+    $environment->task_count = count($environment->tasks);
+    $environment->active_tasks = 0;
+    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
+  }
+  kpr($vars['node']->project->environments);
 }
 
 /**

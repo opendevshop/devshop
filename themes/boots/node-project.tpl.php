@@ -142,6 +142,12 @@
     <div class="list-group devshop-environment <?php print $environment_class ?>">
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
+
+        <!-- Environment Tasks -->
+        <div class="environment-tasks pull-right">
+          <?php print $environment->tasks_list; ?>
+        </div>
+
         <!-- Environment Status Indicators -->
         <div class="environment-indicators pull-right">
           <?php if ($environment->settings->locked): ?>
@@ -172,13 +178,13 @@
           <span class="environment-meta-data">Disabled</span>
         <?php endif; ?>
 
-        <div class="progress">
-          <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-            <span class="sr-only">In Progress</span>
-          </div>
-        </div>
       </div>
 
+      <div class="list-group-item progress">
+        <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+          <span class="sr-only">In Progress</span>
+        </div>
+      </div>
       <!-- URLs -->
       <div class="environment-domains list-group-item btn-group btn-group-justified">
         <div class="btn-group">
@@ -222,18 +228,6 @@
         </div>
       </div>
 
-
-      <!-- Last  -->
-      <div class="list-group-item">
-        <!-- Settings -->
-        <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default pull-right settings">
-          <i class="fa fa-sliders" ?></i> Settings
-        </a>
-
-        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
-          <?php print $environment->git_current; ?>
-        </a>
-      </div>
 
       <div class="environment-deploy list-group-item">
 
@@ -333,11 +327,18 @@
           </ul>
         </div>
         -->
+        <!-- Last  -->
+        <div class="list-group-item">
+          <!-- Settings -->
+          <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default pull-right settings">
+            <i class="fa fa-sliders" ?></i> Settings
+          </a>
 
-      </div>
-      <!-- Tasks -->
-      <div class="tasks-button">
-        <?php print $environment->tasks_list; ?>
+          <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
+            <?php print $environment->git_current; ?>
+          </a>
+        </div>
+
       </div>
     </div>
   </div>
