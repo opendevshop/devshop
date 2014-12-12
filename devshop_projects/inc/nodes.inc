@@ -64,6 +64,7 @@ function devshop_projects_load($node) {
         p.publish_path as root,
         http.title as remote_host,
         sn.title as uri,
+        sn.title as drush_alias,
         http.title as web_server,
         db.title as db_server,
         n.title as project_name,
@@ -86,6 +87,9 @@ function devshop_projects_load($node) {
     if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
       continue;
     }
+
+    // Drush alias
+    $environment->drush_alias = '@' . $environment->drush_alias;
 
     // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
