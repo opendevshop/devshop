@@ -35,12 +35,6 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-  $tasks['project']['devshop-sync'] = array(
-    'title' => t('Sync Data'),
-    'description' => t('Copy database and files from one environment to another.'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-  );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
