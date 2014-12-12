@@ -281,9 +281,9 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     );
     $form['environment']['settings']['locked'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Locked'),
+      '#title' => t('Lock Database'),
       '#default_value' => $environment->settings->locked,
-      '#description' => t('Prevent devshop users from overwriting the database.'),
+      '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
     );
 
     $form['environment']['settings']['pull_disabled'] = array(
