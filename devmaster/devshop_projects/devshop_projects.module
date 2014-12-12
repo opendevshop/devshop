@@ -17,7 +17,6 @@ include_once('tasks/tasks.inc');
 include_once('tasks/commit.inc');
 include_once('tasks/create.inc');
 include_once('tasks/pull.inc');
-include_once('tasks/sync.inc');
 include_once('tasks/deploy.inc');
 
 
@@ -42,7 +41,6 @@ function devshop_projects_perm() {
     'create devshop-create task',
     'create devshop-commit task',
     'create devshop-pull task',
-    'create devshop-sync task',
     'create devshop-delete task',
     'create devshop-deploy task',
     'create project',
