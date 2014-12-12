@@ -17,42 +17,7 @@
         <?php if ($logs_link): ?>
           <li><?php print $logs_link; ?></li>
         <?php endif; ?>
-        <!-- Drush Info -->
-        <li>
-          <button type="button" class="btn btn-link pull-right" data-toggle="modal" data-target="#drush-alias-modal" title="Drush Aliases">
-          <i class="fa fa-drupal"></i>
-         </button>
-        </li>
-      </ul>
-
-      <!-- Modal -->
-      <div class="modal fade" id="drush-alias-modal" tabindex="-1" role="dialog" aria-labelledby="drush-alias-modal" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="drush-alias-modal">Project Drush Aliases</h4>
-            </div>
-            <div class="modal-body">
-
-              <!-- Download button -->
-              <p>
-                <a href="<?php print $aliases_url; ?>" class="btn btn-primary"><?php print t('Download Alias File'); ?></a> or copy to <code>~/.drush/<?php print $project->name; ?>.aliases.drushrc.php</code>.
-              </p>
-
-              <textarea cols="40" rows="10" class='form-control' onlick="this.select()"><?php print $drush_aliases; ?></textarea>
-
-              <p>
-                <?php print $access_note; ?>
-              </p>
-
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
+        </ul>
     </div>
 
     <!-- Git Info -->
