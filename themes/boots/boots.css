@@ -148,13 +148,22 @@ body.admin-menu .navbar-static-top {
 /*}*/
 
 .devshop-environment .progress {
-    height: 10px;
-    border-radius: 0px;
-    border: none;
-    margin: -10px 0 0 0;
-    padding: 0px;
-    background: transparent;
-    box-shadow: none;
+  height: 10px;
+  border-radius: 0px;
+  border: none;
+  margin: 0;
+  padding: 0px;
+  background: transparent;
+  box-shadow: none;
+  clear: both;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  left: 0px;
+}
+
+.progress-bar {
+  float: none;
 }
 
 .devshop-environment .progress .progress-bar.inactive {

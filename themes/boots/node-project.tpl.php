@@ -178,11 +178,10 @@
           <span class="environment-meta-data">Disabled</span>
         <?php endif; ?>
 
-      </div>
-
-      <div class="list-group-item progress">
-        <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-          <span class="sr-only">In Progress</span>
+        <div class="progress">
+          <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+            <span class="sr-only"><?php print $environment->progress_output ?></span>
+          </div>
         </div>
       </div>
       <!-- URLs -->
@@ -240,11 +239,7 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu btn-git-ref" role="menu">
-              <li><p class="text-muted"><?php print $deploy_label; ?></p></li>
-
               <?php if (count($git_refs)): ?>
-              <li class="divider"></li>
-
               <?php foreach ($git_refs as $ref => $item): ?>
                 <li>
                   <?php print str_replace('ENV_NID', $environment->site, $item); ?>
@@ -260,12 +255,14 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
+              <li><p><?php print t('Deploy data from:'); ?></p></li>
+              <li class="divider"></li>
               <?php if (count($project->environments) == 1): ?>
               <li><p><?php print t('No other environments to deploy data from.'); ?></p></li>
               <?php endif; ?>
-                <?php foreach ($project->environments as $env): ?>
-                  <?php if ($env->settings->locked || $env->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $node->nid ?>/sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
+                <?php foreach ($project->environments as $source): ?>
+                  <?php if ($env->settings->locked || $source->name == $environment->name) continue; ?>
+                  <li><a href="/node/<?php print $environment->site ?>/sync/?source=<?php print $source->name ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
                 <?php endforeach; ?>
             </ul>
           </div>
