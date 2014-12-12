@@ -353,7 +353,7 @@
                     $icon = 'cube';
                   }
                   elseif ($type == 'solr') {
-                    $icon = 'sun';
+                    $icon = 'sun-o';
                   }
                   ?>
                   <li>
