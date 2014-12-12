@@ -207,7 +207,7 @@
         - devshop_provision-{{ devshop_provision_version }}
         - provision_logs-{{ provision_logs_version }}
 # Commented out until functional
-#        - provision_solr-{{ provision_solr_version }}
+        - provision_solr-{{ provision_solr_version }}
         - provision_tasks_extra-{{ provision_tasks_extra_version }}
       args:
         creates: /var/aegir/.drush/commands/provision_tasks_extra/provision_tasks_extra.drush.inc
@@ -228,6 +228,7 @@
       service:
         name={{ supervisor_daemon }}
         state=started
+        sleep=3
         enabled=yes
 
     - name: Supervisor | Set up queue runner script
