@@ -289,6 +289,7 @@
                   ?>
                   <li>
                     <a href="/node/<?php print $server['nid'] ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
+                      <?php print_r($server); ?>
                       <i class="fa fa-<?php print $icon; ?>"></i>
                       <?php print $type; ?>
                       <small><?php print $server['name']; ?></small>
