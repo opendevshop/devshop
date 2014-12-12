@@ -7,11 +7,6 @@ body.admin-menu .navbar-static-top {
   min-width: 321px;
 }
 
-.devshop-environment > .environment-header {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .table-controls {
   border: 1px solid #ddd;
   margin: 0px;
@@ -122,40 +117,42 @@ body.admin-menu .navbar-static-top {
     color: #777;
 }
 
-.devshop-environment .tasks-button {
-    position: absolute;
-    top: 1px;
-    right: 15px;
-    z-index: 2;
-}
+/*.devshop-environment .tasks-button {*/
+    /*position: absolute;*/
+    /*top: 1px;*/
+    /*right: 15px;*/
+    /*z-index: 2;*/
+/*}*/
 
 
-.devshop-environment .tasks-button > a {
-    padding: 10px 5px;
-    height: 3.2em;
-}
+/*.devshop-environment .tasks-button > a {*/
+    /*padding: 10px 5px;*/
+    /*height: 3.2em;*/
+/*}*/
 
-.devshop-environment .tasks-button > a:hover,
-.devshop-environment .tasks-button.open > a {
-    background: #428bca;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-}
+/*.devshop-environment .tasks-button > a:hover,*/
+/*.devshop-environment .tasks-button.open > a {*/
+    /*background: #428bca;*/
+    /*color: white;*/
+    /*text-decoration: none;*/
+    /*border-radius: 4px;*/
+/*}*/
 
-.devshop-environment.live-environment .tasks-button > a {
-    color: white;
-}
+/*.devshop-environment.live-environment .tasks-button > a {*/
+    /*color: white;*/
+/*}*/
 
-.devshop-environment.live-environment .tasks-button > a:hover,
-.devshop-environment.live-environment .tasks-button.open > a {
-  text-decoration: underline;
-}
+/*.devshop-environment.live-environment .tasks-button > a:hover,*/
+/*.devshop-environment.live-environment .tasks-button.open > a {*/
+  /*text-decoration: underline;*/
+/*}*/
 
 .devshop-environment .progress {
     height: 10px;
     border-radius: 0px;
-    margin: 5px -15px -15px;
+    border: none;
+    margin: -10px 0 0 0;
+    padding: 0px;
     background: transparent;
     box-shadow: none;
 }
@@ -242,8 +239,13 @@ body.admin-menu .navbar-static-top {
     border:none;
 }
 
-.environment-tasks .tasks {
-    width: 30px;
+.environment-tasks {
+    margin-top: -5px;
+    margin-right: -10px;
+
+}
+.environment-tasks .tasks-list button {
+    padding: 0px;
 }
 .dropdown-menu>li>a {
     white-space: normal;
