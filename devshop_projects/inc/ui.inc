@@ -318,10 +318,18 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     // The actions we want
-    $site_actions = array('flush_cache', 'login_reset', 'backup');
+    $site_actions = array(
+      'flush_cache',
+      'login_reset',
+      'backup',
+      'restore' => 'restore',
+      'rebuild_registry',
+      'run_cron',
+      'update',
+    );
 
-    if (!$environment->settings->locked){
-      $site_actions[] = 'restore';
+    if ($environment->settings->locked){
+      unset($site_actions['restore']);
     }
 
     // Add disable or delete task based on hosting variable.
