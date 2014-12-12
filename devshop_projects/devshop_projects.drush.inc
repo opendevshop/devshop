@@ -59,18 +59,6 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['revert'] = $task->task_args['revert'];
   }
 
-  // Sync
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-sync') {
-    $task->args[] = $task->task_args['source'];
-    $task->args[] = $task->task_args['destination'];
-    $task->options['database'] = $task->task_args['database'];
-    $task->options['files'] = $task->task_args['files'];
-    $task->options['pull'] = $task->task_args['pull'];
-    $task->options['update'] = $task->task_args['update'];
-    $task->options['revert'] = $task->task_args['revert'];
-    $task->options['cache'] = $task->task_args['cache'];
-  }
-
   // Download
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-dl') {
     $task->options['modules'] = $task->task_args['modules'];
