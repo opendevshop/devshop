@@ -12,7 +12,7 @@ devshop_hosting_version:    6.x-2.x
 provision_version:          6.x-2.x
 provision_git_version:      6.x-1.x
 provision_logs_version:      6.x-1.x
-provision_solr_version:      6.x-1.x
+provision_solr_version:      6.x-2.x
 provision_tasks_extra_version: 6.x-2.x
 
 
