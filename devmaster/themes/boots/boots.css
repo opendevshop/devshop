@@ -305,3 +305,7 @@ input.form-control.webhook-url {
 .btn-deploy-code li a {
   white-space: nowrap;
 }
+
+.alert-spacing {
+  margin-top: 15px;
+}

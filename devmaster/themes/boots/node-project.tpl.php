@@ -262,7 +262,7 @@
               <?php endif; ?>
                 <?php foreach ($project->environments as $source): ?>
                   <?php if ($env->settings->locked || $source->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->name ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
+                  <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
                 <?php endforeach; ?>
             </ul>
           </div>
