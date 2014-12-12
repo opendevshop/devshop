@@ -47,16 +47,16 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
-.devshop-environment.live-environment .environment-header a,
-.devshop-environment.live-environment .environment-header a.btn-text {
+.environment.live-environment .environment-header a,
+.environment.live-environment .environment-header a.btn-text {
     color: white;
 }
 
-.devshop-environment.live-environment.active .environment-meta-data {
+.environment.live-environment.active .environment-meta-data {
     color: #8a6d3b;
 }
 
-.devshop-environment.live-environment.active .text-muted {
+.environment.live-environment.active .text-muted {
     color: #8a6d3b;
 }
 
@@ -117,7 +117,7 @@ body.admin-menu .navbar-static-top {
     color: #777;
 }
 
-/*.devshop-environment .tasks-button {*/
+/*.environment .tasks-button {*/
     /*position: absolute;*/
     /*top: 1px;*/
     /*right: 15px;*/
@@ -125,29 +125,29 @@ body.admin-menu .navbar-static-top {
 /*}*/
 
 
-/*.devshop-environment .tasks-button > a {*/
+/*.environment .tasks-button > a {*/
     /*padding: 10px 5px;*/
     /*height: 3.2em;*/
 /*}*/
 
-/*.devshop-environment .tasks-button > a:hover,*/
-/*.devshop-environment .tasks-button.open > a {*/
+/*.environment .tasks-button > a:hover,*/
+/*.environment .tasks-button.open > a {*/
     /*background: #428bca;*/
     /*color: white;*/
     /*text-decoration: none;*/
     /*border-radius: 4px;*/
 /*}*/
 
-/*.devshop-environment.live-environment .tasks-button > a {*/
+/*.environment.live-environment .tasks-button > a {*/
     /*color: white;*/
 /*}*/
 
-/*.devshop-environment.live-environment .tasks-button > a:hover,*/
-/*.devshop-environment.live-environment .tasks-button.open > a {*/
+/*.environment.live-environment .tasks-button > a:hover,*/
+/*.environment.live-environment .tasks-button.open > a {*/
   /*text-decoration: underline;*/
 /*}*/
 
-.devshop-environment .progress {
+.environment .progress {
   height: 10px;
   border-radius: 0px;
   border: none;
@@ -166,43 +166,43 @@ body.admin-menu .navbar-static-top {
   float: none;
 }
 
-.devshop-environment .progress .progress-bar.inactive {
+.environment .progress .progress-bar.inactive {
     background: transparent;
 }
-.devshop-environment.disabled .progress .progress-bar {
+.environment.disabled .progress .progress-bar {
     background: white !important;
 }
 
 
-.devshop-environment.active {
+.environment.active {
     background-color: #fcf8e3 !important;
     color: #8a6d3b;
 }
-.devshop-environment.active .environment-header a {
+.environment.active .environment-header a {
     color: #8a6d3b !important;
 }
-.devshop-environment.active .tasks-button > a:hover,
-.devshop-environment.active .tasks-button > a:active,
-.devshop-environment.active .tasks-button.open > a {
+.environment.active .tasks-button > a:hover,
+.environment.active .tasks-button > a:active,
+.environment.active .tasks-button.open > a {
     background: #8a6d3b;
     color:  white !important;
     text-decoration: none;
 }
 
-.devshop-environment.active ul a {
+.environment.active ul a {
   color: #777;
 }
 
-.devshop-environment > .list-group-item.btn-group {
+.environment > .list-group-item.btn-group {
     padding: 0px;
 }
-.devshop-environment > .list-group-item.btn-group a.btn {
+.environment > .list-group-item.btn-group a.btn {
     margin: 0px 3px;
     background: transparent !important;
 }
 
-.devshop-environment > .list-group-item.btn-group .btn,
-.devshop-environment > .list-group-item.btn-group > .btn-group {
+.environment > .list-group-item.btn-group .btn,
+.environment > .list-group-item.btn-group > .btn-group {
     font-size: 1.0em;
     color: #777;
     border: none !important;
@@ -211,7 +211,7 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.devshop-environment > .list-group-item.btn-group > a:hover {
+.environment > .list-group-item.btn-group > a:hover {
     color: #111 !important;
     background-color: whitesmoke;
 }
@@ -238,7 +238,7 @@ body.admin-menu .navbar-static-top {
 .environment-meta-data button:hover {
   text-decoration: underline;
 }
-.devshop-environment .last-commit {
+.environment .last-commit {
     display: block;
     color: #777;
 }
@@ -274,7 +274,7 @@ input.form-control.webhook-url {
 .environment-deploy {
     padding: 0px;
 }
-.environment-deploy > span {
+.environment label {
   font-size: .7em;
   text-transform: uppercase;
   color: grey;
