@@ -363,20 +363,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
     $rows[] = $row;
 
-    // Environment Tasks
-    if ($environment->site) {
-      $environment->tasks = hosting_get_tasks('rid', $environment->site);
-    }
-    else {
-      $environment->tasks = hosting_get_tasks('rid', $environment->platform);
-    }
-    $environment->task_count = count($environment->tasks);
-    $environment->active_tasks = 0;
-
-    if (function_exists('boots_render_tasks')){
-      $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
-    }
-
     foreach ($environment->tasks as &$task) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
         $environment->active_tasks++;
