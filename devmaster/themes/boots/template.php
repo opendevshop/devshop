@@ -27,7 +27,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
   }
 
   if ($tasks_count > 0) {
-    $task_class = 'fa-spin active-task-gear';
+    $task_class = 'active-task';
   }
 
   if (!empty($tasks)) {
@@ -82,12 +82,16 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
 
   $tasks = theme('item_list', $items, '', 'ul', array('class' => 'tasks dropdown-menu dropdown-menu-' . $direction, 'role' => 'menu'));
 
+  if ($tasks_count == 0) {
+    $tasks_count = '';
+  }
+
+  $logs = t('Task Logs');
   return <<<HTML
     <div class="task-list btn-group">
-      <button type="button" class="btn btn-link dropdown-toggle $class" data-toggle="dropdown">
-        <i class="fa fa-gear $task_class"></i>
+      <button type="button" class="btn btn-link task-list-button dropdown-toggle $class" data-toggle="dropdown" title="$logs">
           $tasks_count
-        <span class="caret"></span>
+        <i class="fa fa-th-list $task_class"></i>
       </button>
       $tasks
     </div>

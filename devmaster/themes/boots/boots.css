@@ -15,8 +15,10 @@ body.admin-menu .navbar-static-top {
 .btn-env-buttons {
   min-width: 92px;
 }
-
-#navbar-main .active-task-gear {
+#navbar-main .task-list-button {
+  padding: 1em;
+}
+#navbar-main .active-task {
   color: #ffffaa;
 }
 
