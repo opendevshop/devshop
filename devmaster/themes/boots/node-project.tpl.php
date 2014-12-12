@@ -152,19 +152,18 @@
                 <i class="fa fa-gear" ></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
+                <li><a href="/node/<?php print $project->nid ?>/edit/<?php print $environment->name; ?>">
+                    <i class="fa fa-sliders"></i>
+                    <?php print t('Settings'); ?>
+                  </a>
+                </li>
+                <li class="divider"></li>
                 <?php foreach ($node->environment_actions[$environment->name] as $link): ?>
                   <li>
                     <a href="<?php print $link['url'] ?>"><?php print $link['title']; ?></a>
                   </li>
                 <?php endforeach; ?>
-                <li class="divider"></li>
-                <li class="text-muted"><?php print t('Sync Data:'); ?></li>
-
-                <?php foreach ($project->environments as $env): ?>
-                  <?php if ($env->settings->locked || $env->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
-                <?php endforeach; ?>
-              </ul>
+                </ul>
             </div>
 
             <!-- Environment Logs -->
@@ -332,11 +331,8 @@
         </div>
       </div>
         <div class="list-group-item">
-          <!-- Settings -->
-          <a href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" class="btn btn-default pull-right settings">
-            <i class="fa fa-sliders" ?></i> Settings
-          </a>
 
+          <!-- Last Commit -->
           <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
             <?php print $environment->git_current; ?>
           </a>
