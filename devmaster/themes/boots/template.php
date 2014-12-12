@@ -309,7 +309,6 @@ HTML;
     $environment->active_tasks = 0;
     $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
   }
-  kpr($vars['node']->project->environments);
 }
 
 /**
