@@ -119,7 +119,7 @@ function devshop_projects_load($node) {
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
 //    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small><br /> <small >%s</small>' HEAD^...HEAD");
-    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small>' --max-count=1");
+    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small> <span>%s</span>' --max-count=1");
 
     if (empty($environment->git_current)){
       $environment->git_current = t('Cloning in progress...');
