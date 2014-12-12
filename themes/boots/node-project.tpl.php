@@ -106,7 +106,7 @@
         <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
 
 
-      <strong><?php print t('Webhook'); ?></strong>
+      <strong><?php print t('Last Commit'); ?></strong>
           <small>
           <?php if (empty($project->settings->deploy['last_webhook'])): ?>
             <!-- Not Received -->
