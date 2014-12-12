@@ -255,9 +255,21 @@ body.admin-menu .navbar-static-top {
   text-decoration: underline;
 }
 .environment .last-commit {
-    display: block;
-    color: #777;
+  display: block;
+  color: #777;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
+
+
+.environment .last-commit span {
+  font-style: italic;
+  font-size: .8em;
+  color: #999999;
+}
+
+
 
 .btn.settings {
     margin: -5px 0px;
@@ -322,3 +334,4 @@ input.form-control.webhook-url {
 .alert-spacing {
   margin-top: 15px;
 }
+
