@@ -50,8 +50,22 @@ body.admin-menu .navbar-static-top {
 }
 
 .environment.live-environment .environment-header a,
-.environment.live-environment .environment-header a.btn-text {
+.environment.live-environment .environment-header a.btn-text,
+.environment.live-environment .environment-header button.btn-link,
+.environment.live-environment .environment-header span,
+.environment.live-environment .environment-header
+{
     color: white;
+}
+
+.environment.live-environment .environment-header  .dropdown-menu a,
+.environment.live-environment .environment-header  .dropdown-menu {
+  color: black;
+}
+
+
+.environment.live-environment .environment-header button.btn-link: hover {
+  text-decoration: none;
 }
 
 .environment.live-environment.active .environment-meta-data {
