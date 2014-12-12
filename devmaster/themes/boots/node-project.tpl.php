@@ -241,7 +241,7 @@
         <span><?php print t('Deploy'); ?></span>
         <div class="btn-group btn-toolbar" role="toolbar">
           <div class="btn-group btn-deploy-code" role="group">
-            <button type="button" class="btn btn-sm btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
+            <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
               <?php print t('Code'); ?>
               <span class="caret"></span>
             </button>
@@ -261,7 +261,7 @@
           </div>
           <div class="btn-group btn-deploy-database" role="group">
 
-            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
               <?php print t('Data'); ?>
               <span class="caret"></span>
             </button>
@@ -277,7 +277,7 @@
           </div>
           <div class="btn-group btn-deploy-servers" role="group">
 
-            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i>
               <?php print t('Stack'); ?>
               <span class="caret"></span>
             </button>
@@ -305,26 +305,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Servers -->
-      <div class="environment-servers list-group-item">
-        <div class="btn-group btn-toolbar" role="toolbar">
-          <ul class="list-inline">
-            <li>
-              <a href="<?php print url('node/' . $environment->servers['http']['nid']); ?>">
-                <i class="fa fa-cube"></i>
-                <?php print $environment->servers['http']['name']; ?>
-              </a>
-            </li>
-            <li>
-              <a href="<?php print url('node/' . $environment->servers['db']['nid']); ?>">
-                <i class="fa fa-database"></i>
-                <?php print $environment->servers['db']['name']; ?>
-              </a>
-            </li>
-          </ul>
-        </div>
-
 
         <!-- Tasks -->
         <!--

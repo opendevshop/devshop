@@ -260,11 +260,33 @@ input.form-control.webhook-url {
         margin-top: 40px !important;
     }
 }
-
+.environment-deploy {
+    padding: 0px 15px;
+}
 .environment-deploy > span {
   font-size: .7em;
     text-transform: uppercase;
     color: grey;
     font-weight: bold;
     margin-right: 10px;
+}
+
+.environment-deploy button {
+    font-size: .8em;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: none !important;
+    border-radius: 0px;
+    background: transparent !important;
+    color: gray;
+
+}
+
+.environment-deploy button:hover {
+    color: #333;
+}
+
+.environment-deploy .btn-group {
+    margin: 0px;
+
 }
