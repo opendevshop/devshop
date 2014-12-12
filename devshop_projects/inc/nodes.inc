@@ -107,13 +107,13 @@ function devshop_projects_load($node) {
     // Get extra server info
     $environment->servers['http'] = array(
       'nid' => $environment->web_server_nid,
-      'name' => $environment->web_server
+      'name' => $environment->web_server,
     );
 
     // HTTP Server
     $environment->servers['db'] = array(
       'nid' => $environment->db_server,
-      'name' => $environment->db_server
+      'name' => $environment->db_server,
     );
 
     // Last commit
