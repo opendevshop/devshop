@@ -64,24 +64,6 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('pdp'),
   );
-  $items['provision-devshop-sync'] = array(
-    'description' => 'Sync database (and files, coming soon) from a chosen source site.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'update' => 'Run update.php after content sync.',
-      'revert' => 'Revert all features after content sync.',
-      'cache' => 'Clear all caches after content sync.',
-      'files' => 'Sync site files.',
-    ),
-    'arguments' => array(
-      'from' => 'Environment to sync from.',
-      'to' => 'Environment to sync to.',
-    ),
-    'examples' => array(
-      'drush @project_mysite provision-devshop-sync live dev' => 'Syncs the database from for project_mysite\'s live to  project_mysite\'s dev server.',
-    ),
-    'aliases' => array('pds'),
-  );
   $items['provision-devshop-commit'] = array(
     'description' => 'Export the site\'s Features and commit the result.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
