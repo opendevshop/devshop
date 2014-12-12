@@ -11,10 +11,18 @@
  * Implements drush_HOOK_post_COMMAND()
  * for provision_devshop_deploy.
  *
+ * This hook should be put in sites/all/drush of your project and can be used
+ * to fire off anything you want, post deploy.
+ *
  */
 function drush_devshop_post_provision_devshop_deploy($branch) {
   
   drush_log('Hello, devshop', 'ok');
+
+  // If no changes in files were detected, the context 'devshop_block_deploy_hooks' gets saved to TRUE.
+  if (drush_get_context('devshop_block_deploy_hooks')){
+//    return;
+  }
 
   // If this is a site, log a message.
   if (d()->type == 'site'){
@@ -24,6 +32,7 @@ function drush_devshop_post_provision_devshop_deploy($branch) {
 
     drush_log("[CUSTOM] Successfully checked out $branch to environment $environment_name in project $project_name.", 'ok');
 
-    drush_invoke('status');
+    provision_backend_invoke(d(), 'status');
+
   }
 }
