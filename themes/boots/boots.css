@@ -300,5 +300,8 @@ input.form-control.webhook-url {
 
 .environment-deploy .btn-group {
     margin: 0px;
+}
 
+.btn-deploy-code li a {
+  white-space: nowrap;
 }

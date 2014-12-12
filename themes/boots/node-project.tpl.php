@@ -239,6 +239,7 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu btn-git-ref" role="menu">
+              <li><label><?php print t('Deploy a branch or tag'); ?></label></li>
               <?php if (count($git_refs)): ?>
               <?php foreach ($git_refs as $ref => $item): ?>
                 <li>
@@ -255,8 +256,7 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li><label><?php print t('Deploy data from:'); ?></label></li>
-              <li class="divider"></li>
+              <li><label><?php print t('Deploy data from'); ?></label></li>
               <?php if (count($project->environments) == 1): ?>
               <li><p><?php print t('No other environments to deploy data from.'); ?></p></li>
               <?php endif; ?>
