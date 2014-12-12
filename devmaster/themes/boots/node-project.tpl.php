@@ -264,7 +264,11 @@
                 <li><label><?php print t('Deploy data from'); ?></label></li>
                 <?php foreach ($source_environments as $source): ?>
                   <?php if ($source->name == $environment->name) continue; ?>
-                  <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>"><?php print $source->name ?> <small><?php print $source->url; ?></small></a></li>
+                  <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
+                      <strong class="btn-block"><?php print $source->name ?></strong>
+                      <small><?php print $source->url; ?></small>
+                    </a>
+                  </li>
                 <?php endforeach; ?>
               <?php endif; ?>
             </ul>
@@ -289,9 +293,7 @@
                   ?>
                   <li>
                     <a href="/node/<?php print $server['nid'] ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
-                      <?php print_r($server); ?>
-                      <i class="fa fa-<?php print $icon; ?>"></i>
-                      <?php print $type; ?>
+                      <strong class="btn-block"><i class="fa fa-<?php print $icon; ?>"></i> <?php print $type; ?></strong>
                       <small><?php print $server['name']; ?></small>
                     </a>
                   </li>
