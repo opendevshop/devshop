@@ -38,7 +38,7 @@ body.admin-menu .navbar-static-top {
     font-size: .7em;
 }
 .environment-indicators {
-    margin-right: 35px;
+  display: inline;
 }
 .environment-meta-data i.fa {
     margin-right: .5em;
@@ -250,14 +250,11 @@ body.admin-menu .navbar-static-top {
     border:none;
 }
 
-.environment-tasks {
-    margin-top: -5px;
-    margin-right: -10px;
+.environment-dropdowns {
+  margin-top: -5px;
+  margin-right: -15px;
+}
 
-}
-.environment-tasks .tasks-list button {
-    padding: 0px;
-}
 .dropdown-menu>li>a {
     white-space: normal;
 }
