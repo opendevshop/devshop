@@ -93,6 +93,24 @@ function devshop_projects_preprocess_page(&$vars){
   }
 }
 
+
+/**
+ * Preprocess page
+ */
+function devshop_projects_preprocess_node(&$vars){
+
+  // On project node edit page
+  if (isset($vars['node']) && $vars['node']->type == 'project'){
+
+    $vars['drush_aliases'] = devshop_project_aliases($vars['node']->project);
+    $vars['aliases_url'] = url("node/{$vars['node']->nid}/aliases");
+
+    $vars['access_note'] = t('NOTE: To grant users authorization to access these environments with drush remotely, you must put their private key into the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+  }
+}
+
+
+
 /**
  * Preprocess for project_nav.tpl.php
  */
@@ -173,9 +191,4 @@ function template_preprocess_devshop_project_nav(&$vars){
 //  if (user_access('access project logs')){
 //    $vars['logs_link'] = l('<i class="fa fa-list-alt"></i> ' . t('Logs'), "node/$node->nid/logs", array('html' => TRUE));
 //  }
-
-  $vars['drush_aliases'] = devshop_project_aliases($project);
-  $vars['aliases_url'] = url("node/{$node->nid}/aliases");
-
-  $vars['access_note'] = t('NOTE: To grant users authorization to access these environments with drush remotely, you must put their private key into the file <code>/var/aegir/.ssh/authorized_keys</code>.');
 }
