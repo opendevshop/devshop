@@ -143,20 +143,33 @@
       <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
 
 
-        <!-- Environment Tasks -->
-        <div class="environment-tasks pull-right">
-          <?php print $environment->tasks_list; ?>
-        </div>
+        <div class="environment-dropdowns pull-right">
 
-        <!-- Environment Status Indicators -->
-        <div class="environment-indicators pull-right">
-          <?php if ($environment->settings->locked): ?>
-            <i class="fa fa-lock" title="Locked"></i>
-          <?php endif; ?>
+          <!-- Environment Tasks -->
+          <div class="environment-tasks btn-group ">
+            <div class="btn-group btn-tasks">
+              <button type="button" class="btn btn-link dropdown-toggle btn-git-ref" data-toggle="dropdown">
+                <i class="fa fa-gear" ></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <?php foreach ($node->environment_actions[$environment->name] as $link): ?>
+                  <li>
+                    <a href="<?php print $link['url'] ?>"><?php print $link['title']; ?></a>
+                  </li>
+                <?php endforeach; ?>
+                <li class="divider"></li>
+                <li class="text-muted"><?php print t('Sync Data:'); ?></li>
 
-          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
-            <i class="fa fa-bolt" title="Live Environment"></i>
-          <?php endif; ?>
+                <?php foreach ($project->environments as $env): ?>
+                  <?php if ($env->settings->locked || $env->name == $environment->name) continue; ?>
+                  <li><a href="/node/<?php print $node->nid ?>/project_devshop-sync/?source=<?php print $environment->name ?>&dest=<?php print $env->name ?>"><?php print t('Copy data to') . ' ' . $env->name; ?></a></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+
+            <!-- Environment Logs -->
+            <?php print $environment->tasks_list; ?>
+          </div>
         </div>
 
         <!-- Environment Links -->
@@ -177,6 +190,22 @@
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
           <span class="environment-meta-data">Disabled</span>
         <?php endif; ?>
+
+        <!-- Environment Status Indicators -->
+        <div class="environment-indicators">
+          <?php if ($environment->settings->locked): ?>
+            <span class="environment-meta-data text-muted" title="<?php print t('This database is locked.'); ?>">
+              <i class="fa fa-lock"></i><?php print t('Locked') ?>
+            </span>
+          <?php endif; ?>
+
+          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+          <span class="environment-meta-data text-muted" title="<?php print t('This is the live environment.'); ?>">
+            <i class="fa fa-bolt"></i>Live
+          </span>
+          <?php endif; ?>
+        </div>
+
 
         <div class="progress">
           <div class="progress-bar <?php print $environment->progress_classes ?>"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
