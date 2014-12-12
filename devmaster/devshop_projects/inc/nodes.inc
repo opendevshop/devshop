@@ -104,6 +104,7 @@ function devshop_projects_load($node) {
     $release = hosting_package_instance_load($iid);
     $environment->version = $release->version;
 
+    // @TODO: Make "servers" more abstract so we can add many more.
     // Get extra server info
     $environment->servers['http'] = array(
       'nid' => $environment->web_server_nid,
@@ -115,6 +116,19 @@ function devshop_projects_load($node) {
       'nid' => $environment->db_server,
       'name' => $environment->db_server,
     );
+
+    // Load Solr if present
+    if (module_exists('hosting_solr')) {
+      $server_nid = db_result(db_query("SELECT server FROM {hosting_solr} WHERE nid=%d", $environment->site));
+
+      $servers = hosting_get_servers('solr');
+      if ($server_nid && isset($servers[$server_nid])) {
+        $environment->servers['solr'] = array(
+          'nid' => $server_nid,
+          'name' => $servers[$server_nid],
+        );
+      }
+    }
 
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
