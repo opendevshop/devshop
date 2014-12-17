@@ -168,7 +168,7 @@ body.admin-menu .navbar-static-top {
 /*}*/
 
 .environment .progress {
-  height: 10px;
+  height: 7px;
   border-radius: 0px;
   border: none;
   margin: 0;
@@ -182,17 +182,15 @@ body.admin-menu .navbar-static-top {
   left: 0px;
 }
 
-.progress-bar {
+.environment .progress-bar {
+  display: none;
   float: none;
 }
 
-.environment .progress .progress-bar.inactive {
-    background: transparent;
+.environment.active .progress-bar {
+  display: block;
+  width: 100%;
 }
-.environment.disabled .progress .progress-bar {
-    background: white !important;
-}
-
 
 .environment.active,
 .environment.live-environment.active .environment-header {
