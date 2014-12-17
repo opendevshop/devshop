@@ -257,6 +257,7 @@
       service:
         name={{ supervisor_daemon }}
         state=restarted
+        sleep=3
 
     - name: restart mysql
       service: >
