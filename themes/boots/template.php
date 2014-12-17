@@ -11,7 +11,7 @@
  * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
  * print boots_render_tasks($tasks);
  */
-function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
+function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
 
   if (is_null($tasks)){
     // Tasks
@@ -27,11 +27,31 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
   }
 
   if ($tasks_count > 0) {
-    $task_class = 'active-task';
+    $task_class = 'active-task fa-spin';
   }
 
+  $items = array();
+  if (!empty($actions)) {
+
+    $environment_node = node_load($tasks[0]->rid);
+    $environment = $environment_node->environment;
+
+    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE));
+    $items[] = array(
+      'class' => 'divider',
+    );
+    foreach ($actions as $link) {
+      $items[] = l($link['title'], $link['url']);
+    }
+    $items[] = array(
+      'class' => 'divider',
+    );
+  }
+
+  $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
+  $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
+
   if (!empty($tasks)) {
-    $items = array();
 
     foreach ($tasks as $task) {
 
@@ -77,10 +97,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
     'class' => 'divider',
   );
 
-  $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
-  $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
-
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'tasks dropdown-menu dropdown-menu-' . $direction, 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'tasks dropdown-menu dropdown-menu-right', 'role' => 'menu'));
 
   if ($tasks_count == 0) {
     $tasks_count = '';
@@ -91,7 +108,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $direction = 'right'){
     <div class="task-list btn-group">
       <button type="button" class="btn btn-link task-list-button dropdown-toggle $class" data-toggle="dropdown" title="$logs">
           $tasks_count
-        <i class="fa fa-th-list $task_class"></i>
+        <i class="fa fa-gear $task_class"></i>
       </button>
       $tasks
     </div>
@@ -310,7 +327,7 @@ HTML;
 
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
-    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
+    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $node->environment_actions[$environment->name]);
 
     foreach ($environment->tasks as &$task) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){

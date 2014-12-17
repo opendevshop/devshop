@@ -163,26 +163,6 @@
 
           <!-- Environment Tasks -->
           <div class="environment-tasks btn-group ">
-            <div class="btn-group btn-tasks">
-              <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" title="<?php print $environment->active_tasks_label ?>">
-                <i class="fa fa-gear <?php if ($environment->active_tasks) print 'fa-spin' ?>" ></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li><a href="/node/<?php print $project->nid ?>/edit/<?php print $environment->name; ?>">
-                    <i class="fa fa-sliders"></i>
-                    <?php print t('Settings'); ?>
-                  </a>
-                </li>
-                <li class="divider"></li>
-                <?php foreach ($node->environment_actions[$environment->name] as $link): ?>
-                  <li>
-                    <a href="<?php print $link['url'] ?>"><?php print $link['title']; ?></a>
-                  </li>
-                <?php endforeach; ?>
-                </ul>
-            </div>
-
-            <!-- Environment Logs -->
             <?php print $environment->tasks_list; ?>
           </div>
         </div>
