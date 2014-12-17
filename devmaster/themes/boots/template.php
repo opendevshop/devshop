@@ -312,11 +312,36 @@ HTML;
     $environment->active_tasks = 0;
     $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link');
 
+    foreach ($environment->tasks as &$task) {
+      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
+        $environment->active_tasks++;
+      }
+    }
+
     if ($environment->site) {
       $vars['source_environments'][$environment->name] = $environment;
     }
-  }
 
+    // Status
+    if ($environment->site_status == HOSTING_SITE_DISABLED){
+      $environment->class = 'disabled';
+      $environment->list_item_class = 'disabled';
+    }
+    elseif ($environment->name == $project->settings->live['live_environment']){
+      $environment->class = ' live-environment';
+      $environment->list_item_class = 'info';
+    }
+    else {
+      $environment->class = ' normal-environment';
+      $environment->list_item_class = 'info';
+    }
+
+    // Active?
+    if ($environment->active_tasks > 0) {
+      $environment->class .= ' active';
+      $environment->list_item_class = 'warning';
+    }
+  }
 }
 
 /**

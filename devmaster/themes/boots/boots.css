@@ -49,6 +49,10 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
+.environment.live-environment .environment-header {
+  background: #4E6DDB;
+ }
+
 .environment.live-environment .environment-header a,
 .environment.live-environment .environment-header a.btn-text,
 .environment.live-environment .environment-header button.btn-link,
@@ -68,11 +72,11 @@ body.admin-menu .navbar-static-top {
   text-decoration: none;
 }
 
-.environment.live-environment.active .environment-meta-data {
+.environment.live-environment .environment-meta-data {
     color: #8a6d3b;
 }
 
-.environment.live-environment.active .text-muted {
+.environment.live-environment .text-muted {
     color: #8a6d3b;
 }
 
@@ -190,9 +194,10 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.environment.active {
-    background-color: #fcf8e3 !important;
-    color: #8a6d3b;
+.environment.active,
+.environment.live-environment.active .environment-header {
+    background-color: #fcf8e3;
+    color: #8a6d3b !important;
 }
 .environment.active .environment-header a {
     color: #8a6d3b !important;
@@ -201,7 +206,7 @@ body.admin-menu .navbar-static-top {
 .environment.active .tasks-button > a:active,
 .environment.active .tasks-button.open > a {
     background: #8a6d3b;
-    color:  white !important;
+    color:  white;
     text-decoration: none;
 }
 
