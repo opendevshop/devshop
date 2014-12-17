@@ -364,3 +364,36 @@ input.form-control.webhook-url {
 .btn-deploy-database a {
   position: relative;
 }
+
+.devshop-tasks {
+  min-width: 340px;
+}
+
+.environment-tasks .devshop-tasks .tasks,
+.environment-tasks .devshop-tasks .actions {
+  float: left;
+  width: 50%;
+}
+
+.devshop-tasks.dropdown-menu {
+  padding-bottom: 0px;
+}
+.devshop-tasks .actions .list-group,
+.devshop-tasks .tasks .list-group
+{
+  margin-bottom: 0px;
+}
+.devshop-tasks .actions .list-group-item:first-child,
+.devshop-tasks .tasks .list-group-item:first-child
+{
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-top: -10px;
+}
+.devshop-tasks .actions .list-group-item:last-child,
+.devshop-tasks .tasks .list-group-item:last-child
+{
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom: none;
+}
