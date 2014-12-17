@@ -153,31 +153,10 @@
 <div class="row">
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
-  <?php
-  if ($environment->site_status == HOSTING_SITE_DISABLED){
-    $environment_class = 'disabled';
-    $list_item_class = 'disabled';
-  }
-  elseif ($environment->name == $project->settings->live['live_environment']){
-    $environment_class = ' live-environment';
-    $list_item_class = 'info active';
-  }
-  else {
-    $environment_class = '';
-    $list_item_class = 'info';
-  }
-
-  // Active?
-  if ($environment->active_tasks > 0) {
-    $environment_class .= ' active';
-    $list_item_class = 'warning';
-  }
-  ?>
-
   <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
-    <div class="list-group environment <?php print $environment_class ?>">
-      <div class="environment-header list-group-item list-group-item-<?php print $list_item_class ?>">
+    <div class="list-group environment <?php print $environment->class  ?>">
+      <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
 
         <div class="environment-dropdowns pull-right">
