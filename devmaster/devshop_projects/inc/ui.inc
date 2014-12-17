@@ -370,21 +370,21 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     
     $row[] = theme('ctools_dropdown', t('Actions'), $actions);
     $rows[] = $row;
-
-    if (!is_array($environment->tasks)) $environment->tasks = array();
-    foreach ($environment->tasks as &$task) {
-      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
-        $environment->active_tasks++;
-      }
-    }
-
-    // Progress Bar
-    if ($environment->active_tasks > 0){
-      $environment->progress_classes = 'progress-bar-striped progress-bar-warning active';
-      $environment->active_tasks++;
-    } else {
-      $environment->progress_classes = 'inactive';
-    }
+//
+//    if (!is_array($environment->tasks)) $environment->tasks = array();
+//    foreach ($environment->tasks as &$task) {
+//      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
+//        $environment->active_tasks++;
+//      }
+//    }
+//
+//    // Progress Bar
+//    if ($environment->active_tasks > 0){
+//      $environment->progress_classes = 'progress-bar-striped progress-bar-warning active';
+//      $environment->active_tasks++;
+//    } else {
+//      $environment->progress_classes = 'inactive';
+//    }
   }
   $header = array();
   $table = theme('table', $header, $rows, array('class' => 'environments-table'));
