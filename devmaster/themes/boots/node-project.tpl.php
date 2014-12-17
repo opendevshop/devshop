@@ -309,6 +309,12 @@
                 <?php foreach ($source_environments as $source): ?>
                   <?php if ($source->name == $environment->name) continue; ?>
                   <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
+                    <?php if ($project->settings->live['live_environment'] == $source->name): ?>
+                      <i class="fa fa-bolt deploy-db-indicator"></i>
+                    <?php elseif ($source->settings->locked): ?>
+                      <i class="fa fa-lock deploy-db-indicator"></i>
+                    <?php endif; ?>
+
                       <strong class="btn-block"><?php print $source->name ?></strong>
                       <small><?php print $source->url; ?></small>
                     </a>

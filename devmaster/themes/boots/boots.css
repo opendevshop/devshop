@@ -355,3 +355,12 @@ input.form-control.webhook-url {
   margin-top: 15px;
 }
 
+.deploy-db-indicator {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.btn-deploy-database a {
+  position: relative;
+}
