@@ -31,25 +31,17 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
   }
 
   $items = array();
-  if (!empty($actions)) {
-
-    $environment_node = node_load($tasks[0]->rid);
-    $environment = $environment_node->environment;
-
-    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE));
-    $items[] = array(
-      'class' => 'divider',
-    );
-    foreach ($actions as $link) {
-      $items[] = l($link['title'], $link['url']);
-    }
-    $items[] = array(
-      'class' => 'divider',
-    );
-  }
-
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
-  $items[] = l($text, 'hosting/queues/tasks', array('html' => TRUE));
+
+  $task_items = array();
+  $task_items[] = l($text, 'hosting/queues/tasks', array(
+    'html' => TRUE,
+    'attributes' => array(
+      'class' => 'list-group-item',
+    ),
+  ));
+
+  $task_types = hosting_available_tasks();
 
   if (!empty($tasks)) {
 
@@ -58,46 +50,75 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
       switch ($task->task_status){
         case HOSTING_TASK_SUCCESS:
           $icon = 'check text-success';
-          $item_class = 'bg-success';
+          $item_class = 'list-group-item-success';
           break;
 
         case HOSTING_TASK_ERROR;
           $icon = 'exclamation-circle text-danger';
-          $item_class = 'bg-danger';
+          $item_class = 'list-group-item-danger';
           break;
         case HOSTING_TASK_WARNING:
           $icon = 'warning text-warning';
-          $item_class = 'bg-warning';
+          $item_class = 'list-group-item-warning';
           break;
 
         case HOSTING_TASK_PROCESSING;
         case HOSTING_TASK_QUEUED;
           $icon = 'cog fa-spin text-info';
-          $item_class = 'bg-info';
+          $item_class = 'list-group-item-info';
           break;
-
-
       }
+
+      $task_node = node_load($task->rid);
+
+      // If environment tasks...
+      if (!empty($actions)) {
+        $task->title = $task_types[$task_node->type][$task->task_type]['title'];
+      }
+
       $text = '<i class="fa fa-' . $icon . '"></i> ';
       $text .= $task->title;
-      $text .= ' <small>' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
+      $text .= ' <small class="btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
 
-      $items[] =  array(
-        'data' => l($text, 'node/' . $task->rid, array(
-          'html' => TRUE,
-        )),
-        'class' => $item_class,
-      );
+      $task_items[] = l($text, 'node/' . $task->rid, array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => 'list-group-item ' . $item_class,
+        ),
+      ));
     }
   }
   else {
-    $items[] = t('No Active Tasks');
+    $task_items[] = t('No Active Tasks');
   }
+
   $items[] = array(
-    'class' => 'divider',
+    'class' => 'tasks',
+    'data' => '<div class="list-group">' . implode("\n", $task_items) . '</div>',
   );
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'tasks dropdown-menu dropdown-menu-right', 'role' => 'menu'));
+  if (!empty($actions)) {
+
+    $environment_node = node_load($tasks[0]->rid);
+    $environment = $environment_node->environment;
+
+    array_unshift($items, array(
+      'class' => 'divider',
+    ));
+    array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE)));
+
+    $action_items = array();
+    foreach ($actions as $link) {
+      $action_items[] = l($link['title'], $link['url'], array('attributes' => array('class' => 'list-group-item')));
+    }
+
+    $items[] = array(
+      'class' => 'actions',
+      'data' => '<div class="list-group">' . implode("\n", $action_items) . '</div>',
+    );
+  }
+
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-right', 'role' => 'menu'));
 
   if ($tasks_count == 0) {
     $tasks_count = '';
