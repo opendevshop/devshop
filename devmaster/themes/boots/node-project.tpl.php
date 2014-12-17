@@ -164,8 +164,8 @@
           <!-- Environment Tasks -->
           <div class="environment-tasks btn-group ">
             <div class="btn-group btn-tasks">
-              <button type="button" class="btn btn-link dropdown-toggle btn-git-ref" data-toggle="dropdown">
-                <i class="fa fa-gear" ></i>
+              <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" title="<?php print $environment->active_tasks_label ?>">
+                <i class="fa fa-gear <?php if ($environment->active_tasks) print 'fa-spin' ?>" ></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
                 <li><a href="/node/<?php print $project->nid ?>/edit/<?php print $environment->name; ?>">

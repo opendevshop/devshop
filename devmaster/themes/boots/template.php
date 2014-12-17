@@ -341,6 +341,12 @@ HTML;
       $environment->class .= ' active';
       $environment->list_item_class = 'warning';
     }
+
+    $environment->active_tasks_label = format_plural(
+      $environment->active_tasks,
+      t('1 active task'),
+      t('@count active tasks', array('@count' => $environment->active_tasks))
+    );
   }
 }
 
