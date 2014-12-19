@@ -15,11 +15,18 @@ function drush_acquia_post_provision_devshop_deploy($branch) {
 
   if (d()->type == 'site'){
     $environment = (object) d()->environment;
+
+    // Respect environment settings.
+    if ($environment->settings['deploy']['acquia_hooks'] != 1) {
+      return;
+    }
+
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
 
     // If project has no path to drupal, we know it's not acquia.
     if ($project->drupal_path != 'docroot') {
+      drush_log('[DEVSHOP] Acquia Cloud skipped.', 'ok');
       return;
     }
 
