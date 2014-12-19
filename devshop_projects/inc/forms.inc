@@ -315,6 +315,16 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['cache'],
     );
 
+    // If acquia cloud hooks are detected, add the option to fire them.
+    if (file_exists($environment->repo_root . '/hooks/common/post-code-update')) {
+      $form['environment']['settings']['deploy']['acquia_hooks'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Run Acquia "post-code-update" hook scripts for environment "%env".', array('%env' => $environment->name)),
+        '#description' => 'Cloud hooks were detected in your project.  Check this box to run the "post-code-update" hook every time you deploy code to this environment.',
+        '#default_value' => empty($node->nid)? 0: $environment->settings->deploy['acquia_hooks'],
+      );
+    }
+
     // Add our own submit handler
     $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
