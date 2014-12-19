@@ -139,6 +139,9 @@ function devshop_projects_load($node) {
       $environment->git_current = t('Cloning in progress...');
     }
 
+    // Repo root
+    $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
+
     // Environments URL
     // @TODO: Check for http or https.
     // @TODO: Load a login URL if available.
