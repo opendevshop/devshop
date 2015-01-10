@@ -310,19 +310,31 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
+                  <li><label><?php print t('Environment Services'); ?></label></li>
                 <?php foreach ($environment->servers as $type => $server):
+                  // DB: Migrate Task
                   if ($type == 'db') {
                     $icon = 'database';
+                    $url = "node/{$environment->site}/site_migrate";
                   }
+                  // HTTP: Edit Platform
                   elseif ($type == 'http') {
                     $icon = 'cube';
+                    $url = "node/{$environment->platform}/edit";
                   }
+                  // SOLR: Edit Site
                   elseif ($type == 'solr') {
                     $icon = 'sun-o';
+                    $url = "node/{$environment->site}/edit";
                   }
+
+                  // Build http query.
+                  $query = array();
+                  $query['destination'] = $_GET['q'];
+                  $query['deploy'] = 'stack';
                   ?>
                   <li>
-                    <a href="/node/<?php print $server['nid'] ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
+                    <a href="<?php print url($url, array('query' => $query)); ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
                       <strong class="btn-block"><i class="fa fa-<?php print $icon; ?>"></i> <?php print $type; ?></strong>
                       <small><?php print $server['name']; ?></small>
                     </a>
