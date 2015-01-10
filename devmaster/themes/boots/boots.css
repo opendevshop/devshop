@@ -377,6 +377,7 @@ input.form-control.webhook-url {
 
 .devshop-tasks.dropdown-menu {
   padding-bottom: 0px;
+  top: 91%;
 }
 .devshop-tasks .actions .list-group,
 .devshop-tasks .tasks .list-group
@@ -396,4 +397,12 @@ input.form-control.webhook-url {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   border-bottom: none;
+}
+
+.task-list.btn-group.open button {
+  background: white;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 4px !important;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
 }
