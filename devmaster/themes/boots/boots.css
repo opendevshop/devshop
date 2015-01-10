@@ -407,6 +407,10 @@ input.form-control.webhook-url {
   box-shadow: 0 6px 12px rgba(0,0,0,.175);
 }
 
+.task-list.btn-group.open button i {
+  color: black;
+}
+
 #navbar-main .task-list.btn-group.open button,
 #navbar-main .task-list.btn-group.open button .active-task {
   color: black;
