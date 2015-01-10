@@ -109,7 +109,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
 
     $action_items = array();
     foreach ($actions as $link) {
-      $action_items[] = l($link['title'], $link['url'], array('attributes' => array('class' => 'list-group-item')));
+      $action_items[] = l($link['title'], $link['href'], array('attributes' => array('class' => 'list-group-item')));
     }
 
     $items[] = array(
