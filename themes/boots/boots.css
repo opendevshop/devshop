@@ -415,3 +415,29 @@ input.form-control.webhook-url {
 #navbar-main .task-list.btn-group.open button .active-task {
   color: #777;
 }
+
+.devshop-stack li.inline {
+  position: relative;
+}
+.devshop-stack li.inline a {
+
+  display: inline-block;
+  height: 3.5em;
+}
+
+.devshop-stack li.inline a:first-child {
+  width: 80%;
+}
+.devshop-stack li.inline a:last-child {
+  width: 15%;
+  padding: 0px;
+  position: absolute;
+  top: 0px;
+}
+
+.devshop-stack li.inline a:last-child i.fa {
+  position: absolute;
+  top: 25%;
+  left: 31%;
+  font-size: 1.5em;
+}
