@@ -408,10 +408,10 @@ input.form-control.webhook-url {
 }
 
 .task-list.btn-group.open button i {
-  color: black;
+  color: #777;
 }
 
 #navbar-main .task-list.btn-group.open button,
 #navbar-main .task-list.btn-group.open button .active-task {
-  color: black;
+  color: #777;
 }
