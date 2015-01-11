@@ -131,7 +131,7 @@ body.admin-menu .navbar-static-top {
     border: 1px solid whitesmoke;
 }
 
-.navbar-project .nav-pills a.active.dropdown-toggle {
+.navbar-project .main-project-nav > ul.nav-pills  > li > a.active {
   background: white;
 
 }
@@ -330,7 +330,9 @@ input.form-control.webhook-url {
 .environment-deploy {
     padding: 0px;
 }
-.dropdown-menu li label {
+.dropdown-menu li label,
+.environment-deploy label
+{
   font-size: .7em;
   text-transform: uppercase;
   color: grey;
