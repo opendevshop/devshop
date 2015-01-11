@@ -9,10 +9,22 @@
         <li><?php print $dashboard_link; ?></li>
 
         <!-- Settings -->
-        <?php if ($settings_link): ?>
-        <li><?php print $settings_link; ?></li>
-        <?php endif; ?>
-
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle <?php print $settings_active ?>" data-toggle="dropdown" role="button" aria-expanded="false">
+            <i class="fa fa-sliders"></i>
+            <?php print t('Settings'); ?>
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
+            <li><label><?php print t('Environment Settings'); ?></label></li>
+            <?php foreach ($project->environments as $environment): ?>
+            <li>
+              <?php print l($environment->name, "node/{$project->nid}/edit/{$environment->name}"); ?>
+            </li>
+            <?php endforeach; ?>
+          </ul>
+        </li>
         <!-- Logs-->
         <?php if ($logs_link): ?>
           <li><?php print $logs_link; ?></li>
