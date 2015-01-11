@@ -121,10 +121,21 @@ body.admin-menu .navbar-static-top {
   margin: .5em 0;
 }
 
+/*.main-project-nav .dropdown a.active {*/
+  /*background: #333;*/
+  /*color: white;*/
+/*}*/
+
 .navbar-project .nav-pills a.active {
-    background: white;
+    background: whitesmoke;
     border: 1px solid whitesmoke;
 }
+
+.navbar-project .nav-pills a.active.dropdown-toggle {
+  background: white;
+
+}
+
 
 
 .project-stuff {
