@@ -7,6 +7,8 @@ stylesheets[all][] = boots.css
 
 scripts[] = js/jquery.min.js
 scripts[] = js/bootstrap.min.js
+scripts[] = js/jquery.matchHeight.js
+scripts[] = js/boots.js
 
 scripts[] = https://oss.maxcdn.com/respond/1.4.2/respond.min.js
 
