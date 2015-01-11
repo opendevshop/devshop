@@ -153,6 +153,17 @@ function devshop_projects_menu() {
     'file path' => drupal_get_path('module', 'node'),
     'type' => MENU_LOCAL_TASK,
   );
+  // Environment logs pages
+  $items['node/%node/logs/%'] = array(
+    'title' => 'Logs',
+    'page callback' => 'devshop_project_logs_page',
+    'page arguments' => array(1, 3),
+    'access callback' => 'devshop_project_logs_access',
+    'access arguments' => array('view', 1),
+    'weight' => 1,
+    'file' => 'inc/logs.inc',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
   // Drush aliases download.
   $items['node/%node/aliases'] = array(
     'title' => 'Drush Aliases',
@@ -167,6 +178,9 @@ function devshop_projects_menu() {
   return $items;
 }
 
+function devshop_project_logs_access() {
+  return TRUE;
+}
 
 /**
  * Implements hook_block()

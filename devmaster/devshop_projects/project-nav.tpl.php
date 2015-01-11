@@ -34,7 +34,6 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu">
-            <li><?php print l(t('All Logs'), "node/{$project->nid}/logs"); ?></li>
             <li><label><?php print t('Environment Logs'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
               <li>
