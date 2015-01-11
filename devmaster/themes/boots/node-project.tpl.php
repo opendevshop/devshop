@@ -309,8 +309,8 @@
               <?php print t('Stack'); ?>
               <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><label><?php print t('Change Servers'); ?></label></li>
+            <ul class="dropdown-menu devshop-stack" role="menu">
+              <li><label><?php print t('Deploy Services'); ?></label></li>
               <?php foreach ($environment->servers as $type => $server):
                   // DB: Migrate Task
                   if ($type == 'db') {
@@ -332,12 +332,16 @@
                   $query = array();
                   $query['destination'] = $_GET['q'];
                   $query['deploy'] = 'stack';
+
+                  $full_url = url($url, array('query' => $query));
+                  $server_url = url('node/' . $server['nid']);
                   ?>
-                  <li>
-                    <a href="<?php print url($url, array('query' => $query)); ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
+                  <li class="inline">
+                    <a href="<?php print $server_url; ?>" title="<?php print $type .': ' . $server['name']; ?>">
                       <strong class="btn-block"><i class="fa fa-<?php print $icon; ?>"></i> <?php print $type; ?></strong>
                       <small><?php print $server['name']; ?></small>
                     </a>
+                    <a href="<?php print $full_url;?>" title="<?php print t('Change !type server...', array('!type' => $type)); ?>"><i class="fa fa-angle-double-right"></i></a>
                   </li>
                 <?php endforeach; ?>
             </ul>
