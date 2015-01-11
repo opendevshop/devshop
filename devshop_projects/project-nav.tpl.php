@@ -25,11 +25,26 @@
             <?php endforeach; ?>
           </ul>
         </li>
+
         <!-- Logs-->
-        <?php if ($logs_link): ?>
-          <li><?php print $logs_link; ?></li>
-        <?php endif; ?>
-        </ul>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle <?php print $logs_active ?>" data-toggle="dropdown" role="button" aria-expanded="false">
+            <i class="fa fa-list-alt"></i>
+            <?php print t('Logs'); ?>
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li><?php print l(t('All Logs'), "node/{$project->nid}/logs"); ?></li>
+            <li><label><?php print t('Environment Logs'); ?></label></li>
+            <?php foreach ($project->environments as $environment): ?>
+              <li>
+                <?php print l($environment->name, "node/{$project->nid}/logs/{$environment->name}"); ?>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </li>
+
+      </ul>
     </div>
 
     <!-- Git Info -->
