@@ -101,7 +101,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
               unset($form['parameters'][$key]);
             }
           }
-          dsm($form['parameters']);
           $form['parameters']['#suffix'] = '</div>';
         }
         break;
