@@ -33,8 +33,21 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
   $items = array();
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
 
+  // If for an environment, change the link.
+  if (!empty($actions)) {
+
+    $environment_node = node_load($tasks[0]->rid);
+    $environment = $environment_node->environment;
+
+    $url = "node/{$environment->project_nid}/logs/{$environment->name}";
+  }
+  else {
+    $url = 'hosting/queues/tasks';
+  }
+
   $task_items = array();
-  $task_items[] = l($text, 'hosting/queues/tasks', array(
+
+  $task_items[] = l($text, $url, array(
     'html' => TRUE,
     'attributes' => array(
       'class' => 'list-group-item',
@@ -98,9 +111,6 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
   );
 
   if (!empty($actions)) {
-
-    $environment_node = node_load($tasks[0]->rid);
-    $environment = $environment_node->environment;
 
     array_unshift($items, array(
       'class' => 'divider',
