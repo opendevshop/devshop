@@ -341,7 +341,9 @@
                       <strong class="btn-block"><i class="fa fa-<?php print $icon; ?>"></i> <?php print $type; ?></strong>
                       <small><?php print $server['name']; ?></small>
                     </a>
+                    <?php if ($full_url) :?>
                     <a href="<?php print $full_url;?>" title="<?php print t('Change !type server...', array('!type' => $type)); ?>"><i class="fa fa-angle-double-right"></i></a>
+                    <?php endif; ?>
                   </li>
                 <?php endforeach; ?>
             </ul>
