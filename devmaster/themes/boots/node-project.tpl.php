@@ -310,8 +310,8 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                  <li><label><?php print t('Environment Services'); ?></label></li>
-                <?php foreach ($environment->servers as $type => $server):
+              <li><label><?php print t('Change Server'); ?></label></li>
+              <?php foreach ($environment->servers as $type => $server):
                   // DB: Migrate Task
                   if ($type == 'db') {
                     $icon = 'database';
