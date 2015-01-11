@@ -191,10 +191,7 @@ function template_preprocess_devshop_project_nav(&$vars){
   if (arg(2) == 'edit') {
     $vars['settings_active'] = 'active';
   }
-
-
-  dsm($vars['project']);
-//  if (user_access('access project logs')){
-//    $vars['logs_link'] = l('<i class="fa fa-list-alt"></i> ' . t('Logs'), "node/$node->nid/logs", array('html' => TRUE));
-//  }
+  if (arg(2) == 'logs') {
+    $vars['logs_active'] = 'active';
+  }
 }
