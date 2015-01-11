@@ -77,41 +77,32 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       case 'migrate':
 
         // To change the database server, we use the migrate form.
-        if ($_GET['db_server']) {
-          drupal_set_title(t('Migrate Database'));
+        if ($_GET['deploy'] == 'stack') {
+          drupal_set_title(t('Change Database Server'));
           $site_node = node_load($form['nid']['#value']);
           $environment = $site_node->environment;
-          $form['help']['#value'] = t("Are you sure you want to change this site's database server?");
-
-          // Set DB Server values
-          $form['parameters']['new_db_server']['#type'] = 'value';
-          $db_server = $_GET['db_server'];
-          $db_server_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "server" && title = "%s"', $db_server));
-          $form['parameters']['new_db_server']['#default_value'] = $db_server_nid;
+          $form['help']['#weight'] = 100;
+          $form['help']['#value'] = t("Are you sure you want to change this environment's database server?");
 
           // Set URI value
           $form['parameters']['new_uri']['#type'] = 'value';
           $form['parameters']['new_uri']['#value'] = $form['parameters']['new_uri']['#default_value'];
+
           // Display something helpful
           $form['old'] = array(
             '#type' => 'item',
             '#title' => t('Current Database Server'),
-            '#value' => l($environment->servers['db']['name'], 'node/' . $environment->servers['db']['nid']),
+            '#value' => l($environment->servers['db']['name'], 'hosting/c/server_' . $environment->servers['db']['nid']),
             '#weight' => '-1',
           );
 
-          // Display something helpful
-          $form['new'] = array(
-            '#type' => 'item',
-            '#title' => t('New Database Server'),
-            '#value' => l($db_server, "node/$db_server_nid"),
-            '#weight' => '0',
-          );
-
-          // @TODO: not sure how to hide the radios.  We'll just use CSS for now.
-          $form['parameters']['#prefix'] = '<div class="hidden">';
+          foreach ($form['parameters'] as $key => &$element) {
+            if (is_int($key)) {
+              unset($form['parameters'][$key]);
+            }
+          }
+          dsm($form['parameters']);
           $form['parameters']['#suffix'] = '</div>';
-
         }
         break;
 
