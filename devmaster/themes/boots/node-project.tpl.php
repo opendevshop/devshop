@@ -310,7 +310,7 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li><label><?php print t('Change Server'); ?></label></li>
+              <li><label><?php print t('Change Servers'); ?></label></li>
               <?php foreach ($environment->servers as $type => $server):
                   // DB: Migrate Task
                   if ($type == 'db') {
