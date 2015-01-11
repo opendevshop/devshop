@@ -325,7 +325,7 @@
                   // SOLR: Edit Site
                   elseif ($type == 'solr') {
                     $icon = 'sun-o';
-                    $url = "node/{$environment->site}/edit";
+                    $url = "node/{$environment->project_nid}/edit/{$environment->name}";
                   }
 
                   // Build http query.
@@ -334,7 +334,11 @@
                   $query['deploy'] = 'stack';
 
                   $full_url = url($url, array('query' => $query));
-                  $server_url = url('node/' . $server['nid']);
+
+                  // @TODO: Not sure why nid is localhost here.
+                  $server_url = $server['nid'] == 'localhost'?
+                    'server_localhost':
+                    url('node/' . $server['nid']);
                   ?>
                   <li class="inline">
                     <a href="<?php print $server_url; ?>" title="<?php print $type .': ' . $server['name']; ?>">
@@ -342,7 +346,7 @@
                       <small><?php print $server['name']; ?></small>
                     </a>
                     <?php if ($full_url) :?>
-                    <a href="<?php print $full_url;?>" title="<?php print t('Change !type server...', array('!type' => $type)); ?>"><i class="fa fa-angle-double-right"></i></a>
+                    <a href="<?php print $full_url;?>" title="<?php print t('Change !type server...', array('!type' => $type)); ?>"><i class="fa fa-angle-right"></i></a>
                     <?php endif; ?>
                   </li>
                 <?php endforeach; ?>
