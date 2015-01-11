@@ -319,7 +319,7 @@ input.form-control.webhook-url {
 .environment-deploy {
     padding: 0px;
 }
-.environment label {
+.dropdown-menu li label {
   font-size: .7em;
   text-transform: uppercase;
   color: grey;
