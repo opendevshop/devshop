@@ -121,10 +121,21 @@ body.admin-menu .navbar-static-top {
   margin: .5em 0;
 }
 
+/*.main-project-nav .dropdown a.active {*/
+  /*background: #333;*/
+  /*color: white;*/
+/*}*/
+
 .navbar-project .nav-pills a.active {
-    background: white;
+    background: whitesmoke;
     border: 1px solid whitesmoke;
 }
+
+.navbar-project .main-project-nav > ul.nav-pills  > li > a.active {
+  background: white;
+
+}
+
 
 
 .project-stuff {
@@ -319,7 +330,9 @@ input.form-control.webhook-url {
 .environment-deploy {
     padding: 0px;
 }
-.environment label {
+.dropdown-menu li label,
+.environment-deploy label
+{
   font-size: .7em;
   text-transform: uppercase;
   color: grey;
@@ -377,6 +390,7 @@ input.form-control.webhook-url {
 
 .devshop-tasks.dropdown-menu {
   padding-bottom: 0px;
+  top: 91%;
 }
 .devshop-tasks .actions .list-group,
 .devshop-tasks .tasks .list-group
@@ -396,4 +410,47 @@ input.form-control.webhook-url {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   border-bottom: none;
+}
+
+.task-list.btn-group.open button {
+  background: white;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 4px !important;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.task-list.btn-group.open button i {
+  color: #777;
+}
+
+#navbar-main .task-list.btn-group.open button,
+#navbar-main .task-list.btn-group.open button .active-task {
+  color: #777;
+}
+
+.devshop-stack li.inline {
+  position: relative;
+}
+.devshop-stack li.inline a {
+
+  display: inline-block;
+  height: 3.5em;
+}
+
+.devshop-stack li.inline a:first-child {
+  width: 80%;
+}
+.devshop-stack li.inline a:last-child {
+  width: 15%;
+  padding: 0px;
+  position: absolute;
+  top: 0px;
+}
+
+.devshop-stack li.inline a:last-child i.fa {
+  position: absolute;
+  top: 25%;
+  left: 31%;
+  font-size: 1.5em;
 }
