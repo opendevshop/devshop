@@ -85,8 +85,11 @@ function devshop_projects_load($node) {
   $environments = array();
   while ($environment = db_fetch_object($query)) {
 
-    // Skip this if it is not enabled.
+    // Don't load the environment if the site and/or platform is deleted.
     if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
+      continue;
+    }
+    if ($environment->platform_status == HOSTING_PLATFORM_DELETED) {
       continue;
     }
 
