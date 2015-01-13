@@ -309,23 +309,45 @@
               <?php print t('Stack'); ?>
               <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu" role="menu">
-                <?php foreach ($environment->servers as $type => $server):
+            <ul class="dropdown-menu devshop-stack" role="menu">
+              <li><label><?php print t('Deploy Services'); ?></label></li>
+              <?php foreach ($environment->servers as $type => $server):
+                  // DB: Migrate Task
                   if ($type == 'db') {
                     $icon = 'database';
+                    $url = "node/{$environment->site}/site_migrate";
                   }
+                  // HTTP: Edit Platform
                   elseif ($type == 'http') {
                     $icon = 'cube';
+                    $url = "node/{$environment->platform}/edit";
                   }
+                  // SOLR: Edit Site
                   elseif ($type == 'solr') {
                     $icon = 'sun-o';
+                    $url = "node/{$environment->project_nid}/edit/{$environment->name}";
                   }
+
+                  // Build http query.
+                  $query = array();
+                  $query['destination'] = $_GET['q'];
+                  $query['deploy'] = 'stack';
+
+                  $full_url = url($url, array('query' => $query));
+
+                  // @TODO: Not sure why nid is localhost here.
+                  $server_url = $server['nid'] == 'localhost'?
+                    'server_localhost':
+                    url('node/' . $server['nid']);
                   ?>
-                  <li>
-                    <a href="/node/<?php print $server['nid'] ?>" title="<?php print $type .' '. t('server') .' '. $server['name']; ?>">
+                  <li class="inline">
+                    <a href="<?php print $server_url; ?>" title="<?php print $type .': ' . $server['name']; ?>">
                       <strong class="btn-block"><i class="fa fa-<?php print $icon; ?>"></i> <?php print $type; ?></strong>
                       <small><?php print $server['name']; ?></small>
                     </a>
+                    <?php if ($full_url) :?>
+                    <a href="<?php print $full_url;?>" title="<?php print t('Change !type server...', array('!type' => $type)); ?>"><i class="fa fa-angle-right"></i></a>
+                    <?php endif; ?>
                   </li>
                 <?php endforeach; ?>
             </ul>

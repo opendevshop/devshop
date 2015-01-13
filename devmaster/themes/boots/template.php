@@ -12,6 +12,7 @@
  * print boots_render_tasks($tasks);
  */
 function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
+  global $user;
 
   if (is_null($tasks)){
     // Tasks
@@ -33,8 +34,20 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
   $items = array();
   $text = '<i class="fa fa-list-alt"></i> '. t('Task Logs');
 
+  // If for an environment, change the link.
+  if (!empty($actions)) {
+
+    $environment_node = node_load($tasks[0]->rid);
+    $environment = $environment_node->environment;
+
+    $url = "node/{$environment->project_nid}/logs/{$environment->name}";
+  }
+  else {
+    $url = 'hosting/queues/tasks';
+  }
+
   $task_items = array();
-  $task_items[] = l($text, 'hosting/queues/tasks', array(
+  $task_items[] = l($text, $url, array(
     'html' => TRUE,
     'attributes' => array(
       'class' => 'list-group-item',
@@ -99,9 +112,6 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
 
   if (!empty($actions)) {
 
-    $environment_node = node_load($tasks[0]->rid);
-    $environment = $environment_node->environment;
-
     array_unshift($items, array(
       'class' => 'divider',
     ));
@@ -109,7 +119,14 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
 
     $action_items = array();
     foreach ($actions as $link) {
-      $action_items[] = l($link['title'], $link['url'], array('attributes' => array('class' => 'list-group-item')));
+      $action_items[] = l($link['title'], $link['href'], array(
+        'attributes' => array(
+          'class' => 'list-group-item',
+        ),
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+        ),
+      ));
     }
 
     $items[] = array(
