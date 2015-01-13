@@ -12,6 +12,7 @@
  * print boots_render_tasks($tasks);
  */
 function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
+  global $user;
 
   if (is_null($tasks)){
     // Tasks
@@ -46,7 +47,6 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
   }
 
   $task_items = array();
-
   $task_items[] = l($text, $url, array(
     'html' => TRUE,
     'attributes' => array(
@@ -119,7 +119,14 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
 
     $action_items = array();
     foreach ($actions as $link) {
-      $action_items[] = l($link['title'], $link['href'], array('attributes' => array('class' => 'list-group-item')));
+      $action_items[] = l($link['title'], $link['href'], array(
+        'attributes' => array(
+          'class' => 'list-group-item',
+        ),
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+        ),
+      ));
     }
 
     $items[] = array(
