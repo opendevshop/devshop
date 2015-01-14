@@ -479,6 +479,29 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
   devshop_projects_nodeapi_site_view($node, $a3, $a4);
 }
 
+
+/**
+ * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
+ */
+function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
+
+  $rows = array();
+  foreach ($node->task_args as $key => $value) {
+    $rows[] = array(
+      '<strong>' . $key . '</strong>',
+      '<small>' . $value . '</small>',
+    );
+  }
+
+  $node->content['info']['parameters'] = array(
+    '#type' => 'item',
+    '#title' => t('Task Parameters'),
+    '#value' => theme('table', array(),  $rows),
+    '#weight' => -11,
+  );
+
+}
+
 /**
  * Our own version of _hosting_site_goto_link()
  */
