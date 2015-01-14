@@ -300,6 +300,12 @@
                     </a>
                   </li>
                 <?php endforeach; ?>
+                <li class="divider"></li>
+                   <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=other&dest=<?php print $source->name ?>">
+                       <strong class="btn-block"><?php print t('Other...'); ?></strong>
+                       <small><?php print t('Enter a drush alias to deploy from.'); ?></small>
+                     </a>
+                   </li>
               <?php endif; ?>
             </ul>
           </div>
