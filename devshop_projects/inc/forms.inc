@@ -115,6 +115,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         $form['#submit'][] = 'devshop_deploy_redirect_to_project';
         break;
 
+      // Delete task form
+      case 'delete':
+        $form['#submit'][] = 'devshop_deploy_redirect_to_project';
+        break;
+
       // Sync task form
       case 'sync':
         if (isset($_GET['source'])) {
