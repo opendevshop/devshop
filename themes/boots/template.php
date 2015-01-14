@@ -93,7 +93,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
       $text .= $task->title;
       $text .= ' <small class="btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
 
-      $task_items[] = l($text, 'node/' . $task->rid, array(
+      $task_items[] = l($text, 'node/' . $task->nid, array(
         'html' => TRUE,
         'attributes' => array(
           'class' => 'list-group-item ' . $item_class,
