@@ -119,26 +119,25 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       case 'sync':
         if (isset($_GET['source'])) {
           $node = node_load($form['nid']['#value']);
-          $source = node_load($_GET['source']);
 
-          if (empty($source) || $source->type != 'site') {
-            break;
+          if ($_GET['source'] == 'other') {
+            $source = '';
+          }
+          else {
+            $source = node_load($_GET['source']);
+            if (isset($source->nid) && $source->type != 'site') {
+              break;
+            }
           }
 
           drupal_set_title(t('Deploy data to Environment "@env"', array('@env' => $node->environment->name)));
           $environment = $node->environment;
-          $source_environment = $source->environment;
           $form['#submit'][] = 'devshop_deploy_redirect_to_project';
 
           $form['help'] = array(
             '#prefix' => '<div class="alert alert-warning" role="alert">',
             '#suffix' => '</div>',
 
-            'source' => array(
-              '#value' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
-              '#prefix' => '<p>',
-              '#suffix' => '</p>',
-            ),
             'target' => array(
               '#value' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
               '#prefix' => '<p class="text-danger">',
@@ -146,11 +145,29 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
             ),
           );
 
-          // Alter the "source" item
-          $form['parameters']['source'] = array(
-            '#type' => 'value',
-            '#value' => $source->environment->drush_alias,
-          );
+          // If source is empty, ask for an alias.
+          if (empty($source)) {
+            $form['parameters']['source'] = array(
+              '#type' => 'textfield',
+              '#title' => t('Drush Alias for Source'),
+              '#description' => t('Enter a full drush alias to use as the source. Make sure to include the "@" character at the beginning.'),
+            );
+          }
+          // If a source is specified, add help and set it as a value.
+          else {
+
+            $source_environment = $source->environment;
+            $form['help']['source'] = array(
+              '#value' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
+              '#prefix' => '<p>',
+              '#suffix' => '</p>',
+            );
+
+            $form['parameters']['source'] = array(
+              '#type' => 'value',
+              '#value' => $source->environment->drush_alias,
+            );
+          }
 
           // Don't copy modules and themes.
           unset($form['parameters']['modules']);
