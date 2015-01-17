@@ -142,7 +142,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     }
     else {
       $settings->testing = array(
-        'test_type' => 'simpletest',
+        'test_type' => 0,
         'tests_to_run' => '',
         'path_to_behat' => '',
       );
@@ -167,10 +167,16 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#description' => t('Enter the names of the tests to run, one per line.  See the !link for examples, or call <strong><code>drush @@site test-run</code></strong> for a list of available tests.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/hierarchy/DrupalWebTestCase/7'), '@site' => 'drushalias')),
   );
 
-  $testing_form['path_to_behat'] = array(
+  $testing_form['path_to_behat_bin'] = array(
     '#type' => 'textfield',
-    '#title' => t('Path to Behat'),
-    '#description' => t('Enter the path to bin/behat. If relative, enter the path relative to the Drupal root.'),
+    '#title' => t('Path to Behat Binary'),
+    '#description' => t('Enter the path to your bin/behat executable file. If relative, enter the path relative to the git repo root.'),
+    '#default_value' => $settings->testing['path_to_behat'],
+  );
+  $testing_form['path_to_behat_tests'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to Behat Tests'),
+    '#description' => t('Enter the path to your tests (the *.featurefiles), relative to the git repo root.'),
     '#default_value' => $settings->testing['path_to_behat'],
   );
 
