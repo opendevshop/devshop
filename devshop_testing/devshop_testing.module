@@ -16,23 +16,6 @@ function devshop_testing_perm() {
 }
 
 /**
- * Implements hook_form_alter().
- */
-function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
-
-  if ($form_id == 'project_node_form') {
-    $form['tests_to_run'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Tests To Run'),
-      '#default_value' => $form['#node']->tests_to_run,
-      '#rows' => 6,
-      '#description' => t('Enter the names of the simpletests to trigger when "Run Tests" task is started, one per line.  See the !link for examples.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/DrupalWebTestCase/7'))),
-      '#weight' => 20,
-    );
-  }
-}
-
-/**
  * Implements hook_nodeapi()
  */
 function devshop_testing_nodeapi(&$node, $op, $a3 = null) {
@@ -108,7 +91,7 @@ function devshop_testing_devshop_environment_actions($environment) {
 function hosting_task_test_form($node) {
 
   $tests = $node->tests_to_run;
-  
+
   $form = array();
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to run tests on.'), 'environment', 'Environment', 'radios');
 
@@ -140,3 +123,50 @@ function hosting_task_devshop_test_form_validate($form, &$form_state) {
 
 }
 
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_testing_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+  $project = $form['#node']->project;
+
+  $form['project']['settings']['testing'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Testing'),
+    '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
+  );
+
+  if (!isset($project->settings->testing)) {
+    $project->settings->testing = array(
+      'test_type' => 'simpletest',
+      'tests_to_run' => '',
+      'path_to_behat' => '',
+    );
+  }
+  $form['project']['settings']['testing']['test_type'] = array(
+    '#title' => t('Test Type'),
+    '#options' => array(
+      0 => t('None'),
+      'simpletest' => t('SimpleTest'),
+      'behat' => t('Behat'),
+    ),
+    '#type' => 'radios',
+    '#default_value' => $project->settings->testing['test_type'],
+  );
+
+  $form['project']['settings']['testing']['tests_to_run'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Tests to Run'),
+    '#default_value' => $project->settings->testing['tests_to_run'],
+    '#rows' => 6,
+    '#description' => t('Enter the names of the tests to run, one per line.  See the !link for examples, or call <strong><code>drush @@site test-run</code></strong> for a list of available tests.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/hierarchy/DrupalWebTestCase/7'), '@site' => 'drushalias')),
+  );
+
+  $form['project']['settings']['testing']['path_to_behat'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to Behat'),
+    '#description' => t('Enter the path to bin/behat. If relative, enter the path relative to the Drupal root.'),
+    '#default_value' => $project->settings->testing['path_to_behat'],
+  );
+
+}
