@@ -65,7 +65,7 @@ function drush_devshop_projects_pre_hosting_task() {
   }
 
   // Run tests
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-test') {
+  if ($task->ref->type == 'project' && $task->task_type == 'test') {
     $tests = array();
 
     foreach(explode("\n", $task->task_args['tests_to_run']) as $test) {
@@ -74,9 +74,9 @@ function drush_devshop_projects_pre_hosting_task() {
 	$tests[] = $test;
       }
     }
-    $task->args['environment'] = $task->task_args['environment'];
     $task->options['tests-to-run'] = implode(',', $tests);
-    $task->options['sync-from-live'] = $task->task_args['sync'];
+    $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
+    $task->options['behat-bin-path'] = $task->task_args['behat_bin_path'];
   }
 }
 
