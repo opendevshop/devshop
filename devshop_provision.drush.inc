@@ -89,16 +89,14 @@ function devshop_provision_drush_command() {
     'aliases' => array('pdl'),
   );
   */
-  $items['provision-devshop-test'] = array(
-    'description' => 'Run a group of SimpleTests.',
+  $items['provision-test'] = array(
+    'description' => 'Run a set of tests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
       'tests-to-run' => 'The list of tests to run, separated by comma.',
+      'test-type' => 'The type of tests to run.  simpletest, behat',
     ),
-    'aliases' => array('pdt'),
-    'arguments' => array(
-      'environment' => 'The name of the environment to run tests on.',
-    ),
+    'aliases' => array('test'),
   );
   // @TODO: Remove this once http://drupal.org/node/1995506 is committed
   $items['devshop-install'] = array(
