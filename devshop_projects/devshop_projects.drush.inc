@@ -75,6 +75,7 @@ function drush_devshop_projects_pre_hosting_task() {
       }
     }
     $task->options['tests-to-run'] = implode(',', $tests);
+    $task->options['test-type'] = $task->task_args['test_type'];
     $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
     $task->options['behat-bin-path'] = $task->task_args['behat_bin_path'];
   }
