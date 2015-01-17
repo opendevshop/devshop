@@ -87,42 +87,14 @@ function devshop_testing_devshop_environment_actions($environment) {
 }
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * Our parameters are added in devshop_testing_form_alter()
  */
 function hosting_task_test_form($node) {
 
-  $tests = $node->tests_to_run;
-
   $form = array();
-  devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environment to run tests on.'), 'environment', 'Environment', 'radios');
-
-  $example_site = key($form['environment']['#options']) . "." . $node->base_url;
-  $form['tests_to_run'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Tests To Run'),
-    '#default_value' => $tests,
-    '#rows' => 6,
-    '#description' => t('Enter the names of the simpletests to run, one per line.  See the !link for examples, or call <strong><code>drush @@site test-run</code></strong> for a list of available tests.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/hierarchy/DrupalWebTestCase/7'), '@site' => $example_site)),
-  );
-
   return $form;
 }
-
-/**
- * Implementation of hook_hosting_task_TASK_TYPE_form_validate().
- *
- */
-function hosting_task_devshop_test_form_validate($form, &$form_state) {
-
-  $tests = $form_state['values']['parameters']['tests_to_run'];
-  $t = trim(str_replace("\n", "", $tests));
-
-  if (empty($tests) || empty($t) || $tests == "" || $t == ""){
-    form_set_error('tests_to_run', t('You must include at least one test.'));
-  }
-
-
-}
-
 
 /**
  * Implements hook_form_alter().
@@ -153,6 +125,14 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     );
     $testing_form = &$form['environment']['settings']['testing'];
     $settings =  $form['#node']->environment->settings;
+  }
+  elseif ($form_id == 'hosting_task_confirm_form') {
+    $testing_form = &$form['parameters'];
+    $node = node_load($form['nid']['#value']);
+    $settings =  $node->environment->settings;
+  }
+  else {
+    return;
   }
 
   // Setting defaults.  Use project settings if there are any.
