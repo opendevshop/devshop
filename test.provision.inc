@@ -9,18 +9,17 @@ function drush_devshop_provision_pre_provision_test(){
 /**
  * Implements the provision-devshop-test command.
  */
-function drush_devshop_provision_provision_test() {
+function drush_devshop_provision_provision_test($tests_to_run = '') {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
 
   // Get test info
   $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
-  $tests = drush_get_option('tests-to-run', d()->environment['settings']['testing']['tests_to_run']);
 
   // Run Simpletest
   if ($type == 'simpletest') {
     drush_log(dt("Running $type tests $tests"), 'ok');
     provision_backend_invoke('@self', 'en simpletest');
-    provision_backend_invoke('@self', 'test-run', array($tests));
+    provision_backend_invoke('@self', 'test-run', array($tests_to_run));
   }
   elseif ($type == 'behat') {
     $repo_path = d()->environment['repo_root'];
@@ -35,7 +34,7 @@ function drush_devshop_provision_provision_test() {
     }
 
     $path = $repo_path . $behat_folder_path;
-    $cmd = "$behat_bin_path $tests";
+    $cmd = "$behat_bin_path features/$tests_to_run";
     drush_log("Running $cmd in $path");
 
     if (drush_shell_cd_and_exec($path, $cmd)) {
