@@ -17,7 +17,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
 
   // Run Simpletest
   if ($type == 'simpletest') {
-    drush_log(dt("Running $type tests $tests"), 'ok');
+    drush_log(dt("Running $type tests $tests_to_run"), 'ok');
     provision_backend_invoke('@self', 'en simpletest');
     provision_backend_invoke('@self', 'test-run', array($tests_to_run));
   }
