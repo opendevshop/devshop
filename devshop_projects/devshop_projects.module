@@ -40,15 +40,50 @@ function devshop_projects_perm() {
     'view projects',
     'create devshop-create task',
     'create devshop-commit task',
-    'create devshop-pull task',
     'create devshop-delete task',
     'create devshop-deploy task',
+// @TODO: Not Ready Yet... Move to hosting_git.
+//    'create commit task',
     'create project',
     'view project',
     'edit project',
     'delete projects',
     'administer projects',
   );
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function devshop_projects_devshop_environment_actions($environment) {
+  $items = array(
+    'flush_cache',
+    'login-reset',
+    'backup',
+    'restore' => 'restore',
+    'rebuild_registry',
+    'run_cron',
+    'update',
+  );
+
+  if ($environment->settings->locked){
+    unset($items['restore']);
+  }
+
+  // Add disable or delete task based on hosting variable.
+  if (!variable_get('hosting_require_disable_before_delete', TRUE)){
+    $items[] = 'delete';
+  } else {
+    if ($environment->site_status == HOSTING_SITE_DISABLED){
+      $items[] = 'enable';
+      $items[] = 'delete';
+    } elseif (!$items->settings->locked){
+      $items[] = 'disable';
+    }
+  }
+  return $items;
 }
 
 /**
