@@ -317,35 +317,14 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $site_tasklist = array();
     }
 
-    // The actions we want
-    $site_actions = array(
-      'flush_cache',
-      'login_reset',
-      'backup',
-      'restore' => 'restore',
-      'rebuild_registry',
-      'run_cron',
-      'update',
-    );
+    // Invoke hook_devshop_environment_actions()
+    // Load available environment actions.
+    $environment_actions = module_invoke_all('devshop_environment_actions', $environment, $site_tasklist);
 
-    if ($environment->settings->locked){
-      unset($site_actions['restore']);
-    }
+    // @TODO: Invoke drupal_alter()
 
-    // Add disable or delete task based on hosting variable.
-    if (!variable_get('hosting_require_disable_before_delete', TRUE)){
-      $site_actions[] = 'delete';
-    } else {
-      if ($environment->site_status == HOSTING_SITE_DISABLED){
-        $site_actions[] = 'enable';
-        $site_actions[] = 'delete';
-      } elseif (!$environment->settings->locked){
-        $site_actions[] = 'disable';
-      }
-    }
-    
     // Build links to tasks
-    foreach ($site_actions as $task_name) {
+    foreach ($environment_actions as $task_name) {
       if (isset($site_tasklist[$task_name]) && $site_tasklist[$task_name]['task_permitted']){
         $actions[] = array(
           'title' => $site_tasklist[$task_name]['title'],
