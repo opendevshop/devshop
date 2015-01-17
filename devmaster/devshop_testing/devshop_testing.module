@@ -11,7 +11,7 @@
  */
 function devshop_testing_perm() {
   return array(
-    'create devshop-test task',
+    'create test task',
   );
 }
 
@@ -81,9 +81,9 @@ function devshop_testing_nodeapi(&$node, $op, $a3 = null) {
 function devshop_testing_hosting_tasks() {
   $tasks = array();
 
-  $tasks['project']['devshop-test'] = array(
+  $tasks['site']['test'] = array(
     'title' => t('Run Tests'),
-    'description' => t('Run a group of SimpleTests.'),
+    'description' => t('Run tests on the site.'),
     'dialog' => TRUE,
     'task_permitted' => TRUE,
     'access callback' => 'devshop_hosting_task_menu_access',
@@ -93,9 +93,19 @@ function devshop_testing_hosting_tasks() {
 }
 
 /**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function devshop_testing_devshop_environment_actions($environment) {
+  return array(
+    'test'
+  );
+}
+/**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  */
-function hosting_task_devshop_test_form($node) {
+function hosting_task_test_form($node) {
 
   $tests = $node->tests_to_run;
   
