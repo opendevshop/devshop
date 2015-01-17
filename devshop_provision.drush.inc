@@ -95,6 +95,8 @@ function devshop_provision_drush_command() {
     'options' => array(
       'tests-to-run' => 'The list of tests to run, separated by comma.',
       'test-type' => 'The type of tests to run.  simpletest, behat',
+      'behat-folder-path' => 'The path to this sites behat tests.',
+      'behat-bin-path' => 'The path to the behat executable within behat-folder-path',
     ),
     'aliases' => array('test'),
   );
