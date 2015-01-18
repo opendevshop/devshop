@@ -83,7 +83,7 @@ YML;
     $no_errors = TRUE;
     foreach ($features_to_run as $feature) {
 
-      $cmd = "$full_behat_bin_path features/$feature --config $temporary_behat_yml_file --profile $environment";
+      $cmd = "$full_behat_bin_path features/$feature --config $temporary_behat_yml_file --profile $environment --colors";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
