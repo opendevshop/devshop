@@ -139,3 +139,23 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
   );
 
 }
+//require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
+require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
+
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+
+function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
+
+  $converter = new AnsiToHtmlConverter();
+  $output = $converter->convert($node->task_args['test_results']);
+
+  $node->content['results'] = array(
+    '#type' => 'item',
+    '#value' => strtr($output, array(
+      "\n" => "<br />",
+      "  " => "&nbsp; ",
+    )),
+    '#prefix' => '<div class="test-results" style="background-color: black; padding: 2em; font-family: Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">',
+    '#suffix' => '</div>'
+  );
+}
