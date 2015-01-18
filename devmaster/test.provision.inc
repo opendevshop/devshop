@@ -100,6 +100,8 @@ YML;
         drush_log(implode("\n", $shell_output), 'error');
         $no_errors = drush_set_error('DEVSHOP_TESTS_FAILED', dt('Test Run Failed'));
       }
+
+      drush_set_option('behat_test_results', implode("\n", $shell_output));
     }
 
     // Delete temprary behat config file.
