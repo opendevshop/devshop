@@ -16,50 +16,7 @@ function devshop_testing_perm() {
 }
 
 /**
- * Implements hook_nodeapi()
- */
-function devshop_testing_nodeapi(&$node, $op, $a3 = null) {
-
-  if ($node->type != 'project' || $a3 != null) {
-    return;
-  }
-
-  switch ($op) {
-  case 'load':
-    $data = db_fetch_array(db_query("SELECT tests_to_run " .
-				     "FROM {hosting_devshop_project_testing} ".
-				     "WHERE project_nid = %d", $node->nid));
-    return $data;
-
-  case 'view':
-
-    break;
-
-
-  case 'insert':
-  case 'update':
-    db_query("DELETE FROM {hosting_devshop_project_testing} " .
-	     "WHERE project_nid = %d", $node->nid);
-
-    db_query("INSERT INTO {hosting_devshop_project_testing} " .
-	     "(project_nid, tests_to_run) " .
-	     "VALUES(%d, '%s')", $node->nid, $node->tests_to_run);
-    break;
-
-  case 'delete':
-    db_query("DELETE FROM {hosting_devshop_project_testing} " .
-	     "WHERE project_nid = %d", $node->nid);
-    break;
-
-  default:
-    break;
-  }
-
-}
-
-/**
  * Implementation of hook_hosting_tasks()
- *
  */
 function devshop_testing_hosting_tasks() {
   $tasks = array();
