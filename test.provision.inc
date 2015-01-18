@@ -15,6 +15,10 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
   // Get test info
   $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
 
+  if (empty($tests_to_run)) {
+    $tests_to_run = d()->environment['settings']['testing']['tests_to_run'];
+  }
+
   // Run Simpletest
   if ($type == 'simpletest') {
     drush_log(dt("Running $type tests $tests_to_run"), 'ok');
@@ -32,24 +36,58 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
 
     // If no repo at that path, error.
     if (!file_exists($repo_path)){
-      return drush_set_error(dt('repo_root does not exist.'), DRUSH_FRAMEWORK_ERROR);
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('repo_root does not exist.'));
     }
     // If no file at behat bin path, error.
     if (!file_exists($repo_path . $behat_folder_path . '/' . $behat_bin_path)){
-      return drush_set_error(dt('File not found at behat_bin_path.'), DRUSH_FRAMEWORK_ERROR);
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('File not found at behat_bin_path.'));
     }
 
     // Prepare path and command
-    $path = $repo_path . $behat_folder_path;
+    $full_behat_folder_path = $repo_path . $behat_folder_path;
+    $full_behat_bin_path = $repo_path . $behat_folder_path . '/' . $behat_bin_path;
 
-    // Add all features to the command.
+    // Load the behat.yml from behat_folder_path.
+    if (file_exists($full_behat_folder_path . '/behat.yml')) {
+      $behat_yml = file_get_contents($full_behat_folder_path . '/behat.yml');
+    }
+    elseif (file_exists($full_behat_folder_path . '/config/behat.yml')) {
+      $behat_yml = file_get_contents($full_behat_folder_path . '/config/behat.yml');
+    }
+    else {
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('behat.yml file not found in behat_folder_path.'));
+    }
+
+    // Write custom behat.yml to temporary folder.
+    $environment = d()->environment['name'];
+    $url = d()->environment['url'];
+    $alias = d()->name;
+
+    $behat_yml .= <<<YML
+
+# DevShop Environment Profile
+$environment:
+  extensions:
+    Behat\MinkExtension:
+      base_url: $url
+    Drupal\DrupalExtension:
+      drush:
+        alias: $alias
+
+YML;
+
+    $temporary_behat_yml_file = tempnam($full_behat_folder_path, 'behat.yml.');
+    file_put_contents($temporary_behat_yml_file, $behat_yml);
+
+    // Run behat tests for each feature.
+    $no_errors = TRUE;
     foreach ($features_to_run as $feature) {
-      $cmd = "$behat_bin_path $feature";
 
-      drush_log("Running '$cmd' in $path", 'status');
+      $cmd = "$full_behat_bin_path features/$feature --config $temporary_behat_yml_file --profile $environment";
+      drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
-      if (drush_shell_cd_and_exec($path, $cmd)) {
+      if (drush_shell_cd_and_exec($full_behat_folder_path, $cmd)) {
         $shell_output = drush_shell_exec_output();
         drush_set_context('test_output', $shell_output);
         drush_log(implode("\n", $shell_output), 'ok');
@@ -60,8 +98,16 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
         $shell_output = drush_shell_exec_output();
         drush_set_context('test_output', $shell_output);
         drush_log(implode("\n", $shell_output), 'error');
-        drush_set_error(dt('Test Run Failed'), DRUSH_FRAMEWORK_ERROR);
+        $no_errors = drush_set_error('DEVSHOP_TESTS_FAILED', dt('Test Run Failed'));
       }
+    }
+
+    // Delete temprary behat config file.
+    unlink($temporary_behat_yml_file);
+
+    // If errors were detected, return FALSE;  We've already logged the errors.
+    if (!$no_errors) {
+      return FALSE;
     }
   }
 }
