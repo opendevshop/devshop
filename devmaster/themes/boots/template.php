@@ -210,7 +210,6 @@ function boots_preprocess_node_task(&$vars) {
   $revisions = node_revision_list($vars['node']);
 
   $revision = array_shift($revisions);
-  dsm($revision);
 
   $vars['submitted'] = t('Task Queued by !user, @time (%ago)', array(
     '!user' => l($revision->name, "user/$revision->uid"),
