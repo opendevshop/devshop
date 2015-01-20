@@ -82,11 +82,32 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     );
     $testing_form = &$form['environment']['settings']['testing'];
     $settings =  $form['#node']->environment->settings;
+
+    // Add to deploy hooks.
+    $form['environment']['settings']['deploy']['test'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Tests'),
+      '#description' => t('Run tests after every code deploy.'),
+      '#weight' => 100,
+      '#default_value' => $form['#node']->environment->settings->deploy['test'],
+    );
   }
+  // Run Tests Task confirm form.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
     $testing_form = &$form['parameters'];
     $node = node_load($form['nid']['#value']);
     $settings =  $node->environment->settings;
+  }
+  // Deploy Code Task confirm form.
+  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-deploy') {
+    $node = node_load($form['nid']['#value']);
+    $form['parameters']['test'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Tests'),
+      '#description' => t('Run tests after this code deploy.'),
+      '#default_value' => $node->environment->settings->deploy['test'],
+    );
+    return;
   }
   else {
     return;
