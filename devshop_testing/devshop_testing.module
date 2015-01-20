@@ -179,7 +179,8 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
         "  " => "&nbsp; ",
       )),
       '#prefix' => '<div class="test-results" style="background-color: black; padding: 2em; font-family: Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">',
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
+      '#weight' => -100,
     );
   }
 }
