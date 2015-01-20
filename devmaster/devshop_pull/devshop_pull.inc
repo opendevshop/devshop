@@ -158,7 +158,11 @@ function devshop_pull_github_webhook($project_node){
 
           // Determine environment branch.
           // @TODO: Make Configurable, allow branch names to be env name
-          $environment_name = "pr" . $data->pull_request->number;
+          //   $environment_name = "pr" . $data->pull_request->number;
+          $environment_name = 'branch_' . str_replace('-', '_', $branch);
+          if (isset($project->environments[$environment_name])) {
+            $environment_name .= '2';
+          }
 
           // When PR is opened... create new environment.
           if ($data->action == 'opened'){
