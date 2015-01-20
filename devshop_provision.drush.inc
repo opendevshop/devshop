@@ -37,6 +37,7 @@ function devshop_provision_drush_command() {
       'cache' => 'Clear all caches after code pull.',
       'reset' => 'Runs "git reset --hard" before pulling.',
       'force' => "Runs always update,revert and cache options, even if files don't change.",
+      'test' => 'Queue a test run after the deploy.  (Only works from Hostmaster)',
     ),
     'arguments' => array(
       'git_ref' => 'The git branch or tag to deploy.',
