@@ -83,7 +83,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     $testing_form = &$form['environment']['settings']['testing'];
     $settings =  $form['#node']->environment->settings;
   }
-  elseif ($form_id == 'hosting_task_confirm_form') {
+  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
     $testing_form = &$form['parameters'];
     $node = node_load($form['nid']['#value']);
     $settings =  $node->environment->settings;
