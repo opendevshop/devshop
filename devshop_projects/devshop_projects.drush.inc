@@ -232,7 +232,10 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 }
 
 /**
- * Implementation of hook_post_hosting_TASK_TYPE_task
+ * Implementation of hook_post_hosting_TASK_TYPE_task()
+ *
+ * Acts after the successful verification of platforms.
+ * This is where the sites get automatically created.
  */
 function devshop_projects_post_hosting_verify_task($task, $data) {
 
@@ -267,7 +270,9 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         $servers = hosting_get_servers('db');
 
         $args['target_platform'] = $platform->nid;
-        $args['new_uri'] = $platform->environment->name .'.'. $platform->project->base_url;
+
+        // Ensure new URI doesn't contain underscores or other invalid characters.
+        $args['new_uri'] = str_replace('_', '-', $platform->environment->name) .'.'. $platform->project->base_url;
 
         // @TODO: Match settings of cloned environment.
         $args['new_db_server'] = key($servers);
