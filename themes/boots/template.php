@@ -191,88 +191,97 @@ function boots_preprocess_page(&$vars){
  *
  * @param $vars
  */
-function boots_preprocess_node(&$vars){
+function boots_preprocess_node(&$vars) {
   global $user;
-  if ($vars['node'] && $vars['node']->type == 'project') {
+  if ($vars['node']->type == 'project') {
+    boots_preprocess_node_project($vars);
+  }
+}
 
-    // Easy Access
-    $node = &$vars['node'];
-    $project = $vars['project'] = $vars['node']->project;
+/**
+ * Preprocessor for Project Nodes.
+ * @param $vars
+ */
+function boots_preprocess_node_project(&$vars){
+  global $user;
 
-    // Live Domain link.
-    if ($project->settings->live['live_domain']) {
-      $vars['live_domain_url'] =  'http://' . $project->settings->live['live_domain'];
-      $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
+  // Easy Access
+  $node = &$vars['node'];
+  $project = $vars['project'] = $vars['node']->project;
+
+  // Live Domain link.
+  if ($project->settings->live['live_domain']) {
+    $vars['live_domain_url'] =  'http://' . $project->settings->live['live_domain'];
+    $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
+  }
+  else {
+    $vars['live_domain_url'] =  '';
+  }
+
+  $vars['git_refs'] = array();
+
+  if (empty($node->project->settings->git['refs'])){
+    $vars['deploy_label'] = '';
+
+    if ($node->verify->task_status == HOSTING_TASK_ERROR) {
+      $vars['deploy_label'] = t('There was a problem refreshing branches and tags.');
+      $vars['git_refs'][] = l(t('View task log'), 'node/' . $node->verify->nid);
+      $vars['git_refs'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
     }
-    else {
-      $vars['live_domain_url'] =  '';
+    elseif ($node->verify->task_status == HOSTING_TASK_QUEUED || $node->verify->task_status == HOSTING_TASK_PROCESSING) {
+      $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
     }
+  }
+  else {
+    $vars['deploy_label'] = t('Deploy a tag or branch');
 
-    $vars['git_refs'] = array();
-
-    if (empty($node->project->settings->git['refs'])){
-      $vars['deploy_label'] = '';
-
-      if ($node->verify->task_status == HOSTING_TASK_ERROR) {
-        $vars['deploy_label'] = t('There was a problem refreshing branches and tags.');
-        $vars['git_refs'][] = l(t('View task log'), 'node/' . $node->verify->nid);
-        $vars['git_refs'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
-      }
-      elseif ($node->verify->task_status == HOSTING_TASK_QUEUED || $node->verify->task_status == HOSTING_TASK_PROCESSING) {
-        $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
-      }
-    }
-    else {
-      $vars['deploy_label'] = t('Deploy a tag or branch');
-
-      foreach ($node->project->settings->git['refs'] as $ref => $type){
-        $href = url('node/ENV_NID/site_devshop-deploy', array(
-          'query' =>array(
-            'git_ref' => $ref,
-          )
-        ));
-        $icon = $type == 'tag'? 'tag': 'code-fork';
-
-        $vars['git_refs'][$ref] = "<a href='$href'>
-          <i class='fa fa-$icon'></i>
-          $ref
-        </a>";
-      }
-    }
-
-    // Get available servers
-    $vars['web_servers'] = hosting_get_servers('http');
-    $vars['db_servers'] = hosting_get_servers('db');
-
-    // React to git provider
-    if ($project->git_provider == 'github') {
-      $url = strtr($project->git_url, array(
-        'git@github.com:' => 'http://github.com/',
-        '.git' => '',
+    foreach ($node->project->settings->git['refs'] as $ref => $type){
+      $href = url('node/ENV_NID/site_devshop-deploy', array(
+        'query' =>array(
+          'git_ref' => $ref,
+        )
       ));
-      if (empty($project->settings->deploy['last_webhook'])){
-        $url .= '/settings/hooks/new';
-      }
-      else {
-        $url .= '/settings/hooks';
-      }
-      $vars['add_webhook_url'] = $url;
-      $vars['add_webhook_icon'] = 'github';
+      $icon = $type == 'tag'? 'tag': 'code-fork';
+
+      $vars['git_refs'][$ref] = "<a href='$href'>
+        <i class='fa fa-$icon'></i>
+        $ref
+      </a>";
+    }
+  }
+
+  // Get available servers
+  $vars['web_servers'] = hosting_get_servers('http');
+  $vars['db_servers'] = hosting_get_servers('db');
+
+  // React to git provider
+  if ($project->git_provider == 'github') {
+    $url = strtr($project->git_url, array(
+      'git@github.com:' => 'http://github.com/',
+      '.git' => '',
+    ));
+    if (empty($project->settings->deploy['last_webhook'])){
+      $url .= '/settings/hooks/new';
     }
     else {
-      $vars['add_webhook_url'] = '#';
-      $vars['add_webhook_icon'] = 'warning';
+      $url .= '/settings/hooks';
     }
+    $vars['add_webhook_url'] = $url;
+    $vars['add_webhook_icon'] = 'github';
+  }
+  else {
+    $vars['add_webhook_url'] = '#';
+    $vars['add_webhook_icon'] = 'warning';
+  }
 
-    // Set webhook interval
-    if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
-      $interval = format_interval(time() - $project->settings->deploy['last_webhook']);
-      $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
-    }
+  // Set webhook interval
+  if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
+    $interval = format_interval(time() - $project->settings->deploy['last_webhook']);
+    $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
+  }
 
-    if ($project->settings->deploy['method'] == 'queue') {
-      $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_deploy_last_run', FALSE));
-    }
+  if ($project->settings->deploy['method'] == 'queue') {
+    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_deploy_last_run', FALSE));
   }
 
   // Webhook status output.
@@ -368,7 +377,7 @@ HTML;
     $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $node->environment_actions[$environment->name]);
 
     foreach ($environment->tasks as &$task) {
-      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING){
+      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
         $environment->active_tasks++;
       }
     }
@@ -378,11 +387,11 @@ HTML;
     }
 
     // Status
-    if ($environment->site_status == HOSTING_SITE_DISABLED){
+    if ($environment->site_status == HOSTING_SITE_DISABLED) {
       $environment->class = 'disabled';
       $environment->list_item_class = 'disabled';
     }
-    elseif ($environment->name == $project->settings->live['live_environment']){
+    elseif ($environment->name == $project->settings->live['live_environment']) {
       $environment->class = ' live-environment';
       $environment->list_item_class = 'info';
     }
