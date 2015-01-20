@@ -57,7 +57,7 @@
 
   <div class="meta">
     <?php if ($submitted): ?>
-      <span class="submitted"><?php print $submitted ?></span>
+      <p class="submitted alert alert-success"><?php print $submitted ?></p>
     <?php endif; ?>
 
     <?php if ($terms): ?>

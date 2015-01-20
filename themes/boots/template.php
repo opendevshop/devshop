@@ -196,8 +196,29 @@ function boots_preprocess_node(&$vars) {
   if ($vars['node']->type == 'project') {
     boots_preprocess_node_project($vars);
   }
+  elseif ($vars['node']->type == 'task') {
+    boots_preprocess_node_task($vars);
+  }
 }
 
+/**
+ * Preprocessor for Project Nodes.
+ * @param $vars
+ */
+function boots_preprocess_node_task(&$vars) {
+
+  $revisions = node_revision_list($vars['node']);
+
+  $revision = array_shift($revisions);
+  dsm($revision);
+
+  $vars['submitted'] = t('Task Queued by !user, @time (%ago)', array(
+    '!user' => l($revision->name, "user/$revision->uid"),
+    '@time' => format_date($revision->timestamp),
+    '%ago' => format_interval(time() - $revision->timestamp) . ' ' . t('ago'),
+  ));
+
+}
 /**
  * Preprocessor for Project Nodes.
  * @param $vars
