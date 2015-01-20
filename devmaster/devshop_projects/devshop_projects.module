@@ -382,7 +382,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   $node->type = 'site';
   $node->status = 1;
   $node->uid = $user->uid;
-  $node->title = $environment_name .'.'. $project->base_url;
+  $node->title = str_replace('_', '-', $environment_name) .'.'. $project->base_url;
 
   // Aegir properties
   // @TODO: better client & DB support
