@@ -81,6 +81,7 @@ YML;
 
     // Run behat tests for each feature.
     $no_errors = TRUE;
+    $test_results = '';
     foreach ($features_to_run as $feature) {
 
       $cmd = "$full_behat_bin_path features/$feature --config $temporary_behat_yml_file --profile $environment --colors";
@@ -101,10 +102,14 @@ YML;
         $no_errors = drush_set_error('DEVSHOP_TESTS_FAILED', dt('Test Run Failed'));
       }
 
-      drush_set_option('behat_test_results', implode("\n", $shell_output));
+      // Collect test results.
+      $test_results .= $shell_output;
     }
 
-    // Delete temprary behat config file.
+    // Save drush option for hostmaster to read later.
+    drush_set_option('behat_test_results', implode("\n", $shell_output));
+
+    // Delete temporary behat config file.
     unlink($temporary_behat_yml_file);
 
     // If errors were detected, return FALSE;  We've already logged the errors.
