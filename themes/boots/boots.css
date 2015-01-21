@@ -475,3 +475,9 @@ input.form-control.webhook-url {
   left: 31%;
   font-size: 1.5em;
 }
+
+.modal-results.modal-lg {
+  min-width: 900px;
+  width: auto;
+  max-width: 90%;
+}
