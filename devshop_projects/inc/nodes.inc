@@ -182,6 +182,8 @@ function devshop_projects_load($node) {
       $environment->test->run_tests_url = url('node/540/site_test', array('query' => array('token' => drupal_get_token($user->uid))));
       $environment->test->status_url = url('node/' . $task->nid);
 
+      $environment->test->results = $environment->test->task_node->test_results_formatted;
+
       if ($environment->test->task_status == HOSTING_TASK_ERROR) {
         $environment->test->status_message = t('Failed');
         $environment->test->status_class = 'danger';
