@@ -368,6 +368,31 @@
           </a>
         </div>
 
+      <?php if ($environment->test): ?>
+        <div class="environment-tests list-group-item list-group-item-<?php print $environment->test->status_class ?>">
+          <label><?php print t('Tests'); ?></label>
+          <div class="btn-group btn-toolbar" role="toolbar">
+            <a href="<?php print $environment->test->status_url; ?>" type="button" class="btn">
+              <?php print $environment->test->status_message ?>
+
+              <small>
+                <?php print $environment->test->duration ?>
+              </small>
+            </a>
+
+
+
+          </div>
+          <div class="btn-group" role="group">
+
+            <a href="<?php print $environment->test->run_tests_url; ?>" type="button" class="btn">
+              <?php print t('Run Tests'); ?>
+              <i class="fa fa-caret-right"></i>
+            </a>
+          </div>
+        </div>
+      <?php endif; ?>
+
       </div>
     </div>
 <?php endforeach; ?>
