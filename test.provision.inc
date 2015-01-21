@@ -61,6 +61,15 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
       return drush_set_error('DEVSHOP_MISSING_FILE', dt('behat.yml file not found in behat_folder_path.'));
     }
 
+    // Run composer update.
+    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer update')) {
+      $shell_output = drush_shell_exec_output();
+      drush_log(implode("\n", $shell_output), 'status');
+    }
+    else {
+      return drush_set_error('DEVSHOP_COMPOSER_FAIL', dt('composer update failed in ' . $full_behat_folder_path));
+    }
+
     // Write custom behat.yml to temporary folder.
     $environment = d()->environment['name'];
     $url = d()->environment['url'];
