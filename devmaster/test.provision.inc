@@ -103,8 +103,8 @@ YML;
       }
 
       // Collect test results.
-      $behat_results = implode($shell_output);
-      $time = time();
+      $behat_results = implode("\n", $shell_output);
+      $time = date('r', time());
       $test_result .= <<<TXT
 _____________________________
 DevShop Test Run
@@ -113,13 +113,14 @@ $time
 PATH: $full_behat_folder_path
 COMMAND: $cmd
 RESULTS:
-$shell_output
+
+$behat_results
 TXT;
       ;
     }
 
     // Save drush option for hostmaster to read later.
-    drush_set_option('behat_test_results', implode("\n", $test_result));
+    drush_set_option('behat_test_results', $test_result);
 
     // Delete temporary behat config file.
     unlink($temporary_behat_yml_file);
