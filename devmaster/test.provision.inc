@@ -28,6 +28,9 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
   elseif ($type == 'behat') {
     // Swap commas for space
     $features_to_run = explode(',', $tests_to_run);
+    if (empty($features_to_run)) {
+      $features_to_run = array('');
+    }
 
     // Get paths from options or site context.
     $repo_path = d()->environment['repo_root'];
