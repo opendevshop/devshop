@@ -34,6 +34,7 @@ function devshop_projects_node_info() {
  *    Node object
  */
 function devshop_projects_load($node) {
+  global $user;
 
   // Load the "hosting context". The unique name in the aegir system.
   $name = db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
@@ -164,6 +165,49 @@ function devshop_projects_load($node) {
         if (strpos($domain, $project->settings->live['live_domain']) !== FALSE){
           $environment->url = 'http://' . $domain;
         }
+      }
+    }
+
+    // Load testing status
+    if (module_exists('devshop_testing') && isset($environment->settings->testing['test_type']) && !empty($environment->settings->testing['test_type'])) {
+      $environment->testing = TRUE;
+
+      // Load test task.
+      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
+
+      $environment->test = $task;
+      $environment->test->time_ago = format_interval(time() - $task->executed);
+      $environment->test->task_node = node_load($environment->test->nid);
+      $environment->test->duration = t('in %time', array('%time' => format_interval($task->delta)));
+      $environment->test->run_tests_url = url('node/540/site_test', array('query' => array('token' => drupal_get_token($user->uid))));
+      $environment->test->status_url = url('node/' . $task->nid);
+
+      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
+        $environment->test->status_message = t('Failed');
+        $environment->test->status_class = 'danger';
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
+        $environment->test->status_message = t('Passed!');
+        $environment->test->status_class = 'success';
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_QUEUED) {
+        $environment->test->status_message = t('Queued');
+        $environment->test->status_class = 'default';
+        $environment->test->duration = '';
+
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
+        $environment->test->status_message = t('Running...');
+        $environment->test->status_class = 'default';
+        $environment->test->duration = '';
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
+        $environment->test->status_message = t('Passed with Warnings');
+        $environment->test->status_class = 'warning';
+      }
+      else {
+        $environment->test->status_message = t('Unknown');
+        $environment->test->status_class = 'default';
       }
     }
 
