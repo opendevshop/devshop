@@ -179,7 +179,7 @@ function devshop_projects_load($node) {
       $environment->test->time_ago = format_interval(time() - $task->executed);
       $environment->test->task_node = node_load($environment->test->nid);
       $environment->test->duration = t('in %time', array('%time' => format_interval($task->delta)));
-      $environment->test->run_tests_url = url('node/540/site_test', array('query' => array('token' => drupal_get_token($user->uid))));
+      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
       $environment->test->status_url = url('node/' . $task->nid);
 
       $environment->test->results = $environment->test->task_node->test_results_formatted;
