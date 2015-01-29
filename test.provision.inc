@@ -125,6 +125,8 @@ $time
 
 PATH: $full_behat_folder_path
 COMMAND: $cmd
+
+URL: $url
 RESULTS:
 
 $behat_results
