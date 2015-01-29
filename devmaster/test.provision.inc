@@ -48,7 +48,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
     }
 
     // Prepare path and command
-    $full_behat_folder_path = $repo_path . '.' . $behat_folder_path;
+    $full_behat_folder_path = $repo_path . '/' . $behat_folder_path;
     $full_behat_bin_path = $repo_path . '/' . $behat_folder_path . '/' . $behat_bin_path;
 
     // Load the behat.yml from behat_folder_path.
