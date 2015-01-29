@@ -42,7 +42,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
       return drush_set_error('DEVSHOP_MISSING_FILE', dt('repo_root does not exist.'));
     }
     // If no file at behat bin path, error.
-    $yml_path = $repo_path . $behat_folder_path . '/behat.yml';
+    $yml_path = $repo_path . '/' . $behat_folder_path . '/behat.yml';
     if (!file_exists($yml_path)){
       return drush_set_error('DEVSHOP_MISSING_FILE', dt('Please add a file at %file', array('%file' => $yml_path)));
     }
