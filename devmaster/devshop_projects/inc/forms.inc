@@ -112,12 +112,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         $node = node_load($form['nid']['#value']);
         drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)));
         $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
-        $form['#submit'][] = 'devshop_deploy_redirect_to_project';
-        break;
-
-      // Delete task form
-      case 'delete':
-        $form['#submit'][] = 'devshop_deploy_redirect_to_project';
         break;
 
       // Sync task form
@@ -137,7 +131,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
           drupal_set_title(t('Deploy data to Environment "@env"', array('@env' => $node->environment->name)));
           $environment = $node->environment;
-          $form['#submit'][] = 'devshop_deploy_redirect_to_project';
 
           $form['help'] = array(
             '#prefix' => '<div class="alert alert-warning" role="alert">',
@@ -340,21 +333,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     // Add our own submit handler
     $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
-}
-
-/**
- * Generic form submit handler for tasks confirmation
- *
- * This handler gets called after any task has been confirmed by the user. It
- * will inject a new task in the queue and redirect the user to the
- * originating node.
- *
- * @see hosting_add_task()
- */
-function devshop_deploy_redirect_to_project($form, &$form_state) {
-  $values = $form_state['values'];
-  $node = node_load($values['nid']);
-  $form_state['redirect'] = 'node/' . $node->environment->project_nid;
 }
 
 /**

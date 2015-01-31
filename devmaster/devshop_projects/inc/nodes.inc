@@ -453,4 +453,13 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $additions['environment'] = $project_node->project->environments[$result->name];
     return $additions;
   }
+
+  // When a task is created or updated that has a project, redirect to the project.
+  if (($op == 'update' || $op == 'insert') && $node->type == 'task') {
+    $object = node_load($node->rid);
+    if (isset($object->project) && arg(0) == 'node' && arg(1) == $object->nid) {
+      drupal_goto("node/{$object->project->nid}");
+
+    }
+  }
 }
