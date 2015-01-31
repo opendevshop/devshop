@@ -252,7 +252,8 @@
           <?php endif; ?>
 
           <?php if ($environment->login_url): ?>
-          <a href="<?php print $environment->login_url; ?>" class="btn btn-link pull-right"><?php print $environment->login_text; ?></a>
+            <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+          <a href="<?php print $environment->login_url; ?>" target="<?php print $targetl ?>" class="btn btn-link pull-right"><?php print $environment->login_text; ?></a>
           <?php endif; ?>
         </div>
       </div>
