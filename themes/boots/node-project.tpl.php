@@ -234,9 +234,11 @@
                 <em>&nbsp;</em>
               </button>
             <?php endif;?>
+            <?php /*
             <a type="button" class="btn btn-xs pull-right" href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" title="<?php print t("Add Domain"); ?>">
               <i class="fa fa-plus"></i>
             </a>
+            */ ?>
           <?php endif;?>
 
           <?php if (count($environment->domains) > 1): ?>
@@ -247,6 +249,10 @@
             <li class="divider">&nbsp;</li>
             <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
           </ul>
+          <?php endif; ?>
+
+          <?php if ($environment->login_url): ?>
+          <a href="<?php print $environment->login_url; ?>" class="btn btn-link pull-right"><?php print $environment->login_text; ?></a>
           <?php endif; ?>
         </div>
       </div>

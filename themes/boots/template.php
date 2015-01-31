@@ -431,6 +431,19 @@ HTML;
       t('1 active task'),
       t('@count active tasks', array('@count' => $environment->active_tasks))
     );
+
+    // Get login link
+    // @TODO: This is how aegir does it.  See _hosting_site_goto_link()
+    // @TODO: Detect and display "Generating login" message.
+    $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
+    if ($cache && (time() < $cache->data['expire'])) {
+      $environment->login_url = url("node/" . $environment->site . "/goto_site");
+      $environment->login_text = t('Log in');
+    }
+    else {
+      $environment->login_url = url("node/{$environment->site}/site_login-reset", array('query' => array('token' => drupal_get_token($user->uid))));
+      $environment->login_text = t('Request Login');
+    }
   }
 }
 
