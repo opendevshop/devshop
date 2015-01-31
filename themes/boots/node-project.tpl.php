@@ -383,9 +383,11 @@
 
               <small>
                 <?php print $environment->test->duration ?>
+                <em>
+                  <?php print $environment->test->ago ?>
+                </em>
               </small>
             </button>
-
 
             <!--- TEST RESULTS MODAL -->
             <div class="modal fade" id="test-results-modal-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="test-results-modal-<?php print $environment->name; ?>" aria-hidden="true">
