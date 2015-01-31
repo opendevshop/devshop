@@ -383,6 +383,7 @@
 
               <small>
                 <?php print $environment->test->duration ?>
+                <br />
                 <em>
                   <?php print $environment->test->ago ?>
                 </em>
