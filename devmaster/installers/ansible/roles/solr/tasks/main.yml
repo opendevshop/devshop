@@ -1,0 +1,22 @@
+---
+
+  - name: Setup | Install tomcat packages.
+    action: apt pkg={{ item }} state=installed update_cache=yes
+    when: ansible_os_family == "Debian"
+    with_items:
+      - tomcat7-common
+
+  - name: Download solr war file.
+    get_url:
+      url={{ solr_war_url }}
+      dest={{ solr_war_destination }}
+      mode=644
+
+  - name: Replace Catalina localhost folder
+    command:  rm -rf /etc/tomcat7/Catalina/localhost && ln -s /var/aegir/config/tomcat /etc/tomcat7/Catalina/localhost
+
+  - name: Add tomcat user to aegir group
+    user:
+      name=tomcat7
+      groups=aegir
+      append=yes
