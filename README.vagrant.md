@@ -9,6 +9,7 @@ file in the devshop project so that deployed servers and vagrant boxes are the s
 Dependencies
 ------------
 
+- Drush
 - Git
 - Vagrant 1.5.x
 - VirtualBox (or any supported virtualization software like VMWare)
