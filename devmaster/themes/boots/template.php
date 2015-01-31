@@ -435,14 +435,22 @@ HTML;
     // Get login link
     // @TODO: This is how aegir does it.  See _hosting_site_goto_link()
     // @TODO: Detect and display "Generating login" message.
-    $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
-    if ($cache && (time() < $cache->data['expire'])) {
-      $environment->login_url = url("node/" . $environment->site . "/goto_site");
-      $environment->login_text = t('Log in');
-    }
-    else {
-      $environment->login_url = url("node/{$environment->site}/site_login-reset", array('query' => array('token' => drupal_get_token($user->uid))));
-      $environment->login_text = t('Request Login');
+    if ($environment->site_status == HOSTING_SITE_ENABLED) {
+      $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
+      if ($cache && (time() < $cache->data['expire'])) {
+        $environment->login_url = url("node/" . $environment->site . "/goto_site");
+        $environment->login_text = t('Log in');
+      }
+      else {
+        $environment->login_url = url("node/{$environment->site}/site_login-reset", array('query' => array('token' => drupal_get_token($user->uid))));
+        $environment->login_text = t('Request Login');
+
+        $task = hosting_get_most_recent_task($environment->site, 'login-reset');
+        if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+          $environment->login_text = t('Please Wait...');
+          $environment->login_url = '#';
+        }
+      }
     }
   }
 }
