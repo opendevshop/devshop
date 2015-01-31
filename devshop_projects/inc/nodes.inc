@@ -176,10 +176,13 @@ function devshop_projects_load($node) {
       $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
 
       $environment->test = $task;
-      $environment->test->time_ago = format_interval(time() - $task->executed);
       $environment->test->task_node = node_load($environment->test->nid);
       $environment->test->duration = t('in %time', array('%time' => format_interval($task->delta)));
-      $environment->test->ago = t('%time ago', array('%time' => $environment->test->time_ago));
+
+      if ($task->executed) {
+        $environment->test->time_ago = format_interval(time() - $task->executed);
+        $environment->test->ago = t('%time ago', array('%time' => $environment->test->time_ago));
+      }
       $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
       $environment->test->status_url = url('node/' . $task->nid);
 
@@ -436,7 +439,7 @@ function devshop_projects_delete($node) {
 
 
 /**
- * Implementation of hook_nodeapi()
+vagra * Implementation of hook_nodeapi()
  * For site and platform nodes, load project and environment objects.
  *
  * @see devshop_projects_load()
