@@ -6,6 +6,9 @@
 - hosts: all
   user: root
 
+  roles:
+    - solr
+
   vars_files:
     - vars.yml
     - vars.{{ ansible_os_family }}.yml
