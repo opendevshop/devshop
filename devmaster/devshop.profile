@@ -15,17 +15,33 @@ function devshop_profile_modules() {
   return array(
     /* core */ 'block', 'color', 'filter', 'help', 'menu', 'node', 'system', 'user', 'update',
     /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate', 'hosting_alias', 'hosting_queued', 'hosting_http_basic_auth', 'hosting_sync',
-    /* other contrib */ 'install_profile_api', 'jquery_ui', 'jquery_update', 'modalframe', 'admin_menu', 'views', 'views_bulk_operations', 'actions_permissions', 'hosting_platform_pathauto',
+
+    /* other contrib */
+    'install_profile_api',
+    'jquery_ui',
+    'jquery_update',
+    'modalframe',
+    'admin_menu',
+    'views',
+    'views_bulk_operations',
+    'actions_permissions',
+    'hosting_platform_pathauto',
 
     /* DEVSHOP Contrib */
     'adminrole',
     'ctools',
 
     /* DEVSHOP */
-    'devshop_hosting', 'devshop_projects', 'devshop_log', 'devshop_pull',
+    'devshop_hosting',
+    'devshop_projects',
+    'devshop_log',
+    'devshop_pull',
 
     /* NICEITIES */
-    'hosting_drush_aliases', 'hosting_filemanager', 'hosting_logs', 'hosting_tasks_extra',
+    'hosting_drush_aliases',
+    'hosting_filemanager',
+    'hosting_logs',
+    'hosting_tasks_extra',
   );
 }
 
