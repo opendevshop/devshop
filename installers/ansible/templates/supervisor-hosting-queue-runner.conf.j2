@@ -1,0 +1,10 @@
+[program:hosting_queue_runner]
+; Adjust the next line to point to where you copied the script.
+command=/usr/bin/hosting-queue-runner
+user=aegir
+numprocs=1
+stdout_logfile=/var/log/hosting_queue_runner
+autostart=TRUE
+autorestart=TRUE
+; Tweak the next line to match your environment.
+environment=HOME="/var/aegir",USER="aegir"
