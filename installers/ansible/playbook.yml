@@ -212,8 +212,9 @@
 # Commented out until functional
         - provision_solr-{{ provision_solr_version }}
         - provision_tasks_extra-{{ provision_tasks_extra_version }}
+        - registry_rebuild-{{ registry_rebuild_version }}
       args:
-        creates: /var/aegir/.drush/commands/provision_tasks_extra/provision_tasks_extra.drush.inc
+        creates: /var/aegir/.drush/commands/registry_rebuild
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
