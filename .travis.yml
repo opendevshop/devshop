@@ -12,7 +12,7 @@ install:
 script:
 
   # Test for DevShop
-  - curl http://localhost.localdomain/
+  - curl http://localhost/
   - sudo su - aegir -c "drush @hostmaster status"
 
 # Notify devshop IRC chatroom.
