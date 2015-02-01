@@ -34,6 +34,10 @@ projects[hosting_logs][subdir] = contrib
 projects[hosting_logs][download][type] = git
 projects[hosting_logs][download][branch] = 6.x-1.x
 
+projects[hosting_site_backup_manager][subdir] = contrib
+projects[hosting_site_backup_manager][download][type] = git
+projects[hosting_site_backup_manager][download][branch] = 6.x-2.x
+
 ; Aegir Hostmaster modules
 ; This includes all hostmaster contrib and libraries!
 projects[hostmaster][type] = profile
