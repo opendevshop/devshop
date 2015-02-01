@@ -1,2 +1,0 @@
-solr_war_url: http://central.maven.org/maven2/org/apache/solr/solr/3.6.2/solr-3.6.2.war
-solr_war_destination: /usr/share/solr-3.6.2.war
