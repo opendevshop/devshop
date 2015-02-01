@@ -327,7 +327,8 @@ input.form-control.webhook-url {
         margin-top: 40px !important;
     }
 }
-.environment-deploy {
+.environment-deploy,
+.environment-tests {
     padding: 0px;
 }
 .dropdown-menu li label,
@@ -340,6 +341,26 @@ input.form-control.webhook-url {
   margin-right: 10px;
   margin-left: 10px;
 }
+
+.environment-tests.list-group-item > label {
+  font-size: .7em;
+  color: grey;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.environment-tests button,
+.environment-tests a {
+  color: #777;
+  background: none;
+  border: none;
+  font-size: .9em;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
 
 .environment-deploy button {
     font-size: .8em;
@@ -453,4 +474,10 @@ input.form-control.webhook-url {
   top: 25%;
   left: 31%;
   font-size: 1.5em;
+}
+
+.modal-results.modal-lg {
+  min-width: 900px;
+  width: auto;
+  max-width: 90%;
 }

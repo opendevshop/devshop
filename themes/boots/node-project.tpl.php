@@ -234,9 +234,11 @@
                 <em>&nbsp;</em>
               </button>
             <?php endif;?>
+            <?php /*
             <a type="button" class="btn btn-xs pull-right" href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" title="<?php print t("Add Domain"); ?>">
               <i class="fa fa-plus"></i>
             </a>
+            */ ?>
           <?php endif;?>
 
           <?php if (count($environment->domains) > 1): ?>
@@ -247,6 +249,11 @@
             <li class="divider">&nbsp;</li>
             <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
           </ul>
+          <?php endif; ?>
+
+          <?php if ($environment->login_url): ?>
+            <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+          <a href="<?php print $environment->login_url; ?>" target="<?php print $targetl ?>" class="btn btn-link pull-right"><?php print $environment->login_text; ?></a>
           <?php endif; ?>
         </div>
       </div>
@@ -367,6 +374,47 @@
             <?php print $environment->git_current; ?>
           </a>
         </div>
+
+      <?php if ($environment->test): ?>
+        <div class="environment-tests list-group-item list-group-item-<?php print $environment->test->status_class ?>">
+          <label><?php print t('Tests'); ?></label>
+          <div class="btn-group btn-toolbar" role="toolbar">
+            <button type="button" class="btn" data-toggle="modal" data-target="#test-results-modal-<?php print $environment->name; ?>" title="<?php print t('View Results'); ?>">
+              <?php print $environment->test->status_message ?>
+
+              <small>
+                <?php print $environment->test->duration ?>
+                <br />
+                <em>
+                  <?php print $environment->test->ago ?>
+                </em>
+              </small>
+            </button>
+
+            <!--- TEST RESULTS MODAL -->
+            <div class="modal fade" id="test-results-modal-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="test-results-modal-<?php print $environment->name; ?>" aria-hidden="true">
+              <div class="modal-dialog modal-results modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="drush-alias-modal"><?php print t('Test Results'); ?></h4>
+                  </div>
+                  <div class="modal-body">
+                    <?php print $environment->test->results; ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group" role="group">
+
+            <a href="<?php print $environment->test->run_tests_url; ?>" type="button" class="btn">
+              <?php print t('Run Tests'); ?>
+              <i class="fa fa-caret-right"></i>
+            </a>
+          </div>
+        </div>
+      <?php endif; ?>
 
       </div>
     </div>
