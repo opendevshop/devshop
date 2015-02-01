@@ -42,6 +42,8 @@ function devshop_profile_modules() {
     'hosting_filemanager',
     'hosting_logs',
     'hosting_tasks_extra',
+    'hosting_site_backup_queue',
+    'hosting_site_backup_manager',
   );
 }
 
@@ -216,6 +218,10 @@ function devshop_bootstrap() {
 
   // This is saved because the config generation script is running via drush, and does not have access to this value
   variable_set('install_url' , $GLOBALS['base_url']);
+
+  // Disable backup queue for sites by default.
+  variable_set('hosting_backup_queue_default_enabled', 0);
+
 }
 
 function devshop_task_finalize() {
