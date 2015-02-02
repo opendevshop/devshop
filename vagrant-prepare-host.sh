@@ -7,6 +7,7 @@
 #
 
 # Passed argument is Vagrant Home folder.
+VAGRANT_HOME=$1
 cd $1
 
 if [ ! -d source ]; then
@@ -17,7 +18,7 @@ cd source
 
 # Build a full devshop frontend on the host with drush make, with working-copy option.
 if [ ! -d devshop-6.x-1.x ]; then
-   drush make $1/build-devshop.make devshop-6.x-1.x --working-copy --no-gitinfofile
+   drush make $VAGRANT_HOME/build-devmaster.make devshop-6.x-1.x --working-copy --no-gitinfofile
    cp devshop-6.x-1.x/sites/default/default.settings.php devshop-6.x-1.x/sites/default/settings.php
    mkdir devshop-6.x-1.x/sites/devshop.local
    chmod 777 devshop-6.x-1.x/sites/devshop.local
