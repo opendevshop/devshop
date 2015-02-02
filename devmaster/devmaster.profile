@@ -1,5 +1,9 @@
 <?php
-// $Id$
+/**
+ * @file devshop.profile
+ *
+ * DevShop Installation Profile
+ */
 
 /**
  * Return an array of the modules to be enabled when this profile is installed.
@@ -9,16 +13,37 @@
  */
 function devmaster_profile_modules() {
   return array(
-    /* core */ 'block', 'color', 'filter', 'help', 'menu', 'node', 'system', 'user',
-    /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate',
-    /* other contrib */ 'install_profile_api' /* needs >= 2.1 */, 'jquery_ui', 'modalframe', 'admin_menu',
+    /* core */ 'block', 'color', 'filter', 'help', 'menu', 'node', 'system', 'user', 'update',
+    /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate', 'hosting_alias', 'hosting_queued', 'hosting_http_basic_auth', 'hosting_sync',
 
-    /* DEVSHOP DEPENDENCIES */
+    /* other contrib */
+    'install_profile_api',
+    'jquery_ui',
+    'jquery_update',
+    'modalframe',
+    'admin_menu',
+    'views',
+    'views_bulk_operations',
+    'actions_permissions',
+    'hosting_platform_pathauto',
+
+    /* DEVSHOP Contrib */
+    'adminrole',
     'ctools',
 
     /* DEVSHOP */
-    'devshop_tasks', 'devshop_projects', 'devshop_log', 'devshop_pull',
+    'devshop_hosting',
+    'devshop_projects',
+    'devshop_log',
+    'devshop_pull',
 
+    /* NICEITIES */
+    'hosting_drush_aliases',
+    'hosting_filemanager',
+    'hosting_logs',
+    'hosting_tasks_extra',
+    'hosting_site_backup_queue',
+    'hosting_site_backup_manager',
   );
 }
 
@@ -31,10 +56,12 @@ function devmaster_profile_modules() {
 function devmaster_profile_details() {
   return array(
     'name' => 'Devmaster',
-    'description' => 'A super powered front-end for DevShop.'
+    'description' => 'The DevShop front-end.'
   );
 }
-
+/**
+ * Implements hook_profile_tasks
+ */
 function devmaster_profile_tasks(&$task, $url) {
   // Install dependencies
   install_include(devmaster_profile_modules());
@@ -72,7 +99,6 @@ function devmaster_bootstrap() {
   $client_id = $node->nid;
 
   /* Default server */
-  // @TODO: Create new Rackspace cloud server
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'server';
@@ -84,9 +110,9 @@ function devmaster_bootstrap() {
   /* Make it compatible with more than apache and nginx */
   $master_server = d()->platform->server;
   hosting_services_add($node, 'http', $master_server->http_service_type, array(
-   'restart_cmd' => $master_server->http_restart_cmd,
-   'port' => 80,
-   'available' => 1,
+    'restart_cmd' => $master_server->http_restart_cmd,
+    'port' => 80,
+    'available' => 1,
   ));
 
   /* examine the db server associated with the hostmaster site */
@@ -135,11 +161,11 @@ function devmaster_bootstrap() {
   node_save($node);
   $package_id = $node->nid;
 
-/*
+  // @TODO: We need to still call these nodes "hostmaster" because the aliases are still @hostmaster and @platform_hostmaster
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'platform';
-  $node->title = 'devmaster';
+  $node->title = 'hostmaster';
   $node->publish_path = d()->root;
   $node->web_server = variable_get('hosting_default_web_server', 2);
   $node->status = 1;
@@ -177,26 +203,28 @@ function devmaster_bootstrap() {
   $node->db_server = $db_node->nid;
   $node->profile = $profile_id;
   $node->import = true;
-  $node->hosting_name = 'devmaster';
+  $node->hosting_name = 'hostmaster';
   $node->status = 1;
   node_save($node);
-*/
 
   // Set the frontpage
-  variable_set('site_frontpage', 'hosting/projects');
+  variable_set('site_frontpage', 'devshop');
 
   // Set the sitename
-  variable_set('site_name', 'DEVSHOP');
+  variable_set('site_name', 'DevShop');
 
   // do not allow user registration: the signup form will do that
   variable_set('user_register', 0);
 
   // This is saved because the config generation script is running via drush, and does not have access to this value
   variable_set('install_url' , $GLOBALS['base_url']);
+
+  // Disable backup queue for sites by default.
+  variable_set('hosting_backup_queue_default_enabled', 0);
+
 }
 
 function devmaster_task_finalize() {
-  variable_set('install_profile', 'devmaster');
   drupal_set_message(st('Configuring menu items'));
 
   install_include(array('menu'));
@@ -207,6 +235,15 @@ function devmaster_task_finalize() {
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
+  $item['weight'] = 3;
+  $item['options'] = unserialize($item['options']);
+  install_menu_update_menu_item($item);
+
+  $items = install_menu_get_items('hosting/servers');
+  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
+  $item['menu_name'] = $menu_name;
+  $item['customized'] = 1;
+  $item['weight'] = 2;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
@@ -221,34 +258,43 @@ function devmaster_task_finalize() {
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
+  $item['weight'] = 1;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
   menu_rebuild();
 
-
-  $theme = 'eldir';
-  drupal_set_message(st('Configuring Eldir theme'));
+  $theme = 'boots';
+  drupal_set_message(st('Enabling "boots" theme'));
   install_disable_theme('garland');
-  install_default_theme('eldir');
+  install_default_theme('boots');
   system_theme_data();
 
   db_query("DELETE FROM {cache}");
 
   drupal_set_message(st('Configuring default blocks'));
-  install_add_block('hosting', 'hosting_queues', $theme, 1, 5, 'right', 1);
+  install_add_block('devshop_hosting', 'devshop_tasks', $theme, 1, 5, 'header', 1);
 
+  // Remove navigation and user login blocks.
+  install_disable_block('user', 0, 'eldir');
+  install_disable_block('user', 1, 'eldir');
+
+  // @TODO: CREATE DEVSHOP ROLES!
   drupal_set_message(st('Configuring roles'));
   install_remove_permissions(install_get_rid('anonymous user'), array('access content', 'access all views'));
   install_remove_permissions(install_get_rid('authenticated user'), array('access content', 'access all views'));
   install_add_permissions(install_get_rid('anonymous user'), array('access disabled sites'));
   install_add_permissions(install_get_rid('authenticated user'), array('access disabled sites'));
-  install_add_role('aegir client');
 
-  // @todo we may need to have a hook here to consider plugins
-  // install_add_permissions(install_get_rid('aegir client'), array('access content', 'access all views', 'edit own client', 'view client', 'create site', 'delete site', 'view site', 'create backup task', 'create delete task', 'create disable task', 'create enable task', 'create restore task', 'view own tasks', 'view task', 'cancel own tasks'));
-  // install_add_role('aegir account manager');
-  // install_add_permissions(install_get_rid('aegir account manager'), array('create client', 'edit client users', 'view client'));
+  // Create administrator role
+  $rid = install_add_role('administrator');
+  variable_set('user_admin_role', $rid);
+
+  // Hide errors from the screen.
+  variable_set('error_level', 0);
+
+  // Make sure blocks are setup properly.
+  _block_rehash();
 
   node_access_rebuild();
 }
