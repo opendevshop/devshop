@@ -24,6 +24,7 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
+DEVSHOP_GIT_REPO='git@github.com/opendevshop/devshop.git'
 
 if [ -f '/etc/os-release' ]; then
     . /etc/os-release
@@ -123,12 +124,12 @@ echo $LINE
 MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
-    git clone http://git.drupal.org/project/devshop.git $PLAYBOOK_PATH
+    git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
   else
     cd $PLAYBOOK_PATH
     git pull
   fi
-  PLAYBOOK_PATH=/tmp/devshop-install/installers/ansible
+  PLAYBOOK_PATH=/tmp/devshop-install
   MAKEFILE_PATH=/tmp/devshop-install/build-devshop.make
   echo $LINE
 
@@ -149,7 +150,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH"
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
