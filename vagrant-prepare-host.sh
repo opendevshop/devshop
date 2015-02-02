@@ -17,11 +17,11 @@ fi
 cd source
 
 # Build a full devshop frontend on the host with drush make, with working-copy option.
-if [ ! -d devshop-6.x-1.x ]; then
-   drush make $VAGRANT_HOME/build-devmaster.make devshop-6.x-1.x --working-copy --no-gitinfofile
-   cp devshop-6.x-1.x/sites/default/default.settings.php devshop-6.x-1.x/sites/default/settings.php
-   mkdir devshop-6.x-1.x/sites/devshop.local
-   chmod 777 devshop-6.x-1.x/sites/devshop.local
+if [ ! -d devmaster-6.x-1.x ]; then
+   drush make $VAGRANT_HOME/build-devmaster.make devmaster-6.x-1.x --working-copy --no-gitinfofile
+   cp devmaster-6.x-1.x/sites/default/default.settings.php devmaster-6.x-1.x/sites/default/settings.php
+   mkdir devmaster-6.x-1.x/sites/devshop.local
+   chmod 777 devmaster-6.x-1.x/sites/devshop.local
 fi
 
 # Clone drush packages.

@@ -25,14 +25,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Set SH as our provisioner
   config.vm.provision "shell",
     path: settings["install_script"],
-    args: "/vagrant/"
+    args: "/vagrant"
 
   # Prepare development environment
   if (settings["development"])
 
       system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__))
 
-      config.vm.synced_folder "source/devshop-6.x-1.x", "/var/aegir/devshop-6.x-1.x",
+      config.vm.synced_folder "source/devmaster-6.x-1.x", "/var/aegir/devmaster-6.x-1.x",
           mount_options: ["uid=12345,gid=12345"]
 
       config.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
