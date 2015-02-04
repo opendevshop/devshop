@@ -7,6 +7,28 @@ projects[drupal][type] = "core"
 ; aegir modules instead of the tagged releases
 includes[devshop] = "drupal-org.make"
 
+; Aegir Modules
+projects[hosting][download][type] = 'git'
+projects[hosting][download][url] = 'http://git.drupal.org/project/hosting.git'
+projects[hosting][download][branch] = '6.x-2.x'
+
+projects[hosting_platform_pathauto][version] = "2.1"
+projects[admin_menu][version] = "1.8"
+projects[openidadmin][version] = "1.2"
+projects[install_profile_api][version] = "2.2"
+projects[jquery_ui][version] = "1.5"
+projects[jquery_update][version] = "2.0-alpha1"
+projects[modalframe][version] = "1.9"
+projects[views][version] = "3.0"
+projects[views_bulk_operations][version] = "1.16"
+projects[ctools][version] = "1.11"
+
+; Libraries
+libraries[jquery_ui][download][type] = "get"
+libraries[jquery_ui][destination] = "modules/jquery_ui"
+libraries[jquery_ui][download][url] = "http://jquery-ui.googlecode.com/files/jquery-ui-1.7.3.zip"
+libraries[jquery_ui][directory_name] = "jquery.ui"
+
 ; DevShop modules
 projects[devshop_hosting][subdir] = devshop
 projects[devshop_hosting][download][type] = git
