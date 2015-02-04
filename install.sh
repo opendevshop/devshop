@@ -131,7 +131,7 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     git pull
   fi
   PLAYBOOK_PATH=/tmp/devshop-install
-  MAKEFILE_PATH=/tmp/devshop-install/build-devshop.make
+  MAKEFILE_PATH=/tmp/devshop-install/build-devmaster.make
   echo $LINE
 
 fi
