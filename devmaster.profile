@@ -275,10 +275,6 @@ function devmaster_task_finalize() {
   drupal_set_message(st('Configuring default blocks'));
   install_add_block('devshop_hosting', 'devshop_tasks', $theme, 1, 5, 'header', 1);
 
-  // Remove navigation and user login blocks.
-  install_disable_block('user', 0, 'eldir');
-  install_disable_block('user', 1, 'eldir');
-
   // @TODO: CREATE DEVSHOP ROLES!
   drupal_set_message(st('Configuring roles'));
   install_remove_permissions(install_get_rid('anonymous user'), array('access content', 'access all views'));
