@@ -24,7 +24,7 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
-DEVSHOP_GIT_REPO='git@github.com/opendevshop/devshop.git'
+DEVSHOP_GIT_REPO='git@github.com:opendevshop/devshop.git'
 
 if [ -f '/etc/os-release' ]; then
     . /etc/os-release
