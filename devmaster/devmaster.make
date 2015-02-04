@@ -13,15 +13,34 @@ projects[hosting][download][url] = 'http://git.drupal.org/project/hosting.git'
 projects[hosting][download][branch] = '6.x-2.x'
 
 projects[hosting_platform_pathauto][version] = "2.1"
+projects[hosting_platform_pathauto][subdir] = contrib
+
 projects[admin_menu][version] = "1.8"
+projects[admin_menu][subdir] = contrib
+
 projects[openidadmin][version] = "1.2"
+projects[openidadmin][subdir] = contrib
+
 projects[install_profile_api][version] = "2.2"
+projects[install_profile_api][subdir] = contrib
+
 projects[jquery_ui][version] = "1.5"
+projects[jquery_ui][subdir] = contrib
+
 projects[jquery_update][version] = "2.0-alpha1"
+projects[jquery_update][subdir] = contrib
+
 projects[modalframe][version] = "1.9"
+projects[modalframe][subdir] = contrib
+
 projects[views][version] = "3.0"
+projects[views][subdir] = contrib
+
 projects[views_bulk_operations][version] = "1.16"
+projects[views_bulk_operations][subdir] = contrib
+
 projects[ctools][version] = "1.11"
+projects[ctools][subdir] = contrib
 
 ; Libraries
 libraries[jquery_ui][download][type] = "get"
@@ -59,8 +78,3 @@ projects[hosting_logs][download][branch] = 6.x-1.x
 projects[hosting_site_backup_manager][subdir] = contrib
 projects[hosting_site_backup_manager][download][type] = git
 projects[hosting_site_backup_manager][download][branch] = 6.x-2.x
-
-; Aegir Hostmaster modules
-; This includes all hostmaster contrib and libraries!
-projects[hostmaster][type] = profile
-projects[hostmaster][version] = 2.x
