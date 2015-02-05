@@ -7,6 +7,7 @@
   user: root
 
   roles:
+    - aegir
     - solr
 
   vars_files:
@@ -71,45 +72,45 @@
         - MySQL-python
         - epel-release
         - supervisor
-
-    - name: Create Aegir Group (so we can set the GID)
-      group:
-        name=aegir
-        state=present
-        gid={{ aegir_user_uid }}
-
-    - name: Create Aegir user
-      user:
-        name=aegir
-        shell=/bin/bash
-        group=aegir
-        groups={{ apache_user }}
-        append=yes
-        system=yes
-        home=/var/aegir
-        generate_ssh_key=yes
-        uid={{ aegir_user_uid }}
-
-    - name: Ensure /var/aegir is owned by aegir user.
-      file:
-        state=directory
-        path=/var/aegir
-        group=aegir
-        owner=aegir
-
-    # Aegir's CentOS installation requires this.
-    - name: Set appropriate permissions for Aegir's home folder.
-      command: chmod -R 755 /var/aegir
-      when: ansible_os_family == "RedHat"
-
-
-    - name: Setup SSH config for aegir user.
-      template:
-        src=templates/ssh-config.j2
-        dest=/var/aegir/.ssh/config
-        mode=0600
-        owner=aegir
-        group=aegir
+#
+#    - name: Create Aegir Group (so we can set the GID)
+#      group:
+#        name=aegir
+#        state=present
+#        gid={{ aegir_user_uid }}
+#
+#    - name: Create Aegir user
+#      user:
+#        name=aegir
+#        shell=/bin/bash
+#        group=aegir
+#        groups={{ apache_user }}
+#        append=yes
+#        system=yes
+#        home=/var/aegir
+#        generate_ssh_key=yes
+#        uid={{ aegir_user_uid }}
+#
+#    - name: Ensure /var/aegir is owned by aegir user.
+#      file:
+#        state=directory
+#        path=/var/aegir
+#        group=aegir
+#        owner=aegir
+#
+#    # Aegir's CentOS installation requires this.
+#    - name: Set appropriate permissions for Aegir's home folder.
+#      command: chmod -R 755 /var/aegir
+#      when: ansible_os_family == "RedHat"
+#
+#
+#    - name: Setup SSH config for aegir user.
+#      template:
+#        src=templates/ssh-config.j2
+#        dest=/var/aegir/.ssh/config
+#        mode=0600
+#        owner=aegir
+#        group=aegir
 
     - name: Setup | Install Composer
       shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
@@ -222,6 +223,9 @@
       sudo: yes
       sudo_user: aegir
 
+    # Runs the drush devshop-install command with all of our options:
+    # For example:
+    #   drush devshop-install devshop.local --version=6.x-1.x --aegir_db_pass=EL9npspxUgBOndp_UiZrCh01ELR-8mcY --aegir_db_user=root --makefile=/vagrant/build-devmaster.make --profile=devmaster --aegir_host=devshop.local
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir

@@ -16,12 +16,6 @@
   - name: Replace Catalina localhost folder
     shell:  rm -rf /etc/tomcat7/Catalina/localhost && ln -s /var/aegir/config/tomcat /etc/tomcat7/Catalina/localhost
 
-  - name: Create Aegir Group (so we can set the GID)
-    group:
-      name=aegir
-      state=present
-      gid={{ aegir_user_uid }}
-
   - name: Add tomcat user to aegir group
     user:
       name=tomcat7
