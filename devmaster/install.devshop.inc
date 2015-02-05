@@ -31,7 +31,7 @@ function drush_provision_devshop_install_validate($site = NULL) {
   // set defaults for this whole script
   // those are settings that are not prompted to the user but still overridable
   drush_set_default('version', provision_version());
-  drush_set_default('profile', 'devshop');
+  drush_set_default('profile', 'devmaster');
 
   // Get values needed to set other defaults
   $version = drush_get_option('version');
@@ -238,7 +238,7 @@ function drush_provision_devshop_install($site = NULL) {
     return false;
   }
 
-  drush_set_default('profile', 'devshop');
+  drush_set_default('profile', 'devmaster');
   $profile = drush_get_option('profile');
 
   $site_name = '@hostmaster';
