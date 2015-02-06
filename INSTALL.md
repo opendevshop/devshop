@@ -25,3 +25,12 @@ Setup
   ```
 
   *NOTE: http://getdevshop.com/install simply redirects to the dev version of install.sh: http://drupalcode.org/project/devshop.git/blob_plain/refs/heads/6.x-1.x:/install.sh*
+
+
+Install Script
+--------------
+
+@TODO:
+The install script does many things.  We will list them all here.
+
+See https://www.drupal.org/node/2419541
