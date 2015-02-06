@@ -42,7 +42,7 @@ function devmaster_profile_modules() {
     'hosting_filemanager',
     'hosting_logs',
     'hosting_tasks_extra',
-    'hosting_site_backup_queue',
+    'hosting_backup_queue',
     'hosting_site_backup_manager',
   );
 }
