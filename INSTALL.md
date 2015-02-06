@@ -1,8 +1,7 @@
 Installing DevShop
 ==================
 
-
-The fastest way to install DevShop is with the new standalone <a href="http://drupalcode.org/project/devshop.git/blob_plain/refs/heads/6.x-1.x:/install.sh">install.sh</a> script.
+DevShop is installed with a standalone <a href="https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh">install.sh</a> script.
 
 The script is designed to work on any Debian or RedHat/CentOS server. Please file issues if you have any problems with it.
 
@@ -24,7 +23,7 @@ Setup
   root@devshop:~# bash install
   ```
 
-  *NOTE: http://getdevshop.com/install simply redirects to the dev version of install.sh: http://drupalcode.org/project/devshop.git/blob_plain/refs/heads/6.x-1.x:/install.sh*
+  *NOTE: http://getdevshop.com/install simply redirects to the dev version of install.sh: https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh*
 
 
 Install Script
