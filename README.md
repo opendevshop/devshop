@@ -3,7 +3,7 @@ DevShop
 
 Welcome to the DevShop Source code.
 
-[![Build Status](https://travis-ci.org/drupalprojects/devshop.svg?branch=6.x-1.x)](https://travis-ci.org/drupalprojects/devshop)
+[![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
 
 Contents
 --------
