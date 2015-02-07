@@ -12,7 +12,7 @@ Feature: Create a project
     Then I fill in "behatproject" for "Project Code Name"
     And I fill in "http://" for "Git URL"
     When I press "Next"
-    Then I should see "Domain Name Settings"
-    And I press "Next"
+    When I press "Cancel"
+    Then I should see "Task delete was added to the queue"
 
     # @TODO! Selenium is needed for @javascript.
