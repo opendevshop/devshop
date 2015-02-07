@@ -12,10 +12,8 @@ install:
 script:
 
   # Test for DevShop
-  - curl http://localhost/
-  - sudo su aegir -c "cd /var/aegir/devmaster-6.x-1.x/profiles/devmaster/tests/ && composer update && bin/behat --profile travis"
-#  --config=/tmp/behat.yml
   - sudo su - aegir -c "drush @hostmaster status"
+  - sudo su aegir -c "cd /usr/share/devshop/tests && composer update && bin/behat --profile travis"
 
 # Notify devshop IRC chatroom.
 notifications:
