@@ -78,6 +78,16 @@ SSH into your server as the `aegir` user to access the back-end.
 
 Use drush to access any of your sites.  Use `drush sa` to see the list of available aliases.
 
+Versions
+--------
+
+We have two active branches as we try to reach for Drupal 8 hosting in time for release.  1.x has just started, and isn't functional yet.  Please use the 0.x branch of DevShop.
+
+DevShop version | Branch | DevMaster Versions | Hosted Drupal Versions | Aegir |Status
+----------------|--------|--------------------|------------------------|-------|-------
+DevShop 1.0.0 *future* | 1.x |  7.x-1.x           | 6, 7, 8                | 3.x | non-functional
+DevShop 0.1.0 *future* | 0.x |  6.x-1.x           | 6, 7                   | 2.x | Stable. Release coming soon.
+
 Vagrant
 -------
 
