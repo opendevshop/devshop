@@ -48,24 +48,6 @@ We have TravisCI running to test the install script.  We have no other tests, cu
 
 [![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
 
-Source Code
------------
-
-This project contains four important components to DevShop
-
-1. install.sh
-  A bash script to go from zero to DevShop.  All you need is a new server and this script.
-  This script is designed to work all by itself, and is not dependent on the other files in this repo to run.
-
-2. build-devshop.make
-  The makefile used to build the DevShop front-end.
-
-3. Ansible Playbooks
-  We use ansible to provision our servers.  See playbook.yml and the "roles" folder.
-
-4. Vagrantfile
-  Allows devshop to be launched with Vagrant. Used for testing and development. See README.vagrant.md for more info.
-
 Installation
 ------------
 
