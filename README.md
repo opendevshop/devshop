@@ -20,7 +20,10 @@ Components
 ----------
 DevShop currenly consists of four main components:
 
-* [DevShop](https://github.com/opendevshop/devshop) DevShop core.  *This repository*
+### [DevShop](https://github.com/opendevshop/devshop) 
+
+DevShop core.  *This repository*
+
   * https://github.com/opendevshop/devshop
   * Install scripts.
   * Ansible playbook and roles.
@@ -28,14 +31,26 @@ DevShop currenly consists of four main components:
   * Tests (coming soon).
   * Clone this to get everything else.  
   * Use this for development.
-* [Devmaster](https://www.drupal.org/project/devmaster) DevShop Front-End.  
+
+#### [Devmaster](https://www.drupal.org/project/devmaster) 
+
+DevShop Front-End.  
+
   * https://www.drupal.org/project/devmaster
   * An install profile and makefile.
-* [DevShop Hosting](https://www.drupal.org/project/devshop_hosting) DevShop Modules
+
+#### [DevShop Hosting](https://www.drupal.org/project/devshop_hosting) 
+
+DevShop Drupal Modules
+
   * https://www.drupal.org/project/devshop_hosting
   * To be merged into devmaster.
   * Drupal modules powering the devshop web interface.
-* [DevShop Provision](https://www.drupal.org/project/devshop_provision) 
+
+### [DevShop Provision](https://www.drupal.org/project/devshop_provision)
+
+DevShop Drush commands.
+
   * https://www.drupal.org/project/devshop_provision
   * To be merged into devmaster.  
   * Drush commands needed for devshop.
