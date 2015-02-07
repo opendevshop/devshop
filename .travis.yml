@@ -13,6 +13,9 @@ script:
 
   # Test for DevShop
   - curl http://localhost/
+  - cd /var/aegir/devmaster-6.x-1.x/profiles/devmaster/tests && composer update
+  - sudo su aegir -c "cd /var/aegir/devmaster-6.x-1.x/profiles/devmaster/tests/; bin/behat"
+#  --config=/tmp/behat.yml
   - sudo su - aegir -c "drush @hostmaster status"
 
 # Notify devshop IRC chatroom.
