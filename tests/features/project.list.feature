@@ -5,6 +5,6 @@ Feature: List all projects
   I need to visit the projects page.
 
   Scenario: Project list home page
-    Given I am logged in as a user with the "authenticated user" role
-    When I click "My account"
-    Then I should see the heading "History"
+    Given I am logged in as a user with the "administrator" role
+    When I click "Projects"
+    Then I should see "All Projects"
