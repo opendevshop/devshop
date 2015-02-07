@@ -224,7 +224,7 @@
       sudo_user: aegir
 
     # Runs the drush devshop-install command with all of our options:
-    - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} -y"
+    - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devmaster_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} -y"
 
     - name: Install Devmaster
       sudo: yes
