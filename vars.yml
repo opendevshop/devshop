@@ -6,7 +6,8 @@ php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
 
-devshop_version:            6.x-1.x
+devshop_version:            0.x
+master_version:            7.x-1.x
 devshop_provision_version:  6.x-2.x
 devshop_hosting_version:    6.x-2.x
 provision_version:          6.x-2.x
