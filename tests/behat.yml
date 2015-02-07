@@ -17,3 +17,10 @@ default:
       drush:
         root: /var/aegir/devmaster-6.x-1.x
         alias: 'hostmaster'
+travis:
+  extensions:
+    Behat\MinkExtension:
+      base_url: http://localhost
+    Drupal\DrupalExtension:
+      drush:
+        alias: 'hostmaster'
