@@ -8,14 +8,8 @@ ansible_playbook: playbook.yml
 
 devshop_version:            0.x
 master_version:            7.x-1.x
-devshop_provision_version:  6.x-2.x
-devshop_hosting_version:    6.x-2.x
-provision_version:          6.x-2.x
-provision_git_version:      6.x-1.x
-provision_logs_version:      6.x-1.x
-provision_solr_version:      6.x-2.x
-provision_tasks_extra_version: 6.x-2.x
-provision_site_backup_manager_version: 6.x-2.x
+devshop_provision_version:  7.x-3.x
+provision_version:          7.x-3.x
 registry_rebuild_version: 7.x-2.2
 
 devshop_makefile: build-devmaster.make

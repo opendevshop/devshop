@@ -32,7 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__))
 
-      config.vm.synced_folder "source/devmaster-6.x-1.x", "/var/aegir/devmaster-6.x-1.x",
+      config.vm.synced_folder "source/devmaster-7.x-1.x", "/var/aegir/devmaster-7.x-1.x",
           mount_options: ["uid=12345,gid=12345"]
 
       config.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",

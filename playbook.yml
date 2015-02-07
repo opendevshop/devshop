@@ -207,16 +207,16 @@
       sudo_user: aegir
       with_items:
         - provision-{{ provision_version }}
-        - provision_git-{{ provision_git_version }}
-        - devshop_provision-{{ devshop_provision_version }}
-        - provision_logs-{{ provision_logs_version }}
+#        - provision_git-{{ provision_git_version }}
+#        - devshop_provision-{{ devshop_provision_version }}
+#        - provision_logs-{{ provision_logs_version }}
 # Commented out until functional
-        - provision_solr-{{ provision_solr_version }}
-        - provision_tasks_extra-{{ provision_tasks_extra_version }}
+#        - provision_solr-{{ provision_solr_version }}
+#        - provision_tasks_extra-{{ provision_tasks_extra_version }}
+#        - provision_site_backup_manager-{{ provision_site_backup_manager_version }}
         - registry_rebuild-{{ registry_rebuild_version }}
-        - provision_site_backup_manager-{{ provision_site_backup_manager_version }}
       args:
-        creates: /var/aegir/.drush/commands/provision_site_backup_manager
+        creates: /var/aegir/.drush/commands/registry_rebuild
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
