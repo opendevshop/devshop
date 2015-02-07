@@ -8,9 +8,8 @@ projects[drupal][type] = "core"
 includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
-projects[hosting][download][type] = 'git'
-projects[hosting][download][url] = 'http://git.drupal.org/project/hosting.git'
-projects[hosting][download][branch] = '6.x-2.x'
+projects[hosting][version] = "2.1"
+projects[hosting][subdir] = aegir
 
 projects[hosting_platform_pathauto][version] = "2.1"
 projects[hosting_platform_pathauto][subdir] = contrib
