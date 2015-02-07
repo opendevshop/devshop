@@ -57,7 +57,7 @@ if [ $1 ]; then
     echo " Using playbook $1/playbook.yml "
     echo $LINE
 else
-    PLAYBOOK_PATH=/tmp/devshop-install
+    PLAYBOOK_PATH=/usr/share/devshop
 fi
 
 # Fail if not running as root (sudo)
@@ -130,8 +130,8 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     cd $PLAYBOOK_PATH
     git pull
   fi
-  PLAYBOOK_PATH=/tmp/devshop-install
-  MAKEFILE_PATH=/tmp/devshop-install/build-devmaster.make
+  PLAYBOOK_PATH=/usr/share/devshop
+  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
   echo $LINE
 
 fi
