@@ -1,12 +1,55 @@
 DevShop
 =======
 
-Welcome to the DevShop Source code.
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It a provides front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devmaster)).
+
+DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
+
+Code is deployed on push to your git repo automatically.  Deploy any branch or tag to any environment. Data (the database and files) can be deployed between environments.  Run the built-in hooks whenever code or data is deployed, or write your own.
+
+Resources
+---------
+
+* [General Documentation](https://devshop.readthedocs.org)  More coming soon.  Documentation is in progress.
+* [Project Homepage](https://www.drupal.org/project/devshop) drupal.org/project/devshop
+* [Issue Queue](https://www.drupal.org/project/issues/devshop) drupal.org/project/issues/devshop
+
+Components
+----------
+DevShop currenly consists of four main components:
+
+* [DevShop](https://github.com/opendevshop/devshop) DevShop core.  *This repository*
+  * Install scripts.
+  * Ansible playbook and roles.
+  * Vagrantfile.
+  * Tests (coming soon).
+  * Clone this to get everything else.  
+  * Use this for development.
+* [Devmaster](https://www.drupal.org/project/devmaster) DevShop Front-End.  
+  * https://www.drupal.org/project/devmaster
+  * An install profile and makefile.
+* [DevShop Hosting](https://www.drupal.org/project/devshop_hosting) DevShop Modules
+  * To be merged into devmaster.
+  * Drupal modules powering the devshop web interface.
+* [DevShop Provision](https://www.drupal.org/project/devshop_provision) 
+  * To be merged into devmaster.  
+  * Drush commands needed for devshop.
+
+Support
+-------
+
+* Bug reports and feature requests should be reported in the [Drupal DevShop Issue Queue](https://www.drupal.org/project/issues/devshop).
+* Join #devshop on IRC.
+  
+Tests
+-----
+
+We have TravisCI running to test the install script.  We have no other tests, currently.  Pull Requests welcome.
 
 [![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
 
-Contents
---------
+Source Code
+-----------
 
 This project contains four important components to DevShop
 
