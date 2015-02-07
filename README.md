@@ -1,27 +1,66 @@
 DevShop
 =======
 
-Welcome to the DevShop Source code.
-
 [![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
 
-Contents
---------
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It a provides front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devmaster)).
 
-This project contains four important components to DevShop
+DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
-1. install.sh
-  A bash script to go from zero to DevShop.  All you need is a new server and this script.
-  This script is designed to work all by itself, and is not dependent on the other files in this repo to run.
+Code is deployed on push to your git repo automatically.  Deploy any branch or tag to any environment. Data (the database and files) can be deployed between environments.  Run the built-in hooks whenever code or data is deployed, or write your own.
 
-2. build-devshop.make
-  The makefile used to build the DevShop front-end.
+Resources
+---------
 
-3. Ansible Playbooks
-  We use ansible to provision our servers.  See playbook.yml and the "roles" folder.
+* [General Documentation](https://devshop.readthedocs.org)  More coming soon.  Documentation is in progress.
+* [Project Homepage](https://www.drupal.org/project/devshop) drupal.org/project/devshop
+* [Issue Queue](https://www.drupal.org/project/issues/devshop) drupal.org/project/issues/devshop
 
-4. Vagrantfile
-  Allows devshop to be launched with Vagrant. Used for testing and development. See README.vagrant.md for more info.
+Components
+----------
+DevShop currenly consists of four main components:
+
+**DevShop**
+
+DevShop core.  *This repository*
+
+  * https://github.com/opendevshop/devshop
+  * Install scripts.
+  * Ansible playbook and roles.
+  * Vagrantfile.
+  * Tests (coming soon).
+  * Clone this to get everything else.  
+  * Use this for development.
+
+**Devmaster**
+
+DevShop Front-End.  
+
+  * https://www.drupal.org/project/devmaster
+  * An install profile and makefile.
+
+**DevShop Hosting**
+
+DevShop Drupal Modules
+
+  * https://www.drupal.org/project/devshop_hosting
+  * To be merged into devmaster.
+  * Drupal modules powering the devshop web interface.
+
+**DevShop Provision**
+
+DevShop Drush commands.
+
+  * https://www.drupal.org/project/devshop_provision
+  * To be merged into devmaster.  
+  * Drush commands needed for devshop.
+
+Support
+-------
+
+* Bug reports and feature requests should be reported in the [Drupal DevShop Issue Queue](https://www.drupal.org/project/issues/devshop).
+* Join #devshop on IRC.
+
 
 Installation
 ------------
@@ -38,6 +77,16 @@ Visit http://devshop.local or your chosen domain in the browser to view the fron
 SSH into your server as the `aegir` user to access the back-end.
 
 Use drush to access any of your sites.  Use `drush sa` to see the list of available aliases.
+
+Versions
+--------
+
+We have two active branches as we try to reach for Drupal 8 hosting in time for release.  1.x has just started, and isn't functional yet.  Please use the 0.x branch of DevShop.
+
+DevShop version | Branch | DevMaster Versions | Hosted Drupal Versions | Aegir |Status
+----------------|--------|--------------------|------------------------|-------|-------
+0.1.0 *coming soon* | 0.x |  6.x-1.x           | 6, 7                   | 2.x | Stable. Release coming soon.
+1.0.0 *coming later*| 1.x |  7.x-1.x           | 6, 7, 8                | 3.x | non-functional
 
 Vagrant
 -------
