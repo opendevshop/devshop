@@ -60,11 +60,7 @@ Support
 
 * Bug reports and feature requests should be reported in the [Drupal DevShop Issue Queue](https://www.drupal.org/project/issues/devshop).
 * Join #devshop on IRC.
-  
-Tests
------
 
-We have TravisCI running to test the install script.  We have no other tests, currently.  Pull Requests welcome.
 
 Installation
 ------------
