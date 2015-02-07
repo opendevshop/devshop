@@ -229,9 +229,9 @@
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
-      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} -y"
+      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devmaster_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} -y"
       args:
-        creates: /var/aegir/devmaster-{{ devshop_version }}/sites/{{ server_hostname }}/settings.php
+        creates: /var/aegir/devmaster-{{ devmaster_version }}/sites/{{ server_hostname }}/settings.php
 
     - name: Service | Ensure Supervisor is started and enabled
       service:
