@@ -12,7 +12,7 @@ Dependencies
 - Drush
 - Git
 - Vagrant 1.5.x
-- VirtualBox (or any supported virtualization software like VMWare)
+- VirtualBox (VMWare has been known to have problems.  If you can solve them, please post an issue!)
 
 Setup
 -----
@@ -43,7 +43,7 @@ It is best to use the installers from the websites so you are sure to get the ri
 
   ```
   git clone git@github.com:opendevshop/devshop.git
-  cd devshop_vagrant
+  cd devshop
   ```
   
 6. Edit your /etc/hosts file, adding the line:
@@ -116,3 +116,9 @@ DevShop Management
 *NOTE: When you create new projects and environments, you will need to add those URIs to your 
 hosts file as well, or you will not be able to access them from your host machine.*
 
+Help Improve Documentation
+--------------------------
+
+Think this can be improved? You can [edit this file on GitHub](https://github.com/opendevshop/devshop/edit/0.x/README.vagrant.md) and select "Create a new branch for this commit and start a pull request.".
+
+Thanks!
