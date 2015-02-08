@@ -11,9 +11,6 @@ includes[devshop] = "drupal-org.make"
 projects[hosting][version] = "2.1"
 projects[hosting][subdir] = aegir
 
-projects[hosting_platform_pathauto][version] = "2.1"
-projects[hosting_platform_pathauto][subdir] = contrib
-
 projects[admin_menu][version] = "1.8"
 projects[admin_menu][subdir] = contrib
 
@@ -49,26 +46,24 @@ libraries[jquery_ui][directory_name] = "jquery.ui"
 
 ; Contrib modules
 projects[adminrole][subdir] = contrib
-projects[ctools][subdir] = contrib
+projects[adminrole][version] = 1.3
+
 projects[jquery_update][subdir] = contrib
+projects[jquery_update][version] = 2.0-alpha1
 
 ; Aegir Contrib
-projects[hosting_filemanager][subdir] = contrib
-projects[hosting_tasks_extra][subdir] = contrib
+projects[hosting_filemanager][subdir] = aegir
+projects[hosting_filemanager][version] = 1.0-beta1
+
+projects[hosting_tasks_extra][subdir] = aegir
+projects[hosting_tasks_extra][version] = 2.1
 
 ; Aegir Contrib maintained by devshop maintainers
-projects[hosting_solr][subdir] = contrib
-projects[hosting_solr][download][type] = git
-projects[hosting_solr][download][branch] = 6.x-1.x
+projects[hosting_solr][subdir] = aegir
+projects[hosting_solr][version] = 1.0-beta2
 
-projects[hosting_drush_aliases][subdir] = contrib
-projects[hosting_drush_aliases][download][type] = git
-projects[hosting_drush_aliases][download][branch] = 6.x-1.x
+projects[hosting_logs][subdir] = aegir
+projects[hosting_logs][version] = 2.x
 
-projects[hosting_logs][subdir] = contrib
-projects[hosting_logs][download][type] = git
-projects[hosting_logs][download][branch] = 6.x-1.x
-
-projects[hosting_site_backup_manager][subdir] = contrib
-projects[hosting_site_backup_manager][download][type] = git
-projects[hosting_site_backup_manager][download][branch] = 6.x-2.x
+projects[hosting_site_backup_manager][subdir] = aegir
+projects[hosting_site_backup_manager][version] = 2.0
