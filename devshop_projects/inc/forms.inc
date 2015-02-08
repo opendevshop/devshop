@@ -568,6 +568,14 @@ function devshop_projects_form(&$node) {
     );
   }
 
+  // Allow "Other"
+  $form['project']['settings']['deploy']['allow_deploy_data_from_alias'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow deploying data from drush aliases.'),
+    '#default_value' => $node->project->settings->deploy['allow_deploy_data_from_alias'],
+    '#description' => t('Requires a patch'),
+  );
+
   // @TODO: is there a better way to save certain values? We lose data without these.
   $form['project']['settings']['deploy']['last_webhook'] = array(
     '#type' => 'value',
