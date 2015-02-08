@@ -1,0 +1,284 @@
+<?php
+/**
+ * @file devshop_hosting.module
+ *
+ * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
+ */
+
+ /**
+  * Implements hook_init()
+  *
+  * Adds CSS and sets the logo.
+  */
+function devshop_hosting_init(){
+  drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
+  $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
+  drupal_set_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
+
+  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">');
+
+
+}
+
+/**
+ * Implements hook_menu()
+ *
+ * Defines a new menu callback: login page for new users, redirect to projects
+ * for authenticated users.
+ */
+function devshop_hosting_menu(){
+  $items['devshop'] = array(
+    'title' => 'Welcome to DevShop',
+    'page callback' => 'devshop_hosting_home',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Menu callback for path "devshop"
+ *
+ * Provides a login page or redirects to proejcts
+ */
+function devshop_hosting_home(){
+  if (user_is_logged_in()){
+    drupal_goto(variable_get('devshop_frontpage', 'hosting/projects'));
+  } else {
+    $output = '<p>' . t('Please log in.') . '</p>';
+    return drupal_get_form('user_login');
+  }
+}
+
+/**
+ * Implements hook_menu_alter()
+ *
+ * Streamlines login and servers pages.
+ */
+function devshop_hosting_menu_alter(&$items){
+  $items['user/password']['type'] = MENU_CALLBACK;
+  unset($items['hosting/sites']);
+  unset($items['hosting/platforms']);
+  unset($items['hosting/clients']);
+
+  $items['hosting/servers/add'] = $items['node/add/server'];
+  $items['hosting/servers/add']['title'] = t('Add new Server');
+  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/servers/add']['page arguments'] = array('server');
+
+  $items['hosting/servers/list'] = array(
+    'title' => t('All Servers'),
+    'weight' => -1,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
+
+}
+
+/**
+ * Override for hosting_site_goto().
+ * @param $node
+ */
+function devshop_hosting_site_goto($node) {
+  $cid = "hosting:site:" . $node->nid . ":login_link";
+  $cache = cache_get($cid);
+  if (user_access('create login-reset task') && !is_null($cache) && (time() < $cache->data['expire'])) {
+    $theurl = $cache->data['link'];
+    cache_clear_all($cid, 'cache');
+  }
+  else {
+    $theurl = devshop_hosting_site_url($node);
+  }
+
+  drupal_goto($theurl);
+  exit();
+}
+
+/**
+ * Override for _hosting_site_url().
+ * @param $node
+ *
+ * Allows us to check for project live domain alias.
+ */
+function devshop_hosting_site_url($node) {
+  $schema = 'http';
+  $port = null;
+
+  if (isset($node->project_nid)){
+    $project = node_load($node->project_nid);
+    $url = "{$node->environment}.{$project->base_url}";
+  }
+  else {
+    $url = strtolower(trim($node->title));
+  }
+
+  $platform = node_load($node->platform);
+  $server = node_load($platform->web_server);
+
+
+  if ($server->services['http']->has_port()) {
+    $port = $server->services['http']->port;
+    if ($port == 80) {
+      $port = null;
+    }
+  }
+
+  /**
+   * This is part of the ssl feature, but is better to implement here.
+   */
+  if (isset($node->ssl_enabled) && ($node->ssl_enabled == 2)) {
+    // this is a bit of a magic number, because we cant rely on the constant being available yet.
+    // 2 == Only SSL is enabled.
+    $schema = 'https';
+
+    if ($server->services['http']->has_port()) {
+      $port = $server->services['http']->ssl_port;
+      if ($port == 443) {
+        $port = null;
+      }
+    }
+  }
+
+  if (is_numeric($port)) {
+    return "{$schema}://{$url}:{$port}";
+  }
+
+  return "{$schema}://{$url}";
+}
+
+/**
+ * Implements hook_form_alter() for user_login.
+ * Provides some UI enhancements.
+ */
+function devshop_hosting_form_user_login_alter(&$form){
+  $form['pass']['#description'] .= '  ' . l(t('Forgot your Password?'), 'user/password');
+
+  // Add user register link
+  if (user_register_access()){
+    $form['submit']['#suffix'] = t('or') . ' ' . l(t('Create an Account'), 'user/register');
+  }
+}
+
+/**
+ * Implements hook_form_alter() for user_login_block.
+ * Hides the login block form on "devshop" page.
+ */
+function devshop_hosting_form_user_login_block_alter(&$form){
+  if (arg(0) == 'devshop'){
+    $form = array();
+  }
+}
+
+/**
+ * Implements hook_block()
+ *
+ * Provides three blocks:
+ *  - DevShop Tasks
+ *  - Created by ThinkDrop
+ *  - Powered by Aegir
+ */
+function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['devshop_tasks'] = array(
+        'info' => t('DevShop Tasks'),
+        'enabled' => 1,
+        'region' => 'header',
+        'weight' => 0,
+      );
+      $blocks['built'] = array(
+        'info' => t('Created by THINKDROP'),
+        'weight' => '10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'footer',
+      );
+      $blocks['driven'] = array(
+        'info' => t('Driven by Aegir'),
+        'weight' => '10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'footer',
+      );
+      return $blocks;
+    case 'view':
+      if ($delta == 'built'){
+        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-td.png';
+        $block['subject'] = t('Created by'); // Don't display a title
+        $block['content'] = l(theme('image', $image_path), 'http://thinkdrop.net/', array('html' => TRUE));
+      }
+      elseif ($delta == 'driven') {
+        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-aegir.png';
+        $block['subject'] = t('Powered by'); // Don't display a title
+        $block['content'] = l(theme('image', $image_path), 'http://aegirproject.org/', array('html' => TRUE));
+      }
+      elseif ($delta = 'devshop_tasks') {
+        $block['subject'] = '';
+        $block['content'] = devshop_hosting_task_queue_block();
+      }
+      return $block;
+  }
+}
+
+/**
+ * DevShop Tasks block.
+ * @todo: Ajaxify.
+ */
+function devshop_hosting_task_queue_block() {
+  if (user_access('access task logs')){
+    drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
+
+    $settings['hostingTaskRefresh'] = array(
+      'queueBlock' => 1,
+    );
+    drupal_add_js($settings, 'setting');
+
+    $tasks['processing'] = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING, 5);
+    $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE);
+
+    $total_tasks = count($tasks['queued']) + count($tasks['processing']);
+    $status = format_plural($total_tasks, '1 active task.', '@count active tasks.');
+
+    if ($total_tasks == 0){
+      $status_class = 'inactive';
+    } else {
+      $status_class = 'active';
+    }
+
+    // Build our own table
+    foreach ($tasks as $task_status => $nodes){
+      foreach ($nodes as $node) {
+        $row = array();
+        $row['type'] = array(
+          'data' => drupal_ucfirst(str_replace('_', ' ', $node->task_type)) . ' ' . _hosting_node_link($node->rid),
+          'class' => 'hosting-status',
+        );
+        $class = hosting_task_status_class($node->task_status);
+        $rows[] = array(
+          'data' => $row,
+          'class' => $class,
+        );
+      }
+    }
+
+    // Build Strings
+    $link = l('Tasks Logs', 'hosting/queues/tasks', array('attributes' => array('class' => 'task-logs-link')));
+
+    $headers = array();
+
+    if (isset($rows)){
+      $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
+    }
+
+    // Output our "template"
+    return <<<HTML
+<div id='devshop-task-status' class='$status_class'>$status</div>
+<div id='hosting-task-queue-block'>
+  <div class='item'>$table</div>
+  <div class='item'>$link</div>
+</div>
+
+HTML;
+  }
+}
