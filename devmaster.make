@@ -60,7 +60,7 @@ projects[hosting_tasks_extra][version] = 2.1
 
 ; Aegir Contrib maintained by devshop maintainers
 projects[hosting_solr][subdir] = aegir
-projects[hosting_solr][version] = 1.0-beta2
+projects[hosting_solr][version] = 1.0-beta1
 
 projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = 2.x
