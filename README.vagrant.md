@@ -42,7 +42,7 @@ It is best to use the installers from the websites so you are sure to get the ri
 5. Clone this Repo and change to it's directory.
 
   ```
-  git clone git@git.drupal.org:project/devshop.git
+  git clone git@github.com:opendevshop/devshop.git
   cd devshop_vagrant
   ```
   
