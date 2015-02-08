@@ -1,5 +1,5 @@
 
-## 0.1.0 (January 7, 2015)
+## 0.1.0 (February 7, 2015)
 
 * Completely new, responsive user interface.
 * Deploy Code, Data, or Stack.
