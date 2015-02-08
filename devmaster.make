@@ -48,11 +48,6 @@ libraries[jquery_ui][destination] = "modules/contrib/jquery_ui"
 libraries[jquery_ui][download][url] = "http://jquery-ui.googlecode.com/files/jquery-ui-1.7.3.zip"
 libraries[jquery_ui][directory_name] = "jquery.ui"
 
-; DevShop modules
-projects[devshop_hosting][subdir] = devshop
-projects[devshop_hosting][download][type] = git
-projects[devshop_hosting][download][branch] = 6.x-2.x
-
 ; Contrib modules
 projects[adminrole][subdir] = contrib
 projects[ctools][subdir] = contrib
