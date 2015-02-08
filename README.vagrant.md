@@ -39,6 +39,11 @@ It is best to use the installers from the websites so you are sure to get the ri
 
   *Any version is probably fine.*
 
+4. Install Drush.
+
+  1. Install composer globally: https://getcomposer.org/doc/00-intro.md#globally
+  2. Install drush globally: http://docs.drush.org/en/master/install/  (6.x)
+
 5. Clone this Repo and change to it's directory.
 
   ```
