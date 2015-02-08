@@ -1,6 +1,8 @@
 DevShop
 =======
 
+<img src="https://www.drupal.org/files/devshop.png" width="100%">
+
 [![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
 
 DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It a provides front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devmaster)).
