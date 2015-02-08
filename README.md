@@ -110,3 +110,10 @@ The install script has been tested on:
 
   - ubuntu 12.04
   - centos 7.0
+
+Help Improve Documentation
+--------------------------
+
+Think this can be improved? You can [edit this file on GitHub](https://github.com/opendevshop/devshop/edit/0.x/README.md) and select "Create a new branch for this commit and start a pull request.".
+
+Thanks!
