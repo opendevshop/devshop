@@ -1,0 +1,49 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Projects
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_testing_schema() {
+ $schema['hosting_devshop_project_testing'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project Node ID.',
+      ),
+      'tests_to_run' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big',
+        'default' => '',
+        'description' => 'A list of tests to run',
+      ),
+    ),
+    'primary key' => array('project_nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function devshop_testing_install() {  
+  // Create tables.
+  drupal_install_schema('devshop_testing');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function devshop_testing_uninstall() {  
+  // Delete tables.
+  drupal_uninstall_schema('devshop_testing');
+}
+

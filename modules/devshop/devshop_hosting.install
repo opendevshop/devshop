@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Implements hook_install()
+ *
+ * Sets a new frontpage.
+ */
+function devshop_hosting_install(){
+  variable_set('site_frontpage', 'devshop');
+  drupal_set_message(t('Site frontpage set to <em>devshop</em>.'));
+
+  db_query('UPDATE {system} SET weight = 11 WHERE name = "devshop_hosting"');
+}
+
+/**
+ * Set weight of this module higher than views.
+ */
+function devshop_hosting_update_7001() {
+  $ret = array();
+  $ret[] = update_sql('UPDATE {system} SET weight = 11 WHERE name = "devshop_hosting"');
+  return $ret;
+}

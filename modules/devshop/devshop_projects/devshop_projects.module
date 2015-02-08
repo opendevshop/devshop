@@ -1,0 +1,515 @@
+<?php
+/**
+ * @file devshop_projects.module
+ *
+ * Provides Node Type, UI, and tools for DevShop Projects.
+ */
+
+include_once('inc/drush.inc');
+include_once('inc/forms.inc');
+include_once('inc/nodes.inc');
+include_once('inc/queue.inc');
+include_once('inc/theme.inc');
+include_once('inc/ui.inc');
+
+// Tasks Code
+include_once('tasks/tasks.inc');
+include_once('tasks/commit.inc');
+include_once('tasks/create.inc');
+include_once('tasks/pull.inc');
+include_once('tasks/deploy.inc');
+
+
+/**
+ * Implementation of hook_init()
+ *
+ * Adds a css file.
+ */
+function devshop_projects_init() {
+  drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/devshop-style.css', 'theme');
+}
+
+/**
+ * Implementation of hook_perm()
+ *
+ * Since we have a node type, "create project content permission is
+ * automatically added by Drupal
+ */
+function devshop_projects_perm() {
+  return array(
+    'view projects',
+    'create devshop-create task',
+    'create devshop-commit task',
+    'create devshop-delete task',
+    'create devshop-deploy task',
+// @TODO: Not Ready Yet... Move to hosting_git.
+//    'create commit task',
+    'create project',
+    'view project',
+    'edit project',
+    'delete projects',
+    'administer projects',
+  );
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function devshop_projects_devshop_environment_actions($environment) {
+  $items = array(
+    'flush_cache',
+    'login-reset',
+    'backup',
+    'restore' => 'restore',
+    'rebuild_registry',
+    'run_cron',
+    'update',
+  );
+
+  if ($environment->settings->locked){
+    unset($items['restore']);
+  }
+
+  // Add disable or delete task based on hosting variable.
+  if (!variable_get('hosting_require_disable_before_delete', TRUE)){
+    $items[] = 'delete';
+  } else {
+    if ($environment->site_status == HOSTING_SITE_DISABLED){
+      $items[] = 'enable';
+      $items[] = 'delete';
+    } elseif (!$items->settings->locked){
+      $items[] = 'disable';
+    }
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_access()
+ */
+function devshop_projects_access($op, $node, $account) {
+  switch ($op) {
+    case 'create':
+      return user_access('create project', $account);
+      break;
+    case 'update':
+      return user_access('edit project', $account);
+      break;
+    case 'delete':
+      return user_access('delete projects', $account);
+      break;
+    case 'view':
+      return user_access('view project', $account);
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function devshop_projects_menu() {
+  //Settings page.
+  $items['admin/hosting/devshop'] = array(
+    'title' => 'DevShop',
+    'description' => 'Default values for use in creation project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_projects_settings_form'),
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['admin/hosting/devshop/projects'] = $items['admin/hosting/devshop'];
+  $items['admin/hosting/devshop/projects']['title'] = 'Projects';
+  $items['admin/hosting/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  $items['admin/hosting/devshop/projects']['tab_parent'] = 'admin/hosting/devshop';
+
+  $items['hosting/projects'] = array(
+    'title' => t('Projects'),
+    'description' => 'Display a list of all projects',
+    'page callback' => 'devshop_projects_projects_page',
+    'access arguments' => array('view projects'),
+    'menu_name' => 'primary-links',
+    'weight' => 1,
+  );
+  $items['hosting/projects/list'] = array(
+    'title' => t('All Projects'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items['hosting/projects/add'] = array(
+    'title' => 'Start New Project',
+    'type' => MENU_LOCAL_TASK,
+    'title' => t('Start a new Project'),
+    'title callback' => 'check_plain',
+    'page callback' => 'devshop_projects_add',
+    'page arguments' => array(3),
+    'access arguments' => array('create project'),
+    'description' => 'Start a new Drupal website project.',
+    'file' => 'create.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc/create',
+  );
+
+  // Ajax endpoint for reloads
+  $items['hosting/projects/add/status'] = array(
+    'page callback' => 'devshop_projects_add_status',
+    'access callback' => 'node_access',
+    'access arguments' => array('create', 'project'),
+    'file' => 'create.inc',
+    'file path' => drupal_get_path('module', 'devshop_projects') . '/inc/create',
+  );
+
+  // hosting tasks ajax pages.
+  foreach (hosting_available_tasks('project') as $task => $info){
+    $path = 'node/%/project_' . $task;
+    $items[$path] = array(
+      'title' => $info['title'],
+      'description' => $info['description'],
+      'page callback' => 'devshop_projects_hosting_task_confirm_form_page',
+      'page arguments' => array(1, $task),
+      'access callback' => 'hosting_task_menu_access_csrf',
+      'access arguments' => array(1, $task),
+      'type' => MENU_CALLBACK,
+    );
+    $items[$path] = array_merge($items[$path], $info);
+  }
+
+  // Environment settings pages
+  $items['node/%node/edit/%'] = array(
+    'title' => 'Edit',
+    'page callback' => 'devshop_project_environment_settings_page',
+    'page arguments' => array(1, 3),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 1),
+    'weight' => 1,
+    'file' => 'node.pages.inc',
+    'file path' => drupal_get_path('module', 'node'),
+    'type' => MENU_LOCAL_TASK,
+  );
+  // Environment logs pages
+  $items['node/%node/logs/%'] = array(
+    'title' => 'Logs',
+    'page callback' => 'devshop_project_logs_page',
+    'page arguments' => array(1, 3),
+    'access callback' => 'devshop_project_logs_access',
+    'access arguments' => array('view', 1),
+    'weight' => 1,
+    'file' => 'inc/logs.inc',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  // Drush aliases download.
+  $items['node/%node/aliases'] = array(
+    'title' => 'Drush Aliases',
+    'page callback' => 'devshop_project_drush_aliases_page',
+    'page arguments' => array(1),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 1),
+    'weight' => 1,
+    'file' => 'inc/drush.inc',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function devshop_project_logs_access() {
+  return TRUE;
+}
+
+/**
+ * Implements hook_block()
+ */
+function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['project_nav'] = array(
+        'info' => t('DevShop Project Nav'),
+        'weight' => '-10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'pre_content',
+      );
+      return $blocks;
+      break;
+
+    case 'view':
+      if ($delta == 'project_nav'){
+        $node = node_load(arg(1));
+        if ($node->type == 'project') {
+          $block['subject'] = '';
+          $block['content'] = theme('devshop_project_nav', $node);
+        }
+      }
+      return $block;
+  }
+}
+
+/**
+ * Environment settings page menu callback.
+ *
+ * Pulls in the node edit form for the site of the project.
+ */
+function devshop_project_environment_settings_page($project_node, $environment){
+
+  $site_node = node_load($project_node->project->environments[$environment]->site);
+
+  drupal_set_title($project_node->title);
+  return drupal_get_form($site_node->type . '_node_form', $site_node);
+}
+
+/**
+ * Page Callback for hosting/projects/add
+ */
+function devshop_projects_add($step = NULL){
+  if ($step == NULL){
+    // Check to see if this project is still in the wizard
+    ctools_include('object-cache');
+    $project_wizard_cache = ctools_object_cache_get('project', NULL);
+    if (!empty($project_wizard_cache->step)) {
+      drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
+    }
+  }
+  return devshop_projects_create_wizard($step);
+}
+
+/**
+ * Replacement for hosting_task_confirm_form()
+ *
+ * @TODO: Remove once http://drupal.org/node/1861898 is committed.
+ */
+function devshop_projects_hosting_task_confirm_form_page($nid, $task){
+  $node = node_load($nid);
+  return drupal_get_form('hosting_task_confirm_form', $node, $task);
+}
+
+/**
+ * Implementation of hook_menu_alter()
+ *
+ * Replaces node/add/project with a ctools wizard.
+ */
+function devshop_projects_menu_alter(&$items) {
+  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
+  $items['node/add/project']['page arguments'] = array(3);
+  $items['node/add/project']['file'] = 'create-wizard.inc';
+  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
+
+  // Make project node pages more user-friendly.
+  $items['node/%node/view']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/view']['title arguments'] = array('View', 1);
+
+  $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/edit']['title arguments'] = array('Edit', 1);
+
+}
+
+/**
+ * Tab title replacer
+ */
+function devshop_hosting_project_tab_title($default, $node){
+  if ($default == 'View' && $node->type == 'project'){
+    return t('Dashboard');
+  }
+  if ($default == 'Edit' && $node->type == 'project'){
+    return t('Settings');
+  }
+
+  // Otherwise, just return the page text
+  return t($default);
+}
+
+/**
+ * Access Callback for Aegir Tasks
+ *
+ * This function defines access to the various aegir tasks.
+ *
+ * @arg $node object
+ *   The node object is running the task. (Site, Platform, Server)
+ *
+ * @arg $task string
+ *   The type of the task that is running.
+ *
+ * @see hosting_task_menu_access()
+ *
+ * @TODO: This NEVER runs for verify!  Only for devshop-xyz tasks.
+ * project verify task is defined in devshop_projects_hosting_tasks() in
+ * inc/tasks.inc, and has this function as it's access callback.  But this
+ * function seems to never run.
+ */
+function devshop_hosting_task_menu_access($node, $task) {
+  // If we are passed the nid by mistake
+  if (!isset($node->nid)){
+    $node = node_load($node);
+  }
+
+  if ($task != 'delete' && !$node->status) {
+    return FALSE;
+  }
+
+  if (user_access("create " . $task . " task")) {
+
+    // If Commit Features task, make sure features module is present
+    if ($task == 'devshop-commit'){
+      return _devshop_projects_project_has_module($node, 'features');
+    } else {
+      return TRUE;
+    }
+  }
+}
+
+
+
+/**
+ * Implements hook_hosting_drush_aliases_name()
+ *
+ * See http://drupal.org/project/hosting_drush_aliases
+ */
+function devshop_projects_hosting_drush_aliases_name($node) {
+  if (isset($node->project_name)) {
+    return $node->project_name .".". $node->project_environment;
+  }
+}
+
+/**
+ * Helper function to create a site in a project.
+ * Used by Wizard & "Create Platform" > Post Verify
+ */
+function devshop_projects_create_site($project, $platform_node, $environment_name, $db_server = NULL) {
+  global $user;
+
+  // Create the site nodes
+  $node = new stdClass();
+  $node->type = 'site';
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->title = str_replace('_', '-', $environment_name) .'.'. $project->base_url;
+
+  // Aegir properties
+  // @TODO: better client & DB support
+  $node->client = HOSTING_DEFAULT_CLIENT;
+  $servers = hosting_get_servers('db');
+  $server = $db_server ? $db_server : key($servers);
+  $node->db_server = $server;
+
+  $node->platform = $platform_node->nid;
+
+  // Lookup this platforms install profile
+  $node->profile = db_result(db_query('SELECT nid FROM {hosting_package} WHERE short_name = "%s"', $project->install_profile));
+
+  // @TODO: Improve site language handling?
+  $node->site_language = !empty($user->language)? $user->language: 'en';
+
+  // Subdomain alias, if configured.
+  if ($project->settings->live['environment_aliases'] && !empty($project->settings->live['live_domain'])) {
+    $node->aliases = array($environment_name . '.' . $project->settings->live['live_domain']);
+  }
+
+  // Save the site node
+  if ($node = node_submit($node)) {
+    node_save($node);
+  }
+
+  // Update environment with our site
+  db_query('UPDATE {hosting_devshop_project_environment} SET site = %d WHERE project_nid = %d AND name = "%s"', $node->nid, $project->nid, $environment_name);
+
+  return $node;
+}
+
+/**
+ * Helper to get select #options for git ref.
+ */
+function devshop_projects_git_ref_options($project, $current_ref = ''){
+
+  // Build branch options
+  if (is_array($project->settings->git['branches']) && !empty($project->settings->git['branches'])) {
+    $options = array(
+      'Branches' => array_combine($project->settings->git['branches'], $project->settings->git['branches']),
+    );
+
+    // If there are tags...
+    if (is_array($project->settings->git['tags']) && !empty($project->settings->git['tags'])) {
+      $options['Tags'] = array_combine($project->settings->git['tags'], $project->settings->git['tags']);
+    }
+  }
+
+  // If there are none...
+  if (!isset($options)){
+    $options = array(t('No branches or tags! Re-validate the project.'));
+  }
+
+  // Set "current" label.
+  if (isset($options['Branches'][$current_ref])) {
+    $options['Branches'][$current_ref] .= ' (' . t('current') . ')';
+  }
+  elseif (isset($options['Tags'][$current_ref])) {
+    $options['Tags'][$current_ref] .= ' (' . t('current') . ')';
+  }
+
+
+  return $options;
+}
+
+/**
+ * Nodemaker
+ */
+function _devshop_projects_node_create($type, $node = stdClass){
+  global $user;
+
+  // @TODO: Validate type
+  $node->type = $type;
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->name = $user->name;
+  if ($node = node_submit($node)) {
+    node_save($node);
+  }
+  return $node;
+}
+
+/**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_projects_site_has_module($nid, $module) {
+  $param = array(
+    'rid' => $nid,
+    'p.short_name' => $module,
+  );
+  $package = hosting_package_instance_load($param);
+  return $package->status;
+}
+
+/**
+ * Check if a site has features diff enabled.
+ */
+function _devshop_projects_project_has_module($node, $module) {
+  $environment = key($node->project->environments);
+  return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
+}
+
+/**
+ * Helper function to generate the URL for an environment.
+ * @param $name
+ * @param $environment
+ * @return string
+ */
+function devshop_projects_url($name, $environment = NULL){
+
+  // If we don't have a name yet, just return the server name.
+  if (empty($name)){
+    return $_SERVER['SERVER_NAME'];
+  }
+  else {
+    $pattern = variable_get('devshop_project_environment_url_pattern', "@environment.@project.@hostname");
+
+    $replacements = array(
+      '@environment' => $environment,
+      '@project' => $name,
+      '@hostname' => $_SERVER['SERVER_NAME'],
+    );
+
+    if (is_null($environment)){
+      $replacements['@environment.'] = '';
+    }
+    return strtr($pattern, $replacements);
+  }
+}
