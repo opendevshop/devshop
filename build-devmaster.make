@@ -11,7 +11,7 @@ projects[drupal][type] = "core"
 ; When in development, use this:
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
-projects[devmaster][download][url] = "git@github.com:opendevshop/devmaster.git"
+projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
 projects[devmaster][download][branch] = "6.x-1.x"
 
 ; RELEASE:
