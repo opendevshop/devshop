@@ -1,0 +1,213 @@
+<?php
+
+/**
+ * @file devshop_projects.module
+ * a module in the DevShop module group which enables the user to create 
+ * proects and group sites/platforms into project groups.
+ */
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_testing_perm() {
+  return array(
+    'create test task',
+  );
+}
+
+/**
+ * Implementation of hook_hosting_tasks()
+ */
+function devshop_testing_hosting_tasks() {
+  $tasks = array();
+
+  $tasks['site']['test'] = array(
+    'title' => t('Run Tests'),
+    'description' => t('Run tests on the site.'),
+    'dialog' => TRUE,
+    'task_permitted' => TRUE,
+    'access callback' => 'devshop_hosting_task_menu_access',
+  );
+
+  return $tasks;
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function devshop_testing_devshop_environment_actions($environment) {
+  return array(
+    'test'
+  );
+}
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * Our parameters are added in devshop_testing_form_alter()
+ */
+function hosting_task_test_form($node) {
+
+  $form = array();
+  return $form;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
+
+  // If it's the project form, it's "defaults" for environments.
+  if ($form_id == 'project_node_form') {
+    $form['project']['settings']['testing'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Testing'),
+      '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
+    );
+    $testing_form = &$form['project']['settings']['testing'];
+    $settings =  $form['#node']->project->settings;
+  }
+
+  // If it's the site (environment) form, it is the override.
+  elseif ($form_id == 'site_node_form') {
+    if (!isset($form['#node']->project)) {
+      return;
+    }
+    $form['environment']['settings']['testing'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Testing'),
+      '#description' => t('Set the testing settings for this environment.'),
+      '#weight' => 100,
+    );
+    $testing_form = &$form['environment']['settings']['testing'];
+    $settings =  $form['#node']->environment->settings;
+
+    // Add to deploy hooks.
+    $form['environment']['settings']['deploy']['test'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Tests'),
+      '#description' => t('Run tests after every code deploy.'),
+      '#weight' => 100,
+      '#default_value' => $form['#node']->environment->settings->deploy['test'],
+    );
+  }
+  // Run Tests Task confirm form.
+  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
+    $testing_form = &$form['parameters'];
+    $node = node_load($form['nid']['#value']);
+    $settings =  $node->environment->settings;
+  }
+  // Deploy Code Task confirm form.
+  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-deploy') {
+    $node = node_load($form['nid']['#value']);
+    $form['parameters']['test'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Tests'),
+      '#description' => t('Run tests after this code deploy.'),
+      '#default_value' => $node->environment->settings->deploy['test'],
+    );
+    return;
+  }
+  else {
+    return;
+  }
+
+  // Setting defaults.  Use project settings if there are any.
+  if (!isset($settings->testing)) {
+    if (isset($form['#node']->project->settings->testing)) {
+      $settings->testing = $form['#node']->project->settings->testing;
+    }
+    else {
+      $settings->testing = array(
+        'test_type' => 0,
+        'tests_to_run' => '',
+        'behat_folder_path' => '',
+        'behat_bin' => 'bin/behat',
+      );
+    }
+  }
+  $testing_form['test_type'] = array(
+    '#title' => t('Test Type'),
+    '#options' => array(
+      0 => t('None'),
+      'simpletest' => t('SimpleTest'),
+      'behat' => t('Behat'),
+    ),
+    '#type' => 'radios',
+    '#default_value' => $settings->testing['test_type'],
+  );
+
+  $testing_form['tests_to_run'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Tests to Run'),
+    '#default_value' => $settings->testing['tests_to_run'],
+    '#rows' => 6,
+    '#description' => t('Enter the names of the tests to run, one per line.  See the !link for examples, or call <strong><code>drush @@site test-run</code></strong> for a list of available tests.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/hierarchy/DrupalWebTestCase/7'), '@site' => 'drushalias')),
+  );
+
+  $testing_form['behat_folder_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Behat folder path'),
+    '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
+    '#default_value' => $settings->testing['behat_folder_path'],
+  );
+  $testing_form['behat_bin_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Behat executable path'),
+    '#description' => t('Enter the path to your bin/behat executable file, relative to the Behat folder path.'),
+    '#default_value' => $settings->testing['behat_bin_path'],
+  );
+
+}
+//require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
+require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
+
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+
+function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
+  if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
+
+    $converter = new AnsiToHtmlConverter();
+    $output = $converter->convert($node->task_args['test_results']);
+
+    $output = strtr($output, array(
+      "\n" => "<br />",
+      "  " => "&nbsp; ",
+    ));
+
+    $node->test_results_formatted = '<div class="test-results" style="background-color: black; padding: 2em; font-family: Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">' . $output . '</div>';
+
+  }
+}
+
+function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
+
+  if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
+    $node->content['results'] = array(
+      '#type' => 'item',
+      '#value' => $node->test_results_formatted,
+      '#weight' => -100,
+    );
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function devshop_testing_preprocess_node(&$vars) {
+  global $user;
+  if ($vars['node']->type == 'project') {
+
+    foreach ($vars['node']->project->environments as &$environment) {
+
+      // Check to see if testing is enabled.
+
+        
+//      $task = hosting_get_tasks('rid', $environment->site);
+
+
+
+    }
+  }
+}

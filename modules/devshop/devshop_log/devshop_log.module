@@ -1,0 +1,127 @@
+<?php
+/**
+ * @file devshop_log.module
+ *
+ * Simply displays a git commit log for each platform.
+ */
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_log_perm() {
+  return array(
+    'view git commit logs',
+    'access project logs',
+  );
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function devshop_log_menu() {
+  $items['admin/hosting/devshop/gitlog'] = array(
+    'title' => 'Commit Log',
+    'description' => 'Configure Commit Log View',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_git_log_settings'),
+    'access arguments' => array('administer hosting settings'),
+    'tab_parent' => 'admin/hosting/devshop',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['node/%/logs/commits'] = array(
+    'title' => 'Commit Log',
+    'description' => 'View commit log entries',
+    'page callback' => 'devshop_log_page',
+    'page arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'access callback' => 'devshop_log_page_access',
+    'access arguments' => array(1),
+    'weight' => -4,
+  );
+
+  return $items;
+}
+
+/**
+ * The access callback for the Git Log menu tab.
+ *
+ * Make sure user has perms to veiw and and also that the node we are
+ * viewing is a platform node.
+ */
+function devshop_log_page_access($nid) {
+
+  if (!user_access('view git commit logs')) {
+    return FALSE;
+  }
+
+  $node = node_load($nid);
+  if (!$node || ($node->type != 'site' && $node->type != 'platform')) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * General settings form.
+ */
+function devshop_git_log_settings() {
+  $form['devshop_git_log']['devshop_git_log_count'] = array(
+    '#type' => 'textfield',
+    '#maxlength' => 5,
+    '#title' => t('Max log entries to display'),
+    '#default_value' => variable_get('devshop_git_log_count', 10),
+    '#weight' => 1,
+    '#description' => t('Enter the maximum number of log entries to ' .
+    		        'display in the Git Commit Log View page. A ' .
+			'value of 0 will display all of the log entries.'),
+  );
+  return system_settings_form($form);
+}
+
+
+/**
+ * Return output from "git log" for this site or platform.
+ */
+function devshop_log_page($nid) {
+
+  $node = node_load($nid);
+  if($node->type == 'site') {
+    $node = node_load($node->platform);
+  }
+
+  // Run "git log" and capture the output. We need to chdir to the repo
+  // directory before we fetch the log. Technically, I should be able to
+  // use git's --work-tree option and not have to chdir, but for some
+  // reason, it doesn't work. It works when I run the exact same command
+  // at the shell prompt, but doesn't work when I call git from PHP.
+  // Something to fix one day.
+
+  $log_count = variable_get('devshop_git_log_count', 10);
+  $log_count_opt = '';
+  if($log_count > 0) {
+    $log_count_opt = "-$log_count";
+  }
+
+  $git_path = variable_get('devshop_git_path', 'git');
+
+  // Get our current working directory
+  $cwd = getcwd();
+
+  // Switch to the repo directory
+  chdir($node->publish_path);
+
+  // Fetch the log
+  $output = shell_exec("$git_path log $log_count_opt 2>&1");
+
+  // Change back to our original work directory
+  chdir($cwd);
+
+  // See if the command failed
+  if ($output == NULL) {
+    return "Unable to execute 'git log'. " .
+    	   "Make sure the 'git' executable is in your path.";
+  }
+
+  // return the output
+  return check_markup($output);
+}
