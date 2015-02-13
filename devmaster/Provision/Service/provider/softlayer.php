@@ -32,14 +32,20 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
     require_once dirname(__FILE__) . '/SoftLayer/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
 
     // Initialize an API client for the SoftLayer_Account service.
-    $hardware = SoftLayer_SoapClient::getClient('SoftLayer_Hardware', null, $provider_options->api_username, $provider_options->api_key);
+    $hardware = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', null, $provider_options->api_username, $provider_options->api_key);
 
     drush_log('[DEVSHOP|softlayer] API: ' . $provider_options->api_username . '...' . $provider_options->api_key, 'notice');
 
     // Retrieve our account record
     try {
       $server = $hardware->createObject($provider_options);
-      drush_log(print_r($server, 1), 'ok');
+      drush_log('[DEVSHOP|softlayer] SoftLayer_Hardware::createObject() ' . print_r($server, 1), 'ok');
+
+      $provider_options->softlayer_global_identifier = $server->globalIdentifier;
+      $this->server->setProperty('provider_options', $provider_options);
+
+      $object = $hardware->getObject();
+      drush_log('[DEVSHOP|softlayer] SoftLayer_Hardware::getObject() ' . print_r($object, 1), 'ok');
 
       // SERVER!?
 
