@@ -38,5 +38,6 @@ function devshop_cloud_drush_command() {
  *  It matches the same service definition in the hosting front end.
  */
 function devshop_cloud_services() {
+  devshop_cloud_register_autoload();
   return array('provider' => 'servers');
 }
