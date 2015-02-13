@@ -7,9 +7,9 @@
  * Save environment name, project name, and git ref to site aliases.
  */
 function devshop_cloud_hosting_server_context_options(&$task) {
-  if (isset($task->ref->provider)) {
-    $task->context_options['provider'] = $task->ref->provider;
-    $task->context_options['provider_options'] = $task->ref->provider_options;
+  if (isset($task->ref->services['provider'])) {
+    $task->context_options['provider'] = $task->ref->services['provider']->type;
+    $task->context_options['provider_options'] = $task->ref->services['provider']->provider_options;
   }
 }
 
