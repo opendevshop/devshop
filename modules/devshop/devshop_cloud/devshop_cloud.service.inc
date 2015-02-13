@@ -46,13 +46,17 @@ class hostingService_provider_softlayer extends hostingService_provider {
   function __construct($node, $values = null) {
     parent::__construct($node, $values);
 
-    $this->provider_options = array(
-      'hostname' => $this->server->title,
-      'domain' => $this->server->title,
-      'processorCoreAmount' => 1,
-      'memoryCapacity' => 1,
-      'hourlyBillingFlag' => TRUE,
-      'operatingSystemReferenceCode' => '',
-    );
+    $this->provider_options = new stdClass();
+    $this->provider_options->hostname = $this->server->title;
+    $this->provider_options->domain = $this->server->title;
+    $this->provider_options->processorCoreAmount = 2;
+    $this->provider_options->memoryCapacity = 4;
+    $this->provider_options->hourlyBillingFlag = TRUE;
+    $this->provider_options->operatingSystemReferenceCode = 'UBUNTU_12_64';
+
+    $this->provider_options->datacenter = new stdClass();
+    $this->provider_options->datacenter->name = 'par01';
+
+
   }
 }
