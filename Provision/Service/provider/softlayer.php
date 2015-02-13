@@ -10,8 +10,8 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
   function save_server() {
     drush_log('[DEVSHOP|softlayer] Provision_Service_provider_softlayer->save_server()', 'ok');
 
-    // Save digitalocean specific info to the drush alias.
-    $this->server->setProperty('softlayer_thing', 'FAKEDROPID');
+    // Example property.
+    $this->server->setProperty('devshop_cloud', TRUE);
 
     // $this->server->shell_exec($path . ' -V');
 
@@ -28,21 +28,20 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
     $provider_options = (object) drush_get_option('provider_options', '');
 
     drush_log('[DEVSHOP|softlayer] Verifying Server ' . $server_fqdn . '...', 'notice');
-//    drush_log('[DEVSHOP|softlayer] ' .print_r($provider_options, 1), 'notice');
 
     require_once dirname(__FILE__) . '/SoftLayer/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
 
-    $apiUsername = drush_get_option('softlayer-api-username', '');
-    $apiKey = drush_get_option('softlayer-api-key', '');
-
-
     // Initialize an API client for the SoftLayer_Account service.
-    $hardware = SoftLayer_SoapClient::getClient('SoftLayer_Hardware', null, $apiUsername, $apiKey);
+    $hardware = SoftLayer_SoapClient::getClient('SoftLayer_Hardware', null, $provider_options->api_username, $provider_options->api_key);
+
+    drush_log('[DEVSHOP|softlayer] API: ' . $provider_options->api_username . '...' . $provider_options->api_key, 'notice');
 
     // Retrieve our account record
     try {
       $server = $hardware->createObject($provider_options);
-      print_r($server);
+      drush_log(print_r($server, 1), 'ok');
+
+      // SERVER!?
 
     } catch (Exception $e) {
 
