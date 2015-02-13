@@ -29,6 +29,10 @@ class Provision_Service_provider extends Provision_Service {
 
   /**
    * This method is called once per server verify.
+   *
+   * NOT called from drush provision-save.
+   *
+   * MUST be called from a devmaster verify task.
    */
   function save_server() {
     // Save digitalocean specific info to the drush alias.
