@@ -37,7 +37,7 @@ function devshop_cloud_drush_command() {
  *  Declares a new service type and a basic implementation of it.
  *  It matches the same service definition in the hosting front end.
  */
-function devshop_cloud_services() {
+function devshop_cloud_provision_services() {
   devshop_cloud_register_autoload();
   return array('provider' => 'servers');
 }

@@ -3,7 +3,7 @@
 /**
  * The site_project service class.
  */
-class Provision_Service_server_provider extends Provision_Service {
+class Provision_Service_provider extends Provision_Service {
   public $service = 'provider';
 
   /**
@@ -20,7 +20,8 @@ class Provision_Service_server_provider extends Provision_Service {
   }
 
   function verify_server_cmd() {
-    $this->create_config($this->context->type);
+    $this->create_config(d()->type);
+
     $this->parse_configs();
   }
 }
