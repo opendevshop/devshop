@@ -12,6 +12,7 @@ class Provision_Service_provider extends Provision_Service {
   static function subscribe_server($context) {
     $context->setProperty('provider');
     $context->setProperty('provider_options');
+    $context->setProperty('provider_data');
   }
 
   function verify_server_cmd() {
