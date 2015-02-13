@@ -37,7 +37,7 @@ function devmaster_profile_modules() {
     'devshop_pull',
 
     /* NICEITIES */
-``    'hosting_filemanager',
+    'hosting_filemanager',
     'hosting_logs',
     'hosting_tasks_extra',
     'hosting_backup_queue',
