@@ -1,0 +1,102 @@
+<?php
+
+include_once('devshop_cloud.drush.inc');
+
+/**
+ * Expose a type of service to the Service API.
+ *
+ * Return a new type of service (such as http, dns, db etc.) to
+ * the service API.
+ *
+ * This information will be used to display the server node form,
+ * allowing you to create services of this type.
+ *
+ * Just defining a service type without any implementations of it,
+ * will automatically provide the "None" implementation.
+ *
+ * You will then need to create a new file in the same directory
+ * as your module named "$module.service.inc, containing at
+ * least a single class named "provisionService_$service", which
+ * extends the base provisionService class.
+ *
+ * @see hosting_server_services()
+ * @return
+ *    an associative array with the index declaring the service
+ *    type, and containing another associative array of properties.
+ *    At present only the 'title' property is required for display
+ *    of the server node form.
+ */
+function devshop_cloud_hosting_service_type() {
+  return array(
+    'provider' => array(
+      'title' => 'Cloud Provider',
+      'weight' => 0,
+    ),
+  );
+}
+
+/**
+ * Expose a service implementation to the service API.
+ *
+ * Return a service implementation, such as the "apache" implementation
+ * of the "http" service.
+ *
+ * An implementation class should go in {module name}.service.inc and be must be
+ * named hostingService_{service type}_{type}, which should be a subclass of
+ * hostingService_{service type} or hostingService.
+ *
+ * You will then need to either extend the existing {module name}.service.inc
+ * file, or create a new file, containing the implementation of your service.
+ *
+ * @return
+ *   An associative array with the service implementation as key, and the
+ *   service type implemented as value.
+ *
+ * @see hosting_server_services()
+ */
+function devshop_cloud_hosting_service() {
+  return array(
+    'digitalocean' => 'provider',
+    'rackspace' => 'provider',
+    'softlayer' => 'provider',
+  );
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'server') {
+    switch ($op) {
+      case 'view':
+        if ($node->services['provider']) {
+          $node->content['info']['provider'] = array(
+            '#type' => 'item',
+            '#title' => t('Cloud Provider'),
+            '#value' => $node->services['provider']->type,
+            '#weight' => 22,
+          );
+        }
+        break;
+      case 'insert':
+      case 'update':
+        break;
+      case 'delete' :
+        break;
+      case 'delete revision':
+        break;
+      case 'validate' :
+        break;
+      case 'load':
+        $additions['provider'] = 'digitalocean';
+        $additions['provider_options'] = array(
+          'name' => $node->title,
+          'region' => 'nyc3',
+          'size' => '512mb',
+          'image' => "ubuntu-14-04-x64",
+        );
+        return $additions;
+        break;
+    }
+  }
+}
