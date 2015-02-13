@@ -88,14 +88,6 @@ function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       case 'validate' :
         break;
       case 'load':
-        $additions['provider'] = 'digitalocean';
-        $additions['provider_options'] = array(
-          'name' => $node->title,
-          'region' => 'nyc3',
-          'size' => '512mb',
-          'image' => "ubuntu-14-04-x64",
-        );
-        return $additions;
         break;
     }
   }
