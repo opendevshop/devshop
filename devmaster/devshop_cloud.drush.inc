@@ -39,5 +39,5 @@ function devshop_cloud_drush_command() {
  */
 function devshop_cloud_provision_services() {
   devshop_cloud_register_autoload();
-  return array('provider' => 'servers');
+  return array('provider' => NULL);
 }
