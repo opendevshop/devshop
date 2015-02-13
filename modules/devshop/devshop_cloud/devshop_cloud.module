@@ -92,3 +92,26 @@ function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     }
   }
 }
+
+//function softlayer_call() {
+//
+//  require_once dirname(__FILE__) . '/SoftLayer/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
+//
+//  $apiUsername = 'jonpugh';
+//  $apiKey = 'ed11e36248ac83f41665c37922e18fe0b37ad4bf05116411aff0073e7449677e';
+//
+//
+//  // Initialize an API client for the SoftLayer_Account service.
+//  $hardware = SoftLayer_SoapClient::getClient('SoftLayer_Hardware', null, $apiUsername, $apiKey);
+//
+//  // Retrieve our account record
+//  try {
+////    $server = $hardware->createObject($provider_options);
+//    $options = $hardware->getCreateObjectOptions();
+//    print_r($options);
+//
+//  } catch (Exception $e) {
+//
+//    return drush_set_error('DEVSHOP_CLOUD_API_ACCESS_DENIED', $e->getMessage());
+//  }
+//}
