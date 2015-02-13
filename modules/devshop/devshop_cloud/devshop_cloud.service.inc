@@ -49,9 +49,11 @@ class hostingService_provider_softlayer extends hostingService_provider {
     $this->provider_options = new stdClass();
     $this->provider_options->hostname = $this->server->title;
     $this->provider_options->domain = $this->server->title;
-    $this->provider_options->processorCoreAmount = 2;
-    $this->provider_options->memoryCapacity = 2;
+    $this->provider_options->startCpus = 2;
+    $this->provider_options->maxMemory = 4;
     $this->provider_options->hourlyBillingFlag = TRUE;
+    $this->provider_options->localDiskFlag = TRUE;
+    $this->provider_options->dedicatedAccountHostOnlyFlag = FALSE;
     $this->provider_options->operatingSystemReferenceCode = 'UBUNTU_12_64';
 
     $this->provider_options->datacenter = new stdClass();
