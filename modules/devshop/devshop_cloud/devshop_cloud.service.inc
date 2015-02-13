@@ -50,7 +50,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
     $this->provider_options->hostname = $this->server->title;
     $this->provider_options->domain = $this->server->title;
     $this->provider_options->processorCoreAmount = 2;
-    $this->provider_options->memoryCapacity = 4;
+    $this->provider_options->memoryCapacity = 2;
     $this->provider_options->hourlyBillingFlag = TRUE;
     $this->provider_options->operatingSystemReferenceCode = 'UBUNTU_12_64';
 
