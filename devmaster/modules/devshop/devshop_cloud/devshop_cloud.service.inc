@@ -56,7 +56,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
 
     $this->provider_options->datacenter = new stdClass();
     $this->provider_options->datacenter->name = 'par01';
-
-
+    $this->provider_options->api_key = variable_get('devshop_cloud_softlayer_api_key','YOURKEY');
+    $this->provider_options->api_username = variable_get('devshop_cloud_softlayer_api_username', 'YOURUSERNAME');
   }
 }
