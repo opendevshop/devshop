@@ -47,7 +47,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
     parent::__construct($node, $values);
 
     $this->provider_options = new stdClass();
-    $this->provider_options->hostname = $this->server->title;
+    $this->provider_options->hostname = 'devshop';
     $this->provider_options->domain = $this->server->title;
     $this->provider_options->startCpus = 2;
     $this->provider_options->maxMemory = 4;
