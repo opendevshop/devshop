@@ -36,9 +36,8 @@ class Provision_Service_provider extends Provision_Service {
    * MUST be called from a devmaster verify task.
    */
   function save_server() {
-    // Save digitalocean specific info to the drush alias.
+    // Save ip addresses.
     $this->server->setProperty('ip_addresses');
-
   }
 
   static function option_documentation() {
