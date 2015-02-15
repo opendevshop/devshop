@@ -10,6 +10,7 @@ function devshop_cloud_hosting_server_context_options(&$task) {
   if (isset($task->ref->services['provider'])) {
     $task->context_options['provider'] = $task->ref->services['provider']->type;
     $task->context_options['provider_options'] = $task->ref->services['provider']->provider_options;
+    $task->context_options['provider_server_identifier'] = $task->ref->services['provider']->provider_server_identifier;
   }
 }
 
@@ -21,6 +22,14 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
 
   // When a project is deleted...
   if ($task->ref->type == 'server') {
+
+    $server = d($task->ref->hosting_name);
+    drush_log('DEBUG: devshop_cloud_post_hosting_verify_task() d(hosting_name)->provider_data: ' . print_r(d($task->ref->hosting_name)->provider_data, 1));
+
+    variable_set("devshop_cloud_server_id_{$task->ref->nid}", d($task->ref->hosting_name)->provider_server_identifier);
+    variable_set("devshop_cloud_server_data_{$task->ref->nid}", d($task->ref->hosting_name)->provider_data);
+
     drush_log('[DEVSHOP] Server Verified... Saving info to front-end.', 'ok');
+
   }
 }
