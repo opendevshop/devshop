@@ -29,7 +29,8 @@ class hostingService_provider extends hostingService {
   function __construct($node, $values = null) {
     parent::__construct($node, $values);
     $this->server_node = $node;
-    $this->provider_server_identifier = variable_get("devshop_cloud_server_{$node->nid}", '');
+    $this->provider_data = variable_get("devshop_cloud_server_data_{$node->nid}", '');
+    $this->provider_server_identifier = variable_get("devshop_cloud_server_id_{$node->nid}", '');
   }
 }
 
