@@ -29,10 +29,16 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
     variable_set("devshop_cloud_server_id_{$task->ref->nid}", $data['context']['provider_server_identifier']);
     variable_set("devshop_cloud_server_data_{$task->ref->nid}", $data['context']['provider_data']);
 
-    $task->ref->ip_addresses = $data['context']['ip_addresses'];
+    if (empty($task->ref->ip_addresses)){
+      $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
+    }
+    else {
+      $task->ref->ip_addresses = $data['context']['ip_addresses'];
+    }
 
     $task->ref->no_verify = TRUE;
-    node_save($task->ref);
 
+    drush_log('[DEVSHOP] saving node... ' . print_r($task->ref, 1), 'ok');
+    node_save($task->ref);
   }
 }
