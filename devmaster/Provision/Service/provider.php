@@ -13,6 +13,7 @@ class Provision_Service_provider extends Provision_Service {
     $context->setProperty('provider');
     $context->setProperty('provider_options');
     $context->setProperty('provider_data');
+    $context->setProperty('provider_server_identifier');
   }
 
   /**
