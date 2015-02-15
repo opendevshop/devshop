@@ -24,7 +24,15 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'server') {
     drush_log('[DEVSHOP] Server Verified... Saving info to front-end.', 'ok');
 
-    variable_set("devshop_cloud_server_id_{$task->ref->nid}", d($task->ref->hosting_name)->provider_server_identifier);
-    variable_set("devshop_cloud_server_data_{$task->ref->nid}", d($task->ref->hosting_name)->provider_data);
+    drush_log('[DEVSHOP] devshop_cloud_post_hosting_verify_task ' . print_r($data['context'], 1), 'ok');
+
+    variable_set("devshop_cloud_server_id_{$task->ref->nid}", $data['context']['provider_server_identifier']);
+    variable_set("devshop_cloud_server_data_{$task->ref->nid}", $data['context']['provider_data']);
+
+    $task->ref->ip_addresses = $data['context']['ip_addresses'];
+
+    $task->ref->no_verify = TRUE;
+    node_save($task->ref);
+
   }
 }
