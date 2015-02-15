@@ -31,9 +31,19 @@ class Provision_Service_provider_digitalocean extends Provision_Service_provider
 
       // Faking our provider server identifier.
       $this->server->setProperty('provider_server_identifier', '123456789');
+
+      $this->server->setProperty('ip_addresses', array(
+        '1.2.3.4'
+      ));
     }
 
     // Call Provision_Service_provider::save_server() to do things like save the IP address.
     parent::save_server();
+  }
+
+  function verify_server_cmd() {
+    drush_set_option('provider_data', $this->server->provider_data);
+    drush_set_option('provider_server_identifier', $this->server->provider_server_identifier);
+    drush_set_option('ip_addresses', $this->server->ip_addresses);
   }
 }
