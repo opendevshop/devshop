@@ -36,14 +36,18 @@ class Provision_Service_provider_digitalocean extends Provision_Service_provider
         '1.2.3.4'
       ));
     }
-
-    // Call Provision_Service_provider::save_server() to do things like save the IP address.
-    parent::save_server();
   }
 
+  /**
+   * Saves server options to drush options so they will be picked up by
+   * devshop_cloud_post_hosting_verify_task()
+   */
   function verify_server_cmd() {
     drush_set_option('provider_data', $this->server->provider_data);
     drush_set_option('provider_server_identifier', $this->server->provider_server_identifier);
-    drush_set_option('ip_addresses', $this->server->ip_addresses);
+
+    if (!empty($this->server->ip_addresses)) {
+      drush_set_option('ip_addresses', $this->server->ip_addresses);
+    }
   }
 }

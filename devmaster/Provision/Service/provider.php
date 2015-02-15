@@ -28,18 +28,6 @@ class Provision_Service_provider extends Provision_Service {
   function init_server() {
   }
 
-  /**
-   * This method is called once per server verify.
-   *
-   * NOT called from drush provision-save.
-   *
-   * MUST be called from a devmaster verify task.
-   */
-  function save_server() {
-    // Save ip addresses.
-    $this->server->setProperty('ip_addresses');
-  }
-
   static function option_documentation() {
     return array(
       '--provider' => 'The provider of this server. Must match an available Provision_Service_provider',
