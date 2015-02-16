@@ -32,7 +32,17 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
 
       // Retrieve our account record
       try {
-        $server = $virtual_guest->createObject($provider_options);
+
+        if (drush_get_option('simulate')) {
+          $server = array(
+            'id' => '00000',
+            'stuff' => 'from softlayer',
+          );
+        }
+        else {
+          $server = $virtual_guest->createObject($provider_options);
+        }
+
         drush_log('[DEVSHOP|softlayer] SoftLayer_Virtual_Guest::createObject() ' . print_r($server, 1), 'ok');
       } catch (Exception $e) {
         return drush_set_error('DEVSHOP_CLOUD_API_ACCESS_DENIED', $e->getMessage());
