@@ -11,28 +11,50 @@ class hostingService_provider_softlayer extends hostingService_provider {
   function form(&$form) {
     parent::form($form);
 
-    $options = $this->getOptions();
-    $form['provider_options'] = array();
-    $form['provider_options']['datacenter'] = array(
-      '#type' => 'select',
-      '#title' => t('Datacenter'),
-      '#options' => $options['datacenters'],
-    );
-    $form['provider_options']['memory'] = array(
-      '#type' => 'select',
-      '#title' => t('Memory'),
-      '#options' => $options['memory'],
-    );
-    $form['provider_options']['operatingSystems'] = array(
-      '#type' => 'select',
-      '#title' => t('Operating System'),
-      '#options' => $options['operatingSystems'],
-    );
-    $form['provider_options']['processors'] = array(
-      '#type' => 'select',
-      '#title' => t('Processors'),
-      '#options' => $options['processors'],
-    );
+    // Don't allow editing.
+    if ($this->server->nid) {
+      $form['provider_options'] = array();
+      $form['provider_options']['datacenter'] = array(
+        '#type' => 'value',
+        '#value' => $this->provider_options['datacenter'],
+      );
+      $form['provider_options']['memory'] = array(
+        '#type' => 'value',
+        '#value' => $this->provider_options['memory'],
+      );
+      $form['provider_options']['operatingSystems'] = array(
+        '#type' => 'value',
+        '#value' => $this->provider_options['operatingSystems'],
+      );
+      $form['provider_options']['processors'] = array(
+        '#type' => 'value',
+        '#value' => $this->provider_options['processors'],
+      );
+    }
+    else {
+      $options = $this->getOptions();
+      $form['provider_options'] = array();
+      $form['provider_options']['datacenter'] = array(
+        '#type' => 'select',
+        '#title' => t('Datacenter'),
+        '#options' => $options['datacenters'],
+      );
+      $form['provider_options']['memory'] = array(
+        '#type' => 'select',
+        '#title' => t('Memory'),
+        '#options' => $options['memory'],
+      );
+      $form['provider_options']['operatingSystems'] = array(
+        '#type' => 'select',
+        '#title' => t('Operating System'),
+        '#options' => $options['operatingSystems'],
+      );
+      $form['provider_options']['processors'] = array(
+        '#type' => 'select',
+        '#title' => t('Processors'),
+        '#options' => $options['processors'],
+      );
+    }
   }
 
   /**
