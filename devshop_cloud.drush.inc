@@ -39,7 +39,10 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
 
     $task->ref->no_verify = TRUE;
 
-    drush_log('[DEVSHOP] saving node... ' . print_r($task->ref, 1), 'ok');
+    drush_log(dt('[DEVSHOP] Saving server ID &id and data for &server', array(
+      '&id' => $data['context']['provider_server_identifier'],
+      '&server' => $task->ref->title,
+    )), 'ok');
     node_save($task->ref);
   }
 }
