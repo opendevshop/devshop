@@ -5,6 +5,14 @@
  */
 
 /**
+ * Implementation of hook_install().
+ */
+function devshop_cloud_install() {
+  // Create tables.
+  drupal_install_schema('devshop_cloud');
+}
+
+/**
  * Implementation of hook_schema().
  */
 function devshop_cloud_schema() {
@@ -15,11 +23,6 @@ function devshop_cloud_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-      ),
-      'provider' => array(
-        'type' => 'varchar',
-        'size' => 128,
-        'not null' => TRUE,
       ),
       'provider_options' => array(
         'type' => 'text',
@@ -32,8 +35,8 @@ function devshop_cloud_schema() {
         'not null' => TRUE,
       ),
       'provider_server_identifier' => array(
-        'type' => 'varchar',
-        'size' => 256,
+        'type' => 'text',
+        'size' => 'tiny',
         'not null' => TRUE,
       ),
     ),
