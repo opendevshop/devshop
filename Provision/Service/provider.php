@@ -28,6 +28,19 @@ class Provision_Service_provider extends Provision_Service {
   function init_server() {
   }
 
+  /**
+   * Saves server options to drush options so they will be picked up by
+   * devshop_cloud_post_hosting_verify_task()
+   */
+  function verify_server_cmd() {
+    drush_set_option('provider_data', $this->server->provider_data);
+    drush_set_option('provider_server_identifier', $this->server->provider_server_identifier);
+
+    if (!empty($this->server->ip_addresses)) {
+      drush_set_option('ip_addresses', $this->server->ip_addresses);
+    }
+  }
+
   static function option_documentation() {
     return array(
       '--provider' => 'The provider of this server. Must match an available Provision_Service_provider',
