@@ -29,9 +29,9 @@ class hostingService_provider extends hostingService {
    */
   function insert() {
     parent::insert();
-    db_query("INSERT INTO {hosting_devshop_cloud_provider} (nid, provider_options, provider_data, provider_server_identifier)
-      VALUES (%d, '%s', '%s', '%s')",
-      $this->server->nid, serialize($this->provider_options), '', '');
+    db_query("INSERT INTO {hosting_devshop_cloud_provider} (nid, provider_options)
+      VALUES (%d, '%s')",
+      $this->server->nid, serialize($this->provider_options));
   }
 
   /**
@@ -39,9 +39,7 @@ class hostingService_provider extends hostingService {
    */
   function update() {
     parent::update();
-    if ($this->provider_server_identifier) {
-      db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s', provider_server_identifier = '%s' WHERE nid = %d", serialize($this->provider_data), $this->provider_server_identifier, $this->server->nid);
-    }
+    db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s', provider_server_identifier = '%s' WHERE nid = %d", serialize($this->provider_data), $this->provider_server_identifier, $this->server->nid);
   }
 
   function delete() {
