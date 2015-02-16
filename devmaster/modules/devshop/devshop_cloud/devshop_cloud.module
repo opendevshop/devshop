@@ -3,7 +3,7 @@
 include_once('devshop_cloud.drush.inc');
 
 /**
- *
+ * Implements hook_menu()
  */
 function devshop_cloud_menu(){
   $items = array();
