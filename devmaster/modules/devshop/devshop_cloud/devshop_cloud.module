@@ -21,6 +21,15 @@ function devshop_cloud_menu(){
 }
 
 /**
+ * Implements hook_perm()
+ */
+function devshop_perm() {
+  return array(
+    'administer devshop cloud'
+  );
+}
+
+/**
  * Expose a type of service to the Service API.
  *
  * Return a new type of service (such as http, dns, db etc.) to
