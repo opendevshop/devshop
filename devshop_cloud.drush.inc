@@ -14,7 +14,6 @@ function devshop_cloud_hosting_server_context_options(&$task) {
   }
 }
 
-
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task() for delete tasks.
  */
