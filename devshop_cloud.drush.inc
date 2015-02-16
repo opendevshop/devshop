@@ -21,11 +21,15 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
 
   // When a project is deleted...
   if ($task->ref->type == 'server') {
-    drush_log('[DEVSHOP] Server Verified... Saving info to front-end.', 'ok');
+    if (empty($task->ref->services['provider']->provider_server_identifier)) {
+      return drush_set_error('DEVSHOP_CLOUD_SERVER_ID_NOT_FOUND', 'The provider did not return a server identifier.');
+    }
 
+    // Save Provider Data and ID to the service in the front-end.
     $task->ref->services['provider']->provider_data = $data['context']['provider_data'];
     $task->ref->services['provider']->provider_server_identifier = $data['context']['provider_server_identifier'];
 
+    // Save IP addresses.
     if (empty($task->ref->ip_addresses)){
       $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
     }
