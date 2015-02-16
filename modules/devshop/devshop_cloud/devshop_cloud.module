@@ -54,33 +54,6 @@ function devshop_cloud_hosting_service_type() {
 }
 
 /**
- * Expose a service implementation to the service API.
- *
- * Return a service implementation, such as the "apache" implementation
- * of the "http" service.
- *
- * An implementation class should go in {module name}.service.inc and be must be
- * named hostingService_{service type}_{type}, which should be a subclass of
- * hostingService_{service type} or hostingService.
- *
- * You will then need to either extend the existing {module name}.service.inc
- * file, or create a new file, containing the implementation of your service.
- *
- * @return
- *   An associative array with the service implementation as key, and the
- *   service type implemented as value.
- *
- * @see hosting_server_services()
- */
-function devshop_cloud_hosting_service() {
-  return array(
-    'digitalocean' => 'provider',
-    'rackspace' => 'provider',
-    'softlayer' => 'provider',
-  );
-}
-
-/**
  * Implementation of hook_nodeapi()
  */
 function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {

@@ -1,7 +1,18 @@
 <?php
 
 /**
+ * Implements hook_hosting_service()
+ */
+function devshop_softlayer_hosting_service() {
+  return array(
+    'softlayer' => 'provider',
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
  *
+ * Alters devshop cloud settings form to add softlayer api keys.
  */
 function devshop_softlayer_form_devshop_cloud_settings_form_alter(&$form, &$form_state) {
 
