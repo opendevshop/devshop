@@ -26,23 +26,22 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
     }
 
     // Save Provider Data and ID to the service in the front-end.
-    $task->ref->services['provider']->provider_data = $data['context']['provider_data'];
-    $task->ref->services['provider']->provider_server_identifier = $data['context']['provider_server_identifier'];
-
-    // Save IP addresses.
-    if (empty($task->ref->ip_addresses)){
-      $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
+    if (db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s', provider_server_identifier = '%s' WHERE nid = %d", serialize($data['context']['provider_data']), $data['context']['provider_server_identifier'], $task->ref->nid)) {
+      drush_log(dt('[DEVSHOP] Saving server ID &id and data for &server', array(
+        '&id' => $data['context']['provider_server_identifier'],
+        '&server' => $task->ref->title,
+      )), 'ok');
     }
     else {
-      $task->ref->ip_addresses = $data['context']['ip_addresses'];
+      return drush_set_error('DEVSHOP_CLOUD_UNABLE_TO_SAVE', dt('Unable to save server ID and data to database.'));
     }
-
-    $task->ref->no_verify = TRUE;
-
-    drush_log(dt('[DEVSHOP] Saving server ID &id and data for &server', array(
-      '&id' => $data['context']['provider_server_identifier'],
-      '&server' => $task->ref->title,
-    )), 'ok');
-    node_save($task->ref);
+//
+//    // Save IP addresses.
+//    if (empty($task->ref->ip_addresses)){
+//      $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
+//    }
+//    else {
+//      $task->ref->ip_addresses = $data['context']['ip_addresses'];
+//    }
   }
 }
