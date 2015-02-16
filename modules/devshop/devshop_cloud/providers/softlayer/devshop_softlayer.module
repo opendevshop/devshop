@@ -13,7 +13,7 @@ function devshop_softlayer_form_devshop_cloud_settings_form_alter(&$form, &$form
 
   $form['softlayer']['devshop_cloud_softlayer_api_username'] = array(
     '#type' => 'textfield',
-    '#title' => t('API Usernkame'),
+    '#title' => t('API Username'),
     '#description' => t('Enter your softlayer username here.'),
     '#default_value' => variable_get('devshop_cloud_softlayer_api_username', ''),
   );
