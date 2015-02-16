@@ -234,7 +234,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   }
 
   // Site "Edit" page.  This is our environment settings page..
-  if ($form_id == 'site_node_form') {
+  if ($form_id == 'site_node_form' && isset($node->environment)) {
 
     $node = $form['#node'];
     $environment = $node->environment;
