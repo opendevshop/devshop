@@ -24,7 +24,7 @@ function devshop_softlayer_options_form() {
     $form['info'] = array(
       '#type' => 'item',
       '#title' => t('SoftLayer Options'),
-      '#value' => empty($options)? t('No options available. Click "Refresh SoftLayer Options".'): kpr($options, 1),
+      '#value' => empty($options)? t('No options available. Click "Refresh SoftLayer Options".'): 'SoftLayer options are saved.',
     );
 
     $form['note'] = array(
