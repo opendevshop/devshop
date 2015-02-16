@@ -23,8 +23,6 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'server') {
     drush_log('[DEVSHOP] Server Verified... Saving info to front-end.', 'ok');
 
-    drush_log('[DEVSHOP] devshop_cloud_post_hosting_verify_task ' . print_r($data['context'], 1), 'ok');
-
     $task->ref->services['provider']->provider_data = $data['context']['provider_data'];
     $task->ref->services['provider']->provider_server_identifier = $data['context']['provider_server_identifier'];
 
