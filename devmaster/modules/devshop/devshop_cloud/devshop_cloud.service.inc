@@ -53,17 +53,6 @@ class hostingService_provider extends hostingService {
     $this->mergeData('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid);
     $this->provider_options = unserialize($this->provider_options);
   }
-
-  function view(&$render) {
-    parent::view($render);
-
-    $render['options'] = array(
-      '#type' => 'item',
-      '#title' => t('Provider Options'),
-      '#value' => print_r($this->provider_options, 1),
-    );
-
-  }
 }
 
 /**
