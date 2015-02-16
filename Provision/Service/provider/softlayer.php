@@ -10,28 +10,24 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
    * This method is called once per server verify.
    */
   function save_server() {
-    drush_log('[DEVSHOP|softlayer] Provision_Service_provider_softlayer->save_server()', 'ok');
+    // Look for provider_server_identifier
+    $server_identifier = $this->server->provider_server_identifier;
 
-    // Check for globalIdentifier
-    $provider_data = d()->provider_data;
-    if (empty($provider_data['globalIdentifier'])) {
+    // If server ID is already found, move on.
+    if ($server_identifier) {
+      drush_log('[DEVSHOP] Server Identifier Found.  Not creating new server.', 'ok');
+    }
+    // If there is no server ID, create the server.
+    else {
 
-      drush_log('[DEVSHOP|softlayer] No global identifier! Creating server...', 'ok');
-
-      // If there is none, attempt to create a server
+      drush_log('[DEVSHOP] Server Identifier not found.  Creating new server!', 'ok');
       $provider_data = (array) $this->create_softlayer_virtual_guest();
       $this->server->setProperty('provider_data', $provider_data);
 
       // @TODO: Wait for server using getObject()
-
+      // Faking our provider server identifier.
+      $this->server->setProperty('provider_server_identifier', $provider_data['globalIdentifier']);
     }
-    else {
-      drush_log('[DEVSHOP|softlayer] Global identifier found. skipping server creation.', 'ok');
-
-    }
-
-    // Call Provision_Service_provider::save_server() to do things like save the IP address.
-    parent::save_server();
   }
 
   /**
