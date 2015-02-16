@@ -35,6 +35,8 @@ class Provision_Service_provider_digitalocean extends Provision_Service_provider
       $this->server->setProperty('ip_addresses', array(
         '1.2.3.4'
       ));
+
+      drush_log('[DEVSHOP] Server Identifier found: 123456789. Assumed server was created.', 'ok');
     }
   }
 }
