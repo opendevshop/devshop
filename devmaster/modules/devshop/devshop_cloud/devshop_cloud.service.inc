@@ -39,14 +39,6 @@ class hostingService_provider extends hostingService {
 
   }
 
-  /**
-   * On server update, we only want to save provider data and provider_server_identifier.
-   */
-  function update() {
-    parent::update();
-    db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s' WHERE nid = %d", serialize($this->provider_data), $this->server->nid);
-  }
-
   function delete() {
     parent::delete();
     db_query('DELETE FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid);
