@@ -1,6 +1,22 @@
 <?php
 
 /**
+ * Implements hook_menu()
+ */
+function devshop_softlayer_menu(){
+  $items = array();
+  $items['admin/hosting/devshop/softlayer'] = array(
+    'title' => 'SoftLayer',
+    'description' => 'Retrieve options from softlayer.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_softlayer_options_form'),
+    'access arguments' => array('administer devshop cloud'),
+    'file' => 'options.php',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+/**
  * Implements hook_hosting_service()
  */
 function devshop_softlayer_hosting_service() {
