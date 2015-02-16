@@ -25,7 +25,7 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
       $this->server->setProperty('provider_data', $provider_data);
 
       // @TODO: Wait for server using getObject()
-      $this->server->setProperty('provider_server_identifier', $provider_data['globalIdentifier']);
+      $this->server->setProperty('provider_server_identifier', $provider_data['id']);
     }
   }
 
