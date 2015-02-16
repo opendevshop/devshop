@@ -1,0 +1,32 @@
+<?php
+
+/**
+ *
+ */
+function devshop_softlayer_form_devshop_cloud_settings_form_alter(&$form, &$form_state) {
+
+  $form['softlayer'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('SoftLayer'),
+    '#weight' => -100,
+  );
+
+  $form['softlayer']['devshop_cloud_softlayer_api_username'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API Usernkame'),
+    '#description' => t('Enter your softlayer username here.'),
+    '#default_value' => variable_get('devshop_cloud_softlayer_api_username', ''),
+  );
+
+  $url = 'https://control.softlayer.com/account/users';
+  $form['softlayer']['devshop_cloud_softlayer_api_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API Key'),
+    '#description' => t('Enter your SoftLayer API key here.  Get your API key at !link', array(
+      '!link' => l($url, $url),
+    )),
+    '#default_value' => variable_get('devshop_cloud_softlayer_api_key', ''),
+  );
+
+
+}
