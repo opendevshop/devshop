@@ -3,6 +3,24 @@
 include_once('devshop_cloud.drush.inc');
 
 /**
+ *
+ */
+function devshop_cloud_menu(){
+  $items = array();
+  $items['admin/hosting/devshop/cloud'] = array(
+    'title' => 'Cloud',
+    'description' => 'Configure cloud providers.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_cloud_settings_form'),
+    'access arguments' => array('administer devshop cloud'),
+    'file' => 'settings.php',
+    'file path' => drupal_get_path('module', 'devshop_cloud') . '/includes',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
  * Expose a type of service to the Service API.
  *
  * Return a new type of service (such as http, dns, db etc.) to

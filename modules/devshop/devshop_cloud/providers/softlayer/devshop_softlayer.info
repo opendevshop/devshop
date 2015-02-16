@@ -1,0 +1,6 @@
+name = DevShop Cloud: SoftLayer
+description = Launches servers in softlayer.
+core = 6.x
+package = DevShop
+
+dependencies[] = devshop_cloud
