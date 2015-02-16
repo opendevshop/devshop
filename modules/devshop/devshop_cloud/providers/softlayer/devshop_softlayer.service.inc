@@ -16,9 +16,12 @@ class hostingService_provider_softlayer extends hostingService_provider {
   function __construct($node, $values = null) {
     parent::__construct($node, $values);
 
+    // Break up title into hostname (subdomain) and domain.
+    $domain = explode('.', $node->title);
+
     $this->provider_options = new stdClass();
-    $this->provider_options->hostname = 'devshop';
-    $this->provider_options->domain = $this->server->title;
+    $this->provider_options->hostname = $domain[0];
+    $this->provider_options->domain = implode('.', array_slice($domain, 1));
     $this->provider_options->startCpus = 2;
     $this->provider_options->maxMemory = 4;
     $this->provider_options->hourlyBillingFlag = TRUE;
