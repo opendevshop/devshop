@@ -24,13 +24,45 @@ class hostingService_provider extends hostingService {
    */
   public $provider_server_identifier = '';
 
-  public $server_node = NULL;
+  /**
+   * On server insert, we only have the provider_options.
+   */
+  function insert() {
+    parent::insert();
+    db_query("INSERT INTO {hosting_devshop_cloud_provider} (nid, provider_options, provider_data, provider_server_identifier)
+      VALUES (%d, '%s', '%s', '%s')",
+      $this->server->nid, serialize($this->provider_options), '', '');
+  }
 
-  function __construct($node, $values = null) {
-    parent::__construct($node, $values);
-    $this->server_node = $node;
-    $this->provider_data = variable_get("devshop_cloud_server_data_{$node->nid}", '');
-    $this->provider_server_identifier = variable_get("devshop_cloud_server_id_{$node->nid}", '');
+  /**
+   * On server update, we only want to save provider data and provider_server_identifier.
+   */
+  function update() {
+    parent::update();
+    db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s', provider_server_identifier = '%s' WHERE nid = %d",
+      serialize($this->provider_data), $this->provider_server_identifier, $this->server->nid);
+  }
+
+  function delete() {
+    parent::delete();
+    db_query('DELETE FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid);
+  }
+
+  function load() {
+    parent::load();
+    $this->mergeData('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid);
+    $this->provider_options = unserialize($this->provider_options);
+  }
+
+  function view(&$render) {
+    parent::view($render);
+
+    $render['options'] = array(
+      '#type' => 'item',
+      '#title' => t('Provider Options'),
+      '#value' => print_r($this->provider_options, 1),
+    );
+
   }
 }
 
