@@ -15,11 +15,11 @@ function devshop_cloud_hosting_server_context_options(&$task) {
 }
 
 /**
- * Implementation of hook_post_hosting_TASK_TYPE_task() for delete tasks.
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for verified tasks.
  */
 function devshop_cloud_post_hosting_verify_task($task, $data) {
 
-  // When a project is deleted...
+  // When a project is verified...
   if ($task->ref->type == 'server') {
     if (empty($data['context']['provider_server_identifier'])) {
       return drush_set_error('DEVSHOP_CLOUD_SERVER_ID_NOT_FOUND', 'The provider did not return a server identifier.');
