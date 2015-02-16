@@ -39,8 +39,9 @@ class hostingService_provider extends hostingService {
    */
   function update() {
     parent::update();
-    db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s', provider_server_identifier = '%s' WHERE nid = %d",
-      serialize($this->provider_data), $this->provider_server_identifier, $this->server->nid);
+    if ($this->provider_server_identifier) {
+      db_query("UPDATE {hosting_devshop_cloud_provider} SET provider_data = '%s', provider_server_identifier = '%s' WHERE nid = %d", serialize($this->provider_data), $this->provider_server_identifier, $this->server->nid);
+    }
   }
 
   function delete() {
