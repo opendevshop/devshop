@@ -15,8 +15,8 @@ class Provision_Service_provider_digitalocean extends Provision_Service_provider
     $server_identifier = $this->server->provider_server_identifier;
 
     // If server ID is already found, move on.
-    if ($server_identifier) {
-      drush_log('[DEVSHOP] Server Identifier Found.  Not creating new server.', 'ok');
+    if (!empty($server_identifier)) {
+      drush_log('[DEVSHOP] Server Identifier Found: ' . $server_identifier . '  Not creating new server.', 'ok');
     }
     // If there is no server ID, create the server.
     else {
