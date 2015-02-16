@@ -1,0 +1,44 @@
+<?php
+/**
+ * @file
+ * devshop_cloud.install
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_cloud_schema() {
+  $schema['hosting_devshop_cloud_provider'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'provider' => array(
+        'type' => 'varchar',
+        'size' => 128,
+        'not null' => TRUE,
+      ),
+      'provider_options' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+      'provider_data' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+      'provider_server_identifier' => array(
+        'type' => 'varchar',
+        'size' => 256,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+
+  return $schema;
+}
