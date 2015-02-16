@@ -56,7 +56,7 @@ function devshop_softlayer_options_form_submit() {
   try {
     $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', null, $apiUsername, $apiKey);
     $options['options'] = $client->getCreateObjectOptions();
-    variable_set('devshop_cloud_softlayer_options', $options);
+    variable_set('devshop_cloud_softlayer_options', $options['options']);
     drupal_set_message(t('SoftLayer options have been saved.'));
 
   } catch (Exception $e) {
