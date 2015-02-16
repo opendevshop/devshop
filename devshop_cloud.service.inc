@@ -29,9 +29,14 @@ class hostingService_provider extends hostingService {
    */
   function insert() {
     parent::insert();
-    db_query("INSERT INTO {hosting_devshop_cloud_provider} (nid, provider_options)
+
+    // Prevent duplicate insert... Not sure why this happens.
+    if (!db_result(db_query('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid))) {
+      db_query("INSERT INTO {hosting_devshop_cloud_provider} (nid, provider_options)
       VALUES (%d, '%s')",
-      $this->server->nid, serialize($this->provider_options));
+        $this->server->nid, serialize($this->provider_options));
+    }
+
   }
 
   /**
@@ -60,20 +65,6 @@ class hostingService_provider extends hostingService {
  */
 class hostingService_provider_digitalocean extends hostingService_provider {
   public $type = 'digitalocean';
-
-  /**
-   * Constructor: Sets provider options.
-   * @param $node
-   * @param null $values1
-   */
-  function __construct($node, $values = null) {
-    parent::__construct($node, $values);
-
-    $this->provider_options = new stdClass();
-    $this->provider_options->hostname = $node->title;
-    $this->provider_options->size = '2GB';
-
-  }
 
 }
 
