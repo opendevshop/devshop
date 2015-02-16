@@ -26,8 +26,8 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
 
     drush_log('[DEVSHOP] devshop_cloud_post_hosting_verify_task ' . print_r($data['context'], 1), 'ok');
 
-    variable_set("devshop_cloud_server_id_{$task->ref->nid}", $data['context']['provider_server_identifier']);
-    variable_set("devshop_cloud_server_data_{$task->ref->nid}", $data['context']['provider_data']);
+    $task->ref->services['provider']->provider_data = $data['context']['provider_data'];
+    $task->ref->services['provider']->provider_server_identifier = $data['context']['provider_server_identifier'];
 
     if (empty($task->ref->ip_addresses)){
       $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
