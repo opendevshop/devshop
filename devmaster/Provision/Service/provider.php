@@ -26,9 +26,6 @@ class Provision_Service_provider extends Provision_Service {
    * Use sparingly.
    */
   function init_server() {
-    if (drush_get_option('simulate')) {
-      drush_log('[DEVSHOP] Cloud Simulator', 'ok');
-    }
   }
 
   /**
