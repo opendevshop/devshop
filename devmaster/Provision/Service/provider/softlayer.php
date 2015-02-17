@@ -38,7 +38,7 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
         //  'id' => '00000',
         //  'stuff' => 'from softlayer',
         //);
-        $server = $virtual_guest->createObject($provider_options);
+        $server = (array) $virtual_guest->createObject($provider_options);
 
         drush_log('[DEVSHOP|softlayer] Created server in softlayer: ' . $server['id'], 'ok');
       } catch (Exception $e) {
