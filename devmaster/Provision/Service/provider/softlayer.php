@@ -23,23 +23,24 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
       drush_log('[DEVSHOP] Server Identifier not found.  Creating new server!', 'ok');
 
       $server_fqdn = d()->remote_host;
-      $provider_options = $this->prepare_provider_options();
 
       drush_log('[DEVSHOP|softlayer] Creating Server ' . $server_fqdn . '...', 'notice');
 
       // Initialize an API client for the SoftLayer_Account service.
       $virtual_guest = $this->softlayer_client('SoftLayer_Virtual_Guest');
+      $provider_options = $this->prepare_provider_options();
 
       // Retrieve our account record
       try {
 
+        // @TODO: Add more robust simulation.
         $server = array(
           'id' => '00000',
           'stuff' => 'from softlayer',
         );
 //        $server = $virtual_guest->createObject($provider_options);
 
-        drush_log('[DEVSHOP|softlayer] SoftLayer_Virtual_Guest::createObject() ' . print_r($server, 1), 'ok');
+        drush_log('[DEVSHOP|softlayer] Created server in softlayer: ' . $server['id'], 'ok');
       } catch (Exception $e) {
         return drush_set_error('DEVSHOP_CLOUD_API_ACCESS_DENIED', $e->getMessage());
       }
