@@ -80,8 +80,6 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
     $api_key = drush_get_option('softlayer_api_key');
     $username = drush_get_option('softlayer_api_username');
 
-    drush_log('[DEVSHOP|softlayer] Accessing SoftLayer API: ' . $username . ' : ' . $api_key, 'warning');
-
     // Initialize an API client for the SoftLayer_Account service.
     $client = SoftLayer_SoapClient::getClient($service, $id, $username, $api_key);
     return $client;
