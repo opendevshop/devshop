@@ -82,8 +82,10 @@ function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             '#type' => 'item',
             '#title' => t('Cloud Provider'),
             '#value' => $node->services['provider']->type,
-            '#weight' => 22,
+            '#weight' => 0,
           );
+
+          // Options
           $rows = array();
           foreach ($node->services['provider']->provider_options as $key => $value) {
             $rows[] = array($key, $value);
@@ -94,12 +96,25 @@ function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             '#value' => theme('table', array(), $rows),
             '#weight' => 22,
           );
+
+          // Data
+          $rows = array();
+          foreach ($node->services['provider']->provider_data as $key => $value) {
+            $rows[] = array($key, $value);
+          }
+          $node->content['info']['provider_data'] = array(
+            '#type' => 'item',
+            '#title' => t('Data'),
+            '#value' => theme('table', array(), $rows),
+            '#weight' => 23,
+          );
+
           if ($node->services['provider']->provider_server_identifier) {
             $node->content['info']['provider_server_identifier'] = array(
               '#type' => 'item',
               '#title' => t('Server Identifier'),
               '#value' => $node->services['provider']->provider_server_identifier,
-              '#weight' => 23,
+              '#weight' => 24,
             );
           }
         }
