@@ -75,6 +75,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
   }
 
   public function context_options($task_type, $ref_type, &$task) {
+    parent::context_options($task_type, $ref_type, $task);
     $task->context_options['softlayer_api_username'] = variable_get('devshop_cloud_softlayer_api_username','YOURUSERNAME');
     $task->context_options['softlayer_api_key'] = variable_get('devshop_cloud_softlayer_api_key','YOURKEY');
   }
