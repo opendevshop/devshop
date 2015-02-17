@@ -12,27 +12,8 @@ class hostingService_provider_softlayer extends hostingService_provider {
     parent::form($form);
 
     // Don't allow editing.
-    if ($this->server->nid) {
-      $form['provider_options'] = array();
-      $form['provider_options']['datacenter'] = array(
-        '#type' => 'value',
-        '#value' => $this->provider_options['datacenter'],
-      );
-      $form['provider_options']['memory'] = array(
-        '#type' => 'value',
-        '#value' => $this->provider_options['memory'],
-      );
-      $form['provider_options']['operatingSystems'] = array(
-        '#type' => 'value',
-        '#value' => $this->provider_options['operatingSystems'],
-      );
-      $form['provider_options']['processors'] = array(
-        '#type' => 'value',
-        '#value' => $this->provider_options['processors'],
-      );
-    }
-    else {
-      $options = $this->getOptions();
+    if (!$this->server->nid) {
+      $options = $this->getSoftlayerOptions();
       $form['provider_options'] = array();
       $form['provider_options']['datacenter'] = array(
         '#type' => 'select',
@@ -60,7 +41,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
   /**
    * Process options
    */
-  function getOptions() {
+  function getSoftlayerOptions() {
     $options = array();
     $raw_options = variable_get('devshop_cloud_softlayer_options', array());
 
