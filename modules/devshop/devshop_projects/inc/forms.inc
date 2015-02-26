@@ -583,7 +583,7 @@ function devshop_projects_form(&$node) {
     '#type' => 'checkbox',
     '#title' => t('Allow deploying data from drush aliases.'),
     '#default_value' => $node->project->settings->deploy['allow_deploy_data_from_alias'],
-    '#description' => t('Requires a patch'),
+    '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
   );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
