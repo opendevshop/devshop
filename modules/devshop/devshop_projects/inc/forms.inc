@@ -464,6 +464,10 @@ function devshop_projects_form(&$node) {
   }
 
   // Project Settings
+  $form['project']['settings'] = array(
+    '#weight' => -10,
+  );
+
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
@@ -520,13 +524,14 @@ function devshop_projects_form(&$node) {
     '#type' => 'fieldset',
     '#title' => t('Deploy Settings'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
+    '#weight' => -10,
   );
 
   $form['project']['settings']['deploy']['method'] = array(
     '#title' => 'Deploy Code Method',
     '#type' => 'radios',
     '#description' => t('Choose the method used to deploy code to the server.'),
-    '#default_value' => $project->settings->deploy['method'],
+    '#default_value' => isset($project->settings->deploy['method'])? $project->settings->deploy['method']: 'webhook',
   );
 
   // Commit Webhook
