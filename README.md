@@ -1,6 +1,8 @@
 DevShop
 =======
 
+<img src="https://www.drupal.org/files/devshop.png" width="100%">
+
 [![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
 
 DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It a provides front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devmaster)).
@@ -108,3 +110,10 @@ The install script has been tested on:
 
   - ubuntu 12.04
   - centos 7.0
+
+Help Improve Documentation
+--------------------------
+
+Think this can be improved? You can [edit this file on GitHub](https://github.com/opendevshop/devshop/edit/0.x/README.md) and select "Create a new branch for this commit and start a pull request.".
+
+Thanks!
