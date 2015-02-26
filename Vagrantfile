@@ -38,8 +38,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
           mount_options: ["uid=12345,gid=12345"]
 
-      config.vm.synced_folder "source/projects", "/var/aegir/projects",
-          mount_options: ["uid=12345,gid=12345"]
+      # config.vm.synced_folder "source/projects", "/var/aegir/projects",
+      #    mount_options: ["uid=12345,gid=12345"]
 
       config.vm.provision "shell",
         path: 'vagrant-prepare-guest.sh'
