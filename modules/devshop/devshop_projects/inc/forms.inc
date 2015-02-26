@@ -638,6 +638,35 @@ function devshop_projects_form(&$node) {
       'clone_live' => t('Clone the live environment: %live', array('%live' => $project->settings->live['live_environment'])),
     )
   );
+
+  //All settings git pull in project page
+  $form['project']['settings']['default_environment'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Default Environment Settings'),
+  );
+
+  // HTTP Server select.
+  $http_servers = hosting_get_servers('http');
+  if (count($http_servers)) {
+    $form['project']['settings']['default_environment']['web_server'] = array(
+      '#title' => t('Web server'),
+      '#type' =>'select',
+      '#options' => $http_servers,
+      '#default_value' => $project->settings->default_environment['web_server'],
+    );
+  }
+
+  // DB Server select.
+  $db_servers = hosting_get_servers('db');
+  if (count($db_servers)) {
+    $form['project']['settings']['default_environment']['db_server'] = array(
+      '#title' => t('Database server'),
+      '#type' => 'select',
+      '#options' => $db_servers,
+      '#default_value' => $project->settings->default_environment['db_server'],
+    );
+  }
+
   return $form;
 }
 
