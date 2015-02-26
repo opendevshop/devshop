@@ -20,3 +20,10 @@ function devshop_hosting_update_7001() {
   $ret[] = update_sql('UPDATE {system} SET weight = 11 WHERE name = "devshop_hosting"');
   return $ret;
 }
+
+/**
+ * Disable aegir's "Welcome" page.
+ */
+function devshop_hosting_update_7002() {
+  variable_set('hosting_welcome_page', 0);
+}
