@@ -163,13 +163,14 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     $tests[] = 'Something is wrong. Environment not found.';
   }
   else {
-    $directory = $environment->repo_root  . '/' . $settings->testing['behat_folder_path'] . '/features';
+    $directory = $environment->repo_root . $settings->testing['behat_folder_path'] . '/features';
 
     $files = file_scan_directory($directory, '.feature', array('.', '..'));
 
     $tests = array();
     foreach ($files as $file) {
-      $tests[$file->filename] = $file->basename;
+      $value = str_replace($directory, '', $file->filename);
+      $tests[$value] = $file->basename;
     }
   }
 
