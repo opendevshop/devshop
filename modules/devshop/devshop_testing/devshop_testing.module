@@ -194,6 +194,17 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#default_value' => $settings->testing['behat_bin_path'],
   );
 
+  if ($form_id == 'hosting_task_confirm_form') {
+    $locked = array(
+      'test_type',
+      'behat_folder_path',
+      'behat_bin_path',
+    );
+    foreach ($locked as $field){
+      $testing_form[$field]['#value'] = $form['project'][$field]['#default_value'];
+      $testing_form[$field]['#type'] = 'value';
+    }
+  }
 }
 //require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
 require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
@@ -262,7 +273,7 @@ function devshop_testing_preprocess_node(&$vars) {
         $environment->test->status_message = t('Passed!');
         $environment->test->status_class = 'success';
       }
-      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
+      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED || HOSTING_TASK_) {
         $environment->test->status_message = t('Queued');
         $environment->test->status_class = 'default';
         $environment->test->duration = '';
@@ -277,6 +288,8 @@ function devshop_testing_preprocess_node(&$vars) {
         $environment->test->status_message = t('Passed with Warnings');
         $environment->test->status_class = 'warning';
       }
+
+
       else {
         $environment->test->status_message = t('Ready');
         $environment->test->status_class = 'default';
