@@ -209,8 +209,14 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // If the platform already exists, update settings and verify it again.
     if ($platform_nid) {
       // @TODO: Apply settings and re-save platform.
-      hosting_add_task($platform_nid, 'verify');
+      //hosting_add_task($platform_nid, 'verify');
+
+      $platform = node_load($platform_nid);
+      $platform->publish_path = $project->code_path . '/' . $environment->name . '/' . $project->drupal_path;
       $environment->platform = $platform_nid;
+      $platform->web_server = $environment->settings->web_server;
+      $platform->db_server = $environment->settings->db_server;
+      node_save($platform);
     }
 
     // If platform hasn't been created yet, do so now!
