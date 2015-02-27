@@ -643,6 +643,7 @@ function devshop_projects_form(&$node) {
   $form['project']['settings']['default_environment'] = array(
     '#type' => 'fieldset',
     '#title' => t('Default Environment Settings'),
+    '#description' => t('These settings will be used when creating new environments.'),
   );
 
   // HTTP Server select.
