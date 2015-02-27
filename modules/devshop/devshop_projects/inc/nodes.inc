@@ -333,10 +333,6 @@ function devshop_projects_insert($node) {
  */
 function devshop_projects_update($node) {
 
-  if (!isset($node->no_verify) || $node->no_verify == FALSE) {
-    hosting_add_task($node->nid, 'verify');
-  }
-
   $project = (object) $node->project;
   $project->settings = (object) $project->settings;
 
@@ -353,9 +349,9 @@ function devshop_projects_update($node) {
 
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
-//
-//  // Update the project environments domain aliases based on the live settings.
-//  devshop_project_update_domains($node);
+  if (!isset($node->no_verify) || $node->no_verify == FALSE) {
+    hosting_add_task($node->nid, 'verify');
+  }
 }
 
 ///**
