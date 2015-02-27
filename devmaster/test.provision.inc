@@ -63,7 +63,7 @@ function drush_devshop_provision_provision_test($tests_to_run = array()) {
     }
 
     // Run composer update.
-    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer update')) {
+    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer install')) {
       $shell_output = drush_shell_exec_output();
       drush_log(implode("\n", $shell_output), 'status');
     }
