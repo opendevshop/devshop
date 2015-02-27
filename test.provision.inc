@@ -48,7 +48,7 @@ function drush_devshop_provision_provision_test($tests_to_run = array()) {
     }
 
     // Prepare path and command
-    $full_behat_folder_path = $repo_path . '/' . $behat_folder_path;
+    $full_behat_folder_path = $repo_path . $behat_folder_path;
     $full_behat_bin_path = $repo_path . $behat_folder_path . '/' . $behat_bin_path;
 
     // Load the behat.yml from behat_folder_path.
@@ -97,7 +97,7 @@ YML;
     $test_result = '';
     foreach ($features_to_run as $feature) {
 
-      $feature_path = empty($feature)? '': "features/{$feature}";
+      $feature_path = empty($feature)? '': "features{$feature}";
       $cmd = "$full_behat_bin_path $feature_path --config $temporary_behat_yml_file --profile $environment --colors";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
