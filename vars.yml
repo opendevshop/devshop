@@ -18,5 +18,6 @@ provision_site_backup_manager_version: 6.x-2.x
 registry_rebuild_version: 7.x-2.2
 
 devshop_makefile: build-devmaster.make
+devshop_working_copy: --working-copy
 
 aegir_user_uid: 12345
