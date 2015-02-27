@@ -227,7 +227,7 @@ function devshop_testing_preprocess_node(&$vars) {
         $environment->test->status_message = t('Passed!');
         $environment->test->status_class = 'success';
       }
-      elseif ($environment->test->task_status == HOSTING_TASK_QUEUED) {
+      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
         $environment->test->status_message = t('Queued');
         $environment->test->status_class = 'default';
         $environment->test->duration = '';
@@ -243,8 +243,9 @@ function devshop_testing_preprocess_node(&$vars) {
         $environment->test->status_class = 'warning';
       }
       else {
-        $environment->test->status_message = t('Unknown');
+        $environment->test->status_message = t('Ready');
         $environment->test->status_class = 'default';
+        $environment->test->duration = '';
       }
     }
   }
