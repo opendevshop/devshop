@@ -461,10 +461,10 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   // Load environment info into tasks.
   if ($op == 'load' && $node->type == 'task') {
     $additions = array();
-    $result = db_fetch_object(db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE site = %d OR platform = %d", $node->rid, $node->rid));
+    $result = db_fetch_object(db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));
 
     // Load project and environment
-    $additions['project'] = $result->name;
+    $additions['project'] = $result;
     return $additions;
   }
 
