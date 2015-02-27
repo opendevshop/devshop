@@ -255,7 +255,7 @@ function devshop_testing_preprocess_node(&$vars) {
 
       $environment->test = $task;
       $environment->test->task_node = node_load($environment->test->nid);
-      $environment->test->duration = t('Duration: @time', array('@time' => format_interval($task->delta, 1)));
+      $environment->test->duration = format_interval($task->delta, 1);
 
       if ($task->executed) {
         $environment->test->time_ago = format_interval(time() - $task->executed, 1);
@@ -274,7 +274,7 @@ function devshop_testing_preprocess_node(&$vars) {
         $environment->test->status_message = t('Passed!');
         $environment->test->status_class = 'success';
       }
-      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED || HOSTING_TASK_) {
+      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
         $environment->test->status_message = t('Queued');
         $environment->test->status_class = 'default';
         $environment->test->duration = '';
