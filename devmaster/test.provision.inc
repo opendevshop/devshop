@@ -27,7 +27,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
   }
   elseif ($type == 'behat') {
     // Swap commas for space
-    $features_to_run = explode(',', $tests_to_run);
+    $features_to_run = $tests_to_run;
     if (empty($features_to_run)) {
       $features_to_run = array('');
     }
@@ -97,7 +97,8 @@ YML;
     $test_result = '';
     foreach ($features_to_run as $feature) {
 
-      $cmd = "$full_behat_bin_path features/$feature --config $temporary_behat_yml_file --profile $environment --colors";
+      $feature_path = empty($feature)? '': "features/{$feature}";
+      $cmd = "$full_behat_bin_path $feature_path --config $temporary_behat_yml_file --profile $environment --colors";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
