@@ -235,6 +235,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       // Other attributes
       $platform->web_server = $environment->settings->web_server;
+      $platform->db_server = $environment->settings->db_server;
       $platform_node = _devshop_projects_node_create('platform', $platform);
       $environment->platform = $platform_node->nid;
     }
