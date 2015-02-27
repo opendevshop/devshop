@@ -182,7 +182,7 @@ function template_preprocess_devshop_project_nav(&$vars){
     }
   }
 
-  $vars['dashboard_link'] = l('<i class="fa fa-cubes"></i> ' . t('Dashboard'), "node/$node->nid", array('html' => TRUE));
+  $vars['dashboard_link'] = l('<i class="fa fa-cubes"></i> ' . t('Dashboard'), "node/$project->nid", array('html' => TRUE));
 
   if (node_access('update', $node)){
     $vars['settings_link'] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/$node->nid/edit", array('html' => TRUE));
