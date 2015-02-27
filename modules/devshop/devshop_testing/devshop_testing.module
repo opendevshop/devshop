@@ -197,6 +197,7 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
  * @param $var
  */
 function devshop_testing_preprocess_node(&$vars) {
+  global $user;
   $node = &$vars['node'];
   if (!empty($node->project->environments)) {
     foreach ($node->project->environments as &$environment) {
