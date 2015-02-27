@@ -123,6 +123,7 @@ function devshop_provision_drush_command() {
      'aegir_root' => dt('Install aegir in this home directory (default: %home). Do not change unless you know what you are doing.', array('%home' => drush_server_home())),
      'makefile' => dt('The Drupal makefile to use to build the front end.'),
      'profile' => dt('The Drupal installation profile to use for installing the front-end (default: hostmaster)'),
+     'working-copy' => dt('Keep VCS files when building the hostmaster platform using Drush make.')
     ),
   );
 
