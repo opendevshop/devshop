@@ -667,6 +667,16 @@ function devshop_projects_form(&$node) {
     );
   }
 
+  // Solr Server Select
+  $solr_servers = hosting_get_servers('solr');
+  if (count($solr_servers)) {
+    $form['project']['settings']['default_environment']['solr_server'] = array(
+      '#title' => t('Solr server'),
+      '#type' => 'select',
+      '#options' => $solr_servers,
+      '#default_value' => $project->settings->default_environment['solr_server'],
+    );
+  }
   return $form;
 }
 
