@@ -208,11 +208,11 @@ function devshop_testing_preprocess_node(&$vars) {
 
       $environment->test = $task;
       $environment->test->task_node = node_load($environment->test->nid);
-      $environment->test->duration = t('in %time', array('%time' => format_interval($task->delta)));
+      $environment->test->duration = t('Duration: @time', array('@time' => format_interval($task->delta, 1)));
 
       if ($task->executed) {
-        $environment->test->time_ago = format_interval(time() - $task->executed);
-        $environment->test->ago = t('%time ago', array('%time' => $environment->test->time_ago));
+        $environment->test->time_ago = format_interval(time() - $task->executed, 1);
+        $environment->test->ago = t('@time ago', array('@time' => $environment->test->time_ago));
       }
       $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
       $environment->test->status_url = url('node/' . $task->nid);
