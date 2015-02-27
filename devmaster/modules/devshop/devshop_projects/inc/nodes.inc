@@ -464,8 +464,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $result = db_fetch_object(db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE site = %d OR platform = %d", $node->rid, $node->rid));
 
     // Load project and environment
-    $project_node = node_load($result->project_nid);
-    $additions['project'] = $project_node->project;
+    $additions['project'] = $result->name;
     return $additions;
   }
 
