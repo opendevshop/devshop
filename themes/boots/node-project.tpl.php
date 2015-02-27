@@ -389,10 +389,12 @@
 
                 &nbsp;
 
+                <?php if ($environment->test->duration): ?>
                 <em>
                   <i class="fa fa-clock-o"></i>
                   <?php print $environment->test->duration ?>
                 </em>
+                <?php endif; ?>
               </small>
             </button>
 
