@@ -9,7 +9,7 @@ function drush_devshop_provision_pre_provision_test(){
 /**
  * Implements the provision-devshop-test command.
  */
-function drush_devshop_provision_provision_test($tests_to_run = '') {
+function drush_devshop_provision_provision_test($tests_to_run = array()) {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
 
   // Get test info
@@ -27,7 +27,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
   }
   elseif ($type == 'behat') {
     // Swap commas for space
-    $features_to_run = $tests_to_run;
+    $features_to_run = array_filter($tests_to_run);
     if (empty($features_to_run)) {
       $features_to_run = array('');
     }
@@ -49,7 +49,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
 
     // Prepare path and command
     $full_behat_folder_path = $repo_path . '/' . $behat_folder_path;
-    $full_behat_bin_path = $repo_path . '/' . $behat_folder_path . '/' . $behat_bin_path;
+    $full_behat_bin_path = $repo_path . $behat_folder_path . '/' . $behat_bin_path;
 
     // Load the behat.yml from behat_folder_path.
     if (file_exists($full_behat_folder_path . '/behat.yml')) {
