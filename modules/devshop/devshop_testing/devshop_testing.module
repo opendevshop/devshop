@@ -192,9 +192,12 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
   }
 }
 
-
-function devshop_testing_nodeapi_project_load(&$node, $a3, $a4) {
-  dsm($node);
+/**
+ * Implements hook_preprocess_node()
+ * @param $var
+ */
+function devshop_testing_preprocess_node(&$vars) {
+  $node = &$vars['node'];
   if (!empty($node->project->environments)) {
     foreach ($node->project->environments as &$environment) {
       $environment->testing = TRUE;
@@ -242,26 +245,6 @@ function devshop_testing_nodeapi_project_load(&$node, $a3, $a4) {
         $environment->test->status_message = t('Unknown');
         $environment->test->status_class = 'default';
       }
-    }
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function devshop_testing_preprocess_node(&$vars) {
-  global $user;
-  if ($vars['node']->type == 'project') {
-
-    foreach ($vars['node']->project->environments as &$environment) {
-
-      // Check to see if testing is enabled.
-
-        
-//      $task = hosting_get_tasks('rid', $environment->site);
-
-
-
     }
   }
 }
