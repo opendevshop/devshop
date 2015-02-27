@@ -386,7 +386,11 @@
 
               <small>
                 <?php print $environment->test->ago ?>
+
+                &nbsp;
+
                 <em>
+                  <i class="fa fa-clock-o"></i>
                   <?php print $environment->test->duration ?>
                 </em>
               </small>
