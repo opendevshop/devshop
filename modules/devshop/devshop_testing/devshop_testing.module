@@ -194,7 +194,6 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
 
 
 function devshop_testing_nodeapi_project_load(&$node, $a3, $a4) {
-  dsm($node);
   if (!empty($node->project->environments)) {
     foreach ($node->project->environments as &$environment) {
       $environment->testing = TRUE;
