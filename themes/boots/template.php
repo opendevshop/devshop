@@ -190,7 +190,9 @@ function boots_preprocess_page(&$vars){
       $vars['title2'] = $vars['title'];
       $vars['subtitle2'] = ucfirst($vars['node']->type);
 
-      $vars['title'] = l($vars['node']->project->name, "node/" . $vars['node']->project->nid);
+      $name = is_string($vars['node']->project)? $vars['node']->project: $vars['node']->project->name;
+
+      $vars['title'] = l($name, "hosting/c/{$name}");
       $vars['subtitle'] = t('Project');
     }
 

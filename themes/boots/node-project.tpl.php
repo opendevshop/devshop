@@ -385,11 +385,16 @@
               <?php print $environment->test->status_message ?>
 
               <small>
-                <?php print $environment->test->duration ?>
-                <br />
+                <?php print $environment->test->ago ?>
+
+                &nbsp;
+
+                <?php if ($environment->test->duration): ?>
                 <em>
-                  <?php print $environment->test->ago ?>
+                  <i class="fa fa-clock-o"></i>
+                  <?php print $environment->test->duration ?>
                 </em>
+                <?php endif; ?>
               </small>
             </button>
 
@@ -408,10 +413,10 @@
               </div>
             </div>
           </div>
-          <div class="btn-group" role="group">
-
-            <a href="<?php print $environment->test->run_tests_url; ?>" type="button" class="btn">
-              <?php print t('Run Tests'); ?>
+          <!-- Run Tests Button -->
+          <div class="btn-group pull-right" role="group">
+            <a href="<?php print $environment->test->run_tests_url; ?>" type="button" class="btn" title="<?php print t('Run Tests'); ?>">
+              <i class="fa fa-list"></i>
               <i class="fa fa-caret-right"></i>
             </a>
           </div>
