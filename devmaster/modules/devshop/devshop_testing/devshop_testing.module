@@ -7,11 +7,26 @@
  */
 
 /**
+ * Implements hook_menu()
+ */
+function devshop_testing_menu() {
+  $items['devshop_tests/%'] = array(
+    'title' => 'Test Results',
+    'page callback' => 'devshop_testing_results_page',
+    'page arguments' => array(1),
+    'file' => 'pages.inc',
+    'access arguments' => array('access test results'),
+  );
+  return $items;
+}
+
+/**
  * Implementation of hook_perm()
  */
 function devshop_testing_perm() {
   return array(
     'create test task',
+    'access test results',
   );
 }
 
