@@ -271,6 +271,7 @@ function devshop_testing_preprocess_node(&$vars) {
       $environment->test = $task;
       $environment->test->task_node = node_load($environment->test->nid);
       $environment->test->duration = format_interval($task->delta, 1);
+      $environment->test->permalink = url("devshop_tests/{$environment->test->nid}/{$environment->test->vid}");
 
       if ($task->executed) {
         $environment->test->time_ago = format_interval(time() - $task->executed, 1);
