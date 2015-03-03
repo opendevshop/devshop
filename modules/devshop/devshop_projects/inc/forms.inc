@@ -439,13 +439,14 @@ function devshop_projects_form(&$node) {
   );
   $form['project']['base_url'] = array(
     '#type' => 'textfield',
-    '#title' => t('Primary Domain'),
-    '#description' => t('The domain name all sites will be built under.'),
+    '#title' => t('Base URL'),
+    '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>This will only affect new environments.</em>'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
     '#weight' => 4,
+    '#access' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
   );
 
   // Don't allow editing
@@ -456,7 +457,7 @@ function devshop_projects_form(&$node) {
     $form['title']['#type'] = 'value';
 
     // Other fields
-    $locked = array('git_url', 'code_path', 'drupal_path', 'base_url');
+    $locked = array('git_url', 'code_path', 'drupal_path');
     foreach ($locked as $field){
       $form['project'][$field]['#value'] = $form['project'][$field]['#default_value'];
       $form['project'][$field]['#type'] = 'value';
