@@ -138,12 +138,48 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#default_value' => $settings->testing['test_type'],
   );
 
+  // Look for feature files.
+  if (isset($form['#node'])) {
+
+    // Project settings page.
+    if ($form['#node']->type == 'project') {
+      // Just grab the first one.
+      $environment = array_shift($form['#node']->project->environments);
+    }
+    // Environment settings page.
+    elseif (isset($form['#node']->environment)) {
+      $environment = $form['#node']->environment;
+    }
+  }
+  elseif ($form['#id'] == 'hosting-task-confirm-form') {
+    $node = node_load(arg(1));
+    $environment = $node->environment;
+  }
+
+  $tests = array();
+
+  // Final check for repo root.
+  if (empty($environment->repo_root)){
+    $tests[] = 'Something is wrong. Environment not found.';
+  }
+  else {
+    $directory = $environment->repo_root . $settings->testing['behat_folder_path'] . '/features';
+
+    $files = file_scan_directory($directory, '.feature', array('.', '..'));
+
+    $tests = array();
+    foreach ($files as $file) {
+      $value = str_replace($directory, '', $file->filename);
+      $tests[$value] = $file->basename;
+    }
+  }
+
   $testing_form['tests_to_run'] = array(
-    '#type' => 'textarea',
+    '#type' => 'checkboxes',
+    '#options' => $tests,
     '#title' => t('Tests to Run'),
     '#default_value' => $settings->testing['tests_to_run'],
-    '#rows' => 6,
-    '#description' => t('Enter the names of the tests to run, one per line.  See the !link for examples, or call <strong><code>drush @@site test-run</code></strong> for a list of available tests.', array('!link' => l(t('Drupal API'), 'http://api.drupal.org/api/drupal/modules%21simpletest%21drupal_web_test_case.php/class/hierarchy/DrupalWebTestCase/7'), '@site' => 'drushalias')),
+    '#description' => t('Select the tests you wish to run.  Leave all unchecked to run all of them.'),
   );
 
   $testing_form['behat_folder_path'] = array(
@@ -159,6 +195,17 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#default_value' => $settings->testing['behat_bin_path'],
   );
 
+  if ($form_id == 'hosting_task_confirm_form') {
+    $locked = array(
+      'test_type',
+      'behat_folder_path',
+      'behat_bin_path',
+    );
+    foreach ($locked as $field){
+      $testing_form[$field]['#value'] = $form['project'][$field]['#default_value'];
+      $testing_form[$field]['#type'] = 'value';
+    }
+  }
 }
 //require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
 require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
@@ -193,21 +240,62 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
 }
 
 /**
- * Implements hook_preprocess_HOOK().
+ * Implements hook_preprocess_node()
+ * @param $var
  */
 function devshop_testing_preprocess_node(&$vars) {
   global $user;
-  if ($vars['node']->type == 'project') {
+  $node = &$vars['node'];
+  if (!empty($node->project->environments)) {
+    foreach ($node->project->environments as &$environment) {
+      $environment->testing = TRUE;
 
-    foreach ($vars['node']->project->environments as &$environment) {
+      // Load test task.
+      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
 
-      // Check to see if testing is enabled.
+      $environment->test = $task;
+      $environment->test->task_node = node_load($environment->test->nid);
+      $environment->test->duration = format_interval($task->delta, 1);
 
-        
-//      $task = hosting_get_tasks('rid', $environment->site);
+      if ($task->executed) {
+        $environment->test->time_ago = format_interval(time() - $task->executed, 1);
+        $environment->test->ago = t('@time ago', array('@time' => $environment->test->time_ago));
+      }
+      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
+      $environment->test->status_url = url('node/' . $task->nid);
+
+      $environment->test->results = $environment->test->task_node->test_results_formatted;
+
+      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
+        $environment->test->status_message = t('Failed');
+        $environment->test->status_class = 'danger';
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
+        $environment->test->status_message = t('Passed!');
+        $environment->test->status_class = 'success';
+      }
+      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
+        $environment->test->status_message = t('Queued');
+        $environment->test->status_class = 'default';
+        $environment->test->duration = '';
+
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
+        $environment->test->status_message = t('Running...');
+        $environment->test->status_class = 'default';
+        $environment->test->duration = '';
+      }
+      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
+        $environment->test->status_message = t('Passed with Warnings');
+        $environment->test->status_class = 'warning';
+      }
 
 
-
+      else {
+        $environment->test->status_message = t('Ready');
+        $environment->test->status_class = 'default';
+        $environment->test->duration = '';
+      }
     }
   }
 }
