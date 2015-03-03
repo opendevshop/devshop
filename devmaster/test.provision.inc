@@ -9,7 +9,7 @@ function drush_devshop_provision_pre_provision_test(){
 /**
  * Implements the provision-devshop-test command.
  */
-function drush_devshop_provision_provision_test($tests_to_run = '') {
+function drush_devshop_provision_provision_test($tests_to_run = array()) {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
 
   // Get test info
@@ -27,7 +27,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
   }
   elseif ($type == 'behat') {
     // Swap commas for space
-    $features_to_run = explode(',', $tests_to_run);
+    $features_to_run = array_filter($tests_to_run);
     if (empty($features_to_run)) {
       $features_to_run = array('');
     }
@@ -48,8 +48,8 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
     }
 
     // Prepare path and command
-    $full_behat_folder_path = $repo_path . '/' . $behat_folder_path;
-    $full_behat_bin_path = $repo_path . '/' . $behat_folder_path . '/' . $behat_bin_path;
+    $full_behat_folder_path = $repo_path . $behat_folder_path;
+    $full_behat_bin_path = $repo_path . $behat_folder_path . '/' . $behat_bin_path;
 
     // Load the behat.yml from behat_folder_path.
     if (file_exists($full_behat_folder_path . '/behat.yml')) {
@@ -63,7 +63,7 @@ function drush_devshop_provision_provision_test($tests_to_run = '') {
     }
 
     // Run composer update.
-    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer update')) {
+    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer install')) {
       $shell_output = drush_shell_exec_output();
       drush_log(implode("\n", $shell_output), 'status');
     }
@@ -97,7 +97,8 @@ YML;
     $test_result = '';
     foreach ($features_to_run as $feature) {
 
-      $cmd = "$full_behat_bin_path features/$feature --config $temporary_behat_yml_file --profile $environment --colors";
+      $feature_path = empty($feature)? '': "features{$feature}";
+      $cmd = "$full_behat_bin_path $feature_path --config $temporary_behat_yml_file --profile $environment --colors";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
