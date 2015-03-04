@@ -62,6 +62,14 @@
 
       <?php print $pre_content ?>
 
+      <?php if ($title2): ?>
+        <h3>
+          <?php print $title2 ?>
+          <?php if ($subtitle2): ?>
+            <small><?php print $subtitle2 ?></small>
+          <?php endif; ?>
+        </h3>
+      <?php endif; ?>
     </div>
   </div>
   <div class="row">

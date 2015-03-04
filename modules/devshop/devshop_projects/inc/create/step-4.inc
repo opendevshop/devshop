@@ -11,7 +11,6 @@
 function devshop_project_create_step_sites(&$form, &$form_state) {
   $project_node = node_load($form_state['project']->project_nid);
   $project = $project_node->project;
-
   $profiles = array();
   $available_profiles = array();
   $completed = TRUE;
@@ -123,13 +122,14 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
     $project->no_finish = TRUE;
-    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
+    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p><p><em>NOTE: There is a bug preventing automatic reloading of this page! Please reload occasionally to see if your project is cloned.</em></p>';
 
     $form['help'] = array(
       '#type' => 'markup',
       '#value' => $note,
     );
 
+    // Add code to reload the page when complete.
     devshop_form_reloader($form, 'platform');
     return $form;
   }

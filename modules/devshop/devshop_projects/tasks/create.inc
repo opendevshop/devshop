@@ -85,6 +85,7 @@ function hosting_task_devshop_create_form($node) {
       '#type' => 'select',
       '#options' => $branch_options,
       '#required' => TRUE,
+      '#weight' => -99,
     );
     $form['environment_source'] = array(
       '#type' => 'value',
@@ -98,8 +99,9 @@ function hosting_task_devshop_create_form($node) {
     '#required' => TRUE,
     '#field_prefix' => 'http://',
     '#field_suffix' => "." . $node->project->base_url,
-    '#size' => 6,
+    '#size' => 10,
     '#maxlength' => 64,
+    '#weight' => -100,
   );
 
   if ($project->settings->live['environment_aliases'] && !empty($node->project->settings->live['live_domain'])) {
