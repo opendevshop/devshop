@@ -34,7 +34,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   }
 
   // Create Project Wizard
-  if ($form_id == 'devshop_project_create_step_sites' || $form_id == 'devshop_project_create_step_settings' || $form_id == 'devshop_project_create_step_environments'){
+  if (
+    $form_id == 'devshop_project_create_step_git' ||
+    $form_id == 'devshop_project_create_step_sites' ||
+    $form_id == 'devshop_project_create_step_settings' ||
+    $form_id == 'devshop_project_create_step_environments'
+  ){
     if ($form_state['project']->no_finish){
       unset($form['buttons']['return']);
     }
@@ -434,13 +439,14 @@ function devshop_projects_form(&$node) {
   );
   $form['project']['base_url'] = array(
     '#type' => 'textfield',
-    '#title' => t('Primary Domain'),
-    '#description' => t('The domain name all sites will be built under.'),
+    '#title' => t('Base URL'),
+    '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>This will only affect new environments.</em>'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->base_url,
     '#maxlength' => 255,
     '#weight' => 4,
+    '#access' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
   );
 
   // Don't allow editing
@@ -451,7 +457,7 @@ function devshop_projects_form(&$node) {
     $form['title']['#type'] = 'value';
 
     // Other fields
-    $locked = array('git_url', 'code_path', 'drupal_path', 'base_url');
+    $locked = array('git_url', 'code_path', 'drupal_path');
     foreach ($locked as $field){
       $form['project'][$field]['#value'] = $form['project'][$field]['#default_value'];
       $form['project'][$field]['#type'] = 'value';
@@ -459,6 +465,10 @@ function devshop_projects_form(&$node) {
   }
 
   // Project Settings
+  $form['project']['settings'] = array(
+    '#weight' => -10,
+  );
+
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
@@ -515,13 +525,14 @@ function devshop_projects_form(&$node) {
     '#type' => 'fieldset',
     '#title' => t('Deploy Settings'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
+    '#weight' => -10,
   );
 
   $form['project']['settings']['deploy']['method'] = array(
     '#title' => 'Deploy Code Method',
     '#type' => 'radios',
     '#description' => t('Choose the method used to deploy code to the server.'),
-    '#default_value' => $project->settings->deploy['method'],
+    '#default_value' => isset($project->settings->deploy['method'])? $project->settings->deploy['method']: 'webhook',
   );
 
   // Commit Webhook
@@ -573,7 +584,7 @@ function devshop_projects_form(&$node) {
     '#type' => 'checkbox',
     '#title' => t('Allow deploying data from drush aliases.'),
     '#default_value' => $node->project->settings->deploy['allow_deploy_data_from_alias'],
-    '#description' => t('Requires a patch'),
+    '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
   );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
@@ -628,6 +639,46 @@ function devshop_projects_form(&$node) {
       'clone_live' => t('Clone the live environment: %live', array('%live' => $project->settings->live['live_environment'])),
     )
   );
+
+  //All settings git pull in project page
+  $form['project']['settings']['default_environment'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Default Environment Settings'),
+    '#description' => t('These settings will be used when creating new environments.'),
+  );
+
+  // HTTP Server select.
+  $http_servers = hosting_get_servers('http');
+  if (count($http_servers)) {
+    $form['project']['settings']['default_environment']['web_server'] = array(
+      '#title' => t('Web server'),
+      '#type' =>'select',
+      '#options' => $http_servers,
+      '#default_value' => $project->settings->default_environment['web_server'],
+    );
+  }
+
+  // DB Server select.
+  $db_servers = hosting_get_servers('db');
+  if (count($db_servers)) {
+    $form['project']['settings']['default_environment']['db_server'] = array(
+      '#title' => t('Database server'),
+      '#type' => 'select',
+      '#options' => $db_servers,
+      '#default_value' => $project->settings->default_environment['db_server'],
+    );
+  }
+
+  // Solr Server Select
+  $solr_servers = hosting_get_servers('solr');
+  if (count($solr_servers)) {
+    $form['project']['settings']['default_environment']['solr_server'] = array(
+      '#title' => t('Solr server'),
+      '#type' => 'select',
+      '#options' => $solr_servers,
+      '#default_value' => $project->settings->default_environment['solr_server'],
+    );
+  }
   return $form;
 }
 
