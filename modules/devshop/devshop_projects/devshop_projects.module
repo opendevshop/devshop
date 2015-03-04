@@ -236,9 +236,12 @@ function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
     case 'view':
       if ($delta == 'project_nav'){
         $node = node_load(arg(1));
-        if ($node->type == 'project') {
+        if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
+
+          // If viewed node is project, use that.
+          $project = $node->type == 'project'? $node: ($node->project->vid? $node->project: node_load($node->project->nid));
           $block['subject'] = '';
-          $block['content'] = theme('devshop_project_nav', $node);
+          $block['content'] = theme('devshop_project_nav', $project);
         }
       }
       return $block;

@@ -287,6 +287,9 @@ function devmaster_task_finalize() {
   // Hide errors from the screen.
   variable_set('error_level', 0);
 
+  // Disable Aegir's "Welcome" page
+  variable_set('hosting_welcome_page', 0);
+
   // Make sure blocks are setup properly.
   _block_rehash();
 

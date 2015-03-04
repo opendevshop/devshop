@@ -168,55 +168,6 @@ function devshop_projects_load($node) {
       }
     }
 
-    // Load testing status
-    if (module_exists('devshop_testing') && isset($environment->settings->testing['test_type']) && !empty($environment->settings->testing['test_type'])) {
-      $environment->testing = TRUE;
-
-      // Load test task.
-      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
-
-      $environment->test = $task;
-      $environment->test->task_node = node_load($environment->test->nid);
-      $environment->test->duration = t('in %time', array('%time' => format_interval($task->delta)));
-
-      if ($task->executed) {
-        $environment->test->time_ago = format_interval(time() - $task->executed);
-        $environment->test->ago = t('%time ago', array('%time' => $environment->test->time_ago));
-      }
-      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
-      $environment->test->status_url = url('node/' . $task->nid);
-
-      $environment->test->results = $environment->test->task_node->test_results_formatted;
-
-      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
-        $environment->test->status_message = t('Failed');
-        $environment->test->status_class = 'danger';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
-        $environment->test->status_message = t('Passed!');
-        $environment->test->status_class = 'success';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_QUEUED) {
-        $environment->test->status_message = t('Queued');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->test->status_message = t('Running...');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
-        $environment->test->status_message = t('Passed with Warnings');
-        $environment->test->status_class = 'warning';
-      }
-      else {
-        $environment->test->status_message = t('Unknown');
-        $environment->test->status_class = 'default';
-      }
-    }
-
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
   }
@@ -333,10 +284,6 @@ function devshop_projects_insert($node) {
  */
 function devshop_projects_update($node) {
 
-  if (!isset($node->no_verify) || $node->no_verify == FALSE) {
-    hosting_add_task($node->nid, 'verify');
-  }
-
   $project = (object) $node->project;
   $project->settings = (object) $project->settings;
 
@@ -353,9 +300,9 @@ function devshop_projects_update($node) {
 
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
-//
-//  // Update the project environments domain aliases based on the live settings.
-//  devshop_project_update_domains($node);
+  if (!isset($node->no_verify) || $node->no_verify == FALSE) {
+    hosting_add_task($node->nid, 'verify');
+  }
 }
 
 ///**
@@ -455,6 +402,16 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $project_node = node_load($result->project_nid);
     $additions['project'] = $project_node->project;
     $additions['environment'] = $project_node->project->environments[$result->name];
+    return $additions;
+  }
+
+  // Load environment info into tasks.
+  if ($op == 'load' && $node->type == 'task') {
+    $additions = array();
+    $result = db_fetch_object(db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));
+
+    // Load project and environment
+    $additions['project'] = $result;
     return $additions;
   }
 

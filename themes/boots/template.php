@@ -183,6 +183,19 @@ function boots_preprocess_page(&$vars){
 
       $vars['title'] = l($vars['title'], "node/" . $vars['node']->nid);
     }
+
+    // Set header and subtitle 2 for nodes that have a project.
+    elseif (isset($vars['node']->project)) {
+
+      $vars['title2'] = $vars['title'];
+      $vars['subtitle2'] = ucfirst($vars['node']->type);
+
+      $name = is_string($vars['node']->project)? $vars['node']->project: $vars['node']->project->name;
+
+      $vars['title'] = l($name, "hosting/c/{$name}");
+      $vars['subtitle'] = t('Project');
+    }
+
   }
 }
 
