@@ -68,7 +68,7 @@ function drush_devshop_provision_provision_test($tests_to_run = array()) {
       drush_log(implode("\n", $shell_output), 'status');
     }
     else {
-      return drush_set_error('DEVSHOP_COMPOSER_FAIL', dt('composer update failed in ' . $full_behat_folder_path));
+      return drush_set_error('DEVSHOP_COMPOSER_FAIL', dt('composer install failed in ' . $full_behat_folder_path));
     }
 
     // Write custom behat.yml to temporary folder.
