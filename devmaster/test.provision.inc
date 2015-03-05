@@ -89,7 +89,7 @@ $environment:
 
 YML;
 
-    $behat_yml_file = $full_behat_folder_path . "behat.$environment.yml";
+    $behat_yml_file = $full_behat_folder_path . "/behat.$environment.yml";
     file_put_contents($behat_yml_file, $behat_yml);
 
     // Run behat tests for each feature.
