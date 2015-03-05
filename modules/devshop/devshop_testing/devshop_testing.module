@@ -228,6 +228,11 @@ require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 
 function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
+
+  if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
+    unset($node->task_args['test_results']);
+  }
+
   if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
 
     $converter = new AnsiToHtmlConverter();
