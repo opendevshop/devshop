@@ -479,3 +479,8 @@ input.form-control.webhook-url {
   width: auto;
   max-width: 90%;
 }
+
+/* Bootstrap breaks user/permissions table */
+th.checkbox, td.checkbox {
+    display: table-cell;
+}
