@@ -89,8 +89,8 @@ $environment:
 
 YML;
 
-    $temporary_behat_yml_file = tempnam($full_behat_folder_path, 'behat.yml.');
-    file_put_contents($temporary_behat_yml_file, $behat_yml);
+    $behat_yml_file = $full_behat_folder_path . "behat.$environment.yml";
+    file_put_contents($behat_yml_file, $behat_yml);
 
     // Run behat tests for each feature.
     $no_errors = TRUE;
@@ -98,7 +98,7 @@ YML;
     foreach ($features_to_run as $feature) {
 
       $feature_path = empty($feature)? '': "features{$feature}";
-      $cmd = "$full_behat_bin_path $feature_path --config $temporary_behat_yml_file --profile $environment --colors";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
@@ -137,9 +137,6 @@ TXT;
 
     // Save drush option for hostmaster to read later.
     drush_set_option('behat_test_results', $test_result);
-
-    // Delete temporary behat config file.
-    unlink($temporary_behat_yml_file);
 
     // If errors were detected, return FALSE;  We've already logged the errors.
     if (!$no_errors) {
