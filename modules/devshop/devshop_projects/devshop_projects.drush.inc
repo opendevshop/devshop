@@ -67,7 +67,6 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Run tests
   if ($task->ref->type == 'site' && $task->task_type == 'test') {
-    drush_log('task args test to run:' . print_r($task->task_args), 'ok');
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
     $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
