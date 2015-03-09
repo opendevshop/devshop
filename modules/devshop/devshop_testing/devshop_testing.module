@@ -104,12 +104,10 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#default_value' => $form['#node']->environment->settings->deploy['test'],
     );
   }
-  // // Run Tests Task confirm form.
-  // elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
-  //   $testing_form = &$form['parameters'];
-  //   $node = node_load($form['nid']['#value']);
-  //   $settings =  $node->environment->settings;
-  // }
+  // Run Tests Form: add extra submit handler to stringify the test options.
+  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
+    array_unshift($form['#submit'], 'devshop_testing_task_submit');
+  }
   // Deploy Code Task confirm form.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-deploy') {
     $node = node_load($form['nid']['#value']);
@@ -230,6 +228,16 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     }
   }
   return $testing_form;
+}
+
+/**
+ * Helper to stringify the tests to run.
+ */
+function devshop_testing_task_submit(&$form, &$form_state) {
+  
+  // Implode tests to run
+  $value = implode(',', array_filter($form_state['values']['parameters']['tests_to_run']));
+  form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
 }
 
 
