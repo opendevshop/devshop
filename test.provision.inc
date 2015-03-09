@@ -6,8 +6,12 @@
 function drush_devshop_provision_pre_provision_test(){
   $tests = drush_get_option('tests-to-run');
 
-  if (!empty($tests) && is_array($tests)) {
+  if (!empty($tests) && is_string($tests)) {
     drush_set_option('tests-to-run', array_filter(explode(',', $tests)));
+  }
+  
+  if (!empty($tests) && is_array($tests)) {
+    drush_set_option('tests-to-run', array_filter($tests));
   }
 }
 
@@ -92,6 +96,13 @@ YML;
     // Run behat tests for each feature.
     $no_errors = TRUE;
     $test_result = '';
+    
+    // Fill an empty item if empty so we run all the tests.
+    if (empty($tests_to_run)) {
+      $tests_to_run[] = '';
+    }
+    
+    // Foreach test to run...
     foreach ($tests_to_run as $feature) {
 
       // Check for path.
