@@ -4,20 +4,23 @@
  * Pre provision-devshop-test
  */
 function drush_devshop_provision_pre_provision_test(){
+  $tests = drush_get_option('tests-to-run');
+
+  if (!empty($tests) && is_array($tests)) {
+    drush_set_option('tests-to-run', array_filter(explode(',', $tests)));
+  }
 }
 
 /**
  * Implements the provision-devshop-test command.
  */
-function drush_devshop_provision_provision_test($tests_to_run = array()) {
+function drush_devshop_provision_provision_test() {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
-
-  // Get test info
+  // Get tests tp run
   $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
+  $tests_to_run = drush_get_option('tests-to-run', array_filter(d()->environment['settings']['testing']['tests_to_run']));
 
-  if (empty($tests_to_run)) {
-    $tests_to_run = d()->environment['settings']['testing']['tests_to_run'];
-  }
+  drush_log('TESTS TO RUN: ' . print_r($tests_to_run, 1), 'ok');
 
   // Run Simpletest
   if ($type == 'simpletest') {
@@ -26,12 +29,6 @@ function drush_devshop_provision_provision_test($tests_to_run = array()) {
     provision_backend_invoke('@self', 'test-run', array($tests_to_run));
   }
   elseif ($type == 'behat') {
-    // Swap commas for space
-    $features_to_run = array_filter($tests_to_run);
-    if (empty($features_to_run)) {
-      $features_to_run = array('');
-    }
-
     // Get paths from options or site context.
     $repo_path = d()->environment['repo_root'];
     $behat_folder_path = drush_get_option('behat-folder-path', d()->environment['settings']['testing']['behat_folder_path']);
@@ -89,16 +86,20 @@ $environment:
 
 YML;
 
-    $temporary_behat_yml_file = tempnam($full_behat_folder_path, 'behat.yml.');
-    file_put_contents($temporary_behat_yml_file, $behat_yml);
+    $behat_yml_file = $full_behat_folder_path . "/behat.$environment.yml";
+    file_put_contents($behat_yml_file, $behat_yml);
 
     // Run behat tests for each feature.
     $no_errors = TRUE;
     $test_result = '';
-    foreach ($features_to_run as $feature) {
+    foreach ($tests_to_run as $feature) {
 
+      // Check for path.
+      if (substr($feature, 0, 1) !== '/') {
+        $feature = '/' . $feature;
+      }
       $feature_path = empty($feature)? '': "features{$feature}";
-      $cmd = "$full_behat_bin_path $feature_path --config $temporary_behat_yml_file --profile $environment --colors";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
@@ -137,9 +138,6 @@ TXT;
 
     // Save drush option for hostmaster to read later.
     drush_set_option('behat_test_results', $test_result);
-
-    // Delete temporary behat config file.
-    unlink($temporary_behat_yml_file);
 
     // If errors were detected, return FALSE;  We've already logged the errors.
     if (!$no_errors) {
