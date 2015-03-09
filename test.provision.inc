@@ -24,8 +24,6 @@ function drush_devshop_provision_provision_test() {
   $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
   $tests_to_run = drush_get_option('tests-to-run', array_filter(d()->environment['settings']['testing']['tests_to_run']));
 
-  drush_log('TESTS TO RUN: ' . print_r($tests_to_run, 1), 'ok');
-
   // Run Simpletest
   if ($type == 'simpletest') {
     drush_log(dt("Running $type tests $tests_to_run"), 'ok');
