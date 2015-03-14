@@ -24,6 +24,9 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
+# Version used for cloning devshop playbooks
+DEVSHOP_VERSION=0.x
+
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
 
@@ -126,6 +129,7 @@ MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
+    git checkout $DEVSHOP_VERSION
   else
     cd $PLAYBOOK_PATH
     git pull
@@ -175,7 +179,7 @@ else
   echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
   echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
   echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                              |_|              ║"
+  echo "║                    0.x                       |_|              ║"
   echo "╟───────────────────────────────────────────────────────────────╢"
   echo "║ Submit any issues to                                          ║"
   echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
