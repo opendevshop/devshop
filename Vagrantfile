@@ -9,7 +9,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Load Variables
   require 'yaml'
-  settings = YAML.load_file(File.dirname(__FILE__) + "/vagrant.vars.yml")
+  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.vagrant.yml")
 
   # Base Box & Config
   config.vm.box = "hashicorp/precise64"
