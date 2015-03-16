@@ -261,9 +261,12 @@
 
       <div class="environment-deploy list-group-item">
 
-        <!-- Deploy: Git Select -->
+        <!-- Deploy -->
         <label><?php print t('Deploy'); ?></label>
         <div class="btn-group btn-toolbar" role="toolbar">
+
+          <?php if (user_access('create devshop-deploy task')): ?>
+          <!-- Deploy: Code -->
           <div class="btn-group btn-deploy-code" role="group">
             <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>
               <?php print t('Code'); ?>
@@ -280,6 +283,10 @@
               <?php endif; ?>
             </ul>
           </div>
+          <?php endif; ?>
+
+          <?php if (user_access('create sync task')): ?>
+          <!-- Deploy: Data -->
           <div class="btn-group btn-deploy-database" role="group">
 
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i>
@@ -318,6 +325,11 @@
               <?php endif; ?>
             </ul>
           </div>
+          <?php endif; ?>
+
+
+          <?php if (user_access('create migrate task')): ?>
+          <!-- Deploy: Stack -->
           <div class="btn-group btn-deploy-servers" role="group">
 
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i>
@@ -367,6 +379,7 @@
                 <?php endforeach; ?>
             </ul>
           </div>
+          <?php endif; ?>
         </div>
       </div>
         <div class="list-group-item">
