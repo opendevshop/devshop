@@ -259,6 +259,13 @@
       </div>
 
 
+      <?php
+      // Only show this area if they have at least one of these permissions.
+      if (
+        user_access('create devshop-deploy task') ||
+        user_access('create sync task') ||
+        user_access('create migrate task')
+        ): ?>
       <div class="environment-deploy list-group-item">
 
         <!-- Deploy -->
@@ -382,6 +389,8 @@
           <?php endif; ?>
         </div>
       </div>
+      <?php endif; ?>
+
         <div class="list-group-item">
 
           <!-- Last Commit -->
