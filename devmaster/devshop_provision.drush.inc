@@ -160,8 +160,8 @@ function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) 
   return <<<PHP
 
   # Additional platform-wide configuration settings.
-  if (file_exists('../all/global.settings.php')) {
-    include_once('../all/global.settings.php');
+  if (file_exists(__DIR__ . '/../all/global.settings.php')) {
+    include_once(__DIR__ . '../all/global.settings.php');
   }
 
 PHP;
