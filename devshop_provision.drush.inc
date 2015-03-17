@@ -159,13 +159,12 @@ function devshop_provision_pre_flight($platform_name = NULL){
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
   return <<<PHP
 
- # Additional platform-wide configuration settings.
-  if (file_exists('../sites/all/global.settings.php')) {
-    include_once('../sites/all/global.settings.php');
+  # Additional platform-wide configuration settings.
+  if (file_exists('../all/global.settings.php')) {
+    include_once('../all/global.settings.php');
   }
 
 PHP;
-;
 }
 
 /**
