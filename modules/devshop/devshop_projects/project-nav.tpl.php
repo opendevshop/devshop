@@ -8,6 +8,7 @@
         <!-- Dashboard -->
         <li><?php print $dashboard_link; ?></li>
 
+        <?php if (node_access('update', $node) || user_access('edit site')): ?>
         <!-- Settings -->
         <li class="dropdown">
           <a href="#" class="dropdown-toggle <?php print $settings_active ?>" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -16,7 +17,9 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu">
+            <?php if (node_access('update', $node)): ?>
             <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
+            <?php endif; ?>
             <li><label><?php print t('Environment Settings'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
             <li>
@@ -25,6 +28,7 @@
             <?php endforeach; ?>
           </ul>
         </li>
+        <?php endif; ?>
 
         <!-- Logs-->
         <li class="dropdown">
