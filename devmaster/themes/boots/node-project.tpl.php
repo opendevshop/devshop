@@ -259,6 +259,13 @@
       </div>
 
 
+      <?php
+      // Only show this area if they have at least one of these permissions.
+      if (
+        user_access('create devshop-deploy task') ||
+        user_access('create sync task') ||
+        user_access('create migrate task')
+        ): ?>
       <div class="environment-deploy list-group-item">
 
         <!-- Deploy -->
@@ -382,6 +389,8 @@
           <?php endif; ?>
         </div>
       </div>
+      <?php endif; ?>
+
         <div class="list-group-item">
 
           <!-- Last Commit -->
@@ -419,8 +428,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="drush-alias-modal"><?php print t('Test Results'); ?>
                       <small><?php print $environment->test->status_message; ?></small>
-
-                    <a href="<?php print $environment->test->permalink ?>" class="btn text-small btn-primary pull-right"><?php print t('Permalink'); ?></a>
+                      <small><a href="<?php print $environment->test->permalink ?>" class="btn btn-small btn-default"><?php print t('Permalink'); ?></a></small>
                     </h4>
 
                   </div>
@@ -444,10 +452,11 @@
       </div>
     </div>
 <?php endforeach; ?>
-
+  <?php if (user_access('create devshop-create task')): ?>
   <div class="placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
     <a href="/node/<?php print $node->nid; ?>/project_devshop-create" class="btn btn-lg btn-success">
       <i class="fa fa-plus-square"></i><br />
       <?php print t('Create New Environment'); ?></a>
   </div>
+  <?php endif; ?>
 </div>
