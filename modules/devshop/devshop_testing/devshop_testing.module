@@ -57,15 +57,14 @@ function devshop_testing_devshop_environment_actions($environment) {
     'test'
   );
 }
+
 /**
  * Implementation of hook_hosting_task_TASK_TYPE_form().
  *
  * Our parameters are added in devshop_testing_form_alter()
  */
 function hosting_task_test_form($node) {
-
-  $form = array();
-  return $form;
+  return devshop_testing_form_elements($node->project, $node->environment->name);
 }
 
 /**
@@ -75,13 +74,12 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
 
   // If it's the project form, it's "defaults" for environments.
   if ($form_id == 'project_node_form') {
-    $form['project']['settings']['testing'] = array(
+    $form['project']['settings']['testing'] = array_merge(array(
       '#type' => 'fieldset',
       '#title' => t('Testing'),
       '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
+    ), devshop_testing_form_elements($form['#node']->project)
     );
-    $testing_form = &$form['project']['settings']['testing'];
-    $settings =  $form['#node']->project->settings;
   }
 
   // If it's the site (environment) form, it is the override.
@@ -95,9 +93,8 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Set the testing settings for this environment.'),
       '#weight' => 100,
     );
-    $testing_form = &$form['environment']['settings']['testing'];
-    $settings =  $form['#node']->environment->settings;
-
+    $form['environment']['settings']['testing'] = devshop_testing_form_elements($form['#node']->project,  $form['#node']->environment->name);
+    
     // Add to deploy hooks.
     $form['environment']['settings']['deploy']['test'] = array(
       '#type' => 'checkbox',
@@ -107,11 +104,9 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#default_value' => $form['#node']->environment->settings->deploy['test'],
     );
   }
-  // Run Tests Task confirm form.
+  // Run Tests Form: add extra submit handler to stringify the test options.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
-    $testing_form = &$form['parameters'];
-    $node = node_load($form['nid']['#value']);
-    $settings =  $node->environment->settings;
+    array_unshift($form['#submit'], 'devshop_testing_task_submit');
   }
   // Deploy Code Task confirm form.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-deploy') {
@@ -122,26 +117,48 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Run tests after this code deploy.'),
       '#default_value' => $node->environment->settings->deploy['test'],
     );
-    return;
+  }
+}
+
+/**
+ * Helper that returns the common form elements for running tests.
+ */
+function devshop_testing_form_elements($project, $environment_name = NULL) {
+  
+  
+  // Load environment object and settings, if we need it.
+  if ($environment_name) {
+    $environment = $project->environments[$environment_name];
+    $settings = $environment->settings;
   }
   else {
-    return;
-  }
-
-  // Setting defaults.  Use project settings if there are any.
-  if (!isset($settings->testing)) {
-    if (isset($form['#node']->project->settings->testing)) {
-      $settings->testing = $form['#node']->project->settings->testing;
+    // If these settings are not for a specific environment, load up live or the first one.
+    if ($project->settings->live['live_environment']) {
+      $environment = $project->environments[$project->settings->live['live_environment']];
     }
     else {
-      $settings->testing = array(
-        'test_type' => 0,
-        'tests_to_run' => '',
-        'behat_folder_path' => '',
-        'behat_bin' => 'bin/behat',
-      );
+      $environment = array_shift($project->environments);
     }
+    $settings = $project->settings;
   }
+  
+  // If this is an environment form, and we are missing testing settings, inherit the project settings.
+  if (isset($environment) && !isset($settings->testing)) {
+    $settings->testing = $project->settings->testing;
+  } 
+  // If a project and we are missing testing settings, load defaults.  
+  // @TODO: Move this to the node API?
+  elseif (!isset($settings->testing)) {
+    $settings->testing = array(
+      'test_type' => 0,
+      'tests_to_run' => '',
+      'behat_folder_path' => '',
+      'behat_bin' => 'bin/behat',
+    );
+  }
+  
+  // build this group of fields.
+  $testing_form = array();
   $testing_form['test_type'] = array(
     '#title' => t('Test Type'),
     '#options' => array(
@@ -152,33 +169,17 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#type' => 'radios',
     '#default_value' => $settings->testing['test_type'],
   );
-
-  // Look for feature files.
-  if (isset($form['#node'])) {
-
-    // Project settings page.
-    if ($form['#node']->type == 'project') {
-      // Just grab the first one.
-      $environment = array_shift($form['#node']->project->environments);
-    }
-    // Environment settings page.
-    elseif (isset($form['#node']->environment)) {
-      $environment = $form['#node']->environment;
-    }
-  }
-  elseif ($form['#id'] == 'hosting-task-confirm-form') {
-    $node = node_load(arg(1));
-    $environment = $node->environment;
-  }
-
+  
+  // Look for behat feature files.
+  // @TODO: Extract this to a hook to make tests types extensible.
   $tests = array();
-
+  
   // Final check for repo root.
   if (empty($environment->repo_root)){
     $tests[] = 'Something is wrong. Environment not found.';
   }
   else {
-    $directory = $environment->repo_root . $settings->testing['behat_folder_path'] . '/features';
+    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
 
     $files = file_scan_directory($directory, '.feature', array('.', '..'));
 
@@ -188,7 +189,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       $tests[$value] = $file->basename;
     }
   }
-
+ 
   $testing_form['tests_to_run'] = array(
     '#type' => 'checkboxes',
     '#options' => $tests,
@@ -196,6 +197,10 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#default_value' => $settings->testing['tests_to_run'],
     '#description' => t('Select the tests you wish to run.  Leave all unchecked to run all of them.'),
   );
+  
+  if (empty($environment_name)) {
+    $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
+  }
 
   $testing_form['behat_folder_path'] = array(
     '#type' => 'textfield',
@@ -209,25 +214,44 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
     '#description' => t('Enter the path to your bin/behat executable file, relative to the Behat folder path.'),
     '#default_value' => $settings->testing['behat_bin_path'],
   );
-
-  if ($form_id == 'hosting_task_confirm_form') {
+  
+  // Lock fields in environment settings.
+  if ($environment_name) {
     $locked = array(
       'test_type',
       'behat_folder_path',
       'behat_bin_path',
     );
     foreach ($locked as $field){
-      $testing_form[$field]['#value'] = $form['project'][$field]['#default_value'];
+      $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
       $testing_form[$field]['#type'] = 'value';
     }
   }
+  return $testing_form;
 }
+
+/**
+ * Helper to stringify the tests to run.
+ */
+function devshop_testing_task_submit(&$form, &$form_state) {
+  
+  // Implode tests to run
+  $value = implode(',', array_filter($form_state['values']['parameters']['tests_to_run']));
+  form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
+}
+
+
 //require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
 require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
 
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 
 function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
+
+  if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
+    unset($node->task_args['test_results']);
+  }
+
   if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
 
     $converter = new AnsiToHtmlConverter();
