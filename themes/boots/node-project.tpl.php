@@ -428,7 +428,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="drush-alias-modal"><?php print t('Test Results'); ?>
                       <small><?php print $environment->test->status_message; ?></small>
-                      <small><a href="<?php print $environment->test->permalink ?>" class="btn btn-small btn-default"><?php print t('Permalink'); ?></a>
+                      <small><a href="<?php print $environment->test->permalink ?>" class="btn btn-small btn-default"><?php print t('Permalink'); ?></a></small>
                     </h4>
 
                   </div>
