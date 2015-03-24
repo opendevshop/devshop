@@ -339,3 +339,25 @@ function devshop_testing_preprocess_node(&$vars) {
     }
   }
 }
+
+
+/**
+ * Implements hook_hosting_slack_message_alter()
+ */ 
+function devshop_testing_hosting_slack_message_alter(&$message_options) {
+  
+  
+  if ($message_options->task->task_type == 'test') {
+
+    $url = url('devshop_tests/' . $message_options->task->nid . '/' . $message_options->task->vid, array('absolute' => TRUE));
+    
+    $attachment = new stdClass();
+    $attachment->fallback = t('Results: ') . $url;
+    $attachment->title = t('Results: ');
+    $attachment->text = $url;
+    $attachment->title_link = $url;
+    
+    $message_options->attachments[] = $attachment;
+
+  }
+}
