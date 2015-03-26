@@ -108,7 +108,7 @@ YML;
         $feature = '/' . $feature;
       }
       $feature_path = empty($feature)? '': "features{$feature}";
-      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}' ";
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
