@@ -1,0 +1,4 @@
+aegir_root: /var/aegir
+aegir_user: aegir
+aegir_user_uid: 12345
+aegir_groups:

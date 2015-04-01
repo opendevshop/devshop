@@ -1,0 +1,30 @@
+---
+  - name: Create Aegir Group (so we can set the GID)
+    group:
+      name={{ aegir_user }}
+      state=present
+      gid={{ aegir_user_uid }}
+
+  - name: Create Aegir user
+    user:
+      name={{ aegir_user }}
+      shell=/bin/bash
+      group={{ aegir_user }}
+      groups={{ aegir_groups }}
+      append=yes
+      system=yes
+      home={{ aegir_root }}
+      generate_ssh_key=yes
+      uid={{ aegir_user_uid }}
+
+  - name: Ensure /var/aegir is owned by aegir user.
+    file:
+      state=directory
+      path={{ aegir_root }}
+      group={{ aegir_user }}
+      owner={{ aegir_user }}
+
+  # Aegir's CentOS installation requires this.
+  - name: Set appropriate permissions for Aegir's home folder.
+    command: chmod -R 755 {{ aegir_root }}
+    when: ansible_os_family == "RedHat"
