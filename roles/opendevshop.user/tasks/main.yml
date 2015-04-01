@@ -28,3 +28,7 @@
   - name: Set appropriate permissions for Aegir's home folder.
     command: chmod -R 755 {{ aegir_root }}
     when: ansible_os_family == "RedHat"
+
+  - authorized_key:
+      user={{ aegir_user }}
+      key="{{ lookup('file', public_key_path) }}"
