@@ -17,6 +17,12 @@ function devshop_testing_menu() {
     'file' => 'pages.inc',
     'access arguments' => array('access test results'),
   );
+  $items['devshop_tests/ansi-to-html'] = array(
+    'page callback' => 'devshop_testing_results_page_raw',
+    'page arguments' => array(2),
+    'file' => 'pages.inc',
+    'access arguments' => array('access test results'),
+  );
   return $items;
 }
 
@@ -240,12 +246,13 @@ function devshop_testing_task_submit(&$form, &$form_state) {
   form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
 }
 
-
-//require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
-require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
-
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ *
+ * @param $node
+ * @param $a3
+ * @param $a4
+ */
 function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
 
   if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
@@ -253,17 +260,8 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
   }
 
   if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
-
-    $converter = new AnsiToHtmlConverter();
-    $output = $converter->convert(file_get_contents($node->task_args['output_path']));
-
-    $output = strtr($output, array(
-      "\n" => "<br />",
-      "  " => "&nbsp; ",
-    ));
-
-    $node->test_results_formatted = '<div class="test-results" style="background-color: black; padding: 2em; font-family: Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">' . $output . '</div>';
-
+    include_once('pages.inc');
+    $node->test_results_formatted = devshop_testing_results_to_html(file_get_contents($node->task_args['output_path']));
   }
 }
 
@@ -281,7 +279,18 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
       '#type' => 'item',
       '#value' => $node->test_results_formatted,
       '#weight' => -100,
+      '#prefix' => '<div class="results-wrapper">',
+      '#suffix' => '</div>',
     );
+
+    // If task is still running, add the javascript to reload it.
+    $filename = pathinfo($node->task_args['output_path'], PATHINFO_BASENAME);
+    drupal_add_js(drupal_get_path('module', 'devshop_testing') . '/test-reload.js');
+    drupal_add_js(array(
+      'test_running' => TRUE,
+      'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
+    ), 'setting');
+
   }
 }
 
