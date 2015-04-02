@@ -11,6 +11,28 @@ use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
  * @param null $vid
  * @return mixed
  */
+function devshop_testing_results_status($nid, $vid = NULL) {
+
+  $node = node_load($nid, $vid);
+
+  if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
+    $return = 'TRUE';
+  }
+  else {
+    $return = 'FALSE';
+  }
+
+  print $return;
+  exit;
+
+}
+
+/**
+ * Callback for devshop_tests/NID/VID
+ * @param $nid
+ * @param null $vid
+ * @return mixed
+ */
 function devshop_testing_results_page($nid, $vid = NULL) {
   $node = node_load($nid, $vid);
 
@@ -41,6 +63,7 @@ function devshop_testing_results_page($nid, $vid = NULL) {
   drupal_add_js(array(
     'test_running' => TRUE,
     'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
+    'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
   ), 'setting');
   return '<div class="results-wrapper">' . $node->test_results_formatted . '</div>';
 }
@@ -52,6 +75,7 @@ function devshop_testing_results_page($nid, $vid = NULL) {
 function devshop_testing_results_page_raw($filename) {
 
   $path = variable_get('file_directory_path', '') . '/tests/' . $filename;
+
   $output = devshop_testing_results_to_html(file_get_contents($path));
   print $output;
 }
