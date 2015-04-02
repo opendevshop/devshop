@@ -67,6 +67,7 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Run tests
   if ($task->ref->type == 'site' && $task->task_type == 'test') {
+
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
     $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
@@ -77,10 +78,16 @@ function drush_devshop_projects_pre_hosting_task() {
       drush_log("Creating $path", 'ok');
       mkdir($path);
     }
-    $task->options['output-path'] = tempnam($path, 'test-results.') . '.txt';
 
+    // Pass to drush provision-test command
+    $output_path = tempnam($path, 'test.') . '.txt';
+    $output_filename = $path . '/' . pathinfo($output_path, PATHINFO_BASENAME);
+
+    $task->options['output-path'] = $output_path;
+
+    // Save output path as a task argument.
     $task->task_args['output_path'] = $task->options['output-path'];
-
+    $task->task_args['output_link'] = url($output_filename, array('absolute' => TRUE));
     $task->no_verify = TRUE;
     node_save($task);
   }
