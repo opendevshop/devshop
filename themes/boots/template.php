@@ -115,7 +115,9 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
     array_unshift($items, array(
       'class' => 'divider',
     ));
-    array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE)));
+    if (node_access('update', $environment_node)) {
+      array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE)));
+    }
 
     $action_items = array();
     foreach ($actions as $link) {
