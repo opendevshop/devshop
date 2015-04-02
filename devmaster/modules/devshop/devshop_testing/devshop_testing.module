@@ -17,6 +17,13 @@ function devshop_testing_menu() {
     'file' => 'pages.inc',
     'access arguments' => array('access test results'),
   );
+  $items['devshop_tests/%/%/status'] = array(
+    'title' => 'Test Status',
+    'page callback' => 'devshop_testing_results_status',
+    'page arguments' => array(1, 2),
+    'file' => 'pages.inc',
+    'access arguments' => array('access test results'),
+  );
   $items['devshop_tests/ansi-to-html'] = array(
     'page callback' => 'devshop_testing_results_page_raw',
     'page arguments' => array(2),
@@ -262,6 +269,7 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
   if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
     include_once('pages.inc');
     $node->test_results_formatted = devshop_testing_results_to_html(file_get_contents($node->task_args['output_path']));
+
   }
 }
 
@@ -289,8 +297,18 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
     drupal_add_js(array(
       'test_running' => TRUE,
       'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
+      'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
     ), 'setting');
 
+    if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
+      $node->content['follow_checkbox'] = array(
+        '#type' => 'markup',
+        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
+      );
+      drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
+      unset($node->content['update-status']);
+    }
+    unset($node->content['info']);
   }
 }
 
