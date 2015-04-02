@@ -14,6 +14,7 @@ function devshop_testing_post_hosting_test_task($task, $data) {
 
   // Save test run results as a task arg
   $task->task_args['test_results'] = $results;
+  $task->task_args['test_results_file'] = $data['context']['behat_test_results_file'];
   node_save($task);
 }
 
