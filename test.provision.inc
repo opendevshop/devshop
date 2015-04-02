@@ -13,6 +13,12 @@ function drush_devshop_provision_pre_provision_test(){
   if (!empty($tests) && is_array($tests)) {
     drush_set_option('tests-to-run', array_filter($tests));
   }
+
+  // Look for desired output path
+  $output_path =  drush_get_option('output-path');
+  if (empty($output_path)) {
+    drush_set_option('output-path', tempnam('', 'test-results.') . '.txt');
+  }
 }
 
 /**
@@ -20,7 +26,7 @@ function drush_devshop_provision_pre_provision_test(){
  */
 function drush_devshop_provision_provision_test() {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
-  // Get tests tp run
+  // Get tests to run
   $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
   $tests_to_run = drush_get_option('tests-to-run', array_filter(d()->environment['settings']['testing']['tests_to_run']));
 
@@ -108,7 +114,13 @@ YML;
         $feature = '/' . $feature;
       }
       $feature_path = empty($feature)? '': "features{$feature}";
-      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors";
+
+      // Get output path from option.
+      $output_path = drush_get_option('output-path');
+
+      // Create Command
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --out $output_path";
+
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
       // If drush_shell_cd_and_exec passes...
@@ -139,6 +151,7 @@ COMMAND: $cmd
 
 URL: $url
 RESULTS:
+  Saved to $output_path
 
 $behat_results
 TXT;
