@@ -71,6 +71,18 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['test-type'] = $task->task_args['test_type'];
     $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
     $task->options['behat-bin-path'] = $task->task_args['behat_bin_path'];
+
+    $path = variable_get('file_directory_path', '') . '/tests';
+    if (!file_exists($path)) {
+      drush_log("Creating $path", 'ok');
+      mkdir($path);
+    }
+    $task->options['output-path'] = tempnam($path, 'test-results.') . '.txt';
+
+    $task->task_args['output_path'] = $task->options['output-path'];
+
+    $task->no_verify = TRUE;
+    node_save($task);
   }
 }
 
