@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * URL callback that is invoked by git to create a code pull task.
  */
@@ -160,9 +159,6 @@ function devshop_pull_github_webhook($project_node){
           // @TODO: Make Configurable, allow branch names to be env name
           //   $environment_name = "pr" . $data->pull_request->number;
           $environment_name = 'branch_' . str_replace('-', '_', $branch);
-          if (isset($project->environments[$environment_name])) {
-            $environment_name .= '2';
-          }
 
           // When PR is opened... create new environment.
           if ($data->action == 'opened'){
@@ -184,7 +180,7 @@ function devshop_pull_github_webhook($project_node){
             $message .= "Pull Request Closed \n";
             if ($project->settings->github['pull_request_environments_delete']){
               hosting_add_task($project->environments[$environment_name]->site, 'delete');
-              $message .= "Site $environment_name scheduled for deletion.";
+              $message .= "Site $environment_name (Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
             }
           }
         }
