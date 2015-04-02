@@ -252,10 +252,10 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
     unset($node->task_args['test_results']);
   }
 
-  if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
+  if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
 
     $converter = new AnsiToHtmlConverter();
-    $output = $converter->convert($node->task_args['test_results']);
+    $output = $converter->convert(file_get_contents($node->task_args['output_path']));
 
     $output = strtr($output, array(
       "\n" => "<br />",
@@ -267,9 +267,16 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
   }
 }
 
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ * @param $node
+ * @param $a3
+ * @param $a4
+ */
 function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
 
-  if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
+  if ($node->type == 'task' && !empty($node->test_results_formatted)) {
+    unset($node->content['hosting_log']);
     $node->content['results'] = array(
       '#type' => 'item',
       '#value' => $node->test_results_formatted,
