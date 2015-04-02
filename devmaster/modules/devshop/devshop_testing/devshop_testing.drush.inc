@@ -6,16 +6,17 @@
  */
 function devshop_testing_post_hosting_test_task($task, $data) {
 
-  // Get test results
-  // @TODO: Handle Simpletest as well
-  if (isset($data['context']['behat_test_results'])) {
-    $results = $data['context']['behat_test_results'];
-  }
-
-  // Save test run results as a task arg
-  $task->task_args['test_results'] = $results;
-  $task->task_args['test_results_file'] = $data['context']['behat_test_results_file'];
-  node_save($task);
+  // We don't really need this if we are saving to a file.
+//  // Get test results
+//  // @TODO: Handle Simpletest as well
+//  if (isset($data['context']['behat_test_results'])) {
+//    $results = $data['context']['behat_test_results'];
+//  }
+//
+//  // Save test run results as a task arg
+//  $task->task_args['test_results'] = $results;
+//  $task->task_args['test_results_file'] = $data['context']['behat_test_results_file'];
+//  node_save($task);
 }
 
 /**
