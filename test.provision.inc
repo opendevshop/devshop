@@ -119,7 +119,7 @@ YML;
       $output_path = drush_get_option('output-path');
 
       // Create Command
-      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --out $output_path";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --out $output_path --format-settings='{\"expand\": true}'";
 
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
