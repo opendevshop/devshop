@@ -65,7 +65,16 @@ function devshop_testing_results_page($nid, $vid = NULL) {
     'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
     'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
   ), 'setting');
-  return '<div class="results-wrapper">' . $node->test_results_formatted . '</div>';
+
+  $output ='<div class="results-wrapper">' . $node->test_results_formatted . '</div>';
+
+
+  if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
+    $output .= '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>';
+    drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
+  }
+
+  return $output;
 }
 
 /**
