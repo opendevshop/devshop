@@ -306,7 +306,7 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
         '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
       );
       drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
-      unset($node->content['update-status']);
+//      unset($node->content['update-status']);
     }
     unset($node->content['info']);
   }

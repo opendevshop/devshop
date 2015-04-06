@@ -93,7 +93,10 @@ function devshop_pull_default_webhook($project_node){
     $args['revert'] = $environment->settings->deploy['revert'];
     $args['cache'] = $environment->settings->deploy['cache'];
 
-    hosting_add_task($environment->site, 'devshop-deploy', $args);
+    // Ensure that environment site exists before trying to deploy it.
+    if (isset($environment->site) && $node = node_load($environment->site)) {
+      hosting_add_task($environment->site, 'devshop-deploy', $args);
+    }
   }
 
   return "Commit notification received! Running 'Deploy' on $project->title environments " . implode(', ', $environments_to_pull);
@@ -140,7 +143,9 @@ function devshop_pull_github_webhook($project_node){
             $args['revert'] = $environment->settings->deploy['revert'];
             $args['cache'] = $environment->settings->deploy['cache'];
 
-            hosting_add_task($environment->site, 'devshop-deploy', $args);
+            if (isset($environment->site) && $node = node_load($environment->site)) {
+              hosting_add_task($environment->site, 'devshop-deploy', $args);
+            }
           }
         }
 
@@ -179,7 +184,10 @@ function devshop_pull_github_webhook($project_node){
           elseif ($data->action == 'closed'){
             $message .= "Pull Request Closed \n";
             if ($project->settings->github['pull_request_environments_delete']){
-              hosting_add_task($project->environments[$environment_name]->site, 'delete');
+
+              if (isset($project->environments[$environment_name]->site) && $node = node_load($project->environments[$environment_name]->site)) {
+                hosting_add_task($project->environments[$environment_name]->site, 'delete');
+              }
               $message .= "Site $environment_name (Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
             }
           }
