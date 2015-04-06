@@ -80,6 +80,7 @@ function drush_devshop_provision_provision_test() {
     $environment = d()->environment['name'];
     $url = d()->environment['url'];
     $alias = d()->name;
+    $root = d()->root;
 
     $behat_yml .= <<<YML
 
@@ -91,6 +92,9 @@ $environment:
     Drupal\DrupalExtension:
       drush:
         alias: $alias
+      drupal:
+        drupal_root: '$root'
+      api_driver: 'drupal'
 
 YML;
 
