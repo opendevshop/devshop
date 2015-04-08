@@ -33,6 +33,7 @@
         - php5-curl
         - php5-gd
         - php5-mysql
+        - php5-mcrypt
         - php-pear
         - postfix
         - sudo
@@ -59,6 +60,7 @@
         - php-process
         - php-pear
         - php-xml
+        - php-mcrypt
         - postfix
         - sudo
         - rsync
