@@ -423,4 +423,10 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     }
   }
+
+  // When a platform or site node is deleted, remove the environment record.
+  if ($op == 'delete' && ($node->type == 'site' || $node->type == 'platform')) {
+    drupal_set_message('Deleted environment.');
+    db_query('DELETE FROM {hosting_devshop_project_environment} WHERE %s = %d', $node->type, $node->nid);
+  }
 }
