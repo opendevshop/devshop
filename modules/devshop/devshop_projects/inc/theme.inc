@@ -122,8 +122,7 @@ function template_preprocess_devshop_project_nav(&$vars){
 
   // @TODO: Detect other web URLs for other git hosts.
   if ($project->git_repo_url) {
-    $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
-    $vars['github_url'] = $url;
+    $vars['github_url'] = $project->git_repo_url;
   }
 
   // Generate branches/tags lists
