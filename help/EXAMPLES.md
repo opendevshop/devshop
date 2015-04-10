@@ -37,6 +37,6 @@ of remote servers fully automatic.  See http://community.aegirproject.org/node/3
 Amazon Web Services Example
 ---------------------------
 
-![Network Diagram for DevShop on AWS](devshop-on-aws.png "DevShop on AWS")
+![Network Diagram for DevShop on AWS](https://raw.githubusercontent.com/opendevshop/devshop/0.x/help/devshop-on-aws.png "DevShop on AWS")
 
 https://creately.com/diagram/i8bky9y71/1ZGBJkfo7bjh1fidQYCKFjJ89D8%3D
