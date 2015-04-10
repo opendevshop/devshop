@@ -23,16 +23,18 @@ body.admin-menu .navbar-static-top {
 }
 
 .environment-git-ref {
-  font-family: monospace;
-  margin: 0px 5px;
-  padding: 3px;
-  color: #777;
-  font-size: .7em;
+  max-width: 77%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.environment-drupal-version {
+  max-width: 23%;
 }
 
 .environment-meta-data {
     font-family: monospace;
-    margin: 0px 5px;
+    margin: 0px;
     padding: 3px;
     color: #777;
     font-size: .7em;
