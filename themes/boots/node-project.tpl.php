@@ -170,7 +170,7 @@
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
           <?php print $environment->name; ?></a>
 
-        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data environment-git-ref btn btn-text">
+        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('View this !type', array('!type' => $environment->git_ref_type)); ?>">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
 
