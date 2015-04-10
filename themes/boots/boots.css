@@ -68,7 +68,18 @@ body.admin-menu .navbar-static-top {
 .environment-domains {
   text-overflow: ellipsis;
   overflow: hidden;
-  padding-right: 30px;
+  position: relative;
+  padding: 0px 6em 0px 0px;
+  white-space: nowrap;
+}
+
+.environment-domains.login-available {
+  padding-right: 4em;
+}
+
+.environment-domains .btn.login-link {
+  position: absolute;
+  right: 0px;
 }
 
 .environment.live-environment .environment-header {

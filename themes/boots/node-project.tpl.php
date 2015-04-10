@@ -208,11 +208,10 @@
         </div>
       </div>
       <!-- URLs -->
-      <div class="environment-domains list-group-item btn-group btn-group-justified">
-        <div class="btn-group">
+      <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
           <?php if (count($environment->domains) > 1): ?>
 
-            <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
+            <a href="<?php print $environment->url ?>" target="_blank">
               <i class="fa fa-globe"></i> <?php print $environment->url ?>
             </a>
             <button type="button" class="btn btn-xs dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
@@ -223,7 +222,7 @@
             </button>
           <?php else: ?>
             <?php if (!empty($environment->url)): ?>
-              <a type="button" class="btn btn-xs" href="<?php print $environment->url ?>" target="_blank">
+              <a href="<?php print $environment->url ?>" target="_blank">
                 <i class="fa fa-globe"></i>
                 <?php print $environment->url ?>
               </a>
@@ -252,10 +251,9 @@
 
           <?php if ($environment->login_url): ?>
             <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
-          <a href="<?php print $environment->login_url; ?>" target="<?php print $targetl ?>" class="btn btn-link pull-right"><?php print $environment->login_text; ?></a>
+          <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link login-link"><?php print $environment->login_text; ?></a>
           <?php endif; ?>
         </div>
-      </div>
 
 
       <?php
