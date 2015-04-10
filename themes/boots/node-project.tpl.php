@@ -156,16 +156,15 @@
   <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
     <div class="list-group environment <?php print $environment->class  ?>">
-      <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
-
-        <div class="environment-dropdowns pull-right">
-
-          <!-- Environment Tasks -->
-          <div class="environment-tasks btn-group ">
-            <?php print $environment->tasks_list; ?>
-          </div>
+      <!-- Environment Tasks -->
+      <div class="environment-dropdowns">
+        <div class="environment-tasks btn-group ">
+          <?php print $environment->tasks_list; ?>
         </div>
+      </div>
+
+      <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
         <!-- Environment Links -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">

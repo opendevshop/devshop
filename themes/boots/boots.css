@@ -49,6 +49,18 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
+.environment-header {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: 30px;
+}
+
+.environment-domains {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: 30px;
+}
+
 .environment.live-environment .environment-header {
   background: #4E6DDB;
  }
@@ -68,7 +80,7 @@ body.admin-menu .navbar-static-top {
 }
 
 
-.environment.live-environment .environment-header button.btn-link: hover {
+.environment.live-environment .environment-header button.btn-link:hover {
   text-decoration: none;
 }
 
@@ -308,8 +320,10 @@ body.admin-menu .navbar-static-top {
 }
 
 .environment-dropdowns {
-  margin-top: -5px;
-  margin-right: -15px;
+  position: absolute;
+  right: 18px;
+  top: 4px;
+  z-index: 10;
 }
 
 .dropdown-menu>li>a {
