@@ -55,6 +55,16 @@ body.admin-menu .navbar-static-top {
   padding-right: 30px;
 }
 
+.environment-tasks button.task-list-button {
+  z-index: 1;
+}
+
+.environment-dropdowns {
+  position: absolute;
+  right: 18px;
+  top: 4px;
+}
+
 .environment-domains {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -69,18 +79,21 @@ body.admin-menu .navbar-static-top {
 .environment.live-environment .environment-header a.btn-text,
 .environment.live-environment .environment-header button.btn-link,
 .environment.live-environment .environment-header span,
-.environment.live-environment .environment-header
+.environment.live-environment .environment-tasks,
+.environment.live-environment .environment-tasks a,
+.environment.live-environment .environment-tasks a.btn-text,
+.environment.live-environment .environment-tasks button.btn-link
 {
     color: white;
 }
 
-.environment.live-environment .environment-header  .dropdown-menu a,
-.environment.live-environment .environment-header  .dropdown-menu {
+.environment.live-environment .environment-tasks .dropdown-menu a,
+.environment.live-environment .environment-tasks .dropdown-menu {
   color: black;
 }
 
 
-.environment.live-environment .environment-header button.btn-link:hover {
+.environment.live-environment .environment-tasks button.btn-link:hover {
   text-decoration: none;
 }
 
@@ -225,7 +238,11 @@ body.admin-menu .navbar-static-top {
 .environment.active.live-environment .environment-header a.btn-text,
 .environment.active.live-environment .environment-header button.btn-link,
 .environment.active.live-environment .environment-header span,
-.environment.active.live-environment .environment-header
+.environment.active.live-environment .environment-header,
+.environment.active.live-environment .environment-tasks a,
+.environment.active.live-environment .environment-tasks a.btn-text,
+.environment.active.live-environment .environment-tasks button.btn-link,
+
 {
   color: #8a6d3b;
 }
@@ -319,13 +336,6 @@ body.admin-menu .navbar-static-top {
     border:none;
 }
 
-.environment-dropdowns {
-  position: absolute;
-  right: 18px;
-  top: 4px;
-  z-index: 10;
-}
-
 .dropdown-menu>li>a {
     white-space: normal;
 }
@@ -413,6 +423,7 @@ input.form-control.webhook-url {
 
 .devshop-tasks {
   min-width: 340px;
+  z-index:20;
 }
 
 .environment-tasks .devshop-tasks .tasks,
