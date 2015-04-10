@@ -170,12 +170,12 @@
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
           <?php print $environment->name; ?></a>
 
-        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data btn btn-text">
+        <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="environment-meta-data environment-git-ref btn btn-text">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
 
         <?php if ($environment->version): ?>
-          <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data btn btn-text">
+          <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data environment-drupal-version btn btn-text">
           <i class="fa fa-drupal"></i><?php print $environment->version; ?>
         </a>
 
