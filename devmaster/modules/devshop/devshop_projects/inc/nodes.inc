@@ -55,6 +55,21 @@ function devshop_projects_load($node) {
     }
   }
 
+  // Git Repo Host
+  if (strpos($project->git_url, 'github.com') !== FALSE) {
+    $project->git_provider = 'github';
+    $project->git_repo_url = strtr($project->git_url, array(
+      'git@github.com:' => 'http://github.com/',
+      'git://' => 'http://',
+      '.git' => '',
+    ));
+  }
+  else {
+    $project->git_provider = 'git';
+    $project->git_repo_url = '';
+  }
+  // @TODO: Set git providers for most common here, then add a hook to detect.
+
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
   $query = db_query("
@@ -102,6 +117,16 @@ function devshop_projects_load($node) {
 
     // Get the current git ref type.
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
+
+    // The URL that the branch or tag links to.
+    if ($project->git_provider == 'github') {
+      $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
+    }
+    else {
+      $environment->git_ref_url = url("node/$environment->site/logs/commits");
+    }
+
+
 
     // Environment Drupal version.
     $iid = db_result(db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type='platform' AND i.rid=%d", $environment->platform));
@@ -193,15 +218,6 @@ function devshop_projects_load($node) {
   // @TODO: Remove devshop_pull.
   module_load_include('inc', 'devshop_pull');
   $project->webhook_url = _devshop_pull_callback_url($node);
-
-  // Git Repo Host
-  if (strpos($project->git_url, 'github.com') !== FALSE) {
-    $project->git_provider = 'github';
-  }
-  else {
-    $project->git_provider = 'git';
-  }
-  // @TODO: Set git providers for most common here, then add a hook to detect.
 
   // Save project object be available at $node->project.
   $additions['project'] = $project;

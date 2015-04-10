@@ -121,7 +121,7 @@ function template_preprocess_devshop_project_nav(&$vars){
   $project = $vars['project'] = $vars['node']->project;
 
   // @TODO: Detect other web URLs for other git hosts.
-  if ($project->git_provider == 'github') {
+  if ($project->git_repo_url) {
     $url = str_replace('git@github.com:', 'http://github.com/', $project->git_url);
     $vars['github_url'] = $url;
   }
