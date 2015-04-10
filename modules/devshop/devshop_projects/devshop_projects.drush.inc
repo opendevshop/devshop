@@ -339,6 +339,12 @@ function devshop_projects_post_hosting_import_task($task, $data) {
         drush_log('[DEVSHOP] Saving domain to the environment:' . $domain);
         node_save($site);
       }
+
+      // Queue a verify task.
+      hosting_add_task($site->nid, 'verify');
+
+      // @TODO: Add queue a test task here, if project is configured for it.
+
     }
   }
 }
