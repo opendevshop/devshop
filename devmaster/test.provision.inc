@@ -13,12 +13,6 @@ function drush_devshop_provision_pre_provision_test(){
   if (!empty($tests) && is_array($tests)) {
     drush_set_option('tests-to-run', array_filter($tests));
   }
-
-  // Look for desired output path
-  $output_path =  drush_get_option('output-path');
-  if (empty($output_path)) {
-    drush_set_option('output-path', tempnam('', 'test-results.') . '.txt');
-  }
 }
 
 /**
@@ -123,7 +117,11 @@ YML;
       $output_path = drush_get_option('output-path');
 
       // Create Command
-      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --out $output_path --format-settings='{\"expand\": true}'";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}'";
+
+      if ($output_path) {
+        $cmd .= "--out $output_path ";
+      }
 
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
 
