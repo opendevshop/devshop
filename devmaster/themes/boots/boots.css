@@ -53,6 +53,7 @@ body.admin-menu .navbar-static-top {
   text-overflow: ellipsis;
   overflow: hidden;
   padding-right: 30px;
+  border-radius: 5px 5px 0 0;
 }
 
 .environment-tasks button.task-list-button {
