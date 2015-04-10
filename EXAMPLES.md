@@ -32,3 +32,11 @@ Additional web servers can be connected in a "cluster" or a "pack".  This is a f
 
 NOTE: Remote servers must be setup and configured manually, for now.  Work is progressing to make installation
 of remote servers fully automatic.  See http://community.aegirproject.org/node/30 and http://community.aegirproject.org/node/396 for more information on aegir remote servers.
+
+
+Amazon Web Services Example
+---------------------------
+
+![Network Diagram for DevShop on AWS](devshop-on-aws.png "DevShop on AWS")
+
+https://creately.com/diagram/i8bky9y71/1ZGBJkfo7bjh1fidQYCKFjJ89D8%3D
