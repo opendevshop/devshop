@@ -57,8 +57,10 @@
       <div class="input-group">
 
         <!-- Link to github or an icon -->
-        <?php if (isset($github_url)): ?>
-          <a class="input-group-addon" href="<?php print $github_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <?php if ($project->git_provider == 'github'): ?>
+          <a class="input-group-addon" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <?php elseif ($project->git_repo_url): ?>
+          <a class="input-group-addon" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View Git Repo'); ?>" target="_blank"><i class="fa fa-git"></i></a>
         <?php else: ?>
           <div class="input-group-addon"><i class="fa fa-git"></i></div>
         <?php endif; ?>
