@@ -1,0 +1,66 @@
+<?php
+/**
+ * @file devshop_github.install
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_github_schema() {
+  $schema['hosting_devshop_github_pull_requests'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Pull Request ID',
+      ),
+      'number' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Pull Request Number',
+      ),
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The project's Node ID.",
+      ),
+      'environment_name' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 64,
+        'default' => '',
+        'description' => 'Environment name for this pull request environment.',
+      ),
+      'pull_request_object' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'A serialized array of settings for this environment.',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function devshop_github_install() {
+  // Create tables.
+  drupal_install_schema('devshop_github');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function devshop_github_uninstall() {
+  // Delete tables.
+  drupal_uninstall_schema('devshop_github');
+}
