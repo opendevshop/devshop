@@ -32,7 +32,9 @@ function devshop_github_nodeapi_project_load(&$node) {
   $query = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = %d', $node->nid);
   while($pull_request = db_fetch_object($query)) {
     $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-    $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+    if (isset( $node->project->environments[$pull_request->environment_name])) {
+      $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+    }
   }
 }
 
@@ -142,6 +144,12 @@ function devshop_github_webhook($project_node){
         $message = 'Pong!';
         break;
       case 'push':
+
+        // If push is for a deleted branch, don't do anything.
+        if ($data->deleted && $data->after == "0000000000000000000000000000000000000000") {
+          $message = 'Deleted ref detected.';
+          break;
+        }
 
         // Limit "Deploy" tasks to only run for the branches we have new code for..
         $git_ref = strtr($data->ref, array('refs/tags/' => '', 'refs/heads/' => ''));
