@@ -203,6 +203,29 @@ function devshop_pull_github_webhook($project_node){
           }
 
           // When PR is cloded, delete environment.
+          elseif ($data->action == 'synchronize') {
+
+            // Update the PR record
+            $info = new stdClass();
+            $info->id = $data->pull_request->id;
+            $info->number = $data->pull_request->number;
+            $info->project_nid = $project->nid;
+            $info->environment_name = $environment_name;
+            $info->pull_request_object = serialize($data->pull_request);
+
+            // Save environment record.
+            if (isset($project->environments[$environment_name]->github_pull_request)) {
+              $update = array('id');
+            }
+            else {
+              $update = array();
+            }
+
+            if (drupal_write_record('hosting_devshop_github_pull_requests', $info, $update)){
+              $message .= ' ' . t('Pull Request info saved to DevShop.');
+            }
+          }
+          // When PR is cloded, delete environment.
           elseif ($data->action == 'closed'){
             $message .= "Pull Request Closed \n";
             if ($project->settings->github['pull_request_environments_delete']){
