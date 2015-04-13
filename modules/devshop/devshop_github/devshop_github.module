@@ -41,65 +41,7 @@ function devshop_github_nodeapi_project_load(&$node) {
  */
 function devshop_github_nodeapi_project_view(&$node, $a3, $a4) {
 
-  // If autoloader is not available, return.
-  if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-    return;
-  }
-
-  // If project is not from github, return.
-  if ($node->project->git_provider != 'github') {
-    return;
-  }
-
-  if (empty($_GET['test'])){
-    return;
-  }
-
-  // Include vendors
-  require_once 'vendor/autoload.php';
-
-  // Extract username and repo
-  list($s, $owner, $repo) = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-
-  try {
-    $token = variable_get('devshop_github_token', '');
-    $client = new \Github\Client();
-    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-
-    $comment = $client->api('issue')
-      ->comments()
-      ->create($owner, $repo, 173, array(
-        'body' => $status == HOSTING_TASK_ERROR ? 'DANGER WILL ROBINSON' : 'SITUATION NOMINAL',
-      ));
-    dsm($comment);
-
-  } catch (Github\Exception\RuntimeException $e) {
-    drupal_set_message('GitHub API Error: ' . $e->getMessage(), 'error');
-    drupal_set_message(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
-  } catch (Github\Exception\ValidationFailedException $e) {
-    drupal_set_message('GitHub API Error: ' . $e->getMessage(), 'error');
-  }
 }
-//  try {
-//    $token = variable_get('devshop_github_token', '');
-//    $client = new \Github\Client();
-//    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-//
-//    $response = $client->getHttpClient()->get("/repos/$owner/$repo/pulls");
-//    $pulls = Github\HttpClient\Message\ResponseMediator::getContent($response);
-//  }
-//  catch (Github\Exception\RuntimeException $e) {
-//    drupal_set_message('GitHub API Error: ' . $e->getMessage(), 'error');
-//    drupal_set_message(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
-//  }
-//
-//  $output = 'hi!';
-//  $node->content['hello'] = array(
-//    '#type' => 'item',
-//    '#title' => t('Pull Request'),
-//    '#value' => $output,
-//  );
-//}
 
 
 /**
@@ -111,7 +53,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     'test',
     'import',
     'verify',
-    'deploy',
+    'devshop-deploy',
   );
 
   if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->github_pull_request)) {
