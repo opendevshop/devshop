@@ -198,6 +198,17 @@
             <i class="fa fa-bolt"></i>Live
           </span>
           <?php endif; ?>
+
+          <?php if (isset($environment->github_pull_request)): ?>
+            <!-- Pull Request -->
+            <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="btn btn-text text-muted btn-sm" target="_blank">
+              <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="16" height="16">
+              <i class="fa fa-github"></i>
+              #<?php print $environment->github_pull_request->number ?>
+            </a>
+
+          <?php endif; ?>
+
         </div>
 
 

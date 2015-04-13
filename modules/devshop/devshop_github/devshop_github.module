@@ -27,6 +27,18 @@ function devshop_github_menu() {
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
+function devshop_github_nodeapi_project_load(&$node) {
+
+  $query = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = %d', $node->nid);
+  while($pull_request = db_fetch_object($query)) {
+    $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
+    $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+  }
+}
+
+/**
+ * Implements hook_nodeapi_TYPE_OP().
+ */
 function devshop_github_nodeapi_project_view(&$node, $a3, $a4) {
 //
 //  // If autoloader is not available, return.
