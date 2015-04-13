@@ -282,7 +282,7 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
 function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
 
   if ($node->type == 'task' && !empty($node->test_results_formatted)) {
-    unset($node->content['hosting_log']);
+//    unset($node->content['hosting_log']);
     $node->content['results'] = array(
       '#type' => 'item',
       '#value' => $node->test_results_formatted,
@@ -308,7 +308,7 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
       drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
 //      unset($node->content['update-status']);
     }
-    unset($node->content['info']);
+//    unset($node->content['info']);
   }
 }
 

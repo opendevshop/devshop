@@ -40,23 +40,46 @@ function devshop_github_nodeapi_project_load(&$node) {
  * Implements hook_nodeapi_TYPE_OP().
  */
 function devshop_github_nodeapi_project_view(&$node, $a3, $a4) {
-//
-//  // If autoloader is not available, return.
-//  if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-//    return;
-//  }
-//
-//  // If project is not from github, return.
-//  if ($node->project->git_provider != 'github') {
-//    return;
-//  }
-//
-//  // Include vendors
-//  require_once 'vendor/autoload.php';
-//
-//  // Extract username and repo
-//  list($s, $owner, $repo) = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-//
+
+  // If autoloader is not available, return.
+  if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+    return;
+  }
+
+  // If project is not from github, return.
+  if ($node->project->git_provider != 'github') {
+    return;
+  }
+
+  if (empty($_GET['test'])){
+    return;
+  }
+
+  // Include vendors
+  require_once 'vendor/autoload.php';
+
+  // Extract username and repo
+  list($s, $owner, $repo) = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
+
+  try {
+    $token = variable_get('devshop_github_token', '');
+    $client = new \Github\Client();
+    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+    $comment = $client->api('issue')
+      ->comments()
+      ->create($owner, $repo, 173, array(
+        'body' => $status == HOSTING_TASK_ERROR ? 'DANGER WILL ROBINSON' : 'SITUATION NOMINAL',
+      ));
+    dsm($comment);
+
+  } catch (Github\Exception\RuntimeException $e) {
+    drupal_set_message('GitHub API Error: ' . $e->getMessage(), 'error');
+    drupal_set_message(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
+  } catch (Github\Exception\ValidationFailedException $e) {
+    drupal_set_message('GitHub API Error: ' . $e->getMessage(), 'error');
+  }
+}
 //  try {
 //    $token = variable_get('devshop_github_token', '');
 //    $client = new \Github\Client();
@@ -76,4 +99,85 @@ function devshop_github_nodeapi_project_view(&$node, $a3, $a4) {
 //    '#title' => t('Pull Request'),
 //    '#value' => $output,
 //  );
+//}
+
+
+/**
+ * Implements hook_hosting_task_update_status()
+ */
+function devshop_github_hosting_task_update_status($task, $status) {
+
+  $task_types = array(
+    'test',
+    'import',
+    'verify',
+    'deploy',
+  );
+
+  if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->github_pull_request)) {
+
+    // If autoloader is not available, return.
+    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+      return;
+    }
+
+    // If project is not from github, return.
+    if ($task->ref->project->git_provider != 'github') {
+      return;
+    }
+
+    // Include vendors
+    require_once 'vendor/autoload.php';
+
+    drush_log('===========================================', 'ok');
+    drush_log('Notifying github...', 'ok');
+
+    // Extract username and repo
+    list($s, $owner, $repo) = explode('/', parse_url($task->ref->project->git_repo_url, PHP_URL_PATH));
+
+    try {
+      $token = variable_get('devshop_github_token', '');
+      $client = new \Github\Client();
+      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+      $comment = $client->api('issue')
+        ->comments()
+        ->create($owner, $repo, $task->ref->environment->github_pull_request->number, array(
+          'body' => devshop_github_comment($task, $status),
+        ));
+      drush_log('Comment posted! ' . print_r($comment, 1), 'ok');
+    } catch (Github\Exception\RuntimeException $e) {
+      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+      drush_log(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
+    } catch (Github\Exception\ValidationFailedException $e) {
+      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+    }
+
+    drush_log('done trying... ', 'ok');
+
+  }
+}
+
+/**
+ *
+ */
+function devshop_github_comment($task, $status) {
+
+  $output = array();
+  $output[] = '```';
+  $output[] = 'DEVSHOP';
+  $output[] = 'Project: ' . url("node/{$task->ref->project->nid}", array('absolute' => TRUE));
+  $output[] = "Task: " . _hosting_parse_error_code($status);
+  $output[] = 'Site: ' . $task->ref->environment->url;
+
+  if ($task->task_type == 'test') {
+    $output[] = 'Results: ' . url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
+  }
+
+  if ($task->task_type == 'import') {
+    $output[] = t('Your environment is now available.');
+  }
+  $output[] = '```';
+
+  return implode("\n", $output);
 }
