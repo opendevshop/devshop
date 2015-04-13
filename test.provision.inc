@@ -105,7 +105,9 @@ YML;
     }
     
     // Foreach test to run...
+    $i = 0;
     foreach ($tests_to_run as $feature) {
+      $i++;
 
       // Check for path.
       if (substr($feature, 0, 1) !== '/') {
@@ -120,7 +122,7 @@ YML;
       $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}'";
 
       if ($output_path) {
-        $cmd .= " --out $output_path ";
+        $cmd .= " --out {$output_path}.{$i}.txt";
       }
 
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
