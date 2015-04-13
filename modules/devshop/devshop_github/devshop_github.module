@@ -106,11 +106,10 @@ function devshop_github_hosting_task_update_status($task, $status) {
 function devshop_github_comment($task, $status) {
 
   $output = array();
-  $output[] = '```';
-  $output[] = 'DEVSHOP';
-  $output[] = 'Project: ' . url("node/{$task->ref->project->nid}", array('absolute' => TRUE));
-  $output[] = "Task: " . _hosting_parse_error_code($status);
-  $output[] = 'Site: ' . $task->ref->environment->url;
+  $output[] = '> **DEVSHOP**';
+  $output[] = '> ' . ucfirst($task->task_type) .  ": " . _hosting_parse_error_code($status);
+  $output[] = '> Site: ' . $task->ref->environment->url;
+  $output[] = '> Project: ' . url("node/{$task->ref->project->nid}", array('absolute' => TRUE));
 
   if ($task->task_type == 'test') {
     $output[] = 'Results: ' . url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
@@ -119,7 +118,6 @@ function devshop_github_comment($task, $status) {
   if ($task->task_type == 'import') {
     $output[] = t('Your environment is now available.');
   }
-  $output[] = '```';
 
   return implode("\n", $output);
 }
