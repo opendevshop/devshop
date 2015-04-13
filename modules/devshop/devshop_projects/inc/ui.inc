@@ -292,29 +292,35 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     
     // Create actions dropdown.
     $actions = array();
-    $actions[] = array(
-      'title' => t('Clone environment'),
-      'href' => 'node/' . $node->nid . '/project_devshop-create/clone/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
-      'attributes' => array(
-        'class' => 'hosting-button-dialog',
-      ),
-    );
-     $actions[] = array(
-      'title' => t('Fork environment'),
-      'href' => 'node/' . $node->nid . '/project_devshop-create/fork/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
-      'attributes' => array(
-        'class' => 'hosting-button-dialog',
-      ),
-    );
-
-    
     // Aegir Tasks
     if ($site_installed){
+      $actions[] = array(
+        'title' => t('Clone environment'),
+        'href' => 'node/' . $node->nid . '/project_devshop-create/clone/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
+        'attributes' => array(
+          'class' => 'hosting-button-dialog',
+        ),
+      );
+      $actions[] = array(
+        'title' => t('Fork environment'),
+        'href' => 'node/' . $node->nid . '/project_devshop-create/fork/' . $environment->site, array( 'query' => array('token' => drupal_get_token($user->uid))),
+        'attributes' => array(
+          'class' => 'hosting-button-dialog',
+        ),
+      );
+
       $site_tasklist = hosting_task_fetch_tasks($environment->site);
       $site_tasklist['restore']['title'] = t('Restore Backups');
     }
     else {
       $site_tasklist = array();
+      $actions[] = array(
+        'title' => t('Delete Environment'),
+        'href' => 'node/' . $environment->platform . '/platform_delete/', array( 'query' => array('token' => drupal_get_token($user->uid))),
+        'attributes' => array(
+          'class' => 'hosting-button-dialog',
+        ),
+      );
     }
 
     // Invoke hook_devshop_environment_actions()
