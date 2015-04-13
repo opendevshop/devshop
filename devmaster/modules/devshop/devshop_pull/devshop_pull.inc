@@ -13,14 +13,6 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
 
-  // Check for environments set to pull
-  $environments_to_pull = array();
-  foreach ($project->environments as $environment) {
-    if (!$environment->settings->pull_disabled) {
-      $environments_to_pull[] = $environment->name;
-    }
-  }
-
   // Make sure we got the project.
   if (!$project_node){
     $message = "Project $project not found.";
@@ -43,14 +35,13 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   else {
     $status = DEVSHOP_PULL_STATUS_OK;
 
-    // @TODO: Make this pluggable.
     // Check headers for GitHub Integration
     $headers = getallheaders();
-    if (isset($headers['X-GitHub-Event'])) {
-      $message = devshop_pull_github_webhook($project_node, $environments_to_pull);
+    if (isset($headers['X-GitHub-Event']) && function_exists('devshop_github_webhook')) {
+      $message = devshop_github_webhook($project_node);
     }
     else {
-      $message = devshop_pull_default_webhook($project_node, $environments_to_pull);
+      $message = devshop_pull_default_webhook($project_node);
     }
   }
 
@@ -100,151 +91,6 @@ function devshop_pull_default_webhook($project_node){
   }
 
   return "Commit notification received! Running 'Deploy' on $project->title environments " . implode(', ', $environments_to_pull);
-}
-
-/**
- * GitHub action to take on webhook init
- * @TODO: Once it is more pluggable, put this in it's own include, or maybe it's own module.
- */
-function devshop_pull_github_webhook($project_node){
-  $headers = getallheaders();
-  $project = $project_node->project;
-
-  // @TODO: This only works with GitHub now!!! IMMEDIATELY complete issue https://www.drupal.org/node/2322593
-  // so we don't leave all other git hosts in the dark :(
-
-  // @TODO: Handle form content from github as well.
-  if ($headers['content-type'] == 'application/json'){
-    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
-    
-    $args = array();
-    $args['cache'] = 1;
-
-    switch ($headers['X-GitHub-Event']){
-      case 'ping':
-        $message = 'Pong!';
-        break;
-      case 'push':
-
-        // Limit "Deploy" tasks to only run for the branches we have new code for..
-        $git_ref = strtr($data->ref, array('refs/tags/' => '', 'refs/heads/' => ''));
-
-        // Check for environments set to pull
-        $environments_to_pull = array();
-        foreach ($project->environments as $environment_name => $environment) {
-
-          // Only pull if deploy is not disabled or if environment is tracking a tag.
-          if ($git_ref == $environment->git_ref && !$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
-            $environments_to_pull[] = $environment->name;
-
-            $args = array();
-            $args['git_ref'] = $environment->git_ref;
-            $args['update'] = $environment->settings->deploy['update'];
-            $args['revert'] = $environment->settings->deploy['revert'];
-            $args['cache'] = $environment->settings->deploy['cache'];
-
-            if (isset($environment->site) && $node = node_load($environment->site)) {
-              hosting_add_task($environment->site, 'devshop-deploy', $args);
-            }
-          }
-        }
-
-        $message = "Push Received for git ref $git_ref. Deploying code to environments: " . implode(', ', $environments_to_pull);
-        break;
-
-      case 'pull_request':
-        // If pull request environments is enabled...
-        if ($project->settings->github['pull_request_environments']){
-          $message = 'Pull Request Received.';
-
-          // @TODO: Handle forks?
-          $branch = $data->pull_request->head->ref;
-
-          // Determine environment branch.
-          // @TODO: Make Configurable, allow branch names to be env name
-          //   $environment_name = "pr" . $data->pull_request->number;
-          $environment_name = 'branch_' . str_replace('-', '_', $branch);
-
-          // When PR is opened... create new environment.
-          if ($data->action == 'opened'){
-            $message = "Detected Pull Request creation for $branch \n";
-            if (isset($project->environments[$environment_name])) {
-              $message = "Environment $environment_name already exists! Not creating one... \n";
-
-              if (isset($project->environments[$environment_name]->github_pull_request)) {
-                $message .= "Already have a PR for $environment_name ... not inserting.";
-                break;
-              }
-            }
-            else {
-              // If method is "install"...
-              if ($project->settings->github['pull_request_environments_method'] == 'install') {
-                hosting_create_environment($project, $environment_name, $branch);
-              }
-              // Otherwise, it is a clone from live.
-              else {
-                hosting_create_environment($project, $environment_name, $branch, $project->settings->live['live_environment']);
-              }
-              $message .= "Environment $environment_name created for $project_node->title \n";
-            }
-
-            // Insert PR record
-            $info = new stdClass();
-            $info->id = $data->pull_request->id;
-            $info->number = $data->pull_request->number;
-            $info->project_nid = $project->nid;
-            $info->environment_name = $environment_name;
-            $info->pull_request_object = serialize($data->pull_request);
-
-            // Save environment record.
-            if (drupal_write_record('hosting_devshop_github_pull_requests', $info)){
-              $message .= ' ' . t('Pull Request info saved to DevShop.');
-            }
-          }
-
-          // When PR is cloded, delete environment.
-          elseif ($data->action == 'synchronize') {
-
-            // Update the PR record
-            $info = new stdClass();
-            $info->id = $data->pull_request->id;
-            $info->number = $data->pull_request->number;
-            $info->project_nid = $project->nid;
-            $info->environment_name = $environment_name;
-            $info->pull_request_object = serialize($data->pull_request);
-
-            // Save environment record.
-            if (isset($project->environments[$environment_name]->github_pull_request)) {
-              $update = array('id');
-            }
-            else {
-              $update = array();
-            }
-
-            if (drupal_write_record('hosting_devshop_github_pull_requests', $info, $update)){
-              $message .= ' ' . t('Pull Request info saved to DevShop.');
-            }
-          }
-          // When PR is cloded, delete environment.
-          elseif ($data->action == 'closed'){
-            $message .= "Pull Request Closed \n";
-            if ($project->settings->github['pull_request_environments_delete']){
-
-              if (isset($project->environments[$environment_name]->site) && $node = node_load($project->environments[$environment_name]->site)) {
-                hosting_add_task($project->environments[$environment_name]->site, 'delete');
-              }
-              $message .= "Site $environment_name (Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
-            }
-          }
-        }
-        break;
-    }
-
-  }
-  else {
-    $message = 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json';
-  }
-  return $message;
 }
 
 /**
