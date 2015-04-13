@@ -207,6 +207,14 @@
           </div>
         </div>
       </div>
+
+      <?php if (empty($environment->site)): ?>
+      <div class="list-group-item center-block text-muted">
+        <p>
+          <?php print t('Environment not yet available.'); ?>
+        </p>
+      </div>
+      <?php else: ?>
       <!-- URLs -->
       <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
           <?php if (count($environment->domains) > 1): ?>
@@ -446,6 +454,7 @@
         </div>
       <?php endif; ?>
 
+      <?php endif; ?>
       </div>
     </div>
 <?php endforeach; ?>
