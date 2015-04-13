@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file devshop_github.module
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function devshop_github_menu() {
+  $items = array();
+
+  $items['admin/hosting/devshop/github'] = array(
+    'title' => 'GitHub',
+    'description' => 'DevShop GitHub Integration Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_github_settings_form'),
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_github') . '/includes',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
