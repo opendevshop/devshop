@@ -315,7 +315,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     else {
       $site_tasklist = array();
       $actions[] = array(
-        'title' => t('Delete Environment'),
+        'title' => t('Delete Platform'),
         'href' => 'node/' . $environment->platform . '/platform_delete/', array( 'query' => array('token' => drupal_get_token($user->uid))),
         'attributes' => array(
           'class' => 'hosting-button-dialog',
