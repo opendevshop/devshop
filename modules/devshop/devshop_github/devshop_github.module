@@ -52,7 +52,6 @@ function devshop_github_hosting_task_update_status($task, $status) {
   $task_types = array(
     'test',
     'import',
-    'verify',
     'devshop-deploy',
   );
 
