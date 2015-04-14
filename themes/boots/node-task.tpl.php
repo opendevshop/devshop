@@ -1,3 +1,12 @@
+<script>
+  (function ($) {
+    $('#task-tabs a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    })
+  })(jQuery);
+</script>
+
 <?php
 
 /**
@@ -57,7 +66,7 @@
 
   <div class="meta">
     <?php if ($submitted): ?>
-      <p class="submitted alert alert-success"><?php print $submitted ?></p>
+      <p class="submitted alert"><?php print $submitted ?></p>
     <?php endif; ?>
 
     <?php if ($terms): ?>
@@ -65,9 +74,41 @@
     <?php endif;?>
   </div>
 
-  <div class="content">
-    <?php print $content ?>
+
+<?php  if ($node->test_results_formatted): ?>
+  <div role="tabpanel">
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" id="task-tabs">
+      <li role="presentation" class="active"><a href="#task" aria-controls="task" role="tab" data-toggle="tab">
+          <?php print t('Results'); ?>
+        </a></li>
+      <li role="presentation"><a href="#logs" aria-controls="logs" role="tab" data-toggle="tab">
+          <?php print t('Details'); ?>
+        </a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="task">
+        <div class="padded-top">
+          <div class="results-wrapper">
+            <?php print $node->test_results_formatted; ?>
+          </div>
+          <label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</label>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="logs">
+        <div class="padded-top">
+          <?php print $content; ?>
+        </div>
+      </div>
+    </div>
   </div>
+<?php else: ?>
+  <?php print $content; ?>
+
+<?php endif; ?>
 
   <?php print $links; ?>
 </div>

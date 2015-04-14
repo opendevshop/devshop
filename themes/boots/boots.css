@@ -534,3 +534,7 @@ th.checkbox, td.checkbox {
   display: none;
 }
 
+
+.padded-top {
+  padding-top: 1em;
+}
