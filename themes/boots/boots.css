@@ -438,6 +438,7 @@ input.form-control.webhook-url {
 .devshop-tasks {
   min-width: 340px;
   z-index:20;
+  max-width: 27em;
 }
 
 .environment-tasks .devshop-tasks .tasks,
