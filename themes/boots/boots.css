@@ -524,3 +524,13 @@ input.form-control.webhook-url {
 th.checkbox, td.checkbox {
     display: table-cell;
 }
+
+/* shows hidden task logs **/
+.hosting-task-full {
+  display: inherit;
+}
+
+.hosting-task-summary {
+  display: none;
+}
+
