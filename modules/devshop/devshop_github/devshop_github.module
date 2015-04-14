@@ -225,6 +225,31 @@ function devshop_github_webhook($project_node){
             if (drupal_write_record('hosting_devshop_github_pull_requests', $info)){
               $message .= ' ' . t('Pull Request info saved to DevShop.');
             }
+
+            // Notify Github via comment
+            // Include vendors
+            require_once 'vendor/autoload.php';
+
+            // Extract username and repo
+            list($s, $owner, $repo) = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+
+            try {
+              $token = variable_get('devshop_github_token', '');
+              $client = new \Github\Client();
+              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+              $comment = $client->api('issue')
+                ->comments()
+                ->create($owner, $repo, $data->github_pull_request->number, array(
+                  'body' => t('Your environment creation has been queued.  Please be patient, you will be notified when it is ready.'),
+                ));
+              $message  .= 'Comment posted to github. ';
+            } catch (Github\Exception\RuntimeException $e) {
+              $message .= 'GitHub API Error: ' . $e->getMessage();
+            } catch (Github\Exception\ValidationFailedException $e) {
+              $message .= 'GitHub API Error: ' . $e->getMessage();
+            }
+
           }
 
           // When PR is cloded, delete environment.
