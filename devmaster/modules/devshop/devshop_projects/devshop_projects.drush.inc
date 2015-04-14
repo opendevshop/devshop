@@ -73,21 +73,26 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
     $task->options['behat-bin-path'] = $task->task_args['behat_bin_path'];
 
-    $path = variable_get('file_directory_path', '') . '/tests';
-    if (!file_exists($path)) {
-      drush_log("Creating $path", 'ok');
-      mkdir($path);
+    // Check for devshop_testing folder. Create if it doesn't exist.
+    $file_directory_path = variable_get('file_directory_path', '') . '/devshop_testing/';
+    if (!file_exists($file_directory_path)) {
+      drush_log("Creating $file_directory_path", 'ok');
+      mkdir($file_directory_path);
     }
 
-    // Pass to drush provision-test command
-    $output_path = tempnam($path, 'test.') . '.txt';
-    $output_filename = $path . '/' . pathinfo($output_path, PATHINFO_BASENAME);
+    // Find output path and relative-to-web path.
+    $output_path = $file_directory_path . 'task-' . $task->vid;
+    if (!file_exists($output_path)) {
+      drush_log("Creating $output_path", 'ok');
+      mkdir($output_path);
+    }
 
-    $task->options['output-path'] = $output_path;
+    // Options are passed to drush command.
+    $task->options['output-path'] = realpath($output_path);
 
-    // Save output path as a task argument.
-    $task->task_args['output_path'] = $task->options['output-path'];
-    $task->task_args['output_link'] = url($output_filename, array('absolute' => TRUE));
+    // Task Args are used to pass info back to devmaster
+    $task->task_args['output_path'] = realpath($output_path);
+    $task->task_args['output_link'] = url($output_path, array('absolute' => TRUE));
     $task->no_verify = TRUE;
     node_save($task);
   }

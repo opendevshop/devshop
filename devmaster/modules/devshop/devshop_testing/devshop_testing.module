@@ -268,8 +268,25 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
 
   if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
     include_once('pages.inc');
-    $node->test_results_formatted = devshop_testing_results_to_html(file_get_contents($node->task_args['output_path']));
+    $output = '';
 
+//    dsm(scandir($node->task_args['output_path']));
+
+    foreach (scandir($node->task_args['output_path']) as $file) {
+      // Don't load directories.
+      if ($file == '.' || $file == '..') {
+        continue;
+      }
+
+      // Load all files
+      $file_path = $node->task_args['output_path'] . '/' . $file;
+
+      if (strpos($file, 'results') === 0) {
+        $file_contents = file_get_contents($node->task_args['output_path'] . '/' . $file);
+        $output .= $file_contents;
+      }
+    }
+    $node->test_results_formatted = devshop_testing_results_to_html($output);
   }
 }
 
