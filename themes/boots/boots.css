@@ -260,12 +260,12 @@ body.admin-menu .navbar-static-top {
 {
   color: #8a6d3b;
 }
-
 .environment.active .environment-header a,
 .environment.active .environment-header span,
-.environment.active .environment-header button
+.environment.active .environment-header button,
+.environment.active .environment-tasks button.btn-link
 {
-  color: #8a6d3b;
+  color: #8a6d3b !important;
 }
 .environment.active .environment-header ul a
 {
