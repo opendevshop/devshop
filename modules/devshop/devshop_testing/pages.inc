@@ -81,11 +81,25 @@ function devshop_testing_results_page($nid, $vid = NULL) {
  * Page callback for ajax test results.
  * @param $filename
  */
-function devshop_testing_results_page_raw($filename) {
+function devshop_testing_results_page_raw($task_dir) {
 
-  $path = variable_get('file_directory_path', '') . '/tests/' . $filename;
+  $path = $_SERVER["DOCUMENT_ROOT"] .'/'. variable_get('file_directory_path', '') . '/devshop_testing/' . $task_dir;
+  $output = '';
 
-  $output = devshop_testing_results_to_html(file_get_contents($path));
+  foreach (scandir($path) as $file) {
+    // Don't load directories.
+    if ($file == '.' || $file == '..') {
+      continue;
+    }
+
+    // Load all files
+    $file_path = $path . '/' . $file;
+    if (strpos($file, 'results') === 0) {
+      $file_contents = file_get_contents($file_path);
+      $output .= $file_contents;
+    }
+  }
+  $output = devshop_testing_results_to_html($output);
   print $output;
 }
 
