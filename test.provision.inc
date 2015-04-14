@@ -122,7 +122,7 @@ YML;
       $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}'";
 
       if ($output_path) {
-        $cmd .= " --out {$output_path}.{$i}.txt";
+        $cmd .= " --out {$output_path}/results-{$i}.txt";
       }
 
       drush_log("Running '$cmd' in $full_behat_folder_path", 'status');

@@ -98,6 +98,7 @@ function devshop_provision_drush_command() {
       'test-type' => 'The type of tests to run.  simpletest, behat',
       'behat-folder-path' => 'The path to this sites behat tests.',
       'behat-bin-path' => 'The path to the behat executable within behat-folder-path',
+      'output-path' => 'The path to a folder to store results in.  Will be created if it doesn\'t exist',
     ),
     'aliases' => array('test'),
   );
