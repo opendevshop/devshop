@@ -189,6 +189,7 @@ function devshop_github_webhook($project_node){
           // @TODO: Make Configurable, allow branch names to be env name
           //   $environment_name = "pr" . $data->pull_request->number;
           $environment_name = 'branch_' . str_replace('-', '_', $branch);
+          $already_have_pr_info = FALSE;
 
           // When PR is opened... create new environment.
           if ($data->action == 'opened'){
@@ -198,7 +199,7 @@ function devshop_github_webhook($project_node){
 
               if (isset($project->environments[$environment_name]->github_pull_request)) {
                 $message .= "Already have a PR for $environment_name ... not inserting.";
-                break;
+                $already_have_pr_info = TRUE;
               }
             }
             else {
@@ -214,16 +215,18 @@ function devshop_github_webhook($project_node){
             }
 
             // Insert PR record
-            $info = new stdClass();
-            $info->id = $data->pull_request->id;
-            $info->number = $data->pull_request->number;
-            $info->project_nid = $project->nid;
-            $info->environment_name = $environment_name;
-            $info->pull_request_object = serialize($data->pull_request);
+            if (!$already_have_pr_info) {
+              $info = new stdClass();
+              $info->id = $data->pull_request->id;
+              $info->number = $data->pull_request->number;
+              $info->project_nid = $project->nid;
+              $info->environment_name = $environment_name;
+              $info->pull_request_object = serialize($data->pull_request);
 
-            // Save environment record.
-            if (drupal_write_record('hosting_devshop_github_pull_requests', $info)){
-              $message .= ' ' . t('Pull Request info saved to DevShop.');
+              // Save environment record.
+              if (drupal_write_record('hosting_devshop_github_pull_requests', $info)){
+                $message .= ' ' . t('Pull Request info saved to DevShop.');
+              }
             }
 
             // Notify Github via comment
@@ -233,6 +236,8 @@ function devshop_github_webhook($project_node){
             // Extract username and repo
             list($s, $owner, $repo) = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
 
+            $message .= "About to try to create a comment for $owner/$repo...  \n";
+
             try {
               $token = variable_get('devshop_github_token', '');
               $client = new \Github\Client();
@@ -240,7 +245,7 @@ function devshop_github_webhook($project_node){
 
               $comment = $client->api('issue')
                 ->comments()
-                ->create($owner, $repo, $data->github_pull_request->number, array(
+                ->create($owner, $repo, $data->pull_request->number, array(
                   'body' => t('Your environment creation has been queued.  Please be patient, you will be notified when it is ready.'),
                 ));
               $message  .= 'Comment posted to github. ';
