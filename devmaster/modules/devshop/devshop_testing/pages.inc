@@ -35,6 +35,7 @@ function devshop_testing_results_status($nid, $vid = NULL) {
  */
 function devshop_testing_results_page($nid, $vid = NULL) {
   $node = node_load($nid, $vid);
+  $site = node_load($node->rid);
 
   if (empty($vid)) {
     $revisions = node_revision_list($node);
@@ -66,14 +67,17 @@ function devshop_testing_results_page($nid, $vid = NULL) {
     'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
   ), 'setting');
 
-  $output ='<div class="results-wrapper">' . $node->test_results_formatted . '</div>';
-
-
-  if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
-    $output .= '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>';
-    drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
-  }
-
+  // Output link to environment
+  $site_url = url("node/{$site->nid}");
+  $output = <<<HTML
+<h3>Environment: <a href="{$site_url}" target="_blank"><small>{$site->environment->name}</small></a></small></h3>
+<h3>URL: <a href="{$site->environment->url}" target="_blank"><small>{$site->environment->url}</small></a></small> </h3>
+  <div class="results-wrapper">
+    {$node->test_results_formatted}
+  </div>
+  <label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</label>
+HTML;
+  drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
   return $output;
 }
 
