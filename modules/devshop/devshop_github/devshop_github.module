@@ -267,7 +267,7 @@ function devshop_github_webhook($project_node){
             }
           }
 
-          // When PR is cloded, delete environment.
+          // When PR is closed, delete environment.
           elseif ($data->action == 'synchronize') {
 
             // Save a status on the SHA
