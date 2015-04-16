@@ -36,6 +36,14 @@ function devshop_github_nodeapi_project_load(&$node) {
       $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
     }
   }
+
+  // Parse github owner and repo.
+  if ($node->project->git_provider == 'github') {
+    $node->project->github_owner =
+      $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
+    $node->project->github_owner = $parts[1];
+    $node->project->github_repo = $parts[2];
+  }
 }
 
 /**
@@ -85,7 +93,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
 
       $comment = $client->api('issue')
         ->comments()
-        ->create($owner, $repo, $task->ref->environment->github_pull_request->number, array(
+        ->create($task->ref->project->github_owner, $task->ref->project->github_repo, $task->ref->environment->github_pull_request->number, array(
           'body' => devshop_github_comment($task, $status),
         ));
       drush_log('Comment posted! ' . print_r($comment, 1), 'ok');
