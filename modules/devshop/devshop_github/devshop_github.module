@@ -140,6 +140,9 @@ function devshop_github_webhook($project_node){
   $headers = getallheaders();
   $project = $project_node->project;
 
+  // Create a github deployment
+  require_once 'vendor/autoload.php';
+
   // @TODO: Handle form content from github as well.
   if ($headers['content-type'] == 'application/json'){
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
@@ -222,6 +225,32 @@ function devshop_github_webhook($project_node){
               $message .= "Environment $environment_name created for $project_node->title \n";
             }
 
+            $owner = $project->github_owner;
+            $repo = $project->github_repo;
+            $message .= "About to try to create a deployment for $owner/$repo...  \n";
+
+            try {
+              $token = variable_get('devshop_github_token', '');
+              $client = new \Github\Client();
+              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+              // Create a status
+              $sha = $data->pull_request->head->sha;
+              $url = "http://{$environment_name}.{$project->base_url}";
+
+              $params = new stdClass();
+              $params->state = 'pending';
+              $params->target_url = "http://{$environment_name}.{$project->base_url}";
+              $params->description = 'Deploying and testing with DevShop...';
+              $params->context = 'devshop/test';
+
+              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+
+            } catch (Github\Exception\RuntimeException $e) {
+              watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
+            }
+
+
             // Insert PR record
             if (!$already_have_pr_info) {
               $info = new stdClass();
@@ -236,37 +265,37 @@ function devshop_github_webhook($project_node){
                 $message .= ' ' . t('Pull Request info saved to DevShop.');
               }
             }
+          }
 
-            // Notify Github via comment
-            // Include vendors
-            require_once 'vendor/autoload.php';
+          // When PR is cloded, delete environment.
+          elseif ($data->action == 'synchronize') {
 
-            // Extract username and repo
-            list($s, $owner, $repo) = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
-
-            $message .= "About to try to create a comment for $owner/$repo...  \n";
+            // Save a status on the SHA
+            $owner = $project->github_owner;
+            $repo = $project->github_repo;
+            $message .= "About to set commit status for $owner/$repo...  \n";
 
             try {
               $token = variable_get('devshop_github_token', '');
               $client = new \Github\Client();
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
-              $comment = $client->api('issue')
-                ->comments()
-                ->create($owner, $repo, $data->pull_request->number, array(
-                  'body' => t('Your environment creation has been queued.  Please be patient, you will be notified when it is ready.'),
-                ));
-              $message  .= 'Comment posted to github. ';
+              // Create a status
+              $sha = $data->pull_request->head->sha;
+              $url = "http://{$environment_name}.{$project->base_url}";
+
+              $params = new stdClass();
+              $params->state = 'pending';
+              $params->target_url = "http://{$environment_name}.{$project->base_url}";
+              $params->description = 'Deploying and testing with DevShop...';
+              $params->context = 'devshop/test';
+
+              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+
             } catch (Github\Exception\RuntimeException $e) {
-              $message .= 'GitHub API Error: ' . $e->getMessage();
-            } catch (Github\Exception\ValidationFailedException $e) {
-              $message .= 'GitHub API Error: ' . $e->getMessage();
+              watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
             }
 
-          }
-
-          // When PR is cloded, delete environment.
-          elseif ($data->action == 'synchronize') {
 
             // Update the PR record
             $info = new stdClass();
