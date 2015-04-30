@@ -1,10 +1,11 @@
-DevShop Vagrant
-===============
+DevShop Development
+===================
 
 This project contains a Vagrantfile for launching a devshop virtual machine.
 
-It uses the stock [install.sh](https://github.com/drupalprojects/devshop/blob/6.x-1.x/install.sh)
-file in the devshop project so that deployed servers and vagrant boxes are the same.
+It uses the install.sh file in this repo to provision the vagrant server.
+
+This is the recommended install method for servers as well as vagrant boxes.
 
 Dependencies
 ------------
