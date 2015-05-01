@@ -122,6 +122,32 @@ DevShop Management
 *NOTE: When you create new projects and environments, you will need to add those URIs to your 
 hosts file as well, or you will not be able to access them from your host machine.*
 
+Repos
+-----
+
+DevShop consists of a number of code repositories.
+
+## "DevShop": Main Project 
+
+[github.com/opendevshop/devshop](http://github.com/opendevshop/devshop)
+
+- DevShop install script: install.sh
+- Ansible playbooks: playbook.yml, roles folder.
+- Documentation
+- Vagrantfile 
+- build-devmaster.make file: used to build the devshop front-end.
+  (Modify this file to use your fork of devmaster.)
+
+## "DevMaster": Drupal install profile for devshop front-end
+
+[github.com/opendevshop/devmaster](http://github.com/opendevshop/devmaster)
+DevShop install script, ansible playbooks, and development tools.
+
+## "DevShop Provision": Drush commands for devshop.
+
+[github.com/opendevshop/devshop_provision](http://github.com/opendevshop/devshop_provision)
+DevShop install script, ansible playbooks, and development tools.
+
 Help Improve Documentation
 --------------------------
 
