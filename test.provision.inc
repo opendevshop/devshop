@@ -33,7 +33,10 @@ function drush_devshop_provision_provision_test() {
   elseif ($type == 'behat') {
     // Get paths from options or site context.
     $repo_path = d()->environment['repo_root'];
-    $behat_folder_path = drush_get_option('behat-folder-path', d()->environment['settings']['testing']['behat_folder_path']);
+
+    $project_context = "project_" . d()->project;
+    $project = (object) d($project_context)->project;
+    $behat_folder_path = drush_get_option('behat-folder-path', $project->settings['testing']['behat_folder_path']);
     $behat_bin_path = drush_get_option('behat-bin-path', d()->environment['settings']['testing']['behat_bin_path']);
 
     // If no repo at that path, error.
@@ -47,8 +50,8 @@ function drush_devshop_provision_provision_test() {
     }
 
     // Prepare path and command
-    $full_behat_folder_path = $repo_path . $behat_folder_path;
-    $full_behat_bin_path = $repo_path . $behat_folder_path . '/' . $behat_bin_path;
+    $full_behat_folder_path = $repo_path . '/' . $behat_folder_path;
+    $full_behat_bin_path = $repo_path . '/' . $behat_folder_path . '/' . $behat_bin_path;
 
     // Load the behat.yml from behat_folder_path.
     if (file_exists($full_behat_folder_path . '/behat.yml')) {
@@ -58,7 +61,7 @@ function drush_devshop_provision_provision_test() {
       $behat_yml = file_get_contents($full_behat_folder_path . '/config/behat.yml');
     }
     else {
-      return drush_set_error('DEVSHOP_MISSING_FILE', dt('behat.yml file not found in behat_folder_path.'));
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('behat.yml file not found in behat_folder_path: ') . $full_behat_folder_path);
     }
 
     // Run composer update.
