@@ -28,7 +28,7 @@ fi
 if [ ! -d drush ]; then
     mkdir drush
     cd drush
-    git clone git@git.drupal.org:project/devshop_provision.git --branch 6.x-2.x
+    git clone git@github.com/opendevshop/devshop_provision.git --branch 6.x-2.x
     git clone git@git.drupal.org:project/provision.git --branch 6.x-2.x
     git clone git@git.drupal.org:project/provision_git.git --branch 6.x-1.x
     git clone git@git.drupal.org:project/provision_logs.git --branch 6.x-1.x
