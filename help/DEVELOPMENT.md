@@ -131,6 +131,11 @@ DevShop consists of a number of code repositories.
 
 [github.com/opendevshop/devshop](http://github.com/opendevshop/devshop)
 
+If you want to develop the server setup, the standalone install script, the 
+documentation, or improve the Vagrantfile, fork this repo.  
+
+*Contains:*
+
 - DevShop install script: install.sh
 - Ansible playbooks: playbook.yml, roles folder.
 - Documentation
@@ -141,6 +146,28 @@ DevShop consists of a number of code repositories.
 ## "DevMaster": Drupal install profile for devshop front-end
 
 [github.com/opendevshop/devmaster](http://github.com/opendevshop/devmaster)
+
+If you want to develop the front-end of devshop:
+
+  1. Fork this repo (https://github.com/opendevshop/devshop), and create your own branch for your feature or bugfix.
+  2. Edit build-devmaster.make file, and replace the devmaster url and branch
+    with your forked repo url and branch like so:
+    
+    ```
+    projects[devmaster][type] = "profile"
+    projects[devmaster][download][type] = "git"
+    projects[devmaster][download][url] = "git@github.com:MYUSERNAME/devmaster.git"
+    projects[devmaster][download][branch] = "dev-MYBRANCH"
+    ```
+  3. Vagrant up!
+    The `build-devmaster.make` file will be used to build the full drupal 
+    distribution when you `vagrant up` for the first time.   
+    
+    See the `./source/devmaster-6.x-1.x/profiles/devmaster` folder for the clone
+    of your repo. 
+
+*Contains:*
+
 DevShop install script, ansible playbooks, and development tools.
 
 ## "DevShop Provision": Drush commands for devshop.
