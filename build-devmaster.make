@@ -18,4 +18,4 @@ projects[devmaster][download][branch] = "6.x-0.x"
 
 ; RELEASE:
 ; When releasing, lock in the devmaster version.
-;projects[devmaster][version] = "6.x-1.0"
+projects[devmaster][download][branch] = "release-0.2.0"
