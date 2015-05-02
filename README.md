@@ -19,6 +19,7 @@ Resources
 * [General Documentation](https://devshop.readthedocs.org)  More coming soon.  Documentation is in progress.
 * [Project Homepage](https://www.drupal.org/project/devshop) drupal.org/project/devshop
 * [Issue Queue](https://www.drupal.org/project/issues/devshop) drupal.org/project/issues/devshop
+* [Development Information](https://devshop.readthedocs.org/en/latest/help/DEVELOPMENT/)  Developer documentation will walk you through contributing to DevShop.
 
 Components
 ----------
