@@ -25,6 +25,7 @@ echo " Welcome to the DevShop Standalone Installer "
 echo "============================================="
 
 # Version used for cloning devshop playbooks
+# Must be a branch or tag.
 DEVSHOP_VERSION=0.x
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
