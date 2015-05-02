@@ -36,6 +36,7 @@ function devmaster_profile_modules() {
     'devshop_projects',
     'devshop_log',
     'devshop_pull',
+    'devshop_github',
 
     /* NICEITIES */
     'hosting_drush_aliases',
