@@ -13,7 +13,7 @@ projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 
 ; Change this URL to your own fork to develop devshop.
-projects[devmaster][download][url] = "git@github.com:opendevshop/devmaster.git"
+projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
 projects[devmaster][download][branch] = "6.x-0.x"
 
 ; RELEASE:
