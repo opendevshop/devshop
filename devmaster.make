@@ -8,7 +8,7 @@ projects[drupal][type] = "core"
 includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
-projects[hosting][version] = '6.x-2.3'
+projects[hosting][version] = "2.3"
 
 ; Contrib Modules
 projects[admin_menu][version] = "1.9"
