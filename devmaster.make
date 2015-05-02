@@ -8,15 +8,14 @@ projects[drupal][type] = "core"
 includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
-projects[hosting][download][type] = 'git'
-projects[hosting][download][url] = 'http://git.drupal.org/project/hosting.git'
-projects[hosting][download][branch] = '6.x-2.x'
+projects[hosting][version] = '6.x-2.3'
 
-projects[hosting_platform_pathauto][version] = "2.1"
-projects[hosting_platform_pathauto][subdir] = contrib
-
-projects[admin_menu][version] = "1.8"
+; Contrib Modules
+projects[admin_menu][version] = "1.9"
 projects[admin_menu][subdir] = contrib
+
+projects[adminrole][version] = "1.3"
+projects[adminrole][subdir] = contrib
 
 projects[openidadmin][version] = "1.2"
 projects[openidadmin][subdir] = contrib
@@ -30,46 +29,33 @@ projects[jquery_ui][subdir] = contrib
 projects[jquery_update][version] = "2.0-alpha1"
 projects[jquery_update][subdir] = contrib
 
-projects[modalframe][version] = "1.9"
-projects[modalframe][subdir] = contrib
-
-projects[views][version] = "3.0"
+projects[views][version] = "3.2"
 projects[views][subdir] = contrib
 
 projects[views_bulk_operations][version] = "1.16"
 projects[views_bulk_operations][subdir] = contrib
 
-projects[ctools][version] = "1.11"
+projects[ctools][version] = "1.12"
 projects[ctools][subdir] = contrib
+
+projects[hosting_filemanager][version] = "1.0-beta1"
+projects[hosting_filemanager][subdir] = contrib
+
+projects[hosting_tasks_extra][version] = "2.1"
+projects[hosting_tasks_extra][subdir] = contrib
+
+; Aegir Contrib maintained by devshop maintainers
+projects[hosting_solr][version] = "1.0-beta3"
+projects[hosting_solr][subdir] = contrib
+
+projects[hosting_logs][version] = "2.0-alpha1"
+projects[hosting_logs][subdir] = contrib
+
+projects[hosting_site_backup_manager][version] = "2.0"
+projects[hosting_site_backup_manager][subdir] = contrib
 
 ; Libraries
 libraries[jquery_ui][download][type] = "get"
 libraries[jquery_ui][destination] = "modules/contrib/jquery_ui"
 libraries[jquery_ui][download][url] = "http://jquery-ui.googlecode.com/files/jquery-ui-1.7.3.zip"
 libraries[jquery_ui][directory_name] = "jquery.ui"
-
-; Contrib modules
-projects[adminrole][subdir] = contrib
-projects[ctools][subdir] = contrib
-projects[jquery_update][subdir] = contrib
-
-; Aegir Contrib
-projects[hosting_filemanager][subdir] = contrib
-projects[hosting_tasks_extra][subdir] = contrib
-
-; Aegir Contrib maintained by devshop maintainers
-projects[hosting_solr][subdir] = contrib
-projects[hosting_solr][download][type] = git
-projects[hosting_solr][download][branch] = 6.x-1.x
-
-projects[hosting_drush_aliases][subdir] = contrib
-projects[hosting_drush_aliases][download][type] = git
-projects[hosting_drush_aliases][download][branch] = 6.x-1.x
-
-projects[hosting_logs][subdir] = contrib
-projects[hosting_logs][download][type] = git
-projects[hosting_logs][download][branch] = 6.x-1.x
-
-projects[hosting_site_backup_manager][subdir] = contrib
-projects[hosting_site_backup_manager][download][type] = git
-projects[hosting_site_backup_manager][download][branch] = 6.x-2.x
