@@ -9,6 +9,9 @@
 - Lots of minor UI tweaks and improvements.
 - Allow changing the "path to drupal" in the project create wizard.
 - ... more tomorrow...
+- 
+115 commits to devmaster: https://github.com/opendevshop/devmaster/compare/0.1.0...0.x
+45 commits to devshop: https://github.com/opendevshop/devshop/compare/0.1.0...0.x
 
 
 
