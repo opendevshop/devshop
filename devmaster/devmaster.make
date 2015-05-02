@@ -51,6 +51,9 @@ projects[hosting_solr][subdir] = contrib
 projects[hosting_logs][version] = "2"
 projects[hosting_logs][subdir] = contrib
 
+projects[hosting_backup_queue][version] = "2"
+projects[hosting_backup_queue][subdir] = contrib
+
 projects[hosting_site_backup_manager][version] = "2.0"
 projects[hosting_site_backup_manager][subdir] = contrib
 
