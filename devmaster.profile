@@ -20,7 +20,6 @@ function devmaster_profile_modules() {
     'install_profile_api',
     'jquery_ui',
     'jquery_update',
-    'modalframe',
     'admin_menu',
     'views',
     'views_bulk_operations',
