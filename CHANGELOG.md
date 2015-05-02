@@ -1,3 +1,16 @@
+# Change Log
+
+## 0.2.0 (May 2, 2015)
+
+- Major improvements to documentation.
+- Removing Aegir's "Welcome" page.
+- Adding "Default environment settings" to projects form.
+- Show the project nav on any node in the project.
+- Lots of minor UI tweaks and improvements.
+- Allow changing the "path to drupal" in the project create wizard.
+- ... more tomorrow...
+
+
 
 ## 0.1.0 (February 7, 2015)
 
