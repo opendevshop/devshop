@@ -7,7 +7,7 @@ install:
 
   # Install DevShop with the standalone installer, using local playbooks.
   # Run as actual root?  Testing to see if this is a problem.
-  - sudo su - root -c "wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh && bash install.sh"d
+  - sudo su - root -c "wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh && bash install.sh"
 
 script:
 
