@@ -9,11 +9,13 @@ install:
   # Run as actual root?  Testing to see if this is a problem.
   - sudo su - root -c "wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh && bash install.sh"
 
+  # @TODO: Pass the git URL of the repo that is being tested to the install script so this can run on pull requests.
+
 script:
 
   # Test for DevShop
   - sudo su - aegir -c "drush @hostmaster status"
-  - sudo su -c "cd /usr/share/devshop/tests && composer update"
+#  - sudo su -c "cd /usr/share/devshop/tests && composer update"
 #  - sudo su aegir -c "cd /usr/share/devshop/tests && bin/behat --profile travis"
 
 # Notify devshop IRC chatroom.
