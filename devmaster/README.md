@@ -16,14 +16,21 @@ Contents
 This project contains:
 
 1. devmaster.make
+
   The makefile used to build devmaster.
 
 2. devmaster.profile
+
   The Drupal installation profile for Devmaster.
   
 3. DevShop modules:
+
   All of the modules needed for devshop are contained in this repo, with the 
   exception of contrib modules that are also useful for Aegir.
+
+4. The DevShop theme "Boots":
+
+  The theme for devshop is contained in this repo.
 
 Issues & Development
 ====================
