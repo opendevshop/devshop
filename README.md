@@ -41,22 +41,15 @@ DevShop core.  *This repository*
 
 DevShop Front-End.  
 
-  * https://www.drupal.org/project/devmaster
+  * https://github.com/opendevshop/devmaster
   * An install profile and makefile.
-
-**DevShop Hosting**
-
-DevShop Drupal Modules
-
-  * https://www.drupal.org/project/devshop_hosting
-  * To be merged into devmaster.
-  * Drupal modules powering the devshop web interface.
+  * DevShop Drupal modules
 
 **DevShop Provision**
 
 DevShop Drush commands.
 
-  * https://www.drupal.org/project/devshop_provision
+  * https://github.com/opendevshop/devshop_provision
   * To be merged into devmaster.  
   * Drush commands needed for devshop.
 
