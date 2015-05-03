@@ -18,4 +18,4 @@ projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.g
 
 ; RELEASE:
 ; When releasing, lock in the devmaster version.
-projects[devmaster][download][branch] = "0.2.0"
+projects[devmaster][download][branch] = "release-0.2.0"
