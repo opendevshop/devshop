@@ -60,16 +60,15 @@ echo $LINE
 # Detect playbook path option
 if [ $1 ]; then
     PLAYBOOK_PATH=$1
-    echo " Using playbook $1/playbook.yml "
-    echo $LINE
-
 # Detect playbook next to the install script
 elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
-
 else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
+
+echo " Using playbook $1/playbook.yml "
+echo $LINE
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
