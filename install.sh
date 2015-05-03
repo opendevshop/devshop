@@ -31,6 +31,7 @@ DEVSHOP_VERSION=0.2.0
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
+DEVSHOP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [ -f '/etc/os-release' ]; then
     . /etc/os-release
@@ -61,6 +62,11 @@ if [ $1 ]; then
     PLAYBOOK_PATH=$1
     echo " Using playbook $1/playbook.yml "
     echo $LINE
+
+# Detect playbook next to the install script
+elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
+    PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
+
 else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
