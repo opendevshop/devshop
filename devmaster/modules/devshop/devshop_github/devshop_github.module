@@ -314,33 +314,39 @@ function devshop_github_webhook($project_node){
             }
           }
 
-          // When PR is closed, delete environment.
+          // When PR is updated, send a new deployment status environment.
           elseif ($data->action == 'synchronize') {
 
             // Save a status on the SHA
             $owner = $project->github_owner;
             $repo = $project->github_repo;
-            $message .= "About to set commit status for $owner/$repo...  \n";
+            $message .= "About to set deployment status for $owner/$repo...  \n";
 
             try {
               $token = variable_get('devshop_github_token', '');
               $client = new \Github\Client();
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
-              // Create a status
+              // Create deployment status
+              $environment = $project->environments[$environment_name];
               $sha = $data->pull_request->head->sha;
-              $url = url("node/{$project->nid}", array('absolute' => TRUE));
+              $deployment_id = $environment->github_pull_request->pull_request_object->deployment->id;
 
               $params = new stdClass();
               $params->state = 'pending';
-              $params->target_url = "http://{$environment_name}.{$project->base_url}";
-              $params->description = 'Deploying and testing with DevShop...';
-              $params->context = 'devshop/devshop-deploy';
+              $params->target_url = $environment->url;
+              $params->description = t('Code is being deployed.  Please stand by.');
 
-              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+              $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";
+              $message .= "Attempting to create deployment status: $post_url \n";
+
+              $deployment_status = $client->getHttpClient()->post($post_url, json_encode($params));
+
+              $message .= " Deployment Status Created! \n";
 
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
+              $message .= 'GitHub API Error: ' . $e->getMessage() . "\n";
             }
 
 
@@ -364,7 +370,7 @@ function devshop_github_webhook($project_node){
               $message .= ' ' . t('Pull Request info saved to DevShop.');
             }
           }
-          // When PR is cloded, delete environment.
+          // When PR is closed, delete environment.
           elseif ($data->action == 'closed'){
             $message .= "Pull Request Closed \n";
             if ($project->settings->github['pull_request_environments_delete']){
