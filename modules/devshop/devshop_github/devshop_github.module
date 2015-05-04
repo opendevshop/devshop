@@ -53,93 +53,93 @@ function devshop_github_nodeapi_project_view(&$node, $a3, $a4) {
 
 }
 
-
-/**
- * Implements hook_hosting_task_update_status()
- */
-function devshop_github_hosting_task_update_status($task, $status) {
-
-  $task_types = array(
-    'test',
-    'import',
-    'devshop-deploy',
-  );
-
-  if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->github_pull_request)) {
-
-    // If autoloader is not available, return.
-    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-      return;
-    }
-
-    // If project is not from github, return.
-    if ($task->ref->project->git_provider != 'github') {
-      return;
-    }
-
-    // Include vendors
-    require_once 'vendor/autoload.php';
-
-    drush_log('===========================================', 'ok');
-    drush_log('Notifying github...', 'ok');
-
-    // Extract username and repo
-    list($s, $owner, $repo) = explode('/', parse_url($task->ref->project->git_repo_url, PHP_URL_PATH));
-
-    try {
-      $token = variable_get('devshop_github_token', '');
-      $client = new \Github\Client();
-      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-
-      // Create a status
-      $sha = $task->ref->environment->github_pull_request->pull_request_object->head->sha;
-
-      if ($task->task_type == 'devshop-deploy'){
-        $description = t('Deployed to Environment: ') . _hosting_parse_error_code($status);
-        $url = $task->ref->environment->url;
-      }
-      elseif ($task->task_type == 'test') {
-        $description = t('Tests: ') . _hosting_parse_error_code($status);
-        $url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
-      }
-      else {
-        $description = 'Something happened...';
-        $url = $task->ref->environment->url;
-      }
-
-      if ($status == HOSTING_TASK_ERROR) {
-        $state = 'error';
-      }
-      elseif ($status == HOSTING_TASK_PROCESSING) {
-        $state = 'pending';
-      }
-      elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
-        $state = 'success';
-      }
-      else {
-        $state = 'error';
-      }
-
-      $params = new stdClass();
-      $params->state = $state;
-      $params->target_url = $url;
-      $params->description = $description;
-      $params->context = 'devshop/' . $task->task_type;
-
-      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-
-      drush_log('Status posted! ', 'ok');
-    } catch (Github\Exception\RuntimeException $e) {
-      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
-      drush_log(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
-    } catch (Github\Exception\ValidationFailedException $e) {
-      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
-    }
-
-    drush_log('done trying... ', 'ok');
-
-  }
-}
+//
+///**
+// * Implements hook_hosting_task_update_status()
+// */
+//function devshop_github_hosting_task_update_status($task, $status) {
+//
+//  $task_types = array(
+//    'test',
+//    'import',
+//    'devshop-deploy',
+//  );
+//
+//  if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->github_pull_request)) {
+//
+//    // If autoloader is not available, return.
+//    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+//      return;
+//    }
+//
+//    // If project is not from github, return.
+//    if ($task->ref->project->git_provider != 'github') {
+//      return;
+//    }
+//
+//    // Include vendors
+//    require_once 'vendor/autoload.php';
+//
+//    drush_log('===========================================', 'ok');
+//    drush_log('Notifying github...', 'ok');
+//
+//    // Extract username and repo
+//    list($s, $owner, $repo) = explode('/', parse_url($task->ref->project->git_repo_url, PHP_URL_PATH));
+//
+//    try {
+//      $token = variable_get('devshop_github_token', '');
+//      $client = new \Github\Client();
+//      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+//
+//      // Create a status
+//      $sha = $task->ref->environment->github_pull_request->pull_request_object->head->sha;
+//
+//      if ($task->task_type == 'devshop-deploy'){
+//        $description = t('Deployed to Environment: ') . _hosting_parse_error_code($status);
+//        $url = $task->ref->environment->url;
+//      }
+//      elseif ($task->task_type == 'test') {
+//        $description = t('Tests: ') . _hosting_parse_error_code($status);
+//        $url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
+//      }
+//      else {
+//        $description = 'Something happened...';
+//        $url = $task->ref->environment->url;
+//      }
+//
+//      if ($status == HOSTING_TASK_ERROR) {
+//        $state = 'error';
+//      }
+//      elseif ($status == HOSTING_TASK_PROCESSING) {
+//        $state = 'pending';
+//      }
+//      elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
+//        $state = 'success';
+//      }
+//      else {
+//        $state = 'error';
+//      }
+//
+//      $params = new stdClass();
+//      $params->state = $state;
+//      $params->target_url = $url;
+//      $params->description = $description;
+//      $params->context = 'devshop/' . $task->task_type;
+//
+//      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+//
+//      drush_log('Status posted! ', 'ok');
+//    } catch (Github\Exception\RuntimeException $e) {
+//      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+//      drush_log(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
+//    } catch (Github\Exception\ValidationFailedException $e) {
+//      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+//    }
+//
+//    drush_log('done trying... ', 'ok');
+//
+//  }
+//}
 
 /**
  *
@@ -330,7 +330,11 @@ function devshop_github_webhook($project_node){
               // Create deployment status
               $environment = $project->environments[$environment_name];
               $sha = $data->pull_request->head->sha;
-              $deployment_id = $environment->github_pull_request->pull_request_object->deployment->id;
+              $deployment = $environment->github_pull_request->pull_request_object->deployment;
+              $deployment_id = $deployment->id;
+
+              // Don't lose the deployment.
+              $data->pull_request->deployment = $deployment;
 
               $params = new stdClass();
               $params->state = 'pending';
