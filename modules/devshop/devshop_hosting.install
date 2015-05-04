@@ -27,3 +27,10 @@ function devshop_hosting_update_7001() {
 function devshop_hosting_update_7002() {
   variable_set('hosting_welcome_page', 0);
 }
+
+/**
+ * Enable devshop_github module.
+ */
+function devshop_hosting_update_7003() {
+  module_enable(array('devshop_hosting'));
+}
