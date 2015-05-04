@@ -74,7 +74,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
 
   // When verified, update deployment.
   // This only needs to happen on the first deployment of a pull request environment.
-  if ($task->task_type == 'verify' || $task->task_type == 'devshop-deploy' && isset($task->ref->environment->github_pull_request->pull_request_object->deployment)) {
+  if (($task->task_type == 'verify' || $task->task_type == 'devshop-deploy') && isset($task->ref->environment->github_pull_request->pull_request_object->deployment)) {
 
     // Create a deployment status
     $project = $task->ref->project;
