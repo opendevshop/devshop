@@ -261,25 +261,40 @@ function devshop_github_webhook($project_node){
             $repo = $project->github_repo;
             $message .= "About to try to create a deployment for $owner/$repo...  \n";
 
+            // Send a "deployment" to github.
             try {
               $token = variable_get('devshop_github_token', '');
               $client = new \Github\Client();
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
-              // Create a status
               $sha = $data->pull_request->head->sha;
-              $url = "http://{$environment_name}.{$project->base_url}";
+              $environment_name_url = str_replace('_', '-', $environment_name);
+              $url = "http://{$environment_name_url}.{$project->base_url}";
 
               $params = new stdClass();
-              $params->state = 'pending';
-              $params->target_url = "http://{$environment_name}.{$project->base_url}";
-              $params->description = 'Deploying and testing with DevShop...';
-              $params->context = 'devshop/test';
+              $params->ref = $sha;
+              $params->environment = $environment_name;
+              $params->required_contexts = array();
+              $post_url = "/repos/$owner/$repo/deployments";
+              $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
 
-              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+              // Save deployment to pull request data for later access.
+              $data->pull_request->deployment = $deployment;
+
+              $message .= " Deployment Created! \n";
+
+              // Create deployment status
+              $params = new stdClass();
+              $params->state = 'pending';
+              $params->target_url = $url;
+              $params->description = t('New environment is being created.  Please stand by.');
+              $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/deployments/{$deployment->id}/statuses", json_encode($params));
+
+              $message .= " Deployment Status Created! \n";
 
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
+              $message .= 'GitHub API Error: ' . $e->getMessage();
             }
 
 
