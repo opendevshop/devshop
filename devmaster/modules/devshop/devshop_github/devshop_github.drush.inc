@@ -1,5 +1,8 @@
 <?php
 
+// Include vendors
+require_once 'vendor/autoload.php';
+
 /**
  * Implements drush_HOOK_pre_COMMAND()
  *
@@ -51,5 +54,53 @@ function drush_devshop_github_pre_hosting_task() {
     }
 
 
+  }
+}
+
+/**
+ * Implements hook_hosting_task_update_status()
+ */
+function devshop_github_hosting_task_update_status($task, $status) {
+  if ($task->task_type == 'deploy') {
+
+    // Create a deployment status
+    $site = $task->ref;
+
+    if ($site->environment->github_pull_request->pull_request_object->deployment){
+
+    }
+
+  }
+
+  // When verified, update deployment.
+  // This only needs to happen on the first deployment of a pull request environment.
+  if ($task->task_type == 'verify' || $task->task_type == 'devshop-deploy' && isset($task->ref->environment->github_pull_request->pull_request_object->deployment)) {
+
+    // Create a deployment status
+    $project = $task->ref->project;
+    $owner = $project->github_owner;
+    $repo = $project->github_repo;
+    $site = node_load($task->rid);
+    $deployment_id = $site->environment->github_pull_request->pull_request_object->deployment->id;
+
+    try {
+      $token = variable_get('devshop_github_token', '');
+      $client = new \Github\Client();
+      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+      $params = new stdClass();
+      $params->state = $status == HOSTING_TASK_SUCCESS? 'success': 'failure';
+      $params->target_url = $task->ref->environment->url;
+      $params->description = t('Pull Request environment is ready!');
+      $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";
+
+      drush_log('Attempting to create github deployment status: ' . $post_url, 'success');
+
+      $deployment_status = $client->getHttpClient()->post($post_url, json_encode($params));
+      drush_log('Deployment status created!', 'success');
+
+    } catch (Github\Exception\RuntimeException $e) {
+      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+    }
   }
 }
