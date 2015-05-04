@@ -89,7 +89,16 @@ function devshop_github_hosting_task_update_status($task, $status) {
       $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
       $params = new stdClass();
-      $params->state = $status == HOSTING_TASK_SUCCESS? 'success': 'failure';
+      if ($status == HOSTING_TASK_SUCCESS) {
+        $params->state = 'success';
+      }
+      elseif ($status == HOSTING_TASK_WARNING) {
+        $params->state = 'error';
+      }
+      else {
+        $params->state = 'failure';
+      }
+
       $params->target_url = $task->ref->environment->url;
       $params->description = t('Pull Request environment is ready!');
       $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";
