@@ -317,7 +317,7 @@ function devshop_github_webhook($project_node){
           // When PR is updated, send a new deployment status environment.
           elseif ($data->action == 'synchronize') {
 
-            // Save a status on the SHA
+            // Create a new deployment
             $owner = $project->github_owner;
             $repo = $project->github_repo;
             $message .= "About to set deployment status for $owner/$repo...  \n";
@@ -327,14 +327,23 @@ function devshop_github_webhook($project_node){
               $client = new \Github\Client();
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
+              $sha = $data->pull_request->head->sha;
+
+              $params = new stdClass();
+              $params->ref = $sha;
+              $params->environment = $environment_name;
+              $params->required_contexts = array();
+              $post_url = "/repos/$owner/$repo/deployments";
+              $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
+
+              // Save deployment to pull request data for later access.
+              $data->pull_request->deployment = $deployment;
+
+              $message .= " Deployment Created! \n";
+
               // Create deployment status
               $environment = $project->environments[$environment_name];
-              $sha = $data->pull_request->head->sha;
-              $deployment = $environment->github_pull_request->pull_request_object->deployment;
               $deployment_id = $deployment->id;
-
-              // Don't lose the deployment.
-              $data->pull_request->deployment = $deployment;
 
               $params = new stdClass();
               $params->state = 'pending';
