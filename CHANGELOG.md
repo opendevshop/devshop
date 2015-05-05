@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.2.0 (coming soon)
+## 0.2.0 (May 5, 2015)
 
 - Major improvements to documentation.
 - Removing Aegir's "Welcome" page.
