@@ -67,7 +67,7 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
-echo " Using playbook $1/playbook.yml "
+echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
 # Fail if not running as root (sudo)
