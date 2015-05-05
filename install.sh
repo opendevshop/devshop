@@ -27,7 +27,7 @@ echo "============================================="
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=0.2.0
+DEVSHOP_VERSION=release-0.2.0
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
