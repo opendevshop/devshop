@@ -136,6 +136,7 @@ MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
+    cd $PLAYBOOK_PATH
     git checkout $DEVSHOP_VERSION
   else
     cd $PLAYBOOK_PATH
