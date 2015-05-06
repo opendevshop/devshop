@@ -22,12 +22,12 @@
 #
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
-echo "                   v 0.x                     "
+echo "                   v 0.2.1                   "
 echo "============================================="
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=0.x
+DEVSHOP_VERSION=0.2.1
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
@@ -187,7 +187,7 @@ else
   echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
   echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
   echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                              |_|   v 0.x      ║"
+  echo "║                                              |_|   v 0.2.1    ║"
   echo "╟───────────────────────────────────────────────────────────────╢"
   echo "║ Submit any issues to                                          ║"
   echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
@@ -200,7 +200,7 @@ else
   echo "║                                                               ║"
   echo "║ Supervisor is running Hosting Queue Runner.                   ║"
   echo "╠═══════════════════════════════════════════════════════════════╣"
-  echo "║ Use this link to login:                               ║"
+  echo "║ Use this link to login:                                       ║"
   echo "╚═══════════════════════════════════════════════════════════════╝"
   sudo su - aegir -c "drush @hostmaster uli"
 fi
