@@ -9,6 +9,7 @@ includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
 projects[hosting][version] = "2.3"
+projects[modalframe][version] = "1.9"
 
 ; Contrib Modules
 projects[admin_menu][version] = "1.9"
