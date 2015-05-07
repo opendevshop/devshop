@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.1 (May 5, 2015
+ 
+- Putting back modalframe.module for now.  Can't remove it quite yet, sadly.
+
 ## 0.2.0 (May 5, 2015)
 
 - Major improvements to documentation.
