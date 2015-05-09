@@ -292,11 +292,28 @@ function devshop_github_webhook($project_node){
 
               $message .= " Deployment Status Created! \n";
 
+              // Set a commit status for this REF for devshop/deploy context
+              $sha =$data->pull_request->head->sha;
+
+              $params = new stdClass();
+              $params->state = 'pending';
+              $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
+              $params->description = t('DevShop: Deploy');
+              $params->context = 'devshop/deploy';
+
+              // Post status to github
+              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+              $message .= " Commit Status Created! \n";
+
+              // @TODO: If environment is configured to run tests, add another status.
+
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
               $message .= 'GitHub API Error: ' . $e->getMessage();
+            } catch (Github\Exception\ValidationFailedException $e) {
+              watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
+              $message .= 'GitHub API Error: ' . $e->getMessage();
             }
-
 
             // Insert PR record
             if (!$already_have_pr_info) {
@@ -356,6 +373,22 @@ function devshop_github_webhook($project_node){
               $deployment_status = $client->getHttpClient()->post($post_url, json_encode($params));
 
               $message .= " Deployment Status Created! \n";
+
+              // Set a commit status for this REF for devshop/deploy context
+              $sha =$data->pull_request->head->sha;
+
+              $params = new stdClass();
+              $params->state = 'pending';
+              $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
+              $params->description = t('DevShop: Deploy');
+              $params->context = 'devshop/deploy';
+
+              // Post status to github
+              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+
+              $message .= " Commit Status Created! \n";
+
+              // @TODO: If environment is configured to run tests, add another status.
 
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());

@@ -4,6 +4,8 @@
 require_once 'vendor/autoload.php';
 
 /**
+ * @TODO: Remove this. GitHub is notified immediately on webhook request via devshop_github_webhook()
+ *
  * Implements drush_HOOK_pre_COMMAND()
  *
  * This runs for each task during the command
@@ -13,7 +15,6 @@ require_once 'vendor/autoload.php';
  * This hook should ONLY be used to pass options from a hostmaster task form to
  * the $task object, or if you don't need this functionality from the command
  * line.
- */
 function drush_devshop_github_pre_hosting_task() {
 
   $task =& drush_get_context('HOSTING_TASK');
@@ -56,21 +57,13 @@ function drush_devshop_github_pre_hosting_task() {
 
   }
 }
+ */
+
 
 /**
  * Implements hook_hosting_task_update_status()
  */
 function devshop_github_hosting_task_update_status($task, $status) {
-  if ($task->task_type == 'deploy') {
-
-    // Create a deployment status
-    $site = $task->ref;
-
-    if ($site->environment->github_pull_request->pull_request_object->deployment){
-
-    }
-
-  }
 
   // When verified, update deployment.
   // On the first deployment of a pull request environment, we need to hook into verify. Subsequent pushes need to hook into devshop-deploy.
@@ -90,14 +83,11 @@ function devshop_github_hosting_task_update_status($task, $status) {
       $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
       $params = new stdClass();
-      if ($status == HOSTING_TASK_SUCCESS) {
-        $params->state = 'success';
-      }
-      elseif ($status == HOSTING_TASK_WARNING) {
-        $params->state = 'error';
+      if ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
+        $params->state = $state = 'success';
       }
       else {
-        $params->state = 'failure';
+        $params->state = $state = 'failure';
       }
 
       $params->target_url = $task->ref->environment->url;
@@ -108,6 +98,28 @@ function devshop_github_hosting_task_update_status($task, $status) {
 
       $deployment_status = $client->getHttpClient()->post($post_url, json_encode($params));
       drush_log('Deployment status created!', 'success');
+
+
+      // Update Status API
+
+      // Create a status
+      $sha = $site->environment->github_pull_request->pull_request_object->head->sha;
+
+      $params = new stdClass();
+      $params->state = $state;
+      $params->target_url = url("node/{$task->nid}", array('absolute' => TRUE));;
+
+      if ($status == HOSTING_TASK_WARNING) {
+        $params->description = t('DevShop: Deploy success with warnings');
+      }
+      else {
+        $params->description = t('DevShop: Deploy !status', array('!status' => $state));
+      }
+      $params->context = 'devshop/deploy';
+
+      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+      drush_log('Commit status created!', 'success');
+
 
     } catch (Github\Exception\RuntimeException $e) {
       drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
