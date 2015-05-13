@@ -7,6 +7,7 @@ php_timezone: America/New_York
 ansible_playbook: playbook.yml
 
 devmaster_version:            0.x
+devshop_version:              0.x
 devshop_working_copy: --working-copy
 
 devshop_provision_version:  6.x-2.x
@@ -22,3 +23,9 @@ registry_rebuild_version: 7.x-2.2
 devshop_makefile: build-devmaster.make
 
 aegir_user_uid: 12345
+
+# Set development to FALSE if you wish to test a "clean" devshop install.
+vagrant_development: true
+vagrant_private_network_ip: 10.10.10.10
+vagrant_install_script: install.sh
+

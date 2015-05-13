@@ -1,6 +1,0 @@
-
-# Set development to FALSE if you wish to test a "clean" devshop install.
-development: true
-server_hostname: devshop.local
-private_network_ip: 10.10.10.10
-install_script: install.sh
