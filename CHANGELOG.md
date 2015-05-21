@@ -5,6 +5,7 @@
 - Hosting 2.4 security release. See http://community.aegirproject.org/2.4.
 - Simplifying Vagrant variables.
 - Fixing problem with Vagrant up preparing the devmaster files in the wrong folder.
+- Adding modalframe back to the installer.
 
 ## 0.2.1 (May 5, 2015
  
