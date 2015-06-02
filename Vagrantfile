@@ -22,6 +22,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = settings["server_hostname"]
   config.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
 
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+  end
+
   # Set SH as our provisioner
   config.vm.provision "shell",
     path: settings["vagrant_install_script"],
