@@ -22,7 +22,7 @@ function devshop_projects_settings_form() {
     '#title' => t('Projects Base Path'),
     '#type' => 'textfield',
     '#description' => t('The default base path that all projects will be created in.  Projects each get their own folder inside this path.'),
-    '#default_value' => variable_get('devshop_project_default_path', '/var/aegir/projects'),
+    '#default_value' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
   );
   $form['paths']['devshop_project_default_drupal_path'] = array(
     '#title' => t('Default path to Drupal'),
