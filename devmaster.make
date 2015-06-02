@@ -8,10 +8,15 @@ projects[drupal][type] = "core"
 includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
-projects[hosting][version] = "2.4"
-projects[modalframe][version] = "1.9"
+; For development, use latest branch.
+projects[hosting][version] = "2.x"
+
+; For release, use tagged version
+;projects[hosting][version] = "2.4"
 
 ; Contrib Modules
+projects[modalframe][version] = "1.9"
+
 projects[admin_menu][version] = "1.9"
 projects[admin_menu][subdir] = contrib
 
