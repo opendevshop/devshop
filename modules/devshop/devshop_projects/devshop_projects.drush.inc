@@ -284,15 +284,14 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
       // Check for site to clone
       if ($platform->environment->settings->site_to_clone) {
-        $servers = hosting_get_servers('db');
-
+        $site = node_load($platform->environment->settings->site_to_clone);
         $args['target_platform'] = $platform->nid;
 
         // Ensure new URI doesn't contain underscores or other invalid characters.
         $args['new_uri'] = str_replace('_', '-', $platform->environment->name) .'.'. $platform->project->base_url;
 
-        // @TODO: Match settings of cloned environment.
-        $args['new_db_server'] = key($servers);
+        // Use the default database server for the project.
+        $args['new_db_server'] = $site->db_server;
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
 
         // Queue the Cloning of the site.
