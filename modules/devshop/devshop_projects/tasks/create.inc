@@ -208,10 +208,8 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $platform->uid = $user->uid;
   $platform->name = $user->name;
 
-  // Set servers
-  // @TODO: Use $settings to retrieve these.
-  $servers = hosting_get_servers('http');
-  $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));;
+  // Set web server to the project default.
+  $platform->web_server = $project->settings->default_environment['web_server'];
 
   // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
