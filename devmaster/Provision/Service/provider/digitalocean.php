@@ -38,7 +38,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
   function save_server() {
     // Look for provider_server_identifier
     $server_identifier = $this->server->provider_server_identifier;
-
+    drush_log(print_r($this, true));
     // If server ID is already found, move on.
     if (!empty($server_identifier)) {
       drush_log('[DEVSHOP] Server Identifier Found: ' . $server_identifier . '  Not creating new server.', 'ok');
@@ -78,6 +78,30 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
   function default_cloud_config() {
 
+    if (isset($this->server->http_service_type)) {
+      $http = $this->server->http_service_type;
+      if ($http == 'apache') {
+        $commands  = "- ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
+         - a2enmod rewrite";
+      }
+      elseif($http == 'nginx') {
+        $commands = "- ln -s /var/aegir/config/nginx.conf /etc/nginx/conf.d/aegir.conf";
+      }
+    }
+
+    if (isset($this->server->db_service_type)) {
+      $db = $this->server->db_service->type;
+      if ($db == 'mysql') {
+        $password = '';
+        $aegir_ip = $_SERVER['SERVER_ADDR'];
+        $mysql_commands = "- mysql -u root -p -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY '$pass' WITH GRANT OPTION'
+  - mysql -u root -p -e 'FLUSH PRIVILEGES'
+        ";
+      }
+    }
+
+
+    $ssh_key = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
     $config = "#cloud-config
 users:
   - name: aegir
@@ -86,18 +110,11 @@ users:
     homedir: /var/aegir
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh-authorized-keys:
-      - SSHKEY
+      - $ssh_key
 runcmd:
-  - ln -s /var/aegir/config/nginx.conf /etc/nginx/conf.d/aegir.conf
-  - mysql -u root -p -e 'GRANT ALL PRIVILEGES ON *.* TO root@aegir_server_ip IDENTIFIED BY 'password' WITH GRANT OPTION'
-  - mysql -u root -p -e 'FLUSH PRIVILEGES'
-";
-    $ssh_key = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
-    $config = str_replace('SSHKEY', $ssh_key, $config);
+  $commands
 
-    // todo replace nginx symlink with selected http service type.
-    // a2enmod rewrite
-    // ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
+";
 
     return $config;
   }
