@@ -14,6 +14,7 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
     // Don't allow editing.
     if (!$this->server->nid) {
       $default_options = variable_get('devshop_digital_ocean_default_options', array());
+      dsm($default_options);
       $options = $this->getDigitalOceanOptions();
       $form['provider_options'] = array();
       $form['provider_options']['region'] = array(
