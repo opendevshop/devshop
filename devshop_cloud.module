@@ -63,14 +63,6 @@ function devshop_cloud_hosting_service_type() {
 }
 
 /**
- * Implements hook_hosting_service()
- */
-function devshop_cloud_hosting_service() {
-  return array(
-    'digitalocean' => 'provider',
-  );
-}
-/**
  * Implementation of hook_nodeapi()
  */
 function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
