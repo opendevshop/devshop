@@ -1,5 +1,5 @@
 <?php
-
+require_once dirname(__FILE__) . '/provider/digitalocean.php';
 /**
  * The Provision_Service_provider service class.
  */
@@ -10,6 +10,7 @@ class Provision_Service_provider extends Provision_Service {
    * Add provider and provider options to the server drush alias.
    */
   static function subscribe_server($context) {
+
     $context->setProperty('provider');
     $context->setProperty('provider_options');
     $context->setProperty('provider_data');
@@ -26,6 +27,7 @@ class Provision_Service_provider extends Provision_Service {
    * Use sparingly.
    */
   function init_server() {
+    parent::init();
   }
 
   /**
