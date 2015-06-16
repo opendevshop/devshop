@@ -63,27 +63,27 @@ function devshop_digital_ocean_options_form() {
         '#options' => $key_options,
         '#default_value' => $default_options['devshop_digital_ocean_default_keys'],
       );
-      $form['backups'] = array(
+      $form['devshop_digital_ocean_default_backups'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable Backups'),
         '#default_value' => $default_options['devshop_digital_ocean_default_backups'],
       );
-      $form['ipv6'] = array(
+      $form['devshop_digital_ocean_default_ipv6'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable IPv6'),
         '#default_value' => $default_options['devshop_digital_ocean_default_ipv6'],
       );
-      $form['private_networking'] = array(
+      $form['devshop_digital_ocean_default_private_networking'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable Private Networking'),
         '#default_value' => $default_options['devshop_digital_ocean_default_private_networking'],
       );
-      $form['remote_server'] = array(
+      $form['devshop_digital_ocean_default_remote_server'] = array(
         '#type' => 'checkbox',
         '#title' => t('Setup as remote aegir server'),
         '#default_value' => $default_options['devshop_digital_ocean_default_remote_server'],
       );
-      //$form['cloud_config'] = array(
+      //$form['devshop_digital_ocean_default_cloud_config'] = array(
       //  '#type' => 'textarea',
       //  '#title' => t('Cloud Config'),
       //  '#default_value' => $default_options['devshop_digital_ocean_default_cloud_config'],
