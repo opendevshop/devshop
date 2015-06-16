@@ -50,7 +50,16 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
       $options = $this->server->provider_options;
       $digitalocean = $this->load_api();
       $droplet = $digitalocean->droplet();
-      $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'], array_filter($options['keys']));
+
+      //$cloud_config = !empty($options['cloud_config']) ? $options['cloud_config'] :  $this->default_cloud_config();
+
+      if ($options['remote_server']) {
+        $cloud_config = $this->default_cloud_config();
+      }
+
+      $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'],
+        $options['backups'], $options['ipv6'], $options['private_networking'], array_filter($options['keys']), $cloud_config);
+
       $this->server->setProperty('provider_server_identifier', $created->id);
       drush_log("[DEVSHOP] Server Identifier found: $created->id. Assumed server was created.", 'ok');
     }
@@ -65,4 +74,33 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
     $digitalocean = new DigitalOceanV2($adapter);
     return $digitalocean;
   }
+
+
+  function default_cloud_config() {
+
+    $config = "#cloud-config
+users:
+  - name: aegir
+    groups: sudo, www-data
+    shell: /bin/bash
+    homedir: /var/aegir
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - SSHKEY
+runcmd:
+  - ln -s /var/aegir/config/nginx.conf /etc/nginx/conf.d/aegir.conf
+  - mysql -u root -p -e 'GRANT ALL PRIVILEGES ON *.* TO root@aegir_server_ip IDENTIFIED BY 'password' WITH GRANT OPTION'
+  - mysql -u root -p -e 'FLUSH PRIVILEGES'
+";
+    $ssh_key = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
+    $config = str_replace('SSHKEY', $ssh_key, $config);
+
+    // todo replace nginx symlink with selected http service type.
+    // a2enmod rewrite
+    // ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
+
+    return $config;
+  }
+
+
 }
