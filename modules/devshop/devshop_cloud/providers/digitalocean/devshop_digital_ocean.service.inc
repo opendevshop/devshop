@@ -40,6 +40,31 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
         '#options' => $options['keys'],
         '#default_value' => $default_options['devshop_digital_ocean_default_keys'],
       );
+      $form['provider_options']['backups'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable Backups'),
+        '#default_value' => $default_options['devshop_digital_ocean_default_backups'],
+      );
+      $form['provider_options']['ipv6'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable IPv6'),
+        '#default_value' => $default_options['devshop_digital_ocean_default_ipv6'],
+      );
+      $form['provider_options']['private_networking'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable Private Networking'),
+        '#default_value' => $default_options['devshop_digital_ocean_default_private_networking'],
+      );
+      $form['provider_options']['remote_server'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Setup as remote aegir server'),
+        '#default_value' => $default_options['devshop_digital_ocean_default_remote_server'],
+      );
+      //$form['provider_options']['cloud_config'] = array(
+      //  '#type' => 'textarea',
+      //  '#title' => t('Cloud Config'),
+      //  '#default_value' => $default_options['devshop_digital_ocean_default_cloud_config'],
+      //);
     }
   }
 
