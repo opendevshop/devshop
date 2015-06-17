@@ -114,8 +114,10 @@ EOT;
       }
     }
 
-    global $conf;
-    $ssh_key = $conf['devshop_public_key'];
+    $handle = fopen('/var/aegir/.ssh/id_rsa.pub', 'r');
+    $ssh_key = fgets($handle);
+    fclose($handle);
+
     $config = <<<EOT
 #cloud-config
 users:
