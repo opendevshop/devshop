@@ -8,7 +8,6 @@
 
   roles:
     - aegir
-    - solr
 
   vars_files:
     - vars.yml
