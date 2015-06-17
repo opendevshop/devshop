@@ -58,7 +58,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
       }
 
       $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'],
-        array_filter($options['keys']), $options['backups'], $options['ipv6'], $options['private_networking'], $cloud_config);
+        $options['backups'], $options['ipv6'], $options['private_networking'], array_filter($options['keys']), $cloud_config);
 
       $this->server->setProperty('provider_server_identifier', $created->id);
       drush_log("[DEVSHOP] Server Identifier found: $created->id. Assumed server was created.", 'ok');
