@@ -13,7 +13,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
     $digitalocean = $this->load_api();
     $droplet = $digitalocean->droplet();
-    $cloud = $droplet->getById($this->server->properties->provider_server_identifier);
+    $cloud = $droplet->getById($this->server->provider_server_identifier);
     if ($cloud->status == 'active') {
 
       $ips = array();
@@ -37,7 +37,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
    */
   function save_server() {
     // Look for provider_server_identifier
-    $server_identifier = $this->server->properties->provider_server_identifier;
+    $server_identifier = $this->server->provider_server_identifier;
     drush_log(print_r($this, true));
     // If server ID is already found, move on.
     if (!empty($server_identifier)) {
@@ -47,7 +47,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
     else {
       drush_log('[DEVSHOP] Server Identifier not found.  Creating new server!', 'ok');
 
-      $options = $this->server->properties->provider_options;
+      $options = $this->server->provider_options;
       $digitalocean = $this->load_api();
       $droplet = $digitalocean->droplet();
 
@@ -57,7 +57,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
         $cloud_config = $this->default_cloud_config();
       }
 
-      $created = $droplet->create($this->server->properties->remote_host, $options['region'], $options['size'], $options['image'],
+      $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'],
         array_filter($options['keys']), $options['backups'], $options['ipv6'], $options['private_networking'], $cloud_config);
 
       $this->server->setProperty('provider_server_identifier', $created->id);
@@ -78,8 +78,8 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
   function default_cloud_config() {
 
-    if (isset($this->server->properties->http_service_type)) {
-      $http = $this->server->properties->http_service_type;
+    if (isset($this->server->http_service_type)) {
+      $http = $this->server->http_service_type;
       if ($http == 'apache') {
         $commands = "- ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
          - a2enmod rewrite";
@@ -89,8 +89,8 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
       }
     }
 
-    if (isset($this->server->properties->db_service_type)) {
-      $db = $this->server->properties->db_service->type;
+    if (isset($this->server->db_service_type)) {
+      $db = $this->server->db_service->type;
       if ($db == 'mysql') {
         $password = $this->server->services['db']->creds['pass'];
         $aegir_ip = $_SERVER['SERVER_ADDR'];
