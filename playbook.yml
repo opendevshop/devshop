@@ -60,6 +60,7 @@
         - php-pear
         - php-xml
         - php-mcrypt
+        - php-mbstring
         - postfix
         - sudo
         - rsync
