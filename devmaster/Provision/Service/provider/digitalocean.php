@@ -106,7 +106,7 @@ EOT;
     if (isset($this->server->db_service_type)) {
       $db = $this->server->db_service_type;
       if ($db == 'mysql') {
-	$creds = array_map('urldecode', parse_url($this->server->master_db); 
+	$creds = array_map('urldecode', parse_url($this->server->master_db)); 
 	drush_log(print_r($this->server, TRUE));
         $password = $creds['pass'];
         $aegir_host = gethostname();
