@@ -38,8 +38,7 @@ The install script (install.sh) is only needed to prepare the server to provisio
 
 It is designed to run as a standalone script.
 
-Install Script Overview
-=======================
+### Install Script Overview
 
 1. Installs git and Ansible.
 2. Generates a secure MySQL password and saves it to the /root/.my.cnf.
@@ -47,8 +46,7 @@ Install Script Overview
 4. Runs the Ansible playbook.
 5. Outputs a link to login to the devshop front-end.
 
-Ansible Playbook Overview
-=========================
+### Ansible Playbook Overview
 
 The Ansible playbook is located in the devshop repo at ./playbook.yml.
 
