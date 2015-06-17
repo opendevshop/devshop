@@ -110,7 +110,7 @@ EOT;
 	drush_log(print_r($this->server, TRUE));
         $password = $creds['pass'];
         $aegir_host = provision_fqdn();
-	$mysql_command = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_host IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
+	$mysql_command = "- mysql -u root -p'' -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_host IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
       }
     }
 
