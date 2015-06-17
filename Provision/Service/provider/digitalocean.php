@@ -94,9 +94,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
       if ($db == 'mysql') {
         $password = '';
         $aegir_ip = $_SERVER['SERVER_ADDR'];
-        $mysql_commands = "- mysql -u root -p -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY '$pass' WITH GRANT OPTION'
-  - mysql -u root -p -e 'FLUSH PRIVILEGES'
-        ";
+	$mysql_commands = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
       }
     }
 
