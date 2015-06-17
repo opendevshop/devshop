@@ -101,6 +101,7 @@ EOT;
       $db = $this->server->db_service_type;
       if ($db == 'mysql') {
 	$services = $this->server->get_services;
+	drush_log(print_r($services, TRUE));
         $password = $services['db']->creds['pass'];
         $aegir_ip = getenv('SERVER_ADDR');
 	$mysql_command = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
