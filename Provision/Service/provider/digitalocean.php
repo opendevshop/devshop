@@ -38,6 +38,8 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
   function save_server() {
     // Look for provider_server_identifier
     $server_identifier = $this->server->provider_server_identifier;
+    $services = $this->server->get_services();
+    drush_log(print_r($services, TRUE));
     drush_log(print_r($this, true));
     // If server ID is already found, move on.
     if (!empty($server_identifier)) {
@@ -100,7 +102,7 @@ EOT;
     if (isset($this->server->db_service_type)) {
       $db = $this->server->db_service_type;
       if ($db == 'mysql') {
-	$services = $this->server->get_services;
+	$services = $this->server->get_services();
 	drush_log(print_r($services, TRUE));
         $password = $services['db']->creds['pass'];
         $aegir_ip = getenv('SERVER_ADDR');
