@@ -10,8 +10,6 @@
       name=aegir
       shell=/bin/bash
       group=aegir
-      groups={{ apache_user }}
-      append=yes
       system=yes
       home=/var/aegir
       generate_ssh_key=yes

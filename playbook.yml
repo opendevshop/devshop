@@ -114,6 +114,12 @@
 #        owner=aegir
 #        group=aegir
 
+    - name: Add aegir to apache group.
+      user:
+        name=aegir
+        groups={{ apache_user }}
+        append=yes
+
     - name: Setup | Install Composer
       shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
       args:
