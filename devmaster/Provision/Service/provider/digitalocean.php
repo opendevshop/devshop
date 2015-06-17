@@ -54,6 +54,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
       if ($options['remote_server']) {
         $cloud_config = $this->default_cloud_config();
+	drush_log(print_r($cloud_config, TRUE));
       }
 
       $keys = array_filter($options['keys']);
