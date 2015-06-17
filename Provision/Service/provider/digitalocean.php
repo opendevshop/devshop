@@ -100,7 +100,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
 
     $ssh_key = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
-    $config = <<EOT
+    $config = <<<EOT
 #cloud-config
 users:
   - name: aegir
