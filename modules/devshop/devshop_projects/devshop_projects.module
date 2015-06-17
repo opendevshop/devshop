@@ -59,6 +59,7 @@ function devshop_projects_perm() {
  */
 function devshop_projects_devshop_environment_actions($environment) {
   $items = array(
+    'verify',
     'flush_cache',
     'login-reset',
     'backup',
