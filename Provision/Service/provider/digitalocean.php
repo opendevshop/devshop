@@ -109,13 +109,13 @@ EOT;
 	$creds = array_map('urldecode', parse_url($this->server->master_db)); 
 	drush_log(print_r($this->server, TRUE));
         $password = $creds['pass'];
-        $aegir_host = gethostname();
+        $aegir_host = provision_fqdn();
 	$mysql_command = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_host IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
       }
     }
 
-
-    $ssh_key = variable_get('devshop_public_key');
+    global $conf;
+    $ssh_key = $conf['devshop_public_key'];
     $config = <<<EOT
 #cloud-config
 users:
