@@ -269,11 +269,11 @@
       sudo_user: aegir
 
     - name: Ensure privacy of SSH Keys
-      file: src=/var/aegir/{{ item.path }} mode={{ item.mode }}
+      file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
       with_items:
-        - { path: '.ssh', dest: '0700' }
-        - { path: '.ssh/id_rsa', dest: '600' }
-        - { path: '.ssh/id_rsa.pub', dest: '644' }
+        - { path: '.ssh', mode: '0700' }
+        - { path: '.ssh/id_rsa', mode: '600' }
+        - { path: '.ssh/id_rsa.pub', mode: '644' }
 
   handlers:
     - name: restart supervisor
