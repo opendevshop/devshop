@@ -41,6 +41,9 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
     // If server ID is already found, move on.
     if (!empty($server_identifier)) {
       drush_log('[DEVSHOP] Server Identifier Found: ' . $server_identifier . '  Not creating new server.', 'ok');
+
+      $cloud_config = $this->default_cloud_config();
+      drush_log(print_r($cloud_config, TRUE));
     }
     // If there is no server ID, create the server.
     else {
