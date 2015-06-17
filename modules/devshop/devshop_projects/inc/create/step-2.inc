@@ -28,7 +28,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#title' => t('Path to Drupal'),
     '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
     '#size' => 40,
-    '#default_Value' => $project->drupal_path,
+    '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
   );
 }
