@@ -57,6 +57,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
       }
 
       $keys = array_filter($options['keys']);
+      $keys = array_values($keys);
 
       $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'],
         $options['backups'], $options['ipv6'], $options['private_networking'], $keys, $cloud_config);
