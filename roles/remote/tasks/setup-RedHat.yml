@@ -1,0 +1,6 @@
+---
+- name: Ensure packages are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: aegir_packages

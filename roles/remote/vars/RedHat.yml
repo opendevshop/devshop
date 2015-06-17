@@ -1,0 +1,29 @@
+---
+apache_daemon: httpd
+apache_server_root: /etc/httpd
+apache_conf_path: /etc/httpd/conf.d
+
+__aegir_packages:
+  - httpd
+  - php
+  - php-mysql
+  - php-cli
+  - php-gd
+  - php-process
+  - php-pear
+  - php-xml
+  - php-mcrypt
+  - php-mbstring
+  - postfix
+  - sudo
+  - rsync
+  - git-core
+  - unzip
+  - vim
+  - git
+  - cronie
+  - mariadb
+  - mariadb-server
+  - MySQL-python
+  - mod_ssl
+  - openssh
