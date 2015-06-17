@@ -39,6 +39,7 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
     // Look for provider_server_identifier
     $server_identifier = $this->server->provider_server_identifier;
     drush_log(print_r($this, true));
+    drush_log(print_r($this->server, TRUE));
     // If server ID is already found, move on.
     if (!empty($server_identifier)) {
       drush_log('[DEVSHOP] Server Identifier Found: ' . $server_identifier . '  Not creating new server.', 'ok');
@@ -57,8 +58,10 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
         $cloud_config = $this->default_cloud_config();
       }
 
+      $keys = array_filter($options['keys']);
+
       $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'],
-        $options['backups'], $options['ipv6'], $options['private_networking'], array_filter($options['keys']), $cloud_config);
+        $options['backups'], $options['ipv6'], $options['private_networking'], $keys, $cloud_config);
 
       $this->server->setProperty('provider_server_identifier', $created->id);
       drush_log("[DEVSHOP] Server Identifier found: $created->id. Assumed server was created.", 'ok');
@@ -100,7 +103,6 @@ EOT;
     if (isset($this->server->db_service_type)) {
       $db = $this->server->db_service_type;
       if ($db == 'mysql') {
-        drush_log(print_r($this->server, TRUE));
         $password = $this->server->services['db']->creds['pass'];
         $aegir_ip = getenv('SERVER_ADDR');
 	$mysql_command = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
