@@ -38,8 +38,6 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
   function save_server() {
     // Look for provider_server_identifier
     $server_identifier = $this->server->provider_server_identifier;
-    drush_log(print_r($this, true));
-    drush_log(print_r($this->server->service('db')->creds['pass'], TRUE));
     // If server ID is already found, move on.
     if (!empty($server_identifier)) {
       drush_log('[DEVSHOP] Server Identifier Found: ' . $server_identifier . '  Not creating new server.', 'ok');
