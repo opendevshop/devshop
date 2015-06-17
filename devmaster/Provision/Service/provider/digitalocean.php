@@ -92,15 +92,16 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
     if (isset($this->server->db_service_type)) {
       $db = $this->server->db_service->type;
       if ($db == 'mysql') {
-        $password = '';
+        $password = $this->server->services['db']->creds['pass'];
         $aegir_ip = $_SERVER['SERVER_ADDR'];
-	$mysql_commands = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
+	$mysql_command = "- mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_ip IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
       }
     }
 
 
     $ssh_key = file_get_contents('/var/aegir/.ssh/id_rsa.pub');
-    $config = "#cloud-config
+    $config = <<EOT
+#cloud-config
 users:
   - name: aegir
     groups: sudo, www-data
@@ -111,8 +112,8 @@ users:
       - $ssh_key
 runcmd:
   $commands
-
-";
+  $mysql_command
+EOT;
 
     return $config;
   }
