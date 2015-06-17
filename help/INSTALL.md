@@ -22,6 +22,7 @@ Setup
   root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/0.2.2/install.sh
   root@devshop:~# bash install
   ```
+
 Chasing Head
 ------------
 
