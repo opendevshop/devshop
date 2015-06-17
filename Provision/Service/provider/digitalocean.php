@@ -80,17 +80,25 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
     if (isset($this->server->http_service_type)) {
       $http = $this->server->http_service_type;
-      if ($http == 'apache') {
-        $commands = "- ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
-         - a2enmod rewrite";
-      }
-      elseif($http == 'nginx') {
+      switch ($http) {
+      case 'apache':
+        $commands = <<<EOT
+- ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
+- a2enmod rewrite
+EOT;
+      	break;
+      case 'nginx':
+      case 'nginx_ssl':
         $commands = "- ln -s /var/aegir/config/nginx.conf /etc/nginx/conf.d/aegir.conf";
+	break;
+      default:
+        $commands = '';
+	break;
       }
     }
 
     if (isset($this->server->db_service_type)) {
-      $db = $this->server->db_service->type;
+      $db = $this->server->db_service_type;
       if ($db == 'mysql') {
         $password = $this->server->services['db']->creds['pass'];
         $aegir_ip = $_SERVER['SERVER_ADDR'];
