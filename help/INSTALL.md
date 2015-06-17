@@ -19,17 +19,39 @@ Setup
 - Login to your server as root, and retrieve and run the install script:
 
   ```
-  root@devshop:~# wget http://getdevshop.com/install
+  root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/0.2.2/install.sh
   root@devshop:~# bash install
   ```
+Chasing Head
+------------
 
-  *NOTE: http://getdevshop.com/install simply redirects to the dev version of install.sh: https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh*
+The 0.x branch install script will install the latest devshop from git source.
 
+Use https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh if you wish to do this.
+
+Many people install this version.  Updates are done with a simple `git pull` in ~/devmaster-0.x/profiles/devmaster
 
 Install Script
 --------------
 
-@TODO:
-The install script does many things.  We will list them all here.
+The install script (install.sh) is only needed to prepare the server to provision itself with Ansible.
 
-See https://www.drupal.org/node/2419541
+It is designed to run as a standalone script.
+
+Install Script Overview
+=======================
+
+1. Installs git and Ansible.
+2. Generates a secure MySQL password and saves it to the /root/.my.cnf.
+3. Clones http://github.com/opendevshop/devshop.git to /usr/share/devshop.  These files include the Ansible playbooks and variables files.
+4. Runs the Ansible playbook.
+5. Outputs a link to login to the devshop front-end.
+
+Ansible Playbook Overview
+=========================
+
+The Ansible playbook is located in the devshop repo at ./playbook.yml.
+
+Ansible is human readable, so if you are interested in what happens there, just open that file and read it.
+
+
