@@ -27,3 +27,4 @@ __aegir_packages:
   - MySQL-python
   - mod_ssl
   - openssh
+  - epel-release
