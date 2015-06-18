@@ -6,9 +6,17 @@ Users
 
 DevShop is built on Aegir, so it uses the `aegir` system user for all activity.
 
+It is not recommended to use the `root` user after the initial server setup.  Everything short of installing new server packages can be done with the `aegir` user.
+
 The `aegir` user's only permission is to reload apache, nginx, and tomcat.  It is granted this permission via `/etc/sudoers.d/aegir` so that it can run `sudo /etc/apache2ctl` without being asked for a password.
 
+The `aegir` user does not have a password set by default. This is recommended. If access needs to be granted, use SSH keys to allow people to login as the `aegir` user. 
+
 The `aegir` user's home directory is `/var/aegir`.  All apache config files and site source code files, including devmaster, are located in this folder.
+
+During typical drupal site development, developers need access to the server via SSH.  This may be granted via the `aegir` user by placing developers SSH public keys into `/var/aegir/.ssh/authorized_keys`.
+
+Be aware that _all_ sites on the server are stored under the single `aegir` user. Granting access to someone gives them access to all of the sites on that server.  It is possible to use the "clients" feature of aegir to create sub-users and grant them access to only their folder in `/var/aegir/clients/` however this is difficult and outside of the scope of devshop.
 
 Apache
 ------
@@ -40,7 +48,7 @@ DevShop creates a unique SSH keypair for each devshop install.  You must use tha
 Ports
 -----
 
-Aegir & devshop expose default ports for HTTP and SSH (80 and 22) respectively.  It makes no assumptions about what network security you would like beyond that. Installing extra firewalls is up to you.
+Aegir & devshop expose default ports for HTTP and SSH (80 and 22).  It makes no assumptions about what network security you would like beyond that. Installing extra firewalls is up to you.
 
 Config Manager
 --------------
