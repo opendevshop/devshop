@@ -45,6 +45,8 @@ The `aegir` user is what connects to your git repos as well as to your remote se
 
 DevShop creates a unique SSH keypair for each devshop install.  You must use that keypair to grant access to your repositories, and to remote servers.
 
+Upon install, DevShop creates a  `/var/aegir/.ssh/config` file that sets `StrictHostKeyChecking` to `no` for common git hosts.  This is so site codebases can be cloned automatically without manual approval of the host being needed.
+
 Ports
 -----
 
