@@ -16,7 +16,7 @@ The `aegir` user's home directory is `/var/aegir`.  All apache config files and 
 
 During typical drupal site development, developers need access to the server via SSH.  This may be granted via the `aegir` user by placing developers SSH public keys into `/var/aegir/.ssh/authorized_keys`.
 
-Be aware that _all_ sites on the server are stored under the single `aegir` user. Granting access to someone gives them access to all of the sites on that server.  It is possible to use the "clients" feature of aegir to create sub-users and grant them access to only their folder in `/var/aegir/clients/` however this is difficult and outside of the scope of devshop.
+Be aware that _all_ sites on the server are stored under the single `aegir` user. Granting access to someone gives them access to all of the sites on that server.  It is possible to use the "clients" feature of aegir to create sub-users and grant them access to only their folder in `/var/aegir/clients/` however this is difficult and outside of the scope of devshop, for now.
 
 Apache
 ------
