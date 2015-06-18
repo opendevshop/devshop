@@ -8,7 +8,18 @@ DevShop is built on Aegir, so it uses the `aegir` system user for all activity.
 
 The `aegir` user's only permission is to reload apache, nginx, and tomcat.  It is granted this permission via `/etc/sudoers.d/aegir` so that it can run `sudo /etc/apache2ctl` without being asked for a password.
 
-The `aegir` user's home directory is `/var/www`.  All apache config files and site source code files, including devmaster, are located in this folder.
+The `aegir` user's home directory is `/var/aegir`.  All apache config files and site source code files, including devmaster, are located in this folder.
+
+Apache
+------
+
+Aegir uses Apache web server by default.  NGINX is also possible.
+
+Aegir works because on setup, a symlink is placed into the Apache config folder that points to `/var/aegir/config/apache`, which in turn includes all files in `/var/aegir/config/server_master/apache`.  
+
+This way, `aegir` user can write apache configs without needing root access.
+
+Once setup, aegir writes it's own configs for additional sites into it's own `/var/aegir/config/server_master/config` folder, then reloads apache.
 
 MySQL
 -----
@@ -44,3 +55,20 @@ When a new site is created, the following occurs:
 4. Within the drupal codebase, the `sites/DOMAIN.com` folder is created, along with a `settings.php` file and the `files` folder.  The permissions for all of these files are appropriately set automatically.  The `settings.php` is created from a template that is stored in the provision drush project.  A special hook can be used to add lines to the settings.php file.
 5. Apache is reloaded.
 6. The site is installed via drush, using the selected install profile.
+
+Remote Servers
+--------------
+
+Aegir has the ability to connect and deploy to remote servers.
+
+Each server gets a folder created in `/var/aegir/config/server_NAME`.  Inside this folder is the same collection of folders present in `server_master`.
+
+Remote servers must have Apache installed, and must have their own Aegir user with the same extra sudo permissions described above, as well as the same symlink in apache config.  You must also install MySQL and setup the root user to be accessible from the master server.
+
+The master server must have SSH access to the remote servers, from `aegir` user to `aegir` user.
+
+Once this is setup, visit the "Add Server" page in the devshop/aegir front-end. Enter a hostname that resolves to the server's IP address.  You must choose the services, apache & mysql 
+
+During the "server verify" process, all of the files in `/var/aegir/config/server_NAME` are copied to the remote server at the same path via RSYNC.
+
+When new sites are created, and the new server is selected as the target, the site codebase will be copied to the remote server at the same path via RSYNC.  This happens again during the "site verify" process.
