@@ -82,3 +82,44 @@ Once this is setup, visit the "Add Server" page in the devshop/aegir front-end. 
 During the "server verify" process, all of the files in `/var/aegir/config/server_NAME` are copied to the remote server at the same path via RSYNC.
 
 When new sites are created, and the new server is selected as the target, the site codebase will be copied to the remote server at the same path via RSYNC.  This happens again during the "site verify" process.
+
+Deploy Methods
+--------------
+
+There are three "Deploy Methods" that are possible for each project:
+
+1. Immediate Deployment:
+
+  Runs deployment the moment that a webhook request is received.  The devshop front-end must be exposed to the internet for this method to work.  
+  
+  To use Immediate Deployment, you must configure a "webhook" with your git provider. This notifies your devshop server whenever code is pushed to the git provider.
+  
+2. Queued Deployment:
+
+  Runs deployment every 1 minute (configurable).  This method would usually be used only when devshop cannot be exposed to the internet.  
+  
+3. Manual Deployment:
+
+  Code is only deployed manually, through the devshop front-end.  
+
+Git Integration
+---------------
+
+The mechanism by which DevShop gets code onto the servers is called the "Deploy" task.
+
+A "Deploy" task will checkout the chosen branch or tag, and runs `git pull` if on a branch.
+
+After the `git pull`, "Deploy Hooks" are run immediately.  What deploy hooks run is configured in the Environment Settings in the devshop front-end. 
+
+Deploy Hooks
+------------
+
+The Deploy Hooks available out of the box are:
+
+1. Update Database
+2. Clear Caches
+3. Revert All Features
+
+Deploy hooks can be added via drush include files.
+
+Also supported are Acquia "Cloud Hooks". These are files contained in the repo that are used by Acquia Cloud hosting.
