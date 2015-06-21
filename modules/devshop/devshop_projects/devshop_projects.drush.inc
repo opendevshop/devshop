@@ -347,7 +347,7 @@ function _devshop_projects_git_execute($commands, $root) {
 
       $output = drush_shell_exec_output();
       drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
-      $return .= $output;
+      $return .= print_r($output, TRUE);
     }
   }
   return $return;
