@@ -42,8 +42,8 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
     if (!empty($server_identifier)) {
       drush_log('[DEVSHOP] Server Identifier Found: ' . $server_identifier . '  Not creating new server.', 'ok');
 
-      $cloud_config = $this->default_cloud_config();
-      drush_log(print_r($cloud_config, TRUE));
+      $user_data = $this->default_user_data();
+      drush_log(print_r($user_data, TRUE));
     }
     // If there is no server ID, create the server.
     else {
@@ -53,18 +53,18 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
       $digitalocean = $this->load_api();
       $droplet = $digitalocean->droplet();
 
-      //$cloud_config = !empty($options['cloud_config']) ? $options['cloud_config'] :  $this->default_cloud_config();
+      //$user_data = !empty($options['user_data']) ? $options['user_data'] :  $this->default_user_data();
 
       if ($options['remote_server']) {
-        $cloud_config = $this->default_cloud_config();
-	drush_log(print_r($cloud_config, TRUE));
+        $user_data = $this->default_user_data();
+	drush_log(print_r($user_data, TRUE));
       }
 
       $keys = array_filter($options['keys']);
       $keys = array_values($keys);
 
       $created = $droplet->create($this->server->remote_host, $options['region'], $options['size'], $options['image'],
-        $options['backups'], $options['ipv6'], $options['private_networking'], $keys, $cloud_config);
+        $options['backups'], $options['ipv6'], $options['private_networking'], $keys, $user_data);
 
       $this->server->setProperty('provider_server_identifier', $created->id);
       drush_log("[DEVSHOP] Server Identifier found: $created->id. Assumed server was created.", 'ok');
@@ -82,35 +82,35 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
   }
 
 
-  function default_cloud_config() {
+  function default_user_data() {
 
     if (isset($this->server->http_service_type)) {
       $http = $this->server->http_service_type;
       switch ($http) {
       case 'apache':
         $commands = <<<EOT
-- ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
-- a2enmod rewrite
+ln -s /var/aegir/config/apache.conf /etc/apache2/conf.d/aegir.conf
+a2enmod rewrite
 EOT;
       	break;
       case 'nginx':
       case 'nginx_ssl':
-        $commands = "- ln -s /var/aegir/config/nginx.conf /etc/nginx/conf.d/aegir.conf";
-	break;
+        $commands = "ln -s /var/aegir/config/nginx.conf /etc/nginx/conf.d/aegir.conf";
+        break;
       default:
         $commands = '';
-	break;
+        break;
       }
     }
 
+    $mysql_command = '';
     if (isset($this->server->db_service_type)) {
       $db = $this->server->db_service_type;
       if ($db == 'mysql') {
-	$creds = array_map('urldecode', parse_url($this->server->master_db)); 
-	drush_log(print_r($this->server, TRUE));
+        $creds = array_map('urldecode', parse_url($this->server->master_db));
         $password = $creds['pass'];
         $aegir_host = provision_fqdn();
-	$mysql_command = "- mysql -u root -p'' -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_host IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
+        $mysql_command = "mysql -u root -p$(cat /etc/motd.tail | awk -F'password is ' '{print $2}' | xargs) -e 'GRANT ALL PRIVILEGES ON *.* TO root@$aegir_host IDENTIFIED BY \"$password\" WITH GRANT OPTION;FLUSH PRIVILEGES;'";
       }
     }
 
@@ -119,18 +119,17 @@ EOT;
     fclose($handle);
 
     $config = <<<EOT
-#cloud-config
-users:
-  - name: aegir
-    groups: sudo, www-data
-    shell: /bin/bash
-    homedir: /var/aegir
-    sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh-authorized-keys:
-      - $ssh_key
-runcmd:
-  $commands
-  $mysql_command
+#!/bin/bash
+adduser --system --group --home /var/aegir aegir
+adduser aegir www-data
+$commands
+$mysql_command
+touch /etc/sudoers.d/aegir
+cat 'aegir ALL=NOPASSWD: ALL' > /etc/sudoers.d/aegir
+mkdir /var/aegir/.ssh
+touch /var/aegir/.ssh/authorized_keys
+cat $ssh_key >> /var/aegir/.ssh/authorized_keys
+chmod -R 400 /var/aegir/.ssh
 EOT;
 
     return $config;
