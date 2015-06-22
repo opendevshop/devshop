@@ -23,6 +23,10 @@ class Login extends Command
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     $output->writeln('Hello, DevShop!');
+    if ($_SERVER['USER'] != 'aegir') {
+      $output->writeln('<error>ERROR: Not running as "aegir" user.  Use "sudo su - aegir" to switch to aegir user, then try again.</error>');
+      return;
+    }
 
     // Check for Drush
     $output->write("<comment>Getting a login URL...  </comment>");
