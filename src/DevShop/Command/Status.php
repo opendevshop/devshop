@@ -64,5 +64,14 @@ class Status extends Command
       $output->writeln("<info>Devmaster is installed.</info>");
     }
 
+    // Check for devshop
+
+    $output->write("<comment>Checking for devshop...  </comment>");
+
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $version = file_get_contents('/var/aegir/.devshop-version');
+      $output->write("<info>Devshop is installed.</info>  ");
+      $output->write("DevShop Version $version");
+    }
   }
 }
