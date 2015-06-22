@@ -55,10 +55,23 @@ class Install extends Command
       $output->writeln('<error>WARNING:</error> aegir user already exists.');
       $question = new ConfirmationQuestion('Do you want to continue with the installation? ', false);
       if (!$helper->ask($input, $output, $question)) {
+        $output->writeln('<fg=red>Installation aborted.');
+        $output->writeln('');
+
         return;
       }
     }
     $output->writeln('');
+
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $current_version = file_get_contents('/var/aegir/.devshop-version');
+      if (!empty($current_version)) {
+        $output->writeln("<error>WARNING:</error> /var/aegir/.devshop-version was found. Version $current_version appears to already be installed.  You should run <info>devshop upgrade</info> command if you wish to upgrade it.");
+        $output->writeln('<fg=red>Installation aborted.');
+        $output->writeln('');
+        return;
+      }
+    }
 
     // Lookup versions
     $output->writeln('Checking for latest releases...');
@@ -75,41 +88,24 @@ class Install extends Command
     $version = $helper->ask($input, $output, $question);
 
     $output->writeln("<info>Selected version $version</info>");
-
-
-    // Check and confirm hostname
-    $output->writeln('');
-    $output->writeln('Checking hostname...');
-
-    // See if hostname resolves to this PC.
-    $hostname = gethostname();
-    $ip = gethostbyname($hostname);
-
-    $output->writeln("<comment>Current Hostname: $hostname</comment>");
-    $output->writeln("<comment>IP: $ip</comment>");
-    $output->writeln("The hostname is how you access the devshop front end through a web browser. The IP must resolve from the internet.");
-
-
-    $question = new ConfirmationQuestion("<comment>Continue installing devshop with this hostname? (y/n) </comment> ", FALSE);
-
-    if (!$helper->ask($input, $output, $question)){
-      $output->writeln('<fg=red>Installation aborted.');
-      return;
-    }
-    $output->writeln("<info>Selected hostname: $hostname</info>");
     $output->writeln('');
 
     // Confirm running on Install script as ROOT
+    $hostname = gethostname();
+    $ip = gethostbyname($hostname);
     $script_url = "https://raw.githubusercontent.com/opendevshop/devshop/$version/install.sh";
     $output->writeln("Installation Options");
     $output->writeln("<info>Version:</info> $version");
     $output->writeln("<info>Hostname:</info> $hostname");
+    $output->writeln("<info>IP:</info> $ip");
     $output->writeln("<info>Install Script URL:</info> $script_url");
+    $output->writeln("The hostname is how you access the devshop front end through a web browser. The IP must resolve from the internet. If you wish to change the hostname or need to update DNS, cancel the installer by entering 'n'.");
 
     $question = new ConfirmationQuestion("<comment>Run the install script as root?</comment> ", FALSE);
 
     if (!$helper->ask($input, $output, $question)){
       $output->writeln('<fg=red>Installation aborted.');
+      $output->writeln('');
       return;
     }
 
