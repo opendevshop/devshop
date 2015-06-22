@@ -23,7 +23,7 @@ use DevShop\Command\Install;
 
 use Symfony\Component\Console\Application;
 
-$application = new Application();
+$application = new Application('DevShop', '0.x');
 $application->add(new Status());
 $application->add(new Login());
 $application->add(new Install());
