@@ -4,3 +4,6 @@ source
 
 # Local config
 .vagrant
+
+# Symfony code
+vendor
