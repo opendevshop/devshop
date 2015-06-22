@@ -20,6 +20,7 @@ if (file_exists(__DIR__ . '/vendor')) {
 use DevShop\Command\Status;
 use DevShop\Command\Login;
 use DevShop\Command\Install;
+use DevShop\Command\Upgrade;
 
 use Symfony\Component\Console\Application;
 
@@ -27,4 +28,5 @@ $application = new Application('DevShop', '0.x');
 $application->add(new Status());
 $application->add(new Login());
 $application->add(new Install());
+$application->add(new Upgrade());
 $application->run();

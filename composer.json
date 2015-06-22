@@ -5,7 +5,8 @@
         "symfony/console": "^2.7",
         "symfony/process": "^2.7",
         "knplabs/github-api": "^1.4",
-        "symfony/filesystem": "^2.7"
+        "symfony/filesystem": "^2.7",
+        "symfony/finder": "^2.7"
     },
     "authors": [
         {
