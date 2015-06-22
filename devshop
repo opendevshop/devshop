@@ -18,8 +18,11 @@ if (file_exists(__DIR__ . '/vendor')) {
 
 
 use DevShop\Command\Status;
+use DevShop\Command\Login;
+
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 $application->add(new Status());
+$application->add(new Login());
 $application->run();
