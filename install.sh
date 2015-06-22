@@ -204,3 +204,6 @@ else
   echo "╚═══════════════════════════════════════════════════════════════╝"
   sudo su - aegir -c "drush @hostmaster uli"
 fi
+
+echo $DEVSHOP_VERSION > /var/aegir/.devshop-version
+
