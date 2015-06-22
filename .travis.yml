@@ -11,6 +11,7 @@ install:
 
 script:
   - sudo su aegir -c "drush @hostmaster uli"
+  - sudo su aegir -c "devshop status"
 
   # Test for DevShop
 #  - sudo su -c "cd /usr/share/devshop/tests && composer update"
