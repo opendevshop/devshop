@@ -14,6 +14,9 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Process\Process;
 use Github\Client;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+
 class Install extends Command
 {
   protected function configure()
@@ -93,8 +96,22 @@ class Install extends Command
       return;
     }
     $output->writeln("<info>Selected hostname: $hostname</info>");
+    $output->writeln('');
 
-    // @TODO: Confirm running on Install script as ROOT
+    // Confirm running on Install script as ROOT
+    $script_url = "https://raw.githubusercontent.com/opendevshop/devshop/$version/install.sh";
+    $output->writeln("Installation Options");
+    $output->writeln("<info>Version:</info> $version");
+    $output->writeln("<info>Hostname:</info> $hostname");
+    $output->writeln("<info>Install Script URL:</info> $script_url");
 
+    $question = new ConfirmationQuestion("<comment>Run the install script as root?</comment> ", FALSE);
+
+    if (!$helper->ask($input, $output, $question)){
+      $output->writeln('<fg=red>Installation aborted.');
+      return;
+    }
+
+    // @TODO: Get and Run the install script.
   }
 }
