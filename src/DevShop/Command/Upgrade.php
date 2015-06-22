@@ -91,8 +91,14 @@ class Upgrade extends Command
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
     $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
-
     $target_version = $release['tag_name'];
+
+    // Confirm version
+    $question = new Question("Target Version: Must be a branch or tag. (Default: $target_version) ", $target_version);
+    $target_version = $helper->ask($input, $output, $question);
+
+    // @TODO: Verify version exists.
+
     $target_path = "/var/aegir/devmaster-{$target_version}";
 
     $output->writeln("<info>Current DevShop Path: </info> $devmaster_root");
@@ -102,5 +108,16 @@ class Upgrade extends Command
     $output->writeln("<info>Target DevShop Path: </info> " . $target_path);
 
     $output->writeln('');
+
+    //@TODO: Finalize the upgrade process.
+    // Aegir's process is split between 'upgrade.sh.txt' and a drush command "hostmaster-migrate"
+
+    // 0. Update composer.
+    // 1. Update drush  (postponed until we figure out how to leverage composer for this.)
+    // 2. Download updated drush components
+    // 3. Git checkout /usr/share/devshop to get the latest release.
+    // 4. Run `drush hostmaster-migrate $HOSTNAME $PLATFORM_PATH --makefile=$MAKEFILE_PATH.
+    // 5. Hope for the best.
+    // 6. Run "install.sh" as root (should be renamed) to run the ansible playbook on the server.
   }
 }
