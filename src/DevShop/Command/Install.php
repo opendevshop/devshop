@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
@@ -42,6 +43,7 @@ class Install extends Command
     $output->writeln($formattedBlock);
 
     $output->writeln('<info>Welcome to the Interactive DevShop Installer!</info>');
+    $output->writeln('');
 
     // Check for existing devshop install.
     // Look for aegir user
@@ -69,6 +71,25 @@ class Install extends Command
     $version = $helper->ask($input, $output, $question);
 
     $output->writeln('Selected version ' . $version);
+
+
+    // Check and confirm hostname
+    $output->writeln('');
+    $output->writeln('Checking hostname...');
+
+    // See if hostname resolves to this PC.
+    $hostname = gethostname();
+    $ip = gethostbyname($hostname);
+
+    $question = new ConfirmationQuestion("<comment>Hostname $hostname resolves to IP $ip.  This hostname will be how you access the devshop front end.  Continue installing for this hostname? (y/n) </comment> ", FALSE);
+
+    if (!$helper->ask($input, $output, $question)){
+      $output->writeln('<comment>Installation aborted.</comment>');
+      return;
+    }
+    $output->writeln('Selected hostname: ' . $hostname);
+
+    // @TODO: Confirm running on Install script as ROOT
 
   }
 }
