@@ -115,7 +115,7 @@ class Install extends Command
     try {
       $fs->copy($script_url, '/tmp/devshop-install.sh');
     } catch (IOExceptionInterface $e) {
-      $output->writeln("<error>An error occurred while creating your directory at ".$e->getPath() . '</error>');
+      $output->writeln("<error>An error occurred while retrieving the install script.</error>');
     }
 
     // If running as root, just run bash.
