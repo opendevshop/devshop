@@ -2,12 +2,19 @@
     "name": "devshop/cli",
     "description": "Command Line interface for DevShop",
     "require": {
-        "symfony/console": "^2.7"
+        "symfony/console": "^2.7",
+        "symfony/process": "^2.7"
     },
     "authors": [
         {
             "name": "Jon Pugh",
             "email": "jon@thinkdrop.net"
         }
+    ],
+    "autoload": {
+        "psr-0": { "devshop": "src/" }
+    },
+    "bin": [
+        "devshop"
     ]
 }
