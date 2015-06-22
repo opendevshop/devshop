@@ -35,7 +35,7 @@ class Status extends Command
     }
     else {
       $output->write("<info>Drush is installed.</info>");
-      $output->write($process->getOutput());
+      $output->writeln(trim($process->getOutput()));
     }
 
     // Check for provision
@@ -71,7 +71,7 @@ class Status extends Command
     if (file_exists('/var/aegir/.devshop-version')) {
       $version = file_get_contents('/var/aegir/.devshop-version');
       $output->write("<info>Devshop is installed.</info>  ");
-      $output->write("DevShop Version $version");
+      $output->write("DevShop Version: $version");
     }
   }
 }
