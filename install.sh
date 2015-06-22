@@ -171,6 +171,10 @@ fi
 
 ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "$ANSIBLE_EXTRA_VARS"
 
+# Run Composer install to enable devshop cli
+cd $PLAYBOOK_PATH
+composer install
+
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
 
@@ -205,5 +209,7 @@ else
   sudo su - aegir -c "drush @hostmaster uli"
 fi
 
+# Save current devshop version.
 echo $DEVSHOP_VERSION > /var/aegir/.devshop-version
+ln -s $PLAYBOOK_PATH/devshop /usr/local/bin/devshop
 
