@@ -24,6 +24,18 @@ class Status extends Command
   {
     $output->writeln('Hello, DevShop!');
 
+    // Check for devshop
+    $output->write("<comment>Checking for devshop...  </comment>");
+
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $version = file_get_contents('/var/aegir/.devshop-version');
+    }
+    else {
+      $version = "unknown";
+    }
+    $output->write("<info>Devshop is installed.</info>  ");
+    $output->writeln("DevShop Version: $version");
+
     // Check for Drush
     $output->write("<comment>Checking for Drush...  </comment>");
 
@@ -34,7 +46,7 @@ class Status extends Command
       $output->writeln($process->getErrorOutput());
     }
     else {
-      $output->write("<info>Drush is installed.</info>");
+      $output->write("<info>Drush is installed.  </info>");
       $output->writeln(trim($process->getOutput()));
     }
 
@@ -64,14 +76,6 @@ class Status extends Command
       $output->writeln("<info>Devmaster is installed.</info>");
     }
 
-    // Check for devshop
-
-    $output->write("<comment>Checking for devshop...  </comment>");
-
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $version = file_get_contents('/var/aegir/.devshop-version');
-      $output->write("<info>Devshop is installed.</info>  ");
-      $output->write("DevShop Version: $version");
-    }
+    $output->writeln('');
   }
 }
