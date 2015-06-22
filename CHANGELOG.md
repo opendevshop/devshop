@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.3.x (pending)
+
+- Fixing bugs in the install script for CentOS machines.
+- Removed Solr from the default installer.
+- Improved documentation for Install Script and overall architecture.
+- Added the "DevShop CLI" with:
+  - 'devshop status' command: Checks the currently installed versions.
+  - 'devshop login' command: Gives user a link to login to Devmaster.
+  - 'devshop upgrade' command: Walks the user through upgrading devshop to a newer version.
+
 ## 0.2.2 (May 20, 2015)
 
 - Hosting 2.4 security release. See http://community.aegirproject.org/2.4.
