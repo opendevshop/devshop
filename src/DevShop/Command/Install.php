@@ -58,6 +58,7 @@ class Install extends Command
         return;
       }
     }
+    $output->writeln('');
 
     // Lookup versions
     $output->writeln('Checking for latest releases...');
@@ -112,6 +113,30 @@ class Install extends Command
       return;
     }
 
-    // @TODO: Get and Run the install script.
+    // Get and Run the install script.
+    $fs = new Filesystem();
+
+    try {
+      $fs->copy($script_url, '/tmp/devshop-install.sh');
+    } catch (IOExceptionInterface $e) {
+      $output->writeln("<error>An error occurred while creating your directory at ".$e->getPath() . '</error>');
+    }
+
+    // If running as root, just run bash.
+    if (get_current_user() == 'root') {
+      $process = new Process("bash /tmp/devshop-install.sh");
+    }
+    // If not running as root, ask for password.
+    else {
+      $question = new Question('Password: ', NULL);
+      $question->setHidden(TRUE);
+      $password = $helper->ask($input, $output, $question);
+      $process = new Process("echo $password | sudo su - -c 'bash /tmp/devshop-install.sh'");
+    }
+
+    $process->setTimeout(NULL);
+    $process->run(function ($type, $buffer) {
+      echo $buffer;
+    });
   }
 }
