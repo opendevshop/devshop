@@ -123,3 +123,24 @@ The Deploy Hooks available out of the box are:
 Deploy hooks can be added via drush include files.
 
 Also supported are Acquia "Cloud Hooks". These are files contained in the repo that are used by Acquia Cloud hosting.
+
+Environments, Git, & Release Strategies
+---------------------------------------
+
+Each environment can be configured to track a branch or a tag.
+
+If set to "Immediate Deployment" and the git webhook is set up, environments that are set to track a branch will be updated whenever a `git push` to that branch occurs.
+
+If an environment is set to a tag, the environment will stay at that tag until changed.
+
+With this configuration, you can employ a number of different release strategies.
+
+1. Tagged Release for Production & Stage
+ 
+  The most controlled release process will involve using Tags for releasing to your Staging environment and your Production environment.
+  
+  You should create release tags such as `v1.0.0` and increment them as your code becomes ready.  
+  
+2. Branch Releases for Production
+  
+  If you set your prodution environment to a branch such as `live`, any push to that branch will be deployed automatically. If you use this setup you should have a good testing process in place.
