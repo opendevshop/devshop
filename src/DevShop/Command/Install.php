@@ -70,7 +70,7 @@ class Install extends Command
     $question = new ChoiceQuestion('<comment>What version of devshop would you like to install? (Default: Latest)</comment> ', $options, 0);
     $version = $helper->ask($input, $output, $question);
 
-    $output->writeln('Selected version ' . $version);
+    $output->writeln("<info>Selected version $version</info>");
 
 
     // Check and confirm hostname
@@ -81,13 +81,18 @@ class Install extends Command
     $hostname = gethostname();
     $ip = gethostbyname($hostname);
 
-    $question = new ConfirmationQuestion("<comment>Hostname $hostname resolves to IP $ip.  This hostname will be how you access the devshop front end.  Continue installing for this hostname? (y/n) </comment> ", FALSE);
+    $output->writeln("<comment>Current Hostname: $hostname</comment>");
+    $output->writeln("<comment>IP: $ip</comment>");
+    $output->writeln("The hostname is how you access the devshop front end through a web browser. The IP must resolve from the internet.");
+
+
+    $question = new ConfirmationQuestion("<comment>Continue installing devshop with this hostname? (y/n) </comment> ", FALSE);
 
     if (!$helper->ask($input, $output, $question)){
-      $output->writeln('<comment>Installation aborted.</comment>');
+      $output->writeln('<fg=red>Installation aborted.');
       return;
     }
-    $output->writeln('Selected hostname: ' . $hostname);
+    $output->writeln("<info>Selected hostname: $hostname</info>");
 
     // @TODO: Confirm running on Install script as ROOT
 
