@@ -12,7 +12,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "devshop": "src/" }
+        "psr-0": { "DevShop": "src/" }
     },
     "bin": [
         "devshop"
