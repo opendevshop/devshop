@@ -118,6 +118,13 @@ class Upgrade extends Command
 
     $output->writeln('');
 
+    // Check for site in target path
+    if (file_exists($target_path)) {
+      $output->writeln("<fg=red>WARNING:</> There is already a site located at <comment>$target_path</comment>. Please check your version and paths and try again.");
+      $output->writeln('');
+      return;
+    }
+
     //@TODO: Finalize the upgrade process.
     // Aegir's process is split between 'upgrade.sh.txt' and a drush command "hostmaster-migrate"
 
@@ -153,8 +160,6 @@ class Upgrade extends Command
     });
 
     // Check for valid hostmaster install
-
-
 
   }
 }
