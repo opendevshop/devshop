@@ -161,7 +161,11 @@ class Upgrade extends Command
 
     // @TODO: Check for valid hostmaster install
     // @TODO: Schedule removal of old platform in devmaster front-end.
-    // @TODO: Tell user to run "devshop install" as root?
+
+    $output->writeln("<info>DevMaster Upgrade Complete!</info>");
+    $output->writeln("You must now run <comment>devshop install</comment> as root or a user with sudo privileges to complete the installation.");
+
+
 
   }
 }
