@@ -89,6 +89,7 @@ class Upgrade extends Command
     $devmaster_root = $aliases['hostmaster']['root'];
     $devmaster_uri = $aliases['hostmaster']['uri'];
 
+
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
@@ -98,6 +99,7 @@ class Upgrade extends Command
     // Confirm version
     $question = new Question("Target Version: (Default: $target_version) ", $target_version);
     $target_version = $helper->ask($input, $output, $question);
+    $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
 
     // @TODO: Verify version exists.
 
@@ -105,13 +107,14 @@ class Upgrade extends Command
     $output->writeln('');
 
     $output->writeln('UPGRADE OPTIONS');
-    $output->writeln("<info>Current DevMaster Path: </info> $devmaster_root");
     $output->writeln("<info>Current Version: </info> " . $current_version);
+    $output->writeln("<info>Current DevMaster Path: </info> $devmaster_root");
     $output->writeln("<info>Current DevMaster Site: </info> " . $devmaster_uri);
     $output->writeln('');
 
+    $output->writeln("<info>Target Version: </info> " . $target_version);
     $output->writeln("<info>Target DevMaster Path: </info> " . $target_path);
-    $output->writeln("<info>Latest Release: </info> " . $target_version);
+    $output->writeln("<info>Target DevMaster Makefile: </info> " . $devmaster_makefile);
 
     $output->writeln('');
 
@@ -130,7 +133,7 @@ class Upgrade extends Command
 
     // Upgrade DevMaster
     $output->writeln('STEP 1: Upgrade DevMaster');
-    $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make --root=$devmaster_root -y";
+    $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
     // If they say no, exit.
@@ -148,6 +151,9 @@ class Upgrade extends Command
     $process->run(function ($type, $buffer) {
       echo $buffer;
     });
+
+    // Check for valid hostmaster install
+
 
 
   }
