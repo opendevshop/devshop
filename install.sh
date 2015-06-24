@@ -211,5 +211,4 @@ fi
 
 # Save current devshop version.
 echo $DEVSHOP_VERSION > /var/aegir/.devshop-version
-ln -s $PLAYBOOK_PATH/devshop /usr/local/bin/devshop
 

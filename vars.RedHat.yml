@@ -15,5 +15,3 @@ supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 motd_path: /etc/motd
 
 bashrc_path: /etc/bashrc
-
-drush_path: /usr/local/bin/drush
