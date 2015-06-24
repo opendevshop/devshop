@@ -65,17 +65,30 @@ function drush_devshop_github_pre_hosting_task() {
  */
 function devshop_github_hosting_task_update_status($task, $status) {
 
-  // When verified, update deployment.
-  // On the first deployment of a pull request environment, we need to hook into verify. Subsequent pushes need to hook into devshop-deploy.
-  $site = node_load($task->rid);
-  if (($task->task_type == 'verify' || $task->task_type == 'devshop-deploy') && $site->type == 'site' && isset($site->environment->github_pull_request->pull_request_object->deployment)) {
+  drush_log('[DEVSHOP GITHUB] Responding to hook update status...');
+
+  // On initial pull request, the "clone" task is what runs.
+  if ($task->task_type == 'clone') {
+    $platform = node_load($task->task_args['target_platform']);
+    $environment = $platform->environment;
+    $project = $platform->project;
+  }
+  // Subsequent tasks are "deploy" and "verify"
+  elseif ($task->task_type == 'verify' || $task->task_type == 'devshop-deploy') {
+    $environment = $task->ref->environment;
+    $project = $task->ref->project;
+  }
+  else {
+    return;
+  }
+
+  // If a pull request object is available...
+  if (isset($environment->github_pull_request->pull_request_object->deployment)) {
 
     // Create a deployment status
-    $project = $site->project;
     $owner = $project->github_owner;
     $repo = $project->github_repo;
-    $site = node_load($task->rid);
-    $deployment_id = $site->environment->github_pull_request->pull_request_object->deployment->id;
+    $deployment_id = $environment->github_pull_request->pull_request_object->deployment->id;
 
     try {
       $token = variable_get('devshop_github_token', '');
@@ -103,7 +116,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
       // Update Status API
 
       // Create a status
-      $sha = $site->environment->github_pull_request->pull_request_object->head->sha;
+      $sha = $environment->github_pull_request->pull_request_object->head->sha;
 
       $params = new stdClass();
       $params->state = $state;
