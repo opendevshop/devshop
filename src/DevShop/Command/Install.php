@@ -121,6 +121,10 @@ class Install extends Command
         return;
       }
     }
+    else {
+      $output->writeln("Running <comment>$script_url</comment> as root.");
+
+    }
 
     // Get and Run the install script.
     $fs = new Filesystem();
