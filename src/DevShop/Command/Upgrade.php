@@ -72,6 +72,7 @@ class Upgrade extends Command
       $current_version = 'unknown';
       $output->writeln("<fg=red>WARNING:</> Unable to detect current version of devshop.");
       $output->writeln("There is no <comment>/var/aegir/.devshop-version</comment> file.");
+      $output->writeln("This is probably because you are running a version prior to 0.3.");
       $output->writeln('');
     }
 
