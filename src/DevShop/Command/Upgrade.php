@@ -159,7 +159,9 @@ class Upgrade extends Command
       echo $buffer;
     });
 
-    // Check for valid hostmaster install
+    // @TODO: Check for valid hostmaster install
+    // @TODO: Schedule removal of old platform in devmaster front-end.
+    // @TODO: Tell user to run "devshop install" as root?
 
   }
 }
