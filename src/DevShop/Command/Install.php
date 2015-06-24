@@ -63,28 +63,24 @@ class Install extends Command
     }
     $output->writeln('');
 
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $current_version = file_get_contents('/var/aegir/.devshop-version');
-      if (!empty($current_version)) {
-        $output->writeln("<error>WARNING:</error> /var/aegir/.devshop-version was found. Version $current_version appears to already be installed.  You should run <info>devshop upgrade</info> command if you wish to upgrade it.");
-        $output->writeln('<fg=red>Installation aborted.');
-        $output->writeln('');
-        return;
-      }
-    }
+//    if (file_exists('/var/aegir/.devshop-version')) {
+//      $current_version = file_get_contents('/var/aegir/.devshop-version');
+//      if (!empty($current_version)) {
+//        $output->writeln("<error>WARNING:</error> /var/aegir/.devshop-version was found. Version $current_version appears to already be installed.  You should run <info>devshop upgrade</info> command if you wish to upgrade it.");
+//        $output->writeln('<fg=red>Installation aborted.');
+//        $output->writeln('');
+//        return;
+//      }
+//    }
 
-    // Lookup versions
+    // Lookup latest version.
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
-    $releases = $client->api('repo')->releases()->all('opendevshop', 'devshop');
+    $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
+    $version = $release['tag_name'];
 
-    $options = array();
-    foreach ($releases as $release) {
-      $options[] =  $release['tag_name'];
-    }
-
-    // Ask what version
-    $question = new ChoiceQuestion('<comment>What version of devshop would you like to install? (Default: Latest)</comment> ', $options, 0);
+    // Confirm version
+    $question = new Question("Target Version: (Default: $version) ", $version);
     $version = $helper->ask($input, $output, $question);
 
     $output->writeln("<info>Selected version $version</info>");
