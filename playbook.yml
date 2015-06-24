@@ -288,6 +288,11 @@
         - { path: '.ssh/id_rsa', mode: '600' }
         - { path: '.ssh/id_rsa.pub', mode: '644' }
 
+    - name: DevShop | Save devshop version to a file.
+      copy:
+        content="{{ devshop_version }}"
+        dest=/var/aegir/.devshop-version
+
   handlers:
     - name: restart supervisor
       service:

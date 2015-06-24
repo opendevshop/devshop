@@ -209,6 +209,3 @@ else
   sudo su - aegir -c "drush @hostmaster uli"
 fi
 
-# Save current devshop version.
-echo $DEVSHOP_VERSION > /var/aegir/.devshop-version
-
