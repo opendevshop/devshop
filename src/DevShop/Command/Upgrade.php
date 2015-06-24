@@ -87,6 +87,7 @@ class Upgrade extends Command
     }
 
     $devmaster_root = $aliases['hostmaster']['root'];
+    $devmaster_uri = $aliases['hostmaster']['uri'];
 
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
@@ -95,18 +96,22 @@ class Upgrade extends Command
     $target_version = $release['tag_name'];
 
     // Confirm version
-    $question = new Question("Target Version: Must be a branch or tag. (Default: $target_version) ", $target_version);
+    $question = new Question("Target Version: (Default: $target_version) ", $target_version);
     $target_version = $helper->ask($input, $output, $question);
 
     // @TODO: Verify version exists.
 
     $target_path = "/var/aegir/devmaster-{$target_version}";
+    $output->writeln('');
 
-    $output->writeln("<info>Current DevShop Path: </info> $devmaster_root");
+    $output->writeln('UPGRADE OPTIONS');
+    $output->writeln("<info>Current DevMaster Path: </info> $devmaster_root");
     $output->writeln("<info>Current Version: </info> " . $current_version);
+    $output->writeln("<info>Current DevMaster Site: </info> " . $devmaster_uri);
+    $output->writeln('');
 
+    $output->writeln("<info>Target DevMaster Path: </info> " . $target_path);
     $output->writeln("<info>Latest Release: </info> " . $target_version);
-    $output->writeln("<info>Target DevShop Path: </info> " . $target_path);
 
     $output->writeln('');
 
@@ -120,5 +125,30 @@ class Upgrade extends Command
     // 4. Run `drush hostmaster-migrate $HOSTNAME $PLATFORM_PATH --makefile=$MAKEFILE_PATH.
     // 5. Hope for the best.
     // 6. Run "install.sh" as root (should be renamed) to run the ansible playbook on the server.
+
+    // 3. Git checkout /usr/share/devshop to get the latest release.
+
+    // Upgrade DevMaster
+    $output->writeln('STEP 1: Upgrade DevMaster');
+    $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make --root=$devmaster_root -y";
+    $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
+
+    // If they say no, exit.
+    if (!$helper->ask($input, $output, $question)) {
+      $output->writeln("<fg=red>Aborting upgrade</>");
+      $output->writeln('');
+      return;
+    }
+
+    // If they say yes, run the command.
+    $output->writeln('');
+
+    $process = new Process($cmd);
+    $process->setTimeout(NULL);
+    $process->run(function ($type, $buffer) {
+      echo $buffer;
+    });
+
+
   }
 }
