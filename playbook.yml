@@ -241,13 +241,6 @@
       args:
         creates: /var/aegir/devmaster-{{ devmaster_version }}/sites/{{ server_hostname }}/settings.php
 
-    - name: Service | Ensure Supervisor is started and enabled
-      service:
-        name={{ supervisor_daemon }}
-        state=started
-        sleep=3
-        enabled=yes
-
     - name: Supervisor | Set up queue runner script
       template:
         src=templates/hosting-queue-runner.j2
@@ -263,6 +256,18 @@
         mode=0644
       notify:
         - restart supervisor
+
+    - name: Service | Ensure Supervisor is restarted
+      service:
+        name={{ supervisor_daemon }}
+        state=restarted
+        sleep=5
+        enabled=yes
+
+    - name: Service | Ensure Apache is restarted
+      service:
+        name={{ apache_daemon }}
+        state=restarted
 
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
