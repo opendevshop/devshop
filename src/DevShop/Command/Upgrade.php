@@ -163,7 +163,9 @@ class Upgrade extends Command
     // @TODO: Schedule removal of old platform in devmaster front-end.
 
     $output->writeln("<info>DevMaster Upgrade Complete!</info>");
-    $output->writeln("You must now run <comment>devshop install</comment> as root or a user with sudo privileges to complete the installation.");
+    $output->writeln("You must now run the following command as root or a user with sudo privileges to complete the installation:");
+    $output->writeln("<comment>devshop install --version=$target_version -n</comment>");
+
 
 
 

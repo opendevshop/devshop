@@ -24,6 +24,18 @@ class Install extends Command
     $this
       ->setName('install')
       ->setDescription('Install devshop')
+      ->addOption(
+        'devshop-version',
+        NULL,
+        InputOption::VALUE_OPTIONAL,
+        'The git tag or branch to install.'
+      )
+      ->addOption(
+        'yes',
+        'y',
+        NULL,
+        'Answer "yes" to all questions.'
+      )
     ;
   }
 
@@ -51,7 +63,7 @@ class Install extends Command
     // Check for existing devshop install.
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
-    if (strpos($users, 'aegir') !== FALSE) {
+    if ($input->getOption('yes') != 1 && strpos($users, 'aegir') !== FALSE) {
       $output->writeln('<error>WARNING:</error> aegir user already exists.');
       $question = new ConfirmationQuestion('Do you want to continue with the installation? ', false);
       if (!$helper->ask($input, $output, $question)) {
@@ -74,14 +86,17 @@ class Install extends Command
 //    }
 
     // Lookup latest version.
-    $output->writeln('Checking for latest releases...');
-    $client = new \Github\Client();
-    $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
-    $version = $release['tag_name'];
+    $version = $input->getOption('devshop-version');
+    if (empty($version)) {
+      $output->writeln('Checking for latest releases...');
+      $client = new \Github\Client();
+      $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
+      $version = $release['tag_name'];
 
-    // Confirm version
-    $question = new Question("Target Version: (Default: $version) ", $version);
-    $version = $helper->ask($input, $output, $question);
+      // Confirm version
+      $question = new Question("Target Version: (Default: $version) ", $version);
+      $version = $helper->ask($input, $output, $question);
+    }
 
     $output->writeln("<info>Selected version $version</info>");
     $output->writeln('');
@@ -97,12 +112,14 @@ class Install extends Command
     $output->writeln("<info>Install Script URL:</info> $script_url");
     $output->writeln("The hostname is how you access the devshop front end through a web browser. The IP must resolve from the internet. If you wish to change the hostname or need to update DNS, cancel the installer by entering 'n'.");
 
-    $question = new ConfirmationQuestion("<comment>Run the install script as root?</comment> ", FALSE);
+    if ($input->getOption('yes') != 1) {
+      $question = new ConfirmationQuestion("<comment>Run the install script as root?</comment> ", FALSE);
 
-    if (!$helper->ask($input, $output, $question)){
-      $output->writeln('<fg=red>Installation aborted.');
-      $output->writeln('');
-      return;
+      if (!$helper->ask($input, $output, $question)){
+        $output->writeln('<fg=red>Installation aborted.');
+        $output->writeln('');
+        return;
+      }
     }
 
     // Get and Run the install script.
