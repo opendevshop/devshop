@@ -24,7 +24,7 @@
 a {
   color: #337ab7;
 }
-a:hover,
+.nav.navbar a:hover,
 .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
   color: #FFF;
   text-decoration: underline;
@@ -32,4 +32,9 @@ a:hover,
 .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
   color: #31b0d5;
   background-color: transparent;
+}
+
+.nav a:hover {
+  color: #31b0d5;
+
 }
