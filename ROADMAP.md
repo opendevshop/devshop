@@ -1,12 +1,6 @@
 DevShop RoadMap
 ===============
 
-# 0.1.0
-## First Release
-### February 7, 2015
-
-https://github.com/opendevshop/devshop/releases/tag/0.1.0
-
 ## 0.1.x 
 
 - First semantic versioning release.
@@ -40,8 +34,8 @@ https://github.com/opendevshop/devshop/releases/tag/0.1.0
 
 See `devshop-cloud` branch of [opendevshop/devmaster](https://github.com/opendevshop/devmaster/tree/devshop-cloud/modules/devshop/devshop_cloud) repo.
 
-# 1.0.0
-## Sometime near Drupal 8 release
+## 1.0.0
+### Sometime near Drupal 8 release
 
 We will release 1.0.0 when we have completed the move to Aegir 3 and can successfully host Drupal 8 sites.
 
@@ -50,8 +44,8 @@ Drush 7
 Hosts Drupal 8 sites
 
 
-# 2.x.y
-## Symfony
+## 2.x.y
+### Symfony
 
 Ideally, Aegir 4 will be Symfony components with a Drupal 8 front-end.
 
