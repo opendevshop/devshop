@@ -91,9 +91,22 @@ Vagrant
 
 There is now a vagrantfile for DevShop that makes for an easy way to test it out and to contribute to the development of DevShop.
 
-It is included in this package. To use, clone this repo and vagrant up:
+It is included in this package. To use, clone this repo and vagrant up.
 
-See README.vagrant.md for more information.
+### Vagrant Development Mode
+
+By default, vagrant development mode is on.  This is set in `vars.yml`:
+
+```
+# Set development to FALSE if you wish to test a "clean" devshop install.
+vagrant_development: true
+```
+
+If vagrant development is set to TRUE, then the script `vagrant-prepare-host.sh` is run on the first call to `vagrant up`.
+
+This script requires drush and git to be installed on the host, so that we can build devmaster and clone the repos locally.
+
+The source files are cloned into the `/source` folder in this repo, which is mounted inside the vagrant box.  Once up and running, you can edit any files in the `/source` folder and it will be immediately visible in the VM.
 
 Testing
 -------
