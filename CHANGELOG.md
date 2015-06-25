@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.3.x (pending)
+## 0.3.0 (June 25, 2015)
 
 - Fixing bugs in the install script for CentOS machines.
 - Removed Solr from the default installer.
@@ -9,6 +9,11 @@
   - 'devshop status' command: Checks the currently installed versions.
   - 'devshop login' command: Gives user a link to login to Devmaster.
   - 'devshop upgrade' command: Walks the user through upgrading devshop to a newer version.
+- Added an example module called "DevShop Extra Users" that will create extra drupal users post site installation.
+- Fixed default db and web servers used for new environments.
+- Added "Verify" to the available tasks in the Projects interface.
+- Fixing GitHub commit status integration. It wasn't running on initial Pull Request.
+- Adding DevShop tests to commit status integration. Each commit now reports back on the results of test runs and of the deployment itself.
 
 ## 0.2.2 (May 20, 2015)
 
