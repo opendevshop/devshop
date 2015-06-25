@@ -12,10 +12,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
 
   # Base Box & Config
-  config.vm.box = "hashicorp/precise64"
+  config.vm.box = "ubuntu/trusty64"
 
   # Uncomment to test with other types of boxes.
-  # config.vm.box = "ubuntu/trusty64"
+  # config.vm.box = "hashicorp/precise64"
   # config.vm.box = "chef/centos-6.5"
   # config.vm.box = "chef/centos-7.0"
 
