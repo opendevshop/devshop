@@ -74,7 +74,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     $project = $platform->project;
   }
   // Subsequent tasks are "deploy" and "verify"
-  elseif ($task->task_type == 'verify' || $task->task_type == 'devshop-deploy') {
+  elseif ($task->task_type == 'verify' || $task->task_type == 'devshop-deploy' || $task->task_type == 'test') {
     $environment = $task->ref->environment;
     $project = $task->ref->project;
   }
@@ -103,6 +103,29 @@ function devshop_github_hosting_task_update_status($task, $status) {
         $params->state = $state = 'failure';
       }
 
+      // If task is a test run, only submit a commit status for devshop/tests context.
+      if ($task->task_type == 'test') {
+        $sha = $environment->github_pull_request->pull_request_object->head->sha;
+
+        $params = new stdClass();
+        $params->state = $state;
+        $params->target_url = url("node/{$task->nid}", array('absolute' => TRUE));;
+
+        if ($status == HOSTING_TASK_WARNING) {
+          $params->description = t('DevShop: Tests passed with warnings');
+        }
+        else {
+          $params->description = t('DevShop: Tests !status!', array('!status' => $state));
+        }
+        $params->context = 'devshop/tests';
+
+        $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+        drush_log('Commit status created for devshop/tests!', 'success'); 
+      } 
+      // Otherwise we create a deployment and a commit status.
+      else {
+
+      
       $params->target_url = $task->ref->environment->url;
       $params->description = t('Pull Request environment is ready!');
       $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";
@@ -133,7 +156,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
       $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
       drush_log('Commit status created!', 'success');
 
-
+      }
     } catch (Github\Exception\RuntimeException $e) {
       drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
     }
