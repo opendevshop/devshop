@@ -1,5 +1,5 @@
-DevShop
-=======
+Open DevShop
+============
 
 <img src="https://www.drupal.org/files/devshop.png" width="100%">
 
