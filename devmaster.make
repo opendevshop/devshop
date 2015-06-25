@@ -2,6 +2,7 @@ core = 6.x
 api = 2
 
 projects[drupal][type] = "core"
+projects[drupal][version] = "6.36"
 
 ; this makefile will make sure we get the development code from the
 ; aegir modules instead of the tagged releases
@@ -9,6 +10,7 @@ includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
 ; For development, use latest branch.
+; NOTE: We are using 2.x of hosting until the next release.
 projects[hosting][version] = "2.x"
 
 ; For release, use tagged version
