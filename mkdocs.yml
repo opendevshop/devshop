@@ -4,13 +4,13 @@ theme: 'flatly'
 pages:
 - 'About':
   - 'About DevShop': 'index.md'
-  - 'Roadmap': 'ROADMAP.md'
+  - 'Roadmap': 'roadmap.md'
 - 'Installation':
-  - 'Installing DevShop': 'INSTALL.md'
+  - 'Installing DevShop': 'install.md'
   - 'Changing Hostname': 'changing-hostname.md'
 - 'Architecture':
-  - 'Architecture Overview': 'ARCHITECTURE.md'
-  - 'Setup Examples': 'EXAMPLES.md'
+  - 'Architecture Overview': 'architecture.md'
+  - 'Setup Examples': 'examples.md'
 - 'Development':
-  - 'Developing DevShop': 'DEVELOPMENT.md'
+  - 'Developing DevShop': 'development.md'
   - 'Release Process': 'release-process.md'
