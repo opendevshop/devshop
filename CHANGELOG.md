@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.x (Pending)
+
+- Docs overhaul: reorganization and styling.
+
 ## 0.3.0 (June 25, 2015)
 
 - Fixing bugs in the install script for CentOS machines.
