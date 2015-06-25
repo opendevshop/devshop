@@ -15,3 +15,4 @@ Follow this guide.
 5. Using the commit log as your guide, add a list of new features to the CHANGELOG.org in the devshop repo.  Use the "x commits since this release" feature on github's releases page.  Include changes in both devshop and devmaster repos in the changelog.
 5. Create and push a new tag for `devmaster` and for `devshop`: `x.y.z`
 6. Create a new "release" on github to match the new tag at https://github.com/opendevshop/devshop/releases/new.  Copy the release notes from CHANGELOG.md into the release.
+7. Announce!
