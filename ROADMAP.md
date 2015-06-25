@@ -8,20 +8,30 @@ DevShop RoadMap
 https://github.com/opendevshop/devshop/releases/tag/0.1.0
 
 ## 0.1.x 
-*Current*
 
-- Behat Testing  **Done.**
-  Needs minor UX improvements, extensibility for other tests.
-- Logs Interface Fixes
-- Commit Features task
-- Download Modules task
+- First semantic versioning release.
+- Completely new user interface. 
+- Behat Testing.
+- Install Script
+- Vagrantfile.
+- Travis CI
+- ReadTheDocs.org setup.
 
 ## 0.2.x
-### DevShop Production
 
-- Integration of production services: Varnish, Memcache, APC
+- Aegir cleanups.
+- UI enhancements.
+- Improved Behat Testing and Logging
 
 ## 0.3.x
+*Current*
+
+- DevShop CLI.
+- Improved GitHub integration.
+- Improved testing interfaces.
+- Addition of multiple test engines.
+
+## 0.4.x
 ### DevShop Cloud
 
 *In Progress:* Branch `devshop-cloud` 
