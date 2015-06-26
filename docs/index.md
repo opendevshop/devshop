@@ -120,6 +120,13 @@ The install script has been tested on:
   - ubuntu 12.04
   - centos 7.0
 
+License
+-------
+
+DevShop is licensed under [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt).
+
+This means any forks of this code must be released as open source and also be licensed under the GPL.
+
 Help Improve Documentation
 --------------------------
 
