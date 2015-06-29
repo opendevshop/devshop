@@ -1,4 +1,5 @@
 
+server_webserver: apache
 server_hostname: devshop.local
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
@@ -31,4 +32,5 @@ devshop_cli_path: /usr/local/bin/devshop
 vagrant_development: true
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
+vagrant_install_script_args: [--playbook=vagrant/, --server-webserver=nginx]
 

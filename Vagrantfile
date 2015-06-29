@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
 
   # Base Box & Config
-  config.vm.box = "hashicorp/precise64"
+  config.vm.box = "ubuntu/trusty64"
 
   # Uncomment to test with other types of boxes.
   # config.vm.box = "ubuntu/trusty64"
@@ -29,7 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Set SH as our provisioner
   config.vm.provision "shell",
     path: settings["vagrant_install_script"],
-    args: "/vagrant"
+    args: settings["vagrant_install_script_args"]
 
   # Prepare development environment
   if (settings["vagrant_development"])

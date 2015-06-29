@@ -27,10 +27,10 @@ echo "============================================="
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=0.3.0
+DEVSHOP_VERSION=apache-nginx-0.3.0
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
-DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
+DEVSHOP_GIT_REPO='http://github.com/DropForge-Labs/devshop.git'
 DEVSHOP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [ -f '/etc/os-release' ]; then
@@ -58,8 +58,25 @@ echo " Hostname: $HOSTNAME_FQDN"
 echo $LINE
 
 # Detect playbook path option
-if [ $1 ]; then
-    PLAYBOOK_PATH=$1
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --playbook=*)
+      PLAYBOOK_PATH="${1#*=}"
+      ;;
+    --server-webserver=*)
+      SERVER_WEBSERVER="${1#*=}"
+      echo "Installing webserver $SERVER_WEBSERVER";
+      ;;
+    *)
+      printf "***************************\n"
+      printf "* Error: Invalid argument.*\n"
+      printf "***************************\n"
+      exit 1
+  esac
+  shift
+done
+if [ $PLAYBOOK_PATH ]; then
+    :
 # Detect playbook next to the install script
 elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
@@ -87,6 +104,11 @@ if [ ! `which ansible` ]; then
             PACKAGE=python-software-properties
         else
             PACKAGE=software-properties-common
+        fi
+
+        if [ "$SERVER_WEBSERVER" == "nginx" ]; then
+            echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
         fi
 
         apt-get install git -y
@@ -163,7 +185,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER"
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
