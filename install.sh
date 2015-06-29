@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
       ;;
     --server-webserver=*)
       SERVER_WEBSERVER="${1#*=}"
-      echo "Installing webserver $SERVER_WEBSERVER";
+      echo " Installing webserver $SERVER_WEBSERVER";
       ;;
     *)
       printf "***************************\n"
