@@ -339,7 +339,8 @@ function devshop_projects_post_hosting_import_task($task, $data) {
       // Save aliases if needed.
       if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
         $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
-        $site->aliases = array($domain);
+
+        $site->aliases[] = $domain;
         drush_log('[DEVSHOP] Saving domain to the environment:' . $domain);
         node_save($site);
       }
