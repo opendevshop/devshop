@@ -84,6 +84,10 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
+if [ -z "$SERVER_WEBSERVER" ]; then
+    SERVER_WEBSERVER=apache
+fi
+
 echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
