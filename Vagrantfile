@@ -3,7 +3,6 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5"
-PATH_TO_ATTRIBUTES = File.dirname(__FILE__) + "/attributes.json"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
