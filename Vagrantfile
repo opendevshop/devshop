@@ -28,7 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Set SH as our provisioner
   config.vm.provision "shell",
     path: settings["vagrant_install_script"],
-    args: "/vagrant"
+    args: settings["vagrant_install_script_args"]
 
   # Prepare development environment
   if (settings["vagrant_development"])
