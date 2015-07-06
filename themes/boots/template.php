@@ -353,7 +353,10 @@ function boots_preprocess_node_project(&$vars){
 
   $url =  $node->project->webhook_url;
   $project_name = $node->title;
-  $vars['webhook_url'] = <<<HTML
+
+  // Only show the webhook url to those who can create projects.
+  if (user_access('create project')) {
+    $vars['webhook_url'] = <<<HTML
 
             <a href="#" data-toggle="modal" class="btn btn-xs $class"
 data-target="#webhook-modal" title="Webhook URL">
@@ -391,7 +394,10 @@ data-target="#webhook-modal" title="Webhook URL">
               </div>
             </div>
 HTML;
-
+  }
+  else {
+    $vars['webhook_url'] = '';
+  }
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 
   // Available deploy data targets.
