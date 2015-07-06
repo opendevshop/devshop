@@ -456,7 +456,7 @@ HTML;
     // Get login link
     // @TODO: This is how aegir does it.  See _hosting_site_goto_link()
     // @TODO: Detect and display "Generating login" message.
-    if ($environment->site_status == HOSTING_SITE_ENABLED) {
+    if ($environment->site_status == HOSTING_SITE_ENABLED && user_access('create login-reset task')) {
       $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
       if ($cache && (time() < $cache->data['expire'])) {
         $environment->login_url = url("node/" . $environment->site . "/goto_site");
