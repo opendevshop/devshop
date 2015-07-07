@@ -10,6 +10,8 @@
 - Blocking access to "webhook" and "login link" to those who lack permission.
 - Fixing Views Bulk Operations version to 1.x since all 6.x releases were removed.
 - Put modalframe in contrib folder.
+- Officially added GPLv2 license.
+- Changing vagrant box to default to ubuntu/trusty
 
 ## 0.3.0 (June 25, 2015)
 
