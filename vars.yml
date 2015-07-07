@@ -1,4 +1,8 @@
 
+# Set to 0.x for development. Set to tag for release.
+devshop_version:              0.3.1
+devmaster_version:            0.3.1
+
 server_hostname: devshop.local
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
@@ -6,8 +10,6 @@ php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
 
-devmaster_version:            0.x
-devshop_version:              0.x
 devshop_working_copy: --working-copy
 
 devshop_provision_version:  6.x-2.x
