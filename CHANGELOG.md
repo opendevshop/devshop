@@ -2,6 +2,7 @@
 
 ## 0.3.x (Pending)
 
+- Fixing Views Bulk Operations version to 1.x since all 6.x releases were removed.
 - Docs overhaul: reorganization and styling.
 
 ## 0.3.0 (June 25, 2015)
