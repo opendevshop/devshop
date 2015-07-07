@@ -2,8 +2,14 @@
 
 ## 0.3.x (Pending)
 
-- Fixing Views Bulk Operations version to 1.x since all 6.x releases were removed.
+## 0.3.1 (July 7, 2015)
+
 - Docs overhaul: reorganization and styling.
+- Passing permalink for test results to GitHub.
+- Fixing accidental deletion of extra domain aliases.
+- Blocking access to "webhook" and "login link" to those who lack permission.
+- Fixing Views Bulk Operations version to 1.x since all 6.x releases were removed.
+- Put modalframe in contrib folder.
 
 ## 0.3.0 (June 25, 2015)
 
