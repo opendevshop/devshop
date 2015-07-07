@@ -40,7 +40,7 @@ projects[jquery_update][subdir] = contrib
 projects[views][version] = "3.2"
 projects[views][subdir] = contrib
 
-projects[views_bulk_operations][version] = "1.16"
+projects[views_bulk_operations][version] = "1.x"
 projects[views_bulk_operations][subdir] = contrib
 
 projects[ctools][version] = "1.12"
