@@ -18,6 +18,7 @@ projects[hosting][version] = "2.x"
 
 ; Contrib Modules
 projects[modalframe][version] = "1.9"
+projects[modalframe][subdir] = contrib
 
 projects[admin_menu][version] = "1.9"
 projects[admin_menu][subdir] = contrib
