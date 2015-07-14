@@ -491,6 +491,23 @@ Small Device Styles
   margin: 15px;
 }
 
+.built-on-aegir {
+  text-align: center;
+}
+
+.built-on-aegir a{
+  display: block;
+  padding: 10px 10px 10px 10px;
+  color: #0a3259;
+  background: #fff no-repeat 95% 50%;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0,0,0,.5);
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  margin: 0px auto;
+  width: 200px;
+}
+
 .img-right {
   clear: left;
   float: right;
