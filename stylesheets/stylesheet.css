@@ -317,6 +317,25 @@ Full-Width Styles
   margin-left: 10px;
 }
 
+#tests_banner {
+
+  display: block;
+  position: absolute;
+  top: 130px;
+  right: 0;
+  z-index: 10;
+  padding: 10px 10px 10px 10px;
+}
+
+#tests_banner img {
+  border: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  -o-box-shadow: none;
+  -ms-box-shadow: none;
+}
+
 #header_wrap {
   background: #212121;
   background: -moz-linear-gradient(top, #373737, #212121);
