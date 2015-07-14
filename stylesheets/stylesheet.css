@@ -266,7 +266,7 @@ Full-Width Styles
 
 .inner {
   position: relative;
-  max-width: 640px;
+  max-width: 1080px;
   padding: 20px 10px;
   margin: 0 auto;
 }
@@ -334,6 +334,11 @@ Full-Width Styles
   -moz-box-shadow: none;
   -o-box-shadow: none;
   -ms-box-shadow: none;
+}
+
+
+#version i.fa {
+  margin-right: 10px;
 }
 
 #header_wrap {
@@ -426,7 +431,7 @@ Small Device Styles
 
 @media screen and (max-width: 480px) {
   body {
-    font-size:14px;
+    font-size: 14px;
   }
 
   #downloads {
@@ -439,7 +444,7 @@ Small Device Styles
   }
 
   #project_title {
-  font-size: 32px;
+    font-size: 32px;
   }
 
   h1 {
@@ -451,7 +456,7 @@ Small Device Styles
   }
 
   h3 {
-    font-size: 21px;
+    font-size: 23px;
   }
 
   h4 {
@@ -471,5 +476,43 @@ Small Device Styles
     max-width: 480px;
     font-size: 11px;
   }
+}
 
+@media screen and (max-width: 640px) {
+  #main_content img {
+
+    float: none;
+    width: 90%;
+    padding: 10px;
+  }
+}
+
+#main_content img {
+  margin: 15px;
+}
+
+.img-right {
+  clear: left;
+  float: right;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+.img-left {
+  clear: right;
+  float: left;
+  padding-right: 10px;
+  bottom: 10px;
+}
+.clear {
+  clear: both;
+}
+.clear-right {
+  clear: right;
+}
+.clear-left {
+  clear: left;
+}
+
+h3 {
+  font-weight: normal;
 }
