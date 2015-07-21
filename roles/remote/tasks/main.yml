@@ -44,3 +44,18 @@
     name: "{{ apache_daemon }}"
     state: started
     enabled: yes
+
+- name: Link apache to aegir config.
+  file:
+    src: "/var/aegir/config/apache.conf"
+    dest: "{{ apache_conf_path }}/aegir.conf"
+    state: link
+    force: true
+
+- name: Save SSH key to authorized keys
+  copy:
+    content: "{{ aegir_ssh_key }}"
+    dest: "/var/aegir/.ssh/authorized_keys"
+    owner: aegir
+    group: aegir
+    mode: 0600
