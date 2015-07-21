@@ -113,7 +113,7 @@ class RemoteInstall extends Command
                     "Remote server <info>$hostname</info> found at <info>$ip</info>"
                 );
                 $confirmationQuestion = new ConfirmationQuestion(
-                    "Is this the correct IP? [y/N] ", false
+                    "Is this the correct IP? [y/N] "
                 );
 
                 if (!$helper->ask($input, $output, $confirmationQuestion)) {
@@ -163,12 +163,46 @@ class RemoteInstall extends Command
         }
 
         // Check for 'ansible' command.
-        $process = new Process('ansible-playbook');
+        $process = new Process('which ansible-playbook');
         $process->run();
         if ($process->getOutput()) {
             $output->writeln(
                 "<info>SUCCESS</info> Command 'ansible-playbook' found."
             );
+        }
+        else {
+            throw new \Exception("Command 'ansible-playbook' not found.  Please install ansible and try again. If you are running on a devshop server, ansible would already be installed.");
+        }
+
+        // Generate an inventory and run the ansible playbook.
+        $fs = new Filesystem();
+
+        try {
+            $fs->dumpFile('inventory-remote', $hostname);
+        } catch (IOExceptionInterface $e) {
+            throw new \Exception("Unable to write inventory-remote file.");
+        }
+        $extra_vars = json_encode(array(
+            'aegir_ssh_key' => file_get_contents($key_file),
+        ));
+
+        $command = "ansible-playbook -i inventory-remote playbook-remote.yml --extra-vars '$extra_vars'";
+
+
+        $confirmationQuestion = new ConfirmationQuestion(
+            "Run the command <comment>$command</comment> ? [y/N] ", false
+        );
+
+        if ($helper->ask($input, $output, $confirmationQuestion)) {
+            $process = new Process($command);
+            $process->setTimeout(null);
+            $process->run(
+                function ($type, $buffer) {
+                    echo $buffer;
+                }
+            );
+        } else {
+            return;
         }
     }
 }
