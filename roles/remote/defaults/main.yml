@@ -2,5 +2,6 @@
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
 php_timezone: America/New_York
+aegir_ssh_key: DEFINEDatRUNTIME
 
 
