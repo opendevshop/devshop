@@ -13,41 +13,56 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Base Box & Config
   config.vm.box = "ubuntu/trusty64"
 
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+  end
+
+  # Prepare host for development
+  if (settings["vagrant_development"])
+    system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__) + ' ' + settings["devmaster_version"])
+  end
+
   # Uncomment to test with other types of boxes.
   # config.vm.box = "hashicorp/precise64"
   # config.vm.box = "chef/centos-6.5"
   # config.vm.box = "chef/centos-7.0"
 
-  config.vm.hostname = settings["server_hostname"]
-  config.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
+  # DevShop Master
+  # Set to be the default machine.
+  # Use `vagrant up` to launch.
+  config.vm.define "devmaster", primary: true do |devmaster|
+    devmaster.vm.hostname = settings["server_hostname"]
+    devmaster.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
 
-  config.vm.provider "virtualbox" do |v|
-    v.memory = 2048
-  end
+    # Set SH as our provisioner
+    devmaster.vm.provision "shell",
+      path: settings["vagrant_install_script"],
+      args: "/vagrant"
 
-  # Set SH as our provisioner
-  config.vm.provision "shell",
-    path: settings["vagrant_install_script"],
-    args: "/vagrant"
+    # Prepare development environment
+    if (settings["vagrant_development"])
 
-  # Prepare development environment
-  if (settings["vagrant_development"])
-
-      system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__) + ' ' + settings["devmaster_version"])
-
-      config.vm.synced_folder "source/devmaster-" + settings["devmaster_version"], "/var/aegir/devmaster-" + settings["devmaster_version"],
+      devmaster.vm.synced_folder "source/devmaster-" + settings["devmaster_version"], "/var/aegir/devmaster-" + settings["devmaster_version"],
           mount_options: ["uid=12345,gid=12345"]
 
-      config.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
+      devmaster.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
           mount_options: ["uid=12345,gid=12345"]
 
       # config.vm.synced_folder "source/projects", "/var/aegir/projects",
       #    mount_options: ["uid=12345,gid=12345"]
 
-      config.vm.provision "shell",
+      devmaster.vm.provision "shell",
         path: 'vagrant-prepare-guest.sh'
+    end
   end
 
+  # DevShop Remote
+  # Does not start automatically on vagrant up.
+  # Use `vagrant up remote` to launch.
+  config.vm.define "remote", autostart: false do |remote|
+    remote.vm.hostname = settings["remote_server_hostname"]
+    remote.vm.network "private_network", ip: settings["remote_vagrant_private_network_ip"]
+  end
 end
 
 class NoSettingsException < Vagrant::Errors::VagrantError

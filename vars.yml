@@ -32,3 +32,5 @@ vagrant_development: true
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
 
+remote_vagrant_private_network_ip: 11.11.11.11
+remote_server_hostname: devshop.remote
