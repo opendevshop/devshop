@@ -214,11 +214,24 @@ class RemoteInstall extends Command
             );
         } else {
             $output->writeln("<info>Generated MySQL password:</info> $mysql_password");
+            $output->writeln("<warning>Aegir Remote not installed.</warning> Run the above command to provision the server, then create the server in the front-end.");
             return;
         }
 
-        $output->writeln("<info>Generated MySQL password:</info> $mysql_password");
+        // Find remote apache control
+        $process = new Process( "ssh $root_username@$hostname -o 'PasswordAuthentication no' -C 'cat /var/aegir/.apache-restart-command'");
+        $process->setTimeout(null);
+        $process->run();
+        $apache_restart = $process->getOutput();
 
+        $output->writeln('');
+        $output->writeln('<info>Aegir Remote Server Install was successful!</info>');
+        $output->writeln("You must now add the server to the Aegir front-end.");
+
+        $output->writeln("<comment>Hostname:</comment> $hostname");
+        $output->writeln("<comment>MySQL username:</comment> aegir_root");
+        $output->writeln("<comment>MySQL password:</comment> $mysql_password");
+        $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
 
     }
 

@@ -73,3 +73,8 @@
 - name: Install MySQL Securely
   include: ./mysql-secure.yml
   when: not mysqlsecured.stat.exists
+
+- name: Save a file with the system's apache restart command
+  copy:
+    dest: /var/aegir/.apache-restart-command
+    content: "{{ apache_control }}"
