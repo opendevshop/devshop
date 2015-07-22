@@ -143,7 +143,7 @@ class RemoteInstall extends Command
         $output->writeln("");
 
         // Confirm ability to SSH in as root.
-        $command = "ssh -i $private_key_file -q $root_username@$hostname -o 'PasswordAuthentication no'";
+        $command = "ssh $root_username@$hostname -o 'PasswordAuthentication no' -C 'echo \$SSH_CLIENT'";
         $output->writeln(
             "Running <comment>$command</comment> to test access..."
         );
@@ -156,9 +156,13 @@ class RemoteInstall extends Command
             }
         );
 
-        if ($process->getOutput()) {
+        $ssh_client_output = $process->getOutput();
+        $ssh_client = explode(' ', $ssh_client_output);
+        $mysql_client_ip = array_shift($ssh_client);
+
+        if ($ssh_client_output) {
             $output->writeln(
-                "<info>SUCCESS</info> SSH connection was successful."
+                "<info>SUCCESS</info> SSH connection was successful.  Client IP detected: <comment>$mysql_client_ip</comment>"
             );
         } else {
             throw new \Exception("Unable to access $root_username@$hostname using the private key file at $private_key_file.");
@@ -191,6 +195,7 @@ class RemoteInstall extends Command
             'aegir_ssh_key' => file_get_contents($key_file),
             'mysql_root_password' => $mysql_password,
             'server_hostname' => $hostname,
+            'mysql_client_ip' => $mysql_client_ip,
         ));
 
         $command = "ansible-playbook -i inventory-remote playbook-remote.yml --extra-vars '$extra_vars'";
@@ -213,6 +218,8 @@ class RemoteInstall extends Command
         }
 
         $output->writeln("<info>Generated MySQL password:</info> $mysql_password");
+
+
     }
 
     /**
