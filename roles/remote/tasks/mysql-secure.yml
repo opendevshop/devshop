@@ -32,7 +32,7 @@
   action: mysql_user user="root" password="{{ mysql_root_password }}" host="{{ server_hostname }}"
 
 - name: MySQL | Grant access to {{ aegir_mysql_root_user }} at {{ mysql_client_ip }}
-  action: mysql_user user="{{ aegir_mysql_root_user }}" password="{{ mysql_root_password }}" host="{{ mysql_client_ip }}"
+  action: mysql_user user="{{ aegir_mysql_root_user }}" password="{{ mysql_root_password }}" host="{{ mysql_client_ip }}" priv=*.*:ALL,GRANT
 
 - name: MySQL | Remove the MySQL test database
   action: mysql_db db=test state=absent
