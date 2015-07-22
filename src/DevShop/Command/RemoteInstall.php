@@ -185,7 +185,7 @@ class RemoteInstall extends Command
         $output->writeln("Run the following command? You may cancel and run the command manually now if you wish.");
 
         $confirmationQuestion = new ConfirmationQuestion(
-            "<comment>$command</comment> [y/N] ", false
+            "<comment>$command</comment> [y/N] ", true
         );
 
         if ($helper->ask($input, $output, $confirmationQuestion)) {
@@ -224,12 +224,7 @@ class RemoteInstall extends Command
 
         $output->writeln('');
         $output->writeln("You must now add the server to the Aegir front-end.");
-
-        // Run devshop:login
-        $command = $this->getApplication()->find('login');
-
-        $input = new ArrayInput(array());
-        $returnCode = $command->run($input, $output);
+        $output->writeln("Run `devshop login` to login to the front-end.");
 
     }
 
