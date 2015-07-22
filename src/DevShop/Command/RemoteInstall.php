@@ -150,16 +150,18 @@ class RemoteInstall extends Command
 
         $process = new Process($command);
         $process->setTimeout(null);
-        $process->run();
+        $process->run(
+            function ($type, $buffer) {
+                echo $buffer;
+            }
+        );
 
         if ($process->getOutput()) {
             $output->writeln(
                 "<info>SUCCESS</info> SSH connection was successful."
             );
         } else {
-            $output->writeln(
-                "<error>SSH CONNECT FAILED:</error> Unable to access <comment>$root_username@$hostname</comment> using the private key file at <comment>$private_key_file</comment>."
-            );
+            throw new \Exception("Unable to access $root_username@$hostname using the private key file at $private_key_file.");
         }
 
         // Check for 'ansible' command.
@@ -193,8 +195,6 @@ class RemoteInstall extends Command
 
         $command = "ansible-playbook -i inventory-remote playbook-remote.yml --extra-vars '$extra_vars'";
 
-        $output->writeln("Generated MySQL password: $mysql_password");
-
         $confirmationQuestion = new ConfirmationQuestion(
             "Run the command <comment>$command</comment> ? [y/N] ", false
         );
@@ -208,8 +208,11 @@ class RemoteInstall extends Command
                 }
             );
         } else {
+            $output->writeln("<info>Generated MySQL password:</info> $mysql_password");
             return;
         }
+
+        $output->writeln("<info>Generated MySQL password:</info> $mysql_password");
     }
 
     /**
