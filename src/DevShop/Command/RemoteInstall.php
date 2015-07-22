@@ -189,7 +189,9 @@ class RemoteInstall extends Command
         );
 
         if ($helper->ask($input, $output, $confirmationQuestion)) {
-            $process = new Process($command);
+            $process = new Process($command, null, array(
+                'ANSIBLE_FORCE_COLOR' => 'true',
+            ));
             $process->setTimeout(null);
             $process->run(
                 function ($type, $buffer) {
