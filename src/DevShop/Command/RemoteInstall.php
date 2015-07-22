@@ -232,7 +232,9 @@ class RemoteInstall extends Command
         $output->writeln("<comment>MySQL username:</comment> aegir_root");
         $output->writeln("<comment>MySQL password:</comment> $mysql_password");
         $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
+        $output->writeln('');
 
+        $output->writeln("<comment>WARNING:</comment> You should probably remove this machine's access to <info>root@$hostname</info> now.");
     }
 
     /**
