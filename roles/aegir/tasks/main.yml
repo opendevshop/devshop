@@ -27,6 +27,21 @@
     command: chmod -R 755 /var/aegir
     when: ansible_os_family == "RedHat"
 
+  - name: Create aegir's config folder
+    file:
+      path: /var/aegir/config
+      owner: aegir
+      group: aegir
+      state: directory
+      mode: 0755
+
+  - name: Create "apache" config file.
+    file:
+      path: /var/aegir/config/apache.conf
+      owner: aegir
+      group: aegir
+      state: touch
+      mode: 0755
 
   - name: Setup SSH config for aegir user.
     template:
