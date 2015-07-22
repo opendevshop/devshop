@@ -213,6 +213,9 @@ class RemoteInstall extends Command
         if (empty($apache_restart)) {
             $apache_restart = 'Unable to determine. Run the provisioner to find the restart command.';
         }
+        else {
+            $apache_restart = "sudo $apache_restart graceful";
+        }
 
         $output->writeln("<comment>Hostname:</comment> $hostname");
         $output->writeln("<comment>MySQL username:</comment> aegir_root");
