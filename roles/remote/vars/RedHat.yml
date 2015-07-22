@@ -2,6 +2,7 @@
 apache_daemon: httpd
 apache_server_root: /etc/httpd
 apache_conf_path: /etc/httpd/conf.d
+apache_control: /usr/sbin/apachectl
 
 __aegir_packages:
   - httpd

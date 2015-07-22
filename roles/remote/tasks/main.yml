@@ -60,6 +60,12 @@
     group: aegir
     mode: 0600
 
+- name: Configure sudo for aegir user
+  copy:
+    dest: "/etc/sudoers.d/aegir"
+    content: "aegir ALL=NOPASSWD: {{ apache_control }}\n\n"
+    mode: 0440
+
 - name: Check for secured installation of MySQL
   stat: path=/var/mysql-secured
   register: mysqlsecured
