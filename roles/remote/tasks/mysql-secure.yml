@@ -11,7 +11,7 @@
   action: template src=templates/root-my.cnf.j2 dest=/root/.my.cnf
 
 - name: MySQL | my.cnf config file.
-  action: template src=my.cnf.j2 dest=/etc/mysql/.my.cnf
+  action: template src=my.cnf.j2 dest=/etc/mysql/my.cnf
 
 - name: MySQL | Delete anonymous MySQL server user for {{ server_hostname }}
   action: mysql_user user="" host="{{ server_hostname }}" state="absent"
