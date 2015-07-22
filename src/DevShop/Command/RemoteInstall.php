@@ -184,7 +184,7 @@ class RemoteInstall extends Command
         $fs = new Filesystem();
 
         try {
-            $fs->dumpFile('inventory-remote', $hostname);
+            $fs->dumpFile('/tmp/inventory-remote', $hostname);
         } catch (IOExceptionInterface $e) {
             throw new \Exception("Unable to write inventory-remote file.");
         }
@@ -198,7 +198,8 @@ class RemoteInstall extends Command
             'mysql_client_ip' => $mysql_client_ip,
         ));
 
-        $command = "ansible-playbook -i inventory-remote playbook-remote.yml --extra-vars '$extra_vars'";
+        $playbook_path = __DIR__ . '/../../../playbook-remote.yml';
+        $command = "ansible-playbook -i /tmp/inventory-remote $playbook_path --extra-vars '$extra_vars'";
 
         $confirmationQuestion = new ConfirmationQuestion(
             "Run the command <comment>$command</comment> ? [y/N] ", false
