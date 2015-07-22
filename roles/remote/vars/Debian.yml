@@ -7,6 +7,21 @@ __aegir_packages:
   - apache2
   - apache2-mpm-prefork
   - apache2-utils
+  - mysql-server
+  - php5
+  - php5-cli
+  - php5-curl
+  - php5-gd
+  - php5-mysql
+  - php5-mcrypt
+  - php-pear
+  - postfix
+  - sudo
+  - unzip
+  - vim
+  - git
+  - curl
+  - python-mysqldb
 
 apache_ports_configuration_items:
   - {

@@ -59,3 +59,11 @@
     owner: aegir
     group: aegir
     mode: 0600
+
+- name: Check for secured installation of MySQL
+  stat: path=/var/mysql-secured
+  register: mysqlsecured
+
+- name: Install MySQL Securely
+  include: ./mysql-secure.yml
+  when: not mysqlsecured.stat.exists

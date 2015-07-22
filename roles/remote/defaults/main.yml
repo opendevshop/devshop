@@ -3,6 +3,10 @@ mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
 php_timezone: America/New_York
 
+server_hostname: devshop.remote
+aegir_master_ip: devshop.local
+aegir_mysql_root_user: aegir_root
+
 aegir_user_uid: 12345
 aegir_user_gid: 12345
 aegir_ssh_key: DEFINEDatRUNTIME

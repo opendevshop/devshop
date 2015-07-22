@@ -182,12 +182,18 @@ class RemoteInstall extends Command
         } catch (IOExceptionInterface $e) {
             throw new \Exception("Unable to write inventory-remote file.");
         }
+
+        $mysql_password = $this->generatePassword();
+
         $extra_vars = json_encode(array(
             'aegir_ssh_key' => file_get_contents($key_file),
+            'mysql_root_password' => $mysql_password,
+            'server_hostname' => $hostname,
         ));
 
         $command = "ansible-playbook -i inventory-remote playbook-remote.yml --extra-vars '$extra_vars'";
 
+        $output->writeln("Generated MySQL password: $mysql_password");
 
         $confirmationQuestion = new ConfirmationQuestion(
             "Run the command <comment>$command</comment> ? [y/N] ", false
@@ -204,5 +210,37 @@ class RemoteInstall extends Command
         } else {
             return;
         }
+    }
+
+    /**
+     * Generates a random password.
+     *
+     * Stolen from aegir provision_password.
+     *
+     * @param int $length
+     * @return string
+     */
+    private function generatePassword($length = 16) {
+        // This variable contains the list of allowable characters for the
+        // password. Note that the number 0 and the letter 'O' have been
+        // removed to avoid confusion between the two. The same is true
+        // of 'I', 1, and 'l'.
+        $allowable_characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+        // Zero-based count of characters in the allowable list:
+        $len = strlen($allowable_characters) - 1;
+
+        // Declare the password as a blank string.
+        $pass = '';
+
+        // Loop the number of times specified by $length.
+        for ($i = 0; $i < $length; $i++) {
+
+            // Each iteration, pick a random character from the
+            // allowable string and append it to the password:
+            $pass .= $allowable_characters[mt_rand(0, $len)];
+        }
+
+        return $pass;
     }
 }
