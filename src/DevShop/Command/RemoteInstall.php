@@ -3,6 +3,7 @@
 namespace DevShop\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -46,56 +47,31 @@ class RemoteInstall extends Command
             'fg=black;bg=green'
         );
         $output->writeln($formattedBlock);
-
         $output->writeln(
-            '<info>Welcome to the Remote Server Installer!</info>'
+            'Welcome to the Remote Server Installer!'
         );
         $output->writeln('');
 
         // Ensure the command is being run on an existing devshop server, by looking for aegir user.
         $output->writeln(
-            "<info>Find aegir public key:</info> Aegir uses SSH to connect to remote servers."
+            "<info>Root Access:</info> To provision your server, we need root access."
         );
 
-        $users = file_get_contents('/etc/passwd');
-        if (strpos($users, 'aegir') === false) {
-            $output->writeln(
-                '<comment>WARNING:</comment> aegir user doesn\'t exist.'
-            );
-
-            // Ask for public key file to use for remote install.
-            $default_path = $_SERVER['HOME'].'/.ssh/id_rsa.pub';
-            $question = new Question(
-                "Would you like to use a different public key file? This key will be used to connect to 'aegir' user on the remote host. [$default_path] ",
-                $default_path
-            );
-            $key_file = $helper->ask($input, $output, $question);
-
-            if (empty($key_file) || !file_exists(realpath($key_file))) {
-                throw new \Exception(
-                    'Unable to continue: Public SSH key not found at '.$key_file
-                );
-            }
-        } // If for some reason aegir ssh key doesn't exist...
-        elseif (!file_exists("/var/aegir/.ssh/id_rsa.pub")) {
-            $output->writeln(
-                '<comment>WARNING:</comment> aegir user public key not found at /var/aegir/.ssh/id_rsa.pub'
-            );
-
-            // Ask for public key file to use for remote install.
-            $default_path = $_SERVER['HOME'].'/.ssh/id_rsa.pub';
-            $question = new Question(
-                "Would you like to use a different public key file? This key will be used to connect to 'aegir' user on the remote host. [$default_path] ",
-                $default_path
-            );
-            $key_file = $helper->ask($input, $output, $question);
-        } // If aegir user exists and public key exists, load it.
-        else {
-            $key_file = "/var/aegir/.ssh/id_rsa.pub";
+        // Look for current user's public key. Throw an exception if we cannot find one.
+        $key_file_path = $_SERVER['HOME'] . '/.ssh/id_rsa.pub';
+        if (!file_exists($key_file_path)) {
+            throw new \Exception("Unable to find a public key at '$key_file_path'. We must have an SSH keypair to provision the new server.");
         }
 
-        $output->writeln("Public Key found at <info>$key_file</info>");
+        $output->writeln(
+            "<info>SSH Key Found:</info> Found an SSH key at <comment>$key_file_path</comment>"
+        );
         $output->writeln('');
+
+        // Display public key to user so they can add it to their server.
+        $pubkey = file_get_contents($key_file_path);
+        $output->writeln("To continue, add the following public key to <comment>/root/.ssh/authorized_keys</comment>:");
+        $output->writeln("<comment>$pubkey</comment>");
 
         // Ask for hostname
         $question = new Question("Remote hostname? ");
@@ -125,58 +101,62 @@ class RemoteInstall extends Command
             }
         }
 
-        // Ask for root access
-        $output->writeln(
-            "<info>Check root access:</info> In order to provision the server, we need root access to it."
-        );
-
-        $question = new Question("Remote root user? [root] ", 'root');
-        $root_username = $helper->ask($input, $output, $question);
-
-        // Ask for private key file to use for remote install.
-        $default_path = $_SERVER['HOME'].'/.ssh/id_rsa';
-        $question = new Question(
-            "Private SSH Key for $root_username@$hostname? [$default_path] ",
-            $default_path
-        );
-        $private_key_file = $helper->ask($input, $output, $question);
-        $output->writeln("");
-
         // Confirm ability to SSH in as root.
-        $command = "ssh $root_username@$hostname -o 'PasswordAuthentication no' -C 'echo \$SSH_CLIENT'";
-        $output->writeln(
-            "Running <comment>$command</comment> to test access..."
-        );
+        $access = FALSE;
+        while ($access == FALSE) {
+            $root_username = 'root';
 
-        $process = new Process($command);
-        $process->setTimeout(null);
-        $process->run(
-            function ($type, $buffer) {
-                echo $buffer;
-            }
-        );
-
-        $ssh_client_output = $process->getOutput();
-        $ssh_client = explode(' ', $ssh_client_output);
-        $mysql_client_ip = array_shift($ssh_client);
-
-        if ($ssh_client_output) {
-            $output->writeln(
-                "<info>SUCCESS</info> SSH connection was successful.  Client IP detected: <comment>$mysql_client_ip</comment>"
+            $confirmationQuestion = new ConfirmationQuestion(
+                "Ready to check access to <comment>$root_username@$hostname</comment> ? [Hit Enter to continue] ", true
             );
-        } else {
-            throw new \Exception("Unable to access $root_username@$hostname using the private key file at $private_key_file.");
+
+            if (!$helper->ask($input, $output, $confirmationQuestion)) {
+                $output->writeln(
+                  "<error>Remote Server Install Cancelled.</error>"
+                );
+                $output->writeln("");
+                return;
+            }
+            $command = "ssh $root_username@$hostname -o 'PasswordAuthentication no' -C 'echo \$SSH_CLIENT'";
+
+            $output->writeln("");
+            $output->writeln(
+                "<info>Access Test:</info> Running <comment>$command</comment> to test access..."
+            );
+
+            $process = new Process($command);
+            $process->setTimeout(null);
+            $process->run(
+                function ($type, $buffer) {
+                    echo $buffer;
+                }
+            );
+
+            // Extract client IP from output.
+            $ssh_client_output = $process->getOutput();
+            $ssh_client = explode(' ', $ssh_client_output);
+            $mysql_client_ip = array_shift($ssh_client);
+
+            if ($ssh_client_output) {
+                $output->writeln("");
+                $output->writeln(
+                    "<info>Access Granted!</info> SSH connection was successful.  Client IP detected: <comment>$mysql_client_ip</comment>"
+                );
+                $output->writeln("");
+                $access = TRUE;
+            } else {
+                $output->writeln("");
+                $output->writeln(
+                    "<error>Access Denied:</error> Unable to access $root_username@$hostname.  Please check your keys and try again."
+                );
+                $output->writeln("");
+            }
         }
 
         // Check for 'ansible' command.
         $process = new Process('which ansible-playbook');
         $process->run();
-        if ($process->getOutput()) {
-            $output->writeln(
-                "<info>SUCCESS</info> Command 'ansible-playbook' found."
-            );
-        }
-        else {
+        if (!$process->getOutput()) {
             throw new \Exception("Command 'ansible-playbook' not found.  Please install ansible and try again. If you are running on a devshop server, ansible would already be installed.");
         }
 
@@ -192,17 +172,20 @@ class RemoteInstall extends Command
         $mysql_password = $this->generatePassword();
 
         $extra_vars = json_encode(array(
-            'aegir_ssh_key' => file_get_contents($key_file),
+            'aegir_ssh_key' => $pubkey,
             'mysql_root_password' => $mysql_password,
             'server_hostname' => $hostname,
             'mysql_client_ip' => $mysql_client_ip,
         ));
 
-        $playbook_path = __DIR__ . '/../../../playbook-remote.yml';
+        $playbook_path = realpath(__DIR__ . '/../../../playbook-remote.yml');
         $command = "ansible-playbook -i /tmp/inventory-remote $playbook_path --extra-vars '$extra_vars'";
 
+        $output->writeln("<info>Provision Server:</info> Run Ansible Playbook");
+        $output->writeln("Run the following command? You may cancel and run the command manually now if you wish.");
+
         $confirmationQuestion = new ConfirmationQuestion(
-            "Run the command <comment>$command</comment> ? [y/N] ", false
+            "<comment>$command</comment> [y/N] ", false
         );
 
         if ($helper->ask($input, $output, $confirmationQuestion)) {
@@ -213,10 +196,12 @@ class RemoteInstall extends Command
                     echo $buffer;
                 }
             );
+
+            $output->writeln('');
+            $output->writeln('<info>Aegir Remote Server Install was successful!</info>');
         } else {
-            $output->writeln("<info>Generated MySQL password:</info> $mysql_password");
-            $output->writeln("<warning>Aegir Remote not installed.</warning> Run the above command to provision the server, then create the server in the front-end.");
-            return;
+            $output->writeln("");
+            $output->writeln('<info>Aegir Remote Server Install was NOT run.</info>');
         }
 
         // Find remote apache control
@@ -225,9 +210,9 @@ class RemoteInstall extends Command
         $process->run();
         $apache_restart = $process->getOutput();
 
-        $output->writeln('');
-        $output->writeln('<info>Aegir Remote Server Install was successful!</info>');
-        $output->writeln("You must now add the server to the Aegir front-end.");
+        if (empty($apache_restart)) {
+            $apache_restart = 'Unable to determine. Run the provisioner to find the restart command.';
+        }
 
         $output->writeln("<comment>Hostname:</comment> $hostname");
         $output->writeln("<comment>MySQL username:</comment> aegir_root");
@@ -235,7 +220,17 @@ class RemoteInstall extends Command
         $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
         $output->writeln('');
 
-        $output->writeln("<comment>WARNING:</comment> You should probably remove this machine's access to <info>root@$hostname</info> now.");
+        $output->writeln("<info>NOTE:</info> You should probably remove this machine's access to <comment>root@$hostname</comment> now.");
+
+        $output->writeln('');
+        $output->writeln("You must now add the server to the Aegir front-end.");
+
+        // Run devshop:login
+        $command = $this->getApplication()->find('login');
+
+        $input = new ArrayInput(array());
+        $returnCode = $command->run($input, $output);
+
     }
 
     /**
