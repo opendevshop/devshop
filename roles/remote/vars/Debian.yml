@@ -4,6 +4,8 @@ apache_server_root: /etc/apache2
 apache_conf_path: /etc/apache2
 apache_control: /usr/sbin/apache2ctl
 
+mysql_daemon: mysql
+
 __aegir_packages:
   - apache2
   - apache2-mpm-prefork

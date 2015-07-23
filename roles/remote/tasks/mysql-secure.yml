@@ -39,3 +39,8 @@
 
 - name: MySQL | Save a file to indicate mysql has been secured.
   file: path=/var/mysql-secured state=touch
+
+- name: MySQL | Restart MySQL
+  service:
+    name: {{ mysql_daemon }}
+    state: restarted
