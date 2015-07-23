@@ -45,6 +45,21 @@
     state: started
     enabled: yes
 
+- name: Create temporary empty config file for apache so it won't throw errors.
+  copy:
+    content: ""
+    dest: "/var/aegir/config/apache-empty.conf"
+    owner: aegir
+    group: aegir
+    mode: 0600
+
+- name: Link aegir apache file to something to aegir config.
+  file:
+    src: "/var/aegir/config/apache-empty.conf"
+    dest: "/var/aegir/config/apache.conf"
+    state: link
+    force: true
+
 - name: Link apache to aegir config.
   file:
     src: "/var/aegir/config/apache.conf"
