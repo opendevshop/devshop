@@ -7,6 +7,7 @@ apache_control: /usr/sbin/apachectl
 mysql_daemon: mysql
 
 __aegir_packages:
+  - epel-release
   - httpd
   - php
   - php-mysql
@@ -30,4 +31,3 @@ __aegir_packages:
   - MySQL-python
   - mod_ssl
   - openssh
-  - epel-release
