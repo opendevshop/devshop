@@ -247,10 +247,7 @@ class RemoteInstall extends Command
             $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
 
         } catch (ProcessFailedException $e) {
-            $output->writeln('<error>Access Denied:</error> MySQL on remote server is not accessible. Something went wrong with the install process.');
-            $output->writeln("<error>Command:</error> $cmd");
-
-            $errorMessages = explode("\n", $e->getMessage());
+            $errorMessages = array_filter(explode("\n", $e->getMessage()));
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
         }
@@ -268,10 +265,7 @@ class RemoteInstall extends Command
             $output->writeln('<info>Access Granted!</info> Apache was restarted successfully.');
 
         } catch (ProcessFailedException $e) {
-            $output->writeln('<error>Access Denied:</error> Unable to restart apache. Something went wrong with the install process.');
-            $output->writeln("<error>Command:</error> $cmd");
-
-            $errorMessages = explode("\n", $e->getMessage());
+            $errorMessages = array_filter(explode("\n", $e->getMessage()));
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
         }
