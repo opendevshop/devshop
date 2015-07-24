@@ -214,10 +214,8 @@ class RemoteInstall extends Command
             );
 
             $output->writeln('');
-            $output->writeln('<info>Aegir Remote Server Install was successful!</info>');
         } else {
             $output->writeln("");
-            $output->writeln('<info>Aegir Remote Server Install was NOT run.</info>');
         }
 
         // Find remote apache control
@@ -233,23 +231,13 @@ class RemoteInstall extends Command
             $apache_restart = "sudo $apache_restart graceful";
         }
 
-        $output->writeln("<comment>Hostname:</comment> $hostname");
-        $output->writeln("<comment>MySQL username:</comment> aegir_root");
-        $output->writeln("<comment>MySQL password:</comment> $mysql_password");
-        $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
-        $output->writeln('');
-
-        $output->writeln("<info>NOTE:</info> You should probably remove this machine's access to <comment>root@$hostname</comment> now.");
-
-        $output->writeln('');
-        $output->writeln("You must now add the server to the Aegir front-end.");
-        $output->writeln("Run `devshop login` to login to the front-end.");
-
         // Save a file with the server's mysql root password in case one runs the command again.
         if (!$fs->exists('~/.servers')) {
             $fs->mkdir('~/.servers', 0700);
         }
         $fs->dumpFile("~/.servers/$hostname-sql-password", $mysql_password);
+
+        $something_failed = FALSE;
 
         // Test MySQL Access
         $output->writeln('');
@@ -267,6 +255,7 @@ class RemoteInstall extends Command
             $errorMessages = array_filter(explode("\n", $e->getMessage()));
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
+            $something_failed = TRUE;
         }
 
         // Test Apache Access
@@ -285,8 +274,29 @@ class RemoteInstall extends Command
             $errorMessages = array_filter(explode("\n", $e->getMessage()));
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
+            $something_failed = TRUE;
         }
 
+        $output->writeln('');
+
+        if ($something_failed) {
+            $output->writeln('<error>Aegir Remote Server did not complete!</error>');
+        }
+        else {
+            $output->writeln('<info>Aegir Remote Server Setup Complete</info>');
+        }
+
+        $output->writeln("<comment>Hostname:</comment> $hostname");
+        $output->writeln("<comment>MySQL username:</comment> aegir_root");
+        $output->writeln("<comment>MySQL password:</comment> $mysql_password");
+        $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
+        $output->writeln('');
+
+        $output->writeln("<info>NOTE:</info> You should probably remove this machine's access to <comment>root@$hostname</comment> now.");
+
+        $output->writeln('');
+        $output->writeln("You must now add the server to the Aegir front-end.");
+        $output->writeln("Run `devshop login` to login to the front-end.");
     }
 
     /**
