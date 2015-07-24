@@ -93,3 +93,9 @@
   copy:
     dest: /var/aegir/.apache-restart-command
     content: "{{ apache_control }}"
+
+- name: Add aegir to apache group.
+  user:
+    name=aegir
+    groups={{ apache_user }}
+    append=yes
