@@ -175,7 +175,7 @@ class RemoteInstall extends Command
         $password_file_path = realpath("/var/aegir/.servers/$hostname-sql-password");
 
         if ($fs->exists($password_file_path)) {
-            $mysql_password = file_get_contents($password_file_path);
+            $mysql_password = trim(file_get_contents($password_file_path));
             $output->writeln("MySQL Password found at <comment>$password_file_path</comment>");
         }
         else {
@@ -243,7 +243,7 @@ class RemoteInstall extends Command
         $output->writeln('');
         $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
 
-        $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password";
+        $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e'CREATE DATABASE test_access; DROP DATABASE test_access;'";
         $process = new Process($cmd);
         $process->setTimeout(null);
 
