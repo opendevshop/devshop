@@ -245,15 +245,36 @@ class RemoteInstall extends Command
         try {
             $process->mustRun();
             $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
-            $output->writeln('');
 
         } catch (ProcessFailedException $e) {
-            $output->writeln('<error>Access Denied:</info> MySQL on remote server is not accessible. Something went wrong with the install process.');
-            $output->writeln("<error>Command:</info> $cmd");
-            $output->writeln($e->getMessage());
-            $output->writeln('');
+            $output->writeln('<error>Access Denied:</error> MySQL on remote server is not accessible. Something went wrong with the install process.');
+            $output->writeln("<error>Command:</error> $cmd");
+
+            $errorMessages = explode("\n", $e->getMessage());
+            $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+            $output->writeln($formattedBlock);
         }
 
+        // Test Apache Access
+        $output->writeln('');
+        $output->writeln('<info>Apache:</info> Testing Apache restart access...');
+
+        $cmd = "ssh aegir@$hostname -o 'PasswordAuthentication no' -C 'sudo $apache_restart graceful'";
+        $process = new Process($cmd);
+        $process->setTimeout(null);
+
+        try {
+            $process->mustRun();
+            $output->writeln('<info>Access Granted!</info> Apache was restarted successfully.');
+
+        } catch (ProcessFailedException $e) {
+            $output->writeln('<error>Access Denied:</error> Unable to restart apache. Something went wrong with the install process.');
+            $output->writeln("<error>Command:</error> $cmd");
+
+            $errorMessages = explode("\n", $e->getMessage());
+            $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+            $output->writeln($formattedBlock);
+        }
 
     }
 
