@@ -292,11 +292,13 @@ class RemoteInstall extends Command
         $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
         $output->writeln('');
 
-        $output->writeln("<info>NOTE:</info> You should probably remove this machine's access to <comment>root@$hostname</comment> now.");
+        $output->writeln("<comment>WARNING:</comment> You must revoke access to  <comment>root@$hostname</comment> to secure your system.");
 
         $output->writeln('');
+        $url = "http://" . php_uname('n') . '/node/add/server';
+;
         $output->writeln("You must now add the server to the Aegir front-end.");
-        $output->writeln("Run `devshop login` to login to the front-end.");
+        $output->writeln("Run `devshop login` to login to the front-end, and visit $url to create a new server.");
     }
 
     /**
