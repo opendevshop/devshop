@@ -171,7 +171,18 @@ class RemoteInstall extends Command
             throw new \Exception("Unable to write inventory-remote file.");
         }
 
-        $mysql_password = $this->generatePassword();
+        // Look for saved password
+        $password_file_path = realpath("/var/aegir/.servers/$hostname-sql-password");
+
+        if ($fs->exists($password_file_path)) {
+            $mysql_password = file_get_contents($password_file_path);
+            $output->writeln("MySQL Password found at <comment>$password_file_path</comment>");
+        }
+        else {
+            $mysql_password = $this->generatePassword();
+            $output->writeln("MySQL Password generated as <comment>$mysql_password</comment>.");
+        }
+        $output->writeln("");
 
         $extra_vars = json_encode(array(
             'aegir_ssh_key' => $pubkey,
@@ -233,6 +244,12 @@ class RemoteInstall extends Command
         $output->writeln('');
         $output->writeln("You must now add the server to the Aegir front-end.");
         $output->writeln("Run `devshop login` to login to the front-end.");
+
+        // Save a file with the server's mysql root password in case one runs the command again.
+        if (!$fs->exists('~/.servers')) {
+            $fs->mkdir('~/.servers', 0700);
+        }
+        $fs->dumpFile("~/.servers/$hostname-sql-password", $mysql_password);
 
         // Test MySQL Access
         $output->writeln('');
