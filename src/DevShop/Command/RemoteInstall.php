@@ -13,6 +13,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+
 use Github\Client;
 
 use Symfony\Component\Filesystem\Filesystem;
@@ -236,17 +238,23 @@ class RemoteInstall extends Command
         $output->writeln('');
         $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
 
-        $cmd = "mysql -h $hostname -u aegir_root -p $mysql_password -e 'CREATE DATABASE test_create; REMOVE DATABASE test_create;'";
+        $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e 'CREATE DATABASE test_create; DROP DATABASE test_create;'";
         $process = new Process($cmd);
         $process->setTimeout(null);
 
         try {
             $process->mustRun();
+            $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
+            $output->writeln('');
+
         } catch (ProcessFailedException $e) {
-            $output->writeln('<error>ERROR: </error> Unable to connect to remote database! Something went wrong with the installation.');
-            $output->writeln("<error>Command:</error> $cmd");
-            $output->writeln('<error>ERROR: </error> ' . $e->getMessage());
+            $output->writeln('<error>Access Denied:</info> MySQL on remote server is not accessible. Something went wrong with the install process.');
+            $output->writeln("<error>Command:</info> $cmd");
+            $output->writeln($e->getMessage());
+            $output->writeln('');
         }
+
+
     }
 
     /**
