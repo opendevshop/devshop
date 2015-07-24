@@ -70,7 +70,7 @@ class RemoteInstall extends Command
 
         // Display public key to user so they can add it to their server.
         $pubkey = file_get_contents($key_file_path);
-        $output->writeln("To continue, add the following public key to <comment>/root/.ssh/authorized_keys</comment>:");
+        $output->writeln("To continue, add the following public key to the remote server at <comment>/root/.ssh/authorized_keys</comment>:");
         $output->writeln("<comment>$pubkey</comment>");
 
         // Ask for hostname
