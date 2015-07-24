@@ -175,6 +175,7 @@ class RemoteInstall extends Command
             'aegir_ssh_key' => $pubkey,
             'mysql_root_password' => $mysql_password,
             'server_hostname' => $hostname,
+            'server_ip' => $ip,
             'mysql_client_ip' => $mysql_client_ip,
         ));
 
