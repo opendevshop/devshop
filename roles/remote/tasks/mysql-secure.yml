@@ -4,6 +4,11 @@
 #
 # Distribution independent.
 #
+- name: MySQL | Start MySQL
+  service:
+    name: "{{ mysql_daemon }}"
+    state: started
+
 - name: MySQL | Set the root password.
   action: mysql_user user=root password={{ mysql_root_password }} host=localhost
 
@@ -11,7 +16,7 @@
   action: template src=templates/root-my.cnf.j2 dest=/root/.my.cnf
 
 - name: MySQL | my.cnf config file.
-  action: template src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  action: template src=my.cnf.{{ ansible_os_family }}.j2 dest={{ mysql_conf_path }}
 
 - name: MySQL | Delete anonymous MySQL server user for {{ server_hostname }}
   action: mysql_user user="" host="{{ server_hostname }}" state="absent"

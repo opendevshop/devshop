@@ -4,7 +4,8 @@ apache_server_root: /etc/httpd
 apache_conf_path: /etc/httpd/conf.d
 apache_control: /usr/sbin/apachectl
 
-mysql_daemon: mysql
+mysql_daemon: mariadb
+mysql_conf_path: /etc/my.cnf
 
 __aegir_packages:
   - epel-release
