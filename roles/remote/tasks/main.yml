@@ -27,10 +27,10 @@
     apache_version: "{{ _apache_version.stdout.split()[2].split('/')[1] }}"
 
 - include_vars: apache-22.yml
-  when: "apache_version.split('.')[1] == '2'"
+  when: "apache_version.split('.')[1] == '2' and ansible_os_family == 'Debian'"
 
 - include_vars: apache-24.yml
-  when: "apache_version.split('.')[1] == '4'"
+  when: "apache_version.split('.')[1] == '4' and ansible_os_family == 'Debian'"
 
 # Configure Apache.
 - include: configure-RedHat.yml

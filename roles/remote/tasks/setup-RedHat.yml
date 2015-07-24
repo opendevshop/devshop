@@ -1,4 +1,9 @@
 ---
+- name: Install epel-release
+  yum:
+    name: "epel-release"
+    state: installed
+
 - name: Ensure packages are installed.
   yum:
     name: "{{ item }}"
