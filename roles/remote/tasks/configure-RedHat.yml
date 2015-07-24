@@ -17,3 +17,11 @@
     mode: 0644
   notify: restart apache
   when: apache_create_vhosts
+
+- name: Create aegir logs folder.
+  file:
+    path: /var/aegir/logs
+    owner: aegir
+    group: aegir
+    mode: 0644
+    state: directory
