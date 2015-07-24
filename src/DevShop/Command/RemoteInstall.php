@@ -255,7 +255,7 @@ class RemoteInstall extends Command
         $output->writeln('');
         $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
 
-        $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e 'CREATE DATABASE test_create; DROP DATABASE test_create;'";
+        $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password";
         $process = new Process($cmd);
         $process->setTimeout(null);
 
