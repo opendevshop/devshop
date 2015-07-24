@@ -273,7 +273,7 @@ class RemoteInstall extends Command
         $output->writeln('');
         $output->writeln('<info>Apache:</info> Testing Apache restart access...');
 
-        $cmd = "ssh aegir@$hostname -o 'PasswordAuthentication no' -C 'sudo $apache_restart graceful'";
+        $cmd = "ssh aegir@$hostname -t -o 'PasswordAuthentication no' -C '$apache_restart'";
         $process = new Process($cmd);
         $process->setTimeout(null);
 
