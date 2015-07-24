@@ -232,6 +232,21 @@ class RemoteInstall extends Command
         $output->writeln("You must now add the server to the Aegir front-end.");
         $output->writeln("Run `devshop login` to login to the front-end.");
 
+        // Test MySQL Access
+        $output->writeln('');
+        $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
+
+        $cmd = "mysql -h $hostname -u aegir_root -p $mysql_password -e 'CREATE DATABASE test_create; REMOVE DATABASE test_create;'";
+        $process = new Process($cmd);
+        $process->setTimeout(null);
+
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $e) {
+            $output->writeln('<error>ERROR: </error> Unable to connect to remote database! Something went wrong with the installation.');
+            $output->writeln("<error>Command:</error> $cmd");
+            $output->writeln('<error>ERROR: </error> ' . $e->getMessage());
+        }
     }
 
     /**
