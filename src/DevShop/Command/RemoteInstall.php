@@ -232,10 +232,10 @@ class RemoteInstall extends Command
         }
 
         // Save a file with the server's mysql root password in case one runs the command again.
-        if (!$fs->exists('~/.servers')) {
-            $fs->mkdir('~/.servers', 0700);
+        if (!$fs->exists('/var/aegir/.servers')) {
+            $fs->mkdir('/var/aegir/.servers', 0700);
         }
-        $fs->dumpFile("~/.servers/$hostname-sql-password", $mysql_password);
+        $fs->dumpFile("/var/aegir/.servers/$hostname-sql-password", $mysql_password);
 
         $something_failed = FALSE;
 
