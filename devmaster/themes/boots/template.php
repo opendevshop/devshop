@@ -236,6 +236,10 @@ function boots_preprocess_node(&$vars) {
   elseif ($vars['node']->type == 'task') {
     boots_preprocess_node_task($vars);
   }
+  if ($vars['node']->type == 'site') {
+    $project_node = node_view(node_load($vars['node']->project_nid));
+    boots_preprocess_environment($vars['node']->environment, $project_node->environment_actions[$vars['node']->environment->name]);
+  }
 }
 
 /**
@@ -255,6 +259,7 @@ function boots_preprocess_node_task(&$vars) {
   ));
 
 }
+
 /**
  * Preprocessor for Project Nodes.
  * @param $vars
@@ -426,6 +431,17 @@ HTML;
   $vars['target_environments'];
 
   foreach ($vars['node']->project->environments as &$environment) {
+    boots_preprocess_environment($environment, $node->environment_actions[$environment->name]);
+  }
+}
+
+/**
+ * Prepare environment display.
+ *
+ * @param $environment
+ * @param $actions
+ */
+function boots_preprocess_environment(&$environment, $actions) {
 
     // Environment Tasks
     if ($environment->site) {
@@ -437,7 +453,7 @@ HTML;
 
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
-    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $node->environment_actions[$environment->name]);
+    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $actions);
 
     foreach ($environment->tasks as &$task) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
@@ -492,7 +508,6 @@ HTML;
         }
       }
     }
-  }
 }
 
 /**
