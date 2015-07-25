@@ -228,20 +228,39 @@
       <?php else: ?>
       <!-- URLs -->
       <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
-          <?php if (count($environment->domains) > 1): ?>
 
-            <a href="<?php print $environment->url ?>" target="_blank">
-              <i class="fa fa-globe"></i> <?php print $environment->url ?>
-            </a>
-            <button type="button" class="btn btn-xs dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
-              <i class="fa fa-globe"></i>
-              <?php print count($environment->domains); ?>
-              <span class="caret"></span>
-              <span class="sr-only">Domains</span>
-            </button>
+         <div class="btn-group btn-toolbar" role="toolbar">
+
+           <?php if (count($environment->domains) > 1): ?>
+
+             <a href="<?php print $environment->url ?>" class="btn btn-text" target="_blank">
+               <i class="fa fa-globe"></i>
+               <?php print $environment->url ?>
+             </a>
+           <div class="btn-group" role="group">
+             <button type="button" class="btn btn-text dropdown-toggle" data-toggle="dropdown">
+
+                 <?php print format_plural(count($environment->domains),
+                   t('1 Domain'),
+                   t('@count Domains', array(
+                     '@count' => count($environment->domains),
+                   ))
+                 ); ?>
+
+                 <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <?php foreach ($environment->domains as $domain): ?>
+                  <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
+                <?php endforeach; ?>
+                <li class="divider">&nbsp;</li>
+                <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
+              </ul>
+           </div>
+
           <?php else: ?>
             <?php if (!empty($environment->url)): ?>
-              <a href="<?php print $environment->url ?>" target="_blank">
+              <a href="<?php print $environment->url ?>" class="btn btn-text" target="_blank">
                 <i class="fa fa-globe"></i>
                 <?php print $environment->url ?>
               </a>
@@ -251,28 +270,15 @@
                 <em>&nbsp;</em>
               </button>
             <?php endif;?>
-            <?php /*
-            <a type="button" class="btn btn-xs pull-right" href="<?php print url('node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?>" title="<?php print t("Add Domain"); ?>">
-              <i class="fa fa-plus"></i>
-            </a>
-            */ ?>
+
           <?php endif;?>
-
-          <?php if (count($environment->domains) > 1): ?>
-          <ul class="dropdown-menu pull-right" role="menu">
-            <?php foreach ($environment->domains as $domain): ?>
-            <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
-            <?php endforeach; ?>
-            <li class="divider">&nbsp;</li>
-            <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
-          </ul>
-          <?php endif; ?>
-
-          <?php if ($environment->login_url): ?>
-            <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
-          <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link login-link"><?php print $environment->login_text; ?></a>
-          <?php endif; ?>
         </div>
+
+        <?php if ($environment->login_url): ?>
+          <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+          <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link login-link"><?php print $environment->login_text; ?></a>
+        <?php endif; ?>
+      </div>
 
 
       <?php
