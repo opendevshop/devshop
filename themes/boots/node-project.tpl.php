@@ -229,15 +229,16 @@
       <!-- URLs -->
       <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
 
-         <div class="btn-group btn-toolbar" role="toolbar">
+         <div class="btn-toolbar" role="toolbar">
 
            <?php if (count($environment->domains) > 1): ?>
-
-             <a href="<?php print $environment->url ?>" class="btn btn-text" target="_blank">
+           <div class="btn-group url-wrapper" role="group">
+             <a href="<?php print $environment->url ?>" target="_blank">
                <i class="fa fa-globe"></i>
                <?php print $environment->url ?>
              </a>
-           <div class="btn-group" role="group">
+           </div>
+           <div class="btn-group pull-right" role="group">
              <button type="button" class="btn btn-text dropdown-toggle" data-toggle="dropdown">
 
                  <?php print format_plural(count($environment->domains),
@@ -258,13 +259,15 @@
               </ul>
            </div>
 
-          <?php else: ?>
-            <?php if (!empty($environment->url)): ?>
-              <a href="<?php print $environment->url ?>" class="btn btn-text" target="_blank">
+           <?php else: ?>
+           <?php if (!empty($environment->url)): ?>
+             <div class="btn-group url-wrapper" role="group">
+               <a href="<?php print $environment->url ?>" target="_blank">
                 <i class="fa fa-globe"></i>
                 <?php print $environment->url ?>
               </a>
-            <?php else: ?>
+             </div>
+           <?php else: ?>
               <button class="btn btn-xs">
                 <i class="fa fa-globe"></i>
                 <em>&nbsp;</em>
@@ -272,12 +275,16 @@
             <?php endif;?>
 
           <?php endif;?>
+<!---->
+<!--           --><?php //if ($environment->login_url): ?>
+<!--           <div class="btn-group url-wrapper" role="group">-->
+<!---->
+<!--             --><?php //if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+<!--               <a href="--><?php //print $environment->login_url; ?><!--" target="--><?php //print $target; ?><!--" class="btn btn-link">--><?php //print $environment->login_text; ?><!--</a>-->
+<!--           </div>-->
+<!--           --><?php //endif; ?>
         </div>
 
-        <?php if ($environment->login_url): ?>
-          <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
-          <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link login-link"><?php print $environment->login_text; ?></a>
-        <?php endif; ?>
       </div>
 
 
