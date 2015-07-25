@@ -115,6 +115,16 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
     array_unshift($items, array(
       'class' => 'divider',
     ));
+
+    // Add "Request Login" link
+    if (user_access('create login-reset task')) {
+
+      $request_login_link = l('<i class="fa fa-sign-in"></i> ' . t('Request Login'), "node/{$environment->site}/site_login-reset", array('html' => TRUE, 'query' => array('token' => drupal_get_token($user->uid))));
+      array_unshift($items, $request_login_link);
+      array_unshift($items, '<li class="divider"></li>');
+    }
+
+    // Add "Environment Settings" link
     if (node_access('update', $environment_node)) {
       array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE)));
     }
@@ -463,12 +473,9 @@ HTML;
         $environment->login_text = t('Log in');
       }
       else {
-        $environment->login_url = url("node/{$environment->site}/site_login-reset", array('query' => array('token' => drupal_get_token($user->uid))));
-        $environment->login_text = t('Request Login');
-
         $task = hosting_get_most_recent_task($environment->site, 'login-reset');
         if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-          $environment->login_text = t('Please Wait...');
+          $environment->login_text = t('Requesting Login...');
           $environment->login_url = '#';
         }
       }
