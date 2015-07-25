@@ -546,3 +546,9 @@ th.checkbox, td.checkbox {
 .padded-top {
   padding-top: 1em;
 }
+
+ul.dropdown-menu li.text {
+  padding: .25em 2em;
+  font-size: .8em;
+  color: #777;
+}
