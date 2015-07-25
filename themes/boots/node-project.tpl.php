@@ -381,7 +381,7 @@
               </li>
               <?php endforeach; ?>
 
-              <li><label><?php print t('Deploy Services'); ?></label></li>
+              <li><label><?php print t('Servers'); ?></label></li>
               <?php foreach ($environment->servers as $type => $server):
                   // DB: Migrate Task
                   if ($type == 'db') {
