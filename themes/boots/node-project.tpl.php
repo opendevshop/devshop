@@ -167,6 +167,15 @@
       <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
         <!-- Environment Links -->
+
+        <?php if ($environment->login_url): ?>
+          <div class="pull-right login-link" role="group">
+
+            <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+            <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link btn-sm"><?php print $environment->login_text; ?></a>
+          </div>
+        <?php endif; ?>
+
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
           <?php print $environment->name; ?></a>
 
@@ -275,14 +284,6 @@
             <?php endif;?>
 
           <?php endif;?>
-<!---->
-<!--           --><?php //if ($environment->login_url): ?>
-<!--           <div class="btn-group url-wrapper" role="group">-->
-<!---->
-<!--             --><?php //if ($environment->login_text == 'Log in') $target = '_blank'; ?>
-<!--               <a href="--><?php //print $environment->login_url; ?><!--" target="--><?php //print $target; ?><!--" class="btn btn-link">--><?php //print $environment->login_text; ?><!--</a>-->
-<!--           </div>-->
-<!--           --><?php //endif; ?>
         </div>
 
       </div>
