@@ -69,11 +69,19 @@ body.admin-menu .navbar-static-top {
 }
 
 .environment-domains {
-  text-overflow: ellipsis;
-  overflow: hidden;
   position: relative;
-  padding: 0px 6em 0px 0px;
+  padding: 0px 6em 0px 1em;
   white-space: nowrap;
+}
+
+.environment-domains .btn{
+  padding: 3px;
+}
+
+.environment-domains .btn.btn-text {
+  background: white;
+  padding-left: .5em;
+  color: #777;
 }
 
 .environment-domains.login-available {
@@ -370,7 +378,7 @@ input.form-control.webhook-url {
     padding: 0px;
 }
 .dropdown-menu li label,
-.environment-deploy label
+.environment label
 {
   font-size: .7em;
   text-transform: uppercase;
