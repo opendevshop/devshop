@@ -70,7 +70,7 @@ body.admin-menu .navbar-static-top {
 
 .environment-domains {
   position: relative;
-  padding: 0px 6em 0px 1em;
+  padding: 0px;
   white-space: nowrap;
 }
 
@@ -336,6 +336,14 @@ body.admin-menu .navbar-static-top {
 .environment-meta-data button:hover {
   text-decoration: underline;
 }
+
+.url-wrapper {
+  text-overflow:ellipsis;
+  overflow: hidden;
+  display: inline;
+  max-width: 75%;
+}
+
 .environment .last-commit {
   display: block;
   color: #777;
