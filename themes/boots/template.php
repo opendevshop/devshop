@@ -206,7 +206,13 @@ function boots_preprocess_page(&$vars){
     elseif (isset($vars['node']->project)) {
 
       $vars['title2'] = $vars['title'];
-      $vars['subtitle2'] = ucfirst($vars['node']->type);
+
+      if ($vars['node']->type == 'site') {
+        $vars['subtitle2'] = t('Environment');
+      }
+      else {
+        $vars['subtitle2'] = ucfirst($vars['node']->type);
+      }
 
       $name = is_string($vars['node']->project)? $vars['node']->project: $vars['node']->project->name;
 
