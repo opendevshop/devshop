@@ -431,6 +431,11 @@ HTML;
   $vars['target_environments'];
 
   foreach ($vars['node']->project->environments as &$environment) {
+
+    if ($environment->site) {
+      $vars['source_environments'][$environment->name] = $environment;
+    }
+
     boots_preprocess_environment($environment, $node->environment_actions[$environment->name]);
   }
 }
@@ -442,6 +447,8 @@ HTML;
  * @param $actions
  */
 function boots_preprocess_environment(&$environment, $actions) {
+
+    $project = node_load($environment->project_nid);
 
     // Environment Tasks
     if ($environment->site) {
@@ -459,10 +466,6 @@ function boots_preprocess_environment(&$environment, $actions) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
         $environment->active_tasks++;
       }
-    }
-
-    if ($environment->site) {
-      $vars['source_environments'][$environment->name] = $environment;
     }
 
     // Status
