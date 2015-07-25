@@ -176,7 +176,13 @@ function boots_preprocess_page(&$vars){
     $vars['tasks'] = boots_render_tasks();
   }
 
-  if ($vars['node']) {
+  // On any node/% page...
+  if ($vars['node'] || arg(0) == 'node' && is_numeric(arg(1))) {
+
+    // load $vars['node'] if it's not present (like on node/%/edit)
+    if (empty($vars['node'])) {
+      $vars['node'] = node_load(arg(1));
+    }
 
     // Removing conflicting scripts.
     // Not sure how this actually works.  Drupal 6 is fun!
