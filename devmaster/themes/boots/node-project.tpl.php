@@ -366,6 +366,13 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu devshop-stack" role="menu">
+              <li><label><?php print t('IP Address'); ?></label></li>
+              <?php foreach ($environment->ip_addresses as $ip): ?>
+              <li class="text">
+                <?php print $ip ?>
+              </li>
+              <?php endforeach; ?>
+
               <li><label><?php print t('Deploy Services'); ?></label></li>
               <?php foreach ($environment->servers as $type => $server):
                   // DB: Migrate Task

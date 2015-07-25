@@ -134,17 +134,21 @@ function devshop_projects_load($node) {
     $environment->version = $release->version;
 
     // @TODO: Make "servers" more abstract so we can add many more.
-    // Get extra server info
+    // HTTP Server
     $environment->servers['http'] = array(
       'nid' => $environment->web_server_nid,
       'name' => $environment->web_server,
     );
 
-    // HTTP Server
+    // DB Server
     $environment->servers['db'] = array(
       'nid' => $environment->db_server,
       'name' => $environment->db_server,
     );
+
+    // Web Server IP
+    $server = node_load($environment->web_server_nid);
+    $environment->ip_addresses = $server->ip_addresses;
 
     // Load Solr if present
     if (module_exists('hosting_solr')) {
