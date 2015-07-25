@@ -239,6 +239,29 @@ function boots_preprocess_node(&$vars) {
   if ($vars['node']->type == 'site') {
     $project_node = node_view(node_load($vars['node']->project_nid));
     boots_preprocess_environment($vars['node']->environment, $project_node->environment_actions[$vars['node']->environment->name]);
+
+    // Load source environments for db sync.
+    foreach ($vars['node']->project->environments as $environment) {
+      if ($environment->site) {
+        $vars['source_environments'][$environment->name] = $environment;
+      }
+    }
+
+    // Load git refs.
+    $vars['git_refs'] = array();
+    foreach ($vars['node']->project->settings->git['refs'] as $ref => $type){
+      $href = url('node/ENV_NID/site_devshop-deploy', array(
+        'query' =>array(
+          'git_ref' => $ref,
+        )
+      ));
+      $icon = $type == 'tag'? 'tag': 'code-fork';
+
+      $vars['git_refs'][$ref] = "<a href='$href'>
+        <i class='fa fa-$icon'></i>
+        $ref
+      </a>";
+    }
   }
 }
 

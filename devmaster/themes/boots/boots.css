@@ -560,3 +560,11 @@ ul.dropdown-menu li.text {
   font-size: .8em;
   color: #777;
 }
+
+.node-type-site .environment {
+  position: relative;
+}
+
+.node-type-site .environment-dropdowns {
+  right: 0px;
+}
