@@ -19,7 +19,8 @@ __aegir_packages:
   - php-pear
   - php-xml
   - php-mcrypt
-  - php-mbstring
+  # Not a package on RHEL 7? Unable to install.
+  # - php-mbstring
   - postfix
   - sudo
   - rsync
