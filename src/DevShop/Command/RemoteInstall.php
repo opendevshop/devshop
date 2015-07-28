@@ -197,7 +197,12 @@ class RemoteInstall extends Command
         ));
 
         $playbook_path = realpath(__DIR__ . '/../../../playbook-remote.yml');
-        $command = "ansible-playbook -i /tmp/inventory-remote $playbook_path --become --become-user=root --ask-become-pass --extra-vars '$extra_vars'";
+        $command = "ansible-playbook -i /tmp/inventory-remote $playbook_path --extra-vars '$extra_vars'";
+
+        // If not running ansible as root, use "become" options to become root.
+        if ($root_username != 'root') {
+            $command .= ' --become --become-user=root --ask-become-pass';
+        }
 
         $output->writeln("<info>Provision Server:</info> Run Ansible Playbook");
         $output->writeln("Run the following command? You may cancel and run the command manually now if you wish.");
