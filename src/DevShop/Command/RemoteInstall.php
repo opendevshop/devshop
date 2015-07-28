@@ -206,7 +206,9 @@ class RemoteInstall extends Command
             "<comment>$command</comment> [y/N] ", true
         );
 
+        $skip_checks = TRUE;
         if ($helper->ask($input, $output, $confirmationQuestion)) {
+            $skip_checks = FALSE;
             $process = new Process($command, null, array(
                 'ANSIBLE_FORCE_COLOR' => 'true',
                 'HOME' => $_SERVER['HOME'],
@@ -247,6 +249,10 @@ class RemoteInstall extends Command
         // Test MySQL Access
         $output->writeln('');
         $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
+        if ($skip_checks) {
+            $output->writeln('<comment>Skipping...</comment>');
+        }
+        else {
 
         $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e'CREATE DATABASE test_access; DROP DATABASE test_access;'";
         $process = new Process($cmd);
@@ -262,11 +268,15 @@ class RemoteInstall extends Command
             $output->writeln($formattedBlock);
             $something_failed = TRUE;
         }
+        }
 
-        // Test Apache Access
+      // Test Apache Access
         $output->writeln('');
         $output->writeln('<info>Apache:</info> Testing Apache restart access...');
-
+        if ($skip_checks) {
+          $output->writeln('<comment>Skipping...</comment>');
+        }
+        else {
         $cmd = "ssh aegir@$hostname -t -o 'PasswordAuthentication no' -C '$apache_restart'";
         $process = new Process($cmd);
         $process->setTimeout(null);
@@ -280,6 +290,7 @@ class RemoteInstall extends Command
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
             $something_failed = TRUE;
+        }
         }
 
         $output->writeln('');
