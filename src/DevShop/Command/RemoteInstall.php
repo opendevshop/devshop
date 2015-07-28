@@ -104,7 +104,7 @@ class RemoteInstall extends Command
         }
 
         // Ask for remote username
-        $question = new Question("Remote username (must have sudo access) [root]: ", 'root');
+        $question = new Question("Remote username (must have ssh access from this machine and sudo access) [root]: ", 'root');
         while (empty($root_username)) {
           $root_username = $helper->ask($input, $output, $question, 'root');
         }
@@ -170,7 +170,7 @@ class RemoteInstall extends Command
         $fs = new Filesystem();
 
         try {
-            $fs->dumpFile('/tmp/inventory-remote', $hostname);
+            $fs->dumpFile('/tmp/inventory-remote', "$hostname ansible_ssh_user=$root_username");
         } catch (IOExceptionInterface $e) {
             throw new \Exception("Unable to write inventory-remote file.");
         }
@@ -197,10 +197,11 @@ class RemoteInstall extends Command
         ));
 
         $playbook_path = realpath(__DIR__ . '/../../../playbook-remote.yml');
-        $command = "ansible-playbook -i /tmp/inventory-remote $playbook_path --extra-vars '$extra_vars'";
+        $command = "ansible-playbook -i /tmp/inventory-remote $playbook_path --become --become-user=root --ask-become-pass --extra-vars '$extra_vars'";
 
         $output->writeln("<info>Provision Server:</info> Run Ansible Playbook");
         $output->writeln("Run the following command? You may cancel and run the command manually now if you wish.");
+        $output->writeln("When asked for SUDO password, enter the password for <comment>$root_username</comment>.");
 
         $confirmationQuestion = new ConfirmationQuestion(
             "<comment>$command</comment> [y/N] ", true
@@ -308,7 +309,7 @@ class RemoteInstall extends Command
         $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
         $output->writeln('');
 
-        $output->writeln("<comment>WARNING:</comment> You must revoke access to  <comment>root@$hostname</comment> to secure your system.");
+        $output->writeln("<comment>WARNING:</comment> You should revoke access to <comment>$root_username@$hostname</comment> to secure your system.");
 
         $output->writeln('');
         $url = "http://" . php_uname('n') . '/node/add/server';
