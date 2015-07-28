@@ -103,11 +103,15 @@ class RemoteInstall extends Command
             }
         }
 
+        // Ask for remote username
+        $question = new Question("Remote username (must have sudo access) [root]: ", 'root');
+        while (empty($root_username)) {
+          $root_username = $helper->ask($input, $output, $question, 'root');
+        }
+
         // Confirm ability to SSH in as root.
         $access = FALSE;
         while ($access == FALSE) {
-            $root_username = 'root';
-
             $confirmationQuestion = new ConfirmationQuestion(
                 "Ready to check access to <comment>$root_username@$hostname</comment> ? [Hit Enter to continue] ", true
             );
