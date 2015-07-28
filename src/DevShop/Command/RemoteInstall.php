@@ -254,43 +254,43 @@ class RemoteInstall extends Command
         }
         else {
 
-        $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e'CREATE DATABASE test_access; DROP DATABASE test_access;'";
-        $process = new Process($cmd);
-        $process->setTimeout(null);
+            $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e'CREATE DATABASE test_access; DROP DATABASE test_access;'";
+            $process = new Process($cmd);
+            $process->setTimeout(null);
 
-        try {
-            $process->mustRun();
-            $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
+            try {
+                $process->mustRun();
+                $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
 
-        } catch (ProcessFailedException $e) {
-            $errorMessages = array_filter(explode("\n", $e->getMessage()));
-            $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
-            $output->writeln($formattedBlock);
-            $something_failed = TRUE;
+            } catch (ProcessFailedException $e) {
+                $errorMessages = array_filter(explode("\n", $e->getMessage()));
+                $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+                $output->writeln($formattedBlock);
+                $something_failed = TRUE;
+            }
         }
-        }
 
-      // Test Apache Access
+        // Test Apache Access
         $output->writeln('');
         $output->writeln('<info>Apache:</info> Testing Apache restart access...');
         if ($skip_checks) {
-          $output->writeln('<comment>Skipping...</comment>');
+            $output->writeln('<comment>Skipping...</comment>');
         }
         else {
-        $cmd = "ssh aegir@$hostname -t -o 'PasswordAuthentication no' -C '$apache_restart'";
-        $process = new Process($cmd);
-        $process->setTimeout(null);
+            $cmd = "ssh aegir@$hostname -t -o 'PasswordAuthentication no' -C '$apache_restart'";
+            $process = new Process($cmd);
+            $process->setTimeout(null);
 
-        try {
-            $process->mustRun();
-            $output->writeln('<info>Access Granted!</info> Apache was restarted successfully.');
+            try {
+                $process->mustRun();
+                $output->writeln('<info>Access Granted!</info> Apache was restarted successfully.');
 
-        } catch (ProcessFailedException $e) {
-            $errorMessages = array_filter(explode("\n", $e->getMessage()));
-            $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
-            $output->writeln($formattedBlock);
-            $something_failed = TRUE;
-        }
+            } catch (ProcessFailedException $e) {
+                $errorMessages = array_filter(explode("\n", $e->getMessage()));
+                $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+                $output->writeln($formattedBlock);
+                $something_failed = TRUE;
+            }
         }
 
         $output->writeln('');
