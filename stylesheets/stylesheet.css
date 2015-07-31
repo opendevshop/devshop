@@ -530,6 +530,10 @@ Small Device Styles
   clear: left;
 }
 
+.center {
+  text-align: center;
+}
+
 h3 {
   font-weight: normal;
 }
