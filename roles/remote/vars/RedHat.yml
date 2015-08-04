@@ -34,6 +34,7 @@ __aegir_packages:
   - MySQL-python
   - mod_ssl
   - openssh
+  - openssl
 
 apache_ports_configuration_items:
   - {

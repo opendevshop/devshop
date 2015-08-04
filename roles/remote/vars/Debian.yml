@@ -27,6 +27,7 @@ __aegir_packages:
   - git
   - curl
   - python-mysqldb
+  - openssl
 
 apache_ports_configuration_items:
   - {

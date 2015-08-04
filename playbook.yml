@@ -44,6 +44,7 @@
         - curl
         - supervisor
         - python-mysqldb
+        - openssl
 
     # REDHAT
     - name: Setup | Install required packages.
@@ -74,6 +75,9 @@
         - MySQL-python
         - epel-release
         - supervisor
+        - openssl
+        - mod_ssl
+
 #
 #    - name: Create Aegir Group (so we can set the GID)
 #      group:
@@ -155,6 +159,10 @@
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
+      when: ansible_os_family == "Debian"
+
+    - name: Enable mod ssl
+      command: a2enmod ssl
       when: ansible_os_family == "Debian"
 
     - name: Symbolic link to Aegir's Apache Config
