@@ -57,6 +57,16 @@ class Upgrade extends Command
     }
     $output->writeln('');
 
+    // Check current user is aegir
+    if (posix_uname() != 'aegir') {
+      $output->writeln('<error>WARNING:</error> You must run this command as the aegir user.');
+      $output->writeln('Run "sudo su - aegir" to switch to the aegir user.');
+      $output->writeln('<fg=red>Installation aborted.</>');
+      $output->writeln('');
+      return;
+    }
+    $output->writeln('');
+
     // Look for .devshop-version (Pre 0.3 does not have this file.)
     if (file_exists('/var/aegir/.devshop-version')) {
       $current_version = file_get_contents('/var/aegir/.devshop-version');
