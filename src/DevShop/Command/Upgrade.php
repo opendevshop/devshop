@@ -58,7 +58,8 @@ class Upgrade extends Command
     $output->writeln('');
 
     // Check current user is aegir
-    if (posix_uname() != 'aegir') {
+    $pwu_data = posix_getpwuid(posix_geteuid());
+    if ($pwu_data['name'] != 'aegir') {
       $output->writeln('<error>WARNING:</error> You must run this command as the aegir user.');
       $output->writeln('Run "sudo su - aegir" to switch to the aegir user.');
       $output->writeln('<fg=red>Installation aborted.</>');
