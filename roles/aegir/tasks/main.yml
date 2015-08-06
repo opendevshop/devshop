@@ -35,6 +35,14 @@
       state: directory
       mode: 0755
 
+  - name: Create aegir's logs folder
+    file:
+      path: /var/aegir/logs
+      owner: aegir
+      group: aegir
+      state: directory
+      mode: 0755
+
   - name: Setup SSH config for aegir user.
     template:
       src=templates/ssh-config.j2
