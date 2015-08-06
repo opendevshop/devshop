@@ -124,7 +124,7 @@ function hosting_task_devshop_create_form($node) {
       '#description' => t(
         'The database server the site will use to host its content.'
       ),
-      '#options' => hosting_get_servers('db'),
+      '#options' => $servers,
       '#default_value' => $project->settings->default_environment['db_server'],
     );
   }
@@ -218,7 +218,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  *   If desired, the environment to clone. (Copy the database and create a new branch from)
  */
 function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create') {
-
+  $settings = (object) $settings;
   global $user;
 
   // First, create a platform node. Only aegir properties are needed.
