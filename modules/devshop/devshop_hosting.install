@@ -13,6 +13,29 @@ function devshop_hosting_install(){
 }
 
 /**
+ * Implements hook_requirements()
+ * @param $phase
+ * @return array
+ */
+function devshop_hosting_requirements($phase) {
+  $requirements = array();
+
+  $devshop_version = file_get_contents('/var/aegir/.devshop-version');
+  $t = get_t();
+
+  // Report DevShop version
+  if ($phase == 'runtime') {
+    $requirements['devshop'] = array(
+      'title' => $t('DevShop Version'),
+      'value' => $devshop_version,
+      'severity' => REQUIREMENT_OK,
+    );
+  }
+
+  return $requirements;
+}
+
+/**
  * Set weight of this module higher than views.
  */
 function devshop_hosting_update_7001() {
