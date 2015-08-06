@@ -141,7 +141,7 @@ function hosting_task_devshop_create_form($node) {
   }
 
   // Load in environment settings
-  // Load project and it's form
+  // This allows modules that add settings to environments form to do so here as well.
   $form_state = array();
   devshop_projects_form_alter($form, $form_state, 'site_node_form');
   return $form;
