@@ -187,6 +187,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $environment_name = $form_state['values']['parameters']['environment_name'];
   $environment_settings = $form_state['values']['parameters']['environment']['settings'];
   $environment_settings['db_server'] = $form_state['values']['parameters']['db_server'];
+  $environment_settings['web_server'] = $form_state['values']['parameters']['web_server'];
 
   $action = $form_state['values']['parameters']['action'];
   $git_ref = $form_state['values']['parameters']['git_ref'];
