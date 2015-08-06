@@ -299,7 +299,15 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
       }
       else {
-        devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $platform->project->settings->default_environment['db_server']);
+
+        // Determine what DB server to use
+        if (isset($platform->environment->settings->db_server)) {
+          $db_server = $platform->environment->settings->db_server;
+        }
+        else {
+          $db_server = $platform->project->settings->default_environment['db_server'];
+        }
+        devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
         drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
       }
     }

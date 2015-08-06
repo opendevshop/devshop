@@ -113,15 +113,35 @@ function hosting_task_devshop_create_form($node) {
     );
   }
 
-//  // @TODO: I don't think this is needed. hosting_task_devshop_create_form_submit() looks for nid, these values end up in $form_state['values']['paramters'];
-//  $form['project_nid'] = array(
-//    '#type' => 'value',
-//    '#value' => $node->nid,
-//  );
+  // Server Selection
+  // Choose database server.
+  $servers = hosting_get_servers('db');
+  if (sizeof($servers) > 1) {
+    $form['db_server'] = array(
+      '#type' => 'radios',
+      '#title' => t('Database server'),
+      '#required' => true,
+      '#description' => t(
+        'The database server the site will use to host its content.'
+      ),
+      '#options' => hosting_get_servers('db'),
+      '#default_value' => $project->settings->default_environment['db_server'],
+    );
+  }
+
+  $servers = hosting_get_servers('http');
+  if (sizeof($servers) > 1) {
+    $form['web_server'] = array(
+      '#type' => 'radios',
+      '#title' => t('Web server'),
+      '#description' => t('The web server the sites will be hosted on.'),
+      '#options' => $servers,
+      '#default_value' => $project->settings->default_environment['web_server'],
+    );
+  }
 
   // Load in environment settings
   // Load project and it's form
-//  $site_form = array();
   $form_state = array();
   devshop_projects_form_alter($form, $form_state, 'site_node_form');
   return $form;
@@ -163,10 +183,10 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
  * @see devshop_projects_form_alter().  We had to add the submit handler there.
  */
 function hosting_task_devshop_create_form_submit($form, &$form_state) {
-
   $project_node = node_load($form_state['values']['nid']);
   $environment_name = $form_state['values']['parameters']['environment_name'];
   $environment_settings = $form_state['values']['parameters']['environment']['settings'];
+  $environment_settings['db_server'] = $form_state['values']['parameters']['db_server'];
 
   $action = $form_state['values']['parameters']['action'];
   $git_ref = $form_state['values']['parameters']['git_ref'];
@@ -209,7 +229,12 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $platform->name = $user->name;
 
   // Set web server to the project default.
-  $platform->web_server = $project->settings->default_environment['web_server'];
+  if ($settings->web_server) {
+    $platform->web_server = $settings->web_server;
+  }
+  else {
+    $platform->web_server = $project->settings->default_environment['web_server'];
+  }
 
   // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
