@@ -493,7 +493,6 @@ function boots_preprocess_environment(&$environment, $actions) {
     }
 
     // Status
-  dsm($project->settings);
     if ($environment->site_status == HOSTING_SITE_DISABLED) {
       $environment->class = 'disabled';
       $environment->list_item_class = 'disabled';
