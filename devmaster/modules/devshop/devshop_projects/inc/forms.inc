@@ -248,8 +248,9 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   // Site "Edit" page.  This is our environment settings page..
   if ($form_id == 'site_node_form') {
 
+    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
     $node = $form['#node'];
-    $environment = $node->environment;
+    $environment = (object) $node->environment;
 
     // Remove aegir's helpful info panel.
     unset($form['info']);
