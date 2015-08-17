@@ -471,7 +471,8 @@ HTML;
  */
 function boots_preprocess_environment(&$environment, $actions) {
 
-    $project = node_load($environment->project_nid);
+    $project_node = node_load($environment->project_nid);
+    $project = $project_node->project;
 
     // Environment Tasks
     if ($environment->site) {
@@ -492,6 +493,7 @@ function boots_preprocess_environment(&$environment, $actions) {
     }
 
     // Status
+  dsm($project->settings);
     if ($environment->site_status == HOSTING_SITE_DISABLED) {
       $environment->class = 'disabled';
       $environment->list_item_class = 'disabled';
