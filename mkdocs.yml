@@ -14,3 +14,5 @@ pages:
 - 'Development':
   - 'Developing DevShop': 'development.md'
   - 'Release Process': 'release-process.md'
+- 'Help'"
+  - 'Going Live': 'going-live.md'
