@@ -14,5 +14,7 @@ pages:
 - 'Development':
   - 'Developing DevShop': 'development.md'
   - 'Release Process': 'release-process.md'
-- 'Help'"
+- 'Management':
+  - 'Password Protection': 'password-protect.md'
   - 'Going Live': 'going-live.md'
+
