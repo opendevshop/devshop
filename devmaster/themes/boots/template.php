@@ -198,7 +198,7 @@ function boots_preprocess_page(&$vars){
     $vars['title_url'] = "node/" . $vars['node']->nid;
 
     // Set title2 if on a node/%/* sub page.
-    if (!is_null(arg(2))) {
+    if (!is_null(arg(2)) && $vars['title'] != $vars['node']->title) {
       $vars['title2'] = $vars['title'];
       $vars['title'] = $vars['node']->title;
     }
