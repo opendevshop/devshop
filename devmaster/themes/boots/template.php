@@ -224,6 +224,21 @@ function boots_preprocess_page(&$vars){
       }
     }
 
+    // Improve tasks display
+    if ($vars['node']->type == 'task') {
+      $object = node_load($vars['node']->rid);
+
+      $vars['title'] = $object->title;
+      if ($object->type == 'site') {
+        $vars['subtitle'] = t('Environment');
+      }
+      else {
+        $vars['subtitle'] = ucfirst($object->type);
+      }
+
+      $vars['title_url'] = 'node/' . $object->nid;
+    }
+
     $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
