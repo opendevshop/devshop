@@ -63,6 +63,9 @@ projects[hosting_logs][subdir] = contrib
 projects[hosting_site_backup_manager][version] = "2.0"
 projects[hosting_site_backup_manager][subdir] = contrib
 
+projects[aegir_ssh][version] = "0"
+projects[aegir_ssh][subdir] = contrib
+
 ; Libraries
 libraries[jquery_ui][download][type] = "get"
 libraries[jquery_ui][destination] = "modules/contrib/jquery_ui"
