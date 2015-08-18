@@ -105,7 +105,15 @@ function devshop_projects_preprocess_node(&$vars){
     $vars['drush_aliases'] = devshop_project_aliases($vars['node']->project);
     $vars['aliases_url'] = url("node/{$vars['node']->nid}/aliases");
 
-    $vars['access_note'] = t('NOTE: To grant users authorization to access these environments with drush remotely, you must put their private key into the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+    if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
+      global $user;
+      $vars['access_note'] = t('NOTE: To access these environments with drush remotely, make sure you have uploaded your public SSH key under !link.', array(
+        '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
+      ));
+    }
+    else {
+      $vars['access_note'] = t('NOTE: To access these environments with drush remotely, ask an administrator to add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+    }
   }
 }
 
