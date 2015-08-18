@@ -194,12 +194,21 @@ function boots_preprocess_page(&$vars){
     $vars['scripts'] = $js;
 
     // Set subtitle
+    $vars['subtitle'] = ucfirst($vars['node']->type);
+    $vars['title_url'] = "node/" . $vars['node']->nid;
+
+    // Set title2 if on a node/%/* sub page.
+    if (!is_null(arg(2))) {
+      $vars['title2'] = $vars['title'];
+      $vars['title'] = $vars['node']->title;
+    }
+
     if ($vars['node']->type == 'project'){
       $vars['subtitle'] = t('Project');
 
       unset($vars['tabs']);
 
-      $vars['title'] = l($vars['title'], "node/" . $vars['node']->nid);
+      $vars['title_url'] = "node/" . $vars['node']->nid;
     }
 
     // Set header and subtitle 2 for nodes that have a project.
@@ -213,12 +222,9 @@ function boots_preprocess_page(&$vars){
       else {
         $vars['subtitle2'] = ucfirst($vars['node']->type);
       }
-
-      $name = is_string($vars['node']->project)? $vars['node']->project: $vars['node']->project->name;
-
-      $vars['title'] = l($name, "hosting/c/{$name}");
-      $vars['subtitle'] = t('Project');
     }
+
+    $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
 }
