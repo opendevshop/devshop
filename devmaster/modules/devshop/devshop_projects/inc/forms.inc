@@ -195,6 +195,33 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
           $form['warning']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
         }
         break;
+      case 'delete':
+        $node = node_load($form['nid']['#value']);
+        if ($node->type == 'project') {
+
+          // Set a better title.
+          drupal_set_title(t('Delete Project: !project', array(
+            '!project' => l($node->project->name, "node/{$node->nid}"),
+          )));
+
+          // Get a list of environments.
+          foreach ($node->project->environments as $environment) {
+            $items[] = l($environment->uri, 'http://' . $environment->uri);
+
+          }
+          $environments = theme('item_list', $items);
+
+          // Display a scary warning message.
+          $form['help']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Are you sure you wish to destroy the project !project and all of these environments?', array(
+              '!project' => l($node->project->name, "node/{$node->nid}"),
+            )) . $environments . '</div>';
+
+          // Make the button big
+          $form['actions']['submit']['#value'] = t('Delete Project & Environments');
+          $form['actions']['submit']['#attributes']['class'] = 'btn btn-large btn-danger';
+
+        }
+        break;
     }
   }
 
