@@ -87,7 +87,8 @@ function devshop_projects_load($node) {
         db.nid as db_server_nid,
         n.title as project_name,
         s.vid,
-        a.redirection as default_domain
+        sn.title as system_domain,
+        a.redirection as redirect_domain
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
       LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -176,26 +177,17 @@ function devshop_projects_load($node) {
     // Repo root
     $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
 
-    // Environments URL
+    // Environments URLs
+    // Get aegir "aliases"
+    $environment->domains = hosting_alias_get_aliases($environment);
+    $environment->domains[] = $environment->system_domain;
     // @TODO: Check for http or https.
     // @TODO: Load a login URL if available.
-    if ($environment->default_domain) {
-      $environment->url = 'http://' . $environment->default_domain;
+
+    if ($environment->redirect_domain) {
+      $environment->url = 'http://' . $environment->redirect_domain;
     } else {
-      $environment->url = '';
-    }
-
-    // Get Domain aliases
-    $environment->domains = hosting_alias_get_aliases($environment);
-    array_unshift($environment->domains, $environment->default_domain);
-
-    // Make the live domain the primary
-    if ($project->settings->live['environment_aliases'] && !empty($project->settings->live['live_domain'])) {
-      foreach ($environment->domains as $domain) {
-        if (strpos($domain, $project->settings->live['live_domain']) !== FALSE){
-          $environment->url = 'http://' . $domain;
-        }
-      }
+      $environment->url =  'http://' . $environment->system_domain;
     }
 
     // Save to project environments collection.
