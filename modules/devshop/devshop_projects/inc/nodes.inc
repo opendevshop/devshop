@@ -87,7 +87,7 @@ function devshop_projects_load($node) {
         db.nid as db_server_nid,
         n.title as project_name,
         s.vid,
-        sn.title as default_domain
+        a.redirection as default_domain
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
       LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -95,6 +95,7 @@ function devshop_projects_load($node) {
       LEFT JOIN {node} http ON p.web_server = http.nid
       LEFT JOIN {node} db ON s.db_server = db.nid
       LEFT JOIN {node} n ON e.project_nid = n.nid
+      LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
       WHERE project_nid = %d AND
       e.name != ''
       ORDER BY name;   ", $node->nid);
