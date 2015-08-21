@@ -243,7 +243,11 @@
            <?php if (count($environment->domains) > 1): ?>
            <div class="btn-group url-wrapper" role="group">
              <a href="<?php print $environment->url ?>" target="_blank">
-               <i class="fa fa-globe"></i>
+               <?php if (!empty($environment->ssl_enabled)): ?>
+                 <i class="fa fa-lock text-success"></i>
+               <?php else: ?>
+                 <i class="fa fa-globe"></i>
+               <? endif;?>
                <?php print $environment->url ?>
              </a>
            </div>
@@ -272,7 +276,11 @@
            <?php if (!empty($environment->url)): ?>
              <div class="btn-group url-wrapper" role="group">
                <a href="<?php print $environment->url ?>" target="_blank">
-                <i class="fa fa-globe"></i>
+               <?php if (!empty($environment->ssl_enabled)): ?>
+                 <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
+               <?php else: ?>
+                 <i class="fa fa-globe"></i>
+               <? endif;?>
                 <?php print $environment->url ?>
               </a>
              </div>

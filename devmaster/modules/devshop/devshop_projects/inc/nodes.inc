@@ -177,17 +177,23 @@ function devshop_projects_load($node) {
     // Repo root
     $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
 
+    // Load encryption status
+    if (module_exists('hosting_ssl')){
+      $environment->ssl_enabled  = db_result(db_query('SELECT ssl_enabled FROM {hosting_ssl_site} WHERE nid = %d', $environment->site));
+    }
+    else {
+      $environment->ssl_enabled = FALSE;
+    }
+
     // Environments URLs
     // Get aegir "aliases"
     $environment->domains = hosting_alias_get_aliases($environment);
     $environment->domains[] = $environment->system_domain;
-    // @TODO: Check for http or https.
-    // @TODO: Load a login URL if available.
-
+    $protocol = $environment->ssl_enabled? 'https://': 'http://';
     if ($environment->redirect_domain) {
-      $environment->url = 'http://' . $environment->redirect_domain;
+      $environment->url = $protocol . $environment->redirect_domain;
     } else {
-      $environment->url =  'http://' . $environment->system_domain;
+      $environment->url = $protocol . $environment->system_domain;
     }
 
     // Save to project environments collection.
