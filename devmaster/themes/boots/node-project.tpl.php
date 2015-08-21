@@ -176,8 +176,24 @@
           </div>
         <?php endif; ?>
 
+
+        <?php if (isset($environment->github_pull_request)): ?>
+          <!-- Pull Request -->
+          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="btn btn-text text-muted btn-lg" target="_blank">
+            <h4>
+            <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32">
+            <i class="fa fa-github"></i>
+            <?php print t('Pull Request') . ' ' . $environment->github_pull_request->number ?>
+            </h4></a>
+
+        <?php else: ?>
+
+
+        <!-- Environment Name -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
           <?php print $environment->name; ?></a>
+
+        <?php endif; ?>
 
         <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('View this !type', array('!type' => $environment->git_ref_type)); ?>">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
@@ -206,16 +222,6 @@
           <span class="environment-meta-data text-muted" title="<?php print t('This is the live environment.'); ?>">
             <i class="fa fa-bolt"></i>Live
           </span>
-          <?php endif; ?>
-
-          <?php if (isset($environment->github_pull_request)): ?>
-            <!-- Pull Request -->
-            <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="btn btn-text text-muted btn-sm" target="_blank">
-              <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="16" height="16">
-              <i class="fa fa-github"></i>
-              <?php print $environment->github_pull_request->number ?>
-            </a>
-
           <?php endif; ?>
 
         </div>
