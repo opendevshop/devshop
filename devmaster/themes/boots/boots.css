@@ -568,3 +568,9 @@ ul.dropdown-menu li.text {
 .node-type-site .environment-dropdowns {
   right: 0px;
 }
+.pull-request h4 {
+  margin-top: -4px;
+  margin-left: -9px;
+  float: left;
+  margin-right: 10px;
+}
