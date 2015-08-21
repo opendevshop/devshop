@@ -443,7 +443,6 @@
       <?php endif; ?>
 
         <div class="list-group-item">
-          <label><?php print t('Browse'); ?></label>
           <div class="btn-group" role="group">
 
           <!-- Last Commit -->
@@ -457,7 +456,13 @@
             <i class="fa fa-folder-o"></i>
             <?php print t('Files'); ?>
           </a>
-        </div>
+
+          <!-- Browse Backups -->
+          <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
+            <i class="fa fa-database"></i>
+            <?php print t('Backups'); ?>
+          </a>
+          </div>
         </div>
 
       <?php if ($environment->test): ?>
