@@ -40,6 +40,7 @@ function devmaster_profile_modules() {
     /* NICEITIES */
     'hosting_filemanager',
     'hosting_logs',
+    'hosting_ssl',
     'hosting_tasks_extra',
     'hosting_backup_queue',
     'hosting_site_backup_manager',
