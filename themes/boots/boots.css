@@ -578,3 +578,6 @@ ul.dropdown-menu li.text {
 .environment > .list-group-item.environment-header {
   padding:10px;
 }
+.github-button {
+  font-size: 1.5em;
+}
