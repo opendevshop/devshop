@@ -443,11 +443,20 @@
       <?php endif; ?>
 
         <div class="list-group-item">
+          <label><?php print t('Browse'); ?></label>
+          <div class="btn-group" role="group">
 
           <!-- Last Commit -->
-          <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="last-commit">
-            <?php print $environment->git_current; ?>
+          <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="btn btn-text text-muted small" title="<?php print $environment->git_last; ?>">
+            <?php print $environment->git_ref_id; ?>
           </a>
+
+          <!-- Browse Files -->
+          <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
+            <i class="fa fa-file"></i>
+            <?php print t('Files'); ?>
+          </a>
+        </div>
         </div>
 
       <?php if ($environment->test): ?>

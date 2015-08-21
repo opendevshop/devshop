@@ -168,11 +168,9 @@ function devshop_projects_load($node) {
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
 //    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small><br /> <small >%s</small>' HEAD^...HEAD");
-    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small> <span>%s</span>' --max-count=1");
-
-    if (empty($environment->git_current)){
-      $environment->git_current = t('Cloning in progress...');
-    }
+    $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%h %ar' --max-count=1
+");
+    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%an %ar %s' --max-count=1");
 
     // Repo root
     $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
