@@ -177,9 +177,9 @@
         <?php endif; ?>
 
 
-        <?php if (isset($environment->github_pull_request)): ?>
+        <?php  if (isset($environment->github_pull_request)): ?>
           <!-- Pull Request -->
-          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="btn btn-text text-muted btn-lg" target="_blank">
+          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
             <h4>
             <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32">
             <i class="fa fa-github"></i>
