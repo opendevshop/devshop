@@ -222,6 +222,9 @@ function boots_preprocess_page(&$vars){
       else {
         $vars['subtitle2'] = ucfirst($vars['node']->type);
       }
+
+      $vars['title'] = $vars['node']->project->name;
+      $vars['subtitle'] = t('Project');
     }
 
     // Improve tasks display

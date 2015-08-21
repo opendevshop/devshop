@@ -576,9 +576,9 @@ ul.dropdown-menu li.text {
   margin-bottom: -13px;
 }
 
-.environment .list-group-item {
+.environment > .list-group-item {
   padding: 0px;
 }
-.environment .list-group-item.environment-header {
+.environment > .list-group-item.environment-header {
   padding:10px;
 }
