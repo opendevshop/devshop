@@ -183,7 +183,7 @@
             <h4>
             <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32">
             <i class="fa fa-github"></i>
-            <?php print t('Pull Request') . ' ' . $environment->github_pull_request->number ?>
+            <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>
             </h4></a>
 
         <?php else: ?>
