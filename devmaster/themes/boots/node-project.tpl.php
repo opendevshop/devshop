@@ -448,12 +448,13 @@
 
           <!-- Last Commit -->
           <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="btn btn-text text-muted small" title="<?php print $environment->git_last; ?>">
+            <i class="fa fa-file-code-o"></i>
             <?php print $environment->git_ref_id; ?>
           </a>
 
           <!-- Browse Files -->
           <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
-            <i class="fa fa-file"></i>
+            <i class="fa fa-folder-o"></i>
             <?php print t('Files'); ?>
           </a>
         </div>
