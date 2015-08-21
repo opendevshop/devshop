@@ -273,7 +273,7 @@ function devshop_github_webhook($project_node){
 
               $params = new stdClass();
               $params->ref = $sha;
-              $params->environment = $environment_name;
+              $params->environment = $url;
               $params->required_contexts = array();
               $post_url = "/repos/$owner/$repo/deployments";
               $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
@@ -345,10 +345,11 @@ function devshop_github_webhook($project_node){
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
               $sha = $data->pull_request->head->sha;
+              $environment = $project->environments[$environment_name];
 
               $params = new stdClass();
               $params->ref = $sha;
-              $params->environment = $environment_name;
+              $params->environment = $environment->url;
               $params->required_contexts = array();
               $post_url = "/repos/$owner/$repo/deployments";
               $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
@@ -359,7 +360,6 @@ function devshop_github_webhook($project_node){
               $message .= " Deployment Created! \n";
 
               // Create deployment status
-              $environment = $project->environments[$environment_name];
               $deployment_id = $deployment->id;
 
               $params = new stdClass();
