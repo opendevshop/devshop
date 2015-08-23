@@ -229,6 +229,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
   if ($form_id == 'platform_node_form') {
 
     // Set to values
+    $platform_node = node_load($form['nid']['#value']);
+    if (empty($platform_node->project)) {
+      return;
+    }
+
     $form['title']['#type'] = 'value';
     $form['makefile']['#type'] = 'value';
     unset($form['info']);
