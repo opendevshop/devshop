@@ -240,8 +240,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 
     // If switching webservers...
     if ($_GET['web_server']){
-
-      $platform_node = node_load($form['nid']['#value']);
       $environment = $platform_node->environment;
       $form['help'] = array(
         '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
