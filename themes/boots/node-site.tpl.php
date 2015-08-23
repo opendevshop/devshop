@@ -48,6 +48,7 @@
  */
 
 $environment = $node->environment;
+if (!empty($node->project)):
 ?>
 
 <div class="environment-wrapper col-12">
@@ -389,3 +390,7 @@ $environment = $node->environment;
 
 <?php print $node->content['tasks_view']['#value']; ?>
 
+  <?php else: // If site is not in a project... ?>
+  <?php print $content; ?>
+
+<?php endif; ?>
