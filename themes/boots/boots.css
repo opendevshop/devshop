@@ -596,4 +596,5 @@ ul.dropdown-menu li.text {
 #hosting-site-info, #hosting-task-list {
   float: left;
   margin: 0 30px 15px 0;
+  width: 25%;
 }

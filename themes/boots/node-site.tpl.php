@@ -50,17 +50,10 @@
 $environment = $node->environment;
 if (!empty($node->project)):
 ?>
+<div class="container-fluid">
+<div class="environment-wrapper">
 
-<div class="environment-wrapper col-12">
-
-  <div class="list-group environment <?php print $environment->class  ?>">
-
-    <!-- Environment Tasks -->
-    <div class="environment-dropdowns">
-      <div class="environment-tasks btn-group ">
-        <?php print $environment->tasks_list; ?>
-      </div>
-    </div>
+  <div class="list-group environment col-sm-5 <?php print $environment->class  ?>">
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
@@ -388,7 +381,17 @@ if (!empty($node->project)):
   </div>
 </div>
 
-<?php print $node->content['tasks_view']['#value']; ?>
+
+  <!-- Environment Tasks -->
+  <div class="col-md-6">
+      <?php print $environment->tasks_list; ?>
+  </div>
+
+
+  <?php print $content; ?>
+
+<?php //print $node->content['tasks_view']['#value']; ?>
+</div>
 
   <?php else: // If site is not in a project... ?>
   <?php print $content; ?>
