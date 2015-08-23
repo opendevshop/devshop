@@ -246,7 +246,10 @@
 
          <div class="btn-toolbar" role="toolbar">
 
-           <?php if (count($environment->domains) > 1): ?>
+           <?php
+           // If we have more than one domain, add the dropdown.
+           if (count($environment->domains) > 1):
+             ?>
            <div class="btn-group url-wrapper" role="group">
              <a href="<?php print $environment->url ?>" target="_blank">
                <?php if (!empty($environment->ssl_enabled)): ?>
@@ -278,24 +281,27 @@
               </ul>
            </div>
 
-           <?php else: ?>
-           <?php if (!empty($environment->url)): ?>
-             <div class="btn-group url-wrapper" role="group">
-               <a href="<?php print $environment->url ?>" target="_blank">
-               <?php if (!empty($environment->ssl_enabled)): ?>
-                 <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
-               <?php else: ?>
-                 <i class="fa fa-globe"></i>
-               <? endif;?>
-                <?php print $environment->url ?>
-              </a>
-             </div>
-           <?php else: ?>
-              <button class="btn btn-xs">
-                <i class="fa fa-globe"></i>
-                <em>&nbsp;</em>
-              </button>
-            <?php endif;?>
+           <?php
+           // If site only has one domain (no aliases):
+           else: ?>
+
+             <?php if (!empty($environment->url)): ?>
+               <div class="btn-group url-wrapper" role="group">
+                 <a href="<?php print $environment->url ?>" target="_blank">
+                 <?php if (!empty($environment->ssl_enabled)): ?>
+                   <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
+                 <?php else: ?>
+                   <i class="fa fa-globe"></i>
+                 <? endif;?>
+                  <?php print $environment->url ?>
+                </a>
+               </div>
+             <?php else: ?>
+                <button class="btn btn-xs">
+                  <i class="fa fa-globe"></i>
+                  <em>&nbsp;</em>
+                </button>
+              <?php endif;?>
 
           <?php endif;?>
         </div>
