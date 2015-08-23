@@ -592,3 +592,8 @@ ul.dropdown-menu li.text {
 .github-button {
   font-size: 1.5em;
 }
+
+#hosting-site-info, #hosting-task-list {
+  float: left;
+  margin: 0 30px 15px 0;
+}
