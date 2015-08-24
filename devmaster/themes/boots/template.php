@@ -301,11 +301,33 @@ function boots_preprocess_node_task(&$vars) {
 
   $revision = array_shift($revisions);
 
-  $vars['submitted'] = t('Task Queued by !user, @time (%ago)', array(
-    '!user' => l($revision->name, "user/$revision->uid"),
+  $vars['submitted'] = t('@time (%ago)', array(
     '@time' => format_date($revision->timestamp),
     '%ago' => format_interval(time() - $revision->timestamp) . ' ' . t('ago'),
   ));
+
+  switch ($vars['node']->task_status) {
+    case HOSTING_TASK_SUCCESS:
+      $vars['task_label'] = t('Task Success');
+      $vars['task_label_class'] = 'success';
+      break;
+    case HOSTING_TASK_ERROR:
+      $vars['task_label'] = t('Task Error');
+      $vars['task_label_class'] = 'danger';
+      break;
+    case HOSTING_TASK_WARNING:
+      $vars['task_label'] = t('Task Success (with warning)');
+      $vars['task_label_class'] = 'warning';
+      break;
+    case HOSTING_TASK_PROCESSING:
+      $vars['task_label'] = t('Task Processing');
+      $vars['task_label_class'] = 'info';
+      break;
+    case HOSTING_TASK_QUEUED:
+      $vars['task_label'] = t('Task Queued');
+      $vars['task_label_class'] = 'info';
+      break;
+  }
 
 }
 
