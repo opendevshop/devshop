@@ -329,6 +329,11 @@ function boots_preprocess_node_task(&$vars) {
       break;
   }
 
+  // Load ref node
+  $ref_node = node_load($vars['rid']);
+  if ($ref_node->type == 'site') {
+    $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
+  }
 }
 
 /**
