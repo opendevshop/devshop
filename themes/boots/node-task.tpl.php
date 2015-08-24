@@ -60,20 +60,24 @@
 
   <?php print $picture ?>
 
-  <?php if (!$page): ?>
-    <h2><a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a></h2>
-  <?php endif; ?>
+  <div class="well well-sm">
 
-  <div class="meta">
+    <h4>
+      <span class="label label-<?php print $task_label_class ?>"><?php print $task_label ?></span>
+
+      <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
+    </h4>
+
     <?php if ($submitted): ?>
-      <p class="submitted alert"><?php print $submitted ?></p>
+      <p class="small">
+        <?php print $submitted ?>
+      </p>
     <?php endif; ?>
 
-    <?php if ($terms): ?>
-      <div class="terms terms-inline"><?php print $terms ?></div>
-    <?php endif;?>
+    <?php if ($task->ref->type == 'site'): ?>
+      <?php print l($task->ref->environment->url, $task->ref->environment->url); ?>
+    <?php endif; ?>
   </div>
-
 
 <?php  if ($node->test_results_formatted): ?>
   <div role="tabpanel">
