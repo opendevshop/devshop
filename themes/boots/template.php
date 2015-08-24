@@ -231,15 +231,17 @@ function boots_preprocess_page(&$vars){
     if ($vars['node']->type == 'task') {
       $object = node_load($vars['node']->rid);
 
-      $vars['title'] = $object->title;
+      $vars['title2'] = $object->title;
       if ($object->type == 'site') {
-        $vars['subtitle'] = t('Environment');
+        $vars['subtitle2'] = t('Environment');
       }
       else {
-        $vars['subtitle'] = ucfirst($object->type);
+        $vars['subtitle2'] = ucfirst($object->type);
       }
 
-      $vars['title_url'] = 'node/' . $object->nid;
+      $vars['title2_url'] = 'node/' . $object->nid;
+      $vars['title2'] = l($vars['title2'], $vars['title2_url']);
+
     }
 
     $vars['title'] = l($vars['title'], $vars['title_url']);
