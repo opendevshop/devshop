@@ -172,6 +172,8 @@ function devshop_projects_load($node) {
 ");
     $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
 
+    $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+
     // Repo root
     $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
 
