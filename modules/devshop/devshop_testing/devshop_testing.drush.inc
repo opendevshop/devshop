@@ -37,3 +37,20 @@ function devshop_testing_post_hosting_devshop_deploy_task($task, $data) {
     hosting_add_task($task->ref->nid, 'test');
   }
 }
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for IMPORT tasks
+ *
+ * Ensures that cloned sites that are on project platforms inherit the project.
+ */
+function devshop_testing_post_hosting_import_task($task, $data)
+{
+  // If a site is being imported within a project...
+  if ($task->ref->type == 'site' && !empty($task->ref->project)) {
+    // .. and is configured to run tests on deploy...
+    if ($task->ref->environment->settings->deploy['test']) {
+      // trigger a test run.
+      hosting_add_task($task->ref->nid, 'test');
+    }
+  }
+}
