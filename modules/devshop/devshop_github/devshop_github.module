@@ -320,7 +320,7 @@ function devshop_github_webhook($project_node){
                   array('absolute' => true)
                 );
                 $params->description = t('DevShop: Run Tests');
-                $params->context = 'devshop/test';
+                $params->context = 'devshop/tests';
 
                 // Post status to github
                 $status = $client->getHttpClient()->post(
