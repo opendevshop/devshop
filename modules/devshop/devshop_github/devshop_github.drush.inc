@@ -70,7 +70,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
 
       
       $params->target_url = $task->ref->environment->url;
-      $params->description = t('Pull Request environment is ready!');
+      $params->description = t('Visit !url', array('!url' => $task->ref->environment->url));
       $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";
 
       drush_log('Attempting to create github deployment status: ' . $post_url, 'success');
