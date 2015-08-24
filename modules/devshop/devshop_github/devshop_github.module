@@ -240,6 +240,7 @@ function devshop_github_webhook($project_node){
             if (isset($project->environments[$environment_name])) {
               $message = "Environment $environment_name already exists! Not creating one... \n";
 
+              // @TODO: Check for environments that are being deleted.
               if (isset($project->environments[$environment_name]->github_pull_request)) {
                 $message .= "Already have a PR for $environment_name ... not inserting.";
                 $already_have_pr_info = TRUE;
