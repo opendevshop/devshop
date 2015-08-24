@@ -45,14 +45,20 @@ function devshop_testing_post_hosting_devshop_deploy_task($task, $data) {
  */
 function devshop_testing_post_hosting_import_task($task, $data)
 {
-  // If a site is being imported within a project...
-  if ($task->ref->type == 'site' && !empty($task->ref->project)) {
+  // Only work with site import.
+  if ($task->ref->type != 'site') {
+    return;
+  }
 
-    // .. and is configured to run tests on deploy...
-    if ($task->ref->environment->settings->deploy['test']) {
-      // trigger a test run.
-      drush_log('[DEVSHOP] Triggering test run...', 'ok');
-      hosting_add_task($task->ref->nid, 'test');
-    }
+  // Load environment info from platform, because site node doesn't have info yet.
+  $platform = node_load($task->ref->platform);
+
+  // If environment settings say to run tests on deploy...
+  if ($platform->environment->settings->deploy['test']) {
+    drush_log('[DEVSHOP] Triggering test run...', 'ok');
+    hosting_add_task($task->ref->nid, 'test');
+  }
+  else {
+    drush_log('[DEVSHOP] Skipping test run...', 'ok');
   }
 }
