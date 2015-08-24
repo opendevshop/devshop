@@ -101,9 +101,20 @@ function devshop_github_hosting_task_update_status($task, $status) {
       }
       $params->context = 'devshop/deploy';
 
-      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+      $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
       drush_log('Commit status created!', 'success');
 
+        // If deploy task fails, tests won't run.
+        if ($environment->settings->deploy['test'] && $status == HOSTING_TASK_ERROR) {
+
+          $params = new stdClass();
+          $params->state = $state;
+            $params->description = t('DevShop: Tests not run due to Deploy Fail');
+          $params->context = 'devshop/tests';
+
+          $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+          drush_log('Commit status created for devshop/tests', 'success');
+        }
       }
     } catch (Github\Exception\RuntimeException $e) {
       drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
