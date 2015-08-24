@@ -74,8 +74,8 @@
       </p>
     <?php endif; ?>
 
-    <?php if ($task->ref->type == 'site'): ?>
-      <?php print l($task->ref->environment->url, $task->ref->environment->url); ?>
+    <?php if ($site_url): ?>
+      <?php print $site_url ?>
     <?php endif; ?>
   </div>
 
