@@ -79,6 +79,16 @@ function drush_devshop_provision_provision_test() {
     $alias = d()->name;
     $root = d()->root;
 
+    $username = d()->http_basic_auth_username;
+    $password = d()->http_basic_auth_password;
+    $uri = d()->uri;
+
+    if (!empty($username)) {
+      $url = d()->environment['ssl_enabled']?
+        "https://$username:$password@$uri":
+        "http://$username:$password@$uri";
+    }
+
     $behat_yml .= <<<YML
 
 # DevShop Environment Profile
