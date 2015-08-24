@@ -89,10 +89,15 @@ function devshop_github_hosting_task_update_status($task, $status) {
       $params->target_url = url("node/{$task->nid}", array('absolute' => TRUE));;
 
       if ($status == HOSTING_TASK_WARNING) {
-        $params->description = t('DevShop: Deploy success with warnings');
+        $params->description = t('DevShop: Deploy success with warnings. [!url]', array(
+          '!url' => $environment->url,
+        ));
       }
       else {
-        $params->description = t('DevShop: Deploy !status', array('!status' => $state));
+        $params->description = t('DevShop: Deploy !status [!url]', array(
+          '!status' => $state,
+          '!url' => $environment->url,
+        ));
       }
       $params->context = 'devshop/deploy';
 
