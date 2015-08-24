@@ -224,6 +224,7 @@ function boots_preprocess_page(&$vars){
       }
 
       $vars['title'] = $vars['node']->project->name;
+      $vars['title_url'] = "node/" . $vars['node']->project->nid;
       $vars['subtitle'] = t('Project');
     }
 
