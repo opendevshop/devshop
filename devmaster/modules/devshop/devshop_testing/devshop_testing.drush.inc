@@ -47,9 +47,11 @@ function devshop_testing_post_hosting_import_task($task, $data)
 {
   // If a site is being imported within a project...
   if ($task->ref->type == 'site' && !empty($task->ref->project)) {
+
     // .. and is configured to run tests on deploy...
     if ($task->ref->environment->settings->deploy['test']) {
       // trigger a test run.
+      drush_log('[DEVSHOP] Triggering test run...', 'ok');
       hosting_add_task($task->ref->nid, 'test');
     }
   }
