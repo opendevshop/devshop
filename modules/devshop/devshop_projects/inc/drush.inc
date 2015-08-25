@@ -12,7 +12,7 @@ function devshop_project_aliases($project) {
     $remote_user = 'aegir';
     $remote_host = $environment->remote_host;
     $root = $environment->root;
-    $uri = $environment->default_domain;
+    $uri = $environment->uri;
 
     $output .= <<<PHP
 \$aliases['$name'] = array(
