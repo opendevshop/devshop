@@ -381,11 +381,11 @@ function devshop_github_webhook($project_node){
               }
 
             } catch (Github\Exception\RuntimeException $e) {
-              watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
-              $message .= 'GitHub API Error: ' . $e->getMessage();
+              watchdog('devshop_github', 'GitHub Runtime Error: ' . $e->getMessage());
+              $message .= 'GitHub Runtime Error: ' . $e->getMessage();
             } catch (Github\Exception\ValidationFailedException $e) {
-              watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
-              $message .= 'GitHub API Error: ' . $e->getMessage();
+              watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
+              $message .= 'GitHub Runtime Error: ' . $e->getMessage();
             }
 
             // Insert PR record
