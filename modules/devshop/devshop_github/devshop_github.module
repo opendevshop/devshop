@@ -476,8 +476,9 @@ function devshop_github_webhook($project_node){
               }  
 
             } catch (Github\Exception\RuntimeException $e) {
-              watchdog('devshop_github', 'GitHub API Error during PR Syncronize: ' . $e->getMessage());
-              $message .= 'GitHub API Error during PR Syncronize: ' . $e->getMessage() . "\n";
+              $log = 'GitHub API Error during PR Syncronize: ' . $e->getMessage() . $e->getCode();
+              watchdog('devshop_github', $log);
+              $message .= $log ."\n";
             }
 
 
