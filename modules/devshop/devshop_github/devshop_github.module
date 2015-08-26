@@ -490,7 +490,6 @@ function devshop_github_webhook($project_node){
                 $params->context = 'devshop/merge';
 
                 // Post status to github
-                $sha =$data->pull_request->head->sha;
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
               }
               $message .= $log ."\n";
