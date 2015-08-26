@@ -485,7 +485,7 @@ function devshop_github_webhook($project_node){
                 // Send a failed commit status to alert to developer
                 $params = new stdClass();
                 $params->state = 'failure';
-                $params->target_url = $project->git_url;
+                $params->target_url = $project->git_repo_url;
                 $params->description = t('Out of date branch! Merge from master.');
                 $params->context = 'devshop/merge';
 
