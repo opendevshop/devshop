@@ -99,7 +99,7 @@ function devshop_github_nodeapi_task_update($node) {
 
     watchdog('devshop_github','Test run initiated. GitHub has been notified.');
   } catch (Github\Exception\RuntimeException $e) {
-    watchdog('devshop_github', 'GitHub API Error in devshop_github_nodeapi_task_update(): ' . $e->getMessage());
+    watchdog('devshop_github', 'GitHub API Error: ' . $e->getMessage());
   }
 }
 
@@ -326,7 +326,6 @@ function devshop_github_webhook($project_node){
               $params->ref = $sha;
               $params->environment = $url;
               $params->required_contexts = array();
-              $params->auto_merge = false;
               $post_url = "/repos/$owner/$repo/deployments";
               $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
 
