@@ -465,6 +465,8 @@ function devshop_github_webhook($project_node){
               if (!empty($environment->settings->deploy['test'])) {
                 $params = new stdClass();
                 $params->state = 'pending';
+
+                // @TODO: Add the link to the last "test" task here instead of the project.
                 $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
                 $params->description = t('DevShop: Run Tests');
                 $params->context = 'devshop/tests';
