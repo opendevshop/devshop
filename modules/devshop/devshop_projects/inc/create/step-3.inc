@@ -100,7 +100,9 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#title' => t('Web server'),
         '#type' => 'select',
         '#options' => $http_servers,
-        '#default_value' => $environment->settings->http_server,
+        '#default_value' => $environment->settings->web_server?
+          $environment->settings->web_server:
+          $project->settings->default_environment['web_server']
       );
     }
 
@@ -111,7 +113,9 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#title' => t('Database server'),
         '#type' => 'select',
         '#options' => $db_servers,
-        '#default_value' => $environment->settings->db_server,
+        '#default_value' => $environment->settings->db_server?
+          $environment->settings->db_server:
+          $project->settings->default_environment['db_server']
       );
     }
 
