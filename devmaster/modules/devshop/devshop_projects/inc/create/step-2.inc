@@ -30,6 +30,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#size' => 40,
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
+    '#weight' => -100,
   );
 }
 
