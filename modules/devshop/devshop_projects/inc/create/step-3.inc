@@ -95,7 +95,13 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
     // HTTP Server select.
     $http_servers = hosting_get_servers('http');
-    if (count($http_servers)) {
+    if (count($http_servers) == 1) {
+      $form['project']['environments'][$name]['settings']['web_server'] = array(
+          '#type' => 'value',
+          '#value' => $project->settings->default_environment['web_server'],
+      );
+    }
+    elseif (count($http_servers) > 1) {
       $form['project']['environments'][$name]['settings']['web_server'] = array(
         '#title' => t('Web server'),
         '#type' => 'select',
@@ -108,7 +114,13 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
     // DB Server select.
     $db_servers = hosting_get_servers('db');
-    if (count($db_servers)) {
+    if (count($db_servers) == 1) {
+      $form['project']['environments'][$name]['settings']['db_server'] = array(
+          '#type' => 'value',
+          '#value' => $project->settings->default_environment['db_server'],
+      );
+    }
+    elseif (count($db_servers) > 1) {
       $form['project']['environments'][$name]['settings']['db_server'] = array(
         '#title' => t('Database server'),
         '#type' => 'select',
