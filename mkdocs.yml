@@ -15,6 +15,7 @@ pages:
   - 'Developing DevShop': 'development.md'
   - 'Release Process': 'release-process.md'
 - 'Management':
+  - 'Deleting Projects & Environments': 'deleting.md'
   - 'Using SSL': 'ssl.md'
   - 'Password Protection': 'password-protect.md'
   - 'Going Live': 'going-live.md'
