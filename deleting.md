@@ -43,4 +43,4 @@ To delete a project and all of it's environments:
 3. Scroll down to the bottom of the settings page and click the *Delete this project* link.
 4. On the confirmation page, click the *Delete Project* button. *This cannot be undone!*
 
-Your project, and all of it's environments will be scheduled for deletion once you hit this button.  It will take a few dozen seconds for each environment to be deleted, so please be patient.
+Your project, and all of it's environments will be scheduled for deletion once you hit this button.  It will take a few seconds for each environment to be deleted, so please be patient.
