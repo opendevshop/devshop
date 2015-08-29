@@ -29,7 +29,7 @@ If you are sure you want to delete the environment:
 Allowing Direct Deletion
 ------------------------
 
-If, for some reason you want to be able to delete sites without having to disable them first, visit the **Admin > Hosting > Settings** page.  Uncheck the box that says * Require site to be disabled before deletion*.
+If, for some reason you want to be able to delete sites without having to disable them first, visit the **Admin > Hosting > Settings** page.  Uncheck the box that says *Require site to be disabled before deletion*.
 
 This is *not* recommended.  Please use caution when using this setting.  
 
