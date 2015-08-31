@@ -14,7 +14,7 @@ includes[devshop] = "drupal-org.make"
 projects[hosting][version] = "2.x"
 
 ; For release, use tagged version
-;projects[hosting][version] = "2.4"
+;projects[hosting][version] = "2.5"
 
 ; Contrib Modules
 projects[modalframe][version] = "1.9"
@@ -41,10 +41,10 @@ projects[jquery_update][subdir] = contrib
 projects[views][version] = "3.2"
 projects[views][subdir] = contrib
 
-projects[views_bulk_operations][version] = "1.x"
+projects[views_bulk_operations][version] = "1.17"
 projects[views_bulk_operations][subdir] = contrib
 
-projects[ctools][version] = "1.12"
+projects[ctools][version] = "1.14"
 projects[ctools][subdir] = contrib
 
 projects[hosting_filemanager][version] = "1.0-beta1"
