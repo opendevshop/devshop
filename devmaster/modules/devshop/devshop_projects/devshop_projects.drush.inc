@@ -365,6 +365,9 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 function _devshop_projects_git_execute($commands, $root) {
   // Execute
   $return = '';
+  if (!is_string($commands)) {
+    $commands = array($commands);
+  }
   foreach ($commands as $command) {
     if (!empty($command)){
       drush_log('[DEVSHOP] Running: ' . $command);
