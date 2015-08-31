@@ -598,3 +598,16 @@ ul.dropdown-menu li.text {
   margin: 0 30px 15px 0;
   width: 25%;
 }
+
+form > div > fieldset {
+    padding: 20px 0px;
+}
+form > div > fieldset > legend {
+
+    padding: 20px 0px 0px;
+
+}
+
+html.js fieldset.collapsed {
+    height: 2em;
+}

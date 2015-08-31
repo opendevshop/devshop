@@ -64,6 +64,8 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   //All settings git pull in project page
   $form['project']['settings']['github'] = array(
       '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => arg(1) != $node->nid,
       '#title' => t('GitHub Integration'),
   );
 
