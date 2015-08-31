@@ -14,6 +14,7 @@ function devshop_project_create_step_git(&$form, &$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
 
+  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
   if ($project->verify_error){
     $form['note'] = array(
