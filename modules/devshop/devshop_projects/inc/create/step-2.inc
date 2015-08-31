@@ -57,4 +57,7 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
 
   $node->no_verify = TRUE;
   node_save($node);
+
+  // Remove default "task" messages.
+  drupal_get_messages();
 }
