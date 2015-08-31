@@ -245,8 +245,12 @@ function devshop_projects_add_status($type = 'platform'){
       $install_profiles = array();
     }
 
+    $status = _hosting_parse_error_code($task->task_status);
+    if ($status == 'Queued') {
+      $status = '...';
+    }
     $return['tasks'][$nid] = array(
-      'status' => _hosting_parse_error_code($task->task_status),
+      'status' => $status,
       'version' => $platform->release->version,
       'profiles' => implode(', ', $install_profiles),
     );

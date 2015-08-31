@@ -108,6 +108,9 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
     // Add hosting task status.
     $status = _hosting_parse_error_code($task->task_status);
+    if ($status == 'Queued') {
+      $status = '...';
+    }
     $row['status'] = "<span id='status-{$platform->nid}'>{$status}</span>";
 
     // Store rows for display
