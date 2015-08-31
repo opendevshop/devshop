@@ -307,6 +307,7 @@ function boots_preprocess_node_task(&$vars) {
     '%ago' => format_interval(time() - $revision->timestamp) . ' ' . t('ago'),
   ));
 
+  $log_type = '';
   switch ($vars['node']->task_status) {
     case HOSTING_TASK_SUCCESS:
       $vars['task_label'] = t('Task Success');
@@ -315,10 +316,12 @@ function boots_preprocess_node_task(&$vars) {
     case HOSTING_TASK_ERROR:
       $vars['task_label'] = t('Task Error');
       $vars['task_label_class'] = 'danger';
+      $log_type = 'error';
       break;
     case HOSTING_TASK_WARNING:
       $vars['task_label'] = t('Task Success (with warning)');
       $vars['task_label_class'] = 'warning';
+      $log_type = 'warning';
       break;
     case HOSTING_TASK_PROCESSING:
       $vars['task_label'] = t('Task Processing');
@@ -334,6 +337,15 @@ function boots_preprocess_node_task(&$vars) {
   $ref_node = node_load($vars['rid']);
   if ($ref_node->type == 'site') {
     $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
+  }
+
+  // Load error or warning messages.
+  if ($log_type) {
+     $vars['log_message'] = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $vars['node']->nid, $log_type));
+    $vars['log_class'] = $log_type == 'error'? 'danger': $log_type;
+  }
+  else {
+    $vars['log_message'] = '';
   }
 }
 
@@ -586,6 +598,12 @@ function boots_preprocess_environment(&$environment, $actions) {
         if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
           $environment->login_text = t('Requesting Login...');
           $environment->login_url = '#';
+        }
+        else {
+          global $user;
+          $token = drupal_get_token($user->uid);
+          $environment->login_text =  t('Request Login');
+          $environment->login_url = "node/{$environment->site}/site_login-reset?token={$token}";
         }
       }
     }

@@ -77,6 +77,12 @@
     <?php if ($site_url): ?>
       <?php print $site_url ?>
     <?php endif; ?>
+
+    <?php if ($log_message): ?>
+        <div class="alert alert-<?php print $log_class; ?>" role="alert">
+            <?php print $log_message; ?>
+        </div>
+    <?php endif; ?>
   </div>
 
 <?php  if ($node->test_results_formatted): ?>
