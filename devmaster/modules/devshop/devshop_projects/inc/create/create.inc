@@ -13,7 +13,6 @@ function devshop_projects_create_wizard($step = NULL){
   ctools_include('wizard');
   ctools_include('object-cache');
   drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
-  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
   // Setup form info
   $form_info = devshop_projects_create_wizard_info();
@@ -240,7 +239,7 @@ function devshop_projects_add_status($type = 'platform'){
     $return['tasks'][$nid] = _hosting_parse_error_code($task->task_status);
 
     // If task is not completed, mark all tasks not complete.
-    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR) {
+    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR || $task->task_status == HOSTING_TASK_WARNING) {
       continue;
     } else {
       $all_tasks_completed = FALSE;

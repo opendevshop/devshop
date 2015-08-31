@@ -16,6 +16,8 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $form += devshop_projects_form($node);
   $form['#node'] = $node;
 
+  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
+
   // Remove "environment" selector.
   $form['project']['settings']['live']['live_environment']['#type'] = 'value';
 
