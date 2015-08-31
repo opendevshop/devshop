@@ -8,7 +8,7 @@ var devshopCheckProject = function(){
 }
 
 var devshopReloadPage = function(data){
-  
+  console.log('Checking status...');
   if (data.tasks_complete){
     document.location.reload();
   } else {
