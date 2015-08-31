@@ -8,8 +8,6 @@ var devshopCheckProject = function(){
 }
 
 var devshopReloadPage = function(data){
-  console.log('Checking status...');
-
     // Populate versions and install profiles
     $.each(data.tasks, function(i, platform) {
         if (platform.version) {
@@ -22,8 +20,6 @@ var devshopReloadPage = function(data){
             $('#status-' + i).html(platform.status);
         }
     });
-
-    console.log(data);
   if (data.tasks_complete){
     document.location.reload();
   } else {
