@@ -275,4 +275,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 //      hosting_add_task($platform_nid, 'delete');
 //    }
 //  }
+
+
+  // Remove default "task" messages.
+  drupal_get_messages();
+  drupal_set_message('Environments saved! Now preparing codebases...');
 }
