@@ -111,7 +111,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     if ($status == 'Queued') {
       $status = '...';
     }
-    $row['status'] = "<span id='status-{$platform->nid}'>{$status}</span>";
+    $row['status'] = l("<span id='status-{$platform->nid}'>{$status}</span>", "node/{$task->nid}", array('html' => TRUE));
 
     // Store rows for display
     $rows[] = $row;
