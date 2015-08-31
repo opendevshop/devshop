@@ -84,10 +84,10 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error'));
+      $error = l(db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error')), "node/{$task->nid}");
 
       $row['version'] = array(
-        'data' => t('Platform verification failed: %error', array('%error' => $error)),
+        'data' => t('Platform verification failed: !error', array('!error' => $error)),
         'colspan' => 2,
       );
 
