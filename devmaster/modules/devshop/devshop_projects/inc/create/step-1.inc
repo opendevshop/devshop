@@ -207,4 +207,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
       $project->project_nid = $node->nid;
     }
   }
+
+  // Remove default "task" messages.
+  drupal_get_messages();
 }
