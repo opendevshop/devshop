@@ -362,7 +362,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 /**
  * Utility for execute git commands.
  */
-function _devshop_projects_git_execute($commands, $root) {
+function _devshop_projects_git_execute($commands, $root = '') {
   // Execute
   $return = '';
   if (is_string($commands)) {
@@ -370,14 +370,21 @@ function _devshop_projects_git_execute($commands, $root) {
   }
   foreach ($commands as $command) {
     if (!empty($command)){
-      drush_log('[DEVSHOP] Running: ' . $command);
+      drush_log("[DEVSHOP] Running Command in $root: $command");
 
       // @TODO: Create a d()->server->shell_cd_and_exec() function
       //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
       // So instead, this is the code from d()->server->shell_exec
       // d()->server->shell_exec($cmd);
       if (provision_is_local_host(d()->server->remote_host)) {
-        drush_shell_cd_and_exec($root, escapeshellcmd($command));
+
+        // Run in $root if it exists.
+        if (file_exists($root)) {
+          drush_shell_cd_and_exec($root, escapeshellcmd($command));
+        }
+        else {
+          drush_shell_exec(escapeshellcmd($command));
+        }
       }
       else {
         drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
@@ -385,7 +392,7 @@ function _devshop_projects_git_execute($commands, $root) {
 
       $output = drush_shell_exec_output();
       drush_log('Shell Output: ' . implode("\n", $output) , 'ok');
-      $return .= $output;
+      $return .=  implode("\n", $output);
     }
   }
   return $return;
