@@ -178,7 +178,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
   if (empty($form_state['values']['install_profile'])) {
-    form_set_error('install_profile', t('You must choose an install profile'));
+    form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
   }
 }
 
