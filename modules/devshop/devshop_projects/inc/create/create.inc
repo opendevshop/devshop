@@ -60,6 +60,12 @@ function devshop_projects_create_wizard($step = NULL){
 
   }
 
+  // If github module is enabled and this project is github, add the last step: webhook.
+  if (module_exists('devshop_github') && $project_node->project->git_provider == 'github'){
+    $form_info['order']['webhook'] = t('Step 5: Setup Webhook');
+    $form_info['forms']['webhook'] = array('form_id' => 'devshop_project_create_step_webhook');
+  }
+
   // Get "verify" task status for the project
   $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
