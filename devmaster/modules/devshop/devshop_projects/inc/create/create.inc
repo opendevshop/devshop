@@ -267,5 +267,5 @@ function devshop_form_reloader(&$form, $type = 'platform'){
   );
 
   drupal_add_js($settings, 'setting');
-  drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js');
+  drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js', 'core');
 }
