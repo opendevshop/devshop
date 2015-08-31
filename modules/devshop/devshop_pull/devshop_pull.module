@@ -41,8 +41,8 @@ function devshop_pull_perm() {
  */
 function devshop_pull_menu() {
   $items['admin/hosting/devshop/pull'] = array(
-    'title' => 'Pull',
-    'description' => 'Configure Pull Code URL callback ',
+    'title' => 'Git Webhooks',
+    'description' => 'Configure Git Webhooks',
     'page callback' => 'devshop_pull_settings_page',
     'access arguments' => array('administer hosting settings'),
     'file' => 'devshop_pull.settings.inc',
