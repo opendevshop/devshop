@@ -50,7 +50,6 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project->drupal_path = $form_state['values']['project']['drupal_path'];
   $project->settings = $form_state['values']['project']['settings'];
 
-
   // Save the settings to the project node
   $node = $form_state['values']['old'];
   $node->project = $project;
