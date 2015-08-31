@@ -60,6 +60,7 @@ function hosting_task_devshop_create_form($node) {
           $form['environment_source_display'] = array(
             '#type' => 'item',
             '#title' => t('Clone'),
+            '#weight' => -1000,
             '#value' => t('!env environment', array('!env' => "<span class='environment'>{$site->environment->name}</span>")),
           );
           $form['environment_source'] = array(
