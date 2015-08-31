@@ -2,7 +2,7 @@ core = 6.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "6.36"
+projects[drupal][version] = "6.37"
 
 ; this makefile will make sure we get the development code from the
 ; aegir modules instead of the tagged releases
