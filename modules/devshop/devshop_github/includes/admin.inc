@@ -25,7 +25,7 @@ function devshop_github_settings_form(){
   $token = variable_get('devshop_github_token', '');
   if (empty($token)) {
     $form['devshop_github_token']['#description'] .= ' <em class="warning">' . t('No Token was found.') . '</em>';
-    $form['devshop_github_token']['#description'] .= '  ' . l(t('Create a new token'), 'https://github.com/settings/tokens/new');
+    $form['devshop_github_token']['#description'] .= '  ' . l(t('Create a new token'), 'https://github.com/settings/tokens/new', array('attributes' => array('target' => '_blank')));
   }
   else {
       $form['devshop_github_token']['#description'] .= ' <em class="text-success">' . t('Your token is saved.') . '</em>';
