@@ -18,6 +18,9 @@ var devshopReloadPage = function(data){
             $('#profiles-' + i).html(platform.profiles);
         }
         if (platform.status) {
+            if (platform.status == 'Processing') {
+                platform.status += ' <i class="fa fa-circle-o-notch fa-spin"></i>';
+            }
             $('#status-' + i).html(platform.status);
         }
     });
