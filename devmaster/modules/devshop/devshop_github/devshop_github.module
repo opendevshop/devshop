@@ -97,6 +97,51 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id)
+{
+
+  // Look for Token
+  $token = variable_get('devshop_github_token', '');
+
+  if (empty($token)) {
+    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('GitHub API Token was not found.') .' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
+    return;
+  }
+
+  $client = new \Github\Client();
+  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+  $keys = $client->currentUser()->keys()->all();
+  $devshop_key = variable_get('devshop_public_key', '');
+
+  $found_key = FALSE;
+  foreach ($keys as $key) {
+    if (strpos($devshop_key, $key['key']) !== FALSE){
+      $found_key = TRUE;
+    }
+  }
+
+  if ($found_key) {
+    $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your GitHub account.') . '</div>';
+  }
+  else {
+    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
+
+    $form['connect']['#description'] .= l(t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+            'query' => array(
+              'destination' => $_GET['q'],
+            ),
+            'attributes' => array(
+                'class' => 'btn btn-success'
+            ),
+        )) . '</div>';
+    $form['connect']['#prefix'] = '<div class="alert alert-danger">';
+    $form['connect']['#suffix'] = '</div>';
+  }
+}
+/**
  * Implements hook_nodeapi_TYPE_OP().
  */
 function devshop_github_nodeapi_project_load(&$node) {
