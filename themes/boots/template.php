@@ -147,7 +147,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
     );
   }
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-right', 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-left', 'role' => 'menu'));
 
   if ($tasks_count == 0) {
     $tasks_count = '';
