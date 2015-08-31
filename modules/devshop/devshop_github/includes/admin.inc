@@ -31,5 +31,42 @@ function devshop_github_settings_form(){
       $form['devshop_github_token']['#description'] .= ' <em class="text-success">' . t('Your token is saved.') . '</em>';
   }
 
+    // Test for public key access.
+  if (!empty($token)) {
+
+    $form['github_public_keys'] = array(
+        '#value' => 'HELLO?',
+    );
+
+    $token = variable_get('devshop_github_token', '');
+    $client = new \Github\Client();
+    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+    $keys = $client->currentUser()->keys()->all();
+    $devshop_key = variable_get('devshop_public_key', '');
+
+    $found_key = FALSE;
+    foreach ($keys as $key) {
+        if (strpos($devshop_key, $key['key']) !== FALSE){
+            $found_key = TRUE;
+        }
+    }
+
+    if ($found_key) {
+        $form['github_public_keys']['#value'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your GitHub account.') . '</div>';
+    }
+    else {
+        $form['github_public_keys']['#value'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
+
+        $form['github_public_keys']['#value'] .= l(t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+                'attributes' => array(
+                  'class' => 'btn btn-success'
+                ),
+            )) . '</div>';
+        $form['github_public_keys']['#prefix'] = '<div class="alert alert-danger">';
+        $form['github_public_keys']['#suffix'] = '</div>';
+    }
+  }
+
   return system_settings_form($form);
 }
