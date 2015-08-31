@@ -445,6 +445,9 @@ function devshop_projects_form(&$node) {
     '#default_value' => $node->title,
     '#maxlength' => 255,
   );
+  $form['project'] = array(
+    '#type' => 'fieldset',
+  );
   $form['project']['git_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Git URL'),
@@ -520,6 +523,8 @@ function devshop_projects_form(&$node) {
   // Live Environment settings.
   $form['project']['settings']['live'] = array(
     '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Domain Name Settings'),
   );
 
@@ -561,6 +566,8 @@ function devshop_projects_form(&$node) {
   // Pull Code Method
   $form['project']['settings']['deploy'] = array(
     '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Deploy Settings'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
     '#weight' => -10,
@@ -642,6 +649,8 @@ function devshop_projects_form(&$node) {
   //All settings git pull in project page
   $form['project']['settings']['default_environment'] = array(
     '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Default Environment Settings'),
     '#description' => t('These settings will be used when creating new environments.'),
   );
