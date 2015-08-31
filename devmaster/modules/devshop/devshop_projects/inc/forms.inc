@@ -433,6 +433,7 @@ function devshop_projects_form(&$node) {
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
   $form['project'] = array(
     '#tree' => TRUE,
+    '#type' => 'fieldset',
   );
 
   // Hidden fields that can't change.
@@ -444,9 +445,6 @@ function devshop_projects_form(&$node) {
     '#size' => 40,
     '#default_value' => $node->title,
     '#maxlength' => 255,
-  );
-  $form['project'] = array(
-    '#type' => 'fieldset',
   );
   $form['project']['git_url'] = array(
     '#type' => 'textfield',
