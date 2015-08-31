@@ -639,45 +639,6 @@ function devshop_projects_form(&$node) {
     '#value' => $node->project->settings->deploy['last_webhook_ip'],
   );
 
-  // @TODO: Make this more abstract and extensible.
-  $is_github = (strpos($node->project->git_url, 'github.com') !== FALSE);
-
-  //All settings git pull in project page
-  $form['project']['settings']['github'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('GitHub Integration'),
-    '#access' => $is_github,
-  );
-
-  // Pull Requests create environments?
-  $form['project']['settings']['github']['pull_request_environments'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Create Environments for Pull Requests'),
-    '#default_value' => $node->project->settings->github['pull_request_environments'],
-    '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
-    '#access' => $is_github,
-  );
-
-  // Delete Pull Request environments?
-  $form['project']['settings']['github']['pull_request_environments_delete'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Delete Pull Request Environments'),
-    '#default_value' => $node->project->settings->github['pull_request_environments_delete'],
-    '#description' => t('When Pull Requests are closed, delete the environment.'),
-  );
-
-  // Pull Request Environment method.
-  $form['project']['settings']['github']['pull_request_environments_method'] = array(
-    '#type' => 'radios',
-    '#title' => t('Pull Request Environment Deploy Method'),
-    '#default_value' => $node->project->settings->github['pull_request_environments_method'],
-    '#description' => t('Select the method for creating the pull request environments.'),
-    '#options' => array(
-      'install' => t('Run the install profile %profile', array('%profile' =>  $project->install_profile)),
-      'clone_live' => t('Clone the live environment: %live', array('%live' => $project->settings->live['live_environment'])),
-    )
-  );
-
   //All settings git pull in project page
   $form['project']['settings']['default_environment'] = array(
     '#type' => 'fieldset',
