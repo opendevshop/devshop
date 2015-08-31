@@ -12,7 +12,7 @@ require_once 'vendor/autoload.php';
 function devshop_github_menu() {
   $items = array();
 
-  $items['admin/hosting/devshop/github'] = array(
+  $items['admin/devshop/github'] = array(
     'title' => 'GitHub',
     'description' => 'DevShop GitHub Integration Settings',
     'page callback' => 'drupal_get_form',
@@ -226,7 +226,7 @@ function devshop_github_nodeapi_task_update($node) {
 //      drush_log('Status posted! ', 'ok');
 //    } catch (Github\Exception\RuntimeException $e) {
 //      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
-//      drush_log(l(t('Configure GitHub API'), 'admin/hosting/devshop/github'), 'error');
+//      drush_log(l(t('Configure GitHub API'), 'admin/devshop/github'), 'error');
 //    } catch (Github\Exception\ValidationFailedException $e) {
 //      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
 //    }

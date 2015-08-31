@@ -40,13 +40,13 @@ function devshop_pull_perm() {
  * Implements hook_menu()
  */
 function devshop_pull_menu() {
-  $items['admin/hosting/devshop/pull'] = array(
+  $items['admin/devshop/pull'] = array(
     'title' => 'Git Webhooks',
     'description' => 'Configure Git Webhooks',
     'page callback' => 'devshop_pull_settings_page',
     'access arguments' => array('administer hosting settings'),
     'file' => 'devshop_pull.settings.inc',
-    'tab_parent' => 'admin/hosting/devshop',
+    'tab_parent' => 'admin/devshop',
     'type' => MENU_LOCAL_TASK,
   );
   $items[DEVSHOP_PULL_CALLBACK_URL] = array(

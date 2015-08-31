@@ -112,7 +112,7 @@ function devshop_projects_access($op, $node, $account) {
  */
 function devshop_projects_menu() {
   //Settings page.
-  $items['admin/hosting/devshop'] = array(
+  $items['admin/devshop'] = array(
     'title' => 'DevShop',
     'description' => 'Default values for use in creation project',
     'page callback' => 'drupal_get_form',
@@ -120,13 +120,14 @@ function devshop_projects_menu() {
     'access arguments' => array('administer projects'),
     'file' => 'admin.inc',
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['admin/hosting/devshop/projects'] = $items['admin/hosting/devshop'];
-  $items['admin/hosting/devshop/projects']['title'] = 'Projects';
-  $items['admin/hosting/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
-  $items['admin/hosting/devshop/projects']['tab_parent'] = 'admin/hosting/devshop';
+  $items['admin/devshop/projects'] = $items['admin/devshop'];
+  $items['admin/devshop/projects']['title'] = 'Projects';
+  $items['admin/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  $items['admin/devshop/projects']['tab_parent'] = 'admin/devshop';
+  $items['admin/devshop/projects']['weight'] = -10;
 
   $items['hosting/projects'] = array(
     'title' => t('Projects'),
