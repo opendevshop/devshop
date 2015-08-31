@@ -97,8 +97,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
-      $row['version'] = '...';
-      $row['profiles'] = '...';
+      $row['version'] = "<span id='version-{$platform->nid}'>...</span>";
+      $row['profiles'] = "<span id='profiles-{$platform->nid}'>...</span>";
     }
 
     // If a single task is not queued, $all_tasks_queued == FALSE
@@ -107,7 +107,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     }
 
     // Add hosting task status.
-    $row['status'] = _hosting_parse_error_code($task->task_status);
+    $status = _hosting_parse_error_code($task->task_status);
+    $row['status'] = "<span id='status-{$platform->nid}'>{$status}</span>";
 
     // Store rows for display
     $rows[] = $row;
@@ -122,7 +123,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
     $project->no_finish = TRUE;
-    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p><p><em>NOTE: There is a bug preventing automatic reloading of this page! Please reload occasionally to see if your project is cloned.</em></p>';
+    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
 
     $form['help'] = array(
       '#type' => 'markup',

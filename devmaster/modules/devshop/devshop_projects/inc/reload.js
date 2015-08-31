@@ -9,6 +9,21 @@ var devshopCheckProject = function(){
 
 var devshopReloadPage = function(data){
   console.log('Checking status...');
+
+    // Populate versions and install profiles
+    $.each(data.tasks, function(i, platform) {
+        if (platform.version) {
+            $('#version-' + i).html(platform.version);
+        }
+        if (platform.profiles) {
+            $('#profiles-' + i).html(platform.profiles);
+        }
+        if (platform.status) {
+            $('#status-' + i).html(platform.status);
+        }
+    });
+
+    console.log(data);
   if (data.tasks_complete){
     document.location.reload();
   } else {
