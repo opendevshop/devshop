@@ -245,6 +245,15 @@ function boots_preprocess_page(&$vars){
 
     }
 
+
+    // For node/%/* pages where node is site, use the environment name as title2
+    if ($vars['node']->type == 'site' && isset($vars['node']->environment)){
+
+      $vars['title2_url'] = 'node/' . $vars['node']->nid;
+      $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
+
+    }
+
     $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
