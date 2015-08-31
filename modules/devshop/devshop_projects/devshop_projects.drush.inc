@@ -365,7 +365,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 function _devshop_projects_git_execute($commands, $root) {
   // Execute
   $return = '';
-  if (!is_string($commands)) {
+  if (is_string($commands)) {
     $commands = array($commands);
   }
   foreach ($commands as $command) {
@@ -384,7 +384,7 @@ function _devshop_projects_git_execute($commands, $root) {
       }
 
       $output = drush_shell_exec_output();
-      drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
+      drush_log('Shell Output: ' . implode("\n", $output) , 'ok');
       $return .= $output;
     }
   }
