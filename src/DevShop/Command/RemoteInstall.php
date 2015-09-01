@@ -189,10 +189,10 @@ class RemoteInstall extends Command
         $output->writeln("");
 
         // Ask the user if they want to install mysql.
-        $confirmationQuestion = new ConfirmationQuestion("Install MySQL? [Y/n] ", true);
+        $confirmationQuestion = new ConfirmationQuestion("Install MySQL? [y/N] (Default: y) ", true);
         $install_mysql = $helper->ask($input, $output, $confirmationQuestion);
 
-        $confirmationQuestion = new ConfirmationQuestion("Install Apache? [Y/n] ", true);
+        $confirmationQuestion = new ConfirmationQuestion("Install Apache? [y/N] (Default: y) ", true);
         $install_apache = $helper->ask($input, $output, $confirmationQuestion);
 
         $extra_vars = json_encode(array(
