@@ -430,10 +430,6 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
 <code>root</code> user, then run the <code>devshop remote:install</code> command.');
   $items[] = t('If you have already provisioned the server, add the key to the <code>aegir</code> user.');
 
-  $form['devshop_remote_provision'] = array(
-    '#type' => 'checkbox',
-    '#title' => t("Provision server using the 'devshop remote:install' command"),
-  );
   $form['note'] = array(
     '#value' => theme('item_list', $items),
     '#weight' => -100,
