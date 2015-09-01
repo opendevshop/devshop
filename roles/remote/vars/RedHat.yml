@@ -32,6 +32,7 @@ apache_packages:
   - mod_ssl
   - openssh
   - openssl
+  - mariadb-client
 
 mysql_packages:
   - mariadb

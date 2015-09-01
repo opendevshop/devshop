@@ -26,6 +26,7 @@ apache_packages:
   - git
   - curl
   - openssl
+  - mysql-client
 
 mysql_packages:
   - mysql-server
