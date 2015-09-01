@@ -60,9 +60,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Does not start automatically on vagrant up.
   # Use `vagrant up remote` to launch.
   config.vm.define "remote", autostart: false do |remote|
-    # remote.vm.box = "chef/centos-7.0"
     remote.vm.hostname = settings["remote_server_hostname"]
     remote.vm.network "private_network", ip: settings["remote_vagrant_private_network_ip"]
+    remote.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
+  end
+  config.vm.define "remote2", autostart: false do |remote|
+    remote.vm.hostname = settings["remote2_server_hostname"]
+    remote.vm.network "private_network", ip: settings["remote2_vagrant_private_network_ip"]
+    remote.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
   end
 end
 
