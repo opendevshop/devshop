@@ -175,25 +175,31 @@ class RemoteInstall extends Command
             throw new \Exception("Unable to write inventory-remote file.");
         }
 
-        // Look for saved password
-        $password_file_path = realpath("/var/aegir/.servers/$hostname-sql-password");
-
-        if ($fs->exists($password_file_path)) {
-            $mysql_password = trim(file_get_contents($password_file_path));
-            $output->writeln("MySQL Password found at <comment>$password_file_path</comment>");
-        }
-        else {
-            $mysql_password = $this->generatePassword();
-            $output->writeln("MySQL Password generated as <comment>$mysql_password</comment>.");
-        }
-        $output->writeln("");
-
         // Ask the user if they want to install mysql.
         $confirmationQuestion = new ConfirmationQuestion("Install MySQL? [y/N] (Default: y) ", true);
         $install_mysql = $helper->ask($input, $output, $confirmationQuestion);
 
         $confirmationQuestion = new ConfirmationQuestion("Install Apache? [y/N] (Default: y) ", true);
         $install_apache = $helper->ask($input, $output, $confirmationQuestion);
+
+        // Look for saved password
+        if ($install_mysql) {
+          $password_file_path = realpath("/var/aegir/.servers/$hostname-sql-password");
+
+          if ($fs->exists($password_file_path)) {
+            $mysql_password = trim(file_get_contents($password_file_path));
+            $output->writeln("MySQL Password found at <comment>$password_file_path</comment>");
+          }
+          else {
+            $mysql_password = $this->generatePassword();
+            $output->writeln("MySQL Password generated as <comment>$mysql_password</comment>.");
+          }
+        }
+        else {
+          $mysql_password = '';
+        }
+
+        $output->writeln("");
 
         $extra_vars = json_encode(array(
             'aegir_ssh_key' => $pubkey,
@@ -254,10 +260,12 @@ class RemoteInstall extends Command
         }
 
         // Save a file with the server's mysql root password in case one runs the command again.
-        if ($install_mysql && !$fs->exists('/var/aegir/.servers')) {
-            $fs->mkdir('/var/aegir/.servers', 0700);
+        if ($install_mysql) {
+            if (!$fs->exists('/var/aegir/.servers')) {
+              $fs->mkdir('/var/aegir/.servers', 0700);
+            }
+            $fs->dumpFile("/var/aegir/.servers/$hostname-sql-password", $mysql_password);
         }
-        $fs->dumpFile("/var/aegir/.servers/$hostname-sql-password", $mysql_password);
 
         $something_failed = FALSE;
 
@@ -321,7 +329,9 @@ class RemoteInstall extends Command
 
         $output->writeln("<comment>Hostname:</comment> $hostname");
         $output->writeln("<comment>MySQL username:</comment> aegir_root");
-        $output->writeln("<comment>MySQL password:</comment> $mysql_password");
+        if ($install_mysql) {
+          $output->writeln("<comment>MySQL password:</comment> $mysql_password");
+        }
         $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
         $output->writeln('');
 
