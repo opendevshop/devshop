@@ -13,13 +13,17 @@ function devshop_github_add_key_to_account() {
         return;
     }
 
-    print "Token found!";
-
     // Check for SSH key
-    $client = new \Github\Client();
-    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+    try {
+      $client = new \Github\Client();
+      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
-    $keys = $client->currentUser()->keys()->all();
+      $keys = $client->currentUser()->keys()->all();
+    }
+    catch (\GitHub\Exception\RuntimeException $e) {
+      drupal_set_message($e->message(), 'error');
+    }
+
     $devshop_key = variable_get('devshop_public_key', '');
 
     $found_key = FALSE;
@@ -45,7 +49,14 @@ function devshop_github_add_key_to_account() {
         )),
     );
 
-    $return = $client->currentUser()->keys()->create($params);
+    // Create public key
+    try {
+      $return = $client->currentUser()->keys()->create($params);
+    } 
+    catch (\GitHub\Exception\ValidationFailedException $e) {
+      drupal_set_message($e->getMessage(), 'error');
+    }
+
     if ($return['verified']) {
         drupal_set_message('SSH Key added to your account.');
         drupal_goto('admin/devshop/github');
