@@ -254,7 +254,7 @@ class RemoteInstall extends Command
         }
 
         // Save a file with the server's mysql root password in case one runs the command again.
-        if (!$fs->exists('/var/aegir/.servers')) {
+        if ($install_mysql && !$fs->exists('/var/aegir/.servers')) {
             $fs->mkdir('/var/aegir/.servers', 0700);
         }
         $fs->dumpFile("/var/aegir/.servers/$hostname-sql-password", $mysql_password);
@@ -262,27 +262,29 @@ class RemoteInstall extends Command
         $something_failed = FALSE;
 
         // Test MySQL Access
-        $output->writeln('');
-        $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
-        if ($skip_checks) {
+        if ($install_mysql) {
+          $output->writeln('');
+          $output->writeln('<info>MySQL:</info> Testing MySQL Access...');
+          if ($skip_checks) {
             $output->writeln('<comment>Skipping...</comment>');
-        }
-        else {
+          }
+          else {
 
             $cmd = "mysql -h $hostname -u aegir_root -p$mysql_password -e'CREATE DATABASE test_access; DROP DATABASE test_access;'";
             $process = new Process($cmd);
             $process->setTimeout(null);
 
             try {
-                $process->mustRun();
-                $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
+              $process->mustRun();
+              $output->writeln('<info>Access Granted!</info> MySQL on remote server is accessible.');
 
             } catch (ProcessFailedException $e) {
-                $errorMessages = array_filter(explode("\n", $e->getMessage()));
-                $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
-                $output->writeln($formattedBlock);
-                $something_failed = TRUE;
+              $errorMessages = array_filter(explode("\n", $e->getMessage()));
+              $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+              $output->writeln($formattedBlock);
+              $something_failed = TRUE;
             }
+          }
         }
 
         // Test Apache Access
