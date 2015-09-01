@@ -8,11 +8,10 @@ apache_user: www-data
 mysql_daemon: mysql
 mysql_conf_path: /etc/mysql/my.cnf
 
-__aegir_packages:
+apache_packages:
   - apache2
   - apache2-mpm-prefork
   - apache2-utils
-  - mysql-server
   - php5
   - php5-cli
   - php5-curl
@@ -26,8 +25,11 @@ __aegir_packages:
   - vim
   - git
   - curl
-  - python-mysqldb
   - openssl
+
+mysql_packages:
+  - mysql-server
+  - python-mysqldb
 
 apache_ports_configuration_items:
   - {

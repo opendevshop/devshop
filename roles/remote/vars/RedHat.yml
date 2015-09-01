@@ -8,7 +8,7 @@ apache_user: apache
 mysql_daemon: mariadb
 mysql_conf_path: /etc/my.cnf
 
-__aegir_packages:
+apache_packages:
   - epel-release
   - httpd
   - php
@@ -29,12 +29,14 @@ __aegir_packages:
   - vim
   - git
   - cronie
-  - mariadb
-  - mariadb-server
-  - MySQL-python
   - mod_ssl
   - openssh
   - openssl
+
+mysql_packages:
+  - mariadb
+  - mariadb-server
+  - MySQL-python
 
 apache_ports_configuration_items:
   - {

@@ -3,101 +3,27 @@
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
 
-- name: Define aegir_packages.
+- name: Define mysql_packages.
   set_fact:
-    aegir_packages: "{{ __aegir_packages | list }}"
-  when: aegir_packages is not defined
+    mysql_packages: "{{ mysql_packages | list }}"
+  when: mysql_packages is not defined
 
-# Setup/install tasks.
+- name: Define apache_packages.
+  set_fact:
+    apache_packages: "{{ apache_packages | list }}"
+  when: apache_packages is not defined
+
+# Setup Packages
 - include: setup-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
 
-# Figure out what version of Apache is installed.
-- name: Get installed version of Apache.
-  command: "{{ apache_daemon }} -v"
-  changed_when: false
-  always_run: yes
-  register: _apache_version
-  when: ansible_os_family == 'Debian'
+# Install Apache
+- include: install-apache.yml
+  when: install_apache
 
-- name: Create apache_version variable.
-  when: ansible_os_family == 'Debian'
-  set_fact:
-    apache_version: "{{ _apache_version.stdout.split()[2].split('/')[1] }}"
-
-- include_vars: apache-22.yml
-  when: "ansible_os_family == 'Debian' and apache_version.split('.')[1] == '2'"
-
-- include_vars: apache-24.yml
-  when: "ansible_os_family == 'Debian' and apache_version.split('.')[1] == '4'"
-
-# Configure Apache.
-- include: configure-RedHat.yml
-  when: ansible_os_family == 'RedHat'
-
-- include: configure-Debian.yml
-  when: ansible_os_family == 'Debian'
-
-- name: Ensure Apache is started and enabled on boot.
-  service:
-    name: "{{ apache_daemon }}"
-    state: started
-    enabled: yes
-
-- name: Create temporary empty config file for apache so it won't throw errors.
-  copy:
-    content: ""
-    dest: "/var/aegir/config/apache-empty.conf"
-    owner: aegir
-    group: aegir
-    mode: 0600
-
-- name: Link aegir apache file to something to aegir config.
-  file:
-    src: "/var/aegir/config/apache-empty.conf"
-    dest: "/var/aegir/config/apache.conf"
-    state: link
-    force: true
-
-- name: Link apache to aegir config.
-  file:
-    src: "/var/aegir/config/apache.conf"
-    dest: "{{ apache_conf_path }}/aegir.conf"
-    state: link
-    force: true
-
-- name: Save SSH key to authorized keys
-  copy:
-    content: "{{ aegir_ssh_key }}"
-    dest: "/var/aegir/.ssh/authorized_keys"
-    owner: aegir
-    group: aegir
-    mode: 0600
-
-- name: Configure sudo for aegir user
-  copy:
-    dest: "/etc/sudoers.d/aegir"
-    content: "aegir ALL=NOPASSWD: {{ apache_control }}\n\n"
-    mode: 0440
-
-- name: Check for secured installation of MySQL
-  stat: path=/var/mysql-secured
-  register: mysqlsecured
-
-- name: Install MySQL Securely
-  include: ./mysql-secure.yml
-  when: not mysqlsecured.stat.exists
-
-- name: Save a file with the system's apache restart command
-  copy:
-    dest: /var/aegir/.apache-restart-command
-    content: "{{ apache_control }}"
-
-- name: Add aegir to apache group.
-  user:
-    name=aegir
-    groups={{ apache_user }}
-    append=yes
+# Install MySQL
+- include: install-mysql.yml
+  when: install_mysql

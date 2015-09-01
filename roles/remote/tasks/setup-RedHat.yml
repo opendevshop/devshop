@@ -4,8 +4,16 @@
     name: "epel-release"
     state: installed
 
-- name: Ensure packages are installed.
+- name: Ensure mysql packages are installed.
   yum:
     name: "{{ item }}"
     state: installed
-  with_items: aegir_packages
+  with_items: mysql_packages
+  when: install_mysql
+
+- name: Ensure apache packages are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: apache_packages
+  when: install_apache
