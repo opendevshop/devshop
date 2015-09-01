@@ -292,8 +292,8 @@
                    <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
                  <?php else: ?>
                    <i class="fa fa-globe"></i>
-                 <? endif;?>
-                  <?php print $environment->url ?>
+                 <?php endif;?>
+                 <?php print $environment->url ?>
                 </a>
                </div>
              <?php else: ?>
