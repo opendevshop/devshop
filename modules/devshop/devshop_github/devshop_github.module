@@ -35,23 +35,6 @@ function devshop_github_menu() {
 }
 
 /**
- * Implements hook_init()
- */
-function devshop_github_help($path, $arg) {
-
-  if (strpos($path, 'admin') === 0 && strpos($path, 'admin/devshop') !== 0) {
-    return;
-  }
-  $github_token = variable_get('devshop_github_token', '');
-
-  if (empty($github_token)) {
-    drupal_set_message(t("GitHub API Token is missing.  Please add one at !link", array(
-      '!link' => l(t('Admin > DevShop > GitHub'), 'admin/devshop/github'),
-    )));
-  }
-}
-
-/**
  * Implements hook_form_FORM_ID_alter() for project_node_form.
  */
 function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id)
