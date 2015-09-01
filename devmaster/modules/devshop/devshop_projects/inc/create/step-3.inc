@@ -278,6 +278,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
 
   // Remove default "task" messages.
-  drupal_get_messages();
+  drupal_get_messages('status');
   drupal_set_message('Environments saved! Now preparing codebases...');
 }
