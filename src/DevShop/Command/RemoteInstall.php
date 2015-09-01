@@ -188,12 +188,21 @@ class RemoteInstall extends Command
         }
         $output->writeln("");
 
+        // Ask the user if they want to install mysql.
+        $confirmationQuestion = new ConfirmationQuestion("Install MySQL? [Y/n] ", true);
+        $install_mysql = $helper->ask($input, $output, $confirmationQuestion);
+
+        $confirmationQuestion = new ConfirmationQuestion("Install Apache? [Y/n] ", true);
+        $install_apache = $helper->ask($input, $output, $confirmationQuestion);
+
         $extra_vars = json_encode(array(
             'aegir_ssh_key' => $pubkey,
             'mysql_root_password' => $mysql_password,
             'server_hostname' => $hostname,
             'server_ip' => $ip,
             'mysql_client_ip' => $mysql_client_ip,
+            'install_apache' => $install_apache,
+            'install_mysql' => $install_mysql,
         ));
 
         $playbook_path = realpath(__DIR__ . '/../../../playbook-remote.yml');
