@@ -328,8 +328,8 @@ class RemoteInstall extends Command
         }
 
         $output->writeln("<comment>Hostname:</comment> $hostname");
-        $output->writeln("<comment>MySQL username:</comment> aegir_root");
         if ($install_mysql) {
+          $output->writeln("<comment>MySQL username:</comment> aegir_root");
           $output->writeln("<comment>MySQL password:</comment> $mysql_password");
         }
         $output->writeln("<comment>Apache Restart Command:</comment> $apache_restart");
