@@ -201,7 +201,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   unset($_SESSION['last_step']);
 
   // Friendly message
-  drupal_get_messages();
+  drupal_get_messages('status');
   drupal_set_message(t('Your project has been created.  Your sites are being installed.'));
 }
 

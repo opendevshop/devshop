@@ -143,6 +143,100 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     $form['connect']['#suffix'] = '</div>';
   }
 }
+
+
+/**
+ * Implements hook_form_FORM_ID_alter() for project_node_form.
+ */
+function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$form_state)
+{
+
+  // Return if project isn't ready.
+  if (empty($form['install_profile'])) {
+    return;
+  }
+
+  // Return if there is no github token
+  $github_token = variable_get('devshop_github_token', '');
+  if (empty($github_token)) {
+    return;
+  }
+
+  // Load project and github
+  $project_node = node_load($form['nid']['#value']);
+  $project = $project_node->project;
+
+  // Return if provider is not github.
+  if ($project->git_provider != 'github') {
+    return;
+  }
+
+  // Return if deploy method is not webhook.
+  if ($project->settings->deploy['method'] != 'webhook') {
+    return;
+  }
+
+  $repo = $project->github_owner . '/' . $project->github_repo;
+  $repo_url = "http://github.com/" . $repo;
+
+  $form['github_webhook'] = array(
+    '#title' => t('Setup GitHub Webhook'),
+    '#description' => t('Leave this box checked to automatically add a webhook to your GitHub Repository !link.', array(
+      '!link' => l($repo, $repo_url, array(
+          'attributes' => array(
+            'target' => '_blank',
+          ),
+      ))
+    )),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
+  );
+
+  $form['#validate'][] = 'devshop_github_project_create_webhook';
+  $form['#submit'][] = 'devshop_github_project_create_webhook';
+}
+
+/**
+ * Extra submit hook for last step of project create form.
+ */
+function devshop_github_project_create_webhook($form, $form_state) {
+
+  // Return if box is not checked.
+  if (empty($form_state['values']['github_webhook'])) {
+    return;
+  }
+
+  // Get Project
+  $project_node = node_load($form['nid']['#value']);
+  $project = $project_node->project;
+
+  // Get GitHub client
+  $client = new Github\Client();
+  $github_token = variable_get('devshop_github_token', '');
+  $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
+
+  // Create the webhook.
+  try {
+    $hook = $client->repo()->hooks()->create($project->github_owner, $project->github_repo, array(
+        'name' => 'web',
+        'active' => true,
+        'events' => array(
+            'push',
+            'pull_request',
+            'delete',
+            'release',
+        ),
+        'config' => array(
+            'url' => $project->webhook_url,
+            'content_type' => 'json',
+            'insecure_ssl' => '1',
+        ),
+    ));
+  } catch (Github\Exception\ValidationFailedException $e) {
+    drupal_set_message(t('GitHub Exception: ') . $e->getMessage(), 'warning');
+  }
+}
+
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */
