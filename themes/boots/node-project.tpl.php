@@ -256,8 +256,8 @@
                  <i class="fa fa-lock text-success"></i>
                <?php else: ?>
                  <i class="fa fa-globe"></i>
-               <? endif;?>
-               <?php print $environment->url ?>
+               <?php endif; ?>
+              <?php print $environment->url ?>
              </a>
            </div>
            <div class="btn-group pull-right" role="group">
