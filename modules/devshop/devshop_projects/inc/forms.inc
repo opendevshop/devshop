@@ -417,6 +417,41 @@ function devshop_projects_environment_settings_submit($form, &$form_state){
 
 
 /**
+ * Implements hook_form_alter().
+ */
+function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $form_id){
+
+  $items = array();
+  $items[] = t('To create a new server, you must first connect it to this one via SSH.');
+  $items[] = t("You must grant %aegir access to your new server by adding it's SSH Key (below) to <code>~/.ssh/authorized_keys</code>.", array(
+    '%aegir' => "aegir@" . $_SERVER['HTTP_HOST'],
+  ));
+  $items[] = t('If you wish to provision a new server, add the key to the
+<code>root</code> user, then run the <code>devshop remote:install</code> command.');
+  $items[] = t('If you have already provisioned the server, add the key to the <code>aegir</code> user.');
+
+  $form['devshop_remote_provision'] = array(
+    '#type' => 'checkbox',
+    '#title' => t("Provision server using the 'devshop remote:install' command"),
+  );
+  $form['note'] = array(
+    '#value' => theme('item_list', $items),
+    '#weight' => -100,
+    '#prefix' => '<div class="alert alert-info">',
+    '#suffix' => '</div>',
+  );
+
+  $form['key'] = array(
+    '#type' => 'item',
+    '#title' => t(' SSH Public Key for %aegir', array(
+      '%aegir' => "aegir@" . $_SERVER['HTTP_HOST'],
+    )),
+    '#value' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
+    '#weight' => -99,
+  );
+}
+
+/**
  * Implementation of hook_form().
  */
 function devshop_projects_form(&$node) {
