@@ -30,19 +30,25 @@ function devshop_github_settings_form(){
   else {
       $form['devshop_github_token']['#description'] .= ' <em class="text-success">' . t('Your token is saved.') . '</em>';
   }
-
-    // Test for public key access.
+  
+  // Test for public key access.
   if (!empty($token)) {
+    try {
+
+      $client = new \Github\Client();
+      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+      $keys = $client->currentUser()->keys()->all();
+    } 
+    // Happens when user has no public keys.
+    catch (\GitHub\Exception\RuntimeException $e) {
+      drupal_set_message(t('Something went wrong trying to request http://api.github.com/user/keys.  Make sure your personal token is authorized for repo, repo:status, repo:deployment, public_repo, write:public_key, & write:repo_hook.'), 'error');
+      return system_settings_form($form);
+    }
 
     $form['github_public_keys'] = array(
-        '#value' => 'HELLO?',
+        '#value' => '',
     );
-
-    $token = variable_get('devshop_github_token', '');
-    $client = new \Github\Client();
-    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-
-    $keys = $client->currentUser()->keys()->all();
+    
     $devshop_key = variable_get('devshop_public_key', '');
 
     $found_key = FALSE;
