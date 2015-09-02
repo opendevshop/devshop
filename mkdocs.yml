@@ -19,4 +19,5 @@ pages:
   - 'Using SSL': 'ssl.md'
   - 'Password Protection': 'password-protect.md'
   - 'Going Live': 'going-live.md'
+  - 'Scaling': 'scaling.md'
 
