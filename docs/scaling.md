@@ -43,3 +43,5 @@ For more information on Web Clusters, see the documentation page at [aegir.readt
 - Drupal files folder is not synced across servers out of the box. Requires a manual solution.
 - Shared files folder needs to be setup for every environment.
 - Manual setup of load balancer is needed.
+
+See [https://groups.drupal.org/node/291688](https://groups.drupal.org/node/291688) for a discussion on files folder sharing solutions.
