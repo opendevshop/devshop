@@ -18,6 +18,7 @@ pages:
   - 'Deleting Projects & Environments': 'deleting.md'
   - 'Using SSL': 'ssl.md'
   - 'Password Protection': 'password-protect.md'
+  - 'Remote Servers': 'remotes.md'
   - 'Going Live': 'going-live.md'
   - 'Scaling': 'scaling.md'
 
