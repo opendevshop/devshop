@@ -33,6 +33,13 @@ function devshop_hosting_menu(){
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
+  $items['admin/reports/devshop_sites'] = array(
+    'title' => 'DevShop Environments',
+    'description' => "List all active sites and their IP addresses.",
+    'page callback' => 'devshop_hosting_sites_status',
+    'weight' => -60,
+    'access arguments' => array('administer site configuration'),
+  );
   return $items;
 }
 
@@ -281,4 +288,24 @@ function devshop_hosting_task_queue_block() {
 
 HTML;
   }
+}
+
+/**
+ * Page callback for devshop site status.
+ * @return string
+ */
+function devshop_hosting_sites_status() {
+
+  $query = db_query("SELECT nid FROM {node} WHERE type = 'project' AND status = 1");
+  while ($result = db_fetch_object($query)) {
+    $node = node_load($result->nid);
+
+    foreach ($node->project->environments as $environment) {
+      if ($environment->site_status == HOSTING_SITE_ENABLED && count($environment->ip_addresses)) {
+        $ip = array_shift($environment->ip_addresses);
+        $items[] = "$ip $environment->uri";
+      }
+    }
+  }
+  return theme('item_list', $items, t('Site Hosts'));
 }
