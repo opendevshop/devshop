@@ -290,10 +290,12 @@
 
           <?php endif;?>
 
+           <!-- Log In Link -->
            <?php if ($environment->login_url): ?>
              <div class="btn-group pull-right login-link" role="group">
 
-               <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+               <?php if ($environment->login_needs_reset == FALSE) $target = '_blank'; ?>
+
                <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link">
                  <i class="fa fa-sign-in"></i>
                  <?php print $environment->login_text; ?>
