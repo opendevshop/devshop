@@ -168,15 +168,6 @@
 
         <!-- Environment Links -->
 
-        <?php if ($environment->login_url): ?>
-          <div class="pull-right login-link" role="group">
-
-            <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
-            <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link btn-sm"><?php print $environment->login_text; ?></a>
-          </div>
-        <?php endif; ?>
-
-
         <?php  if (isset($environment->github_pull_request)): ?>
           <!-- Pull Request -->
           <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
@@ -260,16 +251,10 @@
               <?php print $environment->url ?>
              </a>
            </div>
-           <div class="btn-group pull-right" role="group">
+           <div class="btn-group" role="group">
              <button type="button" class="btn btn-text dropdown-toggle" data-toggle="dropdown">
-
-                 <?php print format_plural(count($environment->domains),
-                   t('1 Domain'),
-                   t('@count Domains', array(
-                     '@count' => count($environment->domains),
-                   ))
-                 ); ?>
-
+                 <i class="fa fa-globe"></i>
+                 <?php print count($environment->domains); ?>
                  <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu">
@@ -304,7 +289,19 @@
               <?php endif;?>
 
           <?php endif;?>
-        </div>
+
+           <?php if ($environment->login_url): ?>
+             <div class="btn-group pull-right login-link" role="group">
+
+               <?php if ($environment->login_text == 'Log in') $target = '_blank'; ?>
+               <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link">
+                 <i class="fa fa-sign-in"></i>
+                 <?php print $environment->login_text; ?>
+               </a>
+             </div>
+           <?php endif; ?>
+
+         </div>
 
       </div>
 

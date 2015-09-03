@@ -596,7 +596,8 @@ function boots_preprocess_environment(&$environment, $actions) {
     // Get login link
     // @TODO: This is how aegir does it.  See _hosting_site_goto_link()
     // @TODO: Detect and display "Generating login" message.
-    if ($environment->site_status == HOSTING_SITE_ENABLED && user_access('create login-reset task')) {
+  $environment->login_needs_reset = FALSE;
+  if ($environment->site_status == HOSTING_SITE_ENABLED && user_access('create login-reset task')) {
       $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
       if ($cache && (time() < $cache->data['expire'])) {
         $environment->login_url = url("node/" . $environment->site . "/goto_site");
@@ -605,15 +606,16 @@ function boots_preprocess_environment(&$environment, $actions) {
       else {
         $task = hosting_get_most_recent_task($environment->site, 'login-reset');
         if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-          $environment->login_text = t('');
+          $environment->login_text = t('Resetting...');
           $environment->login_url = '#';
         }
         else {
           global $user;
           $token = drupal_get_token($user->uid);
-          $environment->login_text =  t('Request Login');
+          $environment->login_text =  t('Log in');
           $environment->login_url = url(
 "node/{$environment->site}/site_login-reset", array('query' => array('token' => $token)));
+          $environment->login_needs_reset = TRUE;
         }
       }
     }
