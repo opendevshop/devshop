@@ -241,7 +241,7 @@
            // If we have more than one domain, add the dropdown.
            if (count($environment->domains) > 1):
              ?>
-           <div class="btn-group btn-group-smaller" role="group">
+           <div class="btn-group btn-group-smaller btn-urls" role="group">
              <a href="<?php print $environment->url ?>" target="_blank">
                <?php if (!empty($environment->ssl_enabled)): ?>
                  <i class="fa fa-lock text-success"></i>
@@ -271,7 +271,7 @@
            else: ?>
 
              <?php if (!empty($environment->url)): ?>
-               <div class="btn-group btn-group-smaller" role="group">
+               <div class="btn-group btn-group-smaller btn-urls" role="group">
                  <a href="<?php print $environment->url ?>" target="_blank">
                  <?php if (!empty($environment->ssl_enabled)): ?>
                    <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
