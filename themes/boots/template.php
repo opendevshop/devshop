@@ -542,12 +542,7 @@ function boots_preprocess_environment(&$environment, $actions) {
     $project = $project_node->project;
 
     // Environment Tasks
-    if ($environment->site) {
-      $environment->tasks = hosting_get_tasks('rid', $environment->site);
-    }
-    else {
-      $environment->tasks = hosting_get_tasks('rid', $environment->platform);
-    }
+    $environment->tasks  = devshop_get_tasks($environment->project_name, $environment->name);
 
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
