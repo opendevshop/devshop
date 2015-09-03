@@ -368,3 +368,49 @@ function devshop_hosting_login_reset($site_nid) {
 HTML;
 
 }
+
+/**
+ * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
+ * @param $environment_site_nid
+ */
+function devshop_get_tasks($project, $environment) {
+
+  // Get project node
+  $project_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "project" AND title = "%s"', $project));
+
+  $project_node = node_load($project_nid);
+  $project = $project_node->project;
+  $environment = $project->environments[$environment];
+
+  $query = db_query("
+    SELECT t.nid, t.vid
+      FROM {node} tn
+      INNER JOIN {hosting_task} t ON tn.vid = t.vid
+      WHERE
+        t.rid = %d OR t.rid = %d
+      ORDER BY t.vid DESC
+  ",
+      $environment->site,
+      $environment->platform
+  );
+  while ($result = db_fetch_object($query)) {
+    $tasks[$result->vid] = node_load($result->nid, $result->vid);
+  }
+
+  // Load "Clone" tasks
+  $query = db_query("
+    SELECT n.nid, n.vid
+      FROM {node} n
+      INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
+      WHERE
+        name = 'target_platform' AND value = %d
+      ORDER BY vid DESC
+  ",
+      $environment->platform
+  );
+  while ($result = db_fetch_object($query)) {
+    $tasks[$result->vid] = node_load($result->nid, $result->vid);
+  }
+  krsort($tasks);
+  return $tasks;
+}
