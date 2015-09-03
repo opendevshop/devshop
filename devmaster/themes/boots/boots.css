@@ -88,11 +88,6 @@ body.admin-menu .navbar-static-top {
   padding-right: 4em;
 }
 
-.login-link {
-  font-size:.8em;
-  margin-top: -.4em;
-}
-
 .environment.live-environment .environment-header {
   background: #4E6DDB;
  }
