@@ -332,9 +332,12 @@ function devshop_hosting_login_reset($site_nid) {
   $task = hosting_add_task($site_nid, 'login-reset');
 
   // Wait for it to complete
-  while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING ) {
+  while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
     sleep(3);
-    $task = node_load($task->nid);
+    $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
+    if ($cache && (time() < $cache->data['expire'])) {
+      break;
+    }
   }
 
   // Output link to login.
@@ -356,6 +359,8 @@ function devshop_hosting_login_reset($site_nid) {
          <i class="fa fa-sign-in"></i>
          $login_text
        </a>
+
+       $output
      </div>
      <div class="modal-footer">
        <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
