@@ -158,12 +158,21 @@ function devshop_provision_pre_flight($platform_name = NULL){
  * @see provisionConfig_drupal_settings
  */
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
+
+  $environment = d()->environment['name'];
+  $project = d()->environment['project_name'];
+
   return <<<PHP
 
   # Additional platform-wide configuration settings.
   if (file_exists(__DIR__ . '/../all/global.settings.php')) {
     include_once(__DIR__ . '/../all/global.settings.php');
   }
+
+  # This site's devshop project name and environment name.
+  \$_SERVER['devshop_environment'] = '$environment';
+  \$_SERVER['devshop_project'] = '$project';
+
 
 PHP;
 }
@@ -174,4 +183,59 @@ PHP;
 function devshop_provision_provision_services() {
   devshop_provision_register_autoload();
   return array('site_project' => NULL);
+}
+
+/**
+ * Implements hook_provision_apache_vhost_config()
+ *
+ * Adds "devshop_project" and "devshop_environment" server variables.
+ *
+ * @param $uri
+ *   URI for the site.
+ * @param $data
+ *   Associative array of data from Provision_Config_Apache_Site::data.
+ *
+ * @return
+ *   Lines to add to the configuration file.
+ *
+ * @see Provision_Config_Apache_Site
+ * provision_logs_provision_apache_vhost_config
+ */
+function devshop_provision_provision_apache_vhost_config($uri, $data, Provision_Config_Apache_Site $site_config) {
+
+  $environment = d()->environment['name'];
+  $project = d()->environment['project_name'];
+
+  return <<<PHP
+  # Saving project and environment server variables
+  SetEnv DEVSHOP_PROJECT $project
+  SetEnv DEVSHOP_ENVIRONMENT $environment
+
+PHP;
+}
+
+/**
+ * Implements hook_provision_nginx_vhost_config()
+ *
+ * Adds "devshop_project" and "devshop_environment" server variables.
+ *
+ * @param $data
+ *   Associative array of data from Provision_Config_Nginx_Server::data.
+ *
+ * @return
+ *   Lines to add to the configuration file.
+ *
+ * @see Provision_Config_Nginx_Server
+ */
+function devshop_provision_provision_nginx_vhost_config($data) {
+
+  $environment = d()->environment['name'];
+  $project = d()->environment['project_name'];
+
+  return <<<PHP
+  # Saving project and environment server variables
+  fastcgi_param DEVSHOP_PROJECT $project
+  fastcgi_param DEVSHOP_ENVIRONMENT $environment
+
+PHP;
 }
