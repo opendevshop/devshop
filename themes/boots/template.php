@@ -605,14 +605,15 @@ function boots_preprocess_environment(&$environment, $actions) {
       else {
         $task = hosting_get_most_recent_task($environment->site, 'login-reset');
         if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-          $environment->login_text = t('Requesting Login...');
+          $environment->login_text = t('');
           $environment->login_url = '#';
         }
         else {
           global $user;
           $token = drupal_get_token($user->uid);
           $environment->login_text =  t('Request Login');
-          $environment->login_url = "node/{$environment->site}/site_login-reset?token={$token}";
+          $environment->login_url = url(
+"node/{$environment->site}/site_login-reset", array('query' => array('token' => $token)));
         }
       }
     }
