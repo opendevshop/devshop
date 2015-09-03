@@ -216,7 +216,8 @@ function devshop_github_project_create_webhook($form, $form_state) {
         ),
     ));
   } catch (Github\Exception\ValidationFailedException $e) {
-    drupal_set_message(t('GitHub Exception: ') . $e->getMessage(), 'warning');
+    // For some reason, github always returns an exception here when there is already webhooks on the project.
+    // drupal_set_message(t('GitHub Exception: ') . $e->getMessage(), 'warning');
   }
 }
 
