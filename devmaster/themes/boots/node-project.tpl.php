@@ -241,7 +241,7 @@
            // If we have more than one domain, add the dropdown.
            if (count($environment->domains) > 1):
              ?>
-           <div class="btn-group url-wrapper" role="group">
+           <div class="btn-group btn-group-smaller" role="group">
              <a href="<?php print $environment->url ?>" target="_blank">
                <?php if (!empty($environment->ssl_enabled)): ?>
                  <i class="fa fa-lock text-success"></i>
@@ -251,8 +251,8 @@
               <?php print $environment->url ?>
              </a>
            </div>
-           <div class="btn-group" role="group">
-             <button type="button" class="btn btn-text dropdown-toggle" data-toggle="dropdown">
+           <div class="btn-group btn-group-smaller" role="group">
+             <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
                  <i class="fa fa-globe"></i>
                  <?php print count($environment->domains); ?>
                  <span class="caret"></span>
@@ -271,7 +271,7 @@
            else: ?>
 
              <?php if (!empty($environment->url)): ?>
-               <div class="btn-group url-wrapper" role="group">
+               <div class="btn-group btn-group-smaller" role="group">
                  <a href="<?php print $environment->url ?>" target="_blank">
                  <?php if (!empty($environment->ssl_enabled)): ?>
                    <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
@@ -292,14 +292,43 @@
 
            <!-- Log In Link -->
            <?php if ($environment->login_url): ?>
-             <div class="btn-group pull-right login-link" role="group">
+             <div class="btn-group btn-group-smaller pull-right login-link" role="group">
 
-               <?php if ($environment->login_needs_reset == FALSE) $target = '_blank'; ?>
+               <?php if ($environment->login_needs_reset): ?>
 
-               <a href="<?php print $environment->login_url; ?>" target="<?php print $target; ?>" class="btn btn-link">
-                 <i class="fa fa-sign-in"></i>
-                 <?php print $environment->login_text; ?>
-               </a>
+                 <!-- Button trigger modal -->
+                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
+                   <i class="fa fa-sign-in"></i>
+                   <?php print $environment->login_text; ?>
+                 </button>
+
+                 <!-- Modal -->
+                 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
+                   <div class="modal-dialog" role="document">
+                     <div class="modal-content">
+                       <div class="modal-header">
+                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                         <h4 class="modal-title" id="loginModalLabel">
+                           <?php print $environment->login_text; ?>
+                         </h4>
+                       </div>
+                       <div class="modal-body">
+                         <i class="fa fa-gear fa-spin"></i>
+                         <?php print t('Requesting new login. Please wait...') ?>
+                       </div>
+                       <div class="modal-footer">
+                         <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+
+               <?php else: ?>
+                 <a href="<?php print $environment->login_url; ?>" target="_blank" class="btn btn-link">
+                   <i class="fa fa-sign-in"></i>
+                   <?php print $environment->login_text; ?>
+                 </a>
+               <?php endif; ?>
              </div>
            <?php endif; ?>
 
