@@ -555,7 +555,7 @@ ul.dropdown-menu li.text {
   right: 0px;
 }
 
-.environment.pull-request .environment-header {
+.environment.pull-request > .list-group-item.environment-header {
   padding-left: 45px;
 }
 
