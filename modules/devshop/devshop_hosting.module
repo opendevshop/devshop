@@ -40,6 +40,14 @@ function devshop_hosting_menu(){
     'weight' => -60,
     'access arguments' => array('administer site configuration'),
   );
+  $items['devshop/login/reset/%'] = array(
+    'title' => 'Reset Login',
+    'description' => "List all active sites and their IP addresses.",
+    'page callback' => 'devshop_hosting_login_reset',
+    'page arguments' => array(3),
+    'weight' => -60,
+    'access arguments' => array('create login-reset task'),
+  );
   return $items;
 }
 
@@ -308,4 +316,51 @@ function devshop_hosting_sites_status() {
     }
   }
   return theme('item_list', $items, t('Site Hosts'));
+}
+
+/**
+ * Special callback that waits for the login task to become available.
+ */
+function devshop_hosting_login_reset($site_nid) {
+
+  $site = node_load($site_nid);
+
+  // Set timelimit to unlimited.
+  set_time_limit(0);
+
+  // Create new reset-login task.
+  $task = hosting_add_task($site_nid, 'login-reset');
+
+  // Wait for it to complete
+  while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING ) {
+    sleep(3);
+    $task = node_load($task->nid);
+  }
+
+  // Output link to login.
+  $title = t('Log in');
+  $close = t('Close');
+  $login_text = t('Log in to !site', array('!site' => $site->environment->uri));
+  $url = url("node/{$site_nid}/goto_site");
+
+  print <<<HTML
+   <div class="modal-content">
+     <div class="modal-header">
+       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+       <h4 class="modal-title" id="loginModalLabel">
+         $title
+       </h4>
+     </div>
+     <div class="modal-body">
+       <a href="$url" target="_blank" class="btn btn-primary">
+         <i class="fa fa-sign-in"></i>
+         $login_text
+       </a>
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
+     </div>
+   </div>
+HTML;
+
 }

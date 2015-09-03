@@ -74,14 +74,8 @@ body.admin-menu .navbar-static-top {
   white-space: nowrap;
 }
 
-.environment-domains .btn{
+.environment-domains .url-wrapper .btn{
   padding: 3px;
-}
-
-.environment-domains .btn.btn-text {
-  background: white;
-  padding-left: .5em;
-  color: #777;
 }
 
 .environment-domains.login-available {
@@ -314,8 +308,8 @@ body.admin-menu .navbar-static-top {
     width: auto;
 }
 
-.environment-domains a,
-.environment-domains button {
+.environment-domains .btn-group-smaller > a,
+.environment-domains .btn-group-smaller > button {
     margin: 0px 5px;
     padding: 3px;
     color: #777;
