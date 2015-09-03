@@ -612,3 +612,10 @@ html.js fieldset.collapsed {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+
+.btn-urls-single {
+  max-width: 80%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
