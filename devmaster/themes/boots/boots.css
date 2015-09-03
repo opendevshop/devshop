@@ -619,3 +619,7 @@ html.js fieldset.collapsed {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+.environment-tasks .dropdown-menu a {
+    white-space: nowrap;
+}
