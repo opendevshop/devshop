@@ -107,8 +107,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
   }
 
-  modalframe_parent_js();
-
   $node->content['info'] = array(
     '#prefix' => '<div id="hosting-platform-info">',
     '#suffix' => '</div>'
