@@ -170,8 +170,8 @@ function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) 
   }
 
   # This site's devshop project name and environment name.
-  \$_SERVER['devshop_environment'] = '$environment';
-  \$_SERVER['devshop_project'] = '$project';
+  \$_SERVER['DEVSHOP_ENVIRONMENT'] = '$environment';
+  \$_SERVER['DEVSHOP_PROJECT'] = '$project';
 
 
 PHP;
