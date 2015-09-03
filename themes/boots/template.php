@@ -11,7 +11,7 @@
  * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
  * print boots_render_tasks($tasks);
  */
-function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
+function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $float = 'left'){
   global $user;
 
   if (is_null($tasks)){
@@ -147,7 +147,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
     );
   }
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-left', 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-' . $float, 'role' => 'menu'));
 
   if ($tasks_count == 0) {
     $tasks_count = '';
@@ -559,7 +559,7 @@ function boots_preprocess_environment(&$environment, $actions) {
 
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
-    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $actions);
+    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $actions, 'right');
 
     foreach ($environment->tasks as &$task) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
