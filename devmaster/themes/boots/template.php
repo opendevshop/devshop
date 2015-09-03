@@ -579,6 +579,11 @@ function boots_preprocess_environment(&$environment, $actions) {
       $environment->list_item_class = 'warning';
     }
 
+    // Pull Request?
+    if ($environment->github_pull_request) {
+      $environment->class .= ' pull-request';
+    }
+
     $environment->active_tasks_label = format_plural(
       $environment->active_tasks,
       t('1 active task'),
