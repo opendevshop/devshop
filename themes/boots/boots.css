@@ -73,6 +73,7 @@ body.admin-menu .navbar-static-top {
   position: relative;
   padding: 0px;
   white-space: nowrap;
+    background: #eee;
 }
 
 .environment-domains .url-wrapper .btn{
