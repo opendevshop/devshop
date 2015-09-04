@@ -73,7 +73,6 @@ body.admin-menu .navbar-static-top {
   position: relative;
   padding: 0px;
   white-space: nowrap;
-    background: #eee;
 }
 
 .environment-domains .url-wrapper .btn{
@@ -623,4 +622,9 @@ html.js fieldset.collapsed {
 
 .environment-tasks .dropdown-menu a {
     white-space: nowrap;
+}
+
+.environment-task-logs .text {
+    text-transform: uppercase;
+    font-size: .8em;
 }

@@ -236,7 +236,132 @@
       </div>
       <?php else: ?>
 
+          <!-- URLs -->
+          <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
 
+              <div class="btn-toolbar" role="toolbar">
+
+                  <?php
+                  // If we have more than one domain, add the dropdown.
+                  if (count($environment->domains) > 1):
+                      ?>
+                      <div class="btn-group btn-group-smaller btn-urls" role="group">
+                          <a href="<?php print $environment->url ?>" target="_blank">
+                              <?php if (!empty($environment->ssl_enabled)): ?>
+                                  <i class="fa fa-lock text-success"></i>
+                              <?php else: ?>
+                                  <i class="fa fa-globe"></i>
+                              <?php endif; ?>
+                              <?php print $environment->url ?>
+                          </a>
+                      </div>
+                      <div class="btn-group btn-group-smaller" role="group">
+                          <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+                              <i class="fa fa-globe"></i>
+                              <?php print count($environment->domains); ?>
+                              <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                              <?php foreach ($environment->domains as $domain): ?>
+                                  <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
+                              <?php endforeach; ?>
+                              <li class="divider">&nbsp;</li>
+                              <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
+                          </ul>
+                      </div>
+
+                      <?php
+                  // If site only has one domain (no aliases):
+                  else: ?>
+
+                      <?php if (!empty($environment->url)): ?>
+                          <div class="btn-group btn-group-smaller btn-urls-single" role="group">
+                              <a href="<?php print $environment->url ?>" target="_blank">
+                                  <?php if (!empty($environment->ssl_enabled)): ?>
+                                      <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
+                                  <?php else: ?>
+                                      <i class="fa fa-globe"></i>
+                                  <?php endif;?>
+                                  <?php print $environment->url ?>
+                              </a>
+                          </div>
+                      <?php else: ?>
+                          <button class="btn btn-xs">
+                              <i class="fa fa-globe"></i>
+                              <em>&nbsp;</em>
+                          </button>
+                      <?php endif;?>
+
+                  <?php endif;?>
+
+                  <!-- Log In Link -->
+                  <?php if ($environment->login_url): ?>
+                      <div class="btn-group btn-group-smaller pull-right login-link" role="group">
+
+                          <?php if ($environment->login_needs_reset): ?>
+
+                              <!-- Button trigger modal -->
+                              <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
+                                  <i class="fa fa-sign-in"></i>
+                                  <?php print $environment->login_text; ?>
+                              </button>
+
+                              <!-- Modal -->
+                              <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
+                                  <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                          <div class="modal-header">
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                              <h4 class="modal-title" id="loginModalLabel">
+                                                  <?php print $environment->login_text; ?>
+                                              </h4>
+                                          </div>
+                                          <div class="modal-body">
+                                              <i class="fa fa-gear fa-spin"></i>
+                                              <?php print t('Requesting new login. Please wait...') ?>
+                                          </div>
+                                          <div class="modal-footer">
+                                              <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+
+                          <?php else: ?>
+                              <a href="<?php print $environment->login_url; ?>" target="_blank" class="btn btn-link">
+                                  <i class="fa fa-sign-in"></i>
+                                  <?php print $environment->login_text; ?>
+                              </a>
+                          <?php endif; ?>
+                      </div>
+                  <?php endif; ?>
+
+              </div>
+
+          </div>
+
+          <div class="list-group-item">
+              <div class="btn-group" role="group">
+
+                  <!-- Last Commit -->
+                  <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="btn btn-text text-muted small" title="<?php print $environment->git_last; ?>">
+                      <i class="fa fa-file-code-o"></i>
+                      <?php print $environment->git_ref_id; ?>
+                  </a>
+
+                  <!-- Browse Files -->
+                  <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
+                      <i class="fa fa-folder-o"></i>
+                      <?php print t('Files'); ?>
+                  </a>
+
+                  <!-- Browse Backups -->
+                  <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
+                      <i class="fa fa-database"></i>
+                      <?php print t('Backups'); ?>
+                  </a>
+              </div>
+          </div>
       <?php
       // Only show this area if they have at least one of these permissions.
       if (
@@ -376,28 +501,6 @@
       </div>
       <?php endif; ?>
 
-        <div class="list-group-item">
-          <div class="btn-group" role="group">
-
-          <!-- Last Commit -->
-          <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="btn btn-text text-muted small" title="<?php print $environment->git_last; ?>">
-            <i class="fa fa-file-code-o"></i>
-            <?php print $environment->git_ref_id; ?>
-          </a>
-
-          <!-- Browse Files -->
-          <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
-            <i class="fa fa-folder-o"></i>
-            <?php print t('Files'); ?>
-          </a>
-
-          <!-- Browse Backups -->
-          <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
-            <i class="fa fa-database"></i>
-            <?php print t('Backups'); ?>
-          </a>
-          </div>
-        </div>
 
       <?php if ($environment->test): ?>
         <div class="environment-tests list-group-item list-group-item-<?php print $environment->test->status_class ?>">
@@ -448,109 +551,56 @@
           </div>
         </div>
       <?php endif; ?>
+          <div class="environment-task-logs list-group-item">
 
-          <!-- URLs -->
-          <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
+              <?php
+                $classes = array(
+                    array(
+                      'class' => 'success',
+                      'icon' => 'check',
+                      'label' => 'Test',
+                      'ago' => '2 min ago',
+                    ),
+                    array(
+                      'class' => 'danger',
+                      'icon' => 'exclamation-triange',
+                      'label' => 'Deploy',
+                      'ago' => '10 hrs ago'
+                    ),
+                    array(
+                      'class' => 'warning',
+                      'icon' => 'exclamation-circle',
+                      'label' => 'Deploy',
+                      'ago' => '4 days ago',
+                    ),
 
-              <div class="btn-toolbar" role="toolbar">
+                    array(
+                            'class' => 'info',
+                            'icon' => 'gear fa-spin',
+                            'label' => 'Cache Clear',
+                            'ago' => 'running',
+                    ),
 
-                  <?php
-                  // If we have more than one domain, add the dropdown.
-                  if (count($environment->domains) > 1):
-                      ?>
-                      <div class="btn-group btn-group-smaller btn-urls" role="group">
-                          <a href="<?php print $environment->url ?>" target="_blank">
-                              <?php if (!empty($environment->ssl_enabled)): ?>
-                                  <i class="fa fa-lock text-success"></i>
-                              <?php else: ?>
-                                  <i class="fa fa-globe"></i>
-                              <?php endif; ?>
-                              <?php print $environment->url ?>
-                          </a>
-                      </div>
-                      <div class="btn-group btn-group-smaller" role="group">
-                          <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-                              <i class="fa fa-globe"></i>
-                              <?php print count($environment->domains); ?>
-                              <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu" role="menu">
-                              <?php foreach ($environment->domains as $domain): ?>
-                                  <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
-                              <?php endforeach; ?>
-                              <li class="divider">&nbsp;</li>
-                              <li><?php print l(t('Edit Domains'), 'node/' . $node->nid . '/edit/' . $environment->name, array('query'=> drupal_get_destination())); ?></li>
-                          </ul>
-                      </div>
+                );
 
-                      <?php
-                  // If site only has one domain (no aliases):
-                  else: ?>
+              $demo = $classes[rand(0,3)];
+              ?>
+              <!-- Tasks -->
+              <div class="alert-<?php print $demo['class'] ?>">
 
-                      <?php if (!empty($environment->url)): ?>
-                          <div class="btn-group btn-group-smaller btn-urls-single" role="group">
-                              <a href="<?php print $environment->url ?>" target="_blank">
-                                  <?php if (!empty($environment->ssl_enabled)): ?>
-                                      <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
-                                  <?php else: ?>
-                                      <i class="fa fa-globe"></i>
-                                  <?php endif;?>
-                                  <?php print $environment->url ?>
-                              </a>
-                          </div>
-                      <?php else: ?>
-                          <button class="btn btn-xs">
-                              <i class="fa fa-globe"></i>
-                              <em>&nbsp;</em>
-                          </button>
-                      <?php endif;?>
+                  <label>Tasks</label>
 
-                  <?php endif;?>
-
-                  <!-- Log In Link -->
-                  <?php if ($environment->login_url): ?>
-                      <div class="btn-group btn-group-smaller pull-right login-link" role="group">
-
-                          <?php if ($environment->login_needs_reset): ?>
-
-                              <!-- Button trigger modal -->
-                              <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
-                                  <i class="fa fa-sign-in"></i>
-                                  <?php print $environment->login_text; ?>
-                              </button>
-
-                              <!-- Modal -->
-                              <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
-                                  <div class="modal-dialog" role="document">
-                                      <div class="modal-content">
-                                          <div class="modal-header">
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                              <h4 class="modal-title" id="loginModalLabel">
-                                                  <?php print $environment->login_text; ?>
-                                              </h4>
-                                          </div>
-                                          <div class="modal-body">
-                                              <i class="fa fa-gear fa-spin"></i>
-                                              <?php print t('Requesting new login. Please wait...') ?>
-                                          </div>
-                                          <div class="modal-footer">
-                                              <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                          <?php else: ?>
-                              <a href="<?php print $environment->login_url; ?>" target="_blank" class="btn btn-link">
-                                  <i class="fa fa-sign-in"></i>
-                                  <?php print $environment->login_text; ?>
-                              </a>
-                          <?php endif; ?>
-                      </div>
-                  <?php endif; ?>
-
+                  <div class="btn-group pull-right">
+                    <?php //print $environment->tasks_list; ?>
+                  </div>
+                  <div class="btn-group text">
+                      <i class="fa fa-<?php print $demo['icon'] ?>"></i> <?php print $demo['label'] ?> <em class="small"><?php print $demo['ago'] ?></em>
+                  </div>
+                  <div class="btn-group pull-right small">
+                      <i class="fa fa-list"></i>
+                      Logs
+                  </div>
               </div>
-
           </div>
 
       <?php endif; ?>
