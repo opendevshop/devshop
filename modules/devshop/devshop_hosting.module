@@ -389,6 +389,7 @@ function devshop_get_tasks($project, $environment) {
       WHERE
         t.rid = %d OR t.rid = %d
       ORDER BY t.vid DESC
+      LIMIT 10
   ",
       $environment->site,
       $environment->platform
