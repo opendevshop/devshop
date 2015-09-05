@@ -541,49 +541,49 @@ function boots_preprocess_environment(&$environment, $actions) {
     $project_node = node_load($environment->project_nid);
     $project = $project_node->project;
 
-    // Environment Tasks
-    $environment->tasks  = devshop_get_tasks($environment->project_name, $environment->name);
+//    // Environment Tasks
+//    $environment->tasks  = devshop_get_tasks($environment->project_name, $environment->name);
+//
+//    $environment->task_count = count($environment->tasks);
+//    $environment->active_tasks = 0;
+//    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $actions, 'right');
+//
+//    foreach ($environment->tasks as &$task) {
+//      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+//        $environment->active_tasks++;
+//      }
+//    }
 
-    $environment->task_count = count($environment->tasks);
-    $environment->active_tasks = 0;
-    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $actions, 'right');
-
-    foreach ($environment->tasks as &$task) {
-      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->active_tasks++;
-      }
-    }
-
-    // Status
-    if ($environment->site_status == HOSTING_SITE_DISABLED) {
-      $environment->class = 'disabled';
-      $environment->list_item_class = 'disabled';
-    }
-    elseif ($environment->name == $project->settings->live['live_environment']) {
-      $environment->class = ' live-environment';
-      $environment->list_item_class = 'info';
-    }
-    else {
-      $environment->class = ' normal-environment';
-      $environment->list_item_class = 'info';
-    }
-
-    // Active?
-    if ($environment->active_tasks > 0) {
-      $environment->class .= ' active';
-      $environment->list_item_class = 'warning';
-    }
-
-    // Pull Request?
-    if ($environment->github_pull_request) {
-      $environment->class .= ' pull-request';
-    }
-
-    $environment->active_tasks_label = format_plural(
-      $environment->active_tasks,
-      t('1 active task'),
-      t('@count active tasks', array('@count' => $environment->active_tasks))
-    );
+//    // Status
+//    if ($environment->site_status == HOSTING_SITE_DISABLED) {
+//      $environment->class = 'disabled';
+//      $environment->list_item_class = 'disabled';
+//    }
+//    elseif ($environment->name == $project->settings->live['live_environment']) {
+//      $environment->class = ' live-environment';
+//      $environment->list_item_class = 'info';
+//    }
+//    else {
+//      $environment->class = ' normal-environment';
+//      $environment->list_item_class = 'info';
+//    }
+//
+//    // Active?
+//    if ($environment->active_tasks > 0) {
+//      $environment->class .= ' active';
+//      $environment->list_item_class = 'warning';
+//    }
+//
+//    // Pull Request?
+//    if ($environment->github_pull_request) {
+//      $environment->class .= ' pull-request';
+//    }
+//
+//    $environment->active_tasks_label = format_plural(
+//      $environment->active_tasks,
+//      t('1 active task'),
+//      t('@count active tasks', array('@count' => $environment->active_tasks))
+//    );
 
     // Get login link
     // @TODO: This is how aegir does it.  See _hosting_site_goto_link()
