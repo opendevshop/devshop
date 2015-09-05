@@ -196,43 +196,6 @@ function devshop_projects_load($node) {
       $environment->url = $protocol . $environment->system_domain;
     }
 
-    // Load tasks
-    $environment->tasks = devshop_get_tasks($environment->project_name, $environment->name);
-
-    $environment->task_count = count($environment->tasks);
-    $environment->active_tasks = 0;
-
-    foreach ($environment->tasks as &$task) {
-      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->active_tasks++;
-      }
-    }
-
-    // Determine environment status
-    if ($environment->site_status == HOSTING_SITE_DISABLED) {
-      $environment->class = 'disabled';
-      $environment->list_item_class = 'disabled';
-    }
-    elseif ($environment->name == $project->settings->live['live_environment']) {
-      $environment->class = ' live-environment';
-      $environment->list_item_class = 'info';
-    }
-    else {
-      $environment->class = ' normal-environment';
-      $environment->list_item_class = 'info';
-    }
-
-    // Active?
-    if ($environment->active_tasks > 0) {
-      $environment->class .= ' active';
-      $environment->list_item_class = 'warning';
-    }
-
-    // Pull Request?
-    if ($environment->github_pull_request) {
-      $environment->class .= ' pull-request';
-    }
-
     // Save to project environments collection.
     $environments[$environment->name] = $environment;
   }
