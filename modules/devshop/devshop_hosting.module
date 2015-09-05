@@ -373,15 +373,9 @@ HTML;
  * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
  * @param $environment_site_nid
  */
-function devshop_get_tasks($project, $environment) {
+function devshop_get_tasks($environment) {
 
-  // Get project node
-  $project_nid = db_result(db_query('SELECT nid FROM {node} WHERE type = "project" AND title = "%s"', $project));
-
-  $project_node = node_load($project_nid);
-  $project = $project_node->project;
-  $environment = $project->environments[$environment];
-
+  // Load all tasks from hosting_task table.
   $query = db_query("
     SELECT t.nid, t.vid
       FROM {node} tn

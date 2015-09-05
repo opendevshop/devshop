@@ -98,7 +98,7 @@ HTML;
  */
 function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   global $user;
-  $project = $node->project;
+  $project = &$node->project;
 
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
@@ -107,6 +107,80 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
   }
 
+  $tasks = hosting_available_tasks('site');
+
+  // Load environment tasks
+  foreach ($project->environments as &$environment) {
+    $environment->tasks = devshop_get_tasks($environment);
+    $environment->task_count = count($environment->tasks);
+    $environment->active_tasks = 0;
+
+    foreach ($environment->tasks as &$task) {
+      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+        $environment->active_tasks++;
+      }
+
+      // Save last task
+      if (empty($environment->last_task)) {
+        $environment->last_task = array(
+          'class' => 'success',
+          'icon' => 'check',
+          'ago' => format_interval(time() - $task->executed, 1) . ' ' . t('ago'),
+          'label' => drupal_ucfirst($tasks[$task->task_type]['title']),
+          'url' => url("node/$task->nid"),
+        );
+
+        // Determine class
+        if ($task->task_status == HOSTING_TASK_SUCCESS) {
+          $environment->last_task['class'] = 'success';
+          $environment->last_task['icon'] = 'check';
+        }
+        elseif ($task->task_status == HOSTING_TASK_WARNING) {
+          $environment->last_task['class'] = 'warning';
+          $environment->last_task['icon'] = 'exclamation-triangle';
+        }
+        elseif ($task->task_status == HOSTING_TASK_ERROR) {
+          $environment->last_task['class'] = 'danger';
+          $environment->last_task['icon'] = 'exclamation-circle';
+        }
+        elseif ($task->task_status == HOSTING_TASK_QUEUED) {
+          $environment->last_task['class'] = 'info';
+          $environment->last_task['icon'] = 'gear fa-spin';
+          $environment->last_task['ago'] = t('Queued');
+        }
+        elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
+          $environment->last_task['class'] = 'info';
+          $environment->last_task['icon'] = 'gear fa-spin';
+          $environment->last_task['ago'] = t('Running...');
+        }
+      }
+    }
+
+    // Determine environment status
+    if ($environment->site_status == HOSTING_SITE_DISABLED) {
+      $environment->class = 'disabled';
+      $environment->list_item_class = 'disabled';
+    }
+    elseif ($environment->name == $project->settings->live['live_environment']) {
+      $environment->class = ' live-environment';
+      $environment->list_item_class = 'info';
+    }
+    else {
+      $environment->class = ' normal-environment';
+      $environment->list_item_class = 'info';
+    }
+
+    // Active?
+//    if ($environment->active_tasks > 0) {
+//      $environment->class .= ' active';
+//      $environment->list_item_class = 'warning';
+//    }
+
+    // Pull Request?
+    if ($environment->github_pull_request) {
+      $environment->class .= ' pull-request';
+    }
+  }
   return $node;
 }
 
