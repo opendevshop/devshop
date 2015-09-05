@@ -325,8 +325,8 @@ function devshop_hosting_login_reset($site_nid) {
 
   $site = node_load($site_nid);
 
-  // Set timelimit to unlimited.
-  set_time_limit(0);
+  // Set time limit to 3 minutes.
+  set_time_limit(180);
 
   // Create new reset-login task.
   $task = hosting_add_task($site_nid, 'login-reset');
