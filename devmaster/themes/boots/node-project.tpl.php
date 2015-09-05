@@ -219,13 +219,6 @@
           <?php endif; ?>
 
         </div>
-
-
-        <div class="progress">
-          <div class="progress-bar progress-bar-striped progress-bar-warning active"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-            <span class="sr-only"><?php print $environment->progress_output ?></span>
-          </div>
-        </div>
       </div>
 
       <?php if (empty($environment->site)): ?>
@@ -553,40 +546,8 @@
       <?php endif; ?>
           <div class="environment-task-logs list-group-item">
 
-              <?php
-                $classes = array(
-                    array(
-                      'class' => 'success',
-                      'icon' => 'check',
-                      'label' => 'Test',
-                      'ago' => '2 min ago',
-                    ),
-                    array(
-                      'class' => 'danger',
-                      'icon' => 'exclamation-triange',
-                      'label' => 'Deploy',
-                      'ago' => '10 hrs ago'
-                    ),
-                    array(
-                      'class' => 'warning',
-                      'icon' => 'exclamation-circle',
-                      'label' => 'Deploy',
-                      'ago' => '4 days ago',
-                    ),
-
-                    array(
-                            'class' => 'info',
-                            'icon' => 'gear fa-spin',
-                            'label' => 'Cache Clear',
-                            'ago' => 'running',
-                    ),
-
-                );
-
-              $demo = $classes[rand(0,3)];
-              ?>
               <!-- Tasks -->
-              <div class="alert-<?php print $demo['class'] ?>">
+              <div class="alert-<?php print $environment->last_task['class'] ?>">
 
                   <label>Tasks</label>
 
@@ -594,11 +555,18 @@
                     <?php //print $environment->tasks_list; ?>
                   </div>
                   <div class="btn-group text">
-                      <i class="fa fa-<?php print $demo['icon'] ?>"></i> <?php print $demo['label'] ?> <em class="small"><?php print $demo['ago'] ?></em>
+                      <a href="<?php print $environment->last_task['url']; ?>" class="alert-link">
+                          <i class="fa fa-<?php print $environment->last_task['icon'] ?>"></i>
+                          <?php print $environment->last_task['label'] ?>
+                          <em class="small"><?php print $environment->last_task['ago'] ?></em>
+
+                      </a>
                   </div>
-                  <div class="btn-group pull-right small">
-                      <i class="fa fa-list"></i>
-                      Logs
+              </div>
+
+              <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                      <span class="sr-only"><?php print $environment->progress_output ?></span>
                   </div>
               </div>
           </div>
