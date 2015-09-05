@@ -197,8 +197,6 @@ function devshop_projects_load($node) {
     }
 
     // Load tasks
-    continue;
-
     $environment->tasks = devshop_get_tasks($environment->project_name, $environment->name);
 
     $environment->task_count = count($environment->tasks);
