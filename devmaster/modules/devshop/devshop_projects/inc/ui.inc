@@ -115,10 +115,50 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     $environment->task_count = count($environment->tasks);
     $environment->active_tasks = 0;
 
+    $items = array();
+    $items[] = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$project->nid/logs/$environment->name", array(
+      'html' => TRUE,
+        'attributes' => array(
+          'class' => 'list-group-item',
+        ),
+    ));
     foreach ($environment->tasks as &$task) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
         $environment->active_tasks++;
       }
+
+      switch ($task->task_status){
+        case HOSTING_TASK_SUCCESS:
+          $icon = 'check text-success';
+          $item_class = 'list-group-item-success';
+          break;
+
+        case HOSTING_TASK_ERROR;
+          $icon = 'exclamation-circle text-danger';
+          $item_class = 'list-group-item-danger';
+          break;
+        case HOSTING_TASK_WARNING:
+          $icon = 'warning text-warning';
+          $item_class = 'list-group-item-warning';
+          break;
+
+        case HOSTING_TASK_PROCESSING;
+        case HOSTING_TASK_QUEUED;
+          $icon = 'cog fa-spin text-info';
+          $item_class = 'list-group-item-info';
+          break;
+      }
+
+      $text = '<i class="fa fa-' . $icon . '"></i> ';
+      $text .= drupal_ucfirst($tasks[$task->task_type]['title']);
+      $text .= ' <em class="small">' . format_interval(time() - $task->changed, 1) .' '. t('ago') . '</em>';
+
+      $items[] = l($text, 'node/' . $task->nid, array(
+          'html' => TRUE,
+          'attributes' => array(
+            'class' => "list-group-item $item_class",
+          ),
+      ));
 
       // Save last task
       if (empty($environment->last_task)) {
@@ -155,6 +195,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         }
       }
     }
+
+    // Task Logs
+    $environment->task_logs = implode("\n", $items);
 
     // Determine environment status
     if ($environment->site_status == HOSTING_SITE_DISABLED) {
