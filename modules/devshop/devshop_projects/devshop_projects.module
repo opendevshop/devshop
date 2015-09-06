@@ -59,8 +59,12 @@ function devshop_projects_perm() {
  */
 function devshop_projects_devshop_environment_actions($environment) {
 
-  $items[] = l(t('Clone Environment'), "node/{$environment->project_nid}/project_devshop-create/clone");
-  $items[] = l(t('Fork Environment'), "node/{$environment->project_nid}/project_devshop-create/fork");
+  $items[] = l('<i class="fa fa-copy"></i> ' . t('Clone Environment'), "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}", array(
+      'html' => TRUE,
+  ));
+  $items[] = l('<i class="fa fa-code-fork"></i> ' . t('Fork Environment'), "node/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}", array(
+      'html' => TRUE,
+));
 
   // Add disable or delete task based on hosting variable.
   if (!variable_get('hosting_require_disable_before_delete', TRUE)){
@@ -69,7 +73,7 @@ function devshop_projects_devshop_environment_actions($environment) {
     if ($environment->site_status == HOSTING_SITE_DISABLED){
       $items[] = 'enable';
       $items[] = 'delete';
-    } elseif (!$items->settings->locked){
+    } elseif (!$environment->settings->locked){
       $items[] = 'disable';
     }
   }

@@ -633,3 +633,7 @@ html.js fieldset.collapsed {
     color: white;
     font-weight: normal;
 }
+
+.environment-tasks i.fa {
+    width: 20px;
+}
