@@ -637,3 +637,7 @@ html.js fieldset.collapsed {
 .environment-tasks i.fa {
     width: 20px;
 }
+
+.environment-tasks .dropdown-menu .divider {
+    margin: 3px 0px;
+}

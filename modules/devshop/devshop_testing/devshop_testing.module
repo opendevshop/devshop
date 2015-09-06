@@ -67,6 +67,7 @@ function devshop_testing_hosting_tasks() {
  */
 function devshop_testing_devshop_environment_actions($environment) {
   return array(
+    '<div class="divider"></div>',
     'test'
   );
 }
