@@ -4,7 +4,7 @@ body.admin-menu .navbar-static-top {
 }
 
 .environment-wrapper {
-  min-width: 342px;
+  min-width: 340px;
 }
 
 .table-controls {
@@ -212,7 +212,6 @@ body.admin-menu .navbar-static-top {
 /*}*/
 
 .environment .progress {
-  height: 7px;
   border-radius: 0px;
   border: none;
   margin: 0;
@@ -224,57 +223,22 @@ body.admin-menu .navbar-static-top {
   bottom: 0px;
   width: 100%;
   left: 0px;
+  z-index: 1;
+  height: 1.7em;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+    display: none;
 }
 
 .environment .progress-bar {
-  display: none;
   float: none;
+  background-color: #aaa;
+    width: 100%;
 }
 
-.environment.active .progress-bar {
+.environment.active .progress {
   display: block;
   width: 100%;
-}
-
-.environment.active,
-.environment.live-environment.active .environment-header {
-    background-color: #fcf8e3;
-    color: #8a6d3b !important;
-}
-
-.environment.active.live-environment .environment-header a,
-.environment.active.live-environment .environment-header a.btn-text,
-.environment.active.live-environment .environment-header button.btn-link,
-.environment.active.live-environment .environment-header span,
-.environment.active.live-environment .environment-header,
-.environment.active.live-environment .environment-tasks a,
-.environment.active.live-environment .environment-tasks a.btn-text,
-.environment.active.live-environment .environment-tasks button.btn-link,
-
-{
-  color: #8a6d3b;
-}
-.environment.active .environment-header a,
-.environment.active .environment-header span,
-.environment.active .environment-header button,
-.environment.active .environment-tasks button.btn-link
-{
-  color: #8a6d3b !important;
-}
-.environment.active .environment-header ul a
-{
-  color: #000000 !important;
-}
-.environment.active .tasks-button > a:hover,
-.environment.active .tasks-button > a:active,
-.environment.active .tasks-button.open > a {
-    background: #8a6d3b;
-    color:  white;
-    text-decoration: none;
-}
-
-.environment.active ul a {
-  color: #777;
 }
 
 .environment > .list-group-item.btn-group {
@@ -656,5 +620,16 @@ html.js fieldset.collapsed {
 }
 
 .environment-task-logs > .alert-default {
-    background-color: #eee;
+    background-color: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+
+.environment.active .environment-task-logs a.alert-link,
+.environment.active .environment-task-logs a.alert-link i,
+.environment.active .environment-task-logs .btn-default,
+.environment.active .environment-task-logs label {
+    color: white;
+    font-weight: normal;
 }

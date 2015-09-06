@@ -521,7 +521,7 @@
 
               <div class="progress">
                   <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                      <span class="sr-only"><?php print $environment->progress_output ?></span>
+                      <span class="sr-only"></span>
                   </div>
               </div>
           </div>
