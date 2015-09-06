@@ -122,9 +122,16 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
           'class' => 'list-group-item',
         ),
     ));
+
+    $environment->processing = FALSE;
+
     foreach ($environment->tasks as &$task) {
       if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
         $environment->active_tasks++;
+
+        if ($task->task_status == HOSTING_TASK_PROCESSING) {
+          $environment->processing = TRUE;
+        }
       }
 
       switch ($task->task_status){
@@ -144,7 +151,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
         case HOSTING_TASK_PROCESSING;
         case HOSTING_TASK_QUEUED;
-          $icon = 'cog fa-spin text-info';
+          $icon = 'cog text-info';
+          if ($environment->processing) {
+            $icon .= ' fa-spin';
+          }
           $item_class = 'default';
           break;
       }
@@ -160,7 +170,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
         $ago = t('Running...');
       }
 
-      $text = "'<i class='fa fa-{$icon}'></i> {$label} <em class='small'>{$ago}</em>";
+      $text = "<i class='fa fa-{$icon}'></i> {$label} <em class='small'>{$ago}</em>";
 
       $items[] = l($text, 'node/' . $task->nid, array(
           'html' => TRUE,
@@ -196,6 +206,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     else {
       $environment->class = ' normal-environment';
       $environment->list_item_class = 'info';
+    }
+
+    if ($environment->active_tasks > 0) {
+      $environment->class .= ' active';
     }
 
     // Pull Request?
