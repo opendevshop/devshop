@@ -572,7 +572,7 @@ html.js fieldset.collapsed {
 }
 
 .btn-urls {
-  max-width: 70%;
+  max-width: 63%;
   text-overflow: ellipsis;
   overflow: hidden;
 }
