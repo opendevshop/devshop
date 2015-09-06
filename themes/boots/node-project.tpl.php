@@ -501,8 +501,13 @@
 
                   <label>Tasks</label>
 
-                  <div class="btn-group pull-right">
-                    <?php //print $environment->tasks_list; ?>
+                  <div class="btn-group btn-logs pull-right" role="group">
+                      <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                          <i class="fa fa-list-alt"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                          <?php print $environment->task_logs; ?>
+                      </div>
                   </div>
                   <div class="btn-group text">
                       <a href="<?php print $environment->last_task['url']; ?>" class="alert-link">
