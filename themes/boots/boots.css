@@ -654,3 +654,7 @@ html.js fieldset.collapsed {
 .btn-logs .list-group-item {
     white-space: nowrap;
 }
+
+.environment-task-logs > .alert-default {
+    background-color: #eee;
+}

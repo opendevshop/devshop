@@ -130,69 +130,54 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       switch ($task->task_status){
         case HOSTING_TASK_SUCCESS:
           $icon = 'check text-success';
-          $item_class = 'list-group-item-success';
+          $item_class = 'success';
           break;
 
         case HOSTING_TASK_ERROR;
           $icon = 'exclamation-circle text-danger';
-          $item_class = 'list-group-item-danger';
+          $item_class = 'danger';
           break;
         case HOSTING_TASK_WARNING:
           $icon = 'warning text-warning';
-          $item_class = 'list-group-item-warning';
+          $item_class = 'warning';
           break;
 
         case HOSTING_TASK_PROCESSING;
         case HOSTING_TASK_QUEUED;
           $icon = 'cog fa-spin text-info';
-          $item_class = 'list-group-item-info';
+          $item_class = 'default';
           break;
       }
 
-      $text = '<i class="fa fa-' . $icon . '"></i> ';
-      $text .= drupal_ucfirst($tasks[$task->task_type]['title']);
-      $text .= ' <em class="small">' . format_interval(time() - $task->changed, 1) .' '. t('ago') . '</em>';
+      $label = drupal_ucfirst($tasks[$task->task_type]['title']);
+      $ago = ' <em class="small">' . format_interval(time() - $task->executed, 1) .' '. t('ago') . '</em>';
+
+      // Override "ago" text.
+      if ($task->task_status == HOSTING_TASK_QUEUED) {
+        $ago = t('Queued');
+      }
+      elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
+        $ago = t('Running...');
+      }
+
+      $text = "'<i class='fa fa-{$icon}'></i> {$label} <em class='small'>{$ago}</em>";
 
       $items[] = l($text, 'node/' . $task->nid, array(
           'html' => TRUE,
           'attributes' => array(
-            'class' => "list-group-item $item_class",
+            'class' => "list-group-item list-group-item-{$item_class}",
           ),
       ));
 
       // Save last task
       if (empty($environment->last_task)) {
         $environment->last_task = array(
-          'class' => 'success',
-          'icon' => 'check',
-          'ago' => format_interval(time() - $task->executed, 1) . ' ' . t('ago'),
-          'label' => drupal_ucfirst($tasks[$task->task_type]['title']),
+          'class' => $item_class,
+          'icon' => $icon,
+          'ago' => $ago,
+          'label' => $label,
           'url' => url("node/$task->nid"),
         );
-
-        // Determine class
-        if ($task->task_status == HOSTING_TASK_SUCCESS) {
-          $environment->last_task['class'] = 'success';
-          $environment->last_task['icon'] = 'check';
-        }
-        elseif ($task->task_status == HOSTING_TASK_WARNING) {
-          $environment->last_task['class'] = 'warning';
-          $environment->last_task['icon'] = 'exclamation-triangle';
-        }
-        elseif ($task->task_status == HOSTING_TASK_ERROR) {
-          $environment->last_task['class'] = 'danger';
-          $environment->last_task['icon'] = 'exclamation-circle';
-        }
-        elseif ($task->task_status == HOSTING_TASK_QUEUED) {
-          $environment->last_task['class'] = 'info';
-          $environment->last_task['icon'] = 'gear fa-spin';
-          $environment->last_task['ago'] = t('Queued');
-        }
-        elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
-          $environment->last_task['class'] = 'info';
-          $environment->last_task['icon'] = 'gear fa-spin';
-          $environment->last_task['ago'] = t('Running...');
-        }
       }
     }
 
@@ -212,12 +197,6 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $environment->class = ' normal-environment';
       $environment->list_item_class = 'info';
     }
-
-    // Active?
-//    if ($environment->active_tasks > 0) {
-//      $environment->class .= ' active';
-//      $environment->list_item_class = 'warning';
-//    }
 
     // Pull Request?
     if ($environment->github_pull_request) {
