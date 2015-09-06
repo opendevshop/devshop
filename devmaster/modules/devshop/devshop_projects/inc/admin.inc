@@ -50,5 +50,16 @@ function devshop_projects_settings_form() {
     '#description' => t('Each environment (aegir site) gets an initial URL. You can use @project for project name and @hostname for "%host". Environments are put underneath this URL as subdomains.', array('%host' => $_SERVER['SERVER_NAME'])),
     '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
   );
+
+  $form['support'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop Support'),
+  );
+  $form['support']['devshop_support_widget_enable'] = array(
+    '#title' => t('Show Help Widget'),
+    '#description' => t('Uncheck this box if you want to hide the Help widget that appears at the bottom right of the page.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
+  );
   return system_settings_form($form);
 }
