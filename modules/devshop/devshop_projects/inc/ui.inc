@@ -218,10 +218,41 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     }
 
     // Load Actions
+    $environment->task_links = devshop_environment_links($environment);
 //    $actions = module_invoke_all('devshop_environment_actions');
 //    dsm($actions);
   }
   return $node;
+}
+
+function devshop_environment_links($environment) {
+  global $user;
+  $tasks = hosting_available_tasks('site');
+  $actions = module_invoke_all('devshop_environment_actions', $environment);
+
+  // Add environment links
+  $site = node_load($environment->site);
+  if (node_access('update', $site)) {
+    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array(
+      'html' => TRUE,
+    ));
+    $items[] = '<div class="divider"></div>';
+  }
+
+  foreach ($actions as $action) {
+    if (isset($tasks[$action])) {
+      $href = "node/{$environment->site}/site_{$action}";
+      $items[] = l($tasks[$action]['title'], $href, array(
+          'query' => array(
+              'token' => drupal_get_token($user->uid),
+          ),
+      ));
+    }
+    else {
+      $items[] = $action;
+    }
+  }
+  return $items;
 }
 
 /**

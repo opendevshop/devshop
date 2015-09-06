@@ -157,13 +157,13 @@
 
     <div class="list-group environment <?php print $environment->class  ?>">
 
-      <!-- Environment Settings & Actions -->
+      <!-- Environment Settings & Task Links -->
       <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">
             <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Settings & Actions') ;?>">
                 <i class="fa fa-sliders"></i>
             </button>
-            <?php print $environment->actions; ?>
+                <?php print theme("item_list", $environment->task_links, '', 'ul', array('class' => 'dropdown-menu dropdown-menu-right')); ?>
         </div>
       </div>
 
