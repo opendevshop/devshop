@@ -217,10 +217,9 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
       $environment->class .= ' pull-request';
     }
 
-    // Load Actions
+    // Load Task Links
     $environment->task_links = devshop_environment_links($environment);
-//    $actions = module_invoke_all('devshop_environment_actions');
-//    dsm($actions);
+
   }
   return $node;
 }

@@ -82,19 +82,17 @@ function devshop_projects_devshop_environment_actions($environment) {
 
   $items[] = '<div class="divider"></div>';
 
-  $items += array(
-    'verify',
-    'flush_cache',
-    'login-reset',
-    'backup',
-    'restore' => 'restore',
-    'rebuild_registry',
-    'run_cron',
-    'update',
-  );
+  $items[] = 'verify';
+  $items[] = 'flush_cache';
+  $items[] = 'rebuild_registry';
+  $items[] = 'run_cron';
+  $items[] = 'update';
+  $items[] = '<div class="divider"></div>';
 
-  if ($environment->settings->locked){
-    unset($items['restore']);
+  // Backup & Restore
+  $items[] = 'backup';
+  if (!$environment->settings->locked){
+    $items[] = 'restore';
   }
 
   return $items;
