@@ -216,6 +216,10 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     if ($environment->github_pull_request) {
       $environment->class .= ' pull-request';
     }
+
+    // Load Actions
+//    $actions = module_invoke_all('devshop_environment_actions');
+//    dsm($actions);
   }
   return $node;
 }
