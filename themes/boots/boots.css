@@ -628,3 +628,29 @@ html.js fieldset.collapsed {
     text-transform: uppercase;
     font-size: .8em;
 }
+
+.btn-logs > button {
+    color: grey;
+    padding: 3px 8px;
+    margin: 0px;
+    background-color: transparent !important;
+    border: none;
+    border-radius: initial;
+}
+.btn-logs > button:focus,
+.btn-logs > button:hover
+{
+    background-color: transparent !important;
+}
+
+.btn-logs > .dropdown-menu {
+    padding: 0px;
+    border: none;
+    -webkit-border-radius: none;
+    -moz-border-radius: none;
+    border-radius: none;
+}
+
+.btn-logs .list-group-item {
+    white-space: nowrap;
+}
