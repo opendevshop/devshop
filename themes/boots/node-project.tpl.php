@@ -493,6 +493,7 @@
         </div>
       </div>
       <?php endif; ?>
+      <?php endif; ?>
 
           <div class="environment-task-logs list-group-item">
 
@@ -526,7 +527,6 @@
               </div>
           </div>
 
-      <?php endif; ?>
       </div>
     </div>
 <?php endforeach; ?>
