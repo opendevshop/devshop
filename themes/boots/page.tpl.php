@@ -14,7 +14,7 @@
   <![endif]-->
 
   <?php print $styles ?>
-
+  <?php print $head; ?>
 </head>
 <body class='<?php print $body_classes ?>'>
 
