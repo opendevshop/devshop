@@ -590,6 +590,8 @@ function boots_preprocess_environment(&$environment, $actions) {
     // @TODO: Detect and display "Generating login" message.
   $environment->login_needs_reset = FALSE;
   if ($environment->site_status == HOSTING_SITE_ENABLED && user_access('create login-reset task')) {
+      $environment->login_text = t('Log in');
+
       $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
       if ($cache && (time() < $cache->data['expire'])) {
         $environment->login_url = url("node/" . $environment->site . "/goto_site");
@@ -598,8 +600,9 @@ function boots_preprocess_environment(&$environment, $actions) {
       else {
         $task = hosting_get_most_recent_task($environment->site, 'login-reset');
         if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-          $environment->login_text = t('Resetting...');
+          $environment->login_text = t('Log in');
           $environment->login_url = '#';
+          $environment->login_needs_reset = TRUE;
         }
         else {
           global $user;
