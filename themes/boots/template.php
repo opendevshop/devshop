@@ -232,6 +232,11 @@ function boots_preprocess_page(&$vars){
         $vars['subtitle2'] = ucfirst($object->type);
       }
 
+      // Only show environment name if site is in project.
+      if (isset($object->project)) {
+        $vars['title2'] = $object->environment->name;
+      }
+
       $vars['title2_url'] = 'node/' . $object->nid;
       $vars['title2'] = l($vars['title2'], $vars['title2_url']);
 
