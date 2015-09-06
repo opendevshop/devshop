@@ -494,56 +494,6 @@
       </div>
       <?php endif; ?>
 
-
-      <?php if ($environment->test): ?>
-        <div class="environment-tests list-group-item list-group-item-<?php print $environment->test->status_class ?>">
-          <label><?php print t('Tests'); ?></label>
-          <div class="btn-group btn-toolbar" role="toolbar">
-            <button type="button" class="btn" data-toggle="modal" data-target="#test-results-modal-<?php print $environment->name; ?>" title="<?php print t('View Results'); ?>">
-              <?php print $environment->test->status_message ?>
-
-              <small>
-                <?php print $environment->test->ago ?>
-
-                &nbsp;
-
-                <?php if ($environment->test->duration): ?>
-                <em>
-                  <i class="fa fa-clock-o"></i>
-                  <?php print $environment->test->duration ?>
-                </em>
-                <?php endif; ?>
-              </small>
-            </button>
-
-            <!--- TEST RESULTS MODAL -->
-            <div class="modal fade" id="test-results-modal-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="test-results-modal-<?php print $environment->name; ?>" aria-hidden="true">
-              <div class="modal-dialog modal-results modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="drush-alias-modal"><?php print t('Test Results'); ?>
-                      <small><?php print $environment->test->status_message; ?></small>
-                      <small><a href="<?php print $environment->test->permalink ?>" class="btn btn-small btn-default"><?php print t('Permalink'); ?></a></small>
-                    </h4>
-
-                  </div>
-                  <div class="modal-body">
-                    <?php print $environment->test->results; ?>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Run Tests Button -->
-          <div class="btn-group pull-right" role="group">
-            <a href="<?php print $environment->test->run_tests_url; ?>" type="button" class="btn" title="<?php print t('Run Tests'); ?>">
-              <i class="fa fa-list"></i>
-              <i class="fa fa-caret-right"></i>
-            </a>
-          </div>
-        </div>
-      <?php endif; ?>
           <div class="environment-task-logs list-group-item">
 
               <!-- Tasks -->
