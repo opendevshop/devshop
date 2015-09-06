@@ -230,7 +230,7 @@ function devshop_environment_links($environment) {
   $tasks = hosting_available_tasks('site');
   $actions = module_invoke_all('devshop_environment_actions', $environment);
 
-  // Add environment links
+  // Add environment settings link
   $site = node_load($environment->site);
   if (node_access('update', $site)) {
     $items[] = l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array(
@@ -239,13 +239,21 @@ function devshop_environment_links($environment) {
     $items[] = '<div class="divider"></div>';
   }
 
+  // Add all actions from hook_devshop_environment_actions()
   foreach ($actions as $action) {
     if (isset($tasks[$action])) {
+
+      // Special handling for delete/disable/enable
+      if ($action == 'disable' || $action == 'delete' || $action == 'enable') {
+        $tasks[$action]['title'] = '<i class="fa fa-power-off"></i> ' . $tasks[$action]['title'] . ' ' . t('Environment');
+      }
+
       $href = "node/{$environment->site}/site_{$action}";
       $items[] = l($tasks[$action]['title'], $href, array(
           'query' => array(
               'token' => drupal_get_token($user->uid),
           ),
+          'html' => TRUE,
       ));
     }
     else {
