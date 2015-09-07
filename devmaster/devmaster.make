@@ -66,6 +66,9 @@ projects[hosting_site_backup_manager][subdir] = contrib
 projects[aegir_ssh][version] = "0"
 projects[aegir_ssh][subdir] = contrib
 
+projects[sshkey][version] = "2"
+projects[sshkey][subdir] = contrib
+
 ; Libraries
 libraries[jquery_ui][download][type] = "get"
 libraries[jquery_ui][destination] = "modules/contrib/jquery_ui"
