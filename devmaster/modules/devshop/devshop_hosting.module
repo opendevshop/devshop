@@ -15,7 +15,7 @@ function devshop_hosting_init(){
   $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
   drupal_set_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
 
-  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">');
+  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
 
 
 }
