@@ -54,10 +54,12 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
 
   // If reset is true, do a git reset --hard first.
   drush_shell_cd_and_exec($repo_path, 'git stash');
-  drush_log(dt('[DEVSHOP] Git working copy stashed.'), 'ok');
+  drush_log(dt('[DEVSHOP] Git working copy stashed:'), 'ok');
+  drush_log(drush_shell_exec_output(), 'ok');
 
   drush_shell_cd_and_exec($repo_path, "git fetch");
-  drush_log(dt('[DEVSHOP] Git fetch called.'), 'ok');
+  drush_log(dt('[DEVSHOP] Git fetch called:'), 'ok');
+  drush_log(drush_shell_exec_output(), 'ok');
 
   // Check the desired git_ref
   if (drush_shell_cd_and_exec($repo_path, "git checkout $git_ref")) {
