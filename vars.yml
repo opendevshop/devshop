@@ -10,15 +10,15 @@ devmaster_version:            0.x
 devshop_version:              0.x
 devshop_working_copy: --working-copy
 
-devshop_provision_version:  6.x-2.x
-devshop_hosting_version:    6.x-2.x
-provision_version:          6.x-2.x
-provision_git_version:      6.x-1.x
-provision_logs_version:      6.x-1.x
-provision_solr_version:      6.x-2.x
-provision_tasks_extra_version: 6.x-2.x
-provision_site_backup_manager_version: 6.x-2.x
-registry_rebuild_version: 7.x-2.2
+devshop_drush_packages:
+  provision: 6.x-2.x
+  provision_git: 6.x-1.x
+  devshop_provision: 6.x-2.x
+  provision_logs: 6.x-1.x
+  provision_solr: 6.x-2.x
+  provision_tasks_extra: 6.x-2.x
+  provision_site_backup_manager: 6.x-2.x
+  registry_rebuild: 7.x-2.2
 
 devshop_makefile: build-devmaster.make
 

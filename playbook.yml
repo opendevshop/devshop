@@ -224,22 +224,9 @@
         owner=aegir group=aegir mode=0744
         state=directory
 
-    - name: Install drush tools.
-      command: "{{ drush_path }} dl {{ item }}  --destination=/var/aegir/.drush/commands -y --package-handler=git_drupalorg"
-      sudo: yes
-      sudo_user: aegir
-      with_items:
-        - provision-{{ provision_version }}
-        - provision_git-{{ provision_git_version }}
-        - devshop_provision-{{ devshop_provision_version }}
-        - provision_logs-{{ provision_logs_version }}
-# Commented out until functional
-        - provision_solr-{{ provision_solr_version }}
-        - provision_tasks_extra-{{ provision_tasks_extra_version }}
-        - registry_rebuild-{{ registry_rebuild_version }}
-        - provision_site_backup_manager-{{ provision_site_backup_manager_version }}
-      args:
-        creates: /var/aegir/.drush/commands/provision_site_backup_manager
+    - name: Install required drush packages.
+      command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/packages --package-handler=git_drupalorg -y"
+      with_dict: "{{ devshop_drush_packages }}"
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
