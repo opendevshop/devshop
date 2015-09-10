@@ -19,4 +19,5 @@ Follow this guide.
 5. Create and push a new tag for `devmaster` and for `devshop`: `x.y.z`
 6. Create a new "release" on github to match the new tag at https://github.com/opendevshop/devshop/releases/new.  Copy the release notes from CHANGELOG.md into 
 7. Edit http://drupal.org/project/devshop to show the latest release.
+8. Update the "Current Version" displayed on the gh-pages branch. https://github.com/opendevshop/devshop/edit/gh-pages/index.html 
 7. Announce!
