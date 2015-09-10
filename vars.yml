@@ -6,18 +6,18 @@ php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
 
-devmaster_version:            0.x
-devshop_version:              0.x
+devmaster_version:            0.4.0
+devshop_version:              0.4.0
 devshop_working_copy: --working-copy
 
 devshop_drush_packages:
-  provision: 6.x-2.x
-  provision_git: 6.x-1.x
-  devshop_provision: 6.x-2.x
-  provision_logs: 6.x-1.x
-  provision_solr: 6.x-2.x
-  provision_tasks_extra: 6.x-2.x
-  provision_site_backup_manager: 6.x-2.x
+  provision: 6.x-2.5
+  provision_git: 6.x-1.0
+  devshop_provision: 6.x-0.4
+  provision_logs: 6.x-1.0-alpha1
+  provision_solr: 6.x-2.0-beta3
+  provision_tasks_extra: 6.x-2.1
+  provision_site_backup_manager: 6.x-2.0
   registry_rebuild: 7.x-2.2
 
 devshop_makefile: build-devmaster.make
