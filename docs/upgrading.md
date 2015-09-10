@@ -57,7 +57,7 @@ If you have a devshop server with version 0.4.0 or earlier, you can use the devs
 ```
 $ cd /usr/share/devshop
 $ git fetch
-$ git checkout 0.4.0
+$ git checkout 0.x
 $ composer install
 ```
 
