@@ -24,9 +24,8 @@ class Install extends Command
     $this
       ->setName('install')
       ->setDescription('Install devshop')
-      ->addOption(
+      ->addArgument(
         'devshop-version',
-        NULL,
         InputOption::VALUE_OPTIONAL,
         'The git tag or branch to install.'
       )
@@ -96,7 +95,7 @@ class Install extends Command
 //    }
 
     // Lookup latest version.
-    $version = $input->getOption('devshop-version');
+    $version = $input->getArgument('devshop-version');
     if (empty($version)) {
       $output->writeln('Checking for latest releases...');
       $client = new \Github\Client();
