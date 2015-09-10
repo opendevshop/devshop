@@ -219,7 +219,7 @@ class Upgrade extends Command
     $upgradeInput = new ArrayInput($arguments);
     $output->writeln('');
 
-    if ($command->run($upgradeInput, $output)) {
+    if ($command->run($upgradeInput, $output) == 0) {
       $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
     }
     else {
