@@ -24,8 +24,13 @@ use DevShop\Command\Upgrade;
 use DevShop\Command\RemoteInstall;
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Process\Process;
 
-$application = new Application('DevShop', '0.x');
+$process = new Process('git symbolic-ref -q HEAD || git describe --tags --exact-match', __DIR__);
+$process->run();
+$version = str_replace('refs/heads/', '', $process->getOutput());
+
+$application = new Application('DevShop', $version);
 $application->add(new Status());
 $application->add(new Login());
 $application->add(new Install());
