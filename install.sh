@@ -22,7 +22,7 @@
 #
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
-echo "                   v 0.x                     "
+echo "                   v 0.4.0                     "
 echo "============================================="
 
 # Version used for cloning devshop playbooks
