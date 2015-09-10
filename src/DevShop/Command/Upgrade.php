@@ -86,6 +86,11 @@ class Upgrade extends Command
       $output->writeln("There is no <comment>/var/aegir/.devshop-version</comment> file.");
       $output->writeln("This is probably because you are running a version prior to 0.3.");
       $output->writeln('');
+
+      $fs = new Filesystem();
+      $fs->dumpFile('/var/aegir/.devshop-verson', '0.x');
+
+      $output->writeln("We have created this file for you.");
     }
 
     // Look for an active hostmaster
