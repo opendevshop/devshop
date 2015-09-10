@@ -114,7 +114,25 @@ class Upgrade extends Command
 
     // @TODO: Verify version exists.
 
+    // Determine the target path.
     $target_path = "/var/aegir/devmaster-{$target_version}";
+
+    // Check for existing path.  If exists, append the date.
+    if (file_exists($target_path)) {
+      $variant = date('Y-m-d');
+      $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+    }
+
+    // If this path exists, add a number until we find one that doesn't exist.
+    if (file_exists($target_path)) {
+      $number = 1;
+      while (file_exists($target_path . '-' . $number)) {
+        $number++;
+      }
+      $variant .= '-' . $number;
+      $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+    }
+
     $output->writeln('');
 
     $output->writeln('UPGRADE OPTIONS');
