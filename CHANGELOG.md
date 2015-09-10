@@ -1,6 +1,40 @@
 # Change Log
 
-## 0.3.x (Pending)
+## 0.4.0 (September 9, 2015)
+
+101 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.3.1...release-0.4.0
+179 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.3.1...release-0.4.0
+
+- Adding "remote" machines to vagrantfile for testing remotes and clusters.
+- Created "devshop remote:install" command and ansible playbook, making setup of additional remote servers simple.
+- Created "devshop upgrade" command to make upgrading a devshop server simple.
+- Fixing issues with installation on RedHat/CentOS systems.
+- Install SSL by default.
+- Adding documentation on installing remote machines setup, SSL, scaling.
+- Environment UI overhaul. Last task log status display, separated actions from task logs drop downs, better login link, etc.
+- Dynamic one click login for environments.
+- Improved Projects UI on sites, platforms, and task node pages.
+- Fixed a bug preventing data migration between remote servers.
+- Fixed a bug when adding domain aliases.
+- Added Aegir SSH module allowing users to upload their SSH keys to the server to get access to drush.
+- Fixed the awkward primary links order and adding user menu to secondary links.
+- On project delete confirmation form, show every environment that will be deleted.
+- Redesign github pull request environments UI.
+- Improved environment (site) node page. (Still needs work. Next release.)
+- Fixes improving github pull request test status integration.
+- Major improvements on task node page: now shows the error or warning at the top of the page.
+- Fix drush aliases URI and adding files folder path alias.
+- Fixing issues with default servers not respecting settings.
+- Improving project settings form using collapsible fieldsets.
+- Improving dynamic reloading on project creation page.
+- Update to Drupal 6.37.
+- GitHub settings page improvements.
+- Automatic GitHub SSH key addition.
+- Automatic GitHub webhook setup.
+- Using GitHub API to check that SSH access has been granted.
+- Added a page outputting all devshop environments and their IP addresses. Useful for hosts file, when DNS is unavailable.
+- Fixing "clone" task to appear on the clone destination environment, improving user experience.
+- Adding help widget for http://devshop.support.
 
 ## 0.3.1 (July 7, 2015)
 
