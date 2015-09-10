@@ -241,7 +241,7 @@
       sudo_user: aegir
       command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devmaster_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -y"
       args:
-        creates: /var/aegir/devmaster-{{ devmaster_version }}/sites/{{ server_hostname }}/settings.php
+        creates: /var/aegir/.devshop-version
 
     - name: Supervisor | Set up queue runner script
       template:
