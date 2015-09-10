@@ -10,11 +10,8 @@ includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
 ; For development, use latest branch.
-; NOTE: We are using 2.x of hosting until the next release.
-projects[hosting][version] = "2.x"
-
 ; For release, use tagged version
-;projects[hosting][version] = "2.5"
+projects[hosting][version] = "2.5"
 
 ; Contrib Modules
 projects[modalframe][version] = "1.9"
