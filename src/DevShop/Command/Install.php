@@ -150,5 +150,7 @@ class Install extends Command
     $process->run(function ($type, $buffer) {
       echo $buffer;
     });
+
+    return TRUE;
   }
 }
