@@ -174,7 +174,7 @@ class Upgrade extends Command
 
     // If they say no, exit.
     if (!$helper->ask($input, $output, $question)) {
-      $output->writeln("<fg=red>Aborting upgrade</>");
+      $output->writeln("<fg=red>Upgrade cancelled.</>");
       $output->writeln('');
       return;
     }
