@@ -66,7 +66,7 @@ class Install extends Command
     if (strpos($users, 'aegir') !== FALSE) {
       $output->writeln('<error>WARNING:</error> aegir user already exists.');
       $question = new ConfirmationQuestion('Do you want to continue with the installation? ', false);
-      if ($input->getOption('yes')== NULL && !$helper->ask($input, $output, $question)) {
+      if ($input->getOption('yes') == NULL && !$helper->ask($input, $output, $question)) {
         $output->writeln('<fg=red>Installation aborted.');
         $output->writeln('');
 
