@@ -60,6 +60,16 @@ class Install extends Command
     $output->writeln('<info>Welcome to the Interactive DevShop Installer!</info>');
     $output->writeln('');
 
+    // Check current user is root
+    $pwu_data = posix_getpwuid(posix_geteuid());
+    if ($pwu_data['name'] != 'root') {
+      $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
+      $output->writeln('Run "sudo devshop install" to run as root.');
+      $output->writeln('<fg=red>Installation aborted.</>');
+      $output->writeln('');
+      return;
+    }
+
     // Check for existing devshop install.
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
