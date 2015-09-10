@@ -61,6 +61,8 @@ $ git checkout 0.x
 $ composer install
 ```
 
+You **MUST** also create a file at `/var/aegir/.devshop-version` with the text 0.x.
+
 Once you do that, you can run `devshop upgrade` to run through the upgrade process.
 
 
