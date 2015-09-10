@@ -7,6 +7,7 @@ pages:
   - 'Roadmap': 'roadmap.md'
 - 'Installation':
   - 'Installing DevShop': 'install.md'
+  - 'Upgrading DevShop': 'upgrading.md'
   - 'Changing Hostname': 'changing-hostname.md'
 - 'Architecture':
   - 'Architecture Overview': 'architecture.md'
