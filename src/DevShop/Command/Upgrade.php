@@ -182,7 +182,7 @@ class Upgrade extends Command
     // If they say yes, run the command.
     $output->writeln('');
 
-    $process = new Process($cmd);
+    $process = new Process("su aegir - -c '$cmd'");
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
       echo $buffer;
