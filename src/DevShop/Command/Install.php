@@ -145,18 +145,8 @@ class Install extends Command
       $output->writeln("<error>An error occurred while retrieving the install script.</error>");
     }
 
-    // If running as root, just run bash.
-    if (get_current_user() == 'root') {
-      $process = new Process("bash /tmp/devshop-install.sh");
-    }
-    // If not running as root, ask for password.
-    else {
-      $question = new Question('Password: ', NULL);
-      $question->setHidden(TRUE);
-      $password = $helper->ask($input, $output, $question);
-      $process = new Process("echo $password | sudo su - -c 'bash /tmp/devshop-install.sh'");
-    }
-
+    // Run devshop-install script.
+    $process = new Process("bash /tmp/devshop-install.sh");
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
       echo $buffer;
