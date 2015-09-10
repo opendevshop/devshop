@@ -3,6 +3,7 @@
 namespace DevShop\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,7 +58,7 @@ class Upgrade extends Command
     }
     $output->writeln('');
 
-    // Check current user is aegir
+    // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
     if ($pwu_data['name'] != 'root') {
       $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
@@ -193,11 +194,36 @@ class Upgrade extends Command
 
     $output->writeln('');
     $output->writeln("<info>Devmaster Upgraded to {$target_version}.</info>");
-    $output->writeln("You must now run the following command as root or a user with sudo privileges to complete the installation:");
-    $output->writeln("<comment>devshop install --version=$target_version -n</comment>");
 
+    // Run the ansible playbook.
+    $output->writeln('');
+    $question = new ConfirmationQuestion("STEP 2: Run playbook (y/n) ", false);
 
+    // If they say no, exit.
+    if (!$helper->ask($input, $output, $question)) {
+      $output->writeln("<fg=red>Upgrade cancelled.</>");
+      $output->writeln('');
+      return;
+    }
 
+    // If they say yes, run the command.
+    $output->writeln('');
+    $command = $this->getApplication()->find('install');
 
+    $arguments = array(
+        'command' => 'install',
+        'devshop-version' => $target_version,
+        '--yes' => 1,
+    );
+
+    $upgradeInput = new ArrayInput($arguments);
+    $output->writeln('');
+
+    if ($command->run($upgradeInput, $output)) {
+      $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
+    }
+    else {
+      $output->writeln("<fg=red>Playbook run failed!</>");
+    }
   }
 }
