@@ -33,7 +33,7 @@ class Install extends Command
       ->addOption(
         'yes',
         'y',
-        NULL,
+        InputOption::VALUE_NONE,
         'Answer "yes" to all questions.'
       )
     ;
@@ -63,10 +63,10 @@ class Install extends Command
     // Check for existing devshop install.
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
-    if ($input->getOption('yes') != 1 && strpos($users, 'aegir') !== FALSE) {
+    if (strpos($users, 'aegir') !== FALSE) {
       $output->writeln('<error>WARNING:</error> aegir user already exists.');
       $question = new ConfirmationQuestion('Do you want to continue with the installation? ', false);
-      if (!$helper->ask($input, $output, $question)) {
+      if ($input->getOption('yes')== NULL && !$helper->ask($input, $output, $question)) {
         $output->writeln('<fg=red>Installation aborted.');
         $output->writeln('');
 
