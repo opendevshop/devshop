@@ -88,7 +88,7 @@ class Upgrade extends Command
       $output->writeln('');
 
       $fs = new Filesystem();
-      $fs->dumpFile('/var/aegir/.devshop-verson', '0.x');
+      $fs->dumpFile('/var/aegir/.devshop-version', '0.x');
 
       $output->writeln("We have created this file for you.");
     }
