@@ -52,7 +52,16 @@ It is best to use the installers from the websites so you are sure to get the ri
   cd devshop
   ```
   
-6. Edit your /etc/hosts file, adding the line:
+6. Get the `vagrant hosts-updater` plugin:
+ 
+  ```
+  vagrant plugin install vagrant-hostsupdater
+  ```
+  
+  This plugin is great. As long as your vagrantfile has a hostname set and static private network setup, it will add 
+  /etc/hosts entries for you, asking for your password first.
+   
+   or: Edit your /etc/hosts file, adding the line:
   
   ```
   10.10.10.10  devshop.local
@@ -60,32 +69,32 @@ It is best to use the installers from the websites so you are sure to get the ri
   
   *NOTE:* If you wish to change the IP or hostname, edit `vagrant.vars.yml` before you call vagrant up for the first time.
 
-7. If you wish to test a "pure" devshop install, edit `vagrant.vars.yml` and set development to FALSE:
+7. Before you vagrant up the first time, open vars.yml, and set vagrant_development: TRUE.
 
   ```yml
-  # Set to TRUE if you wish to develop devshop.
-  development: true
-  server_hostname: devshop.local
-  private_network_ip: 10.10.10.10
-  install_script: install.sh
+  # VAGRANT variables.
+  # Set development to TRUE if you wish to contribute to devshop development.
+  vagrant_development: TRUE
+  vagrant_private_network_ip: 10.10.10.10
+  vagrant_install_script: install.sh
   ```
 
-  Keeping `development: true` will clone the source code to this folder and setup synced folders to vagrant.  
-  Once installed, you can edit any file in `source` to work on devshop.
+## Vagrant Up
+
+If `vagrant_development` is set to `TRUE`, the next time you run the command `vagrant` it will prepare the source code 
+for devshop in the `./source` folder.
+   
+  - The "front-end code" is located at `./source/devmaster-0.x`, and is mapped to `/var/aegir/devmaster-0.x` in the
+   vagrant box. The actual git repo for devmaster is at `./source/devmaster-0.x/profiles/devmaster`.
+  - The drush commands are all cloned to `./source/drush`, and is mapped to `/var/aegir/.drush/commands` in the vagrant box.
+  - The project folder is mapped to `/vagrant` in the box, as usual.
   
-  Setting `development: false` will provision the machine with just the install.sh script, 
-  the same way you would do it on a real server.  This is useful for testing.
+  Once installed, you can edit any file in `./source` to work on devshop.
+  
+If `vagrant_development` is `FALSE` (the default), `vagrant up` will provision the machine with just the install.sh script, 
+  the same way you would do it on a real server.  This is useful for testing and demonstration purposes.
 
-Usage
------
-
-Once that's all done you can launch and destroy the devshop VM with vagrant commands.
-
-The first time you `vagrant up` it will install devshop. 
-
-  ```
-  vagrant up
-  ```
+## Vagrant Provision
   
 Once the install script is finished you should see the "Welcome to DevShop" message with a link to login to your 
 devshop front-end.
@@ -103,24 +112,35 @@ If you need another login link to the front-end, simply call:
   ```
   aegir@devshop:~$ drush @hostmaster uli
   ```
+  
+  or, the run new devshop CLI command "login":
+
+  ```
+  aegir@devshop:~$ devshop login
+  ```
+  
 
 DevShop Management
 ------------------
 
-  Once you are the aegir user, you can interact with the devshop front-end with drush.  For example, 
-  to get another login link, use the `drush uli` command:
-  ```
-  drush @hostmaster uli
-  ```
-  All server-side interactions with your sites are done as the `aegir` user.
+  Once you are the aegir user, you can interact with the devshop front-end with drush.
+
+  All server-side interactions with your sites are done as the `aegir` user.  Do not run as root unless you need to 
+  install extra packages or have special configuration.
   
   To see all hosted sites call 
   ```
   drush site-alias
   ```
   
-*NOTE: When you create new projects and environments, you will need to add those URIs to your 
-hosts file as well, or you will not be able to access them from your host machine.*
+DevShop.site
+------------
+
+ThinkDrop has purchased the "devshop.site" domain to use for local development of devshop.
+
+The default hostname of the server is devshop.site, and all sites created on devshop will be at subdomains like 
+http://environment.project.devshop.site
+
 
 Repos
 -----
