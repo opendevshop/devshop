@@ -151,6 +151,15 @@
 
 <!-- ENVIRONMENTS-->
 <div class="row">
+    <?php foreach ($environments as $environment): ?>
+
+        <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
+            <?php print $environment; ?>
+        </div>
+
+    <?php endforeach; ?>
+
+
 <?php foreach ($node->project->environments as $environment_name => $environment): ?>
 
   <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
