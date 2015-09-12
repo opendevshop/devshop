@@ -7,6 +7,7 @@ function boots_theme() {
       'environment' => array(
           'arguments' => array(
               'environment' => NULL,
+              'project' => NULL,
               'page' => FALSE,
           ),
           'template' => 'environment',
@@ -552,7 +553,7 @@ HTML;
   foreach ($vars['node']->project->environments as &$environment) {
 
     // Render each environment.
-    $vars['environments'][] = theme('environment', $environment);
+    $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
 
     if ($environment->site) {
       $vars['source_environments'][$environment->name] = $environment;
