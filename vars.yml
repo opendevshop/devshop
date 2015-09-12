@@ -21,8 +21,8 @@ php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
 
-devmaster_version:            0.x
-devshop_version:              0.x
+devmaster_version:            0.4.1
+devshop_version:              0.4.1
 devshop_working_copy: --working-copy
 
 devshop_drush_packages:
