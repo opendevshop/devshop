@@ -184,9 +184,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
         // If the last task is a "verify" and it was successful, load the next task as the last task.
         // Verifies happen a lot and if successful, are not useful information and knocks important ones like test runs off the list.
-        if (
-            $task->task_type == 'verify'
-            || $task->task_type == 'login-reset'
+        if (($task->task_type == 'verify' || $task->task_type == 'login-reset')
             && $task->task_status == HOSTING_TASK_SUCCESS) {
           continue;
         }
