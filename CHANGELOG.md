@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.4.1 (September 12, 2015)
+
+- Defaulting the Vagrant host to http://devshop.site
+- Turning off "development mode" by default. If you are a devshop developer, check vars.yml to make sure you can edit code.
+- Fixing a bug in the install script.
+- Fixing another bug in the update command.
+- Added documentation page for troubleshooting a stalled task queue. (Thanks @jdixon567)
+- Added documentation page for upgrading devshop.
+
 ## 0.4.0 (September 9, 2015)
 
 101 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.3.1...release-0.4.0
