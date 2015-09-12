@@ -1,4 +1,19 @@
 
+# VAGRANT variables.
+# Set development to TRUE if you wish to contribute to devshop development.
+vagrant_development: FALSE
+vagrant_private_network_ip: 10.10.10.10
+vagrant_install_script: install.sh
+
+remote_vagrant_private_network_ip: 10.10.10.11
+remote_server_hostname: devshop.remote
+
+remote2_vagrant_private_network_ip: 10.10.10.12
+remote2_server_hostname: devshop.remote2
+
+
+# DEVSHOP variables
+# The hostname will be overridden by install.sh to match the server it is run on.
 server_hostname: devshop.local
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
@@ -26,14 +41,3 @@ aegir_user_uid: 12345
 
 drush_path: /usr/local/bin/drush
 devshop_cli_path: /usr/local/bin/devshop
-
-# Set development to FALSE if you wish to test a "clean" devshop install.
-vagrant_development: true
-vagrant_private_network_ip: 10.10.10.10
-vagrant_install_script: install.sh
-
-remote_vagrant_private_network_ip: 10.10.10.11
-remote_server_hostname: devshop.remote
-
-remote2_vagrant_private_network_ip: 10.10.10.12
-remote2_server_hostname: devshop.remote2
