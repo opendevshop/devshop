@@ -181,6 +181,12 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
 
       // Save last task
       if (empty($environment->last_task)) {
+
+        // If the last task is a "verify" and it was successful, load the next task as the last task.
+        // Verifies happen a lot and if successful, are not useful information and knocks important ones like test runs off the list.
+        if ($task->task_type == 'verify'&& $task->task_status == HOSTING_TASK_SUCCESS) {
+          continue;
+        }
         $environment->last_task = array(
           'class' => $item_class,
           'icon' => $icon,
