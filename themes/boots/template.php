@@ -1,4 +1,20 @@
 <?php
+/**
+ * Implements hook_theme()
+ */
+function boots_theme() {
+  return array(
+      'environment' => array(
+          'arguments' => array(
+              'environment' => NULL,
+              'page' => FALSE,
+          ),
+          'template' => 'environment',
+      ),
+  );
+}
+
+
 
 /**
  * A simple function to output tasks exactly as we need them.
@@ -278,7 +294,7 @@ function boots_preprocess_node(&$vars) {
   }
   if ($vars['node']->type == 'site') {
     $project_node = node_view(node_load($vars['node']->project_nid));
-    boots_preprocess_environment($vars['node']->environment, $project_node->environment_actions[$vars['node']->environment->name]);
+    boots_preprocess_environment_site($vars['node']->environment, $project_node->environment_actions[$vars['node']->environment->name]);
 
     // Load source environments for db sync.
     foreach ($vars['node']->project->environments as $environment) {
@@ -532,13 +548,17 @@ HTML;
   // Available deploy data targets.
   $vars['target_environments'];
 
+  // Prepare environments output
   foreach ($vars['node']->project->environments as &$environment) {
+
+    // Render each environment.
+    $vars['environments'][] = theme('environment', $environment);
 
     if ($environment->site) {
       $vars['source_environments'][$environment->name] = $environment;
     }
 
-    boots_preprocess_environment($environment, $node->environment_actions[$environment->name]);
+    boots_preprocess_environment_site($environment, $node->environment_actions[$environment->name]);
   }
 }
 
@@ -548,7 +568,7 @@ HTML;
  * @param $environment
  * @param $actions
  */
-function boots_preprocess_environment(&$environment, $actions) {
+function boots_preprocess_environment_site(&$environment, $actions) {
 
     $project_node = node_load($environment->project_nid);
     $project = $project_node->project;
