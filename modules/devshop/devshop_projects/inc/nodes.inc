@@ -436,9 +436,11 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   }
 
   // When a task is updated, save the last_task status in the environment settings.
-  if ($op == 'insert' || $op == 'update' && $node->type == 'task') {
+  if (($op == 'insert' || $op == 'update') && $node->type == 'task') {
     $site = node_load($node->rid);
     if ($site->type == 'site' && isset($site->environment) && $node->task_type == HOSTING_TASK_QUEUED) {
+
+      $site->environment->settings = (object) $site->environment->settings;
       $site->environment->settings->last_task = array(
           'status' => $node->task_status,
           'type' => $node->task_type,
