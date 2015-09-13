@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Implementation of hook_hosting_tasks()
+ */
+function aegir_download_hosting_tasks() {
+    $tasks['site']['download'] = array(
+        'title' => t('Download Modules'),
+        'access callback' => 'devshop_hosting_task_menu_access',
+        'dialog' => TRUE,
+        'icon' => 'download'
+    );
+    return $tasks;
+}
+
+/**
+ * Implements hook_perm()
+ * @return array
+ */
+function aegir_download_perm() {
+    return array('create download task');
+}
+
+/**
+ * @return mixed
+ */
+function hosting_task_download_form() {
+
+    $form['packages'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Drupal modules or themes to download'),
+        '#description' => '<p>' . t('Enter the names of the drupal module or themes you would like to download to your project.  The names must match the package system name: If you want the module from http://drupal.org/project/views, enter "views" into this field. Separate multiple packages with a space.') . '</p><p>' . t('If you enter the name of an existing module, it will overwrite your old version. This is a good way to update your modules.  Run Update.php to ensure smooth deployment.') . '</p>',
+    );
+    $form['git_commit'] = array(
+        '#title' => t('Commit to git.'),
+        '#type' => 'checkbox',
+        '#default_value' => '',
+    );
+    $form['git_message'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Git Commit Message'),
+        '#description' =>t('Enter a message to use in the git commit message.'),
+    );
+    $form['update'] = array(
+        '#title' => t('Run Database Updates'),
+        '#type' => 'checkbox',
+        '#default_value' => 1,
+        '#description' => t('If module updates occur, run update.php to update the database. <em>Only use if you trust the modules you are downloading.</em>'),
+    );
+    return $form;
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function aegir_download_devshop_environment_actions($environment)
+{
+
+    if ($environment->site) {
+        $items[] = 'download';
+    }
+    return $items;
+}
