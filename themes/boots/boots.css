@@ -363,7 +363,9 @@ input.form-control.webhook-url {
   font-size: .9em;
 }
 
-
+.environment-deploy {
+    white-space: nowrap;
+}
 .environment-deploy button {
     font-size: .8em;
     text-transform: uppercase;
