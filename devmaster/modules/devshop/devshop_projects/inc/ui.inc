@@ -189,10 +189,15 @@ function devshop_environment_links($environment) {
           )
       ));
       $title = $tasks[$action]['title'];
-      $icon = $tasks[$action]['icon'];
+      if ($tasks[$action]['icon'])  {
+        $icon = '<i class="fa fa-' . $tasks[$action]['icon'] . '""></i>';
+      }
+      else {
+        $icon = '';
+      }
       $items[] = <<<HTML
       <a href="$url">
-            <i class="fa fa-$icon"></i> $title
+            $icon $title
       </a>
 HTML;
     }
