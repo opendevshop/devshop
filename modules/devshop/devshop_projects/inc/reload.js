@@ -19,7 +19,7 @@ var devshopReloadPage = function(data){
         }
         if (platform.status) {
             if (platform.status == 'Processing') {
-                platform.status += ' <i class="fa fa-circle-o-notch fa-spin"></i>';
+                platform.status += ' <i class="fa fa-gear fa-spin"></i>';
             }
             $('#status-' + i).html(platform.status);
         }
