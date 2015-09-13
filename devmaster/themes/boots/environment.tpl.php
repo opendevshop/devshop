@@ -73,7 +73,7 @@
     <?php else: ?>
 
         <!-- URLs -->
-        <div class="environment-domains list-group-item <?php if ($environment->login_text == 'Log in') print 'login-available'; ?>">
+        <div class="environment-domains list-group-item <?php if ($environment->login_text) print 'login-available'; ?>">
 
             <div class="btn-toolbar" role="toolbar">
 
@@ -131,6 +131,7 @@
                 <?php endif;?>
 
                 <!-- Log In Link -->
+                <?php if ($environment->login_text): ?>
                     <div class="btn-group btn-group-smaller pull-right login-link" role="group">
 
                             <!-- Button trigger modal -->
@@ -151,7 +152,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <i class="fa fa-gear fa-spin"></i>
-                                            <?php print t('Requesting new login. Please wait...') ?>
+                                            <?php print t('Requesting new log in link. Please wait...') ?>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
@@ -160,7 +161,7 @@
                                 </div>
                             </div>
                     </div>
-
+                <?php endif;?>
             </div>
 
         </div>
