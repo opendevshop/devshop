@@ -502,7 +502,14 @@ function boots_preprocess_node_task(&$vars) {
 
   // Load error or warning messages.
   if ($log_type) {
-     $vars['log_message'] = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE vid = %d AND type = '%s' ORDER BY vid, lid", $vars['node']->vid, $log_type));
+    $query = db_query("SELECT message FROM {hosting_task_log} WHERE vid = %d AND type = 'error' ORDER BY vid, lid", $vars['node']->vid, $log_type);
+
+    while ($results = db_fetch_object($query)) {
+      $vars['log_message'][] = $results->message;
+    }
+
+    $vars['log_message'] = theme('item_list', $vars['log_message']);
+
     $vars['log_class'] = $log_type == 'error'? 'danger': $log_type;
   }
   else {
