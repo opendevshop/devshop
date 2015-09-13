@@ -16,14 +16,16 @@
             <?php print t('Settings'); ?>
             <span class="caret"></span>
           </a>
-          <ul class="dropdown-menu" role="menu">
+          <ul class="dropdown-menu dropdown-settings" role="menu">
             <?php if (node_access('update', $node)): ?>
             <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
+                <li class="divider"></li>
             <?php endif; ?>
-            <li><label><?php print t('Environment Settings'); ?></label></li>
             <?php foreach ($project->environments as $environment): $nid = empty($environment->site)? $environment->platform: $environment->site ?>
-            <li>
-              <?php print l($environment->name, "node/{$nid}/edit"); ?>
+                <li><a href="<?php print url("node/{$nid}/edit");?>">
+                    <?php print $environment->name; ?>
+                    <?php print t('Environment Settings'); ?>
+                </a></li>
             </li>
             <?php endforeach; ?>
           </ul>
