@@ -20,6 +20,8 @@ function devshop_projects_projects_page() {
     'Environments',
   );
 
+  $tasks = hosting_available_tasks('site');
+
   $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = 1 ORDER BY n.changed");
   $rows = array();
 
@@ -29,8 +31,8 @@ function devshop_projects_projects_page() {
 
     // Load an environment for extra info like version.
     // @TODO: load the chosen live environment.
-    $environment = array_shift(array_values($project->environments));
-    $platform_node = node_load($environment->platform);
+    $first_environment = array_shift(array_values($project->environments));
+    $platform_node = node_load($first_environment->platform);
 
     $row = array();
 
@@ -46,21 +48,56 @@ function devshop_projects_projects_page() {
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
 
-    // Links to all sites
-    $actions = array();
-    $count = 0;
-    foreach ($project->environments as $env => $details){
-      // @TODO: Handle aliases.
-      $site_url = url("http://$env.$project->base_url", array('absolute' => TRUE));
-      $actions[] = array(
-        'title' => $site_url,
-        'href' => $site_url,
-        'attributes' => array('target' => '_blank'),
-      );
-      $count++;
+    // Links to all environments
+    $items = '';
+    foreach ($project->environments as $env => $environment){
+
+      if ($environment->last_task_status == HOSTING_TASK_SUCCESS) {
+        $icon = 'check';
+        $class = 'success';
+      }
+      elseif ($environment->last_task_status == HOSTING_TASK_PENDING) {
+        $icon = 'gear';
+        $class = 'status';
+      }
+      elseif ($environment->last_task_status == HOSTING_TASK_QUEUED) {
+        $icon = 'gear';
+        $class = 'status';
+      }
+      elseif ($environment->last_task_status == HOSTING_TASK_PROCESSING) {
+        $icon = 'gear fa-spin';
+        $class = 'status active';
+      }
+      elseif ($environment->last_task_status == HOSTING_TASK_WARNING) {
+        $icon = 'exclamation-triangle';
+        $class = 'warning';
+      }
+      elseif ($environment->last_task_status == HOSTING_TASK_ERROR) {
+        $icon = 'exclamation-circle';
+        $class = 'danger';
+      }
+
+      $nid = $first_environment->site? $first_environment->site: $first_environment->platform;
+      $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
+        'attributes' => array(
+            'class' => 'btn btn-sm alert-' . $class,
+            'title' => $tasks[$environment->last_task_type]['title'] . ': ' . _hosting_parse_error_code($environment->last_task_status)
+        ),
+        'html' => TRUE,
+      ));
     }
-    $label = format_plural($count, t('1 Environment'), t('@num Environments', array('@num' => $count)));
-    $row[] = theme('ctools_dropdown', $label, $actions);
+
+    $row[] = <<<HTML
+<div class="btn-toolbar" role="toolbar">
+  <div class="btn-group btn-group-xs" role="group">
+    $items
+  </div>
+</div>
+
+HTML;
+
+
+
 
     $rows[] = $row;
   }
