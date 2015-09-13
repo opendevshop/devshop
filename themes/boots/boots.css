@@ -365,6 +365,7 @@ input.form-control.webhook-url {
 
 .environment-deploy {
     white-space: nowrap;
+
 }
 .environment-deploy button {
     font-size: .8em;
@@ -646,4 +647,11 @@ html.js fieldset.collapsed {
 
 .nav-pills.environment-tasks-nav a {
     color: #333;
+}
+
+.hosting-task-retry, .hosting-task-retry div, .hosting-task-retry form {
+    display: inline;
+}
+div.hosting-task-retry form, div.hosting-task-retry form input {
+    padding: 0.25em 0.5em !important;
 }
