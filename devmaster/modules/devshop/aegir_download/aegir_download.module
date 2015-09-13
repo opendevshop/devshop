@@ -34,7 +34,7 @@ function hosting_task_download_form() {
     $form['git_commit'] = array(
         '#title' => t('Commit to git.'),
         '#type' => 'checkbox',
-        '#default_value' => '',
+        '#default_value' => 1,
     );
     $form['git_message'] = array(
         '#type' => 'textarea',
