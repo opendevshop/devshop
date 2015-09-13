@@ -71,7 +71,6 @@ function drush_devshop_projects_pre_hosting_task() {
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
     $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
-    $task->options['behat-bin-path'] = $task->task_args['behat_bin_path'];
 
     // Check for devshop_testing folder. Create if it doesn't exist.
     $file_directory_path = variable_get('file_directory_path', '') . '/devshop_testing/';
