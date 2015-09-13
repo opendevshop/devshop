@@ -291,7 +291,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
 
     // Add "Environment Settings" link
     if (node_access('update', $environment_node)) {
-      array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE)));
+      array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->site}/edit", array('html' => TRUE)));
     }
 
     $action_items = array();
