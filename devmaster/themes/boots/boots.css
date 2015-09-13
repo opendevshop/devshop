@@ -641,3 +641,7 @@ html.js fieldset.collapsed {
 .environment-tasks .dropdown-menu .divider {
     margin: 3px 0px;
 }
+
+.nav-pills.environment-tasks-nav a {
+    color: #333;
+}
