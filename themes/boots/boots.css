@@ -232,7 +232,7 @@ body.admin-menu .navbar-static-top {
 
 .environment .progress-bar {
   float: none;
-  background-color: #aaa;
+  background-color: #bbb;;
     width: 100%;
 }
 
@@ -633,8 +633,7 @@ html.js fieldset.collapsed {
 .environment.active .environment-task-logs a.alert-link i,
 .environment.active .environment-task-logs .btn-default,
 .environment.active .environment-task-logs label {
-    color: white;
-    font-weight: normal;
+    color: #222;
 }
 
 .environment-tasks i.fa {
