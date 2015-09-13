@@ -468,11 +468,6 @@ function boots_preprocess_node_task(&$vars) {
 
   $revision = array_shift($revisions);
 
-  $vars['submitted'] = t('@time (%ago)', array(
-    '@time' => format_date($revision->timestamp),
-    '%ago' => format_interval(time() - $revision->timestamp) . ' ' . t('ago'),
-  ));
-
   $log_type = '';
   switch ($vars['node']->task_status) {
     case HOSTING_TASK_SUCCESS:
@@ -517,6 +512,11 @@ function boots_preprocess_node_task(&$vars) {
   if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
     $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
   }
+
+  // Show duration
+  $vars['duration'] = format_interval($vars['node']->delta, 1);
+  $vars['date'] = date('D M j Y', $vars['node']->executed);
+  $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
 }
 
 /**
