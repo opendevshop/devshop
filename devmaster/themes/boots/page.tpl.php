@@ -72,14 +72,19 @@
   </div>
   <div class="row">
     <?php if ($tabs): ?>
-    <div class="col-md-3 container-fluid">
+    <div class="col-xs-3 col-sm-2 col-md-3 container-fluid">
 
       <?php if ($tabs) print $tabs ?>
       <?php if (isset($tabs2)) print $tabs2 ?>
 
     </div>
     <?php endif; ?>
-      <div class="main col-md-<?php print $tabs? '9': '12'; ?> container-fluid">
+      <div class="main
+        col-xs-<?php print $tabs? '9': '12'; ?>
+        col-sm-<?php print $tabs? '10': '12'; ?>
+        col-md-<?php print $tabs? '9': '12'; ?>
+
+         container-fluid">
           <?php if ($help): print $help; endif; ?>
           <?php print $content ?>
     </div>

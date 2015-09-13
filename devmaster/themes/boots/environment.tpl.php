@@ -1,5 +1,6 @@
 <div class="list-group environment <?php print $environment->class  ?>">
 
+    <?php if (!$page): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">
@@ -9,6 +10,7 @@
             <?php print theme("item_list", $environment->task_links, '', 'ul', array('class' => 'dropdown-menu dropdown-menu-right')); ?>
         </div>
     </div>
+    <?php endif; ?>
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
@@ -29,7 +31,6 @@
             <!-- Environment Name -->
             <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
                 <?php print $environment->name; ?></a>
-
         <?php endif; ?>
 
         <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('View this !type', array('!type' => $environment->git_ref_type)); ?>">
@@ -367,5 +368,4 @@
             </div>
         </div>
     </div>
-
 </div>
