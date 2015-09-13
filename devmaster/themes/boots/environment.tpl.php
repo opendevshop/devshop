@@ -131,10 +131,7 @@
                 <?php endif;?>
 
                 <!-- Log In Link -->
-                <?php if ($environment->login_url): ?>
                     <div class="btn-group btn-group-smaller pull-right login-link" role="group">
-
-                        <?php if ($environment->login_needs_reset): ?>
 
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
@@ -162,15 +159,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                        <?php else: ?>
-                            <a href="<?php print $environment->login_url; ?>" target="_blank" class="btn btn-link">
-                                <i class="fa fa-sign-in"></i>
-                                <?php print $environment->login_text; ?>
-                            </a>
-                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
 
             </div>
 
