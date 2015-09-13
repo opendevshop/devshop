@@ -17,11 +17,23 @@ include 'drush/contexts.inc';
  * the $task object, or if you don't need this functionality from the command
  * line.
  */
-function drush_devshop_projects_pre_hosting_task() {
+function drush_devshop_projects_pre_hosting_task()
+{
 
   drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
 
   $task =& drush_get_context('HOSTING_TASK');
+
+
+  // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
+  if ($task->task_type = 'download') {
+    drush_log('[AEGIR] Download package enabled...', 'ok');
+
+    $task->options['packages'] = $task->task_args['packages'];
+    $task->options['commit'] = $task->task_args['update'];
+    $task->options['message'] = $task->task_args['message'];
+    $task->options['update'] = $task->task_args['update'];
+  }
 
   // Verify Platform
   // Here is where we hook in and clone the site
