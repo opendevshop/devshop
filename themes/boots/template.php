@@ -19,7 +19,8 @@ function boots_theme() {
  */
 function boots_preprocess_environment(&$vars)
 {
-  $project_node = node_load($vars['environment']->project_nid);
+  $environment = &$vars['environment'];
+  $project_node = node_load($environment->project_nid);
   $vars['project'] = $project_node->project;
 
   // Load git refs and create links
@@ -43,6 +44,12 @@ function boots_preprocess_environment(&$vars)
     if ($source_environment->site) {
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
+  }
+
+  // Show user Login Link
+  if ($environment->site_status == HOSTING_SITE_ENABLED && user_access('create login-reset task')) {
+    $environment->login_text = t('Log in');
+
   }
 }
 
