@@ -183,12 +183,18 @@ function devshop_environment_links($environment) {
       }
 
       $href = "node/{$environment->site}/site_{$action}";
-      $items[] = l($tasks[$action]['title'], $href, array(
+      $url = url($href, array(
           'query' => array(
               'token' => drupal_get_token($user->uid),
-          ),
-          'html' => TRUE,
+          )
       ));
+      $title = $tasks[$action]['title'];
+      $icon = $tasks[$action]['icon'];
+      $items[] = <<<HTML
+      <a href="$url">
+            <i class="fa fa-$icon"></i> $title
+      </a>
+HTML;
     }
     else {
       $items[] = $action;
