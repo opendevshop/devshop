@@ -14,9 +14,30 @@ function boots_theme() {
       ),
   );
 }
+/**
+ * Preprocessor for environment template.
+ */
+function boots_preprocess_environment(&$vars)
+{
+  $project_node = node_load($vars['environment']->project_nid);
+  $vars['project'] = $project_node->project;
 
+  // Load git refs and create links
+  $vars['git_refs'] = array();
+  foreach ($project_node->project->settings->git['refs'] as $ref => $type) {
+    $href = url('node/ENV_NID/site_devshop-deploy', array(
+        'query' => array(
+            'git_ref' => $ref,
+        )
+    ));
+    $icon = $type == 'tag' ? 'tag' : 'code-fork';
 
-
+    $vars['git_refs'][$ref] = "<a href='$href'>
+        <i class='fa fa-$icon'></i>
+        $ref
+      </a>";
+  }
+}
 /**
  * A simple function to output tasks exactly as we need them.
  *
@@ -303,22 +324,6 @@ function boots_preprocess_node(&$vars) {
         $vars['source_environments'][$environment->name] = $environment;
       }
     }
-
-    // Load git refs.
-    $vars['git_refs'] = array();
-    foreach ($vars['node']->project->settings->git['refs'] as $ref => $type){
-      $href = url('node/ENV_NID/site_devshop-deploy', array(
-        'query' =>array(
-          'git_ref' => $ref,
-        )
-      ));
-      $icon = $type == 'tag'? 'tag': 'code-fork';
-
-      $vars['git_refs'][$ref] = "<a href='$href'>
-        <i class='fa fa-$icon'></i>
-        $ref
-      </a>";
-    }
   }
 }
 
@@ -555,11 +560,10 @@ HTML;
     // Render each environment.
     $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
 
+    // Save the list of source_environments (for deploying data)
     if ($environment->site) {
       $vars['source_environments'][$environment->name] = $environment;
     }
-
-    boots_preprocess_environment_site($environment, $node->environment_actions[$environment->name]);
   }
 }
 
