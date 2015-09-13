@@ -367,6 +367,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
         '#default_value' => empty($node->nid)? 0: $environment->settings->deploy['acquia_hooks'],
       );
     }
+    $form['environment']['settings']['last_task'] = array(
+        '#type' => 'valule',
+        '#value' => $environment->settings->last_task,
+    );
 
     // Add our own submit handler
     $form['#submit'][] = 'devshop_projects_environment_settings_submit';
