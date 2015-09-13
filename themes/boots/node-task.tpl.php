@@ -72,11 +72,16 @@
       <?php endif; ?>
     </h4>
 
-    <?php if ($submitted): ?>
-      <p class="small">
-        <?php print $submitted ?>
+      <p class="duration">
+          <i class="fa fa-clock-o"></i>
+          <?php print $duration; ?>
       </p>
-    <?php endif; ?>
+
+      <p class="executed">
+          <i class="fa fa-calendar-o"></i>
+          <?php print $date; ?>
+          <small><?php print $executed; ?></small>
+      </p>
 
     <?php if ($site_url): ?>
       <?php print $site_url ?>
