@@ -86,8 +86,10 @@ function devshop_projects_projects_page() {
         'html' => TRUE,
       ));
     }
-
+    $count = count($project->environments);
     $row[] = <<<HTML
+  <small class="pull-right text-muted"><i class="fa fa-cubes"></i> $count</small>
+
 <div class="btn-toolbar" role="toolbar">
   <div class="btn-group btn-group-xs" role="group">
     $items
