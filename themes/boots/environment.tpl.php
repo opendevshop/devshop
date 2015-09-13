@@ -330,14 +330,11 @@
     <?php endif; ?>
 
 
-    <?php if ($page): ?>
-        <div class="environment-task-logs">
+
+    <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
+        <?php if ($page): ?>
             <?php print $environment->task_logs; ?>
-        </div>
-    <?php else: ?>
-
-    <div class="environment-task-logs list-group-item">
-
+       <?php else: ?>
         <!-- Tasks -->
         <div class="alert-<?php print $environment->last_task['class'] ?>">
 
