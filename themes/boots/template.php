@@ -336,6 +336,13 @@ HTML;
  */
 function boots_preprocess_page(&$vars){
 
+  if ($primary = menu_primary_local_tasks()) {
+    $vars['tabs'] = "<ul class=\"nav nav-pills nav-stacked\">\n" . $primary . "</ul>\n";
+  }
+  if ($secondary = menu_secondary_local_tasks()) {
+    $vars['tabs2'] = "<ul class=\"nav nav-tabs\">\n" . $secondary . "</ul>\n";
+  }
+
   if (user_access('access task logs')){
     $vars['tasks'] = boots_render_tasks();
   }
@@ -743,7 +750,7 @@ function boots_menu_local_tasks() {
     $output .= "<ul class=\"nav nav-pills nav-stacked\">\n" . $primary . "</ul>\n";
   }
   if ($secondary = menu_secondary_local_tasks()) {
-    $output .= "<ul class=\"nav nav-pills nav-stacked\">\n" . $secondary . "</ul>\n";
+    $output .= "<ul class=\"nav nav-tabs\">\n" . $secondary . "</ul>\n";
   }
 
   return $output;
