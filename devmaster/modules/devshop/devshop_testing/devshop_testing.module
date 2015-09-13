@@ -222,19 +222,12 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
     '#default_value' => $settings->testing['behat_folder_path'],
   );
-  $testing_form['behat_bin_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Behat executable path'),
-    '#description' => t('Enter the path to your bin/behat executable file, relative to the Behat folder path.'),
-    '#default_value' => $settings->testing['behat_bin_path'],
-  );
   
   // Lock fields in environment settings.
   if ($environment_name) {
     $locked = array(
       'test_type',
       'behat_folder_path',
-      'behat_bin_path',
     );
     foreach ($locked as $field){
       $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
