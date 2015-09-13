@@ -304,6 +304,10 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
   $items['node/%node/edit']['title arguments'] = array('Edit', 1);
 
+  dsm($items['node/%node/edit']);
+  $items['node/%node/edit']['access callback'] = 'devshop_hosting_project_tab_access';
+
+
 
   $items['node/%node/view']['weight'] = -10;
   $items['node/%node/edit']['weight'] = -9;
@@ -335,6 +339,16 @@ function devshop_hosting_project_tab_title($default, $node){
 
   // Otherwise, just return the page text
   return t($default);
+}
+
+/**
+ * replacement for node_access
+ */
+function devshop_hosting_project_tab_access($type, $node) {
+  if ($node->type == 'task') {
+    return FALSE;
+  }
+  return node_access($type, $node);
 }
 
 /**
