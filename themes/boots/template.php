@@ -37,7 +37,15 @@ function boots_preprocess_environment(&$vars)
         $ref
       </a>";
   }
+
+  // Look for all available source environments
+  foreach ($vars['project']->environments as &$source_environment) {
+    if ($source_environment->site) {
+      $vars['source_environments'][$source_environment->name] = $source_environment;
+    }
+  }
 }
+
 /**
  * A simple function to output tasks exactly as we need them.
  *
@@ -559,11 +567,6 @@ HTML;
 
     // Render each environment.
     $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
-
-    // Save the list of source_environments (for deploying data)
-    if ($environment->site) {
-      $vars['source_environments'][$environment->name] = $environment;
-    }
   }
 }
 
