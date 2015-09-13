@@ -328,9 +328,15 @@ function devshop_hosting_login_reset($site_nid) {
   // Set time limit to 3 minutes.
   set_time_limit(180);
 
-  // Create new reset-login task.
-  $task = hosting_add_task($site_nid, 'login-reset');
-  drupal_get_messages();
+  // Create new reset-login task, if needed
+  $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
+  if (!($cache && (time() < $cache->data['expire']))) {
+    $task = hosting_add_task($site_nid, 'login-reset');
+    drupal_get_messages();
+  }
+  else {
+    $task = hosting_get_most_recent_task($site_nid, 'login-reset');
+  }
 
   // Wait for it to complete
   while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
