@@ -659,3 +659,8 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .alert-status {
     background: #ccc;color: #444;
 }
+
+.dropdown-settings.dropdown-menu {
+    width: 255px;
+    padding: 0px;
+}
