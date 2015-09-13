@@ -478,25 +478,25 @@ function boots_preprocess_node_task(&$vars) {
   $log_type = '';
   switch ($vars['node']->task_status) {
     case HOSTING_TASK_SUCCESS:
-      $vars['task_label'] = t('Task Success');
+      $vars['task_label'] = t('Success');
       $vars['task_label_class'] = 'success';
       break;
     case HOSTING_TASK_ERROR:
-      $vars['task_label'] = t('Task Error');
+      $vars['task_label'] = t('Error');
       $vars['task_label_class'] = 'danger';
       $log_type = 'error';
       break;
     case HOSTING_TASK_WARNING:
-      $vars['task_label'] = t('Task Success (with warning)');
+      $vars['task_label'] = t('Success (with warning)');
       $vars['task_label_class'] = 'warning';
       $log_type = 'warning';
       break;
     case HOSTING_TASK_PROCESSING:
-      $vars['task_label'] = t('Task Processing');
+      $vars['task_label'] = t('Processing') . ' <i class="fa fa-gear fa-spin"></i>';
       $vars['task_label_class'] = 'info';
       break;
     case HOSTING_TASK_QUEUED:
-      $vars['task_label'] = t('Task Queued');
+      $vars['task_label'] = t('Queued');
       $vars['task_label_class'] = 'info';
       break;
   }
@@ -514,6 +514,10 @@ function boots_preprocess_node_task(&$vars) {
   }
   else {
     $vars['log_message'] = '';
+  }
+
+  if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
+    $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
   }
 }
 
@@ -789,4 +793,16 @@ function boots_status_messages($display = NULL) {
     $output .= "</div>\n";
   }
   return $output;
+}
+
+function boots_button($element) {
+  // Make sure not to overwrite classes.
+  if (isset($element ['#attributes']['class'])) {
+    $element ['#attributes']['class'] = 'form-' . $element ['#button_type'] . ' ' . $element ['#attributes']['class'];
+  }
+  else {
+    $element ['#attributes']['class'] = 'btn btn-default form-' . $element ['#button_type'];
+  }
+
+  return '<input type="submit" ' . (empty($element ['#name']) ? '' : 'name="' . $element ['#name'] . '" ') . 'id="' . $element ['#id'] . '" value="' . check_plain($element ['#value']) . '" ' . drupal_attributes($element ['#attributes']) . " />\n";
 }
