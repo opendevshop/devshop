@@ -62,37 +62,37 @@ HTML;
     // Links to all environments
     $items = '';
     foreach ($project->environments as $env => $environment){
-
-      if ($environment->last_task_status == HOSTING_TASK_SUCCESS) {
-        $icon = 'check';
-        $class = 'success';
-      }
-      elseif ($environment->last_task_status == HOSTING_TASK_PENDING) {
-        $icon = 'gear';
+      if (empty($environment->settings->last_task)) {
+        $icon = 'cube';
         $class = 'status';
-      }
-      elseif ($environment->last_task_status == HOSTING_TASK_QUEUED) {
-        $icon = 'gear';
-        $class = 'status';
-      }
-      elseif ($environment->last_task_status == HOSTING_TASK_PROCESSING) {
-        $icon = 'gear fa-spin';
-        $class = 'status active';
-      }
-      elseif ($environment->last_task_status == HOSTING_TASK_WARNING) {
-        $icon = 'exclamation-triangle';
-        $class = 'warning';
-      }
-      elseif ($environment->last_task_status == HOSTING_TASK_ERROR) {
-        $icon = 'exclamation-circle';
-        $class = 'danger';
+      } else {
+        if ($environment->settings->last_task['status'] == HOSTING_TASK_SUCCESS) {
+          $icon = 'check';
+          $class = 'success';
+        }
+        elseif ($environment->settings->last_task['status'] == HOSTING_TASK_QUEUED) {
+          $icon = 'gear';
+          $class = 'status';
+        }
+        elseif ($environment->settings->last_task['status'] == HOSTING_TASK_PROCESSING) {
+          $icon = 'gear fa-spin';
+          $class = 'status active';
+        }
+        elseif ($environment->settings->last_task['status'] == HOSTING_TASK_WARNING) {
+          $icon = 'exclamation-triangle';
+          $class = 'warning';
+        }
+        elseif ($environment->settings->last_task['status'] == HOSTING_TASK_ERROR) {
+          $icon = 'exclamation-circle';
+          $class = 'danger';
+        }
       }
 
-      $nid = $first_environment->site? $first_environment->site: $first_environment->platform;
+      $nid = $environment->site? $environment->site: $environment->platform;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
             'class' => 'btn btn-sm alert-' . $class,
-            'title' => $tasks[$environment->last_task_type]['title'] . ': ' . _hosting_parse_error_code($environment->last_task_status)
+            'title' => $tasks[$environment->settings->last_task['type']]['title'] . ': ' . _hosting_parse_error_code($environment->settings->last_task['status'])
         ),
         'html' => TRUE,
       ));

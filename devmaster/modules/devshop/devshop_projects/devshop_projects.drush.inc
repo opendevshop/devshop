@@ -7,6 +7,23 @@
 include 'drush/contexts.inc';
 
 /**
+ * Implements hook_hosting_task_update_status()
+ *
+ * Saves task status to environment
+ */
+function devshop_projects_hosting_task_update_status($task, $status) {
+  $site = $task->ref;
+  if ($site->type == 'site' && isset($site->environment)) {
+    $site->environment->settings->last_task = array(
+        'status' => $status,
+        'type' => $task->task_type,
+        'nid' => $task->nid,
+    );
+    devshop_environment_save($site->environment);
+  }
+}
+
+/**
  * Implements drush_HOOK_pre_COMMAND()
  *
  * This runs for each task during the command
