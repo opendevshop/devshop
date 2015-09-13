@@ -88,7 +88,10 @@ function devshop_projects_load($node) {
         n.title as project_name,
         s.vid,
         sn.title as system_domain,
-        a.redirection as redirect_domain
+        a.redirection as redirect_domain,
+        t.nid as last_task_nid,
+        t.task_type as last_task_type,
+        t.task_status as last_task_status
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
       LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -97,9 +100,11 @@ function devshop_projects_load($node) {
       LEFT JOIN {node} db ON s.db_server = db.nid
       LEFT JOIN {node} n ON e.project_nid = n.nid
       LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
+      LEFT JOIN {hosting_task} t ON t.rid = s.nid OR t.rid = p.nid
       WHERE project_nid = %d AND
       e.name != ''
-      ORDER BY name;   ", $node->nid);
+      ORDER BY
+        name;   ", $node->nid);
   $environments = array();
   while ($environment = db_fetch_object($query)) {
 
