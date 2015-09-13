@@ -304,7 +304,6 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/%node/edit']['title callback'] = 'devshop_hosting_project_tab_title';
   $items['node/%node/edit']['title arguments'] = array('Edit', 1);
 
-  dsm($items['node/%node/edit']);
   $items['node/%node/edit']['access callback'] = 'devshop_hosting_project_tab_access';
 
 
