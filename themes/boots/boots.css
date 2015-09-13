@@ -655,3 +655,7 @@ html.js fieldset.collapsed {
 div.hosting-task-retry form, div.hosting-task-retry form input {
     padding: 0.25em 0.5em !important;
 }
+
+.alert-status {
+    background: #ccc;color: #444;
+}
