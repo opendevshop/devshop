@@ -88,10 +88,7 @@ function devshop_projects_load($node) {
         n.title as project_name,
         s.vid,
         sn.title as system_domain,
-        a.redirection as redirect_domain,
-        t.nid as last_task_nid,
-        t.task_type as last_task_type,
-        t.task_status as last_task_status
+        a.redirection as redirect_domain
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
       LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -100,7 +97,6 @@ function devshop_projects_load($node) {
       LEFT JOIN {node} db ON s.db_server = db.nid
       LEFT JOIN {node} n ON e.project_nid = n.nid
       LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
-      LEFT JOIN {hosting_task} t ON t.rid = s.nid OR t.rid = p.nid
       WHERE project_nid = %d AND
       e.name != ''
       ORDER BY
@@ -429,7 +425,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     return $additions;
   }
 
-  // Load environment info into tasks.
+    // Load environment info into tasks.
   if ($op == 'load' && $node->type == 'task') {
     $additions = array();
     $result = db_fetch_object(db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));
@@ -437,6 +433,19 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     // Load project and environment
     $additions['project'] = $result;
     return $additions;
+  }
+
+  // When a task is updated, save the last_task status in the environment settings.
+  if ($op == 'insert' || $op == 'update' && $node->type == 'task') {
+    $site = node_load($node->rid);
+    if ($site->type == 'site' && isset($site->environment) && $node->task_type == HOSTING_TASK_QUEUED) {
+      $site->environment->settings->last_task = array(
+          'status' => $node->task_status,
+          'type' => $node->task_type,
+          'nid' => $node->nid,
+      );
+      devshop_environment_save($site->environment);
+    }
   }
 
   // When a task is created or updated that has a project, redirect to the project.
@@ -452,5 +461,31 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   if ($op == 'delete' && ($node->type == 'site' || $node->type == 'platform')) {
     drupal_set_message('Deleted environment.');
     db_query('DELETE FROM {hosting_devshop_project_environment} WHERE %s = %d', $node->type, $node->nid);
+  }
+}
+
+/**
+ * @param $environment
+ */
+function devshop_environment_save(stdClass &$environment) {
+  $environment->settings = (array) $environment->settings;
+
+  // Prepare record for saving
+  $info = new stdClass();
+  $info->project_nid = $environment->project_nid;
+  $info->name = $environment->name;
+  $info->git_ref = $environment->git_ref;
+  $info->site = $environment->site;
+  $info->platform = $environment->platform;
+  $info->settings = serialize($environment->settings);
+
+  // Save environment record.
+  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
+    watchdog('ok', 'Environment record saved: ' . print_r($info, 1));
+    return TRUE;
+  }
+  else {
+    watchdog('error', 'Environment record not saved: ' . print_r($info, 1));
+    return FALSE;
   }
 }
