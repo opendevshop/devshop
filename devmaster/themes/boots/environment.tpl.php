@@ -328,13 +328,20 @@
         <?php endif; ?>
     <?php endif; ?>
 
+
+    <?php if ($page): ?>
+        <div class="environment-task-logs">
+            <?php print $environment->task_logs; ?>
+        </div>
+    <?php else: ?>
+
     <div class="environment-task-logs list-group-item">
 
         <!-- Tasks -->
         <div class="alert-<?php print $environment->last_task['class'] ?>">
 
-            <label>Tasks</label>
 
+                <label>Tasks</label>
             <div class="btn-group btn-logs pull-right" role="group">
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-list-alt"></i>
@@ -352,6 +359,7 @@
                 </a>
             </div>
         </div>
+        <?php endif; ?>
 
         <div class="progress">
             <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
