@@ -21,7 +21,7 @@ function boots_preprocess_environment(&$vars)
 {
   $environment = &$vars['environment'];
   $project_node = node_load($environment->project_nid);
-  $vars['project'] = $project_node->project;
+  $project = $vars['project'] = $project_node->project;
 
   // Load git refs and create links
   $vars['git_refs'] = array();
@@ -51,6 +51,35 @@ function boots_preprocess_environment(&$vars)
     $environment->login_text = t('Log in');
 
   }
+
+  // Determine the CSS classes to use.
+
+  // Determine environment status
+  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+    $environment->class = 'disabled';
+    $environment->list_item_class = 'disabled';
+  }
+  elseif ($environment->name == $project->settings->live['live_environment']) {
+    $environment->class = ' live-environment';
+    $environment->list_item_class = 'info';
+  }
+  else {
+    $environment->class = ' normal-environment';
+    $environment->list_item_class = 'info';
+  }
+
+  if ($environment->active_tasks > 0) {
+    $environment->class .= ' active';
+  }
+
+  // Pull Request?
+  if ($environment->github_pull_request) {
+    $environment->class .= ' pull-request';
+  }
+
+  // Load Task Links
+  $environment->task_links = devshop_environment_links($environment);
+
 }
 
 /**
