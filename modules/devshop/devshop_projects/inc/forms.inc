@@ -369,7 +369,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
     }
 
     // Add our own submit handler
-    $form['buttons']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
+    $form['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
 }
 
