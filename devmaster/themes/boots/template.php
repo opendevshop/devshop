@@ -322,17 +322,6 @@ function boots_preprocess_node(&$vars) {
   elseif ($vars['node']->type == 'task') {
     boots_preprocess_node_task($vars);
   }
-  if ($vars['node']->type == 'site') {
-    $project_node = node_view(node_load($vars['node']->project_nid));
-    boots_preprocess_environment_site($vars['node']->environment, $project_node->environment_actions[$vars['node']->environment->name]);
-
-    // Load source environments for db sync.
-    foreach ($vars['node']->project->environments as $environment) {
-      if ($environment->site) {
-        $vars['source_environments'][$environment->name] = $environment;
-      }
-    }
-  }
 }
 
 /**
