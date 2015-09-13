@@ -733,6 +733,23 @@ function boots_item_list($items = array(), $title = NULL, $type = 'ul', $attribu
 }
 
 /**
+ * Override for drupal's tabs.
+ * @return string
+ */
+function boots_menu_local_tasks() {
+  $output = '';
+
+  if ($primary = menu_primary_local_tasks()) {
+    $output .= "<ul class=\"nav nav-pills nav-stacked\">\n" . $primary . "</ul>\n";
+  }
+  if ($secondary = menu_secondary_local_tasks()) {
+    $output .= "<ul class=\"nav nav-pills nav-stacked\">\n" . $secondary . "</ul>\n";
+  }
+
+  return $output;
+}
+
+/**
  * Implements hook_status_messages()
  */
 function boots_status_messages($display = NULL) {
