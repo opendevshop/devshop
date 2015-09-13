@@ -14,6 +14,7 @@ function boots_theme() {
       ),
   );
 }
+
 /**
  * Preprocessor for environment template.
  */
@@ -80,6 +81,95 @@ function boots_preprocess_environment(&$vars)
   // Load Task Links
   $environment->task_links = devshop_environment_links($environment);
 
+  // Task Logs{
+  $tasks = hosting_available_tasks('site');
+  $environment->tasks = devshop_get_tasks($environment);
+  $environment->task_count = count($environment->tasks);
+  $environment->active_tasks = 0;
+
+  $items = array();
+  $items[] = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$project->nid/logs/$environment->name", array(
+      'html' => TRUE,
+      'attributes' => array(
+          'class' => 'list-group-item',
+      ),
+  ));
+
+  $environment->processing = FALSE;
+
+  foreach ($environment->tasks as &$task) {
+    if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+      $environment->active_tasks++;
+
+      if ($task->task_status == HOSTING_TASK_PROCESSING) {
+        $environment->processing = TRUE;
+      }
+    }
+
+    switch ($task->task_status){
+      case HOSTING_TASK_SUCCESS:
+        $icon = 'check text-success';
+        $item_class = 'success';
+        break;
+
+      case HOSTING_TASK_ERROR;
+        $icon = 'exclamation-circle text-danger';
+        $item_class = 'danger';
+        break;
+      case HOSTING_TASK_WARNING:
+        $icon = 'warning text-warning';
+        $item_class = 'warning';
+        break;
+
+      case HOSTING_TASK_PROCESSING;
+      case HOSTING_TASK_QUEUED;
+        $icon = 'cog text-info';
+        if ($environment->processing) {
+          $icon .= ' fa-spin';
+        }
+        $item_class = 'default';
+        break;
+    }
+
+    $label = drupal_ucfirst($tasks[$task->task_type]['title']);
+    $ago = ' <em class="small">' . format_interval(time() - $task->executed, 1) .' '. t('ago') . '</em>';
+
+    // Override "ago" text.
+    if ($task->task_status == HOSTING_TASK_QUEUED) {
+      $ago = t('Queued');
+    }
+    elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
+      $ago = t('Running...');
+    }
+
+    $text = "<i class='fa fa-{$icon}'></i> {$label} <em class='small'>{$ago}</em>";
+
+    $items[] = l($text, 'node/' . $task->nid, array(
+        'html' => TRUE,
+        'attributes' => array(
+            'class' => "list-group-item list-group-item-{$item_class}",
+        ),
+    ));
+    $environment->task_logs = implode("\n", $items);
+
+    // Save last task
+    if (empty($environment->last_task)) {
+
+      // If the last task is a "verify" and it was successful, load the next task as the last task.
+      // Verifies happen a lot and if successful, are not useful information and knocks important ones like test runs off the list.
+      if (($task->task_type == 'verify' || $task->task_type == 'login-reset')
+          && $task->task_status == HOSTING_TASK_SUCCESS) {
+        continue;
+      }
+      $environment->last_task = array(
+          'class' => $item_class,
+          'icon' => $icon,
+          'ago' => $ago,
+          'label' => $label,
+          'url' => url("node/$task->nid"),
+      );
+    }
+  }
 }
 
 /**
