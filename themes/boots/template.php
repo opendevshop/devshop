@@ -69,10 +69,6 @@ function boots_preprocess_environment(&$vars)
     $environment->list_item_class = 'info';
   }
 
-  if ($environment->active_tasks > 0) {
-    $environment->class .= ' active';
-  }
-
   // Pull Request?
   if ($environment->github_pull_request) {
     $environment->class .= ' pull-request';
@@ -170,6 +166,13 @@ function boots_preprocess_environment(&$vars)
       );
     }
   }
+
+  // Set a class showing the environment as active.
+  if ($environment->active_tasks > 0) {
+    $environment->class .= ' active';
+  }
+
+  print $environment->tasks_active;
 }
 
 /**

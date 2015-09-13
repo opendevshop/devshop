@@ -336,7 +336,7 @@
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
-        <div class="alert-<?php print $environment->last_task['class'] ?>">
+        <div class="environment-tasks-alert alert-<?php print $environment->last_task['class'] ?>">
 
 
                 <label>Tasks</label>
@@ -360,7 +360,7 @@
         <?php endif; ?>
 
         <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar progress-bar-striped progress-bar-info <?php if ($environment->processing) print 'active'; ?>" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                 <span class="sr-only"></span>
             </div>
         </div>
