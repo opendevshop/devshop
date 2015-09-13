@@ -66,6 +66,10 @@
       <span class="label label-<?php print $task_label_class ?>"><?php print $task_label ?></span>
 
       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
+
+      <?php if ($retry): ?>
+            <?php print $retry; ?>
+      <?php endif; ?>
     </h4>
 
     <?php if ($submitted): ?>
