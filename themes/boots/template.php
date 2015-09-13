@@ -171,8 +171,6 @@ function boots_preprocess_environment(&$vars)
   if ($environment->active_tasks > 0) {
     $environment->class .= ' active';
   }
-
-  print $environment->tasks_active;
 }
 
 /**
