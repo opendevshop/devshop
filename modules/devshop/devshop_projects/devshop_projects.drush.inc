@@ -26,8 +26,8 @@ function drush_devshop_projects_pre_hosting_task()
 
 
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
-  if ($task->task_type = 'download') {
-    drush_log('[AEGIR] Download package enabled...', 'ok');
+  if ($task->task_type == 'download') {
+    drush_log('[AEGIR DEVSHOP_PROJECTS] Download package enabled...', 'ok');
 
     $task->options['packages'] = $task->task_args['packages'];
     $task->options['commit'] = $task->task_args['update'];
