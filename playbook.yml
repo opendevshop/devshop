@@ -288,6 +288,21 @@
         content="{{ devshop_version }}"
         dest=/var/aegir/.devshop-version
 
+    - name: Set git user name and email
+      shell: "git config --global user.email aegir@{{ server_hostname }}"
+      sudo: yes
+      sudo_user: aegir
+
+    - name: Set git user name and email
+      shell: "git config --global user.name DevShop"
+      sudo: yes
+      sudo_user: aegir
+
+    - name: Set git user name and email
+      shell: "git config --global push.default simple"
+      sudo: yes
+      sudo_user: aegir
+
   handlers:
     - name: restart supervisor
       service:
