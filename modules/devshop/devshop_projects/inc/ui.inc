@@ -13,8 +13,7 @@
 function devshop_projects_projects_page() {
   drupal_set_title(t('Projects'));
   $header = array(
-    'Name',
-    'Profile',
+    'Project & Install Profile',
     'Version',
     'Git URL',
     'Environments',
@@ -37,13 +36,25 @@ function devshop_projects_projects_page() {
     $row = array();
 
     // Link to Project page
-    $row[] = '<strong>' . l($project->name, "node/$project->nid") . '</strong>';
+    $url = url("node/$project->nid");
+    $version = $platform_node->release->version;
+    $row[] = <<<HTML
 
-    // Install Profile
-    $row[] = $project->install_profile;
+<h4>
+  <a href="$url">
+      $project->name
+      <br />
+      <small>$project->install_profile</small>
+  </a>
+
+</h4>
+
+HTML;
 
     // Drupal Version
-    $row[] = $platform_node->release->version;
+    $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
+ $version
+</button>";
 
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
@@ -124,7 +135,6 @@ HTML;
     if (empty($data['header'])){
       $data['header'] = $header;
     }
-
     $output = theme('table', $data['header'], $data['rows'], array('class' => 'table'));
   }
   return $output;
