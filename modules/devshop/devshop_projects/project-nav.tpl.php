@@ -21,9 +21,9 @@
             <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
             <?php endif; ?>
             <li><label><?php print t('Environment Settings'); ?></label></li>
-            <?php foreach ($project->environments as $environment): ?>
+            <?php foreach ($project->environments as $environment): $nid = empty($environment->site)? $environment->platform: $environment->site ?>
             <li>
-              <?php print l($environment->name, "node/{$project->nid}/edit/{$environment->name}"); ?>
+              <?php print l($environment->name, "node/{$nid}/edit"); ?>
             </li>
             <?php endforeach; ?>
           </ul>
