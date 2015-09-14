@@ -37,7 +37,6 @@ function drush_devshop_provision_provision_test() {
     $project_context = "project_" . d()->project;
     $project = (object) d($project_context)->project;
     $behat_folder_path = drush_get_option('behat-folder-path', $project->settings['testing']['behat_folder_path']);
-    $behat_bin_path = drush_get_option('behat-bin-path', d()->environment['settings']['testing']['behat_bin_path']);
 
     // If no repo at that path, error.
     if (!file_exists($repo_path)){
@@ -51,7 +50,7 @@ function drush_devshop_provision_provision_test() {
 
     // Prepare path and command
     $full_behat_folder_path = $repo_path . '/' . $behat_folder_path;
-    $full_behat_bin_path = $repo_path . '/' . $behat_folder_path . '/' . $behat_bin_path;
+    $full_behat_bin_path = $repo_path . '/' . $behat_folder_path . '/bin/behat';
 
     // Load the behat.yml from behat_folder_path.
     if (file_exists($full_behat_folder_path . '/behat.yml')) {
