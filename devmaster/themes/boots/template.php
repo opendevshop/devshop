@@ -528,7 +528,13 @@ function boots_preprocess_node_task(&$vars) {
 
   }
   else {
-    $vars['duration'] = format_interval($vars['node']->delta, 1);
+
+    if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
+      $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
+    }
+    else {
+      $vars['duration'] = format_interval($vars['node']->delta, 1);
+    }
     $vars['date'] = date('D M j Y', $vars['node']->executed);
     $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
   }
