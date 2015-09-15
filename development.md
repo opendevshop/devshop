@@ -51,25 +51,16 @@ It is best to use the installers from the websites so you are sure to get the ri
   git clone git@github.com:opendevshop/devshop.git
   cd devshop
   ```
-  
-6. Get the `vagrant hosts-updater` plugin:
- 
-  ```
-  vagrant plugin install vagrant-hostsupdater
-  ```
-  
-  This plugin is great. As long as your vagrantfile has a hostname set and static private network setup, it will add 
-  /etc/hosts entries for you, asking for your password first.
-   
-   or: Edit your /etc/hosts file, adding the line:
-  
-  ```
-  10.10.10.10  devshop.local
-  ```
-  
-  *NOTE:* If you wish to change the IP or hostname, edit `vagrant.vars.yml` before you call vagrant up for the first time.
 
-7. Before you vagrant up the first time, open vars.yml, and set vagrant_development: TRUE.
+6. Before you vagrant up the first time, if you wish to develop devshop:
+
+  This repo is used for developing devshop.  To enable "development mode", create a file in this repo called 
+  `.development_mode`.
+  
+  This file will be ignored by git, but will tell the Vagrant box to clone the devshop source code and map the folders
+  to your vagrant box.
+  
+  The old method of enabling development mode will still work, but you must be careful not to commit the change to vars.yml:
 
   ```yml
   # VAGRANT variables.
@@ -81,8 +72,8 @@ It is best to use the installers from the websites so you are sure to get the ri
 
 ## Vagrant Up
 
-If `vagrant_development` is set to `TRUE`, the next time you run the command `vagrant` it will prepare the source code 
-for devshop in the `./source` folder.
+If "development mode" is on (meaning, there is a file called .development_mode in the repo root), the next time you run 
+the command `vagrant` it will prepare the source code for devshop in the `./source` folder.
    
   - The "front-end code" is located at `./source/devmaster-0.x`, and is mapped to `/var/aegir/devmaster-0.x` in the
    vagrant box. The actual git repo for devmaster is at `./source/devmaster-0.x/profiles/devmaster`.
@@ -119,6 +110,13 @@ If you need another login link to the front-end, simply call:
   aegir@devshop:~$ devshop login
   ```
   
+## devshop.site
+
+The domain name `devshop.site` is available, pointing at IP 10.10.10.10.  As long as you didn't change it in vars.yml,
+you can use http://devshop.site for your devmaster front-end, and http://*.devshop.site for your hosted sites.
+
+This means no more fiddling with your `/etc/hosts` file. All sites created in your vagrant box will be available out of 
+the box.
 
 DevShop Management
 ------------------
