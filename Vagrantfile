@@ -9,6 +9,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Load Variables
   require 'yaml'
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
+  development_mode = settings["vagrant_development"] || File.exist?(File.dirname(__FILE__) + '/.development_mode')
 
   # Base Box & Config
   config.vm.box = "ubuntu/trusty64"
@@ -18,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # Prepare host for development
-  if (settings["vagrant_development"])
+  if (development_mode)
     system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__) + ' ' + settings["devmaster_version"])
   end
 
@@ -40,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       args: "/vagrant"
 
     # Prepare development environment
-    if (settings["vagrant_development"])
+    if (development_mode)
 
       devmaster.vm.synced_folder "source/devmaster-" + settings["devmaster_version"], "/var/aegir/devmaster-" + settings["devmaster_version"],
           mount_options: ["uid=12345,gid=12345"]

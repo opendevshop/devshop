@@ -1,6 +1,8 @@
 
 # VAGRANT variables.
 # Set development to TRUE if you wish to contribute to devshop development.
+
+# You may also add a file to this folder called ".development_mode".  If this file is present, development mode will always be enabled.
 vagrant_development: FALSE
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
