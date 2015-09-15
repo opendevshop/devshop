@@ -158,6 +158,8 @@ function template_preprocess_devshop_project_nav(&$vars){
     }
   }
 
+  $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+
   if ($vars['tags_count']){
 //      <li class="divider"></li>
 
