@@ -96,6 +96,12 @@ function devshop_projects_schema() {
         'size' => 'big',
         'description' => 'A serialized array of settings for this environment.',
       ),
+      'last_task' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'Serialized information about the last task.',
+      ),
     ),
     'indexes' => array(
       'project_environment' => array('project_nid', 'name'),
@@ -288,3 +294,17 @@ function devshop_projects_update_600X() {
   return array();
 }
  */
+
+/**
+ * Add "last_task" column for environments.
+ */
+function devshop_projects_update_6008(){
+  $schema = devshop_projects_schema();
+  $ret = array();
+  $ret[] = db_add_field(
+      $ret,
+      'hosting_devshop_project_environment',
+      'last_task', $schema['hosting_devshop_project_environment']['fields']['last_task']
+  );
+  return $ret;
+}

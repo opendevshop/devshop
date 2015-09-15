@@ -440,13 +440,12 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     $site = node_load($node->rid);
     if ($site->type == 'site' && isset($site->environment) && $node->task_type == HOSTING_TASK_QUEUED) {
 
-      $site->environment->settings = (object) $site->environment->settings;
-      $site->environment->settings->last_task = array(
+      $site->environment->last_task = array(
           'status' => $node->task_status,
           'type' => $node->task_type,
           'nid' => $node->nid,
       );
-      devshop_environment_save($site->environment);
+      devshop_environment_save_last_task($site->environment);
     }
   }
 
@@ -480,6 +479,7 @@ function devshop_environment_save(stdClass &$environment) {
   $info->site = $environment->site;
   $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);
+  $info->last_task = serialize($environment->last_task);
 
   // Save environment record.
   if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
@@ -490,4 +490,16 @@ function devshop_environment_save(stdClass &$environment) {
     watchdog('error', 'Environment record not saved: ' . print_r($info, 1));
     return FALSE;
   }
+}
+
+/**
+ * Helper to save last task info.
+ */
+function devshop_environment_save_last_task($environment) {
+
+  $task_string = serialize($environment->last_task);
+
+  db_query('UPDATE {hosting_devshop_project_environment} SET last_task = "%s" WHERE name = "%s" AND project_nid = %d',
+      $task_string, $environment->name, $environment->project_nid
+      );
 }
