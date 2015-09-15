@@ -149,7 +149,7 @@ function boots_preprocess_environment(&$vars)
     $environment->task_logs = implode("\n", $items);
 
     // Save last task
-    if (empty($environment->last_task)) {
+    if (empty($environment->last_task_info)) {
 
       // If the last task is a "verify" and it was successful, load the next task as the last task.
       // Verifies happen a lot and if successful, are not useful information and knocks important ones like test runs off the list.
@@ -157,7 +157,7 @@ function boots_preprocess_environment(&$vars)
           && $task->task_status == HOSTING_TASK_SUCCESS) {
         continue;
       }
-      $environment->last_task = array(
+      $environment->last_task_info = array(
           'class' => $item_class,
           'icon' => $icon,
           'ago' => $ago,

@@ -16,12 +16,12 @@ function devshop_projects_hosting_task_update_status($task, $status) {
   if ($site->type == 'site' && isset($site->environment)) {
     $site->environment->settings = (object) $site->environment->settings;
 
-    $site->environment->settings->last_task = array(
+    $site->environment->last_task = array(
         'status' => $status,
         'type' => $task->task_type,
         'nid' => $task->nid,
     );
-    devshop_environment_save($site->environment);
+    devshop_environment_save_last_task($site->environment);
   }
 }
 
