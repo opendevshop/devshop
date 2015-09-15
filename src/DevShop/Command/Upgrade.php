@@ -194,9 +194,15 @@ class Upgrade extends Command
       echo $buffer;
     });
 
-    // @TODO: Check for valid hostmaster install
-    // @TODO: Schedule removal of old platform in devmaster front-end.
+    // Only continue on successfull hostmaster-migrate.
+    if (!$process->isSuccessful()) {
+      $output->writeln("<fg=red>Upgrade failed.</>  The command failed:");
+      $output->writeln($cmd);
+      $output->writeln();
+      return;
+    }
 
+    // Announce devmaster upgrade.
     $output->writeln('');
     $output->writeln("<info>Devmaster Upgraded to {$target_version}.</info>");
 
@@ -224,11 +230,33 @@ class Upgrade extends Command
     $upgradeInput = new ArrayInput($arguments);
     $output->writeln('');
 
-    if ($command->run($upgradeInput, $output) == 0) {
-      $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
-    }
-    else {
+    if ($command->run($upgradeInput, $output) != 0) {
       $output->writeln("<fg=red>Playbook run failed!</>");
+      $output->writeln('');
     }
+
+    $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
+
+
+    // Schedule the command for deletion.
+    $output->writeln('');
+    $question = new ConfirmationQuestion("STEP 3: Schedule deletion of old platform ($devmaster_root) ", false);
+    $cmd = "drush @hostmaster platform-remove $devmaster_root";
+
+    $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
+
+    // If they say no, exit.
+    if (!$helper->ask($input, $output, $question)) {
+      $output->writeln("<fg=red>Old devmaster platform was not deleted.</> You should find and delete the platform at {$devmaster_root}");
+      $output->writeln('');
+      return;
+    }
+
+    // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
+    $process = new Process("su aegir - -c '$cmd'");
+    $process->setTimeout(NULL);
+    $process->run(function ($type, $buffer) {
+      echo $buffer;
+    });
   }
 }
