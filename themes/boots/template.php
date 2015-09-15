@@ -524,8 +524,7 @@ function boots_preprocess_node_task(&$vars) {
   if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
     $vars['duration'] = 'Queued';
     $vars['date'] = date('D M j Y', $vars['node']->changed);
-    $vars['executed'] = format_interval(time() - $vars['node']->changed) . ' ' . t('ago');
-
+    $vars['executed'] = t('Queued') . ' ' . format_interval(time() - $vars['node']->changed) . ' ' . t('ago');
   }
   else {
 
