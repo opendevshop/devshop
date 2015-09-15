@@ -43,7 +43,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Prepare development environment
     if (development_mode)
 
-      devmaster.vm.synced_folder "source/devmaster-" + settings["devmaster_version"], "/var/aegir/devmaster-" + settings["devmaster_version"],
+      devmaster.vm.synced_folder "source/devmaster-" + settings["devshop_version"], "/var/aegir/devmaster-" + settings["devshop_version"],
           mount_options: ["uid=12345,gid=12345"]
 
       devmaster.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",
