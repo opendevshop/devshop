@@ -129,8 +129,11 @@ function drush_devshop_projects_pre_hosting_task()
 
   // If task is set to clone, save a drush option so our hook knows to run a registry rebuild
   if ($task->task_type == 'clone' && !empty($task->ref->project)) {
-    $task->options['rebuild-registry'] = 1;
-    $task->options['strict'] = 0;
+
+    // @TODO This didn't work.
+    //  The rebuild-registry commands were passed only to provision-save!
+//    $task->options['rebuild-registry'] = 1;
+//    $task->options['strict'] = 0;
   }
 }
 
