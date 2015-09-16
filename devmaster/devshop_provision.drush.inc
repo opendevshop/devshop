@@ -26,13 +26,13 @@
  */
 function drush_devshop_provision_pre_updatedb() {
 
-  // If "rebuild-registry" drush option is passed, run drush rr
-  if (d()->environment['settings']['site_to_clone']) {
-    drush_log('[DEVSHOP] Registry Rebuild triggered because this is a cloned site', 'ok');
+  // When an environment is first cloned, at this point in the process
+  // It has a project property, but not the environment.
+  // That is what the extra import task is for.
+  // We can look for the missing environment
+  if (!empty(d()->project) && empty(d()->environment)) {
+    drush_log('[DEVSHOP] New environment detected.  Rebuilding Registry.', 'ok');
     drush_invoke('registry-rebuild');
-  }
-  else {
-    drush_log('[DEVSHOP] Not a cloned site', 'notice');
   }
 }
 
