@@ -4,6 +4,35 @@
  * Drush commands for DevShop Provision
  */
 
+
+/**
+ * Invokes drush_hook_pre_COMMAND()
+ *  for hook "devshop_provision" and "updatedb"
+ *
+ *
+ * Runs just before "updatedb".  If rebuild registry is passed, it
+ * rebuilds the registry.
+ *
+ * This is here because a "Clone" task in devshop will often go to
+ * a modified codebase.  If you move a module, it will break the
+ * cache clearing, and then trigger a rollback of the clone.
+ *
+ * When the task is called from hostmaster, from `devshop_projects.drush.inc`,
+ * it will set the drush option "rebuild-registry".
+ *
+ * This mitigates the "clone" task.  We will still have to add
+ * registry rebuild to the "deploy" task.
+ *
+ */
+function drush_devshop_provision_pre_updatedb() {
+
+  // If "rebuild-registry" drush option is passed, run drush rr
+  if (drush_get_option('rebuild-registry')) {
+    drush_log('[DEVSHOP] Registry Rebuild triggered from drush option.', 'ok');
+    drush_invoke('registry-rebuild');
+  }
+}
+
 /**
  * Implements hook_drush_init()
  * - Ensures that provision is loaded before devshop_provision
