@@ -27,9 +27,12 @@
 function drush_devshop_provision_pre_updatedb() {
 
   // If "rebuild-registry" drush option is passed, run drush rr
-  if (drush_get_option('rebuild-registry')) {
-    drush_log('[DEVSHOP] Registry Rebuild triggered from drush option.', 'ok');
+  if (d()->environment['settings']['site_to_clone']) {
+    drush_log('[DEVSHOP] Registry Rebuild triggered because this is a cloned site', 'ok');
     drush_invoke('registry-rebuild');
+  }
+  else {
+    drush_log('[DEVSHOP] Not a cloned site', 'notice');
   }
 }
 
