@@ -6,48 +6,6 @@
 
 
 /**
- * Invokes drush_hook_pre_COMMAND()
- *  for hook "devshop_provision" and "updatedb"
- *
- * This function is a hack to fix the problem of moving files around
- * on a pull request environment.
- *
- * When a Pull Request environment is created, the branched code is
- * cloned to the server, and the "live" environment is "cloned".
- *
- * Aegir's "clone" task runs updatedb automatically.  There is no control
- * over this.
- *
- * If the new branch contained moved or missing pieces of the registry, the
- * "updatedb" might fail and cache clears would fail, triggering the rollback
- * process, which deletes the database, deletes the files, and the drush alias!
- *
- * So, you would normally manually run "drush rr" here, but you can't because the
- * site has been destroyed.
- *
- * Hacking into drush's rollback functionality proved challenging, so we're just going
- * to do this:
- *
- *   - Add a "pre updatedb" hook.  The "updatedb" command is called the moment after they import the database.
- *   - In that hook, detect the situation: if the project is set but the environment is
- *     not, it means we have an environment clone in progress.
- *   - Invoke registry rebuild.
- *
- * It Works!
- */
-function drush_devshop_provision_pre_updatedb() {
-
-  // When an environment is first cloned, at this point in the process
-  // It has a project property, but not the environment.
-  // That is what the extra import task is for.
-  // We can look for the missing environment
-  if (!empty(d()->project) && empty(d()->environment)) {
-    drush_log('[DEVSHOP] New environment detected.  Rebuilding Registry.', 'ok');
-    drush_invoke('registry-rebuild');
-  }
-}
-
-/**
  * Implements hook_drush_init()
  * - Ensures that provision is loaded before devshop_provision
  */
@@ -283,4 +241,46 @@ function devshop_provision_provision_nginx_vhost_config($data) {
   fastcgi_param DEVSHOP_ENVIRONMENT $environment
 
 PHP;
+}
+
+/**
+ * Invokes drush_hook_pre_COMMAND()
+ *  for hook "devshop_provision" and "updatedb"
+ *
+ * This function is a hack to fix the problem of moving files around
+ * on a pull request environment.
+ *
+ * When a Pull Request environment is created, the branched code is
+ * cloned to the server, and the "live" environment is "cloned".
+ *
+ * Aegir's "clone" task runs updatedb automatically.  There is no control
+ * over this.
+ *
+ * If the new branch contained moved or missing pieces of the registry, the
+ * "updatedb" might fail and cache clears would fail, triggering the rollback
+ * process, which deletes the database, deletes the files, and the drush alias!
+ *
+ * So, you would normally manually run "drush rr" here, but you can't because the
+ * site has been destroyed.
+ *
+ * Hacking into drush's rollback functionality proved challenging, so we're just going
+ * to do this:
+ *
+ *   - Add a "pre updatedb" hook.  The "updatedb" command is called the moment after they import the database.
+ *   - In that hook, detect the situation: if the project is set but the environment is
+ *     not, it means we have an environment clone in progress.
+ *   - Invoke registry rebuild.
+ *
+ * It Works!
+ */
+function drush_devshop_provision_pre_updatedb() {
+
+  // When an environment is first cloned, at this point in the process
+  // It has a project property, but not the environment.
+  // That is what the extra import task is for.
+  // We can look for the missing environment
+  if (!empty(d()->project) && empty(d()->environment)) {
+    drush_log('[DEVSHOP] New environment detected.  Rebuilding Registry.', 'ok');
+    drush_invoke('registry-rebuild');
+  }
 }
