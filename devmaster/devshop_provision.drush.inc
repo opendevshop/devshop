@@ -127,7 +127,6 @@ function devshop_provision_drush_command() {
      'working-copy' => dt('Keep VCS files when building the hostmaster platform using Drush make.')
     ),
   );
-
   return $items;
 }
 
@@ -164,15 +163,18 @@ function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) 
 
   return <<<PHP
 
-  # Additional platform-wide configuration settings.
-  if (file_exists(__DIR__ . '/../all/global.settings.php')) {
-    include_once(__DIR__ . '/../all/global.settings.php');
-  }
-
   # This site's devshop project name and environment name.
   \$_SERVER['DEVSHOP_ENVIRONMENT'] = '$environment';
   \$_SERVER['DEVSHOP_PROJECT'] = '$project';
 
+  # Include devshop environment configuration settings, if there is any.
+  if (file_exists(__DIR__ . '/../all/settings.devshop.php')) {
+    include_once(__DIR__ . '/../all/settings.devshop.php');
+  }
+
+  if (file_exists(__DIR__ . '/../default/settings.devshop.php')) {
+    include_once(__DIR__ . '/../default/settings.devshop.php');
+  }
 
 PHP;
 }
