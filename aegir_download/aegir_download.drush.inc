@@ -74,6 +74,16 @@ function aegir_download_drush_pm_post_download($project, $release)
     $uri = d()->uri;
     $path_to_project = $project['full_project_path'];
 
+    // Bail if there is no URI.
+    if (empty($uri)) {
+        return;
+    }
+
+    // Bail if there is no repo
+    if (!provision_git_is_repo($path_to_project)) {
+        return;
+    }
+
     // Invoke provision-git-add to add any new files to the index
 
     // Generate commit message.
