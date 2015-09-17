@@ -726,7 +726,7 @@ function devshop_github_webhook($project_node){
               }
               // If environment has a platform... trigger it's deletion.
               elseif ($project->environments[$environment_name]->platform) {
-                $message .= "Site $environment_name (Platform Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
+                $message .= "Site $environment_name (Platform Node: {$project->environments[$environment_name]->platform}) scheduled for deletion.";
               }
             }
           }
