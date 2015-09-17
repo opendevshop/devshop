@@ -5,7 +5,7 @@
  * Provides the "platform-delete" command.  This command triggers a delete task on a platform specified by it's path.
  *
  * This allows taking the final step in an upgrade: deleting the old devmaster.
-*/
+ */
 function devshop_hosting_drush_command()
 {
     $items['platform-delete'] = array(
