@@ -111,9 +111,8 @@ class Upgrade extends Command
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
-//    $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
-//    $default_version = $release['tag_name'];
-    $default_version = '0.4.9';
+    $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
+    $default_version = $release['tag_name'];
     $target_version = '';
 
     // Confirm version
@@ -271,7 +270,6 @@ class Upgrade extends Command
 
   public function checkVersion($version) {
     $client = new \Github\Client();
-    return $version;
 
     try {
       $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/heads/' . $version);
