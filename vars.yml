@@ -22,6 +22,9 @@ remote2_server_hostname: devshop.remote2
 server_hostname: devshop.site
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
+php_post_max_size: 32M
+php_upload_max_filesize: 32M
+
 php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
