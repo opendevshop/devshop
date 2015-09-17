@@ -718,10 +718,16 @@ function devshop_github_webhook($project_node){
             $message .= "Pull Request Closed \n";
             if ($project->settings->github['pull_request_environments_delete']){
 
-              if (isset($project->environments[$environment_name]->site) && $node = node_load($project->environments[$environment_name]->site)) {
+              // If environment has a site... trigger it's deletion.
+              // Platform deletion triggers after site deletion completes.
+              if (isset($project->environments[$environment_name]->site)) {
                 hosting_add_task($project->environments[$environment_name]->site, 'delete');
+                $message .= "Environment $environment_name (Site Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
               }
-              $message .= "Site $environment_name (Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
+              // If environment has a platform... trigger it's deletion.
+              elseif (isset($project->environments[$environment_name]->platform)) {
+                $message .= "Site $environment_name (Platform Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
+              }
             }
           }
         }
