@@ -20,7 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Prepare host for development
   if (development_mode)
-    system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__) + ' ' + settings["devmaster_version"])
+    system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__) + ' ' + settings["devshop_version"])
   end
 
   # Uncomment to test with other types of boxes.
