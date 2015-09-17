@@ -124,7 +124,7 @@ class Upgrade extends Command
     $target_path = "/var/aegir/devmaster-{$target_version}";
 
     // Check for existing path.  If exists, append the date.
-    if (file_exists($target_path)) {
+    if ($target_version = '0.x' || file_exists($target_path)) {
       $variant = date('Y-m-d');
       $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
     }
