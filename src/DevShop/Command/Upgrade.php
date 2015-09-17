@@ -2,6 +2,7 @@
 
 namespace DevShop\Command;
 
+use Github\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -110,21 +111,29 @@ class Upgrade extends Command
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
-    $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
-    $target_version = $release['tag_name'];
+//    $release = $client->api('repo')->releases()->latest('opendevshop', 'devshop');
+//    $default_version = $release['tag_name'];
+    $default_version = '0.4.9';
+    $target_version = '';
 
     // Confirm version
-    $question = new Question("Target Version: (Default: $target_version) ", $target_version);
-    $target_version = $helper->ask($input, $output, $question);
-    $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
+    while ($this->checkVersion($target_version) == FALSE) {
+      $question = new Question("Target Version: (Default: $default_version) ", $default_version);
+      $target_version = $helper->ask($input, $output, $question);
+      $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
 
-    // @TODO: Verify version exists.
+      if (!$this->checkVersion($target_version)) {
+        $output->writeln("<fg=red>Version $target_version not found</>");
+      }
+    }
+    $output->writeln("Version $target_version confirmed.");
+
 
     // Determine the target path.
     $target_path = "/var/aegir/devmaster-{$target_version}";
 
     // Check for existing path.  If exists, append the date.
-    if ($target_version = '0.x' || file_exists($target_path)) {
+    if ($target_version == '0.x' || file_exists($target_path)) {
       $variant = date('Y-m-d');
       $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
     }
@@ -258,5 +267,25 @@ class Upgrade extends Command
     $process->run(function ($type, $buffer) {
       echo $buffer;
     });
+  }
+
+  public function checkVersion($version) {
+    $client = new \Github\Client();
+    return $version;
+
+    try {
+      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/heads/' . $version);
+      return TRUE;
+    }
+    catch (RuntimeException $e) {
+    }
+
+    try {
+      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/tags/' . $version);
+      return TRUE;
+    }
+    catch (RuntimeException $e) {
+      return FALSE;
+    }
   }
 }
