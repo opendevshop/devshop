@@ -269,6 +269,10 @@ class Upgrade extends Command
   }
 
   public function checkVersion($version) {
+    if (empty($version)) {
+      return FALSE;
+    }
+
     $client = new \Github\Client();
 
     try {
