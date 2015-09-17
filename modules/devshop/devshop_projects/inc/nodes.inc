@@ -117,6 +117,7 @@ function devshop_projects_load($node) {
 
     // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
+    $environment->last_task = (array) unserialize($environment->last_task);
 
     // Get the current git ref type.
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
