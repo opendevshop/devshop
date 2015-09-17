@@ -720,12 +720,12 @@ function devshop_github_webhook($project_node){
 
               // If environment has a site... trigger it's deletion.
               // Platform deletion triggers after site deletion completes.
-              if (isset($project->environments[$environment_name]->site)) {
+              if ($project->environments[$environment_name]->site) {
                 hosting_add_task($project->environments[$environment_name]->site, 'delete');
                 $message .= "Environment $environment_name (Site Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
               }
               // If environment has a platform... trigger it's deletion.
-              elseif (isset($project->environments[$environment_name]->platform)) {
+              elseif ($project->environments[$environment_name]->platform) {
                 $message .= "Site $environment_name (Platform Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
               }
             }
