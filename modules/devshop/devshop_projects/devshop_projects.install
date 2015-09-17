@@ -308,3 +308,24 @@ function devshop_projects_update_6008(){
   );
   return $ret;
 }
+
+/**
+ * Update all environments with their last_task();
+ */
+function devshop_projects_update_6009 () {
+
+  // Lookup all environments
+  $query = db_query('SELECT * FROM {hosting_devshop_project_environment}');
+  while ($result = db_fetch_object($query)) {
+    $site = node_load($result->site);
+    $result = db_fetch_object(db_query("SELECT t.nid, t.vid FROM hosting_task t INNER JOIN node n ON n.vid = t.vid WHERE rid = %d GROUP BY t.nid ORDER BY vid DESC", $site->nid));
+
+    $task = node_load($result->nid);
+    $site->environment->last_task = array(
+        'status' => $task->task_status,
+        'type' => $task->task_type,
+        'nid' => $task->nid,
+    );
+    devshop_environment_save_last_task($site->environment);
+  }
+}
