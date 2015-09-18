@@ -249,7 +249,7 @@ class Upgrade extends Command
     // Schedule the command for deletion.
     $output->writeln('');
     $question = new ConfirmationQuestion("STEP 3: Schedule deletion of old platform ($devmaster_root) ", false);
-    $cmd = "drush @hostmaster platform-delete $devmaster_root";
+    $cmd = "drush @hostmaster platform-delete $devmaster_root -y";
 
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
 
