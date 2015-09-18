@@ -274,107 +274,112 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
       );
     }
   }
+}
 
-  // Site "Edit" page.  This is our environment settings page..
-  if ($form_id == 'site_node_form') {
+/**
+ * Implements hook_form_FORM_ID_alter() for node_site_form
+ *
+ * "Environment" Settings form.
+ */
+function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id)
+{
 
-    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
-    $node = $form['#node'];
-    $environment = (object) $node->environment;
+  // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
+  $node = $form['#node'];
+  $environment = (object) $node->environment;
 
-    // Remove aegir's helpful info panel.
-    unset($form['info']);
+  // Remove aegir's helpful info panel.
+  unset($form['info']);
 
-    $form['environment'] = array(
+  $form['environment'] = array(
       '#weight' => -9,
       '#tree' => true,
-    );
+  );
 
-    // Values
-    $form['environment']['project_nid'] = array(
+  // Values
+  $form['environment']['project_nid'] = array(
       '#value' => $environment->project_nid,
       '#type' => 'value',
-    );
-    $form['environment']['project_name'] = array(
+  );
+  $form['environment']['project_name'] = array(
       '#value' => $environment->project_name,
       '#type' => 'value',
-    );
-    $form['environment']['name'] = array(
+  );
+  $form['environment']['name'] = array(
       '#value' => $environment->name,
       '#type' => 'value',
-    );
-    $form['environment']['git_ref'] = array(
+  );
+  $form['environment']['git_ref'] = array(
       '#value' => $environment->git_ref,
       '#type' => 'value',
-    );
-    $form['environment']['site'] = array(
+  );
+  $form['environment']['site'] = array(
       '#value' => $environment->site,
       '#type' => 'value',
-    );
-    $form['environment']['platform'] = array(
+  );
+  $form['environment']['platform'] = array(
       '#value' => $environment->platform,
       '#type' => 'value',
-    );
+  );
 
-    // User-configurable Settings
-    $form['environment']['settings'] = array(
+  // User-configurable Settings
+  $form['environment']['settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Environment Settings'),
       '#tree' => true,
-    );
-    $form['environment']['settings']['locked'] = array(
+  );
+  $form['environment']['settings']['locked'] = array(
       '#type' => 'checkbox',
       '#title' => t('Lock Database'),
       '#default_value' => $environment->settings->locked,
       '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
-    );
+  );
 
-    $form['environment']['settings']['pull_disabled'] = array(
+  $form['environment']['settings']['pull_disabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Disable Deploy on Commit'),
       '#default_value' => $environment->settings->pull_disabled,
       '#description' => t('Do not pull code to the server on commit & push.'),
-    );
+  );
 
-    $form['environment']['settings']['deploy'] = array(
+  $form['environment']['settings']['deploy'] = array(
       '#type' => 'fieldset',
       '#title' => t('Deployment Hooks'),
       '#description' => t('When code is deployed to this environment, do the following:'),
-    );
-    $form['environment']['settings']['deploy']['revert'] = array(
+  );
+  $form['environment']['settings']['deploy']['revert'] = array(
       '#type' => 'checkbox',
       '#title' => t('Revert all features.'),
       '#description' => t('If features is enabled, revert all of them.'),
       '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['revert'],
-    );
-    $form['environment']['settings']['deploy']['update'] = array(
+  );
+  $form['environment']['settings']['deploy']['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
       '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['update'],
-    );
-    $form['environment']['settings']['deploy']['cache'] = array(
+  );
+  $form['environment']['settings']['deploy']['cache'] = array(
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
       '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['cache'],
-    );
+  );
 
-    // If acquia cloud hooks are detected, add the option to fire them.
-    if (file_exists($environment->repo_root . '/hooks/common/post-code-update')) {
-      $form['environment']['settings']['deploy']['acquia_hooks'] = array(
+  // If acquia cloud hooks are detected, add the option to fire them.
+  if (file_exists($environment->repo_root . '/hooks/common/post-code-update')) {
+    $form['environment']['settings']['deploy']['acquia_hooks'] = array(
         '#type' => 'checkbox',
         '#title' => t('Run Acquia "post-code-update" hook scripts for environment "%env".', array('%env' => $environment->name)),
         '#description' => 'Cloud hooks were detected in your project.  Check this box to run the "post-code-update" hook every time you deploy code to this environment.',
         '#default_value' => empty($node->nid)? 0: $environment->settings->deploy['acquia_hooks'],
-      );
-    }
-    $form['environment']['last_task'] = array(
-        '#type' => 'value',
-        '#value' => $environment->last_task,
     );
-
-    // Add our own submit handler
-    $form['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
+  $form['environment']['last_task'] = array(
+      '#type' => 'value',
+      '#value' => $environment->last_task,
+  );
+
+  // Add our own submit handler
+  $form['#submit'][] = 'devshop_projects_environment_settings_submit';
 }
 
 /**
@@ -384,6 +389,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state){
 
   // Save the environment record.
   // @TODO: Replace with an $environment->save();
+  dsm($form_state);
 
   // Ensure correct data types
   $environment = (object) $form_state['values']['environment'];
