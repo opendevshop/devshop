@@ -38,10 +38,12 @@ There are a few steps you need to take in the devshop front-end to get SSL going
     - Click **Edit**.
     - Select *apache_ssl* or *nginx_ssl* from **Web**.
     - Click **Save**.
+    - A *Verify* task will be queued on the server.
+    - Once the Server's *Verify* task is complete, a *Verify* task will be run on every environment hosted on that server.
 
 3. Configure your site to use SSL:
     - Visit the project dashboard for your project.
-    - Click the *Gear* icon next to the environment you wish to add SSL to.
+    - Click the *Environment Settings*  icon (![Environment Settings button.](images/settings.png "Push this button to open Environment Settings.")) on the environment you wish to add SSL to.
     - Click **Environment Settings**
     - Scroll down to **Encryption**. 
     - Select *Enable* if you want https to be optional.
