@@ -67,7 +67,7 @@ If you wish to use your own commercial certificate and key you will need to do t
     - When your certificate has been generated, download the files from the issuing authority and place in your temporary folder on your PC. You may have more than one .crt files, in this case you have a "bundle" or what we call a "certificate chain" that you need to add in aegir (see below).
     - Transfer all the files to /var/aegir/config/ssl.d/example.com. Rename the site .crt file to openssl.crt. If you have a certificate chain, install it in openssl_chain.crt. You should have at least three files in the directory (openssl.crt, openssl.key, openssl.csr, and optionally openssl_chain.crt).
 
-3. Click the environment's *Gear* icon and select *Verify*.
+3. Click the environment's *Environment Settings* icon ![Environment Settings button.](images/settings.png "Push this button to open Environment Settings.") icon and select *Verify*.
 
 You should now be able to access your site via https:// using your commercial certificate.
 

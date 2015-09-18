@@ -11,7 +11,7 @@ Adding a Password to an Environment
 To add a HTTP Password to an environment:
 
 1. Visit the Project Dashboard.
-2. Click an environment's *Gear* icon.
+2. Click an environment's *Environment Settings* icon ![Environment Settings button.](images/settings.png "Push this button to open Environment Settings.") icon.
 3. Click *Environment Settings*.
 4. Scroll toward the bottom of the form.
 5. Look for the section *HTTP Basic Authentication*.

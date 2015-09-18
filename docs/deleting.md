@@ -11,7 +11,7 @@ Environments, by default, must be *disabled* before being deleted.  This is to h
 To disable your environment:
 
 1. Find your environment in the web UI.
-2. Click the *Gear* icon on the environment box.
+2. Click the *Environment Settings* icon ![Environment Settings button.](images/settings.png "Push this button to open Environment Settings.") on the environment box.
 3. Click *Disable* at the bottom of the drop down.
 4. On the confirmation page, click the *Disable* button.
 
@@ -21,7 +21,7 @@ At this point, you can either *Enable* the environment or *Delete* the environme
 
 If you are sure you want to delete the environment:
 
-1. Click the *Gear* icon on your disabled environment.
+1. Click the *Environment Settings* icon ![Environment Settings button.](images/settings.png "Push this button to open Environment Settings.") on your disabled environment.
 2. Click *Delete*.
 3. On the confirmation page, click the *Delete* button.  *You will not be able to recover once you press this button.*
 4. Once the *Delete Task* runs, the environment will disappear from the Project Dashboard.
