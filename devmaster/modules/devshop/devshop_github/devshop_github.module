@@ -577,10 +577,23 @@ function devshop_github_webhook($project_node){
 
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub Runtime Error: ' . $e->getMessage());
-              $message .= 'GitHub Runtime Error: ' . $e->getMessage();
+              $message .= 'GitHub RunTimeException during PR Create: ' . $e->getMessage() . $e->getCode();
+              if ($e->getCode() == '409') {
+                $message .= "\n Branch is out of date! alert the developer!";
+
+                // Send a failed commit status to alert to developer
+                $params = new stdClass();
+                $params->state = 'failure';
+                $params->target_url = $project->git_repo_url;
+                $params->description = t('Branch is out of date! Merge from default branch.');
+                $params->context = 'devshop/merge';
+
+                // Post status to github
+                $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+
             } catch (Github\Exception\ValidationFailedException $e) {
               watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
-              $message .= 'GitHub Runtime Error: ' . $e->getMessage();
+              $message .= 'GitHub ValidationFailedException Error: ' . $e->getMessage();
             }
 
             // Insert PR record
@@ -683,7 +696,7 @@ function devshop_github_webhook($project_node){
                 $params = new stdClass();
                 $params->state = 'failure';
                 $params->target_url = $project->git_repo_url;
-                $params->description = t('Out of date branch! Merge from master.');
+                $params->description = t('Branch is out of date! Merge from default branch.');
                 $params->context = 'devshop/merge';
 
                 // Post status to github
