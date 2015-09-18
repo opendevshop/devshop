@@ -124,7 +124,7 @@ function devshop_projects_access($op, $node, $account) {
 function devshop_projects_menu() {
   //Settings page.
   $items['admin/devshop'] = array(
-    'title' => 'DevShop',
+    'title' => 'DevShop Settings',
     'description' => 'Default values for use in creation project',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_projects_settings_form'),
