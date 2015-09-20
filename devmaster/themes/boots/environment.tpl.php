@@ -1,4 +1,4 @@
-<div class="list-group environment <?php print $environment->class  ?>">
+<div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_names; ?>-<?php print $environment->name ?>">
 
     <?php if (!$page): ?>
     <!-- Environment Settings & Task Links -->
