@@ -27,6 +27,17 @@ include_once('tasks/deploy.inc');
  */
 function devshop_projects_init() {
   drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/devshop-style.css', 'theme');
+
+  // Add task checker
+  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
+
+  // If on projects page...
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    if ($node->type == 'project') {
+      drupal_add_js(array('devshopProject' => arg(1)), 'setting');
+    }
+  }
 }
 
 /**
@@ -210,7 +221,31 @@ function devshop_projects_menu() {
     'file' => 'inc/drush.inc',
     'type' => MENU_CALLBACK,
   );
+
+  // Ajax endpoint for reloads
+  $items['devshop/tasks'] = array(
+      'page callback' => 'devshop_projects_tasks_status_json',
+      'page arguments' => array(2),
+      'access arguments' => array('access task logs'),
+      'file' => 'tasks-ajax.inc',
+      'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
+  );
+
   return $items;
+}
+
+/**
+ * Turn bitmask integer error code into associative array
+ */
+function devshop_task_status_class($status) {
+  $codes = array(
+      HOSTING_TASK_SUCCESS => 'success',
+      HOSTING_TASK_QUEUED => 'default',
+      HOSTING_TASK_ERROR => 'danger',
+      HOSTING_TASK_PROCESSING => 'processing',
+      HOSTING_TASK_WARNING => 'warning',
+  );
+  return $codes[$status];
 }
 
 function devshop_project_logs_access() {
