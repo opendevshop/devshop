@@ -389,7 +389,6 @@ function devshop_projects_environment_settings_submit($form, &$form_state){
 
   // Save the environment record.
   // @TODO: Replace with an $environment->save();
-  dsm($form_state);
 
   // Ensure correct data types
   $environment = (object) $form_state['values']['environment'];
