@@ -52,6 +52,12 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
+.environment-link strong {
+    font-style: inherit;
+    color: inherit;
+    text-transform: inherit;
+}
+
 .environment-header {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -628,14 +634,6 @@ html.js fieldset.collapsed {
     z-index: 2;
 }
 
-
-.environment.active .environment-task-logs a.alert-link,
-.environment.active .environment-task-logs a.alert-link i,
-.environment.active .environment-task-logs .btn-default,
-.environment.active .environment-task-logs label {
-    color: #222;
-}
-
 .environment-tasks i.fa {
     width: 20px;
 }
@@ -662,4 +660,13 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .dropdown-settings.dropdown-menu {
     width: 255px;
     padding: 0px;
+}
+
+.alert-queued,
+.alert-processing {
+    background: #999;
+}
+.alert-queued .alert-link,
+.alert-processing .alert-link {
+    color: #333;
 }
