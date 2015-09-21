@@ -235,7 +235,7 @@ function devshop_projects_menu() {
 }
 
 /**
- * Turn bitmask integer error code into associative array
+ * Get the bootstrap class from hosting task status.
  */
 function devshop_task_status_class($status) {
   $codes = array(
@@ -246,6 +246,20 @@ function devshop_task_status_class($status) {
       HOSTING_TASK_WARNING => 'warning',
   );
   return $codes[$status];
+}
+
+/**
+ * Get the fontawesome icon from hosting task status.
+ */
+function devshop_task_status_icon($status) {
+  $icons = array(
+      HOSTING_TASK_SUCCESS => 'check',
+      HOSTING_TASK_QUEUED => 'cog',
+      HOSTING_TASK_ERROR => 'exclamation-circle',
+      HOSTING_TASK_PROCESSING => 'cog fa-spin',
+      HOSTING_TASK_WARNING => 'warning',
+  );
+  return $icons[$status];
 }
 
 function devshop_project_logs_access() {
