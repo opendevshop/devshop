@@ -18,6 +18,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
         'status' => $status,
         'type' => $task->task_type,
         'nid' => $task->nid,
+        'executed' => $task->executed,
     );
     devshop_environment_save_last_task($site->environment);
   }

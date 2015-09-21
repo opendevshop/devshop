@@ -445,6 +445,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
           'status' => $node->task_status,
           'type' => $node->task_type,
           'nid' => $node->nid,
+          'executed' => $node->executed,
       );
       devshop_environment_save_last_task($site->environment);
     }
