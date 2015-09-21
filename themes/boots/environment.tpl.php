@@ -351,8 +351,8 @@
             <div class="btn-group text">
                 <a href="<?php print $environment->last_task_info['url']; ?>" class="alert-link">
                     <i class="fa fa-<?php print $environment->last_task_info['icon'] ?>"></i>
-                    <?php print $environment->last_task_info['label'] ?>
-                    <em class="small"><?php print $environment->last_task_info['ago'] ?></em>
+                    <span><?php print $environment->last_task_info['label'] ?></span>
+                    <em class="small ago"><?php print $environment->last_task_info['ago'] ?></em>
 
                 </a>
             </div>
