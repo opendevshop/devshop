@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.5.1 (September 22, 2015)
+
+- Fixing a bug caused by our move away from the path alias "hosting/c/NAME": hosting_context_register() saves the context AND sets the path alias. We must do both.
+
 ## 0.5.0 (September 22, 2015)
 
 - Created new dedicated "environment" template file and improved theming.
