@@ -30,6 +30,9 @@ function devshop_projects_tasks_status_json($project_nid = '') {
     // Get all environments and their status.
     while ($result = db_fetch_object($query)) {
         $result->last_task = (object) unserialize($result->last_task);
+
+        // To test out constantly changing tasks, uncomment this line.
+//        $result->last_task->status = rand(-1, 3);
         $result->last_task->status_name = devshop_task_status_class($result->last_task->status);
 
         // Skip verify and password tasks unless they are running
