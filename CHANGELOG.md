@@ -1,5 +1,30 @@
 # Change Log
 
+## 0.5.0 (September 22, 2015)
+
+- Created new dedicated "environment" template file and improved theming.
+- Added task status display on environments for all tasks (not just tests).
+- Saving "last task" status for every environment.
+- Implemented new theme on "site/environment" nodes, adding task logs, devshop actions.
+- Improved "Login" link: Only one click is needed.
+- Improving overall theme with left-floated "tabs".
+- Cleanup "environment settings" page, going back to using site node edit page.
+- Major redesign of tasks pages:
+   - More visible, easier to access "Retry" button.
+   - Raise error or warning messages to top of page.
+- Major improvements to the main projects homepage: Now showing all environments and their status.
+- Adding "Aegir Download" module, allowing adding modules to project repos in one click.
+- Tiny change to the logo.
+- Fixes a problem with cloning sites for pull requests: if files moved, an error would throw, clone would roll back.  Now, a registry rebuild runs no matter what when cloning an environment during a pull request.
+- Added drush command "platform-delete" to allow command line removal of platforms from hostmaster.  Used mainly for the devshop upgrade process.
+- When a pull request is deleted and there is no site, trigger deleting of the platform.
+- When receiving a pull request notification, if the branch is behind master, GitHub API will return a failure.  When this happens, we notify the pull request.
+- All environment task status displays now change dynamically!
+- Adding logo as default theme logo and favicon.
+- Making "development mode" easier to set.
+- Improving upgrade process, allowing for multiple 0.x updates, and automatically queuing the deletion of old devmaster platforms.
+- Adding PHP configs post_max_size and upload_max_filesize as ansible variables.
+
 ## 0.4.1 (September 12, 2015)
 
 - Defaulting the Vagrant host to http://devshop.site
