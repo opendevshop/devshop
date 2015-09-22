@@ -4,7 +4,7 @@
  * Projects Page
  *
  * Callback that is invoked when the user points the brower to
- * hosting/projects. It displays a nice tabulated list of projects
+ * projects. It displays a nice tabulated list of projects
  * and cool things you can do with them.
  *
  * @TODO: Should we make this a list of teasers?  Hard to cram everything in
@@ -118,7 +118,7 @@ HTML;
 
   // No Projects
   if (empty($rows)){
-    $button = l(t('Create your first Project'), 'hosting/projects/add');
+    $button = l(t('Create your first Project'), 'projects/add');
     $output = <<<HTML
 <div class="empty">
     <div class="empty-message">You have no projects.</div>
@@ -154,7 +154,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   ctools_include('object-cache');
   $project_wizard_cache = ctools_object_cache_get('project', NULL);
   if ($page && isset($project_wizard_cache->project_nid) && $node->nid == $project_wizard_cache->project_nid){
-    drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
+    drupal_goto('projects/add/' . $project_wizard_cache->step);
   }
 
   return $node;
@@ -237,7 +237,7 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
     // Add Breadcrumbs
     $crumbs = array();
     $crumbs[] = l(t('Home'), '<front>');
-    $crumbs[] = l(t('Projects'), 'hosting/projects');
+    $crumbs[] = l(t('Projects'), 'projects');
     $crumbs[] = l($node->project->name, "node/" . $node->project->nid);
     drupal_set_breadcrumb($crumbs);
   }

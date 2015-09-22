@@ -58,7 +58,7 @@ function devshop_hosting_menu(){
  */
 function devshop_hosting_home(){
   if (user_is_logged_in()){
-    drupal_goto(variable_get('devshop_frontpage', 'hosting/projects'));
+    drupal_goto(variable_get('devshop_frontpage', 'projects'));
   } else {
     $output = '<p>' . t('Please log in.') . '</p>';
     return drupal_get_form('user_login');
