@@ -98,9 +98,10 @@ var devshopTasksUpdate = function (data) {
 
     // Set count
     var count = $('.list-group-item-queued', '.devshop-tasks').length + $('.list-group-item-processing', '.devshop-tasks').length;
-    if (count) {
-        $('.count', '.task-list-button').html(count);
+    if (count == 0) {
+      count = '';
     }
+    $('.count', '.task-list-button').html(count);
 
     setTimeout("devshopCheckTasks()", 1000);
 }
