@@ -681,3 +681,14 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     z-index: 2;
 }
 
+.project-environments a.alert-queued {
+    color: #777;
+}
+.project-environments a.alert-processing {
+    color: #333;
+    background-color: #ddd;
+}
+.project-environments a.alert-processing:hover {
+    color: #333;
+    background-color: #dedede;
+}

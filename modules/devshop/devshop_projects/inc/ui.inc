@@ -92,7 +92,8 @@ HTML;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
             'class' => 'btn btn-sm alert-' . $class,
-            'title' => $tasks[$environment->last_task['type']]['title'] . ': ' . _hosting_parse_error_code($environment->last_task['status'])
+            'title' => $tasks[$environment->last_task['type']]['title'] . ': ' . _hosting_parse_error_code($environment->last_task['status']),
+            'id' => 'badge-' . $environment->project_name . '-' . $environment->name,
         ),
         'html' => TRUE,
       ));
@@ -101,7 +102,7 @@ HTML;
     $row[] = <<<HTML
   <small class="pull-right text-muted"><i class="fa fa-cubes"></i> $count</small>
 
-<div class="btn-toolbar" role="toolbar">
+<div class="project-environments btn-toolbar" role="toolbar">
   <div class="btn-group btn-group-xs" role="group">
     $items
   </div>
