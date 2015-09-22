@@ -234,7 +234,7 @@ function devmaster_task_finalize() {
   $menu_name = variable_get('menu_primary_links_source', 'primary-links');
 
   // @TODO - seriously need to simplify this, but in our own code i think, not install profile api
-  $items = install_menu_get_items('hosting/projects');
+  $items = install_menu_get_items('projects');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;

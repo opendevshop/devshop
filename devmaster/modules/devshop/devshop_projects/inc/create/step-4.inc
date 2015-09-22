@@ -140,7 +140,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#type' => 'markup',

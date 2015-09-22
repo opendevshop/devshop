@@ -153,7 +153,7 @@ function devshop_projects_menu() {
   $items['admin/devshop/projects']['tab_parent'] = 'admin/devshop';
   $items['admin/devshop/projects']['weight'] = -10;
 
-  $items['hosting/projects'] = array(
+  $items['projects'] = array(
     'title' => t('Projects'),
     'description' => 'Display a list of all projects',
     'page callback' => 'devshop_projects_projects_page',
@@ -161,11 +161,11 @@ function devshop_projects_menu() {
     'menu_name' => 'primary-links',
     'weight' => 1,
   );
-  $items['hosting/projects/list'] = array(
+  $items['projects/list'] = array(
     'title' => t('All Projects'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
-  $items['hosting/projects/add'] = array(
+  $items['projects/add'] = array(
     'title' => 'Start New Project',
     'type' => MENU_LOCAL_TASK,
     'title' => t('Start a new Project'),
@@ -179,7 +179,7 @@ function devshop_projects_menu() {
   );
 
   // Ajax endpoint for reloads
-  $items['hosting/projects/add/status'] = array(
+  $items['projects/add/status'] = array(
     'page callback' => 'devshop_projects_add_status',
     'access callback' => 'node_access',
     'access arguments' => array('create', 'project'),
@@ -313,7 +313,7 @@ function devshop_project_environment_settings_page($project_node, $environment){
 }
 
 /**
- * Page Callback for hosting/projects/add
+ * Page Callback for projects/add
  */
 function devshop_projects_add($step = NULL){
   if ($step == NULL){
@@ -321,7 +321,7 @@ function devshop_projects_add($step = NULL){
     ctools_include('object-cache');
     $project_wizard_cache = ctools_object_cache_get('project', NULL);
     if (!empty($project_wizard_cache->step)) {
-      drupal_goto('hosting/projects/add/' . $project_wizard_cache->step);
+      drupal_goto('projects/add/' . $project_wizard_cache->step);
     }
   }
   return devshop_projects_create_wizard($step);
