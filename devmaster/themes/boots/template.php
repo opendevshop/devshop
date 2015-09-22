@@ -324,7 +324,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
   return <<<HTML
     <div class="task-list btn-group">
       <button type="button" class="btn btn-link task-list-button dropdown-toggle $class" data-toggle="dropdown" title="$logs">
-          $tasks_count
+        <span class="count">$tasks_count</span>
         <i class="fa fa-gear $task_class"></i>
       </button>
       $tasks
