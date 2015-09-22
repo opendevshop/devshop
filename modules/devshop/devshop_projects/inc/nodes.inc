@@ -265,7 +265,8 @@ function devshop_projects_insert($node) {
 
   // Save hosting context
   if (!$node->old_vid) {
-    hosting_context_register($node->nid, ($node->hosting_name) ? $node->hosting_name : $node->title);
+    module_load_include('module', 'path');
+    path_set_alias("node/{$node->nid}", "project/{$node->title}");
   }
 
   // @TODO: The wizard always creates the project before the environments.
