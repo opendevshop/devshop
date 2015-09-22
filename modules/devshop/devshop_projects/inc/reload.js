@@ -5,7 +5,7 @@ Drupal.behaviors.devshopReload = function() {
 
 var devshopCheckProject = function(){
     console.log('Checking...');
-  $.get('/hosting/projects/add/status/' + Drupal.settings.devshopReload.type, null, devshopReloadPage , 'json');
+  $.get('/projects/add/status/' + Drupal.settings.devshopReload.type, null, devshopReloadPage , 'json');
 }
 
 var devshopReloadPage = function(data){

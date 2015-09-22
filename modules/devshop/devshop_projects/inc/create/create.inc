@@ -25,7 +25,7 @@ function devshop_projects_create_wizard($step = NULL){
 
   // Setup Step.
   if ($step == NULL){
-    drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+    drupal_goto('projects/add/' . current(array_keys($form_info['order'])));
   }
 
   // Create default project object
@@ -69,7 +69,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
-      drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+      drupal_goto('projects/add/' . current(array_keys($form_info['order'])));
     }
   } else {
     $project->verify_error = NULL;
@@ -92,7 +92,7 @@ function devshop_projects_create_wizard($step = NULL){
 function devshop_projects_create_wizard_info(){
   return array(
     'id' => 'devshop_project_create',
-    'path' => "hosting/projects/add/%step",
+    'path' => "projects/add/%step",
     'show trail' => TRUE,
     'show back' => TRUE,
     'show cancel' => TRUE,
@@ -155,7 +155,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   ctools_object_cache_clear('project', $form_state['cache name']);
 
   // Redirect to projects list
-  $form_state['redirect'] = 'hosting/projects';
+  $form_state['redirect'] = 'projects';
 
   // If we have a project node, create a "delete" hosting task
   if (!empty($project->project_nid)){

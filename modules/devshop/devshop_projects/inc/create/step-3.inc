@@ -200,7 +200,7 @@ function devshop_projects_save_environments($form, &$form_state) {
 
   // Go back to the same page.
   if ($form_state['clicked_button']['#name'] == 'add_environment') {
-    drupal_goto('hosting/projects/add/environments');
+    drupal_goto('projects/add/environments');
   }
 }
 
