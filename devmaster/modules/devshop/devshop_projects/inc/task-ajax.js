@@ -65,8 +65,19 @@ var devshopTasksUpdate = function (data) {
 
             // Change icon.
             $('.fa', id).attr('class', 'fa fa-' + value.last_task.icon);
-
         }
+
+        // Update global tasks list.
+        var task_id = '#task-' + value.project + '-' + value.name;
+
+        // Set class of badge
+        $(task_id).attr('class', 'list-group-item list-group-item-' + value.last_task.status_name);
+
+        // Set value of "ago"
+        $('small.task-ago', task_id).html(value.last_task.ago);
+
+        // Change icon.
+        $('.fa', task_id).attr('class', 'fa fa-' + value.last_task.icon);
 
     });
     setTimeout("devshopCheckTasks()", 1000);
