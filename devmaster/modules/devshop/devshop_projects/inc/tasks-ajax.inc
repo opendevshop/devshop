@@ -14,7 +14,9 @@ function devshop_projects_tasks_status_json($project_nid = '') {
             project_nid,
             name,
             last_task,
-            n.title as project
+            n.title as project,
+            site,
+            platform
         FROM {hosting_devshop_project_environment} h
         LEFT JOIN {node} n ON h.project_nid = n.nid
 
@@ -43,7 +45,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
 //        }
 
         // Override "ago" text.
-        $result->last_task->ago = format_interval(time() - $result->last_task->executed, 1) .' '. t('ago') . '</em>';
+        $result->last_task->ago = format_interval(time() - $result->last_task->executed, 1) .' '. t('ago');
         if ($result->last_task->status == HOSTING_TASK_QUEUED) {
             $result->last_task->ago = t('Queued');
         }
@@ -52,7 +54,8 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         }
 
         // Set task type
-        $result->last_task->type_name = $task_types['site'][$result->last_task->type]['title'];
+        $task_ref_type = $result->site == 0? 'platform': 'site';
+        $result->last_task->type_name = $task_types[$task_ref_type][$result->last_task->type]['title'];
 
         // Get Icon
         $result->last_task->icon = devshop_task_status_icon($result->last_task->status);
