@@ -13,7 +13,7 @@ include 'drush/contexts.inc';
  */
 function devshop_projects_hosting_task_update_status($task, $status) {
   $site = $task->ref;
-  if ($site->type == 'site' && isset($site->environment)) {
+  if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
     $site->environment->last_task = array(
         'status' => $status,
         'type' => $task->task_type,
