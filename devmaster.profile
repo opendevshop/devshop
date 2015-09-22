@@ -46,6 +46,7 @@ function devmaster_profile_modules() {
     'hosting_site_backup_manager',
     'sshkey',
     'aegir_ssh',
+    'aegir_download',
   );
 }
 
