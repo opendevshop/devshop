@@ -29,18 +29,16 @@ function devshop_projects_init() {
   drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/devshop-style.css', 'theme');
 
   // If on the projects page, or a project or site node...
-  if (arg(0) == 'node' && is_numeric(arg(1)) || $_REQUEST['q'] == 'hosting/projects') {
-    if (arg(0) == 'node') {
-      $node = node_load(arg(1));
-      if ($node->type == 'project' || $node->type == 'site') {
-        drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
-        drupal_add_js(array('devshopProject' => arg(1)), 'setting');
-      }
-    }
-    // If on the projects list page...
-    else {
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    if ($node->type == 'project' || $node->type == 'site') {
       drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
+      drupal_add_js(array('devshopProject' => arg(1)), 'setting');
     }
+  }
+  // If on the projects list page...
+  else {
+    drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
   }
 }
 
