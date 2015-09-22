@@ -32,8 +32,12 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         $result->last_task = (object) unserialize($result->last_task);
         $result->last_task->status_name = devshop_task_status_class($result->last_task->status);
 
-        // Skip verify and password tasks
-//        if ($result->last_task->task)
+        // Skip verify and password tasks unless they are running
+//        if ($result->last_task->status != HOSTING_TASK_PROCESSING && $result->last_task->status != HOSTING_TASK_QUEUED) {
+//            if ($result->last_task->type == 'verify' || $result->last_task->type == 'login-reset') {
+//                continue;
+//            }
+//        }
 
         // Override "ago" text.
         $result->last_task->ago = format_interval(time() - $result->last_task->executed, 1) .' '. t('ago') . '</em>';
