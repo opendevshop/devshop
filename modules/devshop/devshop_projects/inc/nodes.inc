@@ -267,6 +267,7 @@ function devshop_projects_insert($node) {
   if (!$node->old_vid) {
     module_load_include('module', 'path');
     path_set_alias("node/{$node->nid}", "project/{$node->title}");
+    db_query("INSERT INTO {hosting_context} (nid, name) VALUES (%d, '%s')", $node->nid, "project_{$node->title}");
   }
 
   // @TODO: The wizard always creates the project before the environments.
