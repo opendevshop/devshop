@@ -662,11 +662,22 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     padding: 0px;
 }
 
-.alert-queued,
-.alert-processing {
-    background: #999;
+.alert-queued {
+    background: #ddd;
 }
-.alert-queued .alert-link,
+
+.alert-queued .alert-link {
+    color: #777;
+}
 .alert-processing .alert-link {
     color: #333;
 }
+
+.processing {
+    z-index: 1;
+}
+.environment-task-logs > div {
+    position: relative;
+    z-index: 2;
+}
+
