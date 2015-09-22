@@ -32,7 +32,7 @@ var devshopTasksUpdate = function (data) {
         }
 
         // Set value of label span
-        $('.alert-link > span', $alert_div).html(value.last_task.type);
+        $('.alert-link > span', $alert_div).html(value.last_task.type_name);
 
         // Set value of "ago"
         $('.alert-link > .ago', $alert_div).html(value.last_task.ago);
