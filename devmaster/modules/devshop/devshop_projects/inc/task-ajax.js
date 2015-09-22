@@ -22,27 +22,27 @@ var devshopTasksUpdate = function (data) {
 
         if (Drupal.settings.devshopProject) {
 
-        // Set class of wrapper div
-        $alert_div.attr('class', new_class);
+            // Set class of wrapper div
+            $alert_div.attr('class', new_class);
 
-        // Set or remove active class from environment div.
-        if (value.last_task.status_name == 'queued' || value.last_task.status_name == 'processing') {
-            $(id).addClass('active');
-        }
-        else {
-            $(id).removeClass('active');
-        }
+            // Set or remove active class from environment div.
+            if (value.last_task.status_name == 'queued' || value.last_task.status_name == 'processing') {
+                $(id).addClass('active');
+            }
+            else {
+                $(id).removeClass('active');
+            }
 
-        // Set value of label span
-        $('.alert-link > span', $alert_div).html(value.last_task.type_name);
+            // Set value of label span
+            $('.alert-link > span', $alert_div).html(value.last_task.type_name);
 
-        // Set value of "ago"
-        $('.alert-link > .ago', $alert_div).html(value.last_task.ago);
+            // Set value of "ago"
+            $('.alert-link > .ago', $alert_div).html(value.last_task.ago);
 
-        // Change icon.
-        $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);
+            // Change icon.
+            $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);
 
-        // Change "processing" div
+            // Change "processing" div
         }
 
     });
