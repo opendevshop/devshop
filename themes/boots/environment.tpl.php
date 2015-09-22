@@ -359,10 +359,10 @@
         </div>
         <?php endif; ?>
 
-        <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-info <?php if ($environment->processing) print 'active'; ?>" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+        <span class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                 <span class="sr-only"></span>
             </div>
-        </div>
+        </span>
     </div>
 </div>
