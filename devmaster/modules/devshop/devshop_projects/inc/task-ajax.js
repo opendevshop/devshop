@@ -23,6 +23,14 @@ var devshopTasksUpdate = function (data) {
         // Set class of wrapper div
         $alert_div.attr('class', new_class);
 
+        // Set or remove active class from environment div.
+        if (value.last_task.status_name == 'queued' || value.last_task.status_name == 'processing') {
+            $(id).addClass('active');
+        }
+        else {
+            $(id).removeClass('active');
+        }
+
         // Set value of label span
         $('.alert-link > span', $alert_div).html(value.last_task.type);
 
