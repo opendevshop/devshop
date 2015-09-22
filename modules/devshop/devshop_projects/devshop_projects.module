@@ -171,7 +171,7 @@ function devshop_projects_menu() {
     'title' => t('Start a new Project'),
     'title callback' => 'check_plain',
     'page callback' => 'devshop_projects_add',
-    'page arguments' => array(3),
+    'page arguments' => array(2),
     'access arguments' => array('create project'),
     'description' => 'Start a new Drupal website project.',
     'file' => 'create.inc',
