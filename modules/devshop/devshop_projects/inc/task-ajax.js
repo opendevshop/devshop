@@ -33,6 +33,14 @@ var devshopTasksUpdate = function (data) {
                 $(id).removeClass('active');
             }
 
+            // Remove any status classes and add current status
+            $(id).removeClass('task-queued');
+            $(id).removeClass('task-processing');
+            $(id).removeClass('task-success');
+            $(id).removeClass('task-error');
+            $(id).removeClass('task-warning');
+            $(id).addClass('task-' + value.last_task.status_name);
+
             // Set value of label span
             $('.alert-link > span', $alert_div).html(value.last_task.type_name);
 
