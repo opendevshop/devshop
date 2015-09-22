@@ -20,6 +20,8 @@ var devshopTasksUpdate = function (data) {
 
         var $alert_div = $('.environment-task-logs > div', id);
 
+        if (Drupal.settings.devshopProject) {
+
         // Set class of wrapper div
         $alert_div.attr('class', new_class);
 
@@ -41,6 +43,7 @@ var devshopTasksUpdate = function (data) {
         $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);
 
         // Change "processing" div
+        }
 
     });
     setTimeout("devshopCheckTasks()", 1000);
