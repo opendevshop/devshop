@@ -32,6 +32,9 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         $result->last_task = (object) unserialize($result->last_task);
         $result->last_task->status_name = devshop_task_status_class($result->last_task->status);
 
+        // Skip verify and password tasks
+//        if ($result->last_task->task)
+
         // Override "ago" text.
         $result->last_task->ago = format_interval(time() - $result->last_task->executed, 1) .' '. t('ago') . '</em>';
         if ($result->last_task->status == HOSTING_TASK_QUEUED) {
@@ -42,7 +45,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         }
 
         // Set task type
-        $result->last_task->type = $task_types['site'][$result->last_task->type]['title'];
+        $result->last_task->type_name = $task_types['site'][$result->last_task->type]['title'];
 
         // Get Icon
         $result->last_task->icon = devshop_task_status_icon($result->last_task->status);
