@@ -80,5 +80,27 @@ var devshopTasksUpdate = function (data) {
         $('.fa', task_id).attr('class', 'fa fa-' + value.last_task.icon);
 
     });
+
+    // Activate or de-activate global tasks icon.
+    var gear_class = 'fa fa-gear';
+    if ($('.list-group-item-queued', '.devshop-tasks').length) {
+        console.log('queued tasks found');
+        gear_class += ' active-task';
+    }
+    if ($('.list-group-item-processing', '.devshop-tasks').length) {
+        console.log('processing tasks found');
+        gear_class += '  active-task fa-spin';
+    }
+
+    // Set class for global gear icon.
+    $('i.fa', '.task-list-button').attr('class', gear_class);
+    console.log($('i.fa', '.task-list-button'));
+
+    // Set count
+    var count = $('.list-group-item-queued', '.devshop-tasks').length + $('.list-group-item-processing', '.devshop-tasks').length;
+    if (count) {
+        $('.count', '.task-list-button').html(count);
+    }
+
     setTimeout("devshopCheckTasks()", 1000);
 }
