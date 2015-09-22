@@ -240,7 +240,7 @@ function devshop_projects_menu() {
 function devshop_task_status_class($status) {
   $codes = array(
       HOSTING_TASK_SUCCESS => 'success',
-      HOSTING_TASK_QUEUED => 'default',
+      HOSTING_TASK_QUEUED => 'queued',
       HOSTING_TASK_ERROR => 'danger',
       HOSTING_TASK_PROCESSING => 'processing',
       HOSTING_TASK_WARNING => 'warning',

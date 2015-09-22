@@ -104,26 +104,27 @@ function boots_preprocess_environment(&$vars)
 
     switch ($task->task_status){
       case HOSTING_TASK_SUCCESS:
-        $icon = 'check text-success';
+        $icon = 'check';
         $item_class = 'success';
         break;
 
       case HOSTING_TASK_ERROR;
-        $icon = 'exclamation-circle text-danger';
+        $icon = 'exclamation-circle';
         $item_class = 'danger';
         break;
       case HOSTING_TASK_WARNING:
-        $icon = 'warning text-warning';
+        $icon = 'warning';
         $item_class = 'warning';
         break;
 
       case HOSTING_TASK_PROCESSING;
       case HOSTING_TASK_QUEUED;
-        $icon = 'cog text-info';
+        $icon = 'cog';
+        $item_class = 'queued';
         if ($environment->processing) {
           $icon .= ' fa-spin';
+          $item_class = 'processing';
         }
-        $item_class = 'default';
         break;
     }
 
