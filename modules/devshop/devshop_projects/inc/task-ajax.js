@@ -52,6 +52,21 @@ var devshopTasksUpdate = function (data) {
 
             // Change "processing" div
         }
+        // Projects page.
+        else {
+            var id = '#badge-' + value.project + '-' + value.name;
+
+            // Set class of badge
+            $(id).attr('class', 'btn btn-small alert-' + value.last_task.status_name);
+
+            // Set title
+            var title = value.last_task.type_name + ': ' + value.last_task.status_name;
+            $(id).attr('title', title);
+
+            // Change icon.
+            $('.fa', id).attr('class', 'fa fa-' + value.last_task.icon);
+
+        }
 
     });
     setTimeout("devshopCheckTasks()", 1000);
