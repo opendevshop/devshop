@@ -79,17 +79,14 @@ var devshopTasksUpdate = function (data) {
     // Activate or de-activate global tasks icon.
     var gear_class = 'fa fa-gear';
     if ($('.list-group-item-queued', '.devshop-tasks').length) {
-        console.log('queued tasks found');
         gear_class += ' active-task';
     }
     if ($('.list-group-item-processing', '.devshop-tasks').length) {
-        console.log('processing tasks found');
         gear_class += '  active-task fa-spin';
     }
 
     // Set class for global gear icon.
-    $('i.fa', '.task-list-button').attr('class', gear_class);
-    console.log($('i.fa', '.task-list-button'));
+    $('i.fa', '#navbar-main .task-list-button').attr('class', gear_class);
 
     // Set count
     var count = $('.list-group-item-queued', '.devshop-tasks').length + $('.list-group-item-processing', '.devshop-tasks').length;
