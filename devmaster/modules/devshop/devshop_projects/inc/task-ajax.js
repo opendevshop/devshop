@@ -4,12 +4,7 @@ Drupal.behaviors.devshopTasks = function() {
 }
 
 var devshopCheckTasks = function(){
-    if (Drupal.settings.devshopProject) {
-        $.get('/devshop/tasks/' + Drupal.settings.devshopProject, null, devshopTasksUpdate , 'json');
-    }
-    else {
-        $.get('/devshop/tasks', null, devshopTasksUpdate , 'json');
-    }
+    $.get('/devshop/tasks', null, devshopTasksUpdate , 'json');
 }
 
 var devshopTasksUpdate = function (data) {
