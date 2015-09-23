@@ -10,6 +10,8 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   $project = $project_node->project;
   $deploy_settings = $project_node->project->settings->deploy;
 
+  print "TWT";
+  print_r($project_node);
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
 
