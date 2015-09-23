@@ -206,7 +206,7 @@ class Upgrade extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<fg=red>Upgrade failed.</>  The command failed:");
       $output->writeln($cmd);
-      $output->writeln();
+      $output->writeln('');
       return;
     }
 
