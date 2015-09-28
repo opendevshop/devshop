@@ -9,6 +9,7 @@ devshop_version:              0.x
 vagrant_development: FALSE
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
+vagrant_install_script_args: [--playbook=/vagrant, --server-webserver=nginx]
 
 remote_vagrant_private_network_ip: 10.10.10.11
 remote_server_hostname: devshop.remote
