@@ -22,3 +22,31 @@ supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner
 motd_path: /etc/update-motd.d/95-ansible
 
 bashrc_path: /etc/bash.bashrc
+
+packages:
+  - mysql-server
+  - php5
+  - php5-cli
+  - php5-curl
+  - php5-gd
+  - php5-mysql
+  - php5-mcrypt
+  - php-pear
+  - postfix
+  - sudo
+  - rsync
+  - git-core
+  - unzip
+  - vim
+  - git
+  - curl
+  - supervisor
+  - python-mysqldb
+  - openssl
+
+apache_packages:
+  - apache2
+
+nginx_packages:
+  - nginx
+  - php5-fpm

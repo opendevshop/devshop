@@ -91,6 +91,9 @@ fi
 echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
+echo "Using webserver $SERVER_WEBSERVER"
+echo $LINE
+
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
     echo "This script must be run as root.  Try 'sudo ./install.sh'." 1>&2

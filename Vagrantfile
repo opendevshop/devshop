@@ -39,7 +39,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     devmaster.vm.provision "shell",
       path: settings["vagrant_install_script"],
       args: ["--playbook-path=/vagrant", "--server-webserver=" + settings["server_webserver"]]
-      args: "/vagrant"
 
     # Prepare development environment
     if (development_mode)
