@@ -20,6 +20,8 @@ remote2_server_hostname: devshop.remote2
 # DEVSHOP variables
 # The hostname will be overridden by install.sh to match the server it is run on.
 server_hostname: devshop.site
+server_webserver: apache
+
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
 php_post_max_size: 32M
@@ -47,3 +49,5 @@ aegir_user_uid: 12345
 
 drush_path: /usr/local/bin/drush
 devshop_cli_path: /usr/local/bin/devshop
+
+vagrant_install_script_args: [--playbook=/vagrant, --server-webserver=nginx]
