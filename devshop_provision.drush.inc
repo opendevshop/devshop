@@ -209,6 +209,10 @@ function devshop_provision_provision_apache_vhost_config($uri, $data, Provision_
   $environment = d()->environment['name'];
   $project = d()->environment['project_name'];
 
+  if (empty($environment) || empty($project)) {
+    return;
+  }
+
   return <<<PHP
   # Saving project and environment server variables
   SetEnv DEVSHOP_PROJECT $project
@@ -234,6 +238,10 @@ function devshop_provision_provision_nginx_vhost_config($data) {
 
   $environment = d()->environment['name'];
   $project = d()->environment['project_name'];
+
+  if (empty($environment) || empty($project)) {
+    return;
+  }
 
   return <<<PHP
   # Saving project and environment server variables
