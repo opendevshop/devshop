@@ -49,5 +49,3 @@ aegir_user_uid: 12345
 
 drush_path: /usr/local/bin/drush
 devshop_cli_path: /usr/local/bin/devshop
-
-vagrant_install_script_args: [--playbook=/vagrant, --server-webserver=nginx]

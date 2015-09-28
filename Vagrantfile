@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Set SH as our provisioner
     devmaster.vm.provision "shell",
       path: settings["vagrant_install_script"],
-      args: settings["vagrant_install_script_args"]
+      args: ["--playbook-path=/vagrant", "--server-webserver=" + settings["server_webserver"]]
       args: "/vagrant"
 
     # Prepare development environment
