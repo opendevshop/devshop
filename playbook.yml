@@ -95,7 +95,7 @@
 
     - name: Enable mod ssl
       command: a2enmod ssl
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family == "Debian" and server_webserver == "apache"
 
     # Apache Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Apache Config
