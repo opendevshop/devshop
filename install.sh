@@ -68,9 +68,9 @@ while [ $# -gt 0 ]; do
       echo " Installing webserver $SERVER_WEBSERVER";
       ;;
     *)
-      printf "***************************\n"
-      printf "* Error: Invalid argument.*\n"
-      printf "***************************\n"
+      echo $LINE
+      echo " Error: Invalid argument for --server-webserver."
+      echo $LINE
       exit 1
   esac
   shift
@@ -91,7 +91,7 @@ fi
 echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
-echo "Using webserver $SERVER_WEBSERVER"
+echo " Using webserver $SERVER_WEBSERVER"
 echo $LINE
 
 # Fail if not running as root (sudo)
