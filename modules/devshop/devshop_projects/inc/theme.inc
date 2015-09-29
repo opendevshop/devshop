@@ -138,13 +138,11 @@ function template_preprocess_devshop_project_nav(&$vars){
       $vars['branches_class'] = 'btn-danger';
       $vars['branches_items'][] = t('There was a problem refreshing branches and tags.');
       $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->verify->nid);
-      $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
     }
     // If branches are 0 and last verifying has completed... This should never happen, because the task would error out.
     elseif ($node->verify->task_status == HOSTING_TASK_SUCCESS) {
       $vars['branches_show_label'] = TRUE;
       $vars['branches_label'] = t('No branches found!');
-      $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
     }
   }
   // If there are branches... build the branch items
@@ -158,7 +156,6 @@ function template_preprocess_devshop_project_nav(&$vars){
     }
   }
 
-  $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
 
   if ($vars['tags_count']){
 //      <li class="divider"></li>
@@ -184,5 +181,10 @@ function template_preprocess_devshop_project_nav(&$vars){
   }
   if (arg(2) == 'logs') {
     $vars['logs_active'] = 'active';
+  }
+
+  // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
+  if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
+    $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
   }
 }
