@@ -703,3 +703,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     color: #000;
     background-color: #ccc;
 }
+
+.refresh-link {
+    font-size: 0.8em;
+    color: #444;
+    white-space: nowrap;
+}
