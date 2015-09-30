@@ -187,7 +187,7 @@ class Upgrade extends Command
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
     // If they say no, exit.
-    if (!$helper->ask($input, $output, $question)) {
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
       $output->writeln("<fg=red>Upgrade cancelled.</>");
       $output->writeln('');
       return;
@@ -219,7 +219,7 @@ class Upgrade extends Command
     $question = new ConfirmationQuestion("STEP 2: Run playbook (y/n) ", false);
 
     // If they say no, exit.
-    if (!$helper->ask($input, $output, $question)) {
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
       $output->writeln("<fg=red>Upgrade cancelled.</>");
       $output->writeln('');
       return;
@@ -254,7 +254,7 @@ class Upgrade extends Command
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
 
     // If they say no, exit.
-    if (!$helper->ask($input, $output, $question)) {
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
       $output->writeln("<fg=red>Old devmaster platform was not deleted.</> You should find and delete the platform at {$devmaster_root}");
       $output->writeln('');
       return;
