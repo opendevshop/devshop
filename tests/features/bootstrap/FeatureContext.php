@@ -20,4 +20,37 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
   public function __construct() {
   }
 
+  /**
+   * @Then then field :field should have the value :value
+   */
+  public function thenFieldShouldHaveTheValue($field, $value)
+  {
+    $field = $this->fixStepArgument($field);
+    $value = $this->fixStepArgument($value);
+
+    $field_object = $this->getSession()->getPage()->findField($field);
+
+    if (null === $field_object) {
+      throw new \Exception('No field found with id|name|label|value ' . $field);
+    }
+
+    if ($field_object->getAttribute('value') != $value) {
+      $current_value = $field_object->getAttribute('value');
+      throw new \Exception("The field '$field' has the value '$current_value', not '$value'.");
+    }
+  }
+
+  /**
+   * Returns fixed step argument (with \\" replaced back to ").
+   *
+   * A copy from MinkContext
+   *
+   * @param string $argument
+   *
+   * @return string
+   */
+  protected function fixStepArgument($argument)
+  {
+    return str_replace('\\"', '"', $argument);
+  }
 }

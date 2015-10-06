@@ -9,7 +9,7 @@ default:
     Behat\MinkExtension:
       goutte: ~
       selenium2: ~
-      base_url: http://devshop.local
+      base_url: http://devshop.site
       show_cmd: firefox %s
     Drupal\DrupalExtension:
       blackbox: ~
