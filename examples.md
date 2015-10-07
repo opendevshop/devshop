@@ -31,12 +31,12 @@ Each remote server can have one or many services on it.  You can connect a serve
 Additional web servers can be connected in a "cluster" or a "pack".  This is a feature of Aegir.  See http://community.aegirproject.org/content/web-clusters for more information on this configuration.
 
 NOTE: Remote servers must be setup and configured manually, for now.  Work is progressing to make installation
-of remote servers fully automatic.  See http://community.aegirproject.org/node/30 and http://community.aegirproject.org/node/396 for more information on aegir remote servers.
+of remote servers fully automatic.  See [Remote servers (multiserver)](http://community.aegirproject.org/node/30) and [Remote webserver configuration](http://community.aegirproject.org/node/396) for more information on aegir remote servers.
 
 
 Amazon Web Services Example
 ---------------------------
 
-![Network Diagram for DevShop on AWS](https://raw.githubusercontent.com/opendevshop/devshop/0.x/help/devshop-on-aws.png "DevShop on AWS")
+![Network Diagram for DevShop on AWS](https://raw.githubusercontent.com/opendevshop/devshop/0.x/docs/devshop-on-aws.png "DevShop on AWS")
 
-https://creately.com/diagram/i8bky9y71/1ZGBJkfo7bjh1fidQYCKFjJ89D8%3D
+[Network Diagram for DevShop on AWS on creately](https://creately.com/diagram/i8bky9y71/1ZGBJkfo7bjh1fidQYCKFjJ89D8%3D)
