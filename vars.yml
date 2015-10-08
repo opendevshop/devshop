@@ -1,6 +1,6 @@
 
 # The version to install.
-devshop_version:              0.x
+devshop_version:              0.5.2
 
 # VAGRANT variables.
 # Set development to TRUE if you wish to contribute to devshop development.
