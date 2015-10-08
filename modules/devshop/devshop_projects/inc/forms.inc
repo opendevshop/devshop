@@ -284,8 +284,16 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id){
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id)
 {
 
-  // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
+  // Get the node object for this form.
   $node = $form['#node'];
+
+  // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
+  if (!empty($node->project) && arg(1) == $node->nid) {
+    drupal_goto("node/{$node->project->nid}/edit/{$node->environment->name}");
+    exit;
+  }
+
+  // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
   $environment = (object) $node->environment;
 
   // Remove aegir's helpful info panel.
