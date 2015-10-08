@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.5.2 (October 8, 2015)
+
+- `devshop:upgrade` command can now be run interactively.
+- Fixed a bug preventing saving of Aegir data on "environment settings" page, when using the site node edit form.  We moved the environment settings page back to the node/{project_nid}/edit/{environment_name} URL for now.
+
 ## 0.5.1 (September 22, 2015)
 
 - Fixing a bug caused by our move away from the path alias "hosting/c/NAME": hosting_context_register() saves the context AND sets the path alias. We must do both.
