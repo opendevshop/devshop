@@ -291,7 +291,12 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Remove aegir's helpful info panel.
   unset($form['info']);
 
-  $form['environment'] = array(
+    // Help Text
+    $form['note'] = array(
+      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
+    );
+
+    $form['environment'] = array(
       '#weight' => -9,
       '#tree' => true,
   );
