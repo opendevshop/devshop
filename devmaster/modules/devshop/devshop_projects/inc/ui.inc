@@ -168,7 +168,7 @@ function devshop_environment_links($environment) {
   // Add environment settings link
   $site = node_load($environment->site);
   if (node_access('update', $site)) {
-    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->site}/edit", array(
+    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array(
       'html' => TRUE,
     ));
     $items[] = '<div class="divider"></div>';

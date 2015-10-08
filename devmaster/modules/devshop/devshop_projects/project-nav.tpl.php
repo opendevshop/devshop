@@ -21,11 +21,11 @@
             <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
                 <li class="divider"></li>
             <?php endif; ?>
-            <?php foreach ($project->environments as $environment): $nid = empty($environment->site)? $environment->platform: $environment->site ?>
-                <li><a href="<?php print url("node/{$nid}/edit");?>">
-                    <?php print $environment->name; ?>
-                    <?php print t('Environment Settings'); ?>
-                </a></li>
+
+            <li><label><?php print t('Environment Settings'); ?></label></li>
+            <?php foreach ($project->environments as $environment): ?>
+            <li>
+              <?php print l($environment->name, "node/{$project->nid}/edit/{$environment->name}"); ?>
             </li>
             <?php endforeach; ?>
           </ul>
