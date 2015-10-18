@@ -6,6 +6,15 @@
 function devshop_permissions_user_default_permissions() {
   $permissions = array();
 
+  // Exported permission: access content
+  $permissions['access content'] = array(
+    'name' => 'access content',
+    'roles' => array(
+      '0' => 'administrator',
+      '1' => 'authenticated user',
+    ),
+  );
+
   // Exported permission: access disabled sites
   $permissions['access disabled sites'] = array(
     'name' => 'access disabled sites',
@@ -618,7 +627,7 @@ function devshop_permissions_user_default_permissions() {
     'name' => 'manage own SSH public keys',
     'roles' => array(
       '0' => 'administrator',
-      '1' => 'developer',
+      '1' => 'authenticated user',
     ),
   );
 
@@ -679,7 +688,7 @@ function devshop_permissions_user_default_permissions() {
     'name' => 'view own SSH public keys',
     'roles' => array(
       '0' => 'administrator',
-      '1' => 'developer',
+      '1' => 'authenticated user',
     ),
   );
 
