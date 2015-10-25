@@ -265,9 +265,16 @@ function devshop_projects_insert($node) {
 
   // Save hosting context
   if (!$node->old_vid) {
-    module_load_include('module', 'path');
-    path_set_alias("node/{$node->nid}", "project/{$node->title}");
-    db_query("INSERT INTO {hosting_context} (nid, name) VALUES (%d, '%s')", $node->nid, $node->title);
+
+    // Save the "hosting context", which includes setting the path alias.
+    $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
+    hosting_context_register($node->nid, $name);
+
+    // Delete the alias created by hosting_context_register.
+    path_set_alias(NULL, "hosting/c/$name");
+
+    // Add a new path alias.
+    path_set_alias("node/{$node->nid}", "project/$name");
   }
 
   // @TODO: The wizard always creates the project before the environments.
