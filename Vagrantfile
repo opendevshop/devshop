@@ -76,6 +76,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 end
 
+if (ARGV[0] == 'destroy')
+  print "DEVSHOP: Vagrant Destroy detected. \n"
+  print "DEVSHOP: You must delete the 'source/devmaster-0.x/profiles/devmaster' folder before you 'vagrant up' again. \n"
+end
+
 class NoSettingsException < Vagrant::Errors::VagrantError
   error_message('Project settings file not found. Create attributes.json file then try again.')
 end
