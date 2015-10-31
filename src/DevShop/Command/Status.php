@@ -27,12 +27,7 @@ class Status extends Command
     // Check for devshop
     $output->write("<comment>Checking for devshop...  </comment>");
 
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $version = file_get_contents('/var/aegir/.devshop-version');
-    }
-    else {
-      $version = "unknown";
-    }
+    $version = $this->getApplication()->getVersion();
     $output->write("<info>Devshop is installed.</info>  ");
     $output->writeln("DevShop Version: $version");
 
