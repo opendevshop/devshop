@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.5.3 (November 2, 2015)
+
+- Fixing bad version number in getdevshop.com.
+- Docs cleanup from @yograf (Pull Request #25)
+- When calling "vagrant destroy", we now notify you that you need to delete the existing sites/devshop.local folder.
+- Fix for Issue #26: "Error: cannot load node id 0 to find its context"
+
 ## 0.5.2 (October 8, 2015)
 
 - `devshop:upgrade` command can now be run interactively.
