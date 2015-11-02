@@ -6,6 +6,8 @@
 - Docs cleanup from @yograf (Pull Request #25)
 - When calling "vagrant destroy", we now notify you that you need to delete the existing sites/devshop.local folder.
 - Fix for Issue #26: "Error: cannot load node id 0 to find its context"
+- Adding devshop_permissions module to (finally) provide default permissions. 
+- Adding "features.module" to devshop so we can provide exported permissions.
 
 ## 0.5.2 (October 8, 2015)
 
