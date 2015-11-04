@@ -27,9 +27,17 @@ class Status extends Command
     // Check for devshop
     $output->write("<comment>Checking for devshop...  </comment>");
 
-    $version = $this->getApplication()->getVersion();
-    $output->write("<info>Devshop is installed.</info>  ");
-    $output->writeln("DevShop Version: $version");
+    // Check for devshop server install.
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $version = file_get_contents('/var/aegir/.devshop-version');
+      $output->write("<info>Devshop is installed.</info>  ");
+      $output->writeln("DevShop Version: $version");
+    }
+    else {
+      $version = trim($this->getApplication()->getVersion());
+      $output->write("<info>DevShop CLI is installed.</info>  ");
+      $output->writeln("DevShop CLI Version: $version");
+    }
 
     // Check for Drush
     $output->write("<comment>Checking for Drush...  </comment>");
