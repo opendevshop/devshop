@@ -30,7 +30,7 @@ $process = new Process('git symbolic-ref -q HEAD || git describe --tags --exact-
 $process->run();
 $version = str_replace('refs/heads/', '', $process->getOutput());
 
-$application = new Application('DevShop', $version);
+$application = new Application('DevShop CLI', $version);
 $application->add(new Status());
 $application->add(new Login());
 $application->add(new Install());
