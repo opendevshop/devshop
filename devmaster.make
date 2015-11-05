@@ -18,6 +18,7 @@ projects[hostmaster][subdir] = ""
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][version] = "3.1"
+projects[hosting][subdir] = "aegir"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
