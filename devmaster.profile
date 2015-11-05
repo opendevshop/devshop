@@ -6,15 +6,13 @@
  */
 
 /**
- * Implements hook_profile_tasks
+ * Implements hook_install()
  */
-function devmaster_profile_tasks(&$task, $url) {
-  // Install dependencies
-  install_include(devmaster_profile_modules());
+function devmaster_install() {
 
   // add support for nginx
   if (d()->platform->server->http_service_type === 'nginx') {
-    drupal_install_modules(array('hosting_nginx'));
+    module_enable(array('hosting_nginx'));
   }
 
   // Bootstrap and create all the initial nodes
@@ -29,6 +27,7 @@ function devmaster_bootstrap() {
   $types =  node_types_rebuild();
 
   variable_set('install_profile', 'devmaster');
+
   // Initialize the hosting defines
   hosting_init();
 
@@ -56,9 +55,9 @@ function devmaster_bootstrap() {
   /* Make it compatible with more than apache and nginx */
   $master_server = d()->platform->server;
   hosting_services_add($node, 'http', $master_server->http_service_type, array(
-    'restart_cmd' => $master_server->http_restart_cmd,
-    'port' => 80,
-    'available' => 1,
+      'restart_cmd' => $master_server->http_restart_cmd,
+      'port' => 80,
+      'available' => 1,
   ));
 
   /* examine the db server associated with the hostmaster site */
@@ -78,11 +77,11 @@ function devmaster_bootstrap() {
     $db_node->services = array();
   }
   hosting_services_add($db_node, 'db', $db_server->db_service_type, array(
-    'db_type' => $master_db['scheme'],
-    'db_user' => urldecode($master_db['user']),
-    'db_passwd' => urldecode($master_db['pass']),
-    'port' => 3306,
-    'available' => 1,
+      'db_type' => $master_db['scheme'],
+      'db_user' => urldecode($master_db['user']),
+      'db_passwd' => isset($master_db['pass']) ? urldecode($master_db['pass']) : '',
+      'port' => 3306,
+      'available' => 1,
   ));
 
   drupal_set_message(st('Creating master server node'));
@@ -97,24 +96,30 @@ function devmaster_bootstrap() {
   variable_set('hosting_default_db_server', $db_node->nid);
   variable_set('hosting_own_db_server', $db_node->nid);
 
+  // Create the hostmaster platform & packages
   $node = new stdClass();
   $node->uid = 1;
   $node->title = 'Drupal';
   $node->type = 'package';
   $node->package_type = 'platform';
   $node->short_name = 'drupal';
+  $node->old_short_name = 'drupal';
+  $node->description = 'Drupal code-base.';
   $node->status = 1;
   node_save($node);
   $package_id = $node->nid;
 
-  // @TODO: We need to still call these nodes "hostmaster" because the aliases are still @hostmaster and @platform_hostmaster
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'platform';
   $node->title = 'hostmaster';
   $node->publish_path = d()->root;
+  $node->makefile = '';
+  $node->verified = 1;
   $node->web_server = variable_get('hosting_default_web_server', 2);
+  $node->platform_status = 1;
   $node->status = 1;
+  $node->make_working_copy = 0;
   node_save($node);
   $platform_id = $node->nid;
   variable_set('hosting_own_platform', $node->nid);
@@ -122,22 +127,39 @@ function devmaster_bootstrap() {
   $instance = new stdClass();
   $instance->rid = $node->nid;
   $instance->version = VERSION;
-  $instance->schema_version = drupal_get_installed_schema_version('system');
+  $instance->filename = '';
+  $instance->version_code = 1;
+  //$instance->schema_version = drupal_get_installed_schema_version('system');
+  $instance->schema_version = 0;
   $instance->package_id = $package_id;
   $instance->status = 0;
+  $instance->platform = $platform_id;
   hosting_package_instance_save($instance);
 
-  // Create the hostmaster profile node
+  // Create the hostmaster profile package node
   $node = new stdClass();
   $node->uid = 1;
   $node->title = 'devmaster';
   $node->type = 'package';
+  $node->old_short_name = 'devmaster';
+  $node->description = 'The Devmaster profile.';
   $node->package_type = 'profile';
   $node->short_name = 'devmaster';
   $node->status = 1;
   node_save($node);
-
   $profile_id = $node->nid;
+
+  $instance = new stdClass();
+  $instance->rid = $node->nid;
+  $instance->version = VERSION;
+  $instance->filename = '';
+  $instance->version_code = 1;
+  //$instance->schema_version = drupal_get_installed_schema_version('system');
+  $instance->schema_version = 0;
+  $instance->package_id = $profile_id;
+  $instance->status = 0;
+  $instance->platform = $platform_id;
+  hosting_package_instance_save($instance);
 
   // Create the main Aegir site node
   $node = new stdClass();
@@ -146,12 +168,31 @@ function devmaster_bootstrap() {
   $node->title = d()->uri;
   $node->platform = $platform_id;
   $node->client = $client_id;
+  $node->db_name = '';
   $node->db_server = $db_node->nid;
   $node->profile = $profile_id;
   $node->import = true;
   $node->hosting_name = 'hostmaster';
+  $node->site_status = 1;
+  $node->verified = 1;
   $node->status = 1;
   node_save($node);
+
+  // Enable the hosting features of modules that we enable by default.
+  // The module will already be enabled,
+  // this makes sure we also set the default permissions.
+  $default_hosting_features = array(
+      'hosting_web_server' => 'web_server',
+      'hosting_db_server' => 'db_server',
+      'hosting_platform' => 'platform',
+      'hosting_client' => 'client',
+      'hosting_task' => 'task',
+      'hosting_server' => 'server',
+      'hosting_package' => 'package',
+      'hosting_site' => 'site',
+      'hosting' => 'hosting',
+  );
+  hosting_features_enable($default_hosting_features, $rebuild = TRUE, $enable = FALSE);
 
   // Set the frontpage
   variable_set('site_frontpage', 'devshop');
