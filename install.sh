@@ -22,10 +22,16 @@
 #
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
+echo "                   v 0.x                     "
 echo "============================================="
+
+# Version used for cloning devshop playbooks
+# Must be a branch or tag.
+DEVSHOP_VERSION=0.x
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
+DEVSHOP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [ -f '/etc/os-release' ]; then
     . /etc/os-release
@@ -54,11 +60,15 @@ echo $LINE
 # Detect playbook path option
 if [ $1 ]; then
     PLAYBOOK_PATH=$1
-    echo " Using playbook $1/playbook.yml "
-    echo $LINE
+# Detect playbook next to the install script
+elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
+    PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
 else
-    PLAYBOOK_PATH=/tmp/devshop-install
+    PLAYBOOK_PATH=/usr/share/devshop
 fi
+
+echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
+echo $LINE
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
@@ -126,12 +136,14 @@ MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
+    cd $PLAYBOOK_PATH
+    git checkout $DEVSHOP_VERSION
   else
     cd $PLAYBOOK_PATH
     git pull
   fi
-  PLAYBOOK_PATH=/tmp/devshop-install
-  MAKEFILE_PATH=/tmp/devshop-install/build-devmaster.make
+  PLAYBOOK_PATH=/usr/share/devshop
+  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
   echo $LINE
 
 fi
@@ -159,6 +171,10 @@ fi
 
 ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "$ANSIBLE_EXTRA_VARS"
 
+# Run Composer install to enable devshop cli
+cd $PLAYBOOK_PATH
+composer install
+
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
 
@@ -175,7 +191,7 @@ else
   echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
   echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
   echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                              |_|              ║"
+  echo "║                                              |_|   v 0.x      ║"
   echo "╟───────────────────────────────────────────────────────────────╢"
   echo "║ Submit any issues to                                          ║"
   echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
@@ -192,3 +208,4 @@ else
   echo "╚═══════════════════════════════════════════════════════════════╝"
   sudo su - aegir -c "drush @hostmaster uli"
 fi
+

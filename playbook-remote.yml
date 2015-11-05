@@ -1,0 +1,11 @@
+##
+# DevShop: Remove Server
+#
+
+---
+- hosts: all
+  user: root
+
+  roles:
+    - aegir
+    - remote

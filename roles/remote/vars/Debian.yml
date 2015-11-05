@@ -1,0 +1,39 @@
+---
+apache_daemon: apache2
+apache_server_root: /etc/apache2
+apache_conf_path: /etc/apache2
+apache_control: /usr/sbin/apache2ctl
+apache_user: www-data
+
+mysql_daemon: mysql
+mysql_conf_path: /etc/mysql/my.cnf
+
+apache_packages:
+  - apache2
+  - apache2-mpm-prefork
+  - apache2-utils
+  - php5
+  - php5-cli
+  - php5-curl
+  - php5-gd
+  - php5-mysql
+  - php5-mcrypt
+  - php-pear
+  - postfix
+  - sudo
+  - unzip
+  - vim
+  - git
+  - curl
+  - openssl
+  - mysql-client
+
+mysql_packages:
+  - mysql-server
+  - python-mysqldb
+
+apache_ports_configuration_items:
+  - {
+    regexp: "^Listen ",
+    line: "Listen {{ apache_listen_port }}"
+  }

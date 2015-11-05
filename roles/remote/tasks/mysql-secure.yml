@@ -1,0 +1,51 @@
+---
+##
+# MySQL database setup, this does the equivalent of mysql_secure_installation.
+#
+# Distribution independent.
+#
+- name: MySQL | Start MySQL
+  service:
+    name: "{{ mysql_daemon }}"
+    state: started
+
+- name: MySQL | Set the root password.
+  action: mysql_user user=root password={{ mysql_root_password }} host=localhost
+
+- name: MySQL | Config for easy access as root user
+  action: template src=templates/root-my.cnf.j2 dest=/root/.my.cnf
+
+- name: MySQL | my.cnf config file.
+  action: template src=my.cnf.{{ ansible_os_family }}.j2 dest={{ mysql_conf_path }}
+
+- name: MySQL | Delete anonymous MySQL server user for {{ server_hostname }}
+  action: mysql_user user="" host="{{ server_hostname }}" state="absent"
+
+- name: MySQL | Delete anonymous MySQL server user for localhost
+  action: mysql_user user="" state="absent"
+
+- name: MySQL | Secure the MySQL root user for IPV6 localhost (::1)
+  action: mysql_user user="root" password="{{ mysql_root_password }}" host="::1"
+
+- name: MySQL | Secure the MySQL root user for IPV4 localhost (127.0.0.1)
+  action: mysql_user user="root" password="{{ mysql_root_password }}" host="127.0.0.1"
+
+- name: MySQL | Secure the MySQL root user for localhost domain (localhost)
+  action: mysql_user user="root" password="{{ mysql_root_password }}" host="localhost"
+
+- name: MySQL | Secure the MySQL root user for {{ server_hostname }} domain
+  action: mysql_user user="root" password="{{ mysql_root_password }}" host="{{ server_hostname }}"
+
+- name: MySQL | Grant access to {{ aegir_mysql_root_user }} at {{ mysql_client_ip }}
+  action: mysql_user user="{{ aegir_mysql_root_user }}" password="{{ mysql_root_password }}" host="{{ mysql_client_ip }}" priv=*.*:ALL,GRANT
+
+- name: MySQL | Remove the MySQL test database
+  action: mysql_db db=test state=absent
+
+- name: MySQL | Save a file to indicate mysql has been secured.
+  file: path=/var/mysql-secured state=touch
+
+- name: MySQL | Restart MySQL
+  service:
+    name: "{{ mysql_daemon }}"
+    state: restarted

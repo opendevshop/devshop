@@ -4,3 +4,9 @@ source
 
 # Local config
 .vagrant
+
+# Symfony code
+vendor
+
+# Development Mode Indicator File
+.development_mode

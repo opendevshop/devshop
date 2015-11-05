@@ -1,17 +1,50 @@
 
-server_hostname: devshop.local
+# The version to install.
+devshop_version:              0.x
+
+# VAGRANT variables.
+# Set development to TRUE if you wish to contribute to devshop development.
+
+# You may also add a file to this folder called ".development_mode".  If this file is present, development mode will always be enabled.
+vagrant_development: FALSE
+vagrant_private_network_ip: 10.10.10.10
+vagrant_install_script: install.sh
+
+remote_vagrant_private_network_ip: 10.10.10.11
+remote_server_hostname: devshop.remote
+
+remote2_vagrant_private_network_ip: 10.10.10.12
+remote2_server_hostname: devshop.remote2
+
+
+# DEVSHOP variables
+# The hostname will be overridden by install.sh to match the server it is run on.
+server_hostname: devshop.site
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
+php_post_max_size: 32M
+php_upload_max_filesize: 32M
+
 php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
 
-devshop_version:            0.x
-devmaster_version:            7.x-1.x
-devshop_provision_version:  7.x-3.x
-provision_version:          7.x-3.x
-registry_rebuild_version: 7.x-2.2
+
+devshop_working_copy: --working-copy
+
+devshop_drush_packages:
+  provision: 6.x-2.x
+  provision_git: 6.x-1.x
+  devshop_provision: 6.x-2.x
+  provision_logs: 6.x-1.x
+  provision_solr: 6.x-2.x
+  provision_tasks_extra: 6.x-2.x
+  provision_site_backup_manager: 6.x-2.x
+  registry_rebuild: 7.x-2.2
 
 devshop_makefile: build-devmaster.make
 
 aegir_user_uid: 12345
+
+drush_path: /usr/local/bin/drush
+devshop_cli_path: /usr/local/bin/devshop

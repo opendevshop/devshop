@@ -10,8 +10,6 @@
       name=aegir
       shell=/bin/bash
       group=aegir
-      groups={{ apache_user }}
-      append=yes
       system=yes
       home=/var/aegir
       generate_ssh_key=yes
@@ -29,6 +27,21 @@
     command: chmod -R 755 /var/aegir
     when: ansible_os_family == "RedHat"
 
+  - name: Create aegir's config folder
+    file:
+      path: /var/aegir/config
+      owner: aegir
+      group: aegir
+      state: directory
+      mode: 0755
+
+  - name: Create aegir's logs folder
+    file:
+      path: /var/aegir/logs
+      owner: aegir
+      group: aegir
+      state: directory
+      mode: 0755
 
   - name: Setup SSH config for aegir user.
     template:

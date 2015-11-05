@@ -15,5 +15,3 @@ supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner
 motd_path: /etc/update-motd.d/95-ansible
 
 bashrc_path: /etc/bash.bashrc
-
-drush_path: /usr/local/bin/drush

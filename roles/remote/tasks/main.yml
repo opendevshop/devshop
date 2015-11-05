@@ -1,0 +1,29 @@
+---
+# Include variables and define needed variables.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Define mysql_packages.
+  set_fact:
+    mysql_packages: "{{ mysql_packages | list }}"
+  when: mysql_packages is not defined
+
+- name: Define apache_packages.
+  set_fact:
+    apache_packages: "{{ apache_packages | list }}"
+  when: apache_packages is not defined
+
+# Setup Packages
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+# Install Apache
+- include: install-apache.yml
+  when: install_apache
+
+# Install MySQL
+- include: install-mysql.yml
+  when: install_mysql

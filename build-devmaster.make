@@ -13,9 +13,11 @@ projects[drupal][type] = "core"
 ; When in development, use this:
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
-projects[devmaster][download][url] = "git@git.drupal.org:project/devmaster.git"
-projects[devmaster][download][branch] = "7.x-1.x"
+
+; Change this URL to your own fork to develop devshop.
+projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
+;projects[devmaster][download][branch] = "0.x"
 
 ; RELEASE:
 ; When releasing, lock in the devmaster version.
-;projects[devmaster][version] = "7.x-1.0"
+projects[devmaster][download][branch] = "0.x"

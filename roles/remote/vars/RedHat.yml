@@ -1,0 +1,46 @@
+---
+apache_daemon: httpd
+apache_server_root: /etc/httpd
+apache_conf_path: /etc/httpd/conf.d
+apache_control: /usr/sbin/apachectl
+apache_user: apache
+
+mysql_daemon: mariadb
+mysql_conf_path: /etc/my.cnf
+
+apache_packages:
+  - epel-release
+  - httpd
+  - php
+  - php-mysql
+  - php-cli
+  - php-gd
+  - php-process
+  - php-pear
+  - php-xml
+  - php-mcrypt
+  # Not a package on RHEL 7? Unable to install.
+  # - php-mbstring
+  - postfix
+  - sudo
+  - rsync
+  - git-core
+  - unzip
+  - vim
+  - git
+  - cronie
+  - mod_ssl
+  - openssh
+  - openssl
+  - mariadb-client
+
+mysql_packages:
+  - mariadb
+  - mariadb-server
+  - MySQL-python
+
+apache_ports_configuration_items:
+  - {
+    regexp: "^Listen ",
+    line: "Listen {{ apache_listen_port }}"
+  }
