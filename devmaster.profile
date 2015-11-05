@@ -223,7 +223,7 @@ function devmaster_task_finalize() {
   theme_disable(array('bartik'));
 
   drupal_set_message(st('Configuring default blocks'));
-  hostmaster_place_blocks('eldir');
+  devmaster_place_blocks($theme);
 
   // Save "menu_options" for our content types, so they don't offer to be put in menus.
   variable_set('menu_options_client', array());
@@ -255,4 +255,123 @@ function devmaster_task_finalize() {
   _block_rehash();
 
   node_access_rebuild();
+}
+
+/**
+ * Helper function to place block.
+ */
+function devmaster_place_blocks($theme) {
+  $blocks = array(
+      array(
+          'module' => 'hosting',
+          'delta' => 'hosting_queues',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => -2,
+          'region' => 'sidebar_first',
+          'visibility' => 0,
+          'pages' => '',
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'system',
+          'delta' => 'navigation',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'sidebar_first',
+          'visibility' => 0,
+          'pages' => '',
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_task_list-block',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => -2,
+          'region' => 'sidebar_first',
+          'visibility' => 0,
+          'pages' => '',
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_site_list-block_sites',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'content_bottom',
+          'visibility' => 1,
+          'pages' => 'hosting/c/platform_*',
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_platform_list-block_1',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'content_bottom',
+          'visibility' => 1,
+          'pages' => 'hosting/c/server_*',
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_site_list-block_profile',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'content_bottom',
+          'visibility' => 0,
+          'pages' => '',
+        //"<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->package_type == 'profile';\n}\n
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_site_list-block_client',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'content_bottom',
+          'visibility' => 0,
+          'pages' => '',
+        //"<?php\n\$node = menu_get_object();\n\$menu_item = menu_get_item();\nif (!empty(\$node) && \$menu_item['number_parts'] == 2) {\n  return \$node->type == 'client';\n}\n
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_site_list-block_client2',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'content_bottom',
+          'visibility' => 0,
+          'pages' => '',
+        //"<?php\nglobal \$user;\$node = menu_get_object();\n\$menu_item = menu_get_item();\nif (!empty(\$node)) && \$menu_item['number_parts'] == 2) {\n  return \$node->type == 'client' && $user->uid != 1;\n}\n
+          'cache' => -1,
+      ),
+      array(
+          'module' => 'views',
+          'delta' => 'hosting_package_list-block_1',
+          'theme' => $theme,
+          'status' => 1,
+          'weight' => 0,
+          'region' => 'content_bottom',
+          'visibility' => 0,
+          'pages' => '',
+        //"<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'package' && \$node->package_type != 'profile';\n}\n
+          'cache' => -1,
+      ),
+  );
+
+  $query = db_insert('block')->fields(array('module', 'delta', 'theme', 'status', 'weight', 'region', 'visibility', 'pages', 'cache'));
+
+  foreach ($blocks as $block) {
+    $query->values($block);
+  }
+  $query->execute();
+
 }
