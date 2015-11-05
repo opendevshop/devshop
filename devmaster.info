@@ -1,0 +1,37 @@
+name = OpenDevShop DevMaster
+description = Web interface for OpenDevShop.
+core = 7.x
+
+; Drupal core
+dependencies[] = block
+dependencies[] = color
+dependencies[] = filter
+dependencies[] = help
+dependencies[] = menu
+dependencies[] = node
+dependencies[] = overlay
+dependencies[] = system
+dependencies[] = user
+
+; Aegir core
+dependencies[] = hosting
+dependencies[] = hosting_task
+dependencies[] = hosting_client
+dependencies[] = hosting_db_server
+dependencies[] = hosting_package
+dependencies[] = hosting_platform
+dependencies[] = hosting_site
+dependencies[] = hosting_web_server
+dependencies[] = hosting_server
+dependencies[] = hosting_clone
+;dependencies[] = hosting_cron
+;dependencies[] = hosting_migrate
+
+; Drupal contrib
+dependencies[] = admin_menu
+dependencies[] = betterlogin
+dependencies[] = overlay_paths
+dependencies[] = views
+dependencies[] = views_bulk_operations
+dependencies[] = actions_permissions
+dependencies[] = r4032login
