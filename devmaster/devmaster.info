@@ -12,6 +12,7 @@ dependencies[] = node
 dependencies[] = overlay
 dependencies[] = system
 dependencies[] = user
+dependencies[] = update
 
 ; Aegir core
 dependencies[] = hosting
@@ -24,8 +25,21 @@ dependencies[] = hosting_site
 dependencies[] = hosting_web_server
 dependencies[] = hosting_server
 dependencies[] = hosting_clone
-;dependencies[] = hosting_cron
-;dependencies[] = hosting_migrate
+dependencies[] = hosting_cron
+dependencies[] = hosting_migrate
+
+; DevShop Aegir
+dependencies[] = hosting_alias
+dependencies[] = hosting_queued
+dependencies[] = hosting_http_basic_auth
+dependencies[] = hosting_sync
+
+dependencies[] = hosting_filemanager
+dependencies[] = hosting_logs
+dependencies[] = hosting_ssl
+dependencies[] = hosting_tasks_extra
+dependencies[] = hosting_backup_queue
+dependencies[] = hosting_site_backup_manager
 
 ; Drupal contrib
 dependencies[] = admin_menu
@@ -35,3 +49,16 @@ dependencies[] = views
 dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
 dependencies[] = r4032login
+dependencies[] = jquery_update
+dependencies[] = adminrole
+
+; DevShop: TODO: Update devshop module versions
+; dependencies[] = devshop_hosting
+; dependencies[] = devshop_projects
+; dependencies[] = devshop_log
+; dependencies[] = devshop_pull
+; dependencies[] = devshop_github
+; dependencies[] = aegir_ssh
+; dependencies[] = aegir_download
+; dependencies[] = devshop_github
+
