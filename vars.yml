@@ -38,7 +38,6 @@ devshop_drush_packages:
   devshop_provision: 6.x-2.x
   provision_logs: 6.x-1.x
   provision_solr: 6.x-2.x
-  provision_tasks_extra: 6.x-2.x
   provision_site_backup_manager: 6.x-2.x
   registry_rebuild: 7.x-2.2
 
