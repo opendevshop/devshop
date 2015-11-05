@@ -12,6 +12,7 @@ defaults[projects][type] = "module"
 includes[devshop] = "drupal-org.make"
 
 projects[hostmaster][type] = "profile"
+projects[hostmaster][subdir] = ""
 
 ; Aegir Modules
 ; For development, use latest branch.
