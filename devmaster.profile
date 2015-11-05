@@ -213,27 +213,37 @@ function devmaster_bootstrap() {
 
 function devmaster_task_finalize() {
 
-  $theme = 'boots';
+  // Enable "boots" theme.
   drupal_set_message(st('Enabling "boots" theme'));
-  install_disable_theme('garland');
-  install_default_theme('boots');
-  system_theme_data();
+  $theme = 'eldir';
+  theme_enable(array($theme));
+  variable_set('theme_default', $theme);
 
-  db_query("DELETE FROM {cache}");
+  // Disable the default Bartik theme
+  theme_disable(array('bartik'));
 
   drupal_set_message(st('Configuring default blocks'));
-  install_add_block('devshop_hosting', 'devshop_tasks', $theme, 1, 5, 'header', 1);
+  hostmaster_place_blocks('eldir');
 
-  // @TODO: CREATE DEVSHOP ROLES!
-  drupal_set_message(st('Configuring roles'));
-  install_remove_permissions(install_get_rid('anonymous user'), array('access content', 'access all views'));
-  install_remove_permissions(install_get_rid('authenticated user'), array('access content', 'access all views'));
-  install_add_permissions(install_get_rid('anonymous user'), array('access disabled sites'));
-  install_add_permissions(install_get_rid('authenticated user'), array('access disabled sites'));
+  // Save "menu_options" for our content types, so they don't offer to be put in menus.
+  variable_set('menu_options_client', array());
+  variable_set('menu_options_platform', array());
+  variable_set('menu_options_server', array());
+  variable_set('menu_options_site', array());
 
-  // Create administrator role
-  $rid = install_add_role('administrator');
-  variable_set('user_admin_role', $rid);
+//  drupal_set_message(st('Configuring default blocks'));
+//  install_add_block('devshop_hosting', 'devshop_tasks', $theme, 1, 5, 'header', 1);
+//
+//  // @TODO: CREATE DEVSHOP ROLES!
+//  drupal_set_message(st('Configuring roles'));
+//  install_remove_permissions(install_get_rid('anonymous user'), array('access content', 'access all views'));
+//  install_remove_permissions(install_get_rid('authenticated user'), array('access content', 'access all views'));
+//  install_add_permissions(install_get_rid('anonymous user'), array('access disabled sites'));
+//  install_add_permissions(install_get_rid('authenticated user'), array('access disabled sites'));
+//
+//  // Create administrator role
+//  $rid = install_add_role('administrator');
+//  variable_set('user_admin_role', $rid);
 
   // Hide errors from the screen.
   variable_set('error_level', 0);
