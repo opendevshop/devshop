@@ -37,7 +37,7 @@
 
   - name: Create aegir's logs folder
     file:
-      path: /var/aegir/logs
+      path: /var/log/aegir
       owner: aegir
       group: aegir
       state: directory
