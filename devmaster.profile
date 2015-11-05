@@ -6,63 +6,6 @@
  */
 
 /**
- * Return an array of the modules to be enabled when this profile is installed.
- *
- * @return
- *  An array of modules to be enabled.
- */
-function devmaster_profile_modules() {
-  return array(
-    /* core */ 'block', 'color', 'filter', 'help', 'menu', 'node', 'system', 'user', 'update',
-    /* aegir contrib */ 'hosting', 'hosting_task', 'hosting_client', 'hosting_db_server', 'hosting_package', 'hosting_platform', 'hosting_site', 'hosting_web_server', 'hosting_server', 'hosting_clone', 'hosting_cron', 'hosting_migrate', 'hosting_alias', 'hosting_queued', 'hosting_http_basic_auth', 'hosting_sync',
-
-    /* other contrib */
-    'install_profile_api',
-    'jquery_ui',
-    'jquery_update',
-    'modalframe',
-    'admin_menu',
-    'views',
-    'views_bulk_operations',
-    'actions_permissions',
-
-    /* DEVSHOP Contrib */
-    'adminrole',
-    'ctools',
-
-    /* DEVSHOP */
-    'devshop_hosting',
-    'devshop_projects',
-    'devshop_log',
-    'devshop_pull',
-    'devshop_github',
-
-    /* NICEITIES */
-    'hosting_filemanager',
-    'hosting_logs',
-    'hosting_ssl',
-    'hosting_tasks_extra',
-    'hosting_backup_queue',
-    'hosting_site_backup_manager',
-    'sshkey',
-    'aegir_ssh',
-    'aegir_download',
-  );
-}
-
-/**
- * Return a description of the profile for the initial installation screen.
- *
- * @return
- *   An array with keys 'name' and 'description' describing this profile.
- */
-function devmaster_profile_details() {
-  return array(
-    'name' => 'Devmaster',
-    'description' => 'The DevShop front-end.'
-  );
-}
-/**
  * Implements hook_profile_tasks
  */
 function devmaster_profile_tasks(&$task, $url) {
