@@ -25,8 +25,15 @@ projects[hosting_git][subdir] = aegir
 projects[hosting_remote_import][subdir] = aegir
 projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_tasks_extra][subdir] = aegir
+projects[hosting_filemanager][subdir] = aegir
+projects[hosting_logs][subdir] = aegir
+projects[aegir_ssh][subdir] = aegir
+
+; Not working yet.
+;projects[hosting_solr][version] = "1"
 
 ; Contrib Modules
+projects[sshkey][version] = "2"
 projects[betterlogin][version] = 1.4
 projects[entity][version] = 1.6
 projects[openidadmin][version] = 1.0
@@ -39,11 +46,3 @@ projects[views][version] = "3.12"
 projects[views_bulk_operations][version] = "3.3"
 projects[ctools][version] = "1.9"
 projects[features][version] = "2.7"
-projects[hosting_filemanager][version] = "1"
-
-; Aegir Contrib maintained by devshop maintainers
-;projects[hosting_solr][version] = "1"
-projects[hosting_logs][version] = "3.0-beta1"
-projects[aegir_ssh][version] = "0"
-projects[sshkey][version] = "2"
-
