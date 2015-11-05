@@ -11,6 +11,8 @@ defaults[projects][type] = "module"
 ; aegir modules instead of the tagged releases
 includes[devshop] = "drupal-org.make"
 
+projects[hostmaster][type] = "profile"
+
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
