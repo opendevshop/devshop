@@ -212,53 +212,6 @@ function devmaster_bootstrap() {
 }
 
 function devmaster_task_finalize() {
-  drupal_set_message(st('Configuring menu items'));
-
-  install_include(array('menu'));
-  $menu_name = variable_get('menu_primary_links_source', 'primary-links');
-
-  // @TODO - seriously need to simplify this, but in our own code i think, not install profile api
-  $items = install_menu_get_items('projects');
-  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
-  $item['menu_name'] = $menu_name;
-  $item['customized'] = 1;
-  $item['weight'] = 1;
-  $item['options'] = unserialize($item['options']);
-  install_menu_update_menu_item($item);
-
-  $items = install_menu_get_items('hosting/servers');
-  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
-  $item['menu_name'] = $menu_name;
-  $item['customized'] = 1;
-  $item['weight'] = 2;
-  $item['options'] = unserialize($item['options']);
-  install_menu_update_menu_item($item);
-
-  $items = install_menu_get_items('admin/user/user');
-  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
-  $item['menu_name'] = $menu_name;
-  $item['customized'] = 1;
-  $item['weight'] = 2;
-  $item['options'] = unserialize($item['options']);
-  install_menu_update_menu_item($item);
-
-  $items = install_menu_get_items('user/%');
-  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
-  $item['menu_name'] = 'secondary-links';
-  $item['customized'] = 1;
-  $item['weight'] = 1;
-  $item['options'] = unserialize($item['options']);
-  install_menu_update_menu_item($item);
-
-  $items = install_menu_get_items('logout');
-  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
-  $item['menu_name'] = 'secondary-links';
-  $item['customized'] = 1;
-  $item['weight'] = 2;
-  $item['options'] = unserialize($item['options']);
-  install_menu_update_menu_item($item);
-
-  menu_rebuild();
 
   $theme = 'boots';
   drupal_set_message(st('Enabling "boots" theme'));
