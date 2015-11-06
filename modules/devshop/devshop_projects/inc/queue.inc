@@ -29,7 +29,7 @@ function devshop_projects_get_deploy_queue_environments() {
 
   $results = db_query("SELECT nid FROM {hosting_devshop_project}");
   $environments = array();
-  while ($result = db_fetch_object($results)) {
+  foreach ($results as $result) {
     $node = node_load($result->nid);
     $project = $node->project;
     if ($project->settings->deploy['method'] == 'queue') {
