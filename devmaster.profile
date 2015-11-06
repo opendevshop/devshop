@@ -252,9 +252,9 @@ function devmaster_task_finalize() {
   variable_set('hosting_welcome_page', 0);
 
   // Make sure blocks are setup properly.
-  _block_rehash();
+//  _block_rehash();
 
-  node_access_rebuild();
+//  node_access_rebuild();
 }
 
 /**
