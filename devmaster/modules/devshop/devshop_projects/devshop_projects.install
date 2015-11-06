@@ -5,10 +5,10 @@
  */
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function devshop_projects_schema() {
- $schema['hosting_devshop_project'] = array(
+  $schema['hosting_devshop_project'] = array(
     'fields' => array(
       'nid' => array(
         'type' => 'int',
@@ -111,21 +111,8 @@ function devshop_projects_schema() {
 }
 
 /**
- * Implementation of hook_install().
+ *  Add the "data" column to projects.
  */
-function devshop_projects_install() {
-  // Create tables.
-  drupal_install_schema('devshop_projects');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function devshop_projects_uninstall() {
-  // Delete tables.
-  drupal_uninstall_schema('devshop_projects');
-}
-
 function devshop_projects_update_1() {
   $ret = array();
   $ret[] = update_sql("ALTER TABLE {hosting_devshop_project} " .
@@ -137,7 +124,6 @@ function devshop_projects_update_1() {
  * Update 2: Delete rows in the hosting_devshop_project_objects table
  * that the node pointed to by object nid no longer exists.
  */
-
 function devshop_projects_update_2() {
   $ret = array();
   $query = db_query("SELECT object_nid " .
@@ -276,7 +262,7 @@ function devshop_projects_update_6003(){
 /**
  * Change "data" column to "settings" column.
  */
-function devshop_projects_update_6004(){
+function devshop_projects_update_6004() {
   $ret = array();
   db_change_column($ret, 'hosting_devshop_project', 'data', 'settings', 'text', array(
     'not null' => FALSE,
@@ -298,7 +284,7 @@ function devshop_projects_update_600X() {
 /**
  * Add "last_task" column for environments.
  */
-function devshop_projects_update_6008(){
+function devshop_projects_update_6008() {
   $schema = devshop_projects_schema();
   $ret = array();
   $ret[] = db_add_field(
@@ -312,7 +298,7 @@ function devshop_projects_update_6008(){
 /**
  * Update all environments with their last_task();
  */
-function devshop_projects_update_6009 () {
+function devshop_projects_update_6009() {
 
   // Lookup all environments
   $query = db_query('SELECT * FROM {hosting_devshop_project_environment}');
