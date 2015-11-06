@@ -4,7 +4,7 @@
  * Connects DevShop front-end to provision backend.
  */
 
-include DRUPAL_ROOT . '/' . 'drush/contexts.inc';
+include 'drush/contexts.inc';
 
 /**
  * Implements hook_hosting_task_update_status().
