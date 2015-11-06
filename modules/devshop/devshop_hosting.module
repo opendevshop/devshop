@@ -5,28 +5,28 @@
  * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
  */
 
- /**
-  * Implements hook_init()
-  *
-  * Adds CSS and sets the logo.
-  */
-function devshop_hosting_init(){
+/**
+ * Implements hook_init().
+ *
+ * Adds CSS and sets the logo.
+ */
+function devshop_hosting_init() {
   drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
   $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
-  drupal_set_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
+  drupal_add_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
 
-  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
+  drupal_add_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
 
 
 }
 
 /**
- * Implements hook_menu()
+ * Implements hook_menu().
  *
  * Defines a new menu callback: login page for new users, redirect to projects
  * for authenticated users.
  */
-function devshop_hosting_menu(){
+function devshop_hosting_menu() {
   $items['devshop'] = array(
     'title' => 'Welcome to DevShop',
     'page callback' => 'devshop_hosting_home',
@@ -56,21 +56,22 @@ function devshop_hosting_menu(){
  *
  * Provides a login page or redirects to proejcts
  */
-function devshop_hosting_home(){
-  if (user_is_logged_in()){
+function devshop_hosting_home() {
+  if (user_is_logged_in()) {
     drupal_goto(variable_get('devshop_frontpage', 'projects'));
-  } else {
+  }
+  else {
     $output = '<p>' . t('Please log in.') . '</p>';
     return drupal_get_form('user_login');
   }
 }
 
 /**
- * Implements hook_menu_alter()
+ * Implements hook_menu_alter().
  *
  * Streamlines login and servers pages.
  */
-function devshop_hosting_menu_alter(&$items){
+function devshop_hosting_menu_alter(&$items) {
   $items['user/password']['type'] = MENU_CALLBACK;
   unset($items['hosting/sites']);
   unset($items['hosting/platforms']);
@@ -98,7 +99,7 @@ function devshop_hosting_menu_alter(&$items){
 function devshop_hosting_site_goto($node) {
   $cid = "hosting:site:" . $node->nid . ":login_link";
   $cache = cache_get($cid);
-  if (user_access('create login-reset task') && !is_null($cache) && (time() < $cache->data['expire'])) {
+  if (user_access('create login-reset task') && !is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
     $theurl = $cache->data['link'];
     cache_clear_all($cid, 'cache');
   }
@@ -120,7 +121,7 @@ function devshop_hosting_site_url($node) {
   $schema = 'http';
   $port = null;
 
-  if (isset($node->project_nid)){
+  if (isset($node->project_nid)) {
     $project = node_load($node->project_nid);
     $url = "{$node->environment}.{$project->base_url}";
   }
@@ -163,91 +164,87 @@ function devshop_hosting_site_url($node) {
 }
 
 /**
- * Implements hook_form_alter() for user_login.
+ * Implements hook_form_alter() for user_login().
  * Provides some UI enhancements.
  */
-function devshop_hosting_form_user_login_alter(&$form){
+function devshop_hosting_form_user_login_alter(&$form) {
   $form['pass']['#description'] .= '  ' . l(t('Forgot your Password?'), 'user/password');
 
   // Add user register link
-  if (user_register_access()){
+  if (user_register_access()) {
     $form['submit']['#suffix'] = t('or') . ' ' . l(t('Create an Account'), 'user/register');
   }
 }
 
 /**
- * Implements hook_form_alter() for user_login_block.
+ * Implements hook_form_alter() for user_login_block().
  * Hides the login block form on "devshop" page.
  */
-function devshop_hosting_form_user_login_block_alter(&$form){
-  if (arg(0) == 'devshop'){
+function devshop_hosting_form_user_login_block_alter(&$form) {
+  if (arg(0) == 'devshop') {
     $form = array();
   }
 }
 
 /**
- * Implements hook_block()
- *
- * Provides three blocks:
- *  - DevShop Tasks
- *  - Created by ThinkDrop
- *  - Powered by Aegir
+ * Implements hook_block_info().
  */
-function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
-  switch ($op) {
-    case 'list':
-      $blocks['devshop_tasks'] = array(
-        'info' => t('DevShop Tasks'),
-        'enabled' => 1,
-        'region' => 'header',
-        'weight' => 0,
-      );
-      $blocks['built'] = array(
-        'info' => t('Created by THINKDROP'),
-        'weight' => '10',
-        'cache' => BLOCK_NO_CACHE,
-        'status' => 1,
-        'region' => 'footer',
-      );
-      $blocks['driven'] = array(
-        'info' => t('Driven by Aegir'),
-        'weight' => '10',
-        'cache' => BLOCK_NO_CACHE,
-        'status' => 1,
-        'region' => 'footer',
-      );
-      return $blocks;
-    case 'view':
-      if ($delta == 'built'){
-        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-td.png';
-        $block['subject'] = t('Created by'); // Don't display a title
-        $block['content'] = l(theme('image', $image_path), 'http://thinkdrop.net/', array('html' => TRUE));
-      }
-      elseif ($delta == 'driven') {
-        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-aegir.png';
-        $block['subject'] = t('Powered by'); // Don't display a title
-        $block['content'] = l(theme('image', $image_path), 'http://aegirproject.org/', array('html' => TRUE));
-      }
-      elseif ($delta = 'devshop_tasks') {
-        $block['subject'] = '';
-        $block['content'] = devshop_hosting_task_queue_block();
-      }
-      return $block;
+function devshop_hosting_block_info() {
+  $blocks['devshop_tasks'] = array(
+    'info' => t('DevShop Tasks'),
+    'enabled' => 1,
+    'region' => 'header',
+    'weight' => 0,
+  );
+  $blocks['built'] = array(
+    'info' => t('Created by THINKDROP'),
+    'weight' => '10',
+    'cache' => BLOCK_NO_CACHE,
+    'status' => 1,
+    'region' => 'footer',
+  );
+  $blocks['driven'] = array(
+    'info' => t('Driven by Aegir'),
+    'weight' => '10',
+    'cache' => BLOCK_NO_CACHE,
+    'status' => 1,
+    'region' => 'footer',
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function devshop_hosting_block_view($delta) {
+  if ($delta == 'built') {
+    $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-td.png';
+    $block['subject'] = t('Created by'); // Don't display a title
+    $block['content'] = l(theme('image', array('path' => array('path' => $image_path))), 'http://thinkdrop.net/', array('html' => TRUE));
   }
+  elseif ($delta == 'driven') {
+    $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-aegir.png';
+    $block['subject'] = t('Powered by'); // Don't display a title
+    $block['content'] = l(theme('image', array('path' => array('path' => $image_path))), 'http://aegirproject.org/', array('html' => TRUE));
+  }
+  elseif ($delta = 'devshop_tasks') {
+    $block['subject'] = '';
+    $block['content'] = devshop_hosting_task_queue_block();
+  }
+  return $block;
 }
 
 /**
  * DevShop Tasks block.
- * @todo: Ajaxify.
  */
 function devshop_hosting_task_queue_block() {
-  if (user_access('access task logs')){
+  if (user_access('access task logs')) {
     drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
 
     $settings['hostingTaskRefresh'] = array(
       'queueBlock' => 1,
     );
-    drupal_add_js($settings, 'setting');
+    drupal_add_js($settings, array('type' => array('type' => 'setting', 'scope' => JS_DEFAULT), 'scope' => JS_DEFAULT));
 
     $tasks['processing'] = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING, 5);
     $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE);
@@ -255,14 +252,15 @@ function devshop_hosting_task_queue_block() {
     $total_tasks = count($tasks['queued']) + count($tasks['processing']);
     $status = format_plural($total_tasks, '1 active task.', '@count active tasks.');
 
-    if ($total_tasks == 0){
+    if ($total_tasks == 0) {
       $status_class = 'inactive';
-    } else {
+    }
+    else {
       $status_class = 'active';
     }
 
     // Build our own table
-    foreach ($tasks as $task_status => $nodes){
+    foreach ($tasks as $task_status => $nodes) {
       foreach ($nodes as $node) {
         $row = array();
         $row['type'] = array(
@@ -282,8 +280,8 @@ function devshop_hosting_task_queue_block() {
 
     $headers = array();
 
-    if (isset($rows)){
-      $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
+    if (isset($rows)) {
+      $table = theme('table', array('header' => array('header' => $headers, 'rows' => $rows, 'attributes' => array('class' => 'hosting-table'))));
     }
 
     // Output our "template"
@@ -304,7 +302,7 @@ HTML;
  */
 function devshop_hosting_sites_status() {
 
-  $query = db_query("SELECT nid FROM {node} WHERE type = 'project' AND status = 1");
+  $query = db_query("SELECT nid FROM {node} WHERE type = :type AND status = :status", array(':type' => 'project', ':status' => 1));
   while ($result = db_fetch_object($query)) {
     $node = node_load($result->nid);
 
@@ -315,7 +313,7 @@ function devshop_hosting_sites_status() {
       }
     }
   }
-  return theme('item_list', $items, t('Site Hosts'));
+  return theme('item_list', array('items' => $items, 'title' => t('Site Hosts')));
 }
 
 /**
@@ -326,11 +324,11 @@ function devshop_hosting_login_reset($site_nid) {
   $site = node_load($site_nid);
 
   // Set time limit to 3 minutes.
-  set_time_limit(180);
+  drupal_set_time_limit(180);
 
   // Create new reset-login task, if needed
   $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
-  if (!($cache && (time() < $cache->data['expire']))) {
+  if (!($cache && (REQUEST_TIME < $cache->data['expire']))) {
     $task = hosting_add_task($site_nid, 'login-reset');
     drupal_get_messages();
   }
@@ -342,7 +340,7 @@ function devshop_hosting_login_reset($site_nid) {
   while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
     sleep(1);
     $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
-    if ($cache && (time() < $cache->data['expire'])) {
+    if ($cache && (REQUEST_TIME < $cache->data['expire'])) {
       break;
     }
   }
@@ -382,34 +380,35 @@ HTML;
 function devshop_get_tasks($environment) {
 
   // Load all tasks from hosting_task table.
-  $query = db_query("
+  $results = db_query("
     SELECT t.nid, t.vid
       FROM {node} tn
       INNER JOIN {hosting_task} t ON tn.vid = t.vid
       WHERE
-        t.rid = %d OR t.rid = %d
+        t.rid = :site OR t.rid = :platform
       ORDER BY t.vid DESC
       LIMIT 5
-  ",
-      $environment->site,
-      $environment->platform
-  );
-  while ($result = db_fetch_object($query)) {
+  ", array(
+      ':site' => $environment->site,
+      ':platform' => $environment->platform,
+  ));
+  foreach ($results as $result) {
     $tasks[$result->vid] = node_load($result->nid, $result->vid);
   }
 
   // Load "Clone" tasks
-  $query = db_query("
+  $results = db_query("
     SELECT n.nid, n.vid
       FROM {node} n
       INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
       WHERE
-        name = 'target_platform' AND value = %d
+        name = 'target_platform' AND value = :platform
       ORDER BY vid DESC
-  ",
-      $environment->platform
-  );
-  while ($result = db_fetch_object($query)) {
+  ", array(
+      ':site' => $environment->site,
+      ':platform' => $environment->platform,
+  ));
+  foreach ($results as $result) {
     $tasks[$result->vid] = node_load($result->nid, $result->vid);
   }
   krsort($tasks);
