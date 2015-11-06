@@ -1,19 +1,30 @@
 <?php
+/**
+ * @file
+ * Install, update and uninstall functions for the devshop_hosting module.
+ *
+ */
+
 
 /**
- * Implements hook_install()
+ * Implements hook_install().
  *
  * Sets a new frontpage.
  */
-function devshop_hosting_install(){
+function devshop_hosting_install() {
   variable_set('site_frontpage', 'devshop');
   drupal_set_message(t('Site frontpage set to <em>devshop</em>.'));
 
-  db_query('UPDATE {system} SET weight = 11 WHERE name = "devshop_hosting"');
+  db_update('system')
+  ->fields(array(
+    'weight' => 11,
+  ))
+  ->condition('name', "devshop_hosting")
+  ->execute();
 }
 
 /**
- * Implements hook_requirements()
+ * Implements hook_requirements().
  * @param $phase
  * @return array
  */
