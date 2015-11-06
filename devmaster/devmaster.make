@@ -17,7 +17,7 @@ projects[hostmaster][subdir] = ""
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.1"
+projects[hosting][version] = "3.2"
 projects[hosting][subdir] = "aegir"
 projects[hosting][patch][687750] = "https://www.drupal.org/files/issues/2610122-circular-dependencies.patch"
 
