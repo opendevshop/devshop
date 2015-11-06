@@ -16,7 +16,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   array_filter(array_map('trim', $allowed_ips));
 
   // Make sure we got the project.
-  if (!$project_node){
+  if (!$project_node) {
     $message = "Project $project not found.";
   }
   // Make sure the security code is valid
@@ -48,7 +48,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   }
 
   // Save the project node with last pull info.
-  $deploy_settings['last_webhook'] = time();
+  $deploy_settings['last_webhook'] = REQUEST_TIME;
   $deploy_settings['last_webhook_status'] = $status;
   $deploy_settings['last_webhook_ip'] = ip_address();
 
@@ -70,7 +70,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 /**
  * Default action to take on webhook init.
  */
-function devshop_pull_default_webhook($project_node){
+function devshop_pull_default_webhook($project_node) {
   $project = $project_node->project;
   foreach ($project->environments as $environment) {
 
@@ -152,15 +152,16 @@ function devshop_pull_project($project_nid) {
 
   $args = array('environments' => '');
 
-  foreach ($project_node->project->environments as $name => $environment){
-    if (!$environment->data->pull_disabled){
-      $args['environments'] .= $environment->name .' ';
+  foreach ($project_node->project->environments as $name => $environment) {
+    if (!$environment->data->pull_disabled) {
+      $args['environments'] .= $environment->name . ' ';
     }
   }
   $args['environments'] = trim($args['environments']);
-  if (!empty($args['environments'])){
+  if (!empty($args['environments'])) {
     hosting_add_task($project_nid, 'devshop-pull', $args);
-  } else {
+  }
+  else {
     print "No environments configured to pull! Aborting.";
   }
 }
