@@ -34,7 +34,7 @@ devshop_working_copy: --working-copy
 
 devshop_drush_packages:
   provision: 7.x-3.x
-  devshop_provision: 1.x
+#  devshop_provision: 7.x-3.x
 #  provision_solr: 6.x-2.x
   registry_rebuild: 7.x-2.2
 
