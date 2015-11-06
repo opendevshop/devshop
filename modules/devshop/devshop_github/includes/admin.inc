@@ -4,7 +4,7 @@
  * GitHub API key form.
  * @return array()
  */
-function devshop_github_settings_form(){
+function devshop_github_settings_form($form, &$form_state) {
   $form['devshop_github_token'] = array(
     '#title' => t('GitHub API Token'),
     '#type' => 'password',
@@ -28,9 +28,9 @@ function devshop_github_settings_form(){
     $form['devshop_github_token']['#description'] .= '  ' . l(t('Create a new token'), 'https://github.com/settings/tokens/new', array('attributes' => array('target' => '_blank')));
   }
   else {
-      $form['devshop_github_token']['#description'] .= ' <em class="text-success">' . t('Your token is saved.') . '</em>';
+    $form['devshop_github_token']['#description'] .= ' <em class="text-success">' . t('Your token is saved.') . '</em>';
   }
-  
+
   // Test for public key access.
   if (!empty($token)) {
     try {
@@ -38,7 +38,7 @@ function devshop_github_settings_form(){
       $client = new \Github\Client();
       $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
       $keys = $client->currentUser()->keys()->all();
-    } 
+    }
     // Happens when user has no public keys.
     catch (\GitHub\Exception\RuntimeException $e) {
       drupal_set_message(t('Something went wrong trying to request http://api.github.com/user/keys.  Make sure your personal token is authorized for repo, repo:status, repo:deployment, public_repo, write:public_key, & write:repo_hook.'), 'error');
@@ -48,14 +48,14 @@ function devshop_github_settings_form(){
     $form['github_public_keys'] = array(
         '#value' => '',
     );
-    
+
     $devshop_key = variable_get('devshop_public_key', '');
 
     $found_key = FALSE;
     foreach ($keys as $key) {
-        if (strpos($devshop_key, $key['key']) !== FALSE){
-            $found_key = TRUE;
-        }
+      if (strpos($devshop_key, $key['key']) !== FALSE) {
+        $found_key = TRUE;
+      }
     }
 
     if ($found_key) {
