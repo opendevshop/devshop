@@ -4,7 +4,7 @@
  */
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function devshop_github_schema() {
   $schema['hosting_devshop_github_pull_requests'] = array(
@@ -50,22 +50,11 @@ function devshop_github_schema() {
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function devshop_github_install() {
-  // Create tables.
-  drupal_install_schema('devshop_github');
-
   // Display a message about setting a github personal token.
   drupal_set_message(t('DevShop GitHub module has been enabled.  You must add an access token to enable full functionality at !link.', array(
     '!link' => l(t('the settings page'), 'admin/devshop/github'),
   )));
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function devshop_github_uninstall() {
-  // Delete tables.
-  drupal_uninstall_schema('devshop_github');
 }

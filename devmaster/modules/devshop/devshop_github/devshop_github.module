@@ -4,7 +4,7 @@
  * @file devshop_github.module
  */
 
-require_once 'vendor/autoload.php';
+require_once DRUPAL_ROOT . '/' . 'vendor/autoload.php';
 
 /**
  * Implements hook_menu().
@@ -35,10 +35,9 @@ function devshop_github_menu() {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter() for project_node_form.
+ * Implements hook_form_FORM_ID_alter() for project_node_form().
  */
-function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id)
-{
+function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
   if ($node->project->git_provider != 'github') {
     return;
@@ -84,14 +83,13 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 /**
  * Implements hook_form_alter().
  */
-function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id)
-{
+function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
   // Look for Token
   $token = variable_get('devshop_github_token', '');
 
   if (empty($token)) {
-    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('GitHub API Token was not found.') .' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
+    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('GitHub API Token was not found.') . ' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
     return;
   }
 
@@ -103,7 +101,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   $found_key = FALSE;
   foreach ($keys as $key) {
-    if (strpos($devshop_key, $key['key']) !== FALSE){
+    if (strpos($devshop_key, $key['key']) !== FALSE) {
       $found_key = TRUE;
     }
   }
@@ -129,10 +127,9 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
 
 /**
- * Implements hook_form_FORM_ID_alter() for project_node_form.
+ * Implements hook_form_FORM_ID_alter() for project_node_form().
  */
-function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$form_state)
-{
+function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
 
   // Return if project isn't ready.
   if (empty($form['install_profile'])) {
@@ -226,12 +223,11 @@ function devshop_github_project_create_webhook($form, $form_state) {
  */
 function devshop_github_nodeapi_project_load(&$node) {
 
-  $query = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = %d', $node->nid);
-  while($pull_request = db_fetch_object($query)) {
-    $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-    if (isset( $node->project->environments[$pull_request->environment_name])) {
-      $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
-    }
+  $pull_request = (object) db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $node->nid))->fetchAssoc();
+
+  $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
+  if (isset( $node->project->environments[$pull_request->environment_name])) {
+    $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
   }
 
   // Parse github owner and repo.
@@ -244,7 +240,7 @@ function devshop_github_nodeapi_project_load(&$node) {
 }
 
 /**
- * Implements hook_nodeapi_TYPE_OP() for task insert
+ * Implements hook_nodeapi_TYPE_OP() for task insert().
  *
  * If task is a test run, send a "pending" commit status.
  */
@@ -413,7 +409,7 @@ function devshop_github_comment($task, $status) {
 /**
  * GitHub action to take on webhook init
  */
-function devshop_github_webhook($project_node){
+function devshop_github_webhook($project_node) {
   $headers = getallheaders();
   $project = $project_node->project;
 
@@ -421,13 +417,13 @@ function devshop_github_webhook($project_node){
   require_once 'vendor/autoload.php';
 
   // @TODO: Handle form content from github as well.
-  if ($headers['content-type'] == 'application/json'){
+  if ($headers['content-type'] == 'application/json') {
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
 
     $args = array();
     $args['cache'] = 1;
 
-    switch ($headers['X-GitHub-Event']){
+    switch ($headers['X-GitHub-Event']) {
       case 'ping':
         $message = 'Pong!';
         break;
@@ -467,7 +463,7 @@ function devshop_github_webhook($project_node){
 
       case 'pull_request':
         // If pull request environments is enabled...
-        if ($project->settings->github['pull_request_environments']){
+        if ($project->settings->github['pull_request_environments']) {
           $message = 'Pull Request Received.';
 
           // @TODO: Handle forks?
@@ -480,7 +476,7 @@ function devshop_github_webhook($project_node){
           $already_have_pr_info = FALSE;
 
           // When PR is opened... create new environment.
-          if ($data->action == 'opened'){
+          if ($data->action == 'opened') {
             $message = "Detected Pull Request creation for $branch \n";
             if (isset($project->environments[$environment_name])) {
               $message = "Environment $environment_name already exists! Not creating one... \n";
@@ -539,7 +535,7 @@ function devshop_github_webhook($project_node){
               $message .= " Deployment Status Created! \n";
 
               // Set a commit status for this REF for devshop/deploy context
-              $sha =$data->pull_request->head->sha;
+              $sha = $data->pull_request->head->sha;
 
               $params = new stdClass();
               $params->state = 'pending';
@@ -607,7 +603,7 @@ function devshop_github_webhook($project_node){
               $info->pull_request_object = serialize($data->pull_request);
 
               // Save environment record.
-              if (drupal_write_record('hosting_devshop_github_pull_requests', $info)){
+              if (drupal_write_record('hosting_devshop_github_pull_requests', $info)) {
                 $message .= ' ' . t('Pull Request info saved to DevShop.');
               }
             }
@@ -657,7 +653,7 @@ function devshop_github_webhook($project_node){
               $message .= " Deployment Status Created! \n";
 
               // Set a commit status for this REF for devshop/deploy context
-              $sha =$data->pull_request->head->sha;
+              $sha = $data->pull_request->head->sha;
 
               $params = new stdClass();
               $params->state = 'pending';
@@ -684,7 +680,7 @@ function devshop_github_webhook($project_node){
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
 
                 $message .= " Commit Status Created for test runs! \n";
-              }  
+              }
 
             } catch (Github\Exception\RuntimeException $e) {
               $log = 'GitHub API Error during PR Syncronize: ' . $e->getMessage() . $e->getCode();
@@ -703,7 +699,7 @@ function devshop_github_webhook($project_node){
                 // Post status to github
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
               }
-              $message .= $log ."\n";
+              $message .= $log . "\n";
             }
 
 
@@ -723,14 +719,14 @@ function devshop_github_webhook($project_node){
               $update = array();
             }
 
-            if (drupal_write_record('hosting_devshop_github_pull_requests', $info, $update)){
+            if (drupal_write_record('hosting_devshop_github_pull_requests', $info, $update)) {
               $message .= ' ' . t('Pull Request info saved to DevShop.');
             }
           }
           // When PR is closed, delete environment.
-          elseif ($data->action == 'closed'){
+          elseif ($data->action == 'closed') {
             $message .= "Pull Request Closed \n";
-            if ($project->settings->github['pull_request_environments_delete']){
+            if ($project->settings->github['pull_request_environments_delete']) {
 
               // If environment has a site... trigger it's deletion.
               // Platform deletion triggers after site deletion completes.
