@@ -1,10 +1,10 @@
 <?php
 
 // Include vendors
-require_once 'vendor/autoload.php';
+require_once DRUPAL_ROOT . '/' . 'vendor/autoload.php';
 
 /**
- * Implements hook_hosting_task_update_status()
+ * Implements hook_hosting_task_update_status().
  */
 function devshop_github_hosting_task_update_status($task, $status) {
 
@@ -52,7 +52,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
 
         $params = new stdClass();
         $params->state = $state;
-        $params->target_url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));;
+        $params->target_url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
 
         if ($status == HOSTING_TASK_WARNING) {
           $params->description = t('DevShop: Tests passed with warnings');
@@ -63,12 +63,12 @@ function devshop_github_hosting_task_update_status($task, $status) {
         $params->context = 'devshop/tests';
 
         $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-        drush_log('Commit status created for devshop/tests!', 'success'); 
-      } 
+        drush_log('Commit status created for devshop/tests!', 'success');
+      }
       // Otherwise we create a deployment and a commit status.
       else {
 
-      
+
       $params->target_url = $task->ref->environment->url;
       $params->description = t('Visit !url', array('!url' => $task->ref->environment->url));
       $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";

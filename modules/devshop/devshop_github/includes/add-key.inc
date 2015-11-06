@@ -3,7 +3,7 @@
 /**
  * Page callback for "add key to github" link.
  */
-function devshop_github_add_key_to_account() {
+function devshop_github_add_key_to_account($form, &$form_state) {
 
     // Check for token
     $token = variable_get('devshop_github_token', '');
@@ -52,7 +52,7 @@ function devshop_github_add_key_to_account() {
     // Create public key
     try {
       $return = $client->currentUser()->keys()->create($params);
-    } 
+    }
     catch (\GitHub\Exception\ValidationFailedException $e) {
       drupal_set_message($e->getMessage(), 'error');
     }
