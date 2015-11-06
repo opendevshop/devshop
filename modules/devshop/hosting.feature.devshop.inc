@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Implements hook_hosting_feature
+ * Implements hook_hosting_feature().
  * @return array List of features to expose to Aegir's hosting features page.
  */
 function devshop_hosting_hosting_feature() {
