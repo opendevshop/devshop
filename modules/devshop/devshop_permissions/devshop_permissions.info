@@ -1,6 +1,6 @@
 name = "DevShop Permissions"
 description = "Default user permissions for devshop."
-core = "6.x"
+core = 7.x
 package = "Features"
 dependencies[] = "aegir_download"
 dependencies[] = "devshop_log"
