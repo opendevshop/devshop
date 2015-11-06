@@ -1,14 +1,14 @@
 <?php
-include('step-1.inc');
-include('step-2.inc');
-include('step-3.inc');
-include('step-4.inc');
+include DRUPAL_ROOT . '/' . 'step-1.inc';
+include DRUPAL_ROOT . '/' . 'step-2.inc';
+include DRUPAL_ROOT . '/' . 'step-3.inc';
+include DRUPAL_ROOT . '/' . 'step-4.inc';
 
 
 /**
  * Project Create Wizard Page
  */
-function devshop_projects_create_wizard($step = NULL){
+function devshop_projects_create_wizard($step = NULL) {
   // required includes for wizard
   ctools_include('wizard');
   ctools_include('object-cache');
@@ -24,12 +24,12 @@ function devshop_projects_create_wizard($step = NULL){
   $project = ctools_object_cache_get('project', NULL);
 
   // Setup Step.
-  if ($step == NULL){
+  if ($step == NULL) {
     drupal_goto('projects/add/' . current(array_keys($form_info['order'])));
   }
 
   // Create default project object
-  if (empty($project)){
+  if (empty($project)) {
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
@@ -44,7 +44,8 @@ function devshop_projects_create_wizard($step = NULL){
 
     // ** set the storage object so its ready for whatever comes next
     ctools_object_cache_set('project', $form_state['cache name'], $project);
-  } else {
+  }
+  else {
     // Quickly save the current step
     $project->step = $step;
     ctools_object_cache_set('project', $form_state['cache name'], $project);
@@ -53,25 +54,26 @@ function devshop_projects_create_wizard($step = NULL){
   // Check verification status
   // @TODO: We should be able to get the error messages...
   $project_node = node_load($project->project_nid);
-  if (!empty($project_node->nid)){
+  if (!empty($project_node->nid)) {
     $tasks = hosting_task_fetch_tasks($project_node->nid);
   }
-  if (isset($tasks['verify']['nid'])){
+  if (isset($tasks['verify']['nid'])) {
 
   }
 
   // Get "verify" task status for the project
-  $project->verify_task_status = isset($tasks['verify']['task_status'])? $tasks['verify']['task_status']: HOSTING_TASK_ERROR;
+  $project->verify_task_status = isset($tasks['verify']['task_status']) ? $tasks['verify']['task_status'] : HOSTING_TASK_ERROR;
   $project->verify_task_nid = $tasks['verify']['nid'];
 
   // If project verification failed, we need to ask for a new git url.
-  if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)){
-    $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));
+  if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)) {
+    $project->verify_error = db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'error'))->fetchField();
     // If not on the first step, go to it.
-    if ($step != current(array_keys($form_info['order']))){
+    if ($step != current(array_keys($form_info['order']))) {
       drupal_goto('projects/add/' . current(array_keys($form_info['order'])));
     }
-  } else {
+  }
+  else {
     $project->verify_error = NULL;
   }
 
@@ -89,7 +91,7 @@ function devshop_projects_create_wizard($step = NULL){
 /**
  * The form_info for the ctools wizard
  */
-function devshop_projects_create_wizard_info(){
+function devshop_projects_create_wizard_info() {
   return array(
     'id' => 'devshop_project_create',
     'path' => "projects/add/%step",
@@ -158,7 +160,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   $form_state['redirect'] = 'projects';
 
   // If we have a project node, create a "delete" hosting task
-  if (!empty($project->project_nid)){
+  if (!empty($project->project_nid)) {
     hosting_add_task($project->project_nid, 'delete');
   }
 
@@ -208,7 +210,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 /**
  * Returns JSON showing the state of the project
  */
-function devshop_projects_add_status($type = 'platform'){
+function devshop_projects_add_status($type = 'platform') {
   $return = array();
 
   // Get Project Cache
@@ -229,13 +231,13 @@ function devshop_projects_add_status($type = 'platform'){
 
   // When checking platforms...
   if ($type == 'platform') {
-    foreach ($project_node->project->environments as $name => $environment){
+    foreach ($project_node->project->environments as $name => $environment) {
       $nids[] = $environment->platform;
     }
   }
 
   // Check verification task for all nids
-  foreach ($nids as $nid){
+  foreach ($nids as $nid) {
     $task = hosting_get_most_recent_task($nid, 'verify');
     $platform = node_load($nid);
     $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
@@ -258,20 +260,21 @@ function devshop_projects_add_status($type = 'platform'){
     // If task is not completed, mark all tasks not complete.
     if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR || $task->task_status == HOSTING_TASK_WARNING) {
       continue;
-    } else {
+    }
+    else {
       $all_tasks_completed = FALSE;
     }
 
   }
   $return['tasks_complete'] = $all_tasks_completed;
-  drupal_json($return);
+  drupal_json_output($return);
   exit;
 }
 
 /**
  * Helper for adding reloading feature to form
  */
-function devshop_form_reloader(&$form, $type = 'platform'){
+function devshop_form_reloader(&$form, $type = 'platform') {
   // Add JS that reloads the page when tasks finish.
   $form['item'] = array(
     '#type' => 'item',
@@ -283,6 +286,6 @@ function devshop_form_reloader(&$form, $type = 'platform'){
     'delay' => 1000,
   );
 
-  drupal_add_js($settings, 'setting');
-  drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js', 'core');
+  drupal_add_js($settings, array('type' => 'setting'));
+  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/reload.js');
 }

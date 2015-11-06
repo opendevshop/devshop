@@ -57,7 +57,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     // No platforms exist yet
     if ($name == 'NEW') {
       $env_title = '';
-    } else {
+    }
+    else {
       $env_title = $name;
     }
 
@@ -106,8 +107,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#title' => t('Web server'),
         '#type' => 'select',
         '#options' => $http_servers,
-        '#default_value' => $environment->settings->web_server?
-          $environment->settings->web_server:
+        '#default_value' => $environment->settings->web_server ?
+          $environment->settings->web_server :
           $project->settings->default_environment['web_server']
       );
     }
@@ -125,8 +126,8 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
         '#title' => t('Database server'),
         '#type' => 'select',
         '#options' => $db_servers,
-        '#default_value' => $environment->settings->db_server?
-          $environment->settings->db_server:
+        '#default_value' => $environment->settings->db_server ?
+          $environment->settings->db_server :
           $project->settings->default_environment['db_server']
       );
     }
@@ -168,7 +169,8 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   if (count($values['project']['environments']) < 1) {
     if ($form_state['clicked_button']['#name'] == 'add_environment') {
       form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
-    } else {
+    }
+    else {
       form_set_error('project][environments][NEW][name', t('You must add at least one environment.'));
     }
   }
@@ -188,13 +190,23 @@ function devshop_projects_save_environments($form, &$form_state) {
   unset($environments['NEW']);
 
   // Delete all environments
-  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $form_state['values']['nid']);
+  db_delete('hosting_devshop_project_environment')
+    ->condition('project_nid', $form_state['values']['nid'])
+    ->execute();
 
   // Create all environments
   foreach ($environments as $environment) {
     $name = trim($environment['name']);
     if (!empty($name)) {
-      db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $form_state['values']['nid'], $environment['name'], $environment['git_ref'], $environment['platform'], serialize($environment['settings']));
+      $id = db_insert('hosting_devshop_project_environment')
+              ->fields(array(
+                'project_nid' => $form_state['values']['nid'],
+                'name' => $environment['name'],
+                'git_ref' => $environment['git_ref'],
+                'platform' => $environment['platform'],
+                'settings' => serialize($environment['settings']),
+              ))
+              ->execute();
     }
   }
 
@@ -245,7 +257,8 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       // Platform publish_path
       if (!empty($project->drupal_path)) {
         $platform->publish_path = $project->code_path . '/' . $environment->name . '/' . $project->drupal_path;
-      } else {
+      }
+      else {
         $platform->publish_path = $project->code_path . '/' . $environment->name;
       }
 
@@ -257,7 +270,13 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
 
     // Update environment with our platform
-    db_query('UPDATE {hosting_devshop_project_environment} SET platform = %d WHERE project_nid = %d AND name = "%s"', $environment->platform, $form_state['values']['nid'], $environment->name);
+    db_update('hosting_devshop_project_environment')
+      ->fields(array(
+        'platform' => $environment->platform,
+      ))
+      ->condition('project_nid', $form_state['values']['nid'])
+      ->condition('name', $environment->name)
+      ->execute();
   }
 
   // For all removed platforms, trigger a delete task
