@@ -1,5 +1,5 @@
 name = DevShop Log
 description = A DevShop module to display the git commit log for each platform.
-core = 6.x
+core = 7.x
 package = DevShop
 dependencies[] = devshop_projects
