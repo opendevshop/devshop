@@ -52,13 +52,13 @@ dependencies[] = r4032login
 dependencies[] = jquery_update
 dependencies[] = adminrole
 
-; DevShop: TODO: Update devshop module versions
-; dependencies[] = devshop_hosting
-; dependencies[] = devshop_projects
-; dependencies[] = devshop_log
-; dependencies[] = devshop_pull
-; dependencies[] = devshop_github
-; dependencies[] = aegir_ssh
-; dependencies[] = aegir_download
-; dependencies[] = devshop_github
+; DevShop
+dependencies[] = devshop_hosting
+dependencies[] = devshop_projects
+dependencies[] = devshop_log
+dependencies[] = devshop_pull
+dependencies[] = devshop_github
+dependencies[] = aegir_ssh
+dependencies[] = aegir_download
+dependencies[] = devshop_github
 
