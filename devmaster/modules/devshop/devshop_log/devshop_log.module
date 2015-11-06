@@ -6,17 +6,23 @@
  */
 
 /**
- * Implementation of hook_perm()
+ * Implements hook_permission().
  */
-function devshop_log_perm() {
+function devshop_log_permission() {
   return array(
-    'view git commit logs',
-    'access project logs',
+    'view git commit logs' => array(
+      'title' => t('view git commit logs'),
+      'description' => t('Access environment git commit logs.'),
+    ),
+    'access project logs' => array(
+      'title' => t('access project logs'),
+      'description' => t('Access project logs.'),
+    ),
   );
 }
 
 /**
- * Implementation of hook_menu()
+ * Implements hook_menu().
  */
 function devshop_log_menu() {
   $items['admin/devshop/gitlog'] = array(
@@ -85,7 +91,7 @@ function devshop_git_log_settings() {
 function devshop_log_page($nid) {
 
   $node = node_load($nid);
-  if($node->type == 'site') {
+  if ($node->type == 'site') {
     $node = node_load($node->platform);
   }
 
@@ -98,7 +104,7 @@ function devshop_log_page($nid) {
 
   $log_count = variable_get('devshop_git_log_count', 10);
   $log_count_opt = '';
-  if($log_count > 0) {
+  if ($log_count > 0) {
     $log_count_opt = "-$log_count";
   }
 
