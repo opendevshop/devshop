@@ -19,6 +19,7 @@ projects[hostmaster][subdir] = ""
 ; For release, use tagged version
 projects[hosting][version] = "3.1"
 projects[hosting][subdir] = "aegir"
+projects[hosting][patch][687750] = "https://www.drupal.org/files/issues/2610122-circular-dependencies.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
