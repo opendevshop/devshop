@@ -84,7 +84,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $error = l(db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error')), "node/{$task->nid}");
+      $error = l(db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'error'))->fetchField(), "node/{$task->nid}");
 
       $row['version'] = array(
         'data' => t('Platform verification failed: !error', array('!error' => $error)),
@@ -120,7 +120,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
-    '#value' => theme('table', $header, $rows, array('class' => 'table')),
+    '#value' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => 'table'))),
   );
 
   // Not completed means show all tasks are not completed (or errored)

@@ -1,13 +1,13 @@
 <?php
 
 /*********
-* STEP 2
-* Project Settings
-*********/
+ * STEP 2
+ * Project Settings
+ *********/
 
 /**
-* STEP 2: Form
-*/
+ * STEP 2: Form
+ */
 function devshop_project_create_step_settings(&$form, &$form_state) {
 
   // Load project and it's form
@@ -37,16 +37,16 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
 }
 
 /**
-* STEP 2: Validate
-*/
+ * STEP 2: Validate
+ */
 function devshop_project_create_step_settings_validate(&$from, &$form_state) {
   // @TODO: Pass through to devshop validate
   //  devshop_projects_validate($node, $form);
 }
 
 /**
-* STEP 2: Submit
-*/
+ * STEP 2: Submit
+ */
 function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project = &$form_state['project'];
   $project->drupal_path = $form_state['values']['project']['drupal_path'];

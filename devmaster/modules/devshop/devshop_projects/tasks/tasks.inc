@@ -5,7 +5,7 @@
  */
 
 /**
- * Implementation of hook_hosting_tasks()
+ * Implements hook_hosting_tasks().
  */
 function devshop_projects_hosting_tasks() {
   $tasks = array();
@@ -60,7 +60,7 @@ function devshop_projects_tasks_add_environment_to_form(&$form, $node, $descript
     '#type' => $type,
     '#title' => t($title),
     '#options' => $options,
-    '#default_value' => $type == 'radios'? key($options): array(key($options)),
+    '#default_value' => $type == 'radios' ? key($options) : array(key($options)),
     '#required' => $type == 'checkboxes',
     '#description' => $description,
   );

@@ -21,7 +21,7 @@ function devshop_projects_projects_page() {
 
   $tasks = hosting_available_tasks('site');
 
-  $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = 1 ORDER BY n.changed");
+  $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :n.status ORDER BY n.changed", array(':n.status' => 1));
   $rows = array();
 
   while ($result = db_fetch_object($query)) {
@@ -61,11 +61,12 @@ HTML;
 
     // Links to all environments
     $items = '';
-    foreach ($project->environments as $env => $environment){
+    foreach ($project->environments as $env => $environment) {
       if (empty($environment->last_task)) {
         $icon = 'cube';
         $class = 'status';
-      } else {
+      }
+      else {
         if ($environment->last_task['status'] == HOSTING_TASK_SUCCESS) {
           $icon = 'check';
           $class = 'success';
@@ -88,7 +89,7 @@ HTML;
         }
       }
 
-      $nid = $environment->site? $environment->site: $environment->platform;
+      $nid = $environment->site ? $environment->site : $environment->platform;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
             'class' => 'btn btn-sm alert-' . $class,
@@ -117,7 +118,7 @@ HTML;
   }
 
   // No Projects
-  if (empty($rows)){
+  if (empty($rows)) {
     $button = l(t('Create your first Project'), 'projects/add');
     $output = <<<HTML
 <div class="empty">
@@ -125,18 +126,19 @@ HTML;
     <div class="empty-button">$button</div>
 </div>
 HTML;
-  } else {
+  }
+  else {
     //Call hooks for alter informacion
     $data = module_invoke_all('devshop_projects_page', $rows, $header);
-    
+
     // @TODO: Better hook...
-    if (empty($data['rows'])){
+    if (empty($data['rows'])) {
       $data['rows'] = $rows;
     }
-    if (empty($data['header'])){
+    if (empty($data['header'])) {
       $data['header'] = $header;
     }
-    $output = theme('table', $data['header'], $data['rows'], array('class' => 'table'));
+    $output = theme('table', array('header' => $data['header'], 'rows' => $data['rows'], 'attributes' => array('class' => 'table')));
   }
   return $output;
 }
@@ -153,7 +155,7 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
   $project_wizard_cache = ctools_object_cache_get('project', NULL);
-  if ($page && isset($project_wizard_cache->project_nid) && $node->nid == $project_wizard_cache->project_nid){
+  if ($page && isset($project_wizard_cache->project_nid) && $node->nid == $project_wizard_cache->project_nid) {
     drupal_goto('projects/add/' . $project_wizard_cache->step);
   }
 
@@ -190,7 +192,7 @@ function devshop_environment_links($environment) {
           )
       ));
       $title = $tasks[$action]['title'];
-      if ($tasks[$action]['icon'])  {
+      if ($tasks[$action]['icon']) {
         $icon = '<i class="fa fa-' . $tasks[$action]['icon'] . '""></i>';
       }
       else {
@@ -213,7 +215,7 @@ HTML;
  * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
  */
 function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
-  if (!empty($node->project)){
+  if (!empty($node->project)) {
     // Display Project, Environment and Branch.
     $node->content['info']['project'] = array(
       '#type' => 'item',
@@ -233,7 +235,7 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
       '#value' => $node->environment->git_ref,
       '#weight' => -11,
     );
-    
+
     // Add Breadcrumbs
     $crumbs = array();
     $crumbs[] = l(t('Home'), '<front>');
@@ -275,7 +277,7 @@ function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
   $node->content['info']['parameters'] = array(
     '#type' => 'item',
     '#title' => t('Task Parameters'),
-    '#value' => theme('table', array(),  $rows),
+    '#value' => theme('table', array('header' => array(), 'rows' =>   $rows)),
     '#weight' => -11,
   );
 
@@ -302,7 +304,7 @@ function devshop_hosting_site_goto_link($node) {
 
   // Get the link from cache.
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
-  if (!is_null($cache) && (time() < $cache->data['expire'])) {
+  if (!is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
     $title = t("Log in: !url", array('!url' => $url));
   }
   else {

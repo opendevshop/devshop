@@ -16,13 +16,13 @@ function hosting_task_devshop_create_form($node) {
 
   // Look for Site to Fork or Clone
 
-  if (arg(3) == 'fork' || arg(3) == 'clone'){
+  if (arg(3) == 'fork' || arg(3) == 'clone') {
 
-    if (arg(3) == 'fork'){
+    if (arg(3) == 'fork') {
       // @TODO: Do this with hook_menu?
       $site_to_fork = arg(4);
       if ($site_to_fork && is_numeric($site_to_fork) && $site = node_load($site_to_fork)) {
-        if (!empty($project->environments[$site->environment->name])){
+        if (!empty($project->environments[$site->environment->name])) {
           $form['action'] = array(
             '#type' => 'value',
             '#value' => 'fork'
@@ -52,7 +52,7 @@ function hosting_task_devshop_create_form($node) {
       $site_to_clone = arg(4);
       if ($site_to_clone && is_numeric($site_to_clone) && $site = node_load($site_to_clone)) {
 
-        if (!empty($project->environments[$site->environment->name])){
+        if (!empty($project->environments[$site->environment->name])) {
           $form['action'] = array(
             '#type' => 'value',
             '#value' => 'clone'
@@ -151,7 +151,7 @@ function hosting_task_devshop_create_form($node) {
 /**
  * Validation hook for hosting_task_devshop_create_form()
  */
-function hosting_task_devshop_create_form_validate($form, &$form_state){
+function hosting_task_devshop_create_form_validate($form, &$form_state) {
   $params = $form_state['values']['parameters'];
 
   // Load Project
@@ -159,12 +159,12 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
   $project = $node->project;
 
   // Check existence of the environment name
-  if (!empty($project->environments[$params['environment_name']])){
+  if (!empty($project->environments[$params['environment_name']])) {
     form_set_error('environment_name', t('%name is already in use.  Your environment name must be unique within the project.', array('%name' => $params['environment_name'])));
   }
 
   // Check existence of the git branch
-  if (in_array($params['new_branch'], $project->settings->git['branches'])){
+  if (in_array($params['new_branch'], $project->settings->git['branches'])) {
     form_set_error('new_branch', t("The project already has a branch named %name. Choose a git branch name that doesn't already exist.", array('%name' => $params['new_branch'])));
   }
 
@@ -301,6 +301,14 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'executed' => 0,
   );
 
-  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings, last_task) VALUES (%d, "%s", "%s", %d, "%s", "%s");', $project->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings), serialize($environment->last_task));
-
+  db_insert('hosting_devshop_project_environment')
+    ->fields(array(
+      'project_nid' => $project->nid,
+      'name' => $environment->name,
+      'git_ref' => $environment->git_ref,
+      'platform' => $environment->platform,
+      'settings' => serialize($environment->settings),
+      'last_task' => serialize($environment->last_task),
+    ))
+    ->execute();
 }
