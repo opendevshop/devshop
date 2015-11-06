@@ -5,19 +5,19 @@
  * Provides Node Type, UI, and tools for DevShop Projects.
  */
 
-include_once DRUPAL_ROOT . '/' . 'inc/drush.inc';
-include_once DRUPAL_ROOT . '/' . 'inc/forms.inc';
-include_once DRUPAL_ROOT . '/' . 'inc/nodes.inc';
-include_once DRUPAL_ROOT . '/' . 'inc/queue.inc';
-include_once DRUPAL_ROOT . '/' . 'inc/theme.inc';
-include_once DRUPAL_ROOT . '/' . 'inc/ui.inc';
+include_once 'inc/drush.inc';
+include_once 'inc/forms.inc';
+include_once 'inc/nodes.inc';
+include_once 'inc/queue.inc';
+include_once 'inc/theme.inc';
+include_once 'inc/ui.inc';
 
 // Tasks Code
-include_once DRUPAL_ROOT . '/' . 'tasks/tasks.inc';
-include_once DRUPAL_ROOT . '/' . 'tasks/commit.inc';
-include_once DRUPAL_ROOT . '/' . 'tasks/create.inc';
-include_once DRUPAL_ROOT . '/' . 'tasks/pull.inc';
-include_once DRUPAL_ROOT . '/' . 'tasks/deploy.inc';
+include_once 'tasks/tasks.inc';
+include_once 'tasks/commit.inc';
+include_once 'tasks/create.inc';
+include_once 'tasks/pull.inc';
+include_once 'tasks/deploy.inc';
 
 
 /**
