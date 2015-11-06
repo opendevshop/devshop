@@ -5,7 +5,7 @@
  *
  * All code for admin interface.
  */
-function devshop_projects_settings_form() {
+function devshop_projects_settings_form($form, &$form_state) {
   $form = array();
 
   $form['paths'] = array(

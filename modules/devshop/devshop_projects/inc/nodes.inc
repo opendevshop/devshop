@@ -37,11 +37,11 @@ function devshop_projects_load($node) {
   global $user;
 
   // Load the "hosting context". The unique name in the aegir system.
-  $name = db_result(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
+  $name = db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
   $additions['hosting_name'] = 'project_' . $name;
 
   // Load project data
-  $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = %d', $node->nid));
+  $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = :nid', array(':nid' => $node->nid)));
 
   // Load up all project settings.
   $project->name = $name;
@@ -51,7 +51,7 @@ function devshop_projects_load($node) {
   $project->settings->git['refs'] = array();
   foreach ($project->settings->git as $type => $refs) {
     foreach ($refs as $ref) {
-      $project->settings->git['refs'][$ref] = ($type == 'branches')? 'branch': 'tag';
+      $project->settings->git['refs'][$ref] = ($type == 'branches') ? 'branch' : 'tag';
     }
   }
 
@@ -72,7 +72,7 @@ function devshop_projects_load($node) {
 
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
-  $query = db_query("
+  $environments = db_query("
     SELECT
         e.*,
         s.status as site_status,
@@ -97,12 +97,13 @@ function devshop_projects_load($node) {
       LEFT JOIN {node} db ON s.db_server = db.nid
       LEFT JOIN {node} n ON e.project_nid = n.nid
       LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
-      WHERE project_nid = %d AND
+      WHERE project_nid = :nid AND
       e.name != ''
       ORDER BY
-        name;   ", $node->nid);
-  $environments = array();
-  while ($environment = db_fetch_object($query)) {
+        name;   ", array(
+        ':nid' => $node->nid
+  ));
+  foreach ($environments as $environment) {
 
     // Don't load the environment if the site and/or platform is deleted.
     if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
@@ -133,7 +134,7 @@ function devshop_projects_load($node) {
 
 
     // Environment Drupal version.
-    $iid = db_result(db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type='platform' AND i.rid=%d", $environment->platform));
+    $iid = db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type = :type AND i.rid = :nid", array(':type' => 'platform', ':nid' => $environment->platform))->fetchField();
     $release = hosting_package_instance_load($iid);
     $environment->version = $release->version;
 
@@ -156,7 +157,7 @@ function devshop_projects_load($node) {
 
     // Load Solr if present
     if (module_exists('hosting_solr')) {
-      $server_nid = db_result(db_query("SELECT server FROM {hosting_solr} WHERE nid=%d", $environment->site));
+      $server_nid = db_query("SELECT server FROM {hosting_solr} WHERE nid = :nid", array(':nid' => $environment->site))->fetchField();
 
       $servers = hosting_get_servers('solr');
       if ($server_nid && isset($servers[$server_nid])) {
@@ -177,11 +178,11 @@ function devshop_projects_load($node) {
     $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
 
     // Repo root
-    $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
+    $environment->repo_root = empty($project->drupal_path) ? $environment->root : str_replace($project->drupal_path, '', $environment->root);
 
     // Load encryption status
-    if (module_exists('hosting_ssl')){
-      $environment->ssl_enabled  = db_result(db_query('SELECT ssl_enabled FROM {hosting_ssl_site} WHERE nid = %d', $environment->site));
+    if (module_exists('hosting_ssl')) {
+      $environment->ssl_enabled  = db_query('SELECT ssl_enabled FROM {hosting_ssl_site} WHERE nid = :nid', array(':nid' => $environment->site))->fetchField();
     }
     else {
       $environment->ssl_enabled = FALSE;
@@ -191,10 +192,11 @@ function devshop_projects_load($node) {
     // Get aegir "aliases"
     $environment->domains = hosting_alias_get_aliases($environment);
     $environment->domains[] = $environment->system_domain;
-    $protocol = $environment->ssl_enabled? 'https://': 'http://';
+    $protocol = $environment->ssl_enabled ? 'https://' : 'http://';
     if ($environment->redirect_domain) {
       $environment->url = $protocol . $environment->redirect_domain;
-    } else {
+    }
+    else {
       $environment->url = $protocol . $environment->system_domain;
     }
 
@@ -228,7 +230,7 @@ function devshop_projects_load($node) {
   $additions['project'] = $project;
 
   // Load verification status of project node.
-  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d ORDER BY vid DESC', $node->nid));
+  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid)));
   $task->task_status = (int) $task->task_status;
   $additions['verify'] = $task;
 
@@ -249,7 +251,7 @@ function devshop_projects_insert($node) {
   if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
-  
+
   $info = new stdClass();
   $info->nid = $node->nid;
   $info->git_url = $node->project->git_url;
@@ -281,7 +283,7 @@ function devshop_projects_insert($node) {
   // Not sure if we need this, but we might to enable importing via drush.
   // Save Environment records.
   if (!empty($node->project->environments)) {
-    foreach ($node->project->environments as $name => $environment){
+    foreach ($node->project->environments as $name => $environment) {
       // Ensure correct data types
       $environment = (object) $environment;
       $environment->settings = (array) $environment->settings;
@@ -407,8 +409,13 @@ function devshop_projects_update($node) {
  */
 function devshop_projects_delete($node) {
 
-  db_query('DELETE FROM {hosting_devshop_project} WHERE nid = %d', $node->nid);
-  db_query('DELETE FROM {hosting_devshop_project_environment} WHERE project_nid = %d', $node->nid);
+  db_delete('hosting_devshop_project')
+    ->condition('nid', $node->nid)
+    ->execute();
+
+  db_delete('hosting_devshop_project_environment')
+  ->condition('project_nid', $node->nid)
+  ->execute();
 
   hosting_context_delete($node->nid);
 }
@@ -416,7 +423,7 @@ function devshop_projects_delete($node) {
 
 
 /**
-vagra * Implementation of hook_nodeapi()
+ * Implementation of hook_nodeapi()
  * For site and platform nodes, load project and environment objects.
  *
  * @see devshop_projects_load()
@@ -426,7 +433,10 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   // Load environment info into platforms and sites.
   if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
     $additions = array();
-    $result = db_fetch_object(db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE {$node->type} = %d", $node->nid));
+    $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :nid", array(
+        ':type' => $node->type,
+        ':nid'  => $node->nid
+    ))->fetchAssoc();
 
     // Load project and environment
     $project_node = node_load($result->project_nid);
@@ -435,10 +445,13 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     return $additions;
   }
 
-    // Load environment info into tasks.
+  // Load environment info into tasks.
   if ($op == 'load' && $node->type == 'task') {
     $additions = array();
-    $result = db_fetch_object(db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));
+    $result = (object) db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
+        ':site' => $node->rid,
+        ':platform' => $node->rid
+    ))->fetchAssoc();
 
     // Load project and environment
     $additions['project'] = $result;
@@ -473,7 +486,9 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
   // When a platform or site node is deleted, remove the environment record.
   if ($op == 'delete' && ($node->type == 'site' || $node->type == 'platform')) {
     drupal_set_message('Deleted environment.');
-    db_query('DELETE FROM {hosting_devshop_project_environment} WHERE %s = %d', $node->type, $node->nid);
+    db_delete('hosting_devshop_project_environment')
+      ->condition($node->type, $node->nid)
+      ->execute();
   }
 }
 
@@ -494,7 +509,7 @@ function devshop_environment_save(stdClass &$environment) {
   $info->last_task = serialize($environment->last_task);
 
   // Save environment record.
-  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
+  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))) {
     watchdog('ok', 'Environment record saved: ' . print_r($info, 1));
     return TRUE;
   }
@@ -511,7 +526,11 @@ function devshop_environment_save_last_task($environment) {
 
   $task_string = serialize($environment->last_task);
 
-  db_query('UPDATE {hosting_devshop_project_environment} SET last_task = "%s" WHERE name = "%s" AND project_nid = %d',
-      $task_string, $environment->name, $environment->project_nid
-      );
+  db_update('hosting_devshop_project_environment')
+    ->fields(array(
+      'last_task' => $task_string,
+    ))
+    ->condition('name', $environment->name)
+    ->condition('project_nid', $environment->project_nid)
+    ->execute();
 }
