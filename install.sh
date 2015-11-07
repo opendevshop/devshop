@@ -114,6 +114,7 @@ if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  $HOSTNAME_FQDN = localhost
 fi
 
 if [ -f '/root/.my.cnf' ]

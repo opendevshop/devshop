@@ -29,3 +29,6 @@ notifications:
 
 sudo: required
 dist: trusty
+addons:
+  hosts:
+    - localhost
