@@ -14,7 +14,8 @@ script:
   - sudo su aegir -c "devshop status"
 
   # Test for DevShop
-  - sudo su aegir -c "cd /usr/share/devshop/tests && composer install && bin/behat --profile travis"
+  - ls -la $TRAVIS_BUILD_DIR
+  - sudo su aegir -c "cd $TRAVIS_BUILD_DIR/tests && composer install && bin/behat --profile travis"
 
 # Notify devshop IRC chatroom.
 notifications:
