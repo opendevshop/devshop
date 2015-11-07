@@ -50,6 +50,12 @@ elif [ -f '/etc/lsb-release' ]; then
     fi
 fi
 
+# If on travis, use localhost as the hostname
+if [ "$TRAVIS" == "true" ]; then
+  echo "TRAVIS DETECTED! Setting Hostname to 'localhost'."
+  $HOSTNAME_FQDN = localhost
+fi
+
 LINE=---------------------------------------------
 
 echo " OS: $OS"
