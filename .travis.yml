@@ -10,13 +10,11 @@ install:
   - sudo su root -c "bash install.sh"
 
 script:
+  # Run `devshop status` command.
   - sudo su aegir -c "devshop status"
-  - sudo su aegir -c "cd /usr/share/devshop/tests && composer install && bin/behat
 
   # Test for DevShop
-#  - sudo su -c "cd /usr/share/devshop/tests && composer update"
-  # Failing build looks pretty bad.  Let's finish this work in a branch.
-  # - sudo su aegir -c "cd /usr/share/devshop/tests && bin/behat --profile travis"
+  - sudo su aegir -c "cd /usr/share/devshop/tests && composer install && bin/behat --profile travis"
 
 # Notify devshop IRC chatroom.
 notifications:
