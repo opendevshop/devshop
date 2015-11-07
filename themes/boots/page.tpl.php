@@ -71,9 +71,10 @@
     </div>
   </div>
   <div class="row">
-    <?php if ($tabs): ?>
+    <?php if ($tabs || $left): ?>
     <div class="col-xs-3 col-sm-2 col-md-3 container-fluid">
       <?php if ($tabs) print $tabs ?>
+      <?php if ($left) print $left ?>
     </div>
     <?php endif; ?>
       <div class="main

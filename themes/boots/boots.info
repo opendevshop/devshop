@@ -16,4 +16,5 @@ scripts[] = https://oss.maxcdn.com/respond/1.4.2/respond.min.js
 regions[header] = Header
 regions[pre_content] = Pre-content
 regions[content] = Content
+regions[left] = Left
 regions[footer] = Footer
