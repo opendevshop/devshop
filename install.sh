@@ -53,7 +53,7 @@ fi
 # If on travis, use localhost as the hostname
 if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting Hostname to 'localhost'."
-  $HOSTNAME_FQDN = localhost
+  HOSTNAME_FQDN="localhost"
 fi
 
 LINE=---------------------------------------------
