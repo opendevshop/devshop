@@ -146,6 +146,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#type' => 'markup',
       '#value' => $note,
     );
+    $form['#no_finish'] = TRUE;
     return $form;
   }
   else {
