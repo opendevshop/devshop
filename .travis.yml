@@ -10,7 +10,6 @@ install:
   - sudo su root -c "bash install.sh"
 
 script:
-  - sudo su aegir -c "drush @hostmaster uli"
   - sudo su aegir -c "devshop status"
 
   # Test for DevShop
