@@ -4,6 +4,10 @@
     <h4><?php print $project->name; ?></h4>
     <p><?php print $project->git_url; ?></p>
 
+    <p class="pull-right">
+        <a href="<?php print url('projects/add/settings'); ?>"><i class="fa fa-sliders"></i> <?php print t('Edit') ?></a>
+    </p>
+
     <?php if ($project->drupal_path): ?>
     <p><?php print t('Path to Drupal: '); ?><em><?php print $project->drupal_path; ?></em></p>
     <?php endif; ?>
@@ -19,5 +23,6 @@
             <li class="db-server-node"><a href="<?php print url('node/' . $db_server_node->nid); ?>"><i class="fa fa-database"></i> <?php print $db_server_node->title ?></a></li>
         </ul>
     <?php endif; ?>
+
 </div>
 <?php endif; ?>
