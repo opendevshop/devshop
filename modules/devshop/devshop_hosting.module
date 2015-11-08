@@ -72,21 +72,23 @@ function devshop_hosting_home() {
  * Streamlines login and servers pages.
  */
 function devshop_hosting_menu_alter(&$items) {
-  $items['user/password']['type'] = MENU_CALLBACK;
-  unset($items['hosting/sites']);
-  unset($items['hosting/platforms']);
-  unset($items['hosting/clients']);
 
-  $items['hosting/servers/add'] = $items['node/add/server'];
-  $items['hosting/servers/add']['title'] = t('Add new Server');
-  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
-  $items['hosting/servers/add']['page arguments'] = array('server');
-
-  $items['hosting/servers/list'] = array(
-    'title' => t('All Servers'),
-    'weight' => -1,
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-  );
+  // Commented out for the upgrade. Remove when 1.0.0 is released.
+//  $items['user/password']['type'] = MENU_CALLBACK;
+//  unset($items['hosting/sites']);
+//  unset($items['hosting/platforms']);
+//  unset($items['hosting/clients']);
+//
+//  $items['hosting/servers/add'] = $items['node/add/server'];
+//  $items['hosting/servers/add']['title'] = t('Add new Server');
+//  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
+//  $items['hosting/servers/add']['page arguments'] = array('server');
+//
+//  $items['hosting/servers/list'] = array(
+//    'title' => t('All Servers'),
+//    'weight' => -1,
+//    'type' => MENU_DEFAULT_LOCAL_TASK,
+//  );
 
   $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
 
