@@ -709,3 +709,8 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     color: #444;
     white-space: nowrap;
 }
+
+#project-add-status {
+    margin-top: 15px;
+    overflow-x: hidden;
+}
