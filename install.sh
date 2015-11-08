@@ -130,7 +130,7 @@ else
 fi
 
 # Clone the installer code if a playbook path was not set.
-MAKEFILE_PATH=''
+MAKEFILE_PATH=$PLAYBOOK_PATH
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
