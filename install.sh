@@ -129,11 +129,6 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
-echo $LINE
-echo " Hostname: $HOSTNAME_FQDN"
-echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-echo $LINE
-
 # Clone the installer code if a playbook path was not set.
 MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
@@ -162,12 +157,15 @@ if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
     exit 1
 fi
 
-# Run the playbook.
-echo " Installing with Ansible..."
-echo $LINE
-
+# Notify the user what we are about to do.
+echo " Hostname: $HOSTNAME_FQDN"
+echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo " Makefile: $MAKEFILE_PATH "
+echo $LINE
+
+# Run the playbook.
+echo " Installing with Ansible..."
 echo $LINE
 
 ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH devshop_makefile=$MAKEFILE_PATH"
