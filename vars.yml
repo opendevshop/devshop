@@ -39,6 +39,7 @@ devshop_drush_packages:
   registry_rebuild: 7.x-2.2
 
 devshop_makefile: build-devmaster.make
+devshop_install_profile: hostmaster
 
 aegir_user_uid: 12345
 
