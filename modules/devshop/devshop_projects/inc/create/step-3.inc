@@ -99,7 +99,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     if (count($http_servers) == 1) {
       $form['project']['environments'][$name]['settings']['web_server'] = array(
           '#type' => 'value',
-          '#value' => $project->settings->default_environment['web_server'],
+          '#value' => key($http_servers),
       );
     }
     elseif (count($http_servers) > 1) {
