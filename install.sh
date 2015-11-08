@@ -54,6 +54,9 @@ fi
 if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting Hostname to 'localhost'."
   HOSTNAME_FQDN="localhost"
+
+  # Make sure our build code is readable
+  sudo chmod +r $TRAVIS_BUILD_DIR -R
 fi
 
 LINE=---------------------------------------------
