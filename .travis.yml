@@ -11,9 +11,10 @@ install:
   - sudo chmod +r $TRAVIS_BUILD_DIR -R
   - sudo ls -la $TRAVIS_BUILD_DIR -R
 
+  - sudo su root -c "bash install.sh $TRAVIS_BUILD_DIR"
+
   # Testing if aegir user can access build-devmaster.make
   - sudo su aegir -c "cat $TRAVIS_BUILD_DIR/build-devmaster.make"
-  - sudo su root -c "bash install.sh $TRAVIS_BUILD_DIR"
 
 script:
   # Run `devshop status` command.
