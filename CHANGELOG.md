@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.5.4 (November 7, 2015)
+
+- Adding a "Project Info" box to the project create wizard, to show the user what they've added so far and to make it testable.
+- Actually fixes #26. On project create form, the environmental default web_server was sometimes not being set.  If there is only one server, the "Step 3: Environments" form now force defaults to the only server.
+- Remove the "Finish" button on the last step until all platforms are verified.
+- Fixed playbook not writing a new /var/aegir/.devshop-version file on upgrade
+- Slightly improved behat tests.
+- Updates to travis-ci.org file.
+
 ## 0.5.3 (November 2, 2015)
 
 - Fixing bad version number in getdevshop.com.

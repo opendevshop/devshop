@@ -7,16 +7,15 @@ install:
 
   # Install DevShop with the standalone installer, using local playbooks.
   # Run as actual root?  Testing to see if this is a problem.
-  - sudo su root -c "bash install.sh"
+  - sudo bash install.sh
 
 script:
-  - sudo su aegir -c "drush @hostmaster uli"
+  # Run `devshop status` command.
   - sudo su aegir -c "devshop status"
 
   # Test for DevShop
-#  - sudo su -c "cd /usr/share/devshop/tests && composer update"
-  # Failing build looks pretty bad.  Let's finish this work in a branch.
-  # - sudo su aegir -c "cd /usr/share/devshop/tests && bin/behat --profile travis"
+  - ls -la $TRAVIS_BUILD_DIR
+  - cd $TRAVIS_BUILD_DIR/tests && sudo composer install && sudo su aegir -c "bin/behat --profile travis"
 
 # Notify devshop IRC chatroom.
 notifications:
@@ -27,3 +26,9 @@ notifications:
     on_success: change
     on_failure: always
     on_start: false
+
+sudo: required
+dist: trusty
+addons:
+  hosts:
+    - localhost
