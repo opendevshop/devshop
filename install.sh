@@ -73,9 +73,6 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
-echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
-echo $LINE
-
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
     echo "This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
@@ -167,6 +164,10 @@ fi
 
 # Run the playbook.
 echo " Installing with Ansible..."
+echo $LINE
+
+echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
+echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
 ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH devshop_makefile=$MAKEFILE_PATH"
