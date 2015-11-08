@@ -7,6 +7,10 @@ install:
 
   # Install DevShop with the standalone installer, using local playbooks.
   # Run as actual root?  Testing to see if this is a problem.
+  - sudo ls -la $TRAVIS_BUILD_DIR -R
+  - sudo chmod +r $TRAVIS_BUILD_DIR -R
+  - sudo ls -la $TRAVIS_BUILD_DIR -R
+
   - sudo su root -c "bash install.sh $TRAVIS_BUILD_DIR"
 
 script:
