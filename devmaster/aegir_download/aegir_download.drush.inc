@@ -72,10 +72,11 @@ function aegir_download_drush_pm_post_download($project, $release)
 {
     $alias = d()->name;
     $uri = d()->uri;
+    $project = d()->project;
     $path_to_project = $project['full_project_path'];
 
-    // Bail if there is no URI.
-    if (empty($uri)) {
+    // Bail if there is no URI or drush alias.
+    if (empty($uri) || empty($alias) || empty($project)) {
         return;
     }
 
