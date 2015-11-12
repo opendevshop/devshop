@@ -7,8 +7,6 @@
  * projects. It displays a nice tabulated list of projects
  * and cool things you can do with them.
  *
- * @TODO: Should we make this a list of teasers?  Hard to cram everything in
- * a table.
  */
 function devshop_projects_projects_page() {
   drupal_set_title(t('Projects'));
@@ -21,10 +19,10 @@ function devshop_projects_projects_page() {
 
   $tasks = hosting_available_tasks('site');
 
-  $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :n.status ORDER BY n.changed", array(':n.status' => 1));
+  $results = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :status ORDER BY n.changed", array(':status' => 1));
   $rows = array();
 
-  while ($result = db_fetch_object($query)) {
+  foreach ($results as $result) {
     $project_node = node_load($result->nid);
     $project = $project_node->project;
 
