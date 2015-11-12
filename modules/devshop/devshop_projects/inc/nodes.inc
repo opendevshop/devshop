@@ -248,7 +248,11 @@ function devshop_projects_load($node) {
  *
  *  @see hosting_platform_insert()
  */
-function devshop_projects_insert($node) {
+function devshop_projects_node_insert($node) {
+
+  if ($node->type != 'project') {
+    return;
+  }
 
   if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
@@ -316,7 +320,11 @@ function devshop_projects_insert($node) {
  *  2. Adds a "Verify" task for this project.
  *
  */
-function devshop_projects_update($node) {
+function devshop_projects_node_update($node) {
+
+  if ($node->type != 'project') {
+    return;
+  }
 
   $project = (object) $node->project;
   $project->settings = (object) $project->settings;
