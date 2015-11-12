@@ -64,19 +64,33 @@ function theme_devshop_projects_create_settings_form($form) {
     $row = array();
     $header['name'] = 'Name';
     $header['git_ref'] = t('Branch/Tag');
-    $row[] = drupal_render($form[$env_name]['name']);
-    $row[] = drupal_render($form[$env_name]['git_ref']);
 
-    foreach (element_children($form[$env_name]['settings']) as $setting) {
+    $name_element = $form[$env_name]['name'];
+    $git_ref_element = $form[$env_name]['git_ref'];
+    $settings_element = $form[$env_name]['settings'];
+
+    $row[] = drupal_render($name_element);
+    $row[] = drupal_render($git_ref_element);
+
+    foreach (element_children($settings_element) as $setting) {
       if (!isset($header[$setting])) {
         $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
       }
       $form[$env_name]['settings'][$setting]['#title'] = '';
-      $row[] = drupal_render($form[$env_name]['settings'][$setting]);
+
+      $element = $form[$env_name]['settings'][$setting];
+      $row[] = drupal_render($element);
     }
     $rows[] = $row;
   }
-  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'project-settings-table', 'class' => 'table')));
+  $output = theme('table', array(
+      'header' => $header,
+      'rows' => $rows,
+      'attributes' => array(
+          'id' => 'project-settings-table',
+          'class' => array('table'),
+      )
+  ));
   $output .= '<p>' . t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') . '</p>';
 
   return $output;
