@@ -10,7 +10,7 @@
  *
  * Just get the Git URL.  If we can't access the code, all else should fail.
  */
-function devshop_project_create_step_git(&$form, &$form_state) {
+function devshop_project_create_step_git($form, $form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->project_nid);
 
@@ -34,12 +34,11 @@ function devshop_project_create_step_git(&$form, &$form_state) {
     '#required' => TRUE,
     '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
     '#size' => 40,
-    '#default_value' => $project_node->title,
     '#maxlength' => 255,
   );
 
   // If there is already a title, make this an item.
-  if (!empty($project->title)) {
+  if (!empty($project_node->title)) {
     // Force title
     $form['title']['#value'] = $form['title']['#default_value'];
     $form['title']['#type'] = 'value';
