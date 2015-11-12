@@ -42,11 +42,14 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
     'hidden' => TRUE,
   );
-  $tasks['site']['devshop-deploy'] = array(
-    'title' => t('Deploy'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-  );
+  // @TODO: This task was making menu cache clears FREAK OUT.
+  // We must figure out how to create a new "deploy" task.
+  // This task might as well be in hosting_git.module
+//  $tasks['site']['devshop-deploy'] = array(
+//    'title' => t('Deploy'),
+//    'access callback' => 'devshop_hosting_task_menu_access',
+//    'dialog' => TRUE,
+//  );
   return $tasks;
 }
 
