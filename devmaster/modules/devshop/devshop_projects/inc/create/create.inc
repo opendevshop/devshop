@@ -58,12 +58,14 @@ function devshop_projects_create_wizard($step = NULL) {
     $tasks = hosting_task_fetch_tasks($project_node->nid);
   }
   if (isset($tasks['verify']['nid'])) {
-
+    // Get "verify" task status for the project
+    $project->verify_task_status = isset($tasks['verify']['task_status']) ? $tasks['verify']['task_status'] : HOSTING_TASK_ERROR;
+    $project->verify_task_nid = $tasks['verify']['nid'];
   }
-
-  // Get "verify" task status for the project
-  $project->verify_task_status = isset($tasks['verify']['task_status']) ? $tasks['verify']['task_status'] : HOSTING_TASK_ERROR;
-  $project->verify_task_nid = $tasks['verify']['nid'];
+  else {
+    $project->verify_task_status = NULL;
+    $project->verify_task_nid = NULL;
+  }
 
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)) {
