@@ -111,7 +111,7 @@ function devshop_projects_preprocess_node(&$vars) {
 function devshop_projects_preprocess_page(&$vars){
   if (arg(0) == 'projects' && arg(1) == 'add') {
     ctools_include('object-cache');
-    $project = ctools_object_cache_get('project', 'devshop_project');
+    $project = (array) ctools_object_cache_get('project', 'devshop_project');
     $vars['left'] = theme('devshop_project_add_status', $project);
   }
 }
