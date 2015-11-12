@@ -40,10 +40,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     $form_id == 'devshop_project_create_step_settings' ||
     $form_id == 'devshop_project_create_step_environments'
   ){
-    if ($form_state['project']->no_finish || $form['#no_finish']){
+    if ($form['#no_finish']){
       unset($form['buttons']['return']);
     }
-    if ($form_state['project']->no_next) {
+    if ($form['#no_next']) {
       unset($form['buttons']['next']);
     }
     $form['buttons']['next']['#attributes'] =
