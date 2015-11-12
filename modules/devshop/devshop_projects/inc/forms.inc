@@ -48,13 +48,19 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     }
     $form['buttons']['next']['#attributes'] =
     $form['buttons']['return']['#attributes'] = array(
-      'class' => 'btn btn-success',
+      'class' => array(
+          'btn btn-success',
+      ),
     );
     $form['buttons']['previous']['#attributes'] = array(
-      'class' => 'btn btn-default',
+      'class' => array(
+          'btn btn-default',
+      ),
     );
     $form['buttons']['cancel']['#attributes'] = array(
-      'class' => 'btn btn-link',
+      'class' => array(
+          'btn btn-link',
+      ),
     );
 
   }

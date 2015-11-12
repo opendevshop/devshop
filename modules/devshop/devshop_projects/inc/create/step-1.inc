@@ -16,9 +16,6 @@ function devshop_project_create_step_git($form, $form_state) {
 
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
-  // @TODO: The "buttons" array is blowing up the page!
-  unset($form['buttons']);
-
   if ($project->verify_error) {
     $form['note'] = array(
       '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
