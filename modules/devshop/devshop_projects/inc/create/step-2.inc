@@ -8,7 +8,7 @@
 /**
  * STEP 2: Form
  */
-function devshop_project_create_step_settings(&$form, &$form_state) {
+function devshop_project_create_step_settings($form, $form_state) {
 
   // Load project and it's form
   $project = &$form_state['project'];
@@ -34,6 +34,7 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#maxlength' => 255,
     '#weight' => -100,
   );
+  return $form;
 }
 
 /**
