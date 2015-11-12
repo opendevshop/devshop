@@ -8,27 +8,18 @@
 /**
  * STEP 3: Form
  */
-function devshop_project_create_step_environments(&$form, &$form_state) {
-  $project_cache = & $form_state['project'];
-  $project_node = node_load($project_cache->project_nid);
-  $project = $project_node->project;
-
-  if ($project_cache->verify_task_status == HOSTING_TASK_QUEUED || $project_cache->verify_task_status == HOSTING_TASK_PROCESSING) {
+function devshop_project_create_step_environments($form, &$form_state) {
+  $project = &$form_state['project'];
+  if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
-    $project_cache->no_next = TRUE;
-
     $form['note'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
+      '#markup' => $note,
     );
-    $form['not_ready'] = array(
-      '#type' => 'value',
-      '#value' => TRUE,
-    );
+    $form['#no_next'] = TRUE;
 
     // Add code to reload the page when complete.
     devshop_form_reloader($form, 'project');
-    return;
+    return $form;
   }
 
   // this JS handles the form element hiding/showing
@@ -37,7 +28,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
   $form['nid'] = array(
     '#type' => 'value',
-    '#value' => $project_node->nid,
+    '#value' => $project->project_nid,
   );
   $form['project'] = array(
     '#tree' => TRUE,
@@ -143,6 +134,7 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
+  return $form;
 }
 
 
