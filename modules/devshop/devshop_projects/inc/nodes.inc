@@ -33,15 +33,32 @@ function devshop_projects_node_info() {
  * @param node
  *    Node object
  */
-function devshop_projects_load($node) {
+/**
+ * Implements hook_node_load().
+ */
+function devshop_projects_node_load($nodes, $types) {
+
+  // Only act on project nodes.
+  if (!in_array('project', $types)) {
+    return;
+  }
+
   global $user;
+
+  foreach ($nodes as $nid => &$node) {
+
+    $node->blaa = 'blaaaa';
+    // Only act on project nodes.
+    if ($node->type != 'project') {
+      continue;
+    }
 
   // Load the "hosting context". The unique name in the aegir system.
   $name = db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
   $additions['hosting_name'] = 'project_' . $name;
 
   // Load project data
-  $project = db_fetch_object(db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = :nid', array(':nid' => $node->nid)));
+  $project = (object) db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = :nid', array(':nid' => $node->nid))->fetchAssoc();
 
   // Load up all project settings.
   $project->name = $name;
@@ -74,7 +91,7 @@ function devshop_projects_load($node) {
 
   // Load Environments
   // @TODO: Remove environments where the site has been deleted.
-  $environments = db_query("
+  $environment_data = db_query("
     SELECT
         e.*,
         s.status as site_status,
@@ -105,7 +122,7 @@ function devshop_projects_load($node) {
         name;   ", array(
         ':nid' => $node->nid
   ));
-  foreach ($environments as $environment) {
+  foreach ($environment_data as $environment) {
 
     // Don't load the environment if the site and/or platform is deleted.
     if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
@@ -203,7 +220,7 @@ function devshop_projects_load($node) {
     }
 
     // Save to project environments collection.
-    $environments[$environment->name] = $environment;
+    $environments[$environment->name] = (object) $environment;
   }
 
   // Put live environment at the top.
@@ -229,14 +246,15 @@ function devshop_projects_load($node) {
   $project->webhook_url = _devshop_pull_callback_url($node);
 
   // Save project object be available at $node->project.
-  $additions['project'] = $project;
+  $node->project = $project;
 
   // Load verification status of project node.
-  $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid)));
+  $task = (object) db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid))->fetchAssoc();
   $task->task_status = (int) $task->task_status;
-  $additions['verify'] = $task;
+  $node->verify = $task;
 
-  return $additions;
+  }
+//  return $additions;
 }
 
 /**
