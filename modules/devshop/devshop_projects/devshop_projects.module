@@ -363,7 +363,7 @@ function devshop_projects_add($step = NULL) {
   if ($step == NULL) {
     // Check to see if this project is still in the wizard
     ctools_include('object-cache');
-    $project_wizard_cache = ctools_object_cache_get('project', NULL);
+    $project_wizard_cache = ctools_object_cache_get('project', 'devshop_project');
     if (!empty($project_wizard_cache->step)) {
       drupal_goto('projects/add/' . $project_wizard_cache->step);
     }
