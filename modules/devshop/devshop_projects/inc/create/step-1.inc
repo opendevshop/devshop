@@ -28,25 +28,26 @@ function devshop_project_create_step_git($form, $form_state) {
     }
   }
 
-  $form['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Project Code Name'),
-    '#required' => TRUE,
-    '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
-    '#size' => 40,
-    '#maxlength' => 255,
-  );
-
-  // If there is already a title, make this an item.
-  if (!empty($project_node->title)) {
-    // Force title
-    $form['title']['#value'] = $form['title']['#default_value'];
-    $form['title']['#type'] = 'value';
-    $form['title']['#description'] = t('You cannot change the name of your project once it has been created.  If you must, click the "Cancel" button to delete this project, then create a new one.');
-
-    // Be nice and show it.
-    $form['title_display'] = $form['title'];
-    $form['title_display']['#type'] = 'item';
+  if (empty($project->name)) {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Project Code Name'),
+      '#required' => TRUE,
+      '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
+      '#size' => 40,
+      '#maxlength' => 255,
+    );
+  }
+  else {
+    $form['title'] = array(
+      '#type' => 'value',
+      '#value' => $project->name,
+    );
+    $form['title_display'] = array(
+      '#type' => 'item',
+      '#title' => t('Project Code Name'),
+      '#markup' => $project->name,
+    );
   }
 
   $form['git_url'] = array(
@@ -117,6 +118,8 @@ HTML;
 function devshop_project_create_step_git_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
 
+  if (empty($project->project_nid)) {
+
   // PROJECT NAME
   // No spaces or special characters allowed.
   $project_name = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
@@ -135,6 +138,7 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
   $node = hosting_context_load($project_name);
   if ($node->nid != $project->project_nid) {
     form_set_error('title', t('That name is in use.  Please try again.'));
+  }
   }
 
   // CODE PATH & BASE URL
