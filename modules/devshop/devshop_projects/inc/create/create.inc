@@ -21,7 +21,7 @@ function devshop_projects_create_wizard($step = NULL) {
   );
 
   // Setup project
-  $project = ctools_object_cache_get('project', NULL);
+  $project = ctools_object_cache_get('project', 'devshop_project');
 
   // Setup Step.
   if ($step == NULL) {
@@ -43,12 +43,12 @@ function devshop_projects_create_wizard($step = NULL) {
     $project->base_url = '';
 
     // ** set the storage object so its ready for whatever comes next
-    ctools_object_cache_set('project', $form_state['cache name'], $project);
+    ctools_object_cache_set('project', 'devshop_project', $project);
   }
   else {
     // Quickly save the current step
     $project->step = $step;
-    ctools_object_cache_set('project', $form_state['cache name'], $project);
+    ctools_object_cache_set('project', 'devshop_project', $project);
   }
 
   // Check verification status
@@ -140,7 +140,7 @@ function devshop_projects_create_wizard_info() {
  */
 function devshop_projects_create_wizard_next(&$form_state) {
   $project = &$form_state['project'];
-  $cache = ctools_object_cache_set('project', $form_state['cache name'], $project);
+  $cache = ctools_object_cache_set('project', 'devshop_project', $project);
 }
 
 
@@ -154,7 +154,7 @@ function devshop_projects_create_wizard_next(&$form_state) {
 function devshop_projects_create_wizard_cancel(&$form_state) {
   // Update the cache with changes.
   $project = &$form_state['project'];
-  ctools_object_cache_clear('project', $form_state['cache name']);
+  ctools_object_cache_clear('project', 'devshop_project');
 
   // Redirect to projects list
   $form_state['redirect'] = 'projects';
@@ -196,7 +196,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $project_node->status = 1;
   node_save($project_node);
 
-  ctools_object_cache_clear('project', $form_state['cache name']);
+  ctools_object_cache_clear('project', 'devshop_project');
   $form_state['redirect'] = 'node/' . $project_node->nid;
 
   // Removing last step session variable.
@@ -216,7 +216,7 @@ function devshop_projects_add_status($type = 'platform') {
   // Get Project Cache
   ctools_include('wizard');
   ctools_include('object-cache');
-  $project = ctools_object_cache_get('project', NULL);
+  $project = ctools_object_cache_get('project', 'devshop_project');
 
 
   $project_node = node_load($project->project_nid);
