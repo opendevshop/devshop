@@ -278,11 +278,10 @@ function devshop_projects_node_insert($node) {
     $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
     hosting_context_register($node->nid, $name);
 
-    // Delete the alias created by hosting_context_register.
-    path_set_alias(NULL, "hosting/c/$name");
-
-    // Add a new path alias.
-    path_set_alias("node/{$node->nid}", "project/$name");
+    // Replace the alias created by hosting_context_register.
+    $path['source'] = "node/{$node->nid}";
+    $path['alias'] = "project/{$name}";
+    path_save($path);
   }
 
   // @TODO: The wizard always creates the project before the environments.
