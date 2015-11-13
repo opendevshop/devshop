@@ -13,7 +13,7 @@ function devshop_projects_node_info() {
   $types["project"] =  array(
     "name" => 'DevShop Project',
     "base" => 'devshop_project',
-    "description" => t('Create a project'),
+    "description" => t('A project is a website with multiple environments.'),
     "has_title" => TRUE,
     "title_label" => t('Project Codename'),
     "locked" => TRUE,
