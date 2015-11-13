@@ -417,13 +417,3 @@ function devshop_get_tasks($environment) {
   return $tasks;
 }
 
-/**
- * Replacement for hosting_get_most_recent_task(), which was removed in aegir 7.x-3.x
- * @return bool|mixed
- */
-function devshop_hosting_get_most_recent_task($rid, $type) {
-  $nid = db_query("SELECT t.nid FROM {hosting_task} t INNER JOIN {node} n ON n.vid = t.vid WHERE task_type = !task_type and t.rid = !t.rid ORDER BY t.vid DESC limit 1", array('!task_type' => $type, '!t.rid' => $rid))->fetchField();
-  if ($nid) {
-    return node_load($nid);
-  }
-}

@@ -35,7 +35,9 @@ function devshop_project_create_step_sites($form, &$form_state) {
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
-    $task = devshop_hosting_get_most_recent_task($platform_nid, 'verify');
+
+    $tasks = hosting_get_tasks('rid', $platform_nid, 1);
+    $task = array_shift($tasks);
 
     // Build a table.
     $row = array();
@@ -118,8 +120,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
 
   // Output our table.
   $form['platforms'] = array(
-    '#type' => 'markup',
-    '#value' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('table')))),
+    '#markup' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('table')))),
   );
 
   // Not completed means show all tasks are not completed (or errored)
