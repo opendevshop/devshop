@@ -11,16 +11,12 @@
  */
 function devshop_projects_node_info() {
   $types["project"] =  array(
-    "type" => 'project',
     "name" => 'DevShop Project',
     "base" => 'devshop_project',
-    "module" => 'devshop_projects',
+    "description" => t('Create a project'),
     "has_title" => TRUE,
     "title_label" => t('Project Codename'),
-    "description" => t('Create a project'),
-    "has_body" => 0,
-    "body_label" => '',
-    "min_word_count" => 0
+    "locked" => TRUE,
   );
   return $types;
 }
