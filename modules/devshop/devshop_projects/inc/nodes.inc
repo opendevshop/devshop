@@ -38,8 +38,14 @@ function devshop_projects_node_info() {
  */
 function devshop_projects_node_load($nodes, $types) {
 
-  // Only act on project nodes.
-  if (!in_array('project', $types)) {
+  // Only act on project and related nodes.
+  $types = array(
+    'project',
+    'site',
+    'platform',
+    'task',
+  );
+  if (count(array_intersect($types, $types)) == 0) {
     return;
   }
 
@@ -47,10 +53,34 @@ function devshop_projects_node_load($nodes, $types) {
 
   foreach ($nodes as $nid => &$node) {
 
-    // Only act on project nodes.
-    if ($node->type != 'project') {
-      continue;
+    // Sites & Platforms
+    if ($node->type == 'platform' || $node->type == 'site') {
+
+      // Load project and environment
+      $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :type", array(
+          ':type' => $node->type,
+      ))->fetchAssoc();
+
+      $project_node = node_load($result->project_nid);
+      $node->project = $project_node->project;
+      $node->environment = $project_node->project->environments[$result->name];
+      return;
     }
+
+    // Tasks
+    elseif ($node->type == 'task') {
+      $result = (object) db_query("SELECT nid, name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
+          ':site' => $node->rid,
+          ':platform' => $node->rid
+      ))->fetchAssoc();
+
+      // Load project and environment
+      $project_node = node_load($result->nid);
+      $node->project = $project_node->project;
+      $node->environment = $project_node->project->environments[$result->name];
+    }
+    // Projects
+    elseif ($node->type == 'project') {
 
     // Load the "hosting context". The unique name in the aegir system.
     $name = db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
@@ -252,6 +282,7 @@ function devshop_projects_node_load($nodes, $types) {
     $task->task_status = (int) $task->task_status;
     $node->verify = $task;
   }
+  }
 }
 
 /**
@@ -387,33 +418,33 @@ function devshop_projects_delete($node) {
  */
 function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
-  // Load environment info into platforms and sites.
-  if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
-    $additions = array();
-    $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :nid", array(
-        ':type' => $node->type,
-        ':nid'  => $node->nid
-    ))->fetchAssoc();
-
-    // Load project and environment
-    $project_node = node_load($result->project_nid);
-    $additions['project'] = $project_node->project;
-    $additions['environment'] = $project_node->project->environments[$result->name];
-    return $additions;
-  }
+//  // Load environment info into platforms and sites.
+//  if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
+//    $additions = array();
+//    $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :nid", array(
+//        ':type' => $node->type,
+//        ':nid'  => $node->nid
+//    ))->fetchAssoc();
+//
+//    // Load project and environment
+//    $project_node = node_load($result->project_nid);
+//    $additions['project'] = $project_node->project;
+//    $additions['environment'] = $project_node->project->environments[$result->name];
+//    return $additions;
+//  }
 
   // Load environment info into tasks.
-  if ($op == 'load' && $node->type == 'task') {
-    $additions = array();
-    $result = (object) db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
-        ':site' => $node->rid,
-        ':platform' => $node->rid
-    ))->fetchAssoc();
-
-    // Load project and environment
-    $additions['project'] = $result;
-    return $additions;
-  }
+//  if ($op == 'load' && $node->type == 'task') {
+//    $additions = array();
+//    $result = (object) db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
+//        ':site' => $node->rid,
+//        ':platform' => $node->rid
+//    ))->fetchAssoc();
+//
+//    // Load project and environment
+//    $additions['project'] = $result;
+//    return $additions;
+//  }
 
   // When a task is updated, save the last_task status in the environment settings.
   if (($op == 'insert' || $op == 'update') && $node->type == 'task') {
