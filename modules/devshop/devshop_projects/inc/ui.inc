@@ -90,7 +90,7 @@ HTML;
       $nid = $environment->site ? $environment->site : $environment->platform;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
-            'class' => 'btn btn-sm alert-' . $class,
+            'class' => array('btn btn-sm alert-' . $class),
             'title' => $tasks[$environment->last_task['type']]['title'] . ': ' . _hosting_parse_error_code($environment->last_task['status']),
             'id' => 'badge-' . $environment->project_name . '-' . $environment->name,
         ),
@@ -136,7 +136,7 @@ HTML;
     if (empty($data['header'])) {
       $data['header'] = $header;
     }
-    $output = theme('table', array('header' => $data['header'], 'rows' => $data['rows'], 'attributes' => array('class' => 'table')));
+    $output = theme('table', array('header' => $data['header'], 'rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
   }
   return $output;
 }
