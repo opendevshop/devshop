@@ -12,7 +12,7 @@ function devshop_project_create_step_settings($form, $form_state) {
 
   // Load project and it's form
   $project = &$form_state['project'];
-  $node = node_load($project->project_nid);
+  $node = node_load($project->nid);
   $form += devshop_projects_form($node);
   $form['#node'] = $node;
 
