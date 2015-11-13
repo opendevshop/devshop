@@ -28,7 +28,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
 
   $form['nid'] = array(
     '#type' => 'value',
-    '#value' => $project->project_nid,
+    '#value' => $project->nid,
   );
   $form['project'] = array(
     '#tree' => TRUE,

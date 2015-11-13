@@ -9,7 +9,7 @@
  * STEP 4: Form
  */
 function devshop_project_create_step_sites(&$form, &$form_state) {
-  $project_node = node_load($form_state['project']->project_nid);
+  $project_node = node_load($form_state['project']->nid);
   $project = $project_node->project;
   $profiles = array();
   $available_profiles = array();

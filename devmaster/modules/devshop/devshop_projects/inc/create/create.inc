@@ -35,7 +35,7 @@ function devshop_projects_create_wizard($step = NULL) {
     $project = new stdClass();
     $project->step = $step;
     $project->git_url = '';
-    $project->project_nid = NULL;
+    $project->nid = NULL;
     $project->name = '';
 
     // These are empty until we have our project name
@@ -46,16 +46,18 @@ function devshop_projects_create_wizard($step = NULL) {
     ctools_object_cache_set('project', 'devshop_project', $project);
   }
   else {
-    // Quickly save the current step
+    // Load latest project object from database and use that for the ctools cache.
+    $project_node = node_load($project->nid);
+    $project = $project_node->project;
+
+    // Save the current step
     $project->step = $step;
     ctools_object_cache_set('project', 'devshop_project', $project);
   }
 
   // Check verification status
-  // @TODO: We should be able to get the error messages...
-  $project_node = node_load($project->project_nid);
-  if (!empty($project_node->nid)) {
-    $tasks = hosting_task_fetch_tasks($project_node->nid);
+  if (!empty($project->nid)) {
+    $tasks = hosting_task_fetch_tasks($project->nid);
   }
   if (isset($tasks['verify']['nid'])) {
     // Get "verify" task status for the project
@@ -162,8 +164,8 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   $form_state['redirect'] = 'projects';
 
   // If we have a project node, create a "delete" hosting task
-  if (!empty($project->project_nid)) {
-    hosting_add_task($project->project_nid, 'delete');
+  if (!empty($project->nid)) {
+    hosting_add_task($project->nid, 'delete');
   }
 
   // Removing last step session variable.
@@ -178,7 +180,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
 function devshop_projects_create_wizard_finish(&$form_state) {
 
   $project = &$form_state['project'];
-  $project_node = node_load($project->project_nid);
+  $project_node = node_load($project->nid);
 
   // Save the extra options to the project node.
   $project_node->project->install_profile = $project->install_profile;
@@ -221,7 +223,7 @@ function devshop_projects_add_status($type = 'platform') {
   $project = ctools_object_cache_get('project', 'devshop_project');
 
 
-  $project_node = node_load($project->project_nid);
+  $project_node = node_load($project->nid);
 
   $all_tasks_completed = TRUE;
   $nids = array();
