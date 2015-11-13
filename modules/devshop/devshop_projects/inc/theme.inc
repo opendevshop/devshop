@@ -1,28 +1,26 @@
 <?php
 
 /**
- * Implements hook_hosting_theme()
+ * Implements hook_theme()
  */
 function devshop_projects_theme() {
   return array(
     'devshop_projects_settings_form' => array(
-      'arguments' => array(
+      'variables' => array(
         'form' => NULL,
       ),
     ),
     'devshop_projects_create_settings_form' => array(
-      'arguments' => array(
-        'form' => NULL,
-      ),
+      'render element' => 'form',
     ),
     'devshop_project_nav' => array(
-      'arguments' => array(
+      'variables' => array(
         'node' => NULL,
       ),
       'template' => 'project-nav',
     ),
     'devshop_project_add_status' => array(
-      'arguments' => array(
+      'variables' => array(
         'project' => NULL,
       ),
       'template' => 'project-add',
@@ -57,7 +55,9 @@ function theme_devshop_projects_settings_form($form) {
  * Theme function for create environments settings
  * @TODO: Fold into theme_devshop_projects_settings_form()
  */
-function theme_devshop_projects_create_settings_form($form) {
+function theme_devshop_projects_create_settings_form($vars) {
+
+  $form = $vars['form'];
   $rows = array();
   $header = array();
   foreach (element_children($form) as $env_name) {
