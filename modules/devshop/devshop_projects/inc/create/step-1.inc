@@ -12,7 +12,6 @@
  */
 function devshop_project_create_step_git($form, $form_state) {
   $project = &$form_state['project'];
-  $project_node = node_load($project->project_nid);
 
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
@@ -118,7 +117,7 @@ HTML;
 function devshop_project_create_step_git_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
 
-  if (empty($project->project_nid)) {
+  if (empty($project->nid)) {
 
   // PROJECT NAME
   // No spaces or special characters allowed.
@@ -136,7 +135,7 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
 
   // Check for duplicate project name here.
   $node = hosting_context_load($project_name);
-  if ($node->nid != $project->project_nid) {
+  if ($node->nid != $project->nid) {
     form_set_error('title', t('That name is in use.  Please try again.'));
   }
   }
@@ -170,16 +169,16 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   $project = &$form_state['project'];
 
   // If the project already exists, this means the git url has changed...
-  if ($project->project_nid) {
+  if ($project->nid) {
     // Change the git url and save the node.  Verification will run again.
-    $node = node_load($project->project_nid);
+    $node = node_load($project->nid);
     $node->project->git_url = $form_state['values']['git_url'];
     $node->project->code_path = $form_state['values']['code_path'];
     $node->project->base_url = $form_state['values']['base_url'];
     node_save($node);
   }
   // Create new project node
-  elseif (empty($project->project_nid)) {
+  elseif (empty($project->nid)) {
     // Create the project node now.  We will update it with the chosen path.
     // This is so we can check for branches and save the hosting_context as soon
     // as possible.
@@ -210,7 +209,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
 
     // Save NID to ctools object cache.
     if ($node->nid) {
-      $project->project_nid = $node->nid;
+      $project->nid = $node->nid;
     }
   }
 
