@@ -8,16 +8,15 @@
 /**
  * STEP 4: Form
  */
-function devshop_project_create_step_sites(&$form, &$form_state) {
-  $project_node = node_load($form_state['project']->nid);
-  $project = $project_node->project;
+function devshop_project_create_step_sites($form, &$form_state) {
+  $project = $form_state['project'];
   $profiles = array();
   $available_profiles = array();
   $completed = TRUE;
 
   $form['nid'] = array(
     '#type' => 'value',
-    '#value' => $project_node->nid,
+    '#value' => $project->nid,
   );
 
   // Display the platforms
@@ -36,7 +35,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
-    $task = hosting_get_most_recent_task($platform_nid, 'verify');
+    $task = devshop_hosting_get_most_recent_task($platform_nid, 'verify');
 
     // Build a table.
     $row = array();
@@ -120,17 +119,16 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Output our table.
   $form['platforms'] = array(
     '#type' => 'markup',
-    '#value' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => 'table'))),
+    '#value' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('table')))),
   );
 
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
-    $project->no_finish = TRUE;
+    $form['#no_finish'] = TRUE;
     $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
 
     $form['help'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
+      '#markup' => $note,
     );
 
     // Add code to reload the page when complete.
@@ -143,8 +141,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
+      '#markup' => $note,
     );
     $form['#no_finish'] = TRUE;
     return $form;
