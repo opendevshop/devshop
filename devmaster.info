@@ -53,8 +53,8 @@ dependencies[] = jquery_update
 dependencies[] = adminrole
 
 ; DevShop
-;dependencies[] = devshop_hosting
-;dependencies[] = devshop_projects
+dependencies[] = devshop_hosting
+dependencies[] = devshop_projects
 ;dependencies[] = devshop_log
 ;dependencies[] = devshop_pull
 ;dependencies[] = devshop_github
