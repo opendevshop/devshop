@@ -106,11 +106,11 @@ function getBranchesAndTags($git_url = NULL) {
     $ref = explode("/", $line);
     $git_ref = array_pop($ref);
 
-    if ($ref[1] == 'heads') {
+    if (isset($ref[1]) && $ref[1] == 'heads') {
       $branches[] = $git_ref;
       $refs[$git_ref] = 'branch';
     }
-    else if ($ref[1] == 'tags') {
+    else if (isset($ref[1]) && $ref[1] == 'tags') {
       $tags[] = $git_ref;
       $refs[$git_ref] = 'tag';
     }
