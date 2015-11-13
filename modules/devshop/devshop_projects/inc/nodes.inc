@@ -47,7 +47,6 @@ function devshop_projects_node_load($nodes, $types) {
 
   foreach ($nodes as $nid => &$node) {
 
-    $node->blaa = 'blaaaa';
     // Only act on project nodes.
     if ($node->type != 'project') {
       continue;
@@ -55,7 +54,7 @@ function devshop_projects_node_load($nodes, $types) {
 
     // Load the "hosting context". The unique name in the aegir system.
     $name = db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
-    $additions['hosting_name'] = 'project_' . $name;
+    $node->hosting_name = 'project_' . $name;
 
     // Load project data
     $project = (object) db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = :nid', array(':nid' => $node->nid))->fetchAssoc();
