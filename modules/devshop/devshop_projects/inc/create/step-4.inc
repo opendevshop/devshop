@@ -145,7 +145,6 @@ function devshop_project_create_step_sites($form, &$form_state) {
       '#markup' => $note,
     );
     $form['#no_finish'] = TRUE;
-    return $form;
   }
   else {
     $project->no_finish = FALSE;
@@ -170,6 +169,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
       '#default_value' => $default_profile,
     );
   }
+  return $form;
 }
 
 /**
