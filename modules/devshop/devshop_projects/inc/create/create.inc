@@ -50,6 +50,14 @@ function devshop_projects_create_wizard($step = NULL) {
     $project_node = node_load($project->nid);
     $project = $project_node->project;
 
+    // If we have a name but no code_path or base URL.
+    if (!empty($project->name) && empty($project->code_path)) {
+      $project->code_path = variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project->name;
+    }
+    if (!empty($project->name) && empty($project->base_url)) {
+      $project->base_url = devshop_projects_url($project->name);
+    }
+
     // Save the current step
     $project->step = $step;
     ctools_object_cache_set('project', 'devshop_project', $project);
