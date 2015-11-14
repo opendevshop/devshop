@@ -253,7 +253,6 @@ function devshop_projects_add_status($type = 'platform') {
 
   // Check verification task for all nids
   foreach ($nids as $nid) {
-    $task = hosting_get_most_recent_task($nid, 'verify');
     $platform = node_load($nid);
     $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
     if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
@@ -263,7 +262,7 @@ function devshop_projects_add_status($type = 'platform') {
       $install_profiles = array();
     }
 
-    $status = _hosting_parse_error_code($task->task_status);
+    $status = _hosting_parse_error_code($platform->verify->task_status);
     if ($status == 'Queued') {
       $status = '...';
     }
@@ -273,7 +272,7 @@ function devshop_projects_add_status($type = 'platform') {
       'profiles' => implode(', ', $install_profiles),
     );
     // If task is not completed, mark all tasks not complete.
-    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR || $task->task_status == HOSTING_TASK_WARNING) {
+    if ($platform->verify->task_status == HOSTING_TASK_SUCCESS || $platform->verify->task_status == HOSTING_TASK_ERROR || $platform->verify->task_status == HOSTING_TASK_WARNING) {
       continue;
     }
     else {
