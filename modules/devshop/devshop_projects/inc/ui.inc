@@ -269,13 +269,13 @@ function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
   $node->content['info']['project'] = array(
     '#type' => 'item',
     '#title' => t('Project'),
-    '#value' => l($task_host->project->name, "node/{$task_host->project->nid}"),
+    '#markup' => l($task_host->project->name, "node/{$task_host->project->nid}"),
     '#weight' => -12,
   );
   $node->content['info']['parameters'] = array(
     '#type' => 'item',
     '#title' => t('Task Parameters'),
-    '#value' => theme('table', array('header' => array(), 'rows' =>   $rows)),
+    '#markup' => theme('table', array('header' => array(), 'rows' =>   $rows)),
     '#weight' => -11,
   );
 
