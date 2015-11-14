@@ -24,5 +24,6 @@ Feature: Create a project
     And I should see "devshop.site" in the ".web-server-node" element
 
     When I press "Cancel"
-    Then I should see "Task delete was added to the queue"
+    Then I should see "Project creation cancelled."
+    And I should be on "projects"
 
