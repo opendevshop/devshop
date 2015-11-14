@@ -56,34 +56,34 @@ function devshop_project_create_step_git($form, $form_state) {
     '#description' => t('Enter the Git URL for your drupal project.  The root of the repo must contain Drupal\'s index.php.  A clone of !link is a good place to start.', array('!link' => l('http://git.drupal.org/project/drupal.git', 'http://git.drupal.org/project/drupal.git'))),
     '#default_value' => $project->git_url,
   );
-
-  // Project code path.
-  $form['code_path'] = array(
-    '#type' => variable_get('devshop_projects_allow_custom_code_path', FALSE) ? 'textfield' : 'value',
-    '#title' => t('Code path'),
-    '#description' => t('The absolute path on the filesystem that will be used to create all platforms within this project. There must not be a file or directory at this path.'),
-    '#required' => variable_get('devshop_projects_allow_custom_code_path', FALSE),
-    '#size' => 40,
-    '#default_value' => $project->code_path,
-    '#maxlength' => 255,
-    '#attributes' => array(
-      'data-base_path' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
-    ),
-  );
-
-  // Project base url
-  $form['base_url'] = array(
-    '#type' => variable_get('devshop_projects_allow_custom_base_url', FALSE) ? 'textfield' : 'value',
-    '#title' => t('Base URL'),
-    '#description' => t('All sites will be under a subdomain of this domain.'),
-    '#required' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
-    '#size' => 40,
-    '#default_value' => $project->base_url,
-    '#maxlength' => 255,
-    '#attributes' => array(
-      'data-base_url' => devshop_projects_url($project->name, ''),
-    ),
-  );
+//
+//  // Project code path.
+//  $form['code_path'] = array(
+//    '#type' => variable_get('devshop_projects_allow_custom_code_path', FALSE) ? 'textfield' : 'value',
+//    '#title' => t('Code path'),
+//    '#description' => t('The absolute path on the filesystem that will be used to create all platforms within this project. There must not be a file or directory at this path.'),
+//    '#required' => variable_get('devshop_projects_allow_custom_code_path', FALSE),
+//    '#size' => 40,
+//    '#default_value' => $project->code_path,
+//    '#maxlength' => 255,
+//    '#attributes' => array(
+//      'data-base_path' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
+//    ),
+//  );
+//
+//  // Project base url
+//  $form['base_url'] = array(
+//    '#type' => variable_get('devshop_projects_allow_custom_base_url', FALSE) ? 'textfield' : 'value',
+//    '#title' => t('Base URL'),
+//    '#description' => t('All sites will be under a subdomain of this domain.'),
+//    '#required' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
+//    '#size' => 40,
+//    '#default_value' => $project->base_url,
+//    '#maxlength' => 255,
+//    '#attributes' => array(
+//      'data-base_url' => devshop_projects_url($project->name, ''),
+//    ),
+//  );
 
   // Display helpful tips for connecting.
   $pubkey = variable_get('devshop_public_key', '');
@@ -137,25 +137,25 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
       form_set_error('title', t('That name is in use.  Please try again.'));
     }
   }
-
-  // CODE PATH & BASE URL
-  // Code path and base url must be unique
-  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path;', array(':status' => 1, ':code_path' => $form_state['values']['code_path']))->fetchField()) {
-    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
-  }
-  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url;', array(':status' => 1, ':base_url' => $form_state['values']['base_url']))->fetchField()) {
-    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
-  }
-
-  // If custom code paths are not allowed, set the value here using the project name.
-  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
-    form_set_value($form['code_path'], variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project_name, $form_state);
-  }
-
-  // If custom base URLs are not allowed, set the value here using the project name.
-  if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)) {
-    form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
-  }
+//
+//  // CODE PATH & BASE URL
+//  // Code path and base url must be unique
+//  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path;', array(':status' => 1, ':code_path' => $form_state['values']['code_path']))->fetchField()) {
+//    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
+//  }
+//  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url;', array(':status' => 1, ':base_url' => $form_state['values']['base_url']))->fetchField()) {
+//    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
+//  }
+//
+//  // If custom code paths are not allowed, set the value here using the project name.
+//  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
+//    form_set_value($form['code_path'], variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project_name, $form_state);
+//  }
+//
+//  // If custom base URLs are not allowed, set the value here using the project name.
+//  if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)) {
+//    form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
+//  }
 }
 
 /**
