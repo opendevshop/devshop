@@ -69,12 +69,14 @@ function getBranchesAndTags($git_url = NULL) {
   $command = "git ls-remote {$git_url}";
   drush_log('[DEVSHOP] running ' . $command, 'ok');
 
-  if (drush_shell_exec($command)) {
-    $exec_output = drush_shell_exec_output();
+  drush_shell_exec($command);
+  $exec_output = drush_shell_exec_output();
+  if ($exec_output) {
+    drush_log("[DEVSHOP] git ls-remote {$git_url} \n {$exec_output}", 'ok');
   }
   else {
     $exec_output = drush_shell_exec_output();
-    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] Error retrieving remote information: ') . implode("\n", $exec_output), 'error');
+    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] No output from git ls-remote.') . implode("\n", $exec_output), 'error');
     return;
   }
 
@@ -88,7 +90,7 @@ function getBranchesAndTags($git_url = NULL) {
 
   // If remote list is empty, something else went wrong.
   if (count($exec_output) == 1 && empty($exec_output[0])) {
-    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('Something went wrong.  Check the git URL and try again.'), 'error');
+    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] Error:') . implode("\n", $exec_output), 'error');
     return;
   }
 
