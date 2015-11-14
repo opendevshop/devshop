@@ -119,25 +119,23 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
 
   if (empty($project->nid)) {
 
-  // PROJECT NAME
-  // No spaces or special characters allowed.
-  $project_name = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
+    // PROJECT NAME
+    // No spaces or special characters allowed.
+    $project_name = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
 
-  // Set the value to our trimmed and lowercased proejct name.
-  form_set_value($form['title'], $project_name, $form_state);
+    // Set the value to our trimmed and lowercased proejct name.
+    form_set_value($form['title'], $project_name, $form_state);
 
-  // Check for bad characters.
-  if (!ctype_alnum($project_name)) {
-    form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
-  }
+    // Check for bad characters.
+    if (!ctype_alnum($project_name)) {
+      form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
+    }
 
-
-
-  // Check for duplicate project name here.
-  $node = hosting_context_load($project_name);
-  if ($node->nid != $project->nid) {
-    form_set_error('title', t('That name is in use.  Please try again.'));
-  }
+    // Check for duplicate project name here.
+    $node = hosting_context_load($project_name);
+    if ($node->nid != $project->nid) {
+      form_set_error('title', t('That name is in use.  Please try again.'));
+    }
   }
 
   // CODE PATH & BASE URL
