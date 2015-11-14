@@ -277,6 +277,7 @@ function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
     '#title' => t('Task Parameters'),
     '#markup' => theme('table', array('header' => array(), 'rows' =>   $rows)),
     '#weight' => -11,
+    '#access' => count($rows),
   );
 
 }
