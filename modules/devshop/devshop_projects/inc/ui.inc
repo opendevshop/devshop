@@ -157,6 +157,16 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     drupal_goto('projects/add/' . $project_wizard_cache->step);
   }
 
+  $node->content['project'] = array(
+    '#type' => 'item',
+    '#title' => t('Project Name'),
+    '#markup' => $project->name,
+  );
+  $node->content['git_url'] = array(
+    '#type' => 'item',
+    '#title' => t('Git URL'),
+    '#markup' => $project->git_url,
+  );
   return $node;
 }
 
