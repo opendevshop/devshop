@@ -548,12 +548,10 @@ function devshop_projects_form(&$node) {
     $form['title']['#value'] = $form['title']['#default_value'];
     $form['title']['#type'] = 'value';
 
-    // Other fields
-    $locked = array('git_url', 'code_path', 'drupal_path');
-    foreach ($locked as $field) {
-      $form['project'][$field]['#value'] = $form['project'][$field]['#default_value'];
-      $form['project'][$field]['#type'] = 'value';
-    }
+    // Git URL
+    $form['project']['git_url']['#value'] = $form['git_url']['#default_value'];
+    $form['project']['git_url']['#type'] = 'value';
+
   }
 
   // Project Settings
@@ -748,8 +746,26 @@ function devshop_projects_form(&$node) {
  * This function is no longer used since we have a ctools wizard for
  * project creation.
  */
-function devshop_projects_validate($node, &$form) {
+function devshop_projects_validate($node, &$form, &$form_state) {
 
-  // @TODO: if there is no "live domain url" then unset the values for environment aliases
 
+  form_set_error('drupal_root', 'tmp block');
+  // CODE PATH & BASE URL
+  // Code path and base url must be unique
+  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path;', array(':status' => 1, ':code_path' => $form_state['values']['code_path']))->fetchField()) {
+    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
+  }
+  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url;', array(':status' => 1, ':base_url' => $form_state['values']['base_url']))->fetchField()) {
+    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
+  }
+
+  // If custom code paths are not allowed, set the value here using the project name.
+  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
+    form_set_value($form['code_path'], variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project_name, $form_state);
+  }
+
+  // If custom base URLs are not allowed, set the value here using the project name.
+  if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)) {
+    form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
+  }
 }
