@@ -8,32 +8,31 @@
 /**
  * STEP 2: Form
  */
-function devshop_project_create_step_settings($form, $form_state) {
+function devshop_project_create_step_settings($form, &$form_state) {
 
-  // Load project and it's form
+  // Load project node and it's form
   $project = &$form_state['project'];
   $node = node_load($project->nid);
-  $form += devshop_projects_form($node);
-  $form['#node'] = $node;
+
+  $form_state['build_info']['args'] = array($node);
+  $project_form = drupal_retrieve_form('project_node_form', $form_state);
+
+  // Remove node buttons
+  unset($project_form['actions']);
+
+  // Merge project node form into ctools wizard form.
+  $form = array_merge($project_form, $form);
+
+  // Add additional additional submit and validate handlers for the node form.
+  $form['buttons']['next']['#submit'][] = 'node_form_submit';
+  $form['buttons']['next']['#submit'][] = 'ctools_wizard_submit';
+  $form['buttons']['next']['#validate'][] = 'node_form_validate';
 
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
-  // Remove "environment" selector.
+  // Remove "live environment" selector.
   $form['project']['settings']['live']['live_environment']['#type'] = 'value';
 
-  // Default to pull on commit
-  $form['project']['settings']['pull']['pull_enabled']['#default_value'] = TRUE;
-
-  // Add "Path to Drupal".
-  $form['project']['drupal_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Path to Drupal'),
-    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
-    '#size' => 40,
-    '#default_value' => $project->drupal_path,
-    '#maxlength' => 255,
-    '#weight' => -100,
-  );
   return $form;
 }
 
@@ -41,25 +40,14 @@ function devshop_project_create_step_settings($form, $form_state) {
  * STEP 2: Validate
  */
 function devshop_project_create_step_settings_validate(&$from, &$form_state) {
-  // @TODO: Pass through to devshop validate
-  //  devshop_projects_validate($node, $form);
+  // Nothing is needed here.  We've replaced our validator with node_form_validate,
+  // which passes through to devshop_projects_validate()
 }
 
 /**
  * STEP 2: Submit
  */
 function devshop_project_create_step_settings_submit(&$from, &$form_state) {
-  $project = &$form_state['project'];
-  $project->drupal_path = $form_state['values']['project']['drupal_path'];
-  $project->settings = $form_state['values']['project']['settings'];
+  // Nothing is needed here.  We've replaced our validator with node_form_validate,
 
-  // Save the settings to the project node
-  $node = $form_state['values']['old'];
-  $node->project = $project;
-
-  $node->no_verify = TRUE;
-  node_save($node);
-
-  // Remove default "task" messages.
-  drupal_get_messages();
 }
