@@ -188,7 +188,8 @@ function devshop_projects_menu() {
     'description' => 'Display a list of all projects',
     'page callback' => 'devshop_projects_projects_page',
     'access arguments' => array('view projects'),
-    'menu_name' => 'primary-links',
+    'menu_name' => 'main-menu',
+    'type' => MENU_NORMAL_ITEM,
     'weight' => 1,
   );
   $items['projects/list'] = array(
