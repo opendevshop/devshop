@@ -176,6 +176,9 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
     hosting_add_task($project->nid, 'delete');
   }
 
+  // Message
+  drupal_set_message(t('Project creation cancelled.'));
+
   // Removing last step session variable.
   unset($_SESSION['last_step']);
 
