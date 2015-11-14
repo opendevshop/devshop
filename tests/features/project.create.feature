@@ -19,6 +19,8 @@ Feature: Create a project
 
     # @TODO: Fill in all the settings.
     Then I fill in "docroot" for "Path to Drupal"
+    Then I fill in "/var/aegir/projects/special" for "Code path"
+    Then I fill in "special" for "Base URL"
 #    And I select the radio button "Manual Deployment"
     And I check the box "Allow deploying data from drush aliases"
     Then I fill in "live.com" for "Live Domain"
@@ -35,6 +37,9 @@ Feature: Create a project
     # Go back and Edit
     When I press "Back"
     Then the "Path to Drupal" field should contain "docroot"
+    And the "Live Domain" field should contain "live.com"
+    And the "Code path" field should contain "/var/aegir/projects/special"
+    And the "Base URL" field should contain "special"
     And the "Live Domain" field should contain "live.com"
     And the "Allow deploying data from drush aliases" checkbox should be checked
     And the "For new environments, create subdomains under Live Domain." checkbox should be checked
