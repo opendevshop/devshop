@@ -323,6 +323,13 @@ function devshop_projects_block_info() {
         'status' => 1,
         'region' => 'pre_content',
       );
+  $blocks['project_create'] = array(
+        'info' => t('DevShop Create Project'),
+        'weight' => '-10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'sidebar_first',
+      );
   return $blocks;
 }
 
@@ -338,6 +345,14 @@ function devshop_projects_block_view($delta) {
       $project = $node->type == 'project' ? $node : ($node->project->vid ? $node->project : node_load($node->project->nid));
       $block['subject'] = '';
       $block['content'] = theme('devshop_project_nav', array('project' => $project));
+    }
+  }
+  elseif ($delta == 'project_create') {
+    if (arg(0) == 'projects' && arg(1) == 'add') {
+      ctools_include('object-cache');
+      $project = ctools_object_cache_get('project', 'devshop_project');
+      $block['subject'] = $project->name;
+      $block['content'] = theme('devshop_project_add_status', array('project' => $project));
     }
   }
   return $block;

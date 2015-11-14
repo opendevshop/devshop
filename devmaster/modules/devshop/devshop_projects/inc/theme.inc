@@ -120,22 +120,9 @@ function devshop_projects_preprocess_node(&$vars) {
 }
 
 /**
- * Preprocess page
- */
-function devshop_projects_preprocess_page(&$vars){
-  if (arg(0) == 'projects' && arg(1) == 'add') {
-    ctools_include('object-cache');
-    $project = (array) ctools_object_cache_get('project', 'devshop_project');
-    $vars['left'] = theme('devshop_project_add_status', $project);
-  }
-}
-
-
-/**
  * Preprocess for project_add_status.tpl.php
  */
 function template_preprocess_devshop_project_add_status(&$vars) {
-
   $vars['web_server_node'] = node_load($vars['project']->settings->default_environment['web_server']);
   $vars['db_server_node'] = node_load($vars['project']->settings->default_environment['db_server']);
 }
