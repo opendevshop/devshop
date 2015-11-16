@@ -168,6 +168,11 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
     '#title' => t('Git URL'),
     '#markup' => $project->git_url,
   );
+  $node->content['install_profile'] = array(
+    '#type' => 'item',
+    '#title' => t('Install Profile'),
+    '#markup' => $project->install_profile,
+  );
   return $node;
 }
 
