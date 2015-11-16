@@ -13,9 +13,11 @@ default:
       show_cmd: firefox %s
     Drupal\DrupalExtension:
       blackbox: ~
-      api_driver: 'drush'
+      api_driver: 'drupal'
+      drupal:
+        drupal_root: /var/aegir/devmaster-1.x
       drush:
-        root: /var/aegir/devmaster-0.x
+        root: /var/aegir/devmaster-1.x
         alias: 'hostmaster'
 travis:
   extensions:
