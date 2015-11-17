@@ -27,3 +27,5 @@ Setup
 
 9. Help build this module to create new jenkins builds when a new task is added!
 
+
+The config.xml for the jenkins job is available in this repo at jobs/hosting-task/config.xml
