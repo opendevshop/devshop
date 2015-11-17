@@ -45,6 +45,8 @@ function devshop_projects_hosting_task_update_status($task, $status) {
           'nid' => $task_list_item->nid,
           'executed' => $task_list_item->executed,
         );
+        // Stop the loop through the tasks.
+        break;
       }
     }
 
