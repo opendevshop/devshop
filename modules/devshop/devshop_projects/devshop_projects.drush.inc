@@ -20,6 +20,34 @@ function devshop_projects_hosting_task_update_status($task, $status) {
         'nid' => $task->nid,
         'executed' => $task->executed,
     );
+
+    // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
+    // If last task is a successful verify or reset password, load the task before that as the "last task".
+    if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
+      $tasks_list = hosting_get_tasks('rid', $site->nid);
+
+      // The first item in $tasks should be this task.
+      // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
+      foreach ($tasks_list as &$task_list_item) {
+        // If the first task is this task, we want to skip it.
+        if ($task_list_item->nid == $task->nid && $task_list_item->vid == $task->vid) {
+          continue;
+        }
+        // If the next task is also a login-reset or verify, skip it.
+        if ($task_list_item->task_type == 'verify' || $task_list_item->task_type == 'login-reset') {
+          continue;
+        }
+
+        // Grab the first task that isn't this one or another skippable task
+        $site->environment->last_task = array(
+          'status' => $task_list_item->task_status,
+          'type' => $task_list_item->task_type,
+          'nid' => $task_list_item->nid,
+          'executed' => $task_list_item->executed,
+        );
+      }
+    }
+
     devshop_environment_save_last_task($site->environment);
   }
 }
