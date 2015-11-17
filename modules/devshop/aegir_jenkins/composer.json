@@ -1,0 +1,5 @@
+{
+  "require": {
+    "jenkins-khan/jenkins-api": "dev-master"
+  }
+}
