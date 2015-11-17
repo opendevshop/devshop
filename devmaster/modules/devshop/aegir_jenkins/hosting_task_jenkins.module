@@ -1,3 +1,21 @@
 <?php
 
+/**
+ * Implements hook_nodeapi_TYPE_OP()
+ * @param $node
+ */
+function hosting_task_jenkins_nodeapi_task_update(&$node) {
+  watchdog('debug', t('Task sent to jenkins.'));
 
+  require_once( __DIR__ .'/vendor/autoload.php');
+
+  if ($node->task_status == HOSTING_TASK_QUEUED) {
+    $jenkins_url = variable_get('hosting_task_jenkins_url', 'http://localhost:8080/');
+    $jenkins = new \JenkinsKhan\Jenkins($jenkins_url);
+    $job = $jenkins->launchJob("hosting-task", array(
+      'TASK_NID' => $node->nid,
+    ));
+
+    watchdog('debug', print_r($job, 1));
+  }
+}
