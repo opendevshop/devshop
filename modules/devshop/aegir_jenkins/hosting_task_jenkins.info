@@ -1,4 +1,0 @@
-name = Hosting Tasks: Jenkins
-description = Enables using Jenkins as a hosting task queue.
-core = 6.x
-dependencies[] = hosting_task
