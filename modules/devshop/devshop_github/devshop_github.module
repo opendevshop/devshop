@@ -215,9 +215,13 @@ function devshop_github_project_create_webhook($form, $form_state) {
             'insecure_ssl' => '1',
         ),
     ));
-  } catch (Github\Exception\ValidationFailedException $e) {
+  }
+  catch (Github\Exception\ValidationFailedException $e) {
     // For some reason, github always returns an exception here when there is already webhooks on the project.
-    // drupal_set_message(t('GitHub Exception: ') . $e->getMessage(), 'warning');
+     drupal_set_message(t('GitHub Validation Exception: ') . $e->getMessage(), 'error');
+  }
+  catch (Github\Exception\RuntimeException $e) {
+    drupal_set_message(t('GitHub Runtime Exception: ') . $e->getMessage(), 'error');
   }
 }
 
