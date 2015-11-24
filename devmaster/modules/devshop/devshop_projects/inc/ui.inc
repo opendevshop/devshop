@@ -179,8 +179,11 @@ function devshop_environment_links($environment) {
     if (isset($tasks[$action])) {
 
       // Special handling for delete/disable/enable
-      if ($action == 'disable' || $action == 'delete' || $action == 'enable') {
+      if ($action == 'disable' || $action == 'enable') {
         $tasks[$action]['title'] = '<i class="fa fa-power-off"></i> ' . $tasks[$action]['title'] . ' ' . t('Environment');
+      }
+      elseif ($action == 'delete') {
+        $tasks[$action]['title'] = '<i class="fa fa-trash-o"></i> ' . t('Destroy Environment');
       }
 
       $href = "node/{$environment->site}/site_{$action}";
