@@ -129,7 +129,7 @@ function boots_preprocess_environment(&$vars)
     }
 
     $label = drupal_ucfirst($tasks[$task->task_type]['title']);
-    $ago = ' <em class="small">' . format_interval(time() - $task->executed, 1) .' '. t('ago') . '</em>';
+    $ago =  format_interval(time() - $task->executed, 1) .' '. t('ago');
 
     // Override "ago" text.
     if ($task->task_status == HOSTING_TASK_QUEUED) {

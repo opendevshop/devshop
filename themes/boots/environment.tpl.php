@@ -352,7 +352,7 @@
                 <a href="<?php print $environment->last_task_info['url']; ?>" class="alert-link">
                     <i class="fa fa-<?php print $environment->last_task_info['icon'] ?>"></i>
                     <span><?php print $environment->last_task_info['label'] ?></span>
-                    <?php print $environment->last_task_info['ago'] ?>
+                    <em class="ago small"><?php print $environment->last_task_info['ago'] ?></em>
                 </a>
             </div>
         </div>
