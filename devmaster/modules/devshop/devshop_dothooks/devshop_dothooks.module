@@ -35,7 +35,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
   $process->run(function ($type, $buffer) {
     if (Process::ERR === $type) {
       drush_log($buffer, 'dothooks_error');
-      drush_log('[.hooks] Hook failed: ' . $buffer, 'error');
+      drush_log("[.hooks] Hook failed: $buffer", 'error');
     } else {
       drush_log($buffer, 'dothooks_ok');
     }
@@ -66,18 +66,20 @@ function devshop_dothooks_preprocess_node(&$vars) {
         }
         elseif ($results->type == 'dothooks_ok') {
           $status = 'success';
+          $icon = 'check';
           $command = $commands[$i];
           $i++;
         }
         elseif ($results->type == 'dothooks_error') {
           $status = 'danger';
+          $icon = 'exclamation-circle';
           $command = $commands[$i];
           $i++;
         }
         $output = $results->message;
         $messages[] = <<<HTML
 <div class="panel panel-$status">
-  <div class="panel-heading">$command</div>
+  <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
   <div class="panel-body">
      <pre>$output</pre>
   </div>

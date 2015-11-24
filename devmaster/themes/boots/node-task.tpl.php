@@ -72,6 +72,12 @@
       <?php endif; ?>
     </h4>
 
+    <?php if ($log_message): ?>
+      <div class="alert alert-<?php print $log_class; ?>" role="alert">
+        <?php print $log_message; ?>
+      </div>
+    <?php endif; ?>
+
       <p class="duration">
           <i class="fa fa-clock-o"></i>
           <?php print $duration; ?>
@@ -91,11 +97,6 @@
       <?php print $task_well; ?>
     <?php endif; ?>
 
-    <?php if ($log_message): ?>
-      <div class="alert alert-<?php print $log_class; ?>" role="alert">
-        <?php print $log_message; ?>
-      </div>
-    <?php endif; ?>
   </div>
 
 <?php  if ($node->test_results_formatted): ?>
