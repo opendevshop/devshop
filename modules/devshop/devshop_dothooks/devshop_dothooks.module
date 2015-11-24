@@ -31,7 +31,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
   drush_log('[.hooks] Hook found: ' . $hook, 'ok');
   drush_log($environment->dothooks[$hook], 'dothooks_command');
 
-  $process = new Process($environment->dothooks['verify']);
+  $process = new Process($environment->dothooks[$hook]);
   $process->run(function ($type, $buffer) {
     if (Process::ERR === $type) {
       drush_log($buffer, 'dothooks_error');
