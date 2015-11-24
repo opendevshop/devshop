@@ -4,6 +4,9 @@ require_once 'vendor/autoload.php';
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 
 /**
  * Implements hook_nodeapi_site_load()
@@ -76,7 +79,10 @@ function devshop_dothooks_preprocess_node(&$vars) {
           $command = $commands[$i];
           $i++;
         }
-        $output = $results->message;
+
+        $converter = new AnsiToHtmlConverter(null, false);
+        $output = $converter->convert($results->message);
+
         $messages[] = <<<HTML
 <div class="panel panel-$status">
   <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
@@ -108,4 +114,14 @@ HTML;
  */
 function devshop_dothooks_post_hosting_verify_task($task, $data) {
   devshop_dothooks_run_hook('verify', $task->ref->environment);
+}
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task()
+ * for DevShop Deploy tasks.
+ *
+ * Runs the "deploy" dotHook
+ */
+function devshop_dothooks_post_hosting_devshop_deploy_task($task, $data) {
+  devshop_dothooks_run_hook('deploy', $task->ref->environment);
 }

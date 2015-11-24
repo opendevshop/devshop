@@ -6,4 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'SensioLabs\\AnsiConverter' => array($vendorDir . '/sensiolabs/ansi-to-html'),
 );
