@@ -100,5 +100,51 @@
         ],
         "description": "Symfony Process Component",
         "homepage": "https://symfony.com"
+    },
+    {
+        "name": "sensiolabs/ansi-to-html",
+        "version": "v1.1.2",
+        "version_normalized": "1.1.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/sensiolabs/ansi-to-html.git",
+            "reference": "02598b975c510e9e7d07d0be0a89c7a6b43464d6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/sensiolabs/ansi-to-html/zipball/02598b975c510e9e7d07d0be0a89c7a6b43464d6",
+            "reference": "02598b975c510e9e7d07d0be0a89c7a6b43464d6",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "suggest": {
+            "twig/twig": "Provides nice templating features"
+        },
+        "time": "2015-07-22 03:07:58",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "SensioLabs\\AnsiConverter": "."
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "A library to convert a text with ANSI codes to HTML"
     }
 ]
