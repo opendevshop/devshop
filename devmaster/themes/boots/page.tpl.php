@@ -72,14 +72,14 @@
   </div>
   <div class="row">
     <?php if ($tabs || $left): ?>
-    <div class="col-xs-3 col-sm-2 col-md-3 container-fluid">
+    <div class="col-xs-4 col-sm-3 col-md-3 container-fluid">
       <?php if ($tabs) print $tabs ?>
       <?php if ($left) print $left ?>
     </div>
     <?php endif; ?>
       <div class="main
-        col-xs-<?php print $tabs? '9': '12'; ?>
-        col-sm-<?php print $tabs? '10': '12'; ?>
+        col-xs-<?php print $tabs? '8': '12'; ?>
+        col-sm-<?php print $tabs? '9': '12'; ?>
         col-md-<?php print $tabs? '9': '12'; ?>
 
          container-fluid">
