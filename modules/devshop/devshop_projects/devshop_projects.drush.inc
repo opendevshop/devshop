@@ -39,11 +39,12 @@ function devshop_projects_hosting_task_update_status($task, $status) {
         }
 
         // Grab the first task that isn't this one or another skippable task
+        $last_task_node = node_load($task_list_item->nid);
         $site->environment->last_task = array(
-          'status' => $task_list_item->task_status,
-          'type' => $task_list_item->task_type,
-          'nid' => $task_list_item->nid,
-          'executed' => $task_list_item->executed,
+          'status' => $last_task_node->task_status,
+          'type' => $last_task_node->task_type,
+          'nid' => $last_task_node->nid,
+          'executed' => $last_task_node->executed,
         );
         // Stop the loop through the tasks.
         break;
