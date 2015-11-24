@@ -16,29 +16,38 @@ function devshop_dothooks_devshop_environment_alter(&$environment) {
     $environment->dothooks = $yaml->parse(file_get_contents($hooks_path));
 }
 
+/**
+ * Runs a hook for a task.
+ * @param $hook
+ * @param $task
+ */
+function devshop_dothooks_run_hook($hook, $environment) {
+
+  if (empty($environment->dothooks[$hook])) {
+    drush_log('[.hooks] Hook not found: ' . $hook, 'info');
+    return;
+  }
+
+  drush_log('[.hooks] Hook found: ' . $hook, 'ok');
+  drush_log('[.hooks] ' .$environment->dothooks['verify'], 'ok');
+
+  $process = new Process($environment->dothooks['verify']);
+  $process->run(function ($type, $buffer) {
+    if (Process::ERR === $type) {
+      drush_log($buffer, 'dothooks_error');
+      drush_log('[.hooks] Hook failed: ' . $buffer, 'error');
+    } else {
+      drush_log($buffer, 'dothooks_ok');
+    }
+  });
+}
 
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task()
+ * for Verify tasks.
  *
- * Acts after the successful verification of platforms.
- * This is where the sites get automatically created.
+ * Runs the "verify" dotHook
  */
 function devshop_dothooks_post_hosting_verify_task($task, $data) {
-
-  // Run the "verify" hook from .hooks
-  if (!empty($task->ref->environment->dothooks['verify'])) {
-
-    drush_log('[.hooks] Verify hook found.  Running hook...', 'ok');
-    drush_log('[.hooks] ' . $task->ref->environment->dothooks['verify'], 'ok');
-
-    $process = new Process($task->ref->environment->dothooks['verify']);
-    $process->run(function ($type, $buffer) {
-      if (Process::ERR === $type) {
-        drush_log($buffer, 'error');
-      } else {
-        drush_log($buffer, 'ok');
-      }
-    });
-
-  }
+  devshop_dothooks_run_hook('verify', $task->ref->environment);
 }
