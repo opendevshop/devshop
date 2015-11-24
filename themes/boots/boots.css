@@ -714,3 +714,11 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     margin-top: 15px;
     overflow-x: hidden;
 }
+
+.panel-body pre {
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+}

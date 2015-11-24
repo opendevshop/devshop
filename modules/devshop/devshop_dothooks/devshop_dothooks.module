@@ -29,7 +29,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
   }
 
   drush_log('[.hooks] Hook found: ' . $hook, 'ok');
-  drush_log('[.hooks] ' .$environment->dothooks['verify'], 'ok');
+  drush_log($environment->dothooks[$hook], 'dothooks_command');
 
   $process = new Process($environment->dothooks['verify']);
   $process->run(function ($type, $buffer) {
@@ -40,6 +40,62 @@ function devshop_dothooks_run_hook($hook, $environment) {
       drush_log($buffer, 'dothooks_ok');
     }
   });
+}
+
+/**
+ * Implements hook_preprocess_node()
+ * for task nodes, show the .hooks output.
+ * @param $vars
+ */
+function devshop_dothooks_preprocess_node(&$vars) {
+
+  if ($vars['type'] == 'task') {
+    $ref = node_load($vars['rid']);
+    if ($ref->type == 'site' && $ref->environment->dothooks) {
+      $messages = array();
+      $i = 0;
+
+      $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND type LIKE 'dothooks_%' ORDER BY vid, lid", $vars['node']->vid);
+      while ($results = db_fetch_object($query)) {
+
+        if ($results->type == 'dothooks_command') {
+          $command = $results->message;
+          $commands = explode("\n", $command);
+          $i = 0;
+          continue;
+        }
+        elseif ($results->type == 'dothooks_ok') {
+          $status = 'success';
+          $command = $commands[$i];
+          $i++;
+        }
+        elseif ($results->type == 'dothooks_error') {
+          $status = 'danger';
+          $command = $commands[$i];
+          $i++;
+        }
+        $output = $results->message;
+        $messages[] = <<<HTML
+<div class="panel panel-$status">
+  <div class="panel-heading">$command</div>
+  <div class="panel-body">
+     <pre>$output</pre>
+  </div>
+</div>
+HTML;
+      }
+
+      if (count($messages)) {
+        $messages = implode("\n", $messages);
+        $vars['task_well'] = <<<HTML
+  <h3>Hooks Output</h3>
+  <p>Loaded from the <samp>.hooks</samp> file.</p>
+  $messages
+HTML;
+
+      }
+    }
+  }
 }
 
 /**
