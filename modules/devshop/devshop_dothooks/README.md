@@ -14,10 +14,12 @@ Then, add a "deploy" hook to it:
 
 ```
 deploy: |
-  drush updb -y
-  drush cc all
-  drush fra -y
+  drush {{alias}} updb -y
+  drush {{alias}} cc all
+  drush {{alias}} fra -y
 ```
+
+You must use {{alias}} when calling drush to ensure you are controlling the correct site.
 
 Available Hooks
 ---------------
