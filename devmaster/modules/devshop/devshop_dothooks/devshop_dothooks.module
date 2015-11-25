@@ -100,10 +100,12 @@ HTML;
 
       if (count($messages)) {
         $messages = implode("\n", $messages);
-        $vars['task_well'] = <<<HTML
+        $content = $vars['content'];
+        $vars['content'] = <<<HTML
   <h3>Hooks Output</h3>
-  <p>Loaded from the <samp>.hooks</samp> file.</p>
+  <p>The following commands were loaded from the project's <samp>.hooks</samp> file.</p>
   $messages
+  $content
 HTML;
 
       }
