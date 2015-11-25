@@ -66,21 +66,15 @@ function devshop_dothooks_preprocess_node(&$vars) {
 
         if ($results->type == 'dothooks_command') {
           $command = $results->message;
-          $commands = explode("\n", $command);
-          $i = 0;
           continue;
         }
         elseif ($results->type == 'dothooks_ok') {
           $status = 'success';
           $icon = 'check';
-          $command = $commands[$i];
-          $i++;
         }
         elseif ($results->type == 'dothooks_error') {
           $status = 'danger';
           $icon = 'exclamation-circle';
-          $command = $commands[$i];
-          $i++;
         }
 
         $converter = new AnsiToHtmlConverter(null, false);
