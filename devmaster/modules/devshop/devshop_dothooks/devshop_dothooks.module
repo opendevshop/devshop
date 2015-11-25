@@ -44,7 +44,8 @@ function devshop_dothooks_run_hook($hook, $environment) {
 
     drush_log($hook_line, 'dothooks_command');
     $process = new Process($hook_line);
-    $process->run(function ($type, $buffer) {
+    $process->setTimeout(NULL);
+    $exit_code = $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
         drush_log($buffer, 'dothooks_error');
         drush_log("[.hooks] Hook failed: $buffer", 'error');
@@ -52,6 +53,15 @@ function devshop_dothooks_run_hook($hook, $environment) {
         drush_log($buffer, 'dothooks_ok');
       }
     });
+
+    // check exit code
+    if ($exit_code === 0) {
+      drush_log("[.hooks] Command executed successfully.", 'ok');
+    }
+    else {
+      drush_log("[.hooks] Command returned a non-zero exit code: $exit_code", 'error');
+      drush_log("[.hooks] $hook_line", 'error');
+    }
   }
 }
 
