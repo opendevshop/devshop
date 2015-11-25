@@ -59,27 +59,35 @@ function devshop_dothooks_preprocess_node(&$vars) {
     $ref = node_load($vars['rid']);
     if ($ref->type == 'site' && $ref->environment->dothooks) {
       $messages = array();
-      $i = 0;
+      $converter = new AnsiToHtmlConverter(null, false);
 
       $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND type LIKE 'dothooks_%' ORDER BY vid, lid", $vars['node']->vid);
       while ($results = db_fetch_object($query)) {
 
         if ($results->type == 'dothooks_command') {
+          if (empty($results->message)) {
+            continue;
+          }
           $command = $results->message;
+          $outputs[$command] = array(
+            'status' => 'success',
+            'icon' => 'check',
+            'output' => '',
+          );
           continue;
+        } elseif ($results->type == 'dothooks_ok') {
+          $outputs[$command]['output'] .= $results->message;
+        } elseif ($results->type == 'dothooks_error') {
+          $outputs[$command]['status'] = 'danger';
+          $outputs[$command]['icon'] = 'exclamation-circle';
+          $outputs[$command]['output'] .= $results->message;
         }
-        elseif ($results->type == 'dothooks_ok') {
-          $status = 'success';
-          $icon = 'check';
-        }
-        elseif ($results->type == 'dothooks_error') {
-          $status = 'danger';
-          $icon = 'exclamation-circle';
-        }
+      }
 
-        $converter = new AnsiToHtmlConverter(null, false);
-        $output = $converter->convert($results->message);
-
+      foreach ($outputs as $command => $data) {
+        $status = $data['status'];
+        $icon = $data['icon'];
+        $output = $converter->convert($data['output']);
         $messages[] = <<<HTML
 <div class="panel panel-$status">
   <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
