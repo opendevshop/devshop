@@ -8,6 +8,8 @@ use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
 use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 
+require_once 'hooks.php';
+
 /**
  * Implements hook_nodeapi_site_load()
  *
@@ -116,24 +118,4 @@ HTML;
       }
     }
   }
-}
-
-/**
- * Implementation of hook_post_hosting_TASK_TYPE_task()
- * for Verify tasks.
- *
- * Runs the "verify" dotHook
- */
-function devshop_dothooks_post_hosting_verify_task($task, $data) {
-  devshop_dothooks_run_hook('verify', $task->ref->environment);
-}
-
-/**
- * Implementation of hook_post_hosting_TASK_TYPE_task()
- * for DevShop Deploy tasks.
- *
- * Runs the "deploy" dotHook
- */
-function devshop_dothooks_post_hosting_devshop_deploy_task($task, $data) {
-  devshop_dothooks_run_hook('deploy', $task->ref->environment);
 }
