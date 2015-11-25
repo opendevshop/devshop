@@ -39,3 +39,13 @@ function devshop_dothooks_post_hosting_test_task($task, $data) {
 function devshop_dothooks_post_hosting_sync_task($task, $data) {
   devshop_dothooks_run_hook('sync', $task->ref->environment);
 }
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task()
+ * for Install tasks.
+ *
+ * Runs the "install" dotHook
+ */
+function devshop_dothooks_post_hosting_install_task($task, $data) {
+  devshop_dothooks_run_hook('install', $task->ref->environment);
+}
