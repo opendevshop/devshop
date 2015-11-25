@@ -35,6 +35,11 @@ function devshop_dothooks_run_hook($hook, $environment) {
 
   $hooks = explode("\n", $environment->dothooks[$hook]);
   foreach ($hooks as $hook_line) {
+
+    $hook_line = strtr($hook_line, array(
+      '{{alias}}' => $environment->drush_alias,
+    ));
+
     drush_log($hook_line, 'dothooks_command');
     $process = new Process($hook_line);
     $process->run(function ($type, $buffer) {
