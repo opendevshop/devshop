@@ -144,7 +144,8 @@ function hosting_task_devshop_create_form($node) {
   // Load in environment settings
   // This allows modules that add settings to environments form to do so here as well.
   $form_state = array();
-  devshop_projects_form_alter($form, $form_state, 'site_node_form');
+  $form['#project'] = $project;
+  devshop_projects_form_site_node_form_alter($form, $form_state, 'site_node_form');
   return $form;
 }
 
@@ -189,6 +190,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $environment_settings = $form_state['values']['parameters']['environment']['settings'];
   $environment_settings['db_server'] = $form_state['values']['parameters']['db_server'];
   $environment_settings['web_server'] = $form_state['values']['parameters']['web_server'];
+  $environment_settings['deploy'] = $project_node->project->settings->deploy['default_hooks'];
 
   $action = $form_state['values']['parameters']['action'];
   $git_ref = $form_state['values']['parameters']['git_ref'];
@@ -292,6 +294,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     // Use settings passed in to this function.
     $environment->settings = $settings;
+
   }
 
   $environment->last_task = array(
