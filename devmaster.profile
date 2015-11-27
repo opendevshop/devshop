@@ -36,6 +36,7 @@ function devmaster_profile_modules() {
     'devshop_log',
     'devshop_pull',
     'devshop_github',
+    'devshop_dothooks',
 
     /* NICEITIES */
     'hosting_filemanager',
