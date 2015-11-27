@@ -287,9 +287,17 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Get the node object for this form.
   $node = $form['#node'];
 
+  // Look for #project (like on node create form)
+  if ($node->project) {
+    $project = $node->project;
+  }
+  elseif (empty($node) && $form['#project']) {
+    $project = $form['#project'];
+  }
+
   // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
-  if (!empty($node->project) && arg(1) == $node->nid) {
-    drupal_goto("node/{$node->project->nid}/edit/{$node->environment->name}");
+  if (!empty($project) && arg(1) == $node->nid) {
+    drupal_goto("node/{$project->nid}/edit/{$node->environment->name}");
     exit;
   }
 
@@ -364,21 +372,21 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#type' => 'checkbox',
       '#title' => t('Revert all features.'),
       '#description' => t('If features is enabled, revert all of them.'),
-      '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['revert'],
+      '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['revert']: $environment->settings->deploy['revert'],
   );
   $form['environment']['settings']['deploy']['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
-      '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['update'],
+      '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['update']: $environment->settings->deploy['update'],
   );
   $form['environment']['settings']['deploy']['cache'] = array(
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
-      '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['cache'],
+      '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['cache']: $environment->settings->deploy['cache'],
   );
 
   // Hide deploy hooks if project is not allowed to configure them.
-  if (!$node->project->settings->deploy['allow_environment_deploy_config']) {
+  if (!$project->settings->deploy['allow_environment_deploy_config']) {
     $form['environment']['settings']['deploy']['revert']['#type'] = 'value';
     $form['environment']['settings']['deploy']['update']['#type'] = 'value';
     $form['environment']['settings']['deploy']['cache']['#type'] = 'value';
