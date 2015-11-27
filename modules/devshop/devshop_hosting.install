@@ -57,3 +57,10 @@ function devshop_hosting_update_7002() {
 function devshop_hosting_update_7003() {
   module_enable(array('devshop_hosting'));
 }
+
+/**
+ * Enable devshop_dothooks module.
+ */
+function devshop_hosting_update_7004() {
+  module_enable(array('devshop_dothooks'));
+}
