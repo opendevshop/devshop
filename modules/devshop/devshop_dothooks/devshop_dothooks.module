@@ -24,7 +24,7 @@ function devshop_dothooks_devshop_environment_alter(&$environment) {
 /**
  * Implements hook_form_alter().
  */
-function devshop_dothooks_form_alter(&$form, &$form_state) {
+function devshop_dothooks_form_project_node_form_alter(&$form, &$form_state) {
 
   $form['project']['settings']['deploy']['default_hooks']['dothooks'] = array(
     '#type' => 'checkbox',
