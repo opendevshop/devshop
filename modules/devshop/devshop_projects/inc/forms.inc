@@ -377,6 +377,17 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#default_value' => empty($node->nid)? 1: $environment->settings->deploy['cache'],
   );
 
+  // Hide deploy hooks if project is not allowed to configure them.
+  if (!$node->project->settings->deploy['allow_environment_deploy_config']) {
+    $form['environment']['settings']['deploy']['revert']['#type'] = 'value';
+    $form['environment']['settings']['deploy']['update']['#type'] = 'value';
+    $form['environment']['settings']['deploy']['cache']['#type'] = 'value';
+
+    $form['environment']['settings']['deploy']['revert']['#value'] = $environment->settings->deploy['revert'];
+    $form['environment']['settings']['deploy']['update']['#value'] = $environment->settings->deploy['update'];
+    $form['environment']['settings']['deploy']['cache']['#value'] = $environment->settings->deploy['cache'];
+  }
+
   // If acquia cloud hooks are detected, add the option to fire them.
   if (file_exists($environment->repo_root . '/hooks/common/post-code-update')) {
     $form['environment']['settings']['deploy']['acquia_hooks'] = array(
@@ -676,6 +687,39 @@ function devshop_projects_form(&$node) {
     '#title' => t('Allow deploying data from drush aliases.'),
     '#default_value' => $node->project->settings->deploy['allow_deploy_data_from_alias'],
     '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
+  );
+
+  // Deploy hooks configuration
+  $form['project']['settings']['deploy']['default_hooks']['label'] = array(
+    '#value' => t('Default Deploy Hooks:'),
+    '#prefix' => '<label>',
+    '#suffix' => '</label>',
+  );
+  $form['project']['settings']['deploy']['default_hooks']['description'] = array(
+    '#value' => t('New environments will run these actions when new code or data is deployed.'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+  $form['project']['settings']['deploy']['default_hooks']['update'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Run database updates.'),
+    '#default_value' => empty($node->nid)? 1: $node->project->settings->deploy['default_hooks']['update'],
+  );
+  $form['project']['settings']['deploy']['default_hooks']['cache'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Clear all caches.'),
+    '#default_value' => empty($node->nid)? 1: $node->project->settings->deploy['default_hooks']['cache'],
+  );
+  $form['project']['settings']['deploy']['default_hooks']['revert'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Revert all features.'),
+    '#default_value' => empty($node->nid)? 1: $node->project->settings->deploy['default_hooks']['revert'],
+  );
+  $form['project']['settings']['deploy']['allow_environment_deploy_config'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow environment-specific deploy hook configuration.'),
+    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_config'],
+    '#description' => t('Each environment can be configured to have different deploy hooks.'),
   );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
