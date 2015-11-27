@@ -702,11 +702,13 @@ function devshop_projects_form(&$node) {
     '#value' => t('Default Deploy Hooks:'),
     '#prefix' => '<label>',
     '#suffix' => '</label>',
+    '#weight' => -100,
   );
   $form['project']['settings']['deploy']['default_hooks']['description'] = array(
     '#value' => t('New environments will run these actions when new code or data is deployed.'),
     '#prefix' => '<p>',
     '#suffix' => '</p>',
+    '#weight' => -100,
   );
   $form['project']['settings']['deploy']['default_hooks']['update'] = array(
     '#type' => 'checkbox',
