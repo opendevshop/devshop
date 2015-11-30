@@ -722,3 +722,10 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   border-radius: 0;
   background: none;
 }
+
+.environment-dothooks pre {
+  margin: 0 1em 1em;
+  font-size: .8em;
+  overflow-x: scroll;
+  word-wrap: normal;
+}
