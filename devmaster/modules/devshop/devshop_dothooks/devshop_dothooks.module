@@ -77,7 +77,7 @@ function devshop_dothooks_form_project_node_form_alter(&$form, &$form_state) {
  */
 function devshop_dothooks_menu() {
   $items['admin/devshop/dothooks'] = array(
-    'title' => 'Deploy Hooks File Help',
+    'title' => 'Hooks File Help',
     'description' => '.hooks documentation',
     'page callback' => 'devshop_dothooks_help_page',
     'access arguments' => array('administer hosting settings'),
