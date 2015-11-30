@@ -11,7 +11,7 @@ use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 require_once 'hooks.php';
 
 /**
- * Implements hook_nodeapi_site_load()
+ * Implements hook_devshop_environment_alter()
  *
  * For site nodes, look for a .hooks.yml (or .hooks.yaml, or .hooks) file in the git repo root.
  */
