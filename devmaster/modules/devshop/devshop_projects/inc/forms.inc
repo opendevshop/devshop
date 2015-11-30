@@ -398,7 +398,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   }
 
   // If .hooks are allowed, inform the user
-  if ($project->settings->deploy['default_hooks']['dothooks']) {
+  if ($form['#node']->nid && $project->settings->deploy['default_hooks']['dothooks']) {
     if (empty($form['#node']->environment->dothooks)) {
       $description =  '<div class="alert alert-danger">' . t('There was no .hooks file found in your project.  Add a .hooks, .hooks.yml, or .hooks.yaml file with the format described in the !documentation.', array(
         '!documentation' => l(t('documentation'), 'admin/devshop/dothooks')
