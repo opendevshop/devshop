@@ -394,6 +394,29 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     $form['environment']['settings']['deploy']['revert']['#value'] = $environment->settings->deploy['revert'];
     $form['environment']['settings']['deploy']['update']['#value'] = $environment->settings->deploy['update'];
     $form['environment']['settings']['deploy']['cache']['#value'] = $environment->settings->deploy['cache'];
+    $form['environment']['settings']['deploy']['#description'] = t('Environment-specific deploy hook configuration is not allowed. Check Project Settings to change.');
+  }
+
+  // If .hooks are allowed, inform the user
+  if ($project->settings->deploy['default_hooks']['dothooks']) {
+    if (empty($form['#node']->environment->dothooks)) {
+      $description =  '<div class="alert alert-danger">' . t('There was no .hooks file found in your project.  Add a .hooks, .hooks.yml, or .hooks.yaml file with the format described in the !documentation.', array(
+        '!documentation' => l(t('documentation'), 'admin/devshop/dothooks')
+      )) . '</div>';
+    }
+    else {
+      $description = '<div class="alert alert-success">' . t('Found .hooks file at !path', array(
+        '!path' => $form['#node']->environment->dothooks_file_path,
+      )) . '</div>';
+    }
+
+    $form['environment']['settings']['deploy']['dothooks'] = array(
+      '#type' => 'item',
+      '#title' => t('Using %type file for deployment hooks', array(
+        '%type' => $form['#node']->environment->dothooks_file_name? $form['#node']->environment->dothooks_file_name: '.hooks',
+      )),
+      '#value' => $description,
+    );
   }
 
   // If acquia cloud hooks are detected, add the option to fire them.
