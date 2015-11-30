@@ -194,6 +194,11 @@ HTML;
  */
 function devshop_dothooks_run_hook($hook, $environment) {
 
+  if (empty($environment->settings->deploy['dothooks'])) {
+    drush_log('[.hooks] Environment not configured to run .hooks commands.', 'info');
+    return;
+  }
+
   if (empty($environment->dothooks[$hook])) {
     drush_log('[.hooks] Hook not found: ' . $hook, 'info');
     return;
