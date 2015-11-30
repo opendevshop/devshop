@@ -2,6 +2,7 @@
 
 require_once 'vendor/autoload.php';
 use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
@@ -240,9 +241,35 @@ HTML;
         $messages = implode("\n", $messages);
         $content = $vars['content'];
         $file_path = $ref->environment->dothooks_file_name;
+        $hooks_content = file_get_contents($ref->environment->dothooks_file_path);
+
+        switch ($vars['task_type']) {
+          case 'verify':
+          case 'test':
+          case 'sync':
+          case 'install':
+            $type = $vars['task_type'];
+            break;
+          case 'devshop_deploy':
+            $type = 'deploy';
+            break;
+        }
+
         $vars['content'] = <<<HTML
   <h3>Hooks Output</h3>
-  <p>The following commands were loaded from the project's <samp>$file_path</samp> file.</p>
+  <p>The following commands were loaded from the project's <samp>$file_path</samp> file:</p>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+    {$ref->environment->dothooks_file_path}
+    </div>
+    <div class="panel-body">
+        <pre>$hooks_content</pre>
+    </div>
+</div>
+
+  <p>Running <label>$type</label> hooks:</p>
+
   $messages
   $content
 HTML;
