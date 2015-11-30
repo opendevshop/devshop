@@ -12,6 +12,6 @@
  * loaded.
  *
  */
-function hook_devshop_environment_alter(&$environment) {
+function hook_devshop_environment_alter(&$environment, $project) {
   $environment->tagline = t('Hosted by DevShop');
 }
