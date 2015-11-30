@@ -67,7 +67,7 @@ function devshop_dothooks_form_project_node_form_alter(&$form, &$form_state) {
     '#weight' => -99,
     '#default_value' => $form['#node']->project->settings->deploy['default_hooks']['dothooks'],
     '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
-      '!dothooks' => l(t('.hooks documentation'), 'admin/devshop/dothooks'),
+      '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
     )),
   );
 }
@@ -92,7 +92,7 @@ function devshop_dothooks_form_site_node_form_alter(&$form, &$form_state) {
   if ($form['#node']->nid && $project->settings->deploy['default_hooks']['dothooks']) {
     if (empty($form['#node']->environment->dothooks)) {
       $description =  '<div class="alert alert-danger">' . t('There was no .hooks file found in your project.  Add a .hooks, .hooks.yml, or .hooks.yaml file with the format described in the !documentation.', array(
-          '!documentation' => l(t('documentation'), 'admin/devshop/dothooks')
+          '!documentation' => l(t('documentation'), 'admin/help/devshop_dothooks')
         )) . '</div>';
     }
     else {
@@ -107,36 +107,11 @@ function devshop_dothooks_form_site_node_form_alter(&$form, &$form_state) {
       '#weight' => -99,
       '#default_value' => $form['#node']->project->settings->deploy['default_hooks']['dothooks'],
       '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
-        '!dothooks' => l(t('.hooks documentation'), 'admin/devshop/dothooks'),
+        '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
       )),
     );
   }
 
-}
-
-/**
- * Implements hook_access().
- */
-function devshop_dothooks_menu() {
-  $items['admin/devshop/dothooks'] = array(
-    'title' => 'Hooks File Help',
-    'description' => '.hooks documentation',
-    'page callback' => 'devshop_dothooks_help_page',
-    'access arguments' => array('administer hosting settings'),
-    'tab_parent' => 'admin/devshop',
-    'type' => MENU_LOCAL_TASK,
-  );
-  return $items;
-}
-
-/**
- * Page callback for admin/devshop/dothooks
- *
- * Output comes from hook_help()
- * @return string
- */
-function devshop_dothooks_help_page() {
-  return '';
 }
 
 /**
@@ -149,7 +124,7 @@ function devshop_dothooks_help($path, $arg)
 {
   switch ($path) {
     // Main module help for the block module
-    case 'admin/devshop/dothooks':
+    case 'admin/help#devshop_dothooks':
       $note = t(
         'You can control what happens on deploy through a <code>.hooks</code> file in your repository.'
       );
