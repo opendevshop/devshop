@@ -329,7 +329,14 @@
         <?php endif; ?>
     <?php endif; ?>
 
+  <?php if ($page && isset($environment->dothooks)): ?>
 
+    <div class="list-group-item environment-dothooks">
+      <label><?php print $environment->dothooks_file_name . ' ' . t('File'); ?></label>
+      <pre><?php print file_get_contents($environment->dothooks_file_path); ?></pre>
+    </div>
+
+  <?php endif; ?>
 
     <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
         <?php if ($page): ?>
