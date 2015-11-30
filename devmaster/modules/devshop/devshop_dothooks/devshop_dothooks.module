@@ -15,7 +15,12 @@ require_once 'hooks.php';
  *
  * For site nodes, look for a .hooks.yml (or .hooks.yaml, or .hooks) file in the git repo root.
  */
-function devshop_dothooks_devshop_environment_alter(&$environment) {
+function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
+
+  if (!$project->settings->deploy['default_hooks']['dothooks']) {
+    return;
+  }
+
   $yaml = new Parser();
   $hooks_path = '';
 
@@ -59,7 +64,7 @@ function devshop_dothooks_form_project_node_form_alter(&$form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Allow environments to use a file named <code>.hooks</code>,  <code>.hooks.yml</code>, or  <code>.hooks.yaml</code> to define post-task hooks, such as deploy or verify.'),
     '#weight' => -99,
-    '#default_value' => $form['#node']->project->settings->deploy['allow_environment_deploy_config'],
+    '#default_value' => $form['#node']->project->settings->deploy['default_hooks']['dothooks'],
     '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
       '!dothooks' => l(t('.hooks documentation'), 'admin/devshop/dothooks'),
     )),
