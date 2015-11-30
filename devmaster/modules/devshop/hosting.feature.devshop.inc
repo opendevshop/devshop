@@ -40,5 +40,12 @@ function devshop_hosting_hosting_feature() {
     'module' => 'devshop_log',
     'group' => 'devshop',
   );
+  $features['devshop_dothooks'] = array(
+    'title' => t('DevShop .Hooks'),
+    'description' => t('Allows projects to define their deploy hooks in a .hooks.yml file.'),
+    'status' => HOSTING_FEATURE_DISABLED,
+    'module' => 'devshop_dothooks',
+    'group' => 'devshop',
+  );
   return $features;
 }
