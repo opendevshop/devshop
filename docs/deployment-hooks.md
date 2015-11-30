@@ -29,6 +29,10 @@ DevShop now supports placing your hook commands in a file called `.hooks`, `.hoo
 Create a file with the format below to give your developers more control over what happens 
 when new code is deployed.
 
+You must enable to "DevShop .Hooks" module to get this functionality. 
+
+It will be enabled by default in the next release.
+
 ```
 # Fires after an environment is installed.
 install: |
