@@ -200,6 +200,11 @@ function devshop_projects_load($node) {
       $environment->url = $protocol . $environment->system_domain;
     }
 
+    // If per-environment hooks config is not allowed, load it from the project.
+    if (!$project->settings->deploy['allow_environment_deploy_config']) {
+      $environment->settings->deploy = $project->settings->deploy['default_hooks'];
+    }
+
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
     $environments[$environment->name] = $environment;
