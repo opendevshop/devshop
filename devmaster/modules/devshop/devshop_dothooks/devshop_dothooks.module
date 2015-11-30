@@ -119,7 +119,8 @@ function devshop_dothooks_help($path, $arg)
 install: |
   drush {{alias}} vset site_name "Hooks Hooks Hooks"
 
-# Fires after code is deployed.
+# Fires after code is deployed. A "deployment" happens when you push to your
+# git repository or select a new branch or tag for your environment.
 deploy: |
   drush {{alias}} updb -y
   drush {{alias}} cc all
