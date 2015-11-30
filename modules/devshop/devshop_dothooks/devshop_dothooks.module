@@ -57,7 +57,7 @@ function devshop_dothooks_form_project_node_form_alter(&$form, &$form_state) {
 
   $form['project']['settings']['deploy']['default_hooks']['dothooks'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Use <code>.hooks</code> file for deploy hooks.'),
+    '#title' => t('Allow environments to use a file named <code>.hooks</code>,  <code>.hooks.yml</code>, or  <code>.hooks.yaml</code> to define post-task hooks, such as deploy or verify.'),
     '#weight' => -99,
     '#default_value' => $form['#node']->project->settings->deploy['allow_environment_deploy_config'],
     '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
