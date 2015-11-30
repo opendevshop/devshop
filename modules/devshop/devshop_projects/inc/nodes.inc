@@ -201,7 +201,7 @@ function devshop_projects_load($node) {
     }
 
     // Save to project environments collection.
-    drupal_alter('devshop_environment', $environment);
+    drupal_alter('devshop_environment', $environment, $project);
     $environments[$environment->name] = $environment;
   }
 
