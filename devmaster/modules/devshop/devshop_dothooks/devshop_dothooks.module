@@ -13,13 +13,42 @@ require_once 'hooks.php';
 /**
  * Implements hook_nodeapi_site_load()
  *
- * For site nodes, look for a .hooks file in the git repo root.
+ * For site nodes, look for a .hooks.yml (or .hooks.yaml, or .hooks) file in the git repo root.
  */
 function devshop_dothooks_devshop_environment_alter(&$environment) {
-    $yaml = new Parser();
+  $yaml = new Parser();
+  $hooks_path = '';
+
+  if (file_exists($environment->repo_root . '/.hooks.yaml')) {
+    $hooks_file = '.hooks.yaml';
+    $hooks_path = $environment->repo_root . '/.hooks.yaml';
+  }
+  elseif (file_exists($environment->repo_root . '/.hooks.yml')) {
+    $hooks_file = '.hooks.yml';
+    $hooks_path = $environment->repo_root . '/.hooks.yml';
+  }
+  elseif (file_exists($environment->repo_root . '/.hooks')) {
+    $hooks_file = '.hooks';
     $hooks_path = $environment->repo_root . '/.hooks';
+  }
+  else {
+    return;
+  }
+
+  // Attempt to parse
+  try {
     $environment->dothooks = $yaml->parse(file_get_contents($hooks_path));
+    $environment->dothooks_file_name = $hooks_file;
+    $environment->dothooks_file_path = $hooks_path;
+  }
+  catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+    drupal_set_message(t('Invalid YAML in !file: !message', array(
+     '!file' => $hooks_path,
+     '!message' => $e->getMessage(),
+    )));
+  }
 }
+
 
 /**
  * Implements hook_form_alter().
@@ -205,9 +234,10 @@ HTML;
       if (count($messages)) {
         $messages = implode("\n", $messages);
         $content = $vars['content'];
+        $file_path = $ref->environment->dothooks_file_name;
         $vars['content'] = <<<HTML
   <h3>Hooks Output</h3>
-  <p>The following commands were loaded from the project's <samp>.hooks</samp> file.</p>
+  <p>The following commands were loaded from the project's <samp>$file_path</samp> file.</p>
   $messages
   $content
 HTML;
