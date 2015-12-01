@@ -112,6 +112,8 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['force'] = FALSE;
     $task->options['test'] = $task->task_args['test'];
     $task->options['manual'] = $task->task_args['manual'];
+    $task->options['acquia_hooks'] = $task->task_args['acquia_hooks'];
+    $task->options['dothooks'] = $task->task_args['dothooks'];
   }
 
   // Commit
