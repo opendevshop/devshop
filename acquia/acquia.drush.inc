@@ -80,6 +80,17 @@ function drush_acquia_post_provision_devshop_deploy($branch)
       return;
     }
 
-    drush_run_acquia_hook('post-code-deploy', $environment);
+    // If "manual" deployment, it's a post-code-deploy
+    if (drush_get_option('manual', FALSE)) {
+      $hook = 'post-code-deploy';
+    }
+    // If it is automatic, it's a "post-code-update"
+    else {
+      $hook = 'post-code-update';
+    }
+
+    drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name}");
+
+    drush_run_acquia_hook($hook, $environment);
   }
 }
