@@ -385,16 +385,40 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['cache']: $environment->settings->deploy['cache'],
   );
 
-  // Hide deploy hooks if project is not allowed to configure them.
-  if (!$project->settings->deploy['allow_environment_deploy_config']) {
-    $form['environment']['settings']['deploy']['revert']['#type'] = 'value';
-    $form['environment']['settings']['deploy']['update']['#type'] = 'value';
-    $form['environment']['settings']['deploy']['cache']['#type'] = 'value';
+  // Look for .hooks or .hooks.yml
+  if ($form['#node']->nid && !empty($environment->dothooks)) {
+    $form['environment']['settings']['deploy']['dothooks'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
+      '#weight' => -99,
+      '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['dothooks']: $environment->settings->deploy['dothooks'],
+      '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
+        '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
+      )),
+    );
+  }
 
-    $form['environment']['settings']['deploy']['revert']['#value'] = $environment->settings->deploy['revert'];
-    $form['environment']['settings']['deploy']['update']['#value'] = $environment->settings->deploy['update'];
-    $form['environment']['settings']['deploy']['cache']['#value'] = $environment->settings->deploy['cache'];
+  // Look for acquia cloud hooks.
+  if (file_exists($environment->repo_root . '/hooks')){
+    $form['environment']['settings']['deploy']['acquia_hooks'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Acquia Cloud Hooks'),
+      '#description' => t('Acquia Cloud Hooks were detected in your project.  Check this box to run "post-code-update" when deploying code via git, "post-code-deploy" when deploying code manually, "post-files'),
+      '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['acquia_hooks']: $environment->settings->deploy['acquia_hooks'],
+    );
+  }
+
+  // Disable deploy hooks if environment is not allowed to configure them.
+  if (!$project->settings->deploy['allow_environment_deploy_config']) {
+
+    foreach (element_children($form['environment']['settings']['deploy']) as $i) {
+      $form['environment']['settings']['deploy'][$i]['#disabled'] = TRUE;
+    }
+
     $form['environment']['settings']['deploy']['#description'] = t('Environment-specific deploy hook configuration is not allowed. Check Project Settings to change.');
+  }
+  else {
+
   }
 //
 //  // If .hooks are allowed, inform the user
@@ -419,15 +443,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 //    );
 //  }
 
-  // If acquia cloud hooks are detected, add the option to fire them.
-  if (file_exists($environment->repo_root . '/hooks/common/post-code-update')) {
-    $form['environment']['settings']['deploy']['acquia_hooks'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Run Acquia "post-code-update" hook scripts for environment "%env".', array('%env' => $environment->name)),
-        '#description' => 'Cloud hooks were detected in your project.  Check this box to run the "post-code-update" hook every time you deploy code to this environment.',
-        '#default_value' => empty($node->nid)? 0: $environment->settings->deploy['acquia_hooks'],
-    );
-  }
   $form['environment']['last_task'] = array(
       '#type' => 'value',
       '#value' => $environment->last_task,
@@ -748,6 +763,31 @@ function devshop_projects_form(&$node) {
     '#title' => t('Revert all features.'),
     '#default_value' => empty($node->nid)? 1: $node->project->settings->deploy['default_hooks']['revert'],
   );
+
+  // Detect .hooks file
+  $environment = current($project->environments);
+  if (isset($environment->dothooks)) {
+    $form['project']['settings']['deploy']['default_hooks']['dothooks'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
+      '#weight' => -99,
+      '#default_value' => $form['#node']->project->settings->deploy['default_hooks']['dothooks'],
+      '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
+        '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
+      )),
+    );
+  }
+
+  // Detect Acquia Cloud Hooks.
+  if (file_exists($environment->repo_root . '/hooks')){
+    $form['project']['settings']['deploy']['default_hooks']['acquia_hooks'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Acquia "post-code-update" hook scripts for environment "%env".', array('%env' => $environment->name)),
+      '#description' => 'Cloud hooks were detected in your project.  Check this box to run the "post-code-update" hook every time you deploy code to this environment.',
+      '#default_value' => empty($node->nid)? 0: $environment->settings->deploy['acquia_hooks'],
+    );
+  }
+
   $form['project']['settings']['deploy']['allow_environment_deploy_config'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow environment-specific deploy hook configuration.'),
