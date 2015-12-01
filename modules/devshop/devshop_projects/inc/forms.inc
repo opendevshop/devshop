@@ -416,7 +416,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
 
   // Look for .hooks or .hooks.yml
   if ($project->nid && !empty($environment->dothooks)) {
-    $form['environment']['settings']['deploy']['dothooks'] = array(
+    $return['dothooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
       '#weight' => -99,
