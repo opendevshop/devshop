@@ -104,22 +104,14 @@ function drush_devshop_projects_pre_hosting_task()
   // Deploy
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy') {
 
-    // Just load in all of the task_args (they come from the task form.)
+    // The git_ref is the only argument
+    $task->args['git_ref'] = $task->task_args['git_ref'];
+
+    // Just load in all of the task_args as options(they come from the task form.)
+    unset($task->task_args['git_ref']);
     foreach ($task->task_args as $arg => $value) {
-      $task->args[$arg] = $value;
+      $task->options[$arg] = $value;
     }
-
-//    $task->args['git_ref'] = $task->task_args['git_ref'];
-
-//     @TODO: Convert this to something more robust.
-//    $task->options['update'] = $task->task_args['update'];
-//    $task->options['revert'] = !empty($task->task_args['revert']);
-//    $task->options['cache'] = $task->task_args['cache'];
-//    $task->options['force'] = FALSE;
-//    $task->options['test'] = $task->task_args['test'];
-//    $task->options['manual'] = $task->task_args['manual'];
-//    $task->options['acquia_hooks'] = $task->task_args['acquia_hooks'];
-//    $task->options['dothooks'] = $task->task_args['dothooks'];
   }
 
   // Commit
