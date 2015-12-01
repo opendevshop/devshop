@@ -89,7 +89,7 @@ function drush_acquia_post_provision_devshop_deploy($branch)
       $hook = 'post-code-update';
     }
 
-    drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name}");
+    drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name}", 'ok');
 
     drush_run_acquia_hook($hook, $environment);
   }
