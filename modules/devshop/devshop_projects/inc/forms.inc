@@ -396,7 +396,6 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   $return = array(
       '#type' => 'fieldset',
       '#title' => t('Deployment Hooks'),
-      '#description' => t('When code is deployed to this environment, do the following:'),
   );
   $return['update'] = array(
       '#type' => 'checkbox',
