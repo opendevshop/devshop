@@ -836,3 +836,10 @@ function devshop_projects_validate($node, &$form) {
   // @TODO: if there is no "live domain url" then unset the values for environment aliases
 
 }
+
+
+function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
+
+  $form['update-status']['#value'] = t('Cancel Task');
+  $form['update-status']['#attributes']['class'] = 'btn-link pull-right';
+}
