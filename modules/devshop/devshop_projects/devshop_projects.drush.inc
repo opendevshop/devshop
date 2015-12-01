@@ -108,7 +108,6 @@ function drush_devshop_projects_pre_hosting_task()
     $task->args['git_ref'] = $task->task_args['git_ref'];
 
     // Just load in all of the task_args as options(they come from the task form.)
-    unset($task->task_args['git_ref']);
     foreach ($task->task_args as $arg => $value) {
       $task->options[$arg] = $value;
     }
