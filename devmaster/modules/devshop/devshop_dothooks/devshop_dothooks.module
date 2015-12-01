@@ -17,10 +17,6 @@ require_once 'hooks.php';
  */
 function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
 
-  if (!$project->settings->deploy['default_hooks']['dothooks']) {
-    return;
-  }
-
   $yaml = new Parser();
   $hooks_path = '';
 
