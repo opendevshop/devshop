@@ -6,6 +6,55 @@
  */
 
 /**
+ * Implements drush_HOOK_post_COMMAND()
+ * for provision_devshop_deploy.
+ *
+ * Checks for Acquia cloud hooks and runs them.
+ */
+function drush_acquia_post_provision_devshop_deploy($branch)
+{
+
+  if (d()->type == 'site') {
+    $environment = (object) d()->environment;
+
+    // Respect drush option, but default to environment settings.
+    if (!drush_get_option('acquia_hooks', $environment->settings->deploy['acquia_hooks'])) {
+      drush_log('[.hooks] Environment not configured to run acquia cloud hook commands.', 'info');
+      return;
+    }
+
+    $project_name = d()->project;
+    $project = (object) d("@project_{$project_name}")->project;
+
+    // If project has no path to drupal, we know it's not acquia.
+    if ($project->drupal_path != 'docroot' || !file_exists(
+        $environment->repo_root.'/hooks'
+      )
+    ) {
+      drush_log(
+        '[DEVSHOP] ./docroot or ./hooks folder is missing. Not an acquia repo!',
+        'ok'
+      );
+
+      return;
+    }
+
+    // If "manual" deployment, it's a post-code-deploy
+    if (drush_get_option('manual', FALSE)) {
+      $hook = 'post-code-deploy';
+    }
+    // If it is automatic, it's a "post-code-update"
+    else {
+      $hook = 'post-code-update';
+    }
+
+    drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name}", 'ok');
+
+    drush_run_acquia_hook($hook, $environment);
+  }
+}
+
+/**
  * Helper for running acquia cloud hooks.
  * @param $hook
  * @param $environment
@@ -61,54 +110,5 @@ function drush_run_acquia_hook($hook, $environment) {
     else {
       return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'The last cloud hook returned a non-zero exit code.  Remaining hooks skipped.');
     }
-  }
-}
-
-/**
- * Implements drush_HOOK_post_COMMAND()
- * for provision_devshop_deploy.
- *
- * Checks for Acquia cloud hooks and runs them.
- */
-function drush_acquia_post_provision_devshop_deploy($branch)
-{
-
-  if (d()->type == 'site') {
-    $environment = (object) d()->environment;
-
-    // Respect drush option, but default to environment settings.
-    if (!drush_get_option('acquia_hooks', $environment->settings->deploy['acquia_hooks'])) {
-      drush_log('[.hooks] Environment not configured to run acquia cloud hook commands.', 'info');
-      return;
-    }
-
-    $project_name = d()->project;
-    $project = (object) d("@project_{$project_name}")->project;
-
-    // If project has no path to drupal, we know it's not acquia.
-    if ($project->drupal_path != 'docroot' || !file_exists(
-        $environment->repo_root.'/hooks'
-      )
-    ) {
-      drush_log(
-        '[DEVSHOP] ./docroot or ./hooks folder is missing. Not an acquia repo!',
-        'ok'
-      );
-
-      return;
-    }
-
-    // If "manual" deployment, it's a post-code-deploy
-    if (drush_get_option('manual', FALSE)) {
-      $hook = 'post-code-deploy';
-    }
-    // If it is automatic, it's a "post-code-update"
-    else {
-      $hook = 'post-code-update';
-    }
-
-    drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name}", 'ok');
-
-    drush_run_acquia_hook($hook, $environment);
   }
 }
