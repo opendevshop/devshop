@@ -114,6 +114,7 @@ function devshop_projects_preprocess_node(&$vars){
 
   // On task node page
   if (isset($vars['node']) && $vars['node']->type == 'task' && $vars['page']){
+    $vars['content'] = '';
 
     $log_type = '';
     switch ($vars['node']->task_status) {
@@ -230,7 +231,6 @@ HTML;
 
       if (count($messages)) {
         $vars['log_message'] = '';
-        $vars['content'] = '';
         $messages = implode("\n", $messages);
         $content = $vars['content'];
 
