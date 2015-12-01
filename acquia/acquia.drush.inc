@@ -12,22 +12,31 @@
  */
 function drush_run_acquia_hook($hook, $environment) {
 
-  // Collect scripts to run.
-  // Common scripts.
+  // Collect cloud hook scripts to run for all environments "common".
   $files = scandir("{$environment->repo_root}/hooks/common/{$hook}");
   if (empty($files)) $files = array();
-  $scripts = array_diff($files, array('..', '.'));
-  foreach ($scripts as &$script) {
-    $script = realpath("{$environment->repo_root}/hooks/common/{$hook}/{$script}");
+
+  // The list of files we will run.
+  $scripts = array();
+
+  // Remove incorrect entries from scandir.
+  $files = array_diff($files, array('..', '.', '.gitignore'));
+
+  // Collect the full path to each script.
+  foreach ($files as $script) {
+    $scripts[] = realpath("{$environment->repo_root}/hooks/common/{$hook}/{$script}");
   }
 
-  // Environment scripts: Post Code Update
-  if (file_exists("{$environment->repo_root}/hooks/{$environment->name}")) {
-    $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}");
-    if (empty($files)) $files = array();
-    $scripts += array_diff($files, array('..', '.'));
-    foreach ($scripts as &$script) {
-      $script = realpath("{$environment->repo_root}/hooks/{$environment->name}/{$hook}/{$script}");
+  // Collect cloud hook scripts to run for this environment.
+  $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}");
+  if (!empty($files)) {
+
+    // Remove incorrect entries from scandir.
+    $files= array_diff($files, array('..', '.', '.gitignore'));
+
+    // Collect the full path to each script.
+    foreach ($files as $script) {
+      $scripts[] = realpath("{$environment->repo_root}/hooks/{$environment->name}/{$hook}/{$script}");
     }
   }
 
@@ -37,7 +46,15 @@ function drush_run_acquia_hook($hook, $environment) {
   foreach ($scripts as $file) {
     drush_log('[DEVSHOP] Running Acquia Cloud Hook: ' . $file, 'ok');
 
-    if (drush_shell_exec("sh $file {$environment->project_name} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type devshop $environment->url") !== 0) {
+    // This is a trick.  DevShop doesn't have aliases like $project.$environment.
+    // When Acquia cloud hook writers create a script, they will use something like:
+    //
+    //    drush_alias=$site'.'$target_env
+    //    drush @$drush_alias cc all
+    //
+    // So, by passing "environment->name" as $site, and project.hostname as $target_env,
+    // we can trick the Acquia cloud script to use the right alias.
+    if (drush_shell_exec("sh $file {$environment->name} {$environment->project_name}.{$environment->web_server} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type devshop $environment->url") !== 0) {
       $output = drush_shell_exec_output();
       drush_log(implode("\n", $output), 'ok');
     }
@@ -59,8 +76,9 @@ function drush_acquia_post_provision_devshop_deploy($branch)
   if (d()->type == 'site') {
     $environment = (object) d()->environment;
 
-    // Respect environment settings.
-    if ($environment->settings['deploy']['acquia_hooks'] != 1) {
+    // Respect drush option, but default to environment settings.
+    if (!drush_get_option('acquia_hooks', $environment->settings->deploy['acquia_hooks'])) {
+      drush_log('[.hooks] Environment not configured to run acquia cloud hook commands.', 'info');
       return;
     }
 
