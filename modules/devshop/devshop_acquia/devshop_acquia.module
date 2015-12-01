@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
@@ -98,13 +100,24 @@ function drush_run_acquia_hook($hook, $environment) {
     //
     // So, by passing "environment->name" as $site, and project.hostname as $target_env,
     // we can trick the Acquia cloud script to use the right alias.
-    if (drush_shell_exec("sh $file {$environment->name} {$environment->project_name}.{$environment->web_server} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type devshop $environment->url") !== 0) {
-      $output = drush_shell_exec_output();
-      drush_log(implode("\n", $output), 'devshop_ok');
+    $command = "sh $file {$environment->name} {$environment->project_name}.{$environment->web_server} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type";
+    $process = new Process($command);
+    $process->setTimeout(NULL);
+    $exit_code = $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        drush_log($buffer, 'devshop_ok');
+      } else {
+        drush_log($buffer, 'devshop_ok');
+      }
+    });
+
+    // check exit code
+    if ($exit_code === 0) {
+      drush_log("[.hooks] Command executed successfully.", 'ok');
     }
     else {
-      drush_log(implode("\n", $output), 'devshop_error');
-      return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'The last cloud hook returned a non-zero exit code.  Remaining hooks skipped.');
+      drush_log("[.hooks] Hook command failed: $command", 'error');
+      drush_log($command, 'devshop_error');
     }
   }
 }
