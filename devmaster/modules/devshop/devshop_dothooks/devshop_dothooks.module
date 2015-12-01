@@ -110,7 +110,8 @@ HTML;
  */
 function devshop_dothooks_run_hook($hook, $environment) {
 
-  if (empty($environment->settings->deploy['dothooks'])) {
+  // Respect drush option, but default to environment settings.
+  if (!drush_get_option('dothooks', $environment->settings->deploy['dothooks'])) {
     drush_log('[.hooks] Environment not configured to run .hooks commands.', 'info');
     return;
   }
