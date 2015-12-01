@@ -11,16 +11,16 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
 
   if (d()->type == 'site') {
     if (empty(d()->environment)) {
-      return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, 'This site is not a part of a project. You cannot use this command.');
+      return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', 'This site is not a part of a project. You cannot use this command.');
     }
   }
   else {
-    return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, 'provision-devshop-deploy must be run on a site context.');
+    return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', 'provision-devshop-deploy must be run on a site context.');
   }
 
   // Verify that the branch or tag exists
   if (empty($git_ref)) {
-    return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, 'You must specify a valid branch or tag.');
+    return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', 'You must specify a valid branch or tag.');
   }
 
   $project_alias = '@project_' . d()->project;
@@ -28,7 +28,7 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
 
   if (!isset($project->project['settings']['git']['refs'][$git_ref])) {
     $drush_command = "drush $project_alias provision-verify";
-    return drush_set_error(DEVSHOP_FRAMEWORK_ERROR, "Branch or tag '$git_ref' not found. Try running '$drush_command' to fetch new remote branches or tags.");
+    return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', "Branch or tag '$git_ref' not found. Try running '$drush_command' to fetch new remote branches or tags.");
   }
 }
 
