@@ -78,11 +78,9 @@ function devshop_pull_default_webhook($project_node){
     }
     $environments_to_pull[] = $environment->name;
 
-    $args = array();
+    // Default args to the environments deploy settings.
+    $args = $environment->settings->deploy;
     $args['git_ref'] = $environment->git_ref;
-    $args['update'] = $environment->settings->deploy['update'];
-    $args['revert'] = $environment->settings->deploy['revert'];
-    $args['cache'] = $environment->settings->deploy['cache'];
 
     // Ensure that environment site exists before trying to deploy it.
     if (isset($environment->site) && $node = node_load($environment->site)) {
