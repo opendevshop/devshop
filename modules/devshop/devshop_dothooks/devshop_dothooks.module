@@ -55,65 +55,6 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
   }
 }
 
-
-/**
- * Implements hook_form_alter().
- */
-function devshop_dothooks_form_project_node_form_alter(&$form, &$form_state) {
-
-  $form['project']['settings']['deploy']['default_hooks']['dothooks'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
-    '#weight' => -99,
-    '#default_value' => $form['#node']->project->settings->deploy['default_hooks']['dothooks'],
-    '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
-      '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
-    )),
-  );
-}
-
-/**
- * Implements hook_form_alter().
- */
-function devshop_dothooks_form_site_node_form_alter(&$form, &$form_state) {
-
-  // Get the node object for this form.
-  $node = $form['#node'];
-
-  // Look for #project (like on node create form)
-  if ($node->project) {
-    $project = $node->project;
-  }
-  elseif (empty($node) && $form['#project']) {
-    $project = $form['#project'];
-  }
-
-  // If .hooks are allowed, inform the user
-  if ($form['#node']->nid && $project->settings->deploy['default_hooks']['dothooks']) {
-    if (empty($form['#node']->environment->dothooks)) {
-      $description =  '<div class="alert alert-danger">' . t('There was no .hooks file found in your project.  Add a .hooks, .hooks.yml, or .hooks.yaml file with the format described in the !documentation.', array(
-          '!documentation' => l(t('documentation'), 'admin/help/devshop_dothooks')
-        )) . '</div>';
-    }
-    else {
-      $description = '<div class="alert alert-success">' . t('Found .hooks file at !path', array(
-          '!path' => $form['#node']->environment->dothooks_file_path,
-        )) . '</div>';
-    }
-
-    $form['environment']['settings']['deploy']['dothooks'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
-      '#weight' => -99,
-      '#default_value' => $form['#node']->project->settings->deploy['default_hooks']['dothooks'],
-      '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
-        '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
-      )),
-    );
-  }
-
-}
-
 /**
  * Implements hook_help()
  * @param $path
