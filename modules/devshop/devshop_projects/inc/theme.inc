@@ -1,5 +1,13 @@
 <?php
 
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+
 /**
  * Implements hook_hosting_theme()
  */
@@ -102,6 +110,104 @@ function devshop_projects_preprocess_node(&$vars){
     else {
       $vars['access_note'] = t('NOTE: To access these environments with drush remotely, ask an administrator to add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
     }
+  }
+
+  // On task node page
+  if (isset($vars['node']) && $vars['node']->type == 'task' && $vars['page']){
+    $ref = node_load($vars['rid']);
+    if (isset($ref->project) && !empty($ref->project)) {
+      $messages = array();
+      $converter = new AnsiToHtmlConverter(null, false);
+
+      $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND type LIKE 'devshop_%' ORDER BY vid, lid", $vars['node']->vid);
+      while ($results = db_fetch_object($query)) {
+
+        if ($results->type == 'devshop_command') {
+          if (empty($results->message)) {
+            continue;
+          }
+          $command = $results->message;
+          $outputs[$command] = array(
+            'status' => 'success',
+            'icon' => 'check',
+            'output' => '',
+          );
+          continue;
+        } elseif ($results->type == 'devshop_ok') {
+          $outputs[$command]['output'] .= $results->message;
+        } elseif ($results->type == 'devshop_error') {
+          $outputs[$command]['status'] = 'danger';
+          $outputs[$command]['icon'] = 'exclamation-circle';
+          $outputs[$command]['output'] .= $results->message;
+        }
+      }
+
+      foreach ($outputs as $command => $data) {
+        $status = $data['status'];
+        $icon = $data['icon'];
+        $output = $converter->convert($data['output']);
+        $messages[] = <<<HTML
+<div class="panel panel-$status">
+  <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
+  <div class="panel-body">
+     <pre>$output</pre>
+  </div>
+</div>
+HTML;
+      }
+
+      if (count($messages)) {
+        $messages = implode("\n", $messages);
+        $content = $vars['content'];
+
+        switch ($vars['task_type']) {
+          case 'verify':
+          case 'test':
+          case 'sync':
+          case 'install':
+            $type = $vars['task_type'];
+            break;
+          case 'devshop_deploy':
+            $type = 'deploy';
+            break;
+        }
+
+        // Detect Dothooks
+        if ($ref->environment->settings->deploy['dothooks']) {
+          $hooks_content = file_get_contents($ref->environment->dothooks_file_path);
+          $description = t("The following commands were loaded from the project's %filename file:", array(
+            '%filename' => $ref->environment->dothooks_file_name
+          ));
+          $output_dothooks = <<<HTM
+ <div class="panel panel-default">
+    <div class="panel-heading">
+    {$ref->environment->dothooks_file_path}
+    </div>
+    <div class="panel-body">
+        <pre>$hooks_content</pre>
+    </div>
+</div>
+HTM;
+        }
+
+        // Detect Acquia Cloud hooks
+        if ($ref->environment->settings->deploy['acquia_hooks']) {
+          $description = "<p>Running Acquia Cloud Hooks:</p>";
+        }
+
+        $vars['content'] = <<<HTML
+  <h3>Hooks Output</h3>
+  <p>$description</p>
+
+$output_dothooks
+
+  $messages
+  $content
+HTML;
+
+      }
+    }
+
   }
 }
 
