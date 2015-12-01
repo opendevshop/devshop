@@ -114,6 +114,78 @@ function devshop_projects_preprocess_node(&$vars){
 
   // On task node page
   if (isset($vars['node']) && $vars['node']->type == 'task' && $vars['page']){
+
+    $log_type = '';
+    switch ($vars['node']->task_status) {
+      case HOSTING_TASK_SUCCESS:
+        $vars['task_label'] = t('Success');
+        $vars['task_label_class'] = 'success';
+        break;
+      case HOSTING_TASK_ERROR:
+        $vars['task_label'] = t('Error');
+        $vars['task_label_class'] = 'danger';
+        $log_type = 'error';
+        break;
+      case HOSTING_TASK_WARNING:
+        $vars['task_label'] = t('Success (with warning)');
+        $vars['task_label_class'] = 'warning';
+        $log_type = 'warning';
+        break;
+      case HOSTING_TASK_PROCESSING:
+        $vars['task_label'] = t('Processing') . ' <i class="fa fa-gear fa-spin"></i>';
+        $vars['task_label_class'] = 'info';
+        break;
+      case HOSTING_TASK_QUEUED:
+        $vars['task_label'] = t('Queued');
+        $vars['task_label_class'] = 'info';
+        break;
+    }
+
+    // Load ref node
+    $ref_node = node_load($vars['rid']);
+    if ($ref_node->type == 'site') {
+      $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
+    }
+
+    // Load error or warning messages.
+    if ($log_type == 'error' || $log_type == 'warning') {
+      $query = db_query("SELECT message FROM {hosting_task_log} WHERE vid = %d AND type = '%s' ORDER BY vid, lid", $vars['node']->vid, $log_type);
+
+      while ($results = db_fetch_object($query)) {
+        $vars['log_message'][] = $results->message;
+      }
+
+      $vars['log_message'] = theme('item_list', $vars['log_message']);
+
+      $vars['log_class'] = $log_type == 'error'? 'danger': $log_type;
+    }
+    else {
+      $vars['log_message'] = '';
+    }
+
+    if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
+      $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+    }
+
+    // Show duration
+    if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
+      $vars['duration'] = 'Queued';
+      $vars['date'] = date('D M j Y', $vars['node']->changed);
+      $vars['executed'] = t('Queued') . ' ' . format_interval(time() - $vars['node']->changed) . ' ' . t('ago');
+    }
+    else {
+
+      if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
+        $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
+      }
+      else {
+        $vars['duration'] = format_interval($vars['node']->delta, 1);
+      }
+      $vars['date'] = date('D M j Y', $vars['node']->executed);
+      $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
+    }
+
+    // Load Logs
     $ref = node_load($vars['rid']);
     if (isset($ref->project) && !empty($ref->project)) {
       $messages = array();
@@ -157,6 +229,8 @@ HTML;
       }
 
       if (count($messages)) {
+        $vars['log_message'] = '';
+        $vars['content'] = '';
         $messages = implode("\n", $messages);
         $content = $vars['content'];
 
