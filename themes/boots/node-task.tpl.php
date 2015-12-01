@@ -78,16 +78,18 @@
       </div>
     <?php endif; ?>
 
-      <p class="duration">
+    <p>
+      <span class="duration">
           <i class="fa fa-clock-o"></i>
           <?php print $duration; ?>
-      </p>
-
-      <p class="executed">
+      </span>
+      <span>&nbsp;</span>
+      <span class="executed inline">
           <i class="fa fa-calendar-o"></i>
           <?php print $date; ?>
           <small><?php print $executed; ?></small>
-      </p>
+      </span>
+    </p>
 
     <?php if ($site_url): ?>
       <?php print $site_url ?>
@@ -131,6 +133,15 @@
   </div>
 <?php else: ?>
   <?php print $content; ?>
+
+  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+    <i class="fa fa-list"></i> <?php print t('Details'); ?>
+  </button>
+  <div class="collapse" id="collapseLogs">
+    <div class="well">
+      <?php print $node->content['hosting_log']['#value']; ?>
+    </div>
+  </div>
 
 <?php endif; ?>
 
