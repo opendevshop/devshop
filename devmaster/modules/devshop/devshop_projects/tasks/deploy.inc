@@ -77,5 +77,13 @@ function hosting_task_devshop_deploy_form($node) {
     '#default_value' => $node->environment->settings->deploy['cache'],
   );
 
+  // Pass through a value so hostmaster knows this was triggered manually.
+  // This is mainly to allow acquia cloud hooks compatibility. They have separate
+  // hooks for manual deployment vs. automatic deployment.
+  $form['manual'] = array(
+    '#type' => 'value',
+    '#value' => 1,
+  );
+
   return $form;
 }
