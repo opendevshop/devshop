@@ -368,12 +368,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#title' => t('Deployment Hooks'),
       '#description' => t('When code is deployed to this environment, do the following:'),
   );
-  $form['environment']['settings']['deploy']['revert'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Revert all features.'),
-      '#description' => t('If features is enabled, revert all of them.'),
-      '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['revert']: $environment->settings->deploy['revert'],
-  );
   $form['environment']['settings']['deploy']['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
@@ -383,6 +377,12 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
       '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['cache']: $environment->settings->deploy['cache'],
+  );
+  $form['environment']['settings']['deploy']['revert'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Revert all features.'),
+    '#description' => t('If features is enabled, revert all of them.'),
+    '#default_value' => empty($node->nid)? $project->settings->deploy['default_hooks']['revert']: $environment->settings->deploy['revert'],
   );
 
   // Look for .hooks or .hooks.yml
