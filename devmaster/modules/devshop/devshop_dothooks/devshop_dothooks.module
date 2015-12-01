@@ -130,14 +130,14 @@ function devshop_dothooks_run_hook($hook, $environment) {
       '{{alias}}' => $environment->drush_alias,
     ));
 
-    drush_log($hook_line, 'dothooks_command');
+    drush_log($hook_line, 'devshop_command');
     $process = new Process($hook_line);
     $process->setTimeout(NULL);
     $exit_code = $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
-        drush_log($buffer, 'dothooks_ok');
+        drush_log($buffer, 'devshop_ok');
       } else {
-        drush_log($buffer, 'dothooks_ok');
+        drush_log($buffer, 'devshop_ok');
       }
     });
 
@@ -147,99 +147,8 @@ function devshop_dothooks_run_hook($hook, $environment) {
     }
     else {
       drush_log("[.hooks] Hook command failed: $hook_line", 'error');
-      drush_log("$hook_line", 'dothooks_error');
+      drush_log("$hook_line", 'devshop_error');
     }
   }
 }
 
-/**
- * Implements hook_preprocess_node()
- * for task nodes, show the .hooks output.
- * @param $vars
- */
-function devshop_dothooks_preprocess_node(&$vars) {
-
-  if ($vars['type'] == 'task') {
-    $ref = node_load($vars['rid']);
-    if ($ref->type == 'site' && $ref->environment->dothooks) {
-      $messages = array();
-      $converter = new AnsiToHtmlConverter(null, false);
-
-      $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND type LIKE 'dothooks_%' ORDER BY vid, lid", $vars['node']->vid);
-      while ($results = db_fetch_object($query)) {
-
-        if ($results->type == 'dothooks_command') {
-          if (empty($results->message)) {
-            continue;
-          }
-          $command = $results->message;
-          $outputs[$command] = array(
-            'status' => 'success',
-            'icon' => 'check',
-            'output' => '',
-          );
-          continue;
-        } elseif ($results->type == 'dothooks_ok') {
-          $outputs[$command]['output'] .= $results->message;
-        } elseif ($results->type == 'dothooks_error') {
-          $outputs[$command]['status'] = 'danger';
-          $outputs[$command]['icon'] = 'exclamation-circle';
-          $outputs[$command]['output'] .= $results->message;
-        }
-      }
-
-      foreach ($outputs as $command => $data) {
-        $status = $data['status'];
-        $icon = $data['icon'];
-        $output = $converter->convert($data['output']);
-        $messages[] = <<<HTML
-<div class="panel panel-$status">
-  <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
-  <div class="panel-body">
-     <pre>$output</pre>
-  </div>
-</div>
-HTML;
-      }
-
-      if (count($messages)) {
-        $messages = implode("\n", $messages);
-        $content = $vars['content'];
-        $file_path = $ref->environment->dothooks_file_name;
-        $hooks_content = file_get_contents($ref->environment->dothooks_file_path);
-
-        switch ($vars['task_type']) {
-          case 'verify':
-          case 'test':
-          case 'sync':
-          case 'install':
-            $type = $vars['task_type'];
-            break;
-          case 'devshop_deploy':
-            $type = 'deploy';
-            break;
-        }
-
-        $vars['content'] = <<<HTML
-  <h3>Hooks Output</h3>
-  <p>The following commands were loaded from the project's <samp>$file_path</samp> file:</p>
-
-  <div class="panel panel-default">
-    <div class="panel-heading">
-    {$ref->environment->dothooks_file_path}
-    </div>
-    <div class="panel-body">
-        <pre>$hooks_content</pre>
-    </div>
-</div>
-
-  <p>Running <label>$type</label> hooks:</p>
-
-  $messages
-  $content
-HTML;
-
-      }
-    }
-  }
-}
