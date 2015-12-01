@@ -30,32 +30,43 @@ function drush_acquia_post_provision_devshop_deploy($branch) {
       return;
     }
 
+    // Detect "update" vs "deploy"
+    $cloud_hooks_path = d()->environment->repo_root . "/hooks";
+
     // Detect hook files.
-    $cloud_hooks_path = d()->root . '/../hooks';
     if (file_exists($cloud_hooks_path)) {
-      drush_log('[DEVSHOP] Acquia Cloud Hooks detected...', 'ok');
+      drush_log('[DEVSHOP] Acquia Cloud Hooks not detected...', 'ok');
     }
+
+    // If "manual" deployment, it's a post-code-deploy
+    if (drush_get_option('manual', FALSE)) {
+      $hook = 'post-code-deploy';
+    }
+    // If it is automatic, it's a "post-code-update"
+    else {
+      $hook = 'post-code-update';
+    }
+
+    drush_log("[DEVSHOP] Acquia $hook triggered...", 'ok');
 
     // Collect scripts to run.
     // Common scripts.
-    $files = scandir($cloud_hooks_path . '/common/post-code-update');
+    $files = scandir("{$cloud_hooks_path}/common/{$hook}");
     if (empty($files)) $files = array();
     $scripts = array_diff($files, array('..', '.'));
     foreach ($scripts as &$script) {
-      $script = realpath($cloud_hooks_path . '/common/post-code-update/' . $script);
+      $script = realpath("{$cloud_hooks_path}/common/{$hook}/{$script}");
     }
 
-    // Environment scripts: Post Code Update
-    if (file_exists($cloud_hooks_path . '/' . $environment->name)) {
-      $files = scandir($cloud_hooks_path . '/' . $environment->name . '/post-code-update');
+    // Environment scripts specific scripts
+    if (file_exists("{$cloud_hooks_path}/{$environment->name}/{$hook}")) {
+      $files = scandir("{$cloud_hooks_path}/{$environment->name}/{$hook}");
       if (empty($files)) $files = array();
       $scripts += array_diff($files, array('..', '.'));
       foreach ($scripts as &$script) {
-        $script = realpath($cloud_hooks_path . '/' . $environment->name . '/post-code-update/' . $script);
+        $script = realpath("{$cloud_hooks_path}/{$environment->name}/{$hook}/{$script}");
       }
     }
-
-    // @TODO: Post Code Deploy & Post DB Copy
 
     drush_log(implode("\n", $scripts), 'ok');
 
