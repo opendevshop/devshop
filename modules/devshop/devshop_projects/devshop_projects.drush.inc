@@ -216,16 +216,17 @@ function drush_devshop_platform_verify(){
       $commands[] = "git checkout $git_ref";
     }
   }
-  // If the platform has been verified and has a branch and git url
-  else {
-    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
-
-    // Run git fetch to ensure we have all branches and tags
-    $output .= _devshop_projects_git_execute('git fetch', $root);
-
-    // Build the command string
-    $commands[] = "git checkout $git_ref";
-  }
+  // @TODO: Remove.  This is handled by the "deploy" task, right?
+//  // If the platform has been verified and has a branch and git url
+//  else {
+//    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
+//
+//    // Run git fetch to ensure we have all branches and tags
+//    $output .= _devshop_projects_git_execute('git fetch', $root);
+//
+//    // Build the command string
+//    $commands[] = "git checkout $git_ref";
+//  }
 
   // Execute clone or checkout.
   $output .=  _devshop_projects_git_execute($commands, $root);
