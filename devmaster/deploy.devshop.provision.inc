@@ -4,6 +4,9 @@
  * Contains code for the provision-devshop-deploy command.
  */
 
+use GitWrapper\GitWrapper;
+use GitWrapper\GitException;
+
 /**
  * Pre provision-devshop-deploy
  */
@@ -35,72 +38,56 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
 /**
  * Implements the provision-devshop-deploy command.
  */
-function drush_devshop_provision_provision_devshop_deploy($git_ref = '') {
-  // Get info
+function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
+{
   $environment = (object) d()->environment;
-  $project_name = d()->project;
-  $project = (object) d("@project_{$project_name}")->project;
+  try {
 
-  drush_log("[{$project_name}] Deploying '{$git_ref}' to '{$environment->name}'.", 'ok');
+    $wrapper = new GitWrapper();
 
+    $git = $wrapper->workingCopy($environment->repo_root);
+    chdir($git->getDirectory());
 
-  $tag_or_branch = $environment->git_ref_type;
+    // Stash any changes? Not sure if we should do this anymore...
+    // $git->command('stash');
 
-  // Find repo path
-  $repo_path = $project->code_path . '/' . $environment->name;
+    // Fetch
+    drush_log('git fetch all', 'devshop_command');
+    $git->fetchAll();
+    drush_log($git->getOutput(), 'devshop_ok');
 
-  // Ensure it's a git repo.
-  provision_git_is_repo($repo_path);
-
-  // If reset is true, do a git reset --hard first.
-  drush_shell_cd_and_exec($repo_path, 'git stash');
-  drush_log(dt('[DEVSHOP] Git working copy stashed:'), 'ok');
-  drush_log(drush_shell_exec_output(), 'ok');
-
-  drush_shell_cd_and_exec($repo_path, "git fetch");
-  drush_log(dt('[DEVSHOP] Git fetch called:'), 'ok');
-  drush_log(drush_shell_exec_output(), 'ok');
-
-  // Check the desired git_ref
-  if (drush_shell_cd_and_exec($repo_path, "git checkout $git_ref")) {
-    drush_log(dt("[DEVSHOP] Git {$tag_or_branch} {$git_ref} checked out to {$environment->name} environment, located at {$repo_path}."), 'ok');
-    $output = drush_shell_exec_output();
-    drush_log(implode("\n", $output), 'ok');
+    // Checkout the chosen ref
+    drush_log("git checkout {$git_ref}", 'devshop_command');
+    $git->checkout($git_ref);
+    $git_checkout_output = $git->getOutput();
+    $git_checkout_output_lines = explode("\n", $git_checkout_output);
+    drush_log($git_checkout_output, 'devshop_ok');
 
     // Run Git Pull
-    if ($tag_or_branch == 'branch') {
-      drush_shell_cd_and_exec($repo_path, "git pull");
-      $output = drush_shell_exec_output();
+    if ($environment->git_ref_type == 'branch') {
 
-      drush_log(implode("\n", $output), 'ok');
+      drush_log("git pull", 'devshop_command');
+      $git->pull();
+      $git_pull_output = $git->getOutput();
+      drush_log($git_pull_output, 'devshop_ok');
 
       // If on a branch and there are no changes it says "Already up-to-date."
-      if ($output[0] == 'Already up-to-date.') {
+      if ($git_pull_output == trim('Already up-to-date.')) {
         drush_set_context('devshop_block_deploy_hooks', TRUE);
         return;
       }
     }
     // If on a tag, and there are no changes, it outputs one line with the current ref.
-    elseif ($tag_or_branch == 'tag' && count($output) == 1) {
+    elseif ($environment->git_ref_type == 'tag' && count($git_checkout_output_lines) == 1) {
       drush_set_context('devshop_block_deploy_hooks', TRUE);
       return;
     }
-  }
-  else {
-    drush_set_error('DRUSH_PROVISION_GIT_PULL_FAILED', dt("Git pull failed in !path.\nThe specific errors are below:\n!errors", array(
-          '!path' => $repo_path,
-          '!errors' => implode("\n", drush_shell_exec_output())
-        )));
-    return;
-  }
-  drush_shell_cd_and_exec($repo_path, "git status");
-  $output = drush_shell_exec_output();
 
-  drush_log('----------------------------------------', 'ok');
-  drush_log('$ git status', 'ok');
-  drush_log(implode("\n", $output), 'ok');
-  drush_log('----------------------------------------', 'ok');
-
+  } catch (GitException $e) {
+    drush_log("Git Exception", 'devshop_command');
+    drush_log($git->getOutput(), 'devshop_ok');
+    drush_log($e->getMessage(), 'devshop_error');
+  }
 }
 
 /**
