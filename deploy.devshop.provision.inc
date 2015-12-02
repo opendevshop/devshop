@@ -52,7 +52,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     // $git->command('stash');
 
     // Fetch
-    drush_log('git fetch all', 'devshop_command');
+    drush_log('git fetch --all', 'devshop_command');
     $git->fetchAll();
     drush_log($git->getOutput(), 'devshop_ok');
 
