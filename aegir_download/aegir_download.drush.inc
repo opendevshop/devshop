@@ -27,14 +27,6 @@ function aegir_download_drush_command()
 }
 
 /**
- * Pre provision-git-features-update-commit hook
- */
-function drush_aegir_download_pre_provision_download(){
-
-    provision_git_is_repo();
-}
-
-/**
  * Implements the provision-git-pull command.
  */
 function drush_aegir_download_provision_download() {
@@ -53,10 +45,12 @@ function drush_aegir_download_provision_download() {
     $target = d()->name;
     $cmd = "drush $target dl $packages -y";
     drush_log("[AEGIR] Running $cmd", 'ok');
+    drush_log($cmd, 'devshop_command');
+
     if (drush_shell_exec($cmd)) {
         $output = drush_shell_exec_output();
         foreach ($output as $line) {
-            drush_log("[OK] $line", 'ok');
+            drush_log($line, 'devshop_ok');
         }
     }
     else {
