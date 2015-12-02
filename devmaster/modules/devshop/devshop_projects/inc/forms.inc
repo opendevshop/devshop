@@ -290,7 +290,10 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Look for #project (like on node create form)
   if ($node->project) {
     $project = $node->project;
-  } else {
+  } elseif (isset($form['#project'])) {
+    $project = $form['#project'];
+  }
+  else {
     return;
   }
 
@@ -415,7 +418,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   );
 
   // Look for .hooks or .hooks.yml
-  if (!$is_environment_form || $is_environment_form && $project->settings->deploy['default_hooks']['dothooks']) {
+  if (!$is_environment_form || $project->settings->deploy['default_hooks']['dothooks']) {
     $return['dothooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
@@ -428,7 +431,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
 
   // Look for acquia cloud hooks.
-  if (file_exists($environment->repo_root . '/hooks')){
+  if (!$is_environment_form || $project->settings->deploy['default_hooks']['acquia_hooks']){
     $return['acquia_hooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run Acquia Cloud Hooks'),
