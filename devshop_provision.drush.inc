@@ -4,6 +4,7 @@
  * Drush commands for DevShop Provision
  */
 
+require_once('vendor/autoload.php');
 
 /**
  * Implements hook_drush_init()
