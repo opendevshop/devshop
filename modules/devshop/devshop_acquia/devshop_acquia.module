@@ -11,6 +11,13 @@ function devshop_acquia_post_hosting_devshop_deploy_task($task, $data) {
 }
 
 /**
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
+ */
+function devshop_acquia_post_hosting_sync_task($task, $data) {
+  drush_run_acquia_hook($task);
+}
+
+/**
  * Helper for running acquia cloud hooks.
  * @param $hook
  * @param $environment
@@ -22,8 +29,8 @@ function drush_run_acquia_hook($task) {
     return;
   }
 
-  // If acquia hooks is not configured to run, return.
-  if (!isset($task->task_args['acquia_hooks'])) {
+  // If this is a deploy task, and acquia hooks is not configured to run, return.
+  if ($task->task_type == 'devshop_deploy' && !isset($task->task_args['acquia_hooks'])) {
     return;
   }
 
@@ -36,16 +43,32 @@ function drush_run_acquia_hook($task) {
     return;
   }
 
+  // Determine the hook to run
+  $hooks = array();
+
   // If "manual" deployment, it's a post-code-deploy
   if (isset($task->task_args['manual']) && $task->task_args['manual'] == 1) {
-    $hook = 'post-code-deploy';
+    $hooks[] = 'post-code-deploy';
   }
   // If it is automatic, it's a "post-code-update"
-  else {
-    $hook = 'post-code-update';
+  elseif ($task->task_type == 'devshop_deploy') {
+    $hooks[] = 'post-code-update';
+  }
+  // If task is sync...
+  elseif ($task->task_type == 'sync') {
+    // If database is copied, run post-db-copy hook.
+    if ($task->task_args['database']) {
+      $hooks[] = 'post-db-copy';
+    }
+    // If files are copied, run post-files-copy hook.
+    if ($task->task_args['files']) {
+      $hooks[] = 'post-files-copy';
+    }
   }
 
-  drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name}", 'ok');
+  foreach ($hooks as $hook) {
+
+  drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name} ... Scanning  {$environment->repo_root}/hooks/common/{$hook}  & {$environment->repo_root}/hooks/{$environment->name}/{$hook} ", 'ok');
 
   // Collect cloud hook scripts to run for all environments "common".
   $files = scandir("{$environment->repo_root}/hooks/common/{$hook}");
@@ -63,8 +86,7 @@ function drush_run_acquia_hook($task) {
   }
 
   // Collect cloud hook scripts to run for this environment.
-  $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}");
-  if (!empty($files)) {
+  if (file_exists("{$environment->repo_root}/hooks/{$environment->name}") && $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}")) {
 
     // Remove incorrect entries from scandir.
     $files= array_diff($files, array('..', '.', '.gitignore'));
@@ -75,7 +97,11 @@ function drush_run_acquia_hook($task) {
     }
   }
 
-  // Run Scripts
+  // Notify logs how many scripts we've found
+    $count = count($scripts);
+    drush_log("[DEVSHOP] Found $count scripts to run...", 'ok');
+
+    // Run Scripts
   // @TODO: Implement using symfony:Process component.
   // Usage: post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
   foreach ($scripts as $file) {
@@ -109,5 +135,6 @@ function drush_run_acquia_hook($task) {
       drush_log("[.hooks] Hook command failed: $command", 'error');
       drush_log($command, 'devshop_error');
     }
+  }
   }
 }
