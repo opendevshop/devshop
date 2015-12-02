@@ -2,6 +2,8 @@
 
 use Symfony\Component\Process\Process;
 use GitWrapper\GitWrapper;
+use GitWrapper\GitWorkingCopy;
+use GitWrapper\GitException;
 
 /**
  * Implementation of hook_drush_command().
@@ -46,7 +48,20 @@ function drush_aegir_download_provision_download() {
 
     // Run `drush dl $modules`
     $target = d()->name;
-    $cmd = "drush $target dl $packages -y";
+    $cmd = "drush $target dl $packages --yes --strict=0";
+
+    // Pass through options to the drush dl command.
+    if (drush_get_option('commit', FALSE)) {
+      $cmd .= ' --commit ';
+    }
+    if (drush_get_option('message', '')) {
+      $message = drush_get_option('message', '');
+      $cmd .= " --message='$message' ";
+    }
+    if (drush_get_option('update', FALSE)) {
+      $cmd .= " --update";
+    }
+
     drush_log($cmd, 'devshop_command');
 
     $process = new Process($cmd);
@@ -66,82 +81,46 @@ function drush_aegir_download_provision_download() {
       drush_log("Aegir Download: OK", 'ok');
     } else {
       drush_log("Aegir Download Failed!", 'error');
+      drush_log(dt('Downloading modules failed. Check the logs and try again.'), 'devshop_error');
       return;
-    }
-
-    // Add to git and push, if requested.
-    drush_log(dt('Commit'), 'devshop_command');
-
-    if (drush_get_option('commit', FALSE)) {
-      drush_log(dt('Committing new module...'), 'devshop_ok');
-    }
-    else {
-      drush_log(dt('Not Committing.'), 'devshop_ok');
     }
 }
 
-//
-//    drush_log("[AEGIR] Running $cmd", 'ok');
-//    drush_log($cmd, 'devshop_command');
-//
-//    if (drush_shell_exec($cmd)) {
-//        $output = drush_shell_exec_output();
-//        foreach ($output as $line) {
-//            drush_log($line, 'devshop_ok');
-//        }
-//    }
-//    else {
-//        $output = drush_shell_exec_output();
-//        foreach ($output as $line) {
-//            drush_log("[DRUSH] $line", 'ok');
-//        }
-//        drush_log(dt('drush_shell_exec() returned FALSE, but We will keep going.'), 'ok');
-//    }
-//}
-//
-//function aegir_download_drush_pm_post_download($project, $release)
-//{
-//    $alias = d()->name;
-//    $uri = d()->uri;
-//    $project = d()->project;
-//    $path_to_project = $project['full_project_path'];
-//
-//    // Bail if there is no URI or drush alias.
-//    if (empty($uri) || empty($alias) || empty($project)) {
-//        return;
-//    }
-//
-//    // Bail if there is no repo
-//    if (!provision_git_is_repo($path_to_project)) {
-//        return;
-//    }
-//
-//    // Invoke provision-git-add to add any new files to the index
-//
-//    // Generate commit message.
-//    $message = array();
-//    $message[] = "Downloaded '" . $project['name'] . "'" . " to http://$uri";
-//    if (drush_get_option('message')){
-//        $message[] = drush_get_option('message');
-//    }
-//    $message = implode("\n", $message);
-//
-//    $data = array(
-//        'message' => $message,
-//    );
-//    provision_backend_invoke($alias, 'provision-git-add',
-//        array($path_to_project));
-//
-//    // Invoke provision-git-commit
-//    provision_backend_invoke($alias, 'provision-git-commit', array(), $data);
-//
-//    // Push, unless the user doesn't want to.
-//    if (drush_get_option('push', TRUE)){
-//        provision_backend_invoke($alias, 'provision-git-push');
-//    }
-//
-//    // Revert, if the user wants.
-//    if (drush_get_option('revert')){
-//        provision_backend_invoke($alias, 'provision-git-reset');
-//    }
-//}
+/**
+ * Implements hook_drush_pm_post_download()
+ *
+ * Runs after a project has been downloaded.
+ *
+ * This is needed for devshop because we want to commit the new module we just
+ * downloaded, and only this hook knows about the path.
+ *
+ * @param $drupal_project
+ * @param $release
+ */
+function aegir_download_drush_pm_post_download($drupal_project, $release) {
+
+  if (d()->environment && drush_get_option('commit', FALSE)) {
+    drush_log(dt('[DEVSHOP] Committing new module...'), 'ok');
+
+    $message = drush_get_option('message', dt('Committed by DevShop: ') . $drupal_project['name']);
+
+    $wrapper = new GitWrapper();
+    $wrapper->streamOutput();
+
+    try {
+      $git = $wrapper->workingCopy(d()->environment['repo_root']);
+
+      $download_path = d()->environment['root'] .'/' . $drupal_project['full_project_path'];
+      $git
+        ->add($download_path)
+        ->commit($message)
+        ->push();
+    }
+    catch (GitException $e) {
+      return drush_set_error('DRUSH_ERROR', "Git Exception: " . $e->getMessage());
+    }
+  }
+  else {
+    drush_log(dt('Skipping Commit. Make sure you commit or delete this module at some point.'), 'notice');
+  }
+}
