@@ -86,7 +86,9 @@ function drush_run_acquia_hook($task) {
   }
 
   // Collect cloud hook scripts to run for this environment.
-  if (file_exists("{$environment->repo_root}/hooks/{$environment->name}") && $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}")) {
+  if (file_exists("{$environment->repo_root}/hooks/{$environment->name}/{$hook}")) {
+
+    $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}");
 
     // Remove incorrect entries from scandir.
     $files= array_diff($files, array('..', '.', '.gitignore'));
