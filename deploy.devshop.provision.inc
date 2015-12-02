@@ -41,6 +41,10 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
   $environment = (object) d()->environment;
+  $project_name = d()->project;
+  $project = d("@{$project_name}")->project;
+  $desired_ref_type = $project->settings->git['refs'][$git_ref];
+
   try {
 
     $wrapper = new GitWrapper();
@@ -60,11 +64,13 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     drush_log("git checkout {$git_ref}", 'devshop_command');
     $git->checkout($git_ref);
     $git_checkout_output = $git->getOutput();
+    drush_log($git_checkout_output, 'devshop_ok');
+
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
     drush_log($git_checkout_output, 'devshop_ok');
 
     // Run Git Pull
-    if ($environment->git_ref_type == 'branch') {
+    if ($desired_ref_type == 'branch') {
 
       drush_log("git pull", 'devshop_command');
       $git->pull();
@@ -78,15 +84,20 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
       }
     }
     // If on a tag, and there are no changes, it outputs one line with the current ref.
-    elseif ($environment->git_ref_type == 'tag' && count($git_checkout_output_lines) == 1) {
+    elseif ($desired_ref_type == 'tag' && count($git_checkout_output_lines) == 1) {
       drush_set_context('devshop_block_deploy_hooks', TRUE);
       return;
     }
+
+    drush_log('git status', 'devshop_command');
+    $git->status();
+    drush_log($git->getOutput(), 'devshop_ok');
 
   } catch (GitException $e) {
     drush_log("Git Exception", 'devshop_command');
     drush_log($git->getOutput(), 'devshop_ok');
     drush_log($e->getMessage(), 'devshop_error');
+    return drush_set_error('DEVSHOP_GIT_ERROR');
   }
 }
 
