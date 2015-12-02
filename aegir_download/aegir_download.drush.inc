@@ -61,50 +61,50 @@ function drush_aegir_download_provision_download() {
         drush_log(dt('drush_shell_exec() returned FALSE, but We will keep going.'), 'ok');
     }
 }
-
-function aegir_download_drush_pm_post_download($project, $release)
-{
-    $alias = d()->name;
-    $uri = d()->uri;
-    $project = d()->project;
-    $path_to_project = $project['full_project_path'];
-
-    // Bail if there is no URI or drush alias.
-    if (empty($uri) || empty($alias) || empty($project)) {
-        return;
-    }
-
-    // Bail if there is no repo
-    if (!provision_git_is_repo($path_to_project)) {
-        return;
-    }
-
-    // Invoke provision-git-add to add any new files to the index
-
-    // Generate commit message.
-    $message = array();
-    $message[] = "Downloaded '" . $project['name'] . "'" . " to http://$uri";
-    if (drush_get_option('message')){
-        $message[] = drush_get_option('message');
-    }
-    $message = implode("\n", $message);
-
-    $data = array(
-        'message' => $message,
-    );
-    provision_backend_invoke($alias, 'provision-git-add',
-        array($path_to_project));
-
-    // Invoke provision-git-commit
-    provision_backend_invoke($alias, 'provision-git-commit', array(), $data);
-
-    // Push, unless the user doesn't want to.
-    if (drush_get_option('push', TRUE)){
-        provision_backend_invoke($alias, 'provision-git-push');
-    }
-
-    // Revert, if the user wants.
-    if (drush_get_option('revert')){
-        provision_backend_invoke($alias, 'provision-git-reset');
-    }
-}
+//
+//function aegir_download_drush_pm_post_download($project, $release)
+//{
+//    $alias = d()->name;
+//    $uri = d()->uri;
+//    $project = d()->project;
+//    $path_to_project = $project['full_project_path'];
+//
+//    // Bail if there is no URI or drush alias.
+//    if (empty($uri) || empty($alias) || empty($project)) {
+//        return;
+//    }
+//
+//    // Bail if there is no repo
+//    if (!provision_git_is_repo($path_to_project)) {
+//        return;
+//    }
+//
+//    // Invoke provision-git-add to add any new files to the index
+//
+//    // Generate commit message.
+//    $message = array();
+//    $message[] = "Downloaded '" . $project['name'] . "'" . " to http://$uri";
+//    if (drush_get_option('message')){
+//        $message[] = drush_get_option('message');
+//    }
+//    $message = implode("\n", $message);
+//
+//    $data = array(
+//        'message' => $message,
+//    );
+//    provision_backend_invoke($alias, 'provision-git-add',
+//        array($path_to_project));
+//
+//    // Invoke provision-git-commit
+//    provision_backend_invoke($alias, 'provision-git-commit', array(), $data);
+//
+//    // Push, unless the user doesn't want to.
+//    if (drush_get_option('push', TRUE)){
+//        provision_backend_invoke($alias, 'provision-git-push');
+//    }
+//
+//    // Revert, if the user wants.
+//    if (drush_get_option('revert')){
+//        provision_backend_invoke($alias, 'provision-git-reset');
+//    }
+//}
