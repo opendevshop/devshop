@@ -715,12 +715,17 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     overflow-x: hidden;
 }
 
-.panel-body pre {
+
+.panel.devshop-command .panel-heading {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+.panel.devshop-command pre {
   padding: 0;
   margin: 0;
   border: none;
   border-radius: 0;
   background: none;
+  display: inline;
 }
 
 .environment-dothooks pre {

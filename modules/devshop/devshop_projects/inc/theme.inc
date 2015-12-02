@@ -220,7 +220,7 @@ function devshop_projects_preprocess_node(&$vars){
         $icon = $data['icon'];
         $output = $converter->convert($data['output']);
         $messages[] = <<<HTML
-<div class="panel panel-$status">
+<div class="panel panel-$status devshop-command">
   <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
   <div class="panel-body">
      <pre>$output</pre>
@@ -247,15 +247,16 @@ HTML;
         }
 
         // Detect Dothooks
-        if ($ref->environment->settings->deploy['dothooks']) {
+        if ($vars['task_type'] == 'devshop-deploy' && $ref->environment->settings->deploy['dothooks']) {
           $hooks_content = file_get_contents($ref->environment->dothooks_file_path);
-          $description = t("The following commands were loaded from the project's %filename file:", array(
-            '%filename' => $ref->environment->dothooks_file_name
+          $description = t("Running %deploy hooks from the %filename file:", array(
+            '%filename' => $ref->environment->dothooks_file_name,
+            '%deploy' => 'deploy',
           ));
           $output_dothooks = <<<HTM
- <div class="panel panel-default">
+ <div class="panel panel-default devshop-command">
     <div class="panel-heading">
-    {$ref->environment->dothooks_file_path}
+    <i class="fa fa-file-text-o"></i> {$ref->environment->dothooks_file_path}
     </div>
     <div class="panel-body">
         <pre>$hooks_content</pre>
@@ -265,13 +266,12 @@ HTM;
         }
 
         // Detect Acquia Cloud hooks
-        if ($ref->environment->settings->deploy['acquia_hooks']) {
+        if ($vars['task_type'] == 'devshop-deploy' && $ref->environment->settings->deploy['acquia_hooks']) {
           $description = "<p>Running Acquia Cloud Hooks:</p>";
         }
 
         $vars['content'] = <<<HTML
-  <h3>Hooks Output</h3>
-  <p>$description</p>
+  <h4>$description</h4>
 
 $output_dothooks
 
