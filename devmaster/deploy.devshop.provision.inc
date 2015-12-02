@@ -4,6 +4,7 @@
  * Contains code for the provision-devshop-deploy command.
  */
 
+use Symfony\Component\Process\Process;
 use GitWrapper\GitWrapper;
 use GitWrapper\GitException;
 
@@ -122,12 +123,13 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $environment = (object) d()->environment;
   $project_name = d()->project;
 
+  $commands = array();
+
   drush_log("[{$project_name}] {$environment->name}: " . dt('Running deploy hooks.'), 'notice');
 
   // Built in Hooks
   if ($update) {
-    drush_log("[{$project_name}] {$environment->name}:" . dt('Running updb...'), 'notice');
-    provision_backend_invoke(d()->name, 'updb');
+    $commands[] = "drush {$environment->drush_alias} updatedb --yes";
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
@@ -136,22 +138,40 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Revert All Features, unless option is false
   if ($revert) {
-    drush_log(dt('[DEVSHOP] Reverting all features...'), 'ok');
-    provision_backend_invoke(d()->name, 'features-revert-all');
+    $commands[] = "drush {$environment->drush_alias} features-revert-all --yes";
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
   }
 
   // Clear the whole cache, unless option is false
-  // Seriously, lets do this twice.  Go Drupal!
   if ($cache) {
-    drush_log(dt('[DEVSHOP] Clearing all caches...'), 'ok');
-    provision_backend_invoke(d()->name, 'cc all');
-    provision_backend_invoke(d()->name, 'cc all');
+    $commands[] = "drush {$environment->drush_alias} cache-clear all";
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
+  }
+
+  foreach ($commands as $command) {
+    drush_log($command, 'devshop_command');
+    $process = new Process($command);
+    $process->setTimeout(NULL);
+    $exit_code = $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        drush_log($buffer, 'devshop_ok');
+      } else {
+        drush_log($buffer, 'devshop_ok');
+      }
+    });
+
+    // check exit code
+    if ($exit_code === 0) {
+      drush_log("[.hooks] Command executed successfully.", 'ok');
+    }
+    else {
+      drush_log("[.hooks] Hook command failed: $command", 'error');
+      drush_log($command, 'devshop_error');
+    }
   }
 }
 
