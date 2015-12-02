@@ -6,6 +6,38 @@
  */
 require_once 'vendor/autoload.php';
 
+/**
+ * Implements hook_help()
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function devshop_hosting_help($path, $arg)
+{
+  switch ($path) {
+    // Main module help for the block module
+    case 'admin/help#devshop_hosting':
+      $welcome = t('Welcome to OpenDevShop Help');
+      $note = t("There isn't much help built into OpenDevShop yet.  Please visit the documentation site for more information.");
+      $link = t("DevShop Documentation");
+      $url = "http://docs.devshop.support";
+
+      return <<<HTML
+
+<h3>$welcome</h3>
+<p>$note</p>
+
+<a href="$url" class="btn btn-primary btn-large">
+  <large>$link</large>
+<br/>
+  <small>$url</small>
+</a>
+
+HTML;
+
+  }
+}
+
  /**
   * Implements hook_init()
   *
