@@ -1,5 +1,8 @@
 <?php
 
+use Symfony\Component\Process\Process;
+use GitWrapper\GitWrapper;
+
 /**
  * Implementation of hook_drush_command().
  * Provides provision commands for all devshop tasks.
@@ -44,23 +47,57 @@ function drush_aegir_download_provision_download() {
     // Run `drush dl $modules`
     $target = d()->name;
     $cmd = "drush $target dl $packages -y";
-    drush_log("[AEGIR] Running $cmd", 'ok');
     drush_log($cmd, 'devshop_command');
 
-    if (drush_shell_exec($cmd)) {
-        $output = drush_shell_exec_output();
-        foreach ($output as $line) {
-            drush_log($line, 'devshop_ok');
+    $process = new Process($cmd);
+    $process->setTimeout(null);
+    $exit_code = $process->run(
+      function ($type, $buffer) {
+        if (Process::ERR === $type) {
+          drush_log($buffer, 'devshop_ok');
+        } else {
+          drush_log($buffer, 'devshop_ok');
         }
+      }
+    );
+
+    // check exit code
+    if ($exit_code === 0) {
+      drush_log("Aegir Download: OK", 'ok');
+    } else {
+      drush_log("Aegir Download Failed!", 'error');
+      return;
+    }
+
+    // Add to git and push, if requested.
+    drush_log(dt('Commit'), 'devshop_command');
+
+    if (drush_get_option('commit', FALSE)) {
+      drush_log(dt('Committing new module...'), 'devshop_ok');
     }
     else {
-        $output = drush_shell_exec_output();
-        foreach ($output as $line) {
-            drush_log("[DRUSH] $line", 'ok');
-        }
-        drush_log(dt('drush_shell_exec() returned FALSE, but We will keep going.'), 'ok');
+      drush_log(dt('Not Committing.'), 'devshop_ok');
     }
 }
+
+//
+//    drush_log("[AEGIR] Running $cmd", 'ok');
+//    drush_log($cmd, 'devshop_command');
+//
+//    if (drush_shell_exec($cmd)) {
+//        $output = drush_shell_exec_output();
+//        foreach ($output as $line) {
+//            drush_log($line, 'devshop_ok');
+//        }
+//    }
+//    else {
+//        $output = drush_shell_exec_output();
+//        foreach ($output as $line) {
+//            drush_log("[DRUSH] $line", 'ok');
+//        }
+//        drush_log(dt('drush_shell_exec() returned FALSE, but We will keep going.'), 'ok');
+//    }
+//}
 //
 //function aegir_download_drush_pm_post_download($project, $release)
 //{
