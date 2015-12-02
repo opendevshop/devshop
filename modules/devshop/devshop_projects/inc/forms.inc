@@ -422,7 +422,6 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     $return['dothooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
-      '#weight' => -99,
       '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['dothooks']: $environment->settings->deploy['dothooks'],
       '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
         '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
