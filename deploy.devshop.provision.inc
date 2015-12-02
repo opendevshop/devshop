@@ -95,6 +95,8 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
+  // @TODO: Remove this! This is not a full hostmaster task, so project data
+  // is not being saved in hostmaster.
   // Verify the site.
   drush_log(dt('[DEVSHOP] Verifying the site.'), 'ok');
   provision_backend_invoke(d()->name, 'provision-verify');
