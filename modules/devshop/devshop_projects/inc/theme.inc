@@ -201,13 +201,19 @@ function devshop_projects_preprocess_node(&$vars){
           }
           $command = $results->message;
           $outputs[$command] = array(
-            'status' => 'success',
-            'icon' => 'check',
+            'status' => 'default',
+            'icon' => 'gear',
             'output' => '',
           );
+
+          if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
+            $outputs[$command]['icon'] .= ' fa-spin';
+          }
           continue;
         } elseif ($results->type == 'devshop_ok') {
           $outputs[$command]['output'] .= $results->message;
+          $outputs[$command]['status'] = 'success';
+          $outputs[$command]['icon'] = 'check';
         } elseif ($results->type == 'devshop_error') {
           $outputs[$command]['status'] = 'danger';
           $outputs[$command]['icon'] = 'exclamation-circle';
