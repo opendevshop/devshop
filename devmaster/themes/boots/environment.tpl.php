@@ -329,14 +329,65 @@
         <?php endif; ?>
     <?php endif; ?>
 
-  <?php if ($page && isset($environment->dothooks)): ?>
-
     <div class="list-group-item environment-dothooks">
-      <label><?php print $environment->dothooks_file_name . ' ' . t('File'); ?></label>
-      <pre><?php print file_get_contents($environment->dothooks_file_path); ?></pre>
+        <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
+        <div class="btn-group btn-hooks" role="group">
+            <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
+                <?php if ($enabled): ?>
+                    <div class="btn-group btn-hook-" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <?php print $hook_type == 'dothooks'? $environment->dothooks_file_name: $hook_type; ?>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <?php if ($hook_type == 'cache'): ?>
+                                <li><label><?php print t('Clear Caches'); ?></label></li>
+                                <li class="text">
+                                    <p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("All Drupal caches are cleared every time code is deployed."); ?>
+                                    </p>
+                                </li>
+                                <li>
+                                    <pre>drush clear-cache all</pre>
+                                </li>
+                            <?php elseif ($hook_type == 'update'): ?>
+                                <li><label><?php print t('Run Database Updates'); ?></label></li>
+                                <li class="text">
+                                    <p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("Drupal database updates are run every time new code is deployed."); ?>
+                                    </p>
+                                </li>
+                                <li>
+                                    <pre>drush update-db -y</pre>
+                                </li>
+                            <?php elseif ($hook_type == 'revert'): ?>
+                                <li><label><?php print t('Revert all features'); ?></label></li>
+                                <li class="text">
+                                    <p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                          <?php print t("All features modules are reverted every time new code is deployed."); ?>
+                                    </p>
+                                </li>
+                                <li>
+                                    <pre>drush features-revert-all -y</pre>
+                                </li>
+                            <?php elseif ($hook_type == 'dothooks'): ?>
+                                <li><label><?php print t('File-based Hooks'); ?></label></li>
+                                <li class="text"><p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("When code is deployed, the 'deploy' section of a .hooks or .hooks.yml file in your project. This is your %filename file.", array('%filename' => $environment->dothooks_file_name)); ?></p></li>
+                                <li>
+                                    <pre><?php print file_get_contents($environment->dothooks_file_path); ?></pre>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
     </div>
-
-  <?php endif; ?>
 
     <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
         <?php if ($page): ?>
