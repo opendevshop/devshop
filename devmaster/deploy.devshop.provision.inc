@@ -52,17 +52,20 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 
     $git = $wrapper->workingCopy($environment->repo_root);
     chdir($git->getDirectory());
+    drush_log('Current Working Directory', 'devshop_command');
+    drush_log($git->getDirectory(), 'devshop_ok');
+
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
 
     // Fetch
-    drush_log('git fetch --all', 'devshop_command');
+    drush_log('[DevShop Deploy] git fetch --all', 'devshop_command');
     $git->fetchAll();
     drush_log($git->getOutput(), 'devshop_ok');
 
     // Checkout the chosen ref
-    drush_log("git checkout {$git_ref}", 'devshop_command');
+    drush_log("[DevShop Deploy] git checkout {$git_ref}", 'devshop_command');
     $git->checkout($git_ref);
     $git_checkout_output = $git->getOutput();
     drush_log($git_checkout_output, 'devshop_ok');
@@ -73,7 +76,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     // Run Git Pull
     if ($desired_ref_type == 'branch') {
 
-      drush_log("git pull", 'devshop_command');
+      drush_log("[DevShop Deploy] git pull", 'devshop_command');
       $git->pull();
       $git_pull_output = $git->getOutput();
       drush_log($git_pull_output, 'devshop_ok');
@@ -90,12 +93,12 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
       return;
     }
 
-    drush_log('git status', 'devshop_command');
+    drush_log('[DevShop Deploy] git status', 'devshop_command');
     $git->status();
     drush_log($git->getOutput(), 'devshop_ok');
 
   } catch (GitException $e) {
-    drush_log("Git Exception", 'devshop_command');
+    drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
     drush_log($git->getOutput(), 'devshop_ok');
     drush_log($e->getMessage(), 'devshop_error');
     return drush_set_error('DEVSHOP_GIT_ERROR');
@@ -153,7 +156,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   }
 
   foreach ($commands as $command) {
-    drush_log($command, 'devshop_command');
+    drush_log('[DevShop Deploy Hook] ' . $command, 'devshop_command');
     $process = new Process($command);
     $process->setTimeout(NULL);
     $exit_code = $process->run(function ($type, $buffer) {
