@@ -72,12 +72,6 @@
       <?php endif; ?>
     </h4>
 
-    <?php if ($log_message): ?>
-      <div class="alert alert-<?php print $log_class; ?>" role="alert">
-        <?php print $log_message; ?>
-      </div>
-    <?php endif; ?>
-
     <p>
       <span class="duration">
           <i class="fa fa-clock-o"></i>
