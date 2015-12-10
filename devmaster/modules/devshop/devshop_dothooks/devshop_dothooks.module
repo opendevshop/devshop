@@ -112,21 +112,19 @@ function devshop_dothooks_run_hook($hook, $environment) {
   }
 
   if (empty($environment->dothooks[$hook])) {
-    drush_log('.hooks file error', 'devshop_command');
-    drush_log('Hook file not found, but the project is configured to use them. Create a .hooks file or turn off "Run deploy commands in the .hooks file".', 'devshop_error');
-    return drush_set_error('DEVSHOP_HOOKS_ERROR');
+    return drush_set_error('Hook file not found, but the project is configured to use them. Create a .hooks file or turn off "Run deploy commands in the .hooks file".');
   }
 
   drush_log('[.hooks] Hook found: ' . $hook, 'ok');
 
-  $hooks = explode("\n", $environment->dothooks[$hook]);
+  $hooks = array_filter(explode("\n", $environment->dothooks[$hook]));
   foreach ($hooks as $hook_line) {
 
     $hook_line = strtr($hook_line, array(
       '{{alias}}' => $environment->drush_alias,
     ));
 
-    drush_log($hook_line, 'devshop_command');
+    drush_log("[Hooks File: $environment->dothooks_file_name] $hook_line", 'devshop_command');
     $process = new Process($hook_line);
     $process->setTimeout(NULL);
     $exit_code = $process->run(function ($type, $buffer) {
