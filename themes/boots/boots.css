@@ -369,29 +369,6 @@ input.form-control.webhook-url {
   font-size: .9em;
 }
 
-.environment-deploy {
-    white-space: nowrap;
-
-}
-.environment-deploy button {
-    font-size: .8em;
-    text-transform: uppercase;
-    font-weight: bold;
-    border: none !important;
-    border-radius: 0px;
-    background: transparent !important;
-    color: gray;
-
-}
-
-.environment-deploy button:hover {
-    color: #333;
-}
-
-.environment-deploy .btn-group {
-    margin: 0px;
-}
-
 .btn-deploy-code li a {
   white-space: nowrap;
 }
@@ -542,12 +519,15 @@ a.pull-request h4 {
 
 .environment > .list-group-item {
   padding: 0px;
+  white-space: nowrap;
 }
 .environment > .list-group-item.environment-header {
   padding:10px 25px 10px 10px;
 }
 
-.environment > .list-group-item > .btn-group > a {
+.environment > .list-group-item  .btn-group > a,
+.environment > .list-group-item  .btn-group > button
+{
   font-size: .8em;
   text-transform: uppercase;
   font-weight: normal;
@@ -555,8 +535,14 @@ a.pull-request h4 {
   border-radius: 0px;
   background: transparent !important;
   color: gray;
+  /*padding-left: 0.75em;*/
+  /*padding-right: 0.75em;*/
+
 }
 
+.environment > .list-group-item > .btn-group > button:hover {
+  color: #333;
+}
 .github-button {
   font-size: 1.5em;
 }
