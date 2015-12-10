@@ -242,45 +242,20 @@ HTML;
         $content = $vars['content'];
 
         switch ($vars['task_type']) {
+          case 'devshop-deploy':
+            $type = 'Deploy';
+            break;
           case 'verify':
           case 'test':
           case 'sync':
           case 'install':
-            $type = $vars['task_type'];
+          default:
+            $type = ucfirst($vars['task_type']);
             break;
-          case 'devshop_deploy':
-            $type = 'deploy';
-            break;
-        }
-
-        // Detect Dothooks
-        if ($vars['task_type'] == 'devshop-deploy' && $ref->environment->settings->deploy['dothooks']) {
-          $hooks_content = file_get_contents($ref->environment->dothooks_file_path);
-          $description = t("Running %deploy hooks from the %filename file:", array(
-            '%filename' => $ref->environment->dothooks_file_name,
-            '%deploy' => 'deploy',
-          ));
-          $output_dothooks = <<<HTM
- <div class="panel panel-default devshop-command">
-    <div class="panel-heading">
-    <i class="fa fa-file-text-o"></i> {$ref->environment->dothooks_file_path}
-    </div>
-    <div class="panel-body">
-        <pre>$hooks_content</pre>
-    </div>
-</div>
-HTM;
-        }
-
-        // Detect Acquia Cloud hooks
-        if ($vars['task_type'] == 'devshop-deploy' && $ref->environment->settings->deploy['acquia_hooks']) {
-          $description = "<p>Running Acquia Cloud Hooks:</p>";
         }
 
         $vars['content'] = <<<HTML
-  <h4>$description</h4>
-
-$output_dothooks
+  <h3>$type</h3>
 
   $messages
   $content
