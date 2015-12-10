@@ -176,7 +176,7 @@ function devshop_projects_preprocess_node(&$vars){
       $messages = array();
       $converter = new AnsiToHtmlConverter(null, false);
 
-      $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND type LIKE 'devshop_%' ORDER BY vid, lid", $vars['node']->vid);
+      $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $vars['node']->vid);
       while ($results = db_fetch_object($query)) {
 
         if ($results->type == 'devshop_command') {
@@ -202,12 +202,29 @@ function devshop_projects_preprocess_node(&$vars){
           $outputs[$command]['status'] = 'danger';
           $outputs[$command]['icon'] = 'exclamation-circle';
           $outputs[$command]['output'] .= $results->message;
+        } elseif ($results->type == 'warning') {
+          $command = 'warning_' . count($outputs);
+          $outputs[$command]['status'] = 'warning';
+          $outputs[$command]['icon'] = 'exclamation-triangle';
+          $outputs[$command]['output'] .= $results->message;
+          $outputs[$command]['command'] = 'warning';
+        } elseif ($results->type == 'error') {
+          $command = 'error_' . count($outputs);
+          $outputs[$command]['status'] = 'danger';
+          $outputs[$command]['icon'] = 'exclamation-circle';
+          $outputs[$command]['output'] .= $results->message;
+          $outputs[$command]['command'] = 'error';
         }
       }
 
       foreach ($outputs as $command => $data) {
         $status = $data['status'];
         $icon = $data['icon'];
+
+        // Allow $outputs array to override the displayed command.
+        if (!empty($data['command'])) {
+          $command = $data['command'];
+        }
         $output = $converter->convert($data['output']);
         $messages[] = <<<HTML
 <div class="panel panel-$status devshop-command">
