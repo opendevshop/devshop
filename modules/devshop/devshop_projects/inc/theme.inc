@@ -148,22 +148,6 @@ function devshop_projects_preprocess_node(&$vars){
       $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
     }
 
-    // Load error or warning messages.
-    if ($log_type == 'error' || $log_type == 'warning') {
-      $query = db_query("SELECT message FROM {hosting_task_log} WHERE vid = %d AND type = '%s' ORDER BY vid, lid", $vars['node']->vid, $log_type);
-
-      while ($results = db_fetch_object($query)) {
-        $vars['log_message'][] = $results->message;
-      }
-
-      $vars['log_message'] = theme('item_list', $vars['log_message']);
-
-      $vars['log_class'] = $log_type == 'error'? 'danger': $log_type;
-    }
-    else {
-      $vars['log_message'] = '';
-    }
-
     if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
       $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
     }
