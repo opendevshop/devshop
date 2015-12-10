@@ -7,7 +7,9 @@
  * Runs the "verify" dotHook
  */
 function devshop_dothooks_post_hosting_verify_task($task, $data) {
-  devshop_dothooks_run_hook('verify', $task->ref->environment);
+  if ($task->ref->type == 'site') {
+    devshop_dothooks_run_hook('verify', $task->ref->environment);
+  }
 }
 
 /**
