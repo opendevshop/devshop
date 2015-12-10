@@ -225,10 +225,20 @@ function devshop_projects_preprocess_node(&$vars){
         if (!empty($data['command'])) {
           $command = $data['command'];
         }
+
+        // If $command has brackets, convert to span.
+        if (strpos($command, '[') !== FALSE && strpos($command, ']') !== FALSE) {
+          $command = strtr($command, array(
+            '[' => '<div class="text-muted small">',
+            ']' => '</div>',
+          ));
+        }
+
+        // Convert ASCII to HTML
         $output = $converter->convert($data['output']);
         $messages[] = <<<HTML
 <div class="panel panel-$status devshop-command">
-  <div class="panel-heading"><i class="fa fa-$icon"></i> $command</div>
+  <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
   <div class="panel-body">
      <pre>$output</pre>
   </div>
