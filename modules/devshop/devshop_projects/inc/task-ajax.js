@@ -34,7 +34,7 @@ var devshopTasksUpdate = function (data) {
             $(id).removeClass('task-success');
             $(id).removeClass('task-error');
             $(id).removeClass('task-warning');
-            $(id).addClass('task-' + value.last_task.status_name);
+            $(id).addClass('task-' + value.last_task.status_class);
 
             // Set value of label span
             $('.alert-link > span', $alert_div).html(value.last_task.type_name);
