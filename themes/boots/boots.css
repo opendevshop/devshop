@@ -730,3 +730,15 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     bottom: 10px;
     left: 10px;
 }
+
+.task-details {
+  margin-top: 3em;
+}
+
+.running-indicator {
+    display: none;
+}
+
+.running-indicator.active {
+    display: block;
+}

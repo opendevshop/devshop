@@ -154,40 +154,41 @@ function devshop_projects_preprocess_node(&$vars){
     // Load Logs
     $ref = node_load($vars['rid']);
       $messages = devshop_task_get_messages($vars['node']);
-        $vars['log_message'] = '';
-        $messages = implode("\n", $messages);
-        $content = $vars['content'];
-
+        $vars['messages'] = implode("\n", $messages);
         switch ($vars['task_type']) {
           case 'devshop-deploy':
-            $type = 'Deploy';
+            $vars['type'] = 'Deploy';
             break;
           case 'verify':
           case 'test':
           case 'sync':
           case 'install':
           default:
-            $type = ucfirst($vars['task_type']);
+            $vars['type'] = ucfirst($vars['task_type']);
             break;
         }
-
-        $vars['content'] = <<<HTML
-  <h3>$type</h3>
-  <div id='task-logs'>
-    $messages
-  </div>
-
-  $content
-HTML;
 
     // Add "Follow Logs" button.
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
+        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
+    }
+
+    // Running indicator
+    if ($vars['task_status'] == HOSTING_TASK_QUEUED ||$vars['task_status'] == HOSTING_TASK_PROCESSING) {
+      $vars['is_active'] = 'active';
+
+      if ($vars['task_status'] == HOSTING_TASK_PROCESSING) {
+        $vars['is_running'] = 'fa-spin';
+        $vars['running_label'] = t('Processing...');
+      }
+      else {
+        $vars['running_label'] = t('Queued');
+      }
     }
   }
 }
