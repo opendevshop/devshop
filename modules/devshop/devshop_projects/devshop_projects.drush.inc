@@ -14,12 +14,7 @@ include 'drush/contexts.inc';
 function devshop_projects_hosting_task_update_status($task, $status) {
   $site = $task->ref;
   if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
-    $site->environment->last_task = array(
-        'status' => $status,
-        'type' => $task->task_type,
-        'nid' => $task->nid,
-        'executed' => $task->executed,
-    );
+    $site->environment->last_task = $task->nid;
 
     // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
     // If last task is a successful verify or reset password, load the task before that as the "last task".
@@ -41,13 +36,8 @@ function devshop_projects_hosting_task_update_status($task, $status) {
         }
 
         // Grab the first task that isn't this one or another skippable task
-        $last_task_node = node_load($task_list_item->nid);
-        $site->environment->last_task = array(
-          'status' => $last_task_node->task_status,
-          'type' => $last_task_node->task_type,
-          'nid' => $last_task_node->nid,
-          'executed' => $last_task_node->executed,
-        );
+        $site->environment->last_task = $task_list_item->nid;
+
         // Stop the loop through the tasks.
         break;
       }

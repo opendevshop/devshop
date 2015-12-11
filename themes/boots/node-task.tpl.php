@@ -75,7 +75,9 @@
     <p>
       <span class="duration">
           <i class="fa fa-clock-o"></i>
-          <?php print $duration; ?>
+          <span class="duration-text">
+            <?php print $duration; ?>
+          </span>
       </span>
       <span>&nbsp;</span>
       <span class="executed inline">

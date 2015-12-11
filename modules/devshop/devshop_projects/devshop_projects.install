@@ -100,7 +100,7 @@ function devshop_projects_schema() {
         'type' => 'text',
         'not null' => FALSE,
         'size' => 'big',
-        'description' => 'Serialized information about the last task.',
+        'description' => 'The NID of the last task that should be displayed on an environment.',
       ),
     ),
     'indexes' => array(
@@ -326,6 +326,25 @@ function devshop_projects_update_6009 () {
         'type' => $task->task_type,
         'nid' => $task->nid,
     );
+    devshop_environment_save_last_task($site->environment);
+  }
+}
+
+/**
+ * Switch Last Task to the NID of the task.
+ */
+function devshop_projects_update_6010 () {
+
+  // Lookup all environments
+  $query = db_query('SELECT * FROM {hosting_devshop_project_environment}');
+  while ($result = db_fetch_object($query)) {
+
+    // Get original last_task data.
+    $last_task = (object) unserialize($result->last_task);
+
+    // Get site and save environment.
+    $site = node_load($result->site);
+    $site->environment->last_task = $last_task->nid;
     devshop_environment_save_last_task($site->environment);
   }
 }
