@@ -332,12 +332,12 @@
     <div class="list-group-item environment-dothooks">
         <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
         <div class="btn-group btn-hooks" role="group">
+            <?php // @TODO: Make a hook_devshop_hook_types() hook so other modules can expand on deploy hooks.  ?>
             <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
                 <?php if ($enabled): ?>
                     <div class="btn-group btn-hook-" role="group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                             <?php print $hook_type == 'dothooks'? $environment->dothooks_file_name: $hook_type; ?>
-                            <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <?php if ($hook_type == 'cache'): ?>
