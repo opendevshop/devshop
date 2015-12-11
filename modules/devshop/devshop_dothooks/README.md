@@ -19,6 +19,15 @@ deploy: |
   drush {{alias}} fra -y
 ```
 
+You can also use the array syntax to specify commands:
+
+```
+deploy:
+  - drush {{alias}} updb -y
+  - drush {{alias}} cc all
+  - drush {{alias}} fra -y
+```
+
 You must use {{alias}} when calling drush to ensure you are controlling the correct site.
 
 Available Hooks
