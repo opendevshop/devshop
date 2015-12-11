@@ -21,7 +21,7 @@ var devshopTasksUpdate = function (data) {
             $alert_div.attr('class', new_class);
 
             // Set or remove active class from environment div.
-            if (value.last_task.status_name == 'queued' || value.last_task.status_name == 'processing') {
+            if (value.last_task.status_class == 'queued' || value.last_task.status_class == 'processing') {
                 $(id).addClass('active');
             }
             else {
