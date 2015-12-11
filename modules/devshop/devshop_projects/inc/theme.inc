@@ -116,33 +116,11 @@ function devshop_projects_preprocess_node(&$vars){
   if (isset($vars['node']) && $vars['node']->type == 'task' && $vars['page']){
     $vars['content'] = '';
 
-//    $log_type = '';
-//    switch ($vars['node']->task_status) {
-//      case HOSTING_TASK_SUCCESS:
-//        $vars['task_label_class'] = 'success';
-//        break;
-//      case HOSTING_TASK_ERROR:
-//        $vars['task_label_class'] = 'danger';
-//        $log_type = 'error';
-//        break;
-//      case HOSTING_TASK_WARNING:
-//        $vars['task_label_class'] = 'warning';
-//        $log_type = 'warning';
-//        break;
-//      case HOSTING_TASK_PROCESSING:
-//        $vars['task_label'] = t('Processing') . ' <i class="fa fa-gear fa-spin"></i>';
-//        $vars['task_label_class'] = 'info';
-//        break;
-//      case HOSTING_TASK_QUEUED:
-//        $vars['task_label'] = t('Queued');
-//        $vars['task_label_class'] = 'info';
-//        break;
-//    }
+    // Prepare task icon, class, and label.
     $icon = devshop_task_status_icon($vars['node']->task_status);
     $vars['task_label'] = "<i class='fa fa-$icon'></i> " . _hosting_parse_error_code($vars['node']->task_status);
     $vars['task_label_class'] = devshop_task_status_class($vars['node']->task_status);
     $vars['task_icon'] = devshop_task_status_icon($vars['node']->task_status);
-
 
     // Load ref node
     $ref_node = node_load($vars['rid']);
@@ -150,6 +128,7 @@ function devshop_projects_preprocess_node(&$vars){
       $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
     }
 
+    // Replace "Retry" button.
     if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
       $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
     }
