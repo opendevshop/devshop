@@ -129,19 +129,19 @@
   <?php print $content; ?>
 
   <div class="task-details">
-  <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
-    <i class="fa fa-list"></i> <?php print t('Details'); ?>
-  </button>
+    <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+      <i class="fa fa-list"></i> <?php print t('Details'); ?>
+    </button>
 
-  <?php if ($node->content['update-status']['#value']): ?>
-    <?php print $node->content['update-status']['#value']; ?>
-  <?php endif; ?>
+    <?php if ($node->content['update-status']['#value']): ?>
+      <?php print $node->content['update-status']['#value']; ?>
+    <?php endif; ?>
 
-  <div class="collapse" id="collapseLogs">
-    <div class="well">
-      <?php print $node->content['hosting_log']['#value']; ?>
+    <div class="collapse" id="collapseLogs">
+      <div class="well">
+        <?php print $node->content['hosting_log']['#value']; ?>
+      </div>
     </div>
-  </div>
   </div>
 
 <?php endif; ?>
