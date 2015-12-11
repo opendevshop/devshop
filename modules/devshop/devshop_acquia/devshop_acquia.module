@@ -109,7 +109,7 @@ function drush_run_acquia_hook($task) {
   // Usage: post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
   foreach ($scripts as $file) {
     drush_log('[DEVSHOP] Running Acquia Cloud Hook: ' . $file, 'ok');
-    drush_log($file, 'devshop_command');
+    drush_log("[Acquia Cloud Hook $hook] $file", 'devshop_command');
 
     // This is a trick.  DevShop doesn't have aliases like $project.$environment.
     // When Acquia cloud hook writers create a script, they will use something like:
