@@ -137,18 +137,19 @@ function devshop_projects_preprocess_node(&$vars){
     if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
       $vars['duration'] = 'Queued';
       $vars['date'] = date('D M j Y', $vars['node']->changed);
-      $vars['executed'] = t('Queued') . ' ' . format_interval(time() - $vars['node']->changed) . ' ' . t('ago');
+      $vars['executed'] = '';
     }
     else {
 
       if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
         $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
+        $vars['executed'] = '';
       }
       else {
         $vars['duration'] = format_interval($vars['node']->delta, 1);
+        $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
       }
       $vars['date'] = date('D M j Y', $vars['node']->executed);
-      $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
     }
 
     // Load Logs
