@@ -153,7 +153,6 @@ function devshop_projects_preprocess_node(&$vars){
 
     // Load Logs
     $ref = node_load($vars['rid']);
-    if (isset($ref->project) && !empty($ref->project)) {
       $messages = devshop_task_get_messages($vars['node']);
         $vars['log_message'] = '';
         $messages = implode("\n", $messages);
@@ -181,7 +180,6 @@ function devshop_projects_preprocess_node(&$vars){
   $content
 HTML;
 
-    }
 
   }
 }
