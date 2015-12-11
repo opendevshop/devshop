@@ -113,7 +113,8 @@ function devshop_dothooks_run_hook($hook, $environment) {
 
   // If no dothooks file is found, throw an error.
   if (empty($environment->dothooks)) {
-    return drush_set_error(dt('Hook file not found, but the project is configured to use them. Create a .hooks file or turn off "Run deploy commands in the .hooks file".'));
+    drush_log(dt('Hook file not found, but the project is configured to use them. Create a .hooks file or turn off "Run deploy commands in the .hooks file".'), 'notice');
+    return;
   }
 
   drush_log('[.hooks] Hook file found: ' . $environment->dothooks_file_name, 'ok');
