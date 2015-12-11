@@ -242,7 +242,7 @@ body.admin-menu .navbar-static-top {
     width: 100%;
 }
 
-.environment.active .progress {
+.environment.task-processing .progress {
   display: block;
   width: 100%;
 }
