@@ -180,7 +180,15 @@ function devshop_projects_preprocess_node(&$vars){
   $content
 HTML;
 
+    // Add "Follow Logs" button.
+    if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
+      $vars['follow_checkbox'] = array(
+        '#type' => 'markup',
+        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
+      );
 
+      $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
+    }
   }
 }
 
