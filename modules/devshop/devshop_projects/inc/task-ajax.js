@@ -120,5 +120,10 @@ var devshopTasksUpdate = function (data) {
     }
     $('.count', '.task-list-button').html(count);
 
+    // Scroll down if follow checkbox is checked.
+    if ($('#follow').prop('checked')) {
+        window.scrollTo(0,document.body.scrollHeight);
+    }
+
     setTimeout("devshopCheckTasks()", 1000);
 }
