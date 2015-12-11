@@ -525,7 +525,7 @@ a.pull-request h4 {
   padding:10px 25px 10px 10px;
 }
 
-.environment > .list-group-item  .btn-group > a,
+.environment > .list-group-item  .btn-group > .btn,
 .environment > .list-group-item  .btn-group > button
 {
   font-size: .8em;
@@ -540,6 +540,10 @@ a.pull-request h4 {
 
 }
 
+.environment > .list-group-item  .btn-group > a.alert-link {
+  color: inherit;
+  font-size: inherit;
+}
 .environment > .list-group-item > .btn-group > button:hover {
   color: #333;
 }
