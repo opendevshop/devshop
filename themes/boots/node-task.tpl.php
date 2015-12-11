@@ -63,12 +63,17 @@
   <div class="well well-sm">
 
     <h4>
-      <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
+
+      <div class="task-badge pull-right">
+        <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
+      </div>
 
       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
 
       <?php if ($retry): ?>
-            <?php print $retry; ?>
+        <div class="retry-button pull-right">
+          <?php print $retry; ?>
+        </div>
       <?php endif; ?>
     </h4>
 
@@ -91,11 +96,39 @@
       <?php print $site_url ?>
     <?php endif; ?>
 
+
+
     <?php if ($task_well): ?>
       <?php print $task_well; ?>
     <?php endif; ?>
 
   </div>
+
+  <?php if (count($task_args)): ?>
+    <div class="task-arguments panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading"><?php print t('Task Arguments') ?></div>
+
+      <!-- Table -->
+      <div class="panel-body">
+
+        <?php foreach (array_filter($task_args) as $arg => $value): ?>
+          <?php
+          if ($value === '1') {
+            $value = '';
+            $arg = '<i class="fa fa-check"></i>' . $arg;
+          }
+          ?>
+          <span class="task-arg small text-muted">
+            <strong><?php print $arg; ?></strong>
+            <span>
+              <?php print $value; ?>
+            </span>
+          </span>
+        <?php endforeach; ?>
+        </div>
+    </div>
+  <?php endif; ?>
 
     <?php  if ($follow_checkbox): ?>
         <div class="follow-logs-checkbox">
