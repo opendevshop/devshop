@@ -8,7 +8,6 @@ var devshopCheckTasks = function(){
 }
 
 var devshopTasksUpdate = function (data) {
-    //console.log(data);
     $.each(data, function(key, value){
         var id = '#' + value.project + '-' + value.name;
         var new_class = 'alert-' + value.last_task.status_class;
@@ -50,7 +49,6 @@ var devshopTasksUpdate = function (data) {
         }
         // Task Node Page
         else if (Drupal.settings.devshopTask == value.last_task.nid) {
-            console.log( value.last_task);
             $badge = $('.label.task-status', '#node-' + value.last_task.nid);
 
             // Change Badge
