@@ -176,7 +176,6 @@ function devshop_projects_preprocess_node(&$vars){
     $ref = node_load($vars['rid']);
     if (isset($ref->project) && !empty($ref->project)) {
       $messages = devshop_task_get_messages($vars['node']);
-      if (count($messages)) {
         $vars['log_message'] = '';
         $messages = implode("\n", $messages);
         $content = $vars['content'];
@@ -203,7 +202,6 @@ function devshop_projects_preprocess_node(&$vars){
   $content
 HTML;
 
-      }
     }
 
   }

@@ -54,6 +54,16 @@ function devshop_projects_tasks_status_json($project_nid = '') {
 
         // Get Icon
         $result->last_task->icon = devshop_task_status_icon($result->last_task->status);
+
+        // If page is requesting this task's logs, load them.
+        if ($_GET['task'] == $result->last_task->nid) {
+            $task_node = node_load($result->last_task->nid);
+            $messages = devshop_task_get_messages($task_node);
+            if (count($messages)) {
+                $result->last_task->logs = implode("\n", $messages);
+            }
+        }
+
         $output[] = $result;
     }
 
