@@ -332,12 +332,29 @@
     <div class="list-group-item environment-dothooks">
         <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
         <div class="btn-group btn-hooks" role="group">
-            <?php // @TODO: Make a hook_devshop_hook_types() hook so other modules can expand on deploy hooks.  ?>
+            <?php
+            /**
+             * @TODO:
+             * - Move this to a preprocessor.
+             * - Make a hook_devshop_hook_types() hook so other modules can expand on deploy hooks.
+             */ ?>
             <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
                 <?php if ($enabled): ?>
                     <div class="btn-group btn-hook-" role="group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            <?php print $hook_type == 'dothooks'? $environment->dothooks_file_name: $hook_type; ?>
+                            <?php
+                            if ($hook_type == 'dothooks') {
+                                $hook_type_title = t('Hooks YML');
+                            }
+                            elseif ($hook_type == 'acquia_hooks') {
+                                $hook_type_title = t('Acquia Cloud Hooks');
+                            }
+                            else {
+                                $hook_type_title = $hook_type;
+                            }
+                            ?>
+
+                            <?php print $hook_type_title ; ?>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <?php if ($hook_type == 'cache'): ?>
@@ -380,6 +397,29 @@
                                         <?php print t("When code is deployed, the 'deploy' section of a .hooks or .hooks.yml file in your project. This is your %filename file.", array('%filename' => $environment->dothooks_file_name)); ?></p></li>
                                 <li>
                                     <pre><?php print file_get_contents($environment->dothooks_file_path); ?></pre>
+                                </li>
+                            <?php elseif ($hook_type == 'acquia_hooks'): ?>
+                                <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
+                                <li class="text"><p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("When code or data is deployed, the appropriate Acquia Cloud Hook within the project will be triggered."); ?></p></li>
+                                <li class="text"><p class="text-muted"><?php print t('See !link1 and !link2 for more information ', array(
+                                        '!link1' => l('Acquia Cloud Documentation', 'https://docs.acquia.com/cloud/manage/cloud-hooks'),
+                                        '!link2' => l('https://github.com/acquia/cloud-hooks', 'https://github.com/acquia/cloud-hooks'),
+                                        )); ?></p>
+                                </li>
+                                <li>
+                                    <label>Supported Cloud Hooks</label>
+                                </li>
+                                <li class="text">
+
+                                    <ul>
+                                        <li><strong>post-code-update:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
+                                        <li><strong>post-code-deploy:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
+                                        <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                                        <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                                    </ul>
+
                                 </li>
                             <?php endif; ?>
                         </ul>
