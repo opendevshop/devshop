@@ -90,7 +90,8 @@ function devshop_projects_load($node) {
         n.title as project_name,
         s.vid,
         sn.title as system_domain,
-        a.redirection as redirect_domain
+        a.redirection as redirect_domain,
+        e.last_task as last_task_nid
       FROM {hosting_devshop_project_environment} e
       LEFT JOIN {hosting_site} s ON e.site = s.nid
       LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -119,7 +120,9 @@ function devshop_projects_load($node) {
 
     // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
-    $environment->last_task = array_filter((array) unserialize($environment->last_task));
+
+    // Get last task
+    $environment->last_task = node_load($environment->last_task_nid);
 
     // Get the current git ref type.
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
@@ -517,9 +520,6 @@ function devshop_environment_save(stdClass &$environment) {
  */
 function devshop_environment_save_last_task($environment) {
 
-  $task_string = serialize($environment->last_task);
-
-  db_query('UPDATE {hosting_devshop_project_environment} SET last_task = "%s" WHERE name = "%s" AND project_nid = %d',
-      $task_string, $environment->name, $environment->project_nid
-      );
+  db_query('UPDATE {hosting_devshop_project_environment} SET last_task = %d WHERE name = "%s" AND project_nid = %d', $environment->last_task, $environment->name, $environment->project_nid
+  );
 }

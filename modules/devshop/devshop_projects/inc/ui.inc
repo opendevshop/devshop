@@ -66,23 +66,23 @@ HTML;
         $icon = 'cube';
         $class = 'status';
       } else {
-        if ($environment->last_task['status'] == HOSTING_TASK_SUCCESS) {
+        if ($environment->last_task->task_status == HOSTING_TASK_SUCCESS) {
           $icon = 'check';
           $class = 'success';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_QUEUED) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_QUEUED) {
           $icon = 'gear';
           $class = 'status';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_PROCESSING) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_PROCESSING) {
           $icon = 'gear fa-spin';
           $class = 'status active';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_WARNING) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_WARNING) {
           $icon = 'exclamation-triangle';
           $class = 'warning';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_ERROR) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_ERROR) {
           $icon = 'exclamation-circle';
           $class = 'danger';
         }
@@ -92,7 +92,7 @@ HTML;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
             'class' => 'btn btn-sm alert-' . $class,
-            'title' => $tasks[$environment->last_task['type']]['title'] . ': ' . _hosting_parse_error_code($environment->last_task['status']),
+            'title' => $tasks[$environment->last_task->task_type]['title'] . ': ' . _hosting_parse_error_code($environment->last_task->task_status),
             'id' => 'badge-' . $environment->project_name . '-' . $environment->name,
         ),
         'html' => TRUE,
