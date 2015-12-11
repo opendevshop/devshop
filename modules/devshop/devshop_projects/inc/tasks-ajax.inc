@@ -35,7 +35,9 @@ function devshop_projects_tasks_status_json($project_nid = '') {
 
         // To test out constantly changing tasks, uncomment this line.
 //        $result->last_task->status = rand(-1, 3);
-        $result->last_task->status_name = devshop_task_status_class($result->last_task->status);
+        $result->last_task->status_class = devshop_task_status_class($result->last_task->status);
+
+        $result->last_task->status_name = _hosting_parse_error_code($result->last_task->status);
 
         // Override "ago" text.
         $result->last_task->ago = format_interval(time() - $result->last_task->executed, 1) .' '. t('ago');
