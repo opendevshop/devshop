@@ -175,90 +175,7 @@ function devshop_projects_preprocess_node(&$vars){
     // Load Logs
     $ref = node_load($vars['rid']);
     if (isset($ref->project) && !empty($ref->project)) {
-      $messages = array();
-      $converter = new AnsiToHtmlConverter(null, false);
-
-      $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $vars['node']->vid);
-      while ($results = db_fetch_object($query)) {
-
-        if ($results->type == 'devshop_command') {
-          if (empty($results->message)) {
-            continue;
-          }
-          $command = $results->message;
-          $outputs[$command] = array(
-            'status' => 'default',
-            'icon' => 'gear',
-            'output' => '',
-          );
-
-          if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
-            $outputs[$command]['icon'] .= ' fa-spin';
-          }
-          continue;
-        } elseif ($results->type == 'devshop_ok') {
-          $outputs[$command]['output'] .= $results->message;
-          $outputs[$command]['status'] = 'success';
-          $outputs[$command]['icon'] = 'check';
-        } elseif ($results->type == 'devshop_error') {
-          $outputs[$command]['status'] = 'danger';
-          $outputs[$command]['icon'] = 'exclamation-circle';
-          $outputs[$command]['output'] .= $results->message;
-        } elseif ($results->type == 'warning') {
-          $command = 'warning_' . count($outputs);
-          $outputs[$command]['status'] = 'warning';
-          $outputs[$command]['icon'] = 'exclamation-triangle';
-          $outputs[$command]['output'] .= $results->message;
-          $outputs[$command]['command'] = 'warning';
-        } elseif ($results->type == 'error') {
-          $command = 'error_' . count($outputs);
-          $outputs[$command]['status'] = 'danger';
-          $outputs[$command]['icon'] = 'exclamation-circle';
-          $outputs[$command]['output'] .= $results->message;
-          $outputs[$command]['command'] = 'error';
-        } elseif ($results->type == 'devshop_notice') {
-          $command = 'notice_' . count($outputs);
-          $outputs[$command]['status'] = '';
-          $outputs[$command]['icon'] = '';
-          $outputs[$command]['command'] .= $results->message;
-          $outputs[$command]['output'] = '';
-        }
-      }
-
-      foreach ($outputs as $command => $data) {
-        $status = $data['status'];
-        $icon = $data['icon'];
-
-        // Allow $outputs array to override the displayed command.
-        if (isset($data['command'])) {
-          $command = $data['command'];
-        }
-
-        // If $command has brackets, convert to span.
-        if (strpos($command, '[') !== FALSE && strpos($command, ']') !== FALSE) {
-          $command = strtr($command, array(
-            '[' => '<div class="text-muted small">',
-            ']' => '</div>',
-          ));
-        }
-
-        // Convert ASCII to HTML
-        $output = $converter->convert($data['output']);
-
-        if (!empty($output)) {
-          $body = "<div class='panel-body'><pre>$output</pre></div>";
-        }
-        else {
-          $body = '';
-        }
-        $messages[] = <<<HTML
-<div class="panel panel-$status devshop-command">
-  <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
-  $body
-</div>
-HTML;
-      }
-
+      $messages = devshop_task_get_messages($vars['node']);
       if (count($messages)) {
         $vars['log_message'] = '';
         $messages = implode("\n", $messages);
@@ -279,8 +196,10 @@ HTML;
 
         $vars['content'] = <<<HTML
   <h3>$type</h3>
+  <div id='task-logs'>
+    $messages
+  </div>
 
-  $messages
   $content
 HTML;
 
@@ -288,6 +207,98 @@ HTML;
     }
 
   }
+}
+
+/**
+ * Helper to retrieve helpful messages from aegir task logs.
+ * @param $task_node
+ * @return array
+ */
+function devshop_task_get_messages($task_node) {
+  $messages = array();
+  $converter = new AnsiToHtmlConverter(null, false);
+
+  $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $task_node->vid);
+  while ($results = db_fetch_object($query)) {
+
+    if ($results->type == 'devshop_command') {
+      if (empty($results->message)) {
+        continue;
+      }
+      $command = $results->message;
+      $outputs[$command] = array(
+        'status' => 'default',
+        'icon' => 'gear',
+        'output' => '',
+      );
+
+      if ($task_node->task_status == HOSTING_TASK_PROCESSING) {
+        $outputs[$command]['icon'] .= ' fa-spin';
+      }
+      continue;
+    } elseif ($results->type == 'devshop_ok') {
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['status'] = 'success';
+      $outputs[$command]['icon'] = 'check';
+    } elseif ($results->type == 'devshop_error') {
+      $outputs[$command]['status'] = 'danger';
+      $outputs[$command]['icon'] = 'exclamation-circle';
+      $outputs[$command]['output'] .= $results->message;
+    } elseif ($results->type == 'warning') {
+      $command = 'warning_' . count($outputs);
+      $outputs[$command]['status'] = 'warning';
+      $outputs[$command]['icon'] = 'exclamation-triangle';
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['command'] = 'warning';
+    } elseif ($results->type == 'error') {
+      $command = 'error_' . count($outputs);
+      $outputs[$command]['status'] = 'danger';
+      $outputs[$command]['icon'] = 'exclamation-circle';
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['command'] = 'error';
+    } elseif ($results->type == 'devshop_notice') {
+      $command = 'notice_' . count($outputs);
+      $outputs[$command]['status'] = '';
+      $outputs[$command]['icon'] = '';
+      $outputs[$command]['command'] .= $results->message;
+      $outputs[$command]['output'] = '';
+    }
+  }
+
+  foreach ($outputs as $command => $data) {
+    $status = $data['status'];
+    $icon = $data['icon'];
+
+    // Allow $outputs array to override the displayed command.
+    if (isset($data['command'])) {
+      $command = $data['command'];
+    }
+
+    // If $command has brackets, convert to span.
+    if (strpos($command, '[') !== FALSE && strpos($command, ']') !== FALSE) {
+      $command = strtr($command, array(
+        '[' => '<div class="text-muted small">',
+        ']' => '</div>',
+      ));
+    }
+
+    // Convert ASCII to HTML
+    $output = $converter->convert($data['output']);
+
+    if (!empty($output)) {
+      $body = "<div class='panel-body'><pre>$output</pre></div>";
+    }
+    else {
+      $body = '';
+    }
+    $messages[] = <<<HTML
+<div class="panel panel-$status devshop-command">
+  <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
+  $body
+</div>
+HTML;
+  }
+ return $messages;
 }
 
 /**
