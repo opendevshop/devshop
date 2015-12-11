@@ -237,8 +237,30 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   if ($settings->web_server) {
     $platform->web_server = $settings->web_server;
   }
-  else {
+
+  // If no web server was set and project has a default, make sure we set it.
+  elseif (!empty($project->settings->default_environment['web_server'])) {
+    $settings->web_server = $project->settings->default_environment['web_server'];
     $platform->web_server = $project->settings->default_environment['web_server'];
+  }
+  else {
+    $servers = hosting_get_servers('http');
+    reset($servers);
+
+    // If no web server was set, make sure we set it.
+    $settings->web_server = key($servers);
+    $platform->web_server = key($servers);
+  }
+
+  // Set db server to the project default, if none was set.
+  if (empty($settings->db_server) && !empty($project->settings->default_environment['db_server'])) {
+    $settings->db_server = $project->settings->default_environment['db_server'];
+  }
+  // If no db server is set and there is no default set.
+  elseif (empty($settings->db_server)) {
+    $servers = hosting_get_servers('db');
+    reset($servers);
+    $settings->db_server = key($servers);
   }
 
   // If drupal path, append to code path/environment name
