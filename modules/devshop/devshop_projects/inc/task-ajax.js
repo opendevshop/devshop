@@ -4,7 +4,12 @@ Drupal.behaviors.devshopTasks = function() {
 }
 
 var devshopCheckTasks = function(){
-    $.get('/devshop/tasks', null, devshopTasksUpdate , 'json');
+    var url = '/devshop/tasks';
+    if (Drupal.settings.devshopTask) {
+        url = '/devshop/tasks?task=' + Drupal.settings.devshopTask;
+    }
+
+    $.get(url, null, devshopTasksUpdate , 'json');
 }
 
 var devshopTasksUpdate = function (data) {
@@ -58,9 +63,12 @@ var devshopTasksUpdate = function (data) {
             // Change Class
             $badge.attr('class', 'label label-default task-status label-' + value.last_task.status_class);
 
+            // Reload Logs
+            $logs = $('#task-logs', '#node-' + value.last_task.nid);
+            $logs.html(value.last_task.logs);
+
             // @TODO:
             // Change Duration
-            // Reload Logs
 
         }
         // Projects List Page.
