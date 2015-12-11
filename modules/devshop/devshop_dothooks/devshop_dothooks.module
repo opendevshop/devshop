@@ -118,7 +118,15 @@ function devshop_dothooks_run_hook($hook, $environment) {
 
   drush_log('[.hooks] Hook file found: ' . $environment->dothooks_file_name, 'ok');
 
-  $hooks = array_filter(explode("\n", $environment->dothooks[$hook]));
+  // Allow big string or lists of commands.
+  if (is_array($environment->dothooks[$hook])) {
+    $hooks = array_filter($environment->dothooks[$hook]);
+  }
+  else {
+    $hooks = array_filter(explode("\n", $environment->dothooks[$hook]));
+  }
+
+  // Prepare and run each command.
   foreach ($hooks as $hook_line) {
 
     $hook_line = strtr($hook_line, array(
