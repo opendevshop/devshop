@@ -43,8 +43,8 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
   $environment = (object) d()->environment;
   $project_name = d()->project;
-  $project = d("@{$project_name}")->project;
-  $desired_ref_type = $project->settings->git['refs'][$git_ref];
+  $project = (object) d("@project_{$project_name}")->project;
+  $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
   try {
 
