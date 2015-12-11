@@ -214,6 +214,12 @@ function devshop_projects_preprocess_node(&$vars){
           $outputs[$command]['icon'] = 'exclamation-circle';
           $outputs[$command]['output'] .= $results->message;
           $outputs[$command]['command'] = 'error';
+        } elseif ($results->type == 'devshop_notice') {
+          $command = 'notice_' . count($outputs);
+          $outputs[$command]['status'] = '';
+          $outputs[$command]['icon'] = '';
+          $outputs[$command]['command'] .= $results->message;
+          $outputs[$command]['output'] = '';
         }
       }
 
@@ -222,7 +228,7 @@ function devshop_projects_preprocess_node(&$vars){
         $icon = $data['icon'];
 
         // Allow $outputs array to override the displayed command.
-        if (!empty($data['command'])) {
+        if (isset($data['command'])) {
           $command = $data['command'];
         }
 
@@ -236,12 +242,17 @@ function devshop_projects_preprocess_node(&$vars){
 
         // Convert ASCII to HTML
         $output = $converter->convert($data['output']);
+
+        if (!empty($output)) {
+          $body = "<div class='panel-body'><pre>$output</pre></div>";
+        }
+        else {
+          $body = '';
+        }
         $messages[] = <<<HTML
 <div class="panel panel-$status devshop-command">
   <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
-  <div class="panel-body">
-     <pre>$output</pre>
-  </div>
+  $body
 </div>
 HTML;
       }
