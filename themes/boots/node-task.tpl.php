@@ -63,7 +63,7 @@
   <div class="well well-sm">
 
     <h4>
-      <span class="label label-<?php print $task_label_class ?>"><?php print $task_label ?></span>
+      <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
 
       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
 
