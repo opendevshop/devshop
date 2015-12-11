@@ -77,6 +77,7 @@ var devshopTasksUpdate = function (data) {
                     window.scrollTo(0,document.body.scrollHeight);
                 }
                 $('.follow-logs-checkbox').remove();
+                $('.edit-update-status').remove();
                 $('.running-indicator').remove();
             }
             else {
