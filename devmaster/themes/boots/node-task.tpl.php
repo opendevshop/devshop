@@ -95,7 +95,14 @@
 
   </div>
 
-<?php  if ($node->test_results_formatted): ?>
+    <?php  if ($follow_checkbox): ?>
+        <div class="follow-logs-checkbox">
+            <?php print $follow_checkbox; ?>
+        </div>
+    <?php endif; ?>
+
+
+    <?php  if ($node->test_results_formatted): ?>
   <div role="tabpanel">
 
     <!-- Nav tabs -->

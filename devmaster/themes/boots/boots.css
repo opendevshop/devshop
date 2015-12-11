@@ -724,3 +724,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   overflow-x: scroll;
   word-wrap: normal;
 }
+
+.follow-checkbox {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+}

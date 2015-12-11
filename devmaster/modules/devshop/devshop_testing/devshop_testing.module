@@ -292,24 +292,24 @@ function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
  */
 function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
 
-  if ($node->type == 'task' && !empty($node->test_results_formatted)) {
+  if ($node->type == 'task') {
     // If task is still running, add the javascript to reload it.
-    $filename = pathinfo($node->task_args['output_path'], PATHINFO_BASENAME);
-    drupal_add_js(drupal_get_path('module', 'devshop_testing') . '/test-reload.js');
-    drupal_add_js(array(
-      'test_running' => TRUE,
-      'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
-      'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
-    ), 'setting');
-
-    if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
-      $node->content['follow_checkbox'] = array(
-        '#type' => 'markup',
-        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
-      );
-      drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
-//      unset($node->content['update-status']);
-    }
+//    $filename = pathinfo($node->task_args['output_path'], PATHINFO_BASENAME);
+//    drupal_add_js(drupal_get_path('module', 'devshop_testing') . '/test-reload.js');
+//    drupal_add_js(array(
+//      'test_running' => TRUE,
+//      'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
+//      'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
+//    ), 'setting');
+//
+//    if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
+//      $node->content['follow_checkbox'] = array(
+//        '#type' => 'markup',
+//        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
+//      );
+//      drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
+////      unset($node->content['update-status']);
+//    }
 //    unset($node->content['info']);
   }
 }
