@@ -70,6 +70,27 @@ var devshopTasksUpdate = function (data) {
             // @TODO:
             // Change Duration
 
+            // If task is not processing or queued, hide follow link.
+            if (value.last_task.status != 0 && value.last_task.status != -1 ) {
+                // Scroll down one last time if checked.
+                if ($('#follow').prop('checked')) {
+                    window.scrollTo(0,document.body.scrollHeight);
+                }
+                $('.follow-logs-checkbox').remove();
+                $('.running-indicator').remove();
+            }
+            else {
+                // Scroll down if follow checkbox is checked.
+                if ($('#follow').prop('checked')) {
+                    window.scrollTo(0,document.body.scrollHeight);
+                }
+            }
+
+            // If running, set text to indicate
+            if (value.last_task.status == -1) {
+                $('.running-indicator .running-label').text('Processing...');
+                $('.running-indicator .fa-gear').addClass('fa-spin');
+            }
         }
         // Projects List Page.
         // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
@@ -119,11 +140,6 @@ var devshopTasksUpdate = function (data) {
       count = '';
     }
     $('.count', '.task-list-button').html(count);
-
-    // Scroll down if follow checkbox is checked.
-    if ($('#follow').prop('checked')) {
-        window.scrollTo(0,document.body.scrollHeight);
-    }
 
     setTimeout("devshopCheckTasks()", 1000);
 }

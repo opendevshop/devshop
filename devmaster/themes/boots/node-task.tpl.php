@@ -101,6 +101,33 @@
         </div>
     <?php endif; ?>
 
+    <h3><?php print $type; ?></h3>
+
+    <div id='task-logs'>
+        <?php print $messages; ?>
+    </div>
+
+    <div class="running-indicator <?php print $is_active; ?>  text-muted small">
+        <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label;?></span>
+    </div>
+
+    <?php print $content; ?>
+
+    <div class="task-details">
+        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+            <i class="fa fa-list"></i> <?php print t('Details'); ?>
+        </button>
+
+        <?php if ($node->content['update-status']['#value']): ?>
+            <?php print $node->content['update-status']['#value']; ?>
+        <?php endif; ?>
+
+        <div class="collapse" id="collapseLogs">
+            <div class="well">
+                <?php print $node->content['hosting_log']['#value']; ?>
+            </div>
+        </div>
+    </div>
 
     <?php  if ($node->test_results_formatted): ?>
   <div role="tabpanel">
@@ -129,24 +156,6 @@
         <div class="padded-top">
           <?php print $content; ?>
         </div>
-      </div>
-    </div>
-  </div>
-<?php else: ?>
-  <?php print $content; ?>
-
-  <div class="task-details">
-    <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
-      <i class="fa fa-list"></i> <?php print t('Details'); ?>
-    </button>
-
-    <?php if ($node->content['update-status']['#value']): ?>
-      <?php print $node->content['update-status']['#value']; ?>
-    <?php endif; ?>
-
-    <div class="collapse" id="collapseLogs">
-      <div class="well">
-        <?php print $node->content['hosting_log']['#value']; ?>
       </div>
     </div>
   </div>
