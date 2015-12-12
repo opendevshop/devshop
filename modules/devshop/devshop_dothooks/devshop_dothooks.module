@@ -129,30 +129,10 @@ function devshop_dothooks_run_hook($hook, $environment) {
 
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
-
     $hook_line = strtr($hook_line, array(
       '{{alias}}' => $environment->drush_alias,
     ));
-
-    drush_log("[Hooks File: $environment->dothooks_file_name] $hook_line", 'devshop_command');
-    $process = new Process($hook_line);
-    $process->setTimeout(NULL);
-    $exit_code = $process->run(function ($type, $buffer) {
-      if (Process::ERR === $type) {
-        drush_log($buffer, 'devshop_ok');
-      } else {
-        drush_log($buffer, 'devshop_ok');
-      }
-    });
-
-    // check exit code
-    if ($exit_code === 0) {
-      drush_log("[.hooks] Command executed successfully.", 'ok');
-    }
-    else {
-      drush_log("[.hooks] Hook command failed: $hook_line", 'error');
-      drush_log("$hook_line", 'devshop_error');
-    }
+    devshop_drush_process($hook_line, $environment->repo_root, 'DevShop .hooks.yml');
   }
 }
 
