@@ -123,39 +123,6 @@ function drush_devshop_projects_pre_hosting_task()
 
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
-    $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
-
-    // Check for devshop_testing folder. Create if it doesn't exist.
-    $file_directory_path = variable_get('file_directory_path', '') . '/devshop_testing/';
-    if (!file_exists($file_directory_path)) {
-      drush_log("Creating $file_directory_path", 'ok');
-      mkdir($file_directory_path);
-    }
-
-    // Find output path and relative-to-web path.
-    $output_path = $file_directory_path . 'task-' . $task->vid;
-    if (!file_exists($output_path)) {
-      drush_log("Creating $output_path", 'ok');
-      mkdir($output_path);
-    }
-
-    // Options are passed to drush command.
-    $task->options['output-path'] = realpath($output_path);
-
-    // Task Args are used to pass info back to devmaster
-    $task->task_args['output_path'] = realpath($output_path);
-    $task->task_args['output_link'] = url($output_path, array('absolute' => TRUE));
-    $task->no_verify = TRUE;
-    node_save($task);
-  }
-
-  // If task is set to clone, save a drush option so our hook knows to run a registry rebuild
-  if ($task->task_type == 'clone' && !empty($task->ref->project)) {
-
-    // @TODO This didn't work.
-    //  The rebuild-registry commands were passed only to provision-save!
-//    $task->options['rebuild-registry'] = 1;
-//    $task->options['strict'] = 0;
   }
 }
 
