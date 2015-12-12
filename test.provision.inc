@@ -22,7 +22,14 @@ function drush_devshop_provision_provision_test() {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
   // Get tests to run
   $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
-  $tests_to_run = drush_get_option('tests-to-run', array_filter(d()->environment['settings']['testing']['tests_to_run']));
+
+  if (d()->environment['settings']['testing']['tests_to_run'] === NULL) {
+    $tests = array();
+  }
+  else {
+    $tests = array_filter(d()->environment['settings']['testing']['tests_to_run']);
+  }
+  $tests_to_run = drush_get_option('tests-to-run', $tests);
 
   // Run Simpletest
   if ($type == 'simpletest') {
