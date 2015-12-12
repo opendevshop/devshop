@@ -5,6 +5,7 @@ use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
 use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
 use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 
@@ -201,7 +202,12 @@ function devshop_projects_preprocess_node(&$vars){
  */
 function devshop_task_get_messages($task_node) {
   $messages = array();
-  $converter = new AnsiToHtmlConverter(null, false);
+  $theme = new SolarizedXTermTheme();
+  $styles = $theme->asCss();
+  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
+
+  drupal_set_html_head("<style>$styles</style>");
+  $converter = new AnsiToHtmlConverter($theme);
 
   $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $task_node->vid);
   while ($results = db_fetch_object($query)) {
@@ -221,6 +227,10 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
+    } elseif ($results->type == 'devshop_info') {
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['status'] = 'default';
+      $outputs[$command]['icon'] = 'gear fa-spin';
     } elseif ($results->type == 'devshop_ok') {
       $outputs[$command]['output'] .= $results->message;
       $outputs[$command]['status'] = 'success';
@@ -271,7 +281,8 @@ function devshop_task_get_messages($task_node) {
     $output = $converter->convert($data['output']);
 
     if (!empty($output)) {
-      $body = "<div class='panel-body'><pre>$output</pre></div>";
+      $body = "<div class='panel-body ansi_color_bg_black'>
+<pre class=\"ansi_color_bg_black ansi_color_fg_white ansi_box\">$output</pre></div>";
     }
     else {
       $body = '';
