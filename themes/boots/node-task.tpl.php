@@ -105,13 +105,12 @@
   </div>
 
   <?php if (count($task_args)): ?>
-    <div class="task-arguments panel panel-default">
+    <div class="task-arguments well well-sm">
       <!-- Default panel contents -->
-      <div class="panel-heading"><?php print t('Task Arguments') ?></div>
 
-      <!-- Table -->
-      <div class="panel-body">
-
+      <dl class="dl-horizontal">
+        <dt><?php print t('Task Arguments') ?></dt>
+        <dd>
         <?php foreach (array_filter($task_args) as $arg => $value): ?>
           <?php
           if ($value === '1') {
@@ -126,7 +125,9 @@
             </span>
           </span>
         <?php endforeach; ?>
-        </div>
+
+        </dd>
+      </dl>
     </div>
   <?php endif; ?>
 
