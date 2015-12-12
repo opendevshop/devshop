@@ -6,6 +6,8 @@
 
 require_once('vendor/autoload.php');
 
+use Symfony\Component\Process\Process;
+
 /**
  * Implements hook_drush_init()
  * - Ensures that provision is loaded before devshop_provision
@@ -291,5 +293,31 @@ function drush_devshop_provision_pre_updatedb() {
   if (!empty(d()->project) && empty(d()->environment)) {
     drush_log('[DEVSHOP] New environment detected.  Rebuilding Registry.', 'ok');
     drush_invoke('registry-rebuild');
+  }
+}
+
+/**
+ * Run a Symfony Process saving to drush logs.
+ */
+function devshop_drush_process($command, $cwd = null, $label = 'Process') {
+  drush_log("[$label] $command", 'devshop_command');
+  $process = new Process($command, $cwd);
+  $process->setTimeout(NULL);
+  $exit_code = $process->run(function ($type, $buffer) {
+    if (Process::ERR === $type) {
+      drush_log($buffer, 'devshop_info');
+    } else {
+      drush_log($buffer, 'devshop_info');
+    }
+  });
+
+  // check exit code
+  if ($exit_code === 0) {
+    drush_log('Successful', 'devshop_ok');
+    return TRUE;
+  }
+  else {
+    drush_log('Process Failed', 'devshop_error');
+    return drush_set_error('DEVSHOP_DRUSH_PROCESS_ERROR', 'Process Failed');
   }
 }

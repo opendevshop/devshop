@@ -60,17 +60,20 @@ function drush_devshop_provision_provision_test() {
       $behat_yml = file_get_contents($full_behat_folder_path . '/config/behat.yml');
     }
     else {
-      return drush_set_error('DEVSHOP_MISSING_FILE', dt('behat.yml file not found in behat_folder_path: ') . $full_behat_folder_path);
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('behat.yml file not found in behat_folder_path: ') . $behat_folder_path);
     }
 
-    // Run composer update.
-    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer install')) {
-      $shell_output = drush_shell_exec_output();
-      drush_log(implode("\n", $shell_output), 'status');
-    }
-    else {
-      drush_log(dt('composer install failed in ' . $full_behat_folder_path), 'error');
-    }
+//    // Run composer update.
+//    if (drush_shell_cd_and_exec($full_behat_folder_path, 'composer install')) {
+//      $shell_output = drush_shell_exec_output();
+//      drush_log(implode("\n", $shell_output), 'status');
+//    }
+//    else {
+//      drush_log(dt('composer install failed in ' . $full_behat_folder_path), 'error');
+//    }
+
+    // Run composer install.
+    devshop_drush_process('composer install', $full_behat_folder_path, 'DevShop Testing');
 
     // Write custom behat.yml to temporary folder.
     $environment = d()->environment['name'];
@@ -134,53 +137,56 @@ YML;
       $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}'";
 
       if ($output_path) {
-        $cmd .= " --out {$output_path}/results-{$i}.txt";
+//        $cmd .= " --out {$output_path}/results-{$i}.txt";
       }
 
-      drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
+      // Run behat command
+      devshop_drush_process($cmd, $full_behat_folder_path, 'DevShop Testing');
 
-      // If drush_shell_cd_and_exec passes...
-      if (drush_shell_cd_and_exec($full_behat_folder_path, $cmd)) {
-        $shell_output = drush_shell_exec_output();
-        drush_set_context('test_output', $shell_output);
-        drush_log(implode("\n", $shell_output), 'ok');
-        drush_log(dt('Test Run Passed!'), 'success');
-      }
-      // If drush_shell_cd_and_exec fails..
-      else {
-        $shell_output = drush_shell_exec_output();
-        drush_set_context('test_output', $shell_output);
-        drush_log(implode("\n", $shell_output), 'error');
-        $no_errors = drush_set_error('DEVSHOP_TESTS_FAILED', dt('Test Run Failed'));
-      }
+//      drush_log("Running '$cmd' in $full_behat_folder_path", 'status');
+//
+//      // If drush_shell_cd_and_exec passes...
+//      if (drush_shell_cd_and_exec($full_behat_folder_path, $cmd)) {
+//        $shell_output = drush_shell_exec_output();
+//        drush_set_context('test_output', $shell_output);
+//        drush_log(implode("\n", $shell_output), 'ok');
+//        drush_log(dt('Test Run Passed!'), 'success');
+//      }
+//      // If drush_shell_cd_and_exec fails..
+//      else {
+//        $shell_output = drush_shell_exec_output();
+//        drush_set_context('test_output', $shell_output);
+//        drush_log(implode("\n", $shell_output), 'error');
+//        $no_errors = drush_set_error('DEVSHOP_TESTS_FAILED', dt('Test Run Failed'));
+//      }
 
-      // Collect test results.
-      $behat_results = implode("\n", $shell_output);
-      $time = date('r', time());
-      $test_result .= <<<TXT
-_____________________________
-DevShop Test Run
-$time
-
-PATH: $full_behat_folder_path
-COMMAND: $cmd
-
-URL: $url
-RESULTS:
-  Saved to $output_path
-
-$behat_results
-TXT;
-      ;
+//      // Collect test results.
+//      $behat_results = implode("\n", $shell_output);
+//      $time = date('r', time());
+//      $test_result .= <<<TXT
+//_____________________________
+//DevShop Test Run
+//$time
+//
+//PATH: $full_behat_folder_path
+//COMMAND: $cmd
+//
+//URL: $url
+//RESULTS:
+//  Saved to $output_path
+//
+//$behat_results
+//TXT;
+//      ;
     }
-
-    // Save drush option for hostmaster to read later.
-    drush_set_option('behat_test_results', $test_result);
-
-    // If errors were detected, return FALSE;  We've already logged the errors.
-    if (!$no_errors) {
-      return FALSE;
-    }
+//
+//    // Save drush option for hostmaster to read later.
+//    drush_set_option('behat_test_results', $test_result);
+//
+//    // If errors were detected, return FALSE;  We've already logged the errors.
+//    if (!$no_errors) {
+//      return FALSE;
+//    }
   }
 }
 
