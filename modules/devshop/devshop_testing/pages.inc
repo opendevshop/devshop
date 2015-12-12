@@ -2,6 +2,7 @@
 
 require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
 use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
 use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 
@@ -114,7 +115,7 @@ function devshop_testing_results_page_raw($task_dir) {
  */
 function devshop_testing_results_to_html($ascii) {
 
-  $theme = new SolarizedXTermTheme();
+  $theme = new Theme();
   $converter = new AnsiToHtmlConverter($theme, false);
   $html = $converter->convert($ascii);
   $html = strtr($html, array(
