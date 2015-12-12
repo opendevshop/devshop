@@ -13,6 +13,8 @@ var devshopCheckTasks = function(){
 }
 
 var devshopTasksUpdate = function (data) {
+
+    var lastTaskStatus = null;
     $.each(data, function(key, value){
         var id = '#' + value.project + '-' + value.name;
         var new_class = 'alert-' + value.last_task.status_class;
@@ -54,6 +56,7 @@ var devshopTasksUpdate = function (data) {
         }
         // Task Node Page
         else if (Drupal.settings.devshopTask == value.last_task.nid) {
+
             $badge = $('.label.task-status', '#node-' + value.last_task.nid);
 
             // Change Badge
@@ -81,6 +84,7 @@ var devshopTasksUpdate = function (data) {
                 $('.follow-logs-checkbox').remove();
                 $('.edit-update-status').remove();
                 $('.running-indicator').remove();
+                Drupal.settings.lastTaskStopped = TRUE;
             }
             else {
                 // Scroll down if follow checkbox is checked.
@@ -93,6 +97,12 @@ var devshopTasksUpdate = function (data) {
             if (value.last_task.task_status == -1) {
                 $('.running-indicator .running-label').text('Processing...');
                 $('.running-indicator .fa-gear').addClass('fa-spin');
+            }
+
+            // If the last task was complete, and this task is complete, stop the autoloader.
+            if (Drupal.settings.lastTaskStopped && (value.last_task.task_status != -1 && value.last_task.task_status != 0)) {
+                console.log('Task is not processing or queued. Stopping the autoloader.')
+                return;
             }
         }
         // Projects List Page.
