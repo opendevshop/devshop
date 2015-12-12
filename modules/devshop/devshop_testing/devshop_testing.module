@@ -255,33 +255,33 @@ function devshop_testing_task_submit(&$form, &$form_state) {
  * @param $a4
  */
 function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
-
-  if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
-    unset($node->task_args['test_results']);
-  }
-
-  if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
-    include_once('pages.inc');
-    $output = '';
-
-//    dsm(scandir($node->task_args['output_path']));
-
-    foreach (scandir($node->task_args['output_path']) as $file) {
-      // Don't load directories.
-      if ($file == '.' || $file == '..') {
-        continue;
-      }
-
-      // Load all files
-      $file_path = $node->task_args['output_path'] . '/' . $file;
-
-      if (strpos($file, 'results') === 0) {
-        $file_contents = file_get_contents($node->task_args['output_path'] . '/' . $file);
-        $output .= $file_contents;
-      }
-    }
-    $node->test_results_formatted = devshop_testing_results_to_html($output);
-  }
+//
+//  if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
+//    unset($node->task_args['test_results']);
+//  }
+//
+//  if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
+//    include_once('pages.inc');
+//    $output = '';
+//
+////    dsm(scandir($node->task_args['output_path']));
+//
+//    foreach (scandir($node->task_args['output_path']) as $file) {
+//      // Don't load directories.
+//      if ($file == '.' || $file == '..') {
+//        continue;
+//      }
+//
+//      // Load all files
+//      $file_path = $node->task_args['output_path'] . '/' . $file;
+//
+//      if (strpos($file, 'results') === 0) {
+//        $file_contents = file_get_contents($node->task_args['output_path'] . '/' . $file);
+//        $output .= $file_contents;
+//      }
+//    }
+//    $node->test_results_formatted = devshop_testing_results_to_html($output);
+//  }
 }
 
 /**
@@ -319,61 +319,61 @@ function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
  * @param $var
  */
 function devshop_testing_preprocess_node(&$vars) {
-  global $user;
-  $node = &$vars['node'];
-  if (!empty($node->project->environments)) {
-    foreach ($node->project->environments as &$environment) {
-      $environment->testing = TRUE;
-
-      // Load test task.
-      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
-
-      $environment->test = $task;
-      $environment->test->task_node = node_load($environment->test->nid);
-      $environment->test->duration = format_interval($task->delta, 1);
-      $environment->test->permalink = url("devshop_tests/{$environment->test->nid}/{$environment->test->vid}");
-
-      if ($task->executed) {
-        $environment->test->time_ago = format_interval(time() - $task->executed, 1);
-        $environment->test->ago = t('@time ago', array('@time' => $environment->test->time_ago));
-      }
-      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
-      $environment->test->status_url = url('node/' . $task->nid);
-
-      $environment->test->results = $environment->test->task_node->test_results_formatted;
-
-      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
-        $environment->test->status_message = t('Failed');
-        $environment->test->status_class = 'danger';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
-        $environment->test->status_message = t('Passed!');
-        $environment->test->status_class = 'success';
-      }
-      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
-        $environment->test->status_message = t('Queued');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->test->status_message = t('Running...');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
-        $environment->test->status_message = t('Passed with Warnings');
-        $environment->test->status_class = 'warning';
-      }
-
-
-      else {
-        $environment->test->status_message = t('Ready');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-    }
-  }
+//  global $user;
+//  $node = &$vars['node'];
+//  if (!empty($node->project->environments)) {
+//    foreach ($node->project->environments as &$environment) {
+//      $environment->testing = TRUE;
+//
+//      // Load test task.
+//      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
+//
+//      $environment->test = $task;
+//      $environment->test->task_node = node_load($environment->test->nid);
+//      $environment->test->duration = format_interval($task->delta, 1);
+//      $environment->test->permalink = url("devshop_tests/{$environment->test->nid}/{$environment->test->vid}");
+//
+//      if ($task->executed) {
+//        $environment->test->time_ago = format_interval(time() - $task->executed, 1);
+//        $environment->test->ago = t('@time ago', array('@time' => $environment->test->time_ago));
+//      }
+//      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
+//      $environment->test->status_url = url('node/' . $task->nid);
+//
+//      $environment->test->results = $environment->test->task_node->test_results_formatted;
+//
+//      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
+//        $environment->test->status_message = t('Failed');
+//        $environment->test->status_class = 'danger';
+//      }
+//      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
+//        $environment->test->status_message = t('Passed!');
+//        $environment->test->status_class = 'success';
+//      }
+//      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
+//        $environment->test->status_message = t('Queued');
+//        $environment->test->status_class = 'default';
+//        $environment->test->duration = '';
+//
+//      }
+//      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
+//        $environment->test->status_message = t('Running...');
+//        $environment->test->status_class = 'default';
+//        $environment->test->duration = '';
+//      }
+//      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
+//        $environment->test->status_message = t('Passed with Warnings');
+//        $environment->test->status_class = 'warning';
+//      }
+//
+//
+//      else {
+//        $environment->test->status_message = t('Ready');
+//        $environment->test->status_class = 'default';
+//        $environment->test->duration = '';
+//      }
+//    }
+//  }
 }
 
 
