@@ -136,7 +136,7 @@ function devshop_projects_preprocess_node(&$vars){
 
     // Show duration
     if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
-      $vars['duration'] = 'Queued';
+      $vars['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $vars['node']->changed)));
       $vars['date'] = date('D M j Y', $vars['node']->changed);
       $vars['executed'] = '';
     }
