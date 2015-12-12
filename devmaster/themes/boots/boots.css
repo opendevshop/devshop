@@ -342,7 +342,9 @@ input.form-control.webhook-url {
     padding: 0px;
 }
 .dropdown-menu li label,
-.environment label
+.environment label,
+.well label,
+.well dt
 {
   font-size: .7em;
   text-transform: uppercase;
@@ -350,6 +352,25 @@ input.form-control.webhook-url {
   font-weight: bold;
   margin-right: 10px;
   margin-left: 10px;
+}
+
+
+.task-arguments.well {
+  min-height: inherit;
+  margin-bottom: 0px;
+}
+.task-arguments.well dl {
+  margin-bottom: 0px;
+}
+.task-arguments.well .dl-horizontal dt {
+  width: 120px;
+  padding-top: .5em;
+  padding-right: 2em;
+  margin-bottom: 0px;
+}
+
+.task-arguments.well .dl-horizontal dd {
+  margin-left: 120px;
 }
 
 .environment-tests.list-group-item > label {
@@ -746,4 +767,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .task-arg {
   padding-right: 2em;
   white-space: nowrap;
+}
+
+.task-arguments-list {
+  display: inline-block;
+
 }
