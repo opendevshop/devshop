@@ -736,7 +736,6 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   border: none;
   border-radius: 0;
   background: none;
-  display: inline;
 }
 
 .environment-dothooks pre {
