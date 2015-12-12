@@ -1,14 +1,6 @@
 <?php
 
 /**
- * @param $task
- * @param $data
- */
-function devshop_testing_hosting_test_task_rollback($task, $data) {
-  devshop_testing_post_hosting_test_task($task, $data);
-}
-
-/**
  * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
  *
  * Saves a deploy task if the environment is set to do so.
