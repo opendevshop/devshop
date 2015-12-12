@@ -689,7 +689,6 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 }
 .environment-task-logs > div {
     position: relative;
-    z-index: 2;
 }
 
 .project-environments a.alert-queued,
