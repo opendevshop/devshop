@@ -39,7 +39,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
             $result->last_task->duration = format_interval(time() - $result->last_task->executed, 1);
         }
         elseif ($result->last_task->task_status == HOSTING_TASK_QUEUED) {
-            $result->last_task->duration = t('Queued');
+            $result->last_task->duration = t('Queued for %time', array('%time' => format_interval(time() - $result->last_task->changed)));
         }
         else  {
             $result->last_task->duration = format_interval($result->last_task->delta, 1);
