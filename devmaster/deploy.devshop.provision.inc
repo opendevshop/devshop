@@ -154,25 +154,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   }
 
   foreach ($commands as $command) {
-    drush_log('[DevShop Deploy Hook] ' . $command, 'devshop_command');
-    $process = new Process($command);
-    $process->setTimeout(NULL);
-    $exit_code = $process->run(function ($type, $buffer) {
-      if (Process::ERR === $type) {
-        drush_log($buffer, 'devshop_ok');
-      } else {
-        drush_log($buffer, 'devshop_ok');
-      }
-    });
-
-    // check exit code
-    if ($exit_code === 0) {
-      drush_log("[.hooks] Command executed successfully.", 'ok');
-    }
-    else {
-      drush_log("[.hooks] Hook command failed: $command", 'error');
-      drush_log($command, 'devshop_error');
-    }
+    devshop_drush_process($command, $environment->repo_root, 'DevShop Deploy Hook');
   }
 }
 
