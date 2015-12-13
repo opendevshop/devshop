@@ -1,10 +1,14 @@
 DevShop Provision
 =================
 
-Drupal development infrastructure made easy.
+Drush Back-end tools for DevShop.
 
-This module provides the backend commands needed to manage projects, platforms,
-and sites with DevShop Hosting.
+See http://getdevshop.com/ for more information.
+
+This project exists for devshop 0.x.  Once we finish migrating to Aegir 3 (devshop 1.0) this repo will be retired.
+
+ARCHIVE
+=======
 
 About DevShop
 -------------
