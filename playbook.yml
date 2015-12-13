@@ -224,6 +224,12 @@
         owner=aegir group=aegir mode=0744
         state=directory
 
+    - name: Install devshop_provision from github.
+      git:
+        repo: {{ devshop_provision_repo }}
+        dest: /var/aegir/.drush/commands/devshop_provision
+        version: {{ devshop_version }}
+
     - name: Install required drush packages.
       command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler=git_drupalorg -y"
       with_dict: "{{ devshop_drush_packages }}"

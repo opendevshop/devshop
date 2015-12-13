@@ -31,10 +31,11 @@ ansible_playbook: playbook.yml
 
 devshop_working_copy: --working-copy
 
+devshop_provision_repo: https://github.com/opendevshop/devshop_provision.git
+
 devshop_drush_packages:
   provision: 6.x-2.x
   provision_git: 6.x-1.x
-  devshop_provision: 6.x-2.x
   provision_logs: 6.x-1.x
   provision_solr: 6.x-2.x
   provision_tasks_extra: 6.x-2.x
