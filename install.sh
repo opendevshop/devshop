@@ -115,11 +115,14 @@ else
     echo $LINE
 fi
 
+MAKEFILE_PATH=''
+
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  MAKEFILE_PATH='/home/travis/build/opendevshop/devshop/build-devmaster.make'
 fi
 
 if [ -f '/root/.my.cnf' ]
@@ -138,7 +141,6 @@ echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo $LINE
 
 # Clone the installer code if a playbook path was not set.
-MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
