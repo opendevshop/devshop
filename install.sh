@@ -122,7 +122,7 @@ if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
-  MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make
+  MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make"
 fi
 
 if [ -f '/root/.my.cnf' ]
