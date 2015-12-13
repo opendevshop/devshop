@@ -21,6 +21,7 @@
   <status>published</status>
   <release_link>https://github.com/opendevshop/devshop_provision/releases/tag/6.x-0.4</release_link>
   <download_link>https://github.com/opendevshop/devshop_provision/archive/6.x-0.4.tar.gz</download_link>
+  <mdhash>9FB463A272EA096A9EC21A60CCB6B428</mdhash>
 </release>
 </releases>
 </project>
