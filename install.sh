@@ -20,14 +20,16 @@
 #  If using a playbook path option, the makefile used to build devmaster is defined
 #  in the vars.yml file: devshop_makefile.
 #
-echo "============================================="
-echo " Welcome to the DevShop Standalone Installer "
-echo "                   v 0.x                     "
-echo "============================================="
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=0.x
+DEVSHOP_VERSION=0.6.0
+
+echo "============================================="
+echo " Welcome to the DevShop Standalone Installer "
+echo "                   v $DEVSHOP_VERSION        "
+echo "============================================="
+
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
@@ -199,8 +201,10 @@ else
   echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
   echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
   echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                              |_|   v 0.x      ║"
-  echo "╟───────────────────────────────────────────────────────────────╢"
+  echo "║                                              |_|              ║"
+  echo "╚═══════════════════════════════════════════════════════════════╝"
+  echo "                            v $DEVSHOP_VERSION"
+  echo "╔═══════════════════════════════════════════════════════════════╗"
   echo "║ Submit any issues to                                          ║"
   echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
   echo "╟───────────────────────────────────────────────────────────────╢"
