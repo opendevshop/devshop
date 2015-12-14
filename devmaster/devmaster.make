@@ -63,6 +63,13 @@ projects[hosting_logs][subdir] = contrib
 projects[hosting_site_backup_manager][version] = "2.0"
 projects[hosting_site_backup_manager][subdir] = contrib
 
+projects[hosting_tasks_jenkins][subdir] = "contrib"
+projects[hosting_tasks_jenkins][type] = "module"
+projects[hosting_tasks_jenkins][download][type] = "git"
+projects[hosting_tasks_jenkins][download][branch] = "master"
+projects[hosting_tasks_jenkins][version] = "master"
+projects[hosting_tasks_jenkins][download][url] = "git://github.com/opendevshop/hosting_task_jenkins.git"
+
 projects[aegir_ssh][version] = "0"
 projects[aegir_ssh][subdir] = contrib
 
