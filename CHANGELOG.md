@@ -1,5 +1,75 @@
 # Change Log
 
+# 0.6.0 (December 14, 2015)
+
+19 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.5.4...0.6.0
+137 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.5.4...0.6.0
+32 commits to devshop_provision: https://github.com/opendevshop/devshop_provision/compare/0.5.0...0.6.0
+
+## Web Developer Improvements
+- Added "DevShop dotHooks" module: Add deploy hooks to your project's source code in a `.hooks` or `.hooks.yml` file.  Easily hook into any task: verify, install, deploy, test, etc.  See [docs.devshop.support](http://docs.devshop.support/en/latest/deployment-hooks/#devshop-dothooks) for more information.
+- Added "DevShop Acquia" module: Use Acquia Cloud Hooks as deploy hooks in devshop. See [docs.devshop.support](http://docs.devshop.support/en/latest/deployment-hooks-acquia/) for more information.  We had partial support but now, all acquia cloud hooks are supported, and logging is much more clear.
+
+## User Interface Improvements
+- Total redesign of Tasks and logs: now we only output the logs that are pertinent to developers.
+- Dynamic task logs loading for all types. Now you can sit back and watch your tasks run, with only the logs you want to see appearing.
+- Renamed "Update Status" button to "Cancel Task". (TODO: Fail the task if the button is pushed.)
+- Much improved deploy hooks configuration: 
+  - Each environment now displays the deploy hooks that are configured, making it clear what is supposed to happen every time you deploy.
+  - Project defaults are passed to all environments.
+  - Block environment-specific deploy hooks.
+  - Standardized deploy hook form across environment settings, deploy task, etc.
+  - Automated deploy tasks respect all deploy hook types.
+- Added settings form for "DevShop Public Key", in case you have to rebuild your devshop server's public key.
+- Fixing problems with Aegir Download module.
+- Fixed up some quirks with dynamically updating environment status.
+- Created "Hosting Task Jenkins" module, allowing you to setup jenkins to run all of your tasks.  See [Hosting Tasks: Jenkins README](https://github.com/opendevshop/hosting_task_jenkins/blob/master/README.md) for more information.
+- Lots of subtle design improvements.
+
+## Internal Development Improvements
+- Added hook_devshop_environment_alter(): Allow other modules to alter the environment object
+- Added composer.json to devmaster and devshop_provision.
+- Swapped drush_shell_exec's for Symfony Process in devshop_provision.
+- Swapped provision-git-deploy for Symfony GitWrapper in devshop_provision and devshop_projects.drush.inc.  
+- Added a new drush log type: devshop_command + devshop_log + devshop_ok + devshop_error.  These will output logs in a new prettier format in the front-end.  Documentation coming soon.
+- Finally fully moving devshop_provision to [github](https://github.com/opendevshop/devshop_provision), Created proper tags and branches and cleaned up old ones.
+- Adding a shared function for adding the deploy hooks checkboxes to all forms that need it:  devshop_environment_deploy_hooks_form()
+- Cleaned out a lot of old code and comments.
+
+# Documentation Improvements
+- Added Deployment Hooks page to documentation: http://docs.devshop.support/en/latest/deployment-hooks/
+- Added Automated Testing page to documentation: http://docs.devshop.support/en/latest/testing/
+- Modified and cleaned up the roadmap: http://docs.devshop.support/en/latest/roadmap/
+- Added hook_help() in order to improve the built in documentation!  
+
+## New Contributors
+
+Radim Klaška - https://github.com/radimklaska
+Commit 84f9068ff4114e9f0ac9a468b8a0854f35b62e48 
+
+Radim fixed a typo in our documentation.  Thanks, Radim!
+
+## Site Development
+
+- Added hook_devshop_environment_alter()
+- Added "DevShop dotHooks" module: Add deploy hooks to your project's source code in a `.hooks` or `.hooks.yml` file.
+- Added "DevShop Acquia" module: Use Acquia Cloud Hooks as deploy hooks in devshop.
+- Total redesign of Tasks and logs: now we only output the logs that are pertinant to developers.
+- Renamed "Update Status" button to "Cancel Task".
+- Much improved deploy hooks configuration: 
+  - Project defaults are passed to all environments.
+  - Block environment-specific deploy hooks.
+  - Standardized deploy hook form across environment settings, deploy task, etc.
+  - Automated deploy tasks respect all deploy hook types.
+- Added settings form for "DevShop Public Key", in case you have to rebuild your devshop server's public key.
+- Fixing problems with Aegir Download module.
+- Added composer.json to devmaster and devshop_provision.
+- Swapped drush_shell_exec's for Symfony Process
+- Swapped provision-git-deploy for Symfony GitWrapper
+- Added Deployment Hooks page to documentation.
+- Cleaned up the roadmap.
+
+
 ## 0.5.4 (November 7, 2015)
 
 - Adding a "Project Info" box to the project create wizard, to show the user what they've added so far and to make it testable.
