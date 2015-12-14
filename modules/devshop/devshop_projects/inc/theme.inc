@@ -251,7 +251,7 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] .= $results->message;
       $outputs[$command]['command'] = 'error';
-    } elseif ($results->type == 'devshop_notice') {
+    } elseif ($results->type == 'devshop_log') {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
