@@ -52,7 +52,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 
     $git = $wrapper->workingCopy($environment->repo_root);
     chdir($git->getDirectory());
-    drush_log('[Current Working Directory]' . $git->getDirectory(), 'devshop_notice');
+    drush_log('[Current Working Directory]' . $git->getDirectory(), 'devshop_log');
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
