@@ -32,10 +32,17 @@ ansible_playbook: playbook.yml
 
 devshop_working_copy: --working-copy
 
+devshop_provision_repo: https://github.com/opendevshop/devshop_provision.git
+
 devshop_drush_packages:
   provision: 7.x-3.x
-#  devshop_provision: 7.x-3.x
 #  provision_solr: 6.x-2.x
+  provision: 6.x-2.x
+  provision_git: 6.x-1.x
+  provision_logs: 6.x-1.x
+  provision_solr: 6.x-2.x
+  provision_tasks_extra: 6.x-2.x
+  provision_site_backup_manager: 6.x-2.x
   registry_rebuild: 7.x-2.2
 
 devshop_makefile: build-devmaster.make

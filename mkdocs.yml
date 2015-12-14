@@ -12,9 +12,14 @@ pages:
 - 'Architecture':
   - 'Architecture Overview': 'architecture.md'
   - 'Setup Examples': 'examples.md'
-- 'Development':
+- 'Site Development':
+  - 'Deployment Hooks': 'deployment-hooks.md'
+  - 'Automated Testing': 'testing.md'
+  - 'Acquia Cloud Hooks Integration': 'deployment-hooks-acquia.md'
+- 'DevShop Development':
   - 'Developing DevShop': 'development.md'
   - 'Release Process': 'release-process.md'
+  - 'Roadmap': 'roadmap.md'
 - 'Management':
   - 'Deleting Projects & Environments': 'deleting.md'
   - 'Using SSL': 'ssl.md'

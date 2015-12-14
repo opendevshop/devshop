@@ -78,7 +78,7 @@ end
 
 if (ARGV[0] == 'destroy')
   print "DEVSHOP: Vagrant Destroy detected. \n"
-  print "DEVSHOP: You must delete the 'source/devmaster-0.x/profiles/devmaster' folder before you 'vagrant up' again. \n"
+  print "DEVSHOP: You must delete the 'source/devmaster-0.x/sites/devshop.site' folder before you 'vagrant up' again. \n"
 end
 
 class NoSettingsException < Vagrant::Errors::VagrantError
