@@ -28,6 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Process\Process;
+use Phar;
 
 // Length of time past current version to warn user.
 define('DEVSHOP_DEV_WARNING_DELAY', 2592000);
@@ -69,7 +70,20 @@ class Application extends BaseApplication
 
   public function __construct($version, $release_date)
   {
-    parent::__construct('DevShop', DevShop::VERSION);
+
+    // If phar is running, use DevShop::VERSION (@package_version@)
+    if (Phar::running()) {
+      parent::__construct('DevShop', DevShop::VERSION);
+      $this->release_date = $release_date;
+    }
+    else {
+      $version = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
+      $version .= ' ' . $this->process('git log --pretty=format:"%h" -n 1');
+
+      parent::__construct('DevShop', $version);
+
+      $this->release_date = $this->process('git log -1 --format=%ct');
+    }
   }
 
   /**
@@ -81,7 +95,7 @@ class Application extends BaseApplication
   public function process($cmd, $dir = __DIR__) {
     $process = new Process($cmd, $dir);
     $process->run();
-    return $process->getOutput();
+    return trim($process->getOutput());
   }
 
   /**
