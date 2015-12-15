@@ -47,14 +47,14 @@ class Application extends BaseApplication
    */
   protected $devshop;
 
-  private static $logo = '
+  private static $logo = '<fg=cyan>
   ___                     ____              ____  _
 /  _ \ _ __   ___ _ __   |  _ \  _____   __/ ___|| |__   ___  _ __
 | | | | \'_ \ / _ \ \'_ \  | | | |/ _ \ \ / /\___ \| \'_ \ / _ \| \'_ \
 | |_| | |_) |  __/ | | | | |_| |  __/\ V /  ___) | | | | (_) | |_) |
  \___/| .__/ \___|_| |_| |____/ \___| \_/  |____/|_| |_|\___/| .__/
-      |_|                                                    |_|
-';
+      |_|             http://getdevshop.com                  |_|
+</>';
 
   public function __construct()
   {
