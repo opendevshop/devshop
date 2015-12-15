@@ -134,7 +134,7 @@ class Upgrade extends Command
 
     // Warn if default is not latest
     if ($latest_release != $default_version) {
-        $output->writeln("<fg=red>WARNING: </> You have not selected the latest release.");
+        $output->writeln("<fg=red>WARNING:</> You have specified a release that is not the latest.");
     }
 
     // Confirm version
