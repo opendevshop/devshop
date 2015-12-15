@@ -27,6 +27,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Process\Process;
 
 // Length of time past current version to warn user.
 define('DEVSHOP_DEV_WARNING_DELAY', 2592000);
@@ -47,6 +48,16 @@ class Application extends BaseApplication
    */
   protected $devshop;
 
+  /**
+   * @var string
+   */
+  protected $version;
+
+  /**
+   * @var string
+   */
+  protected $release_date;
+
   private static $logo = '<fg=cyan>
   ___                     ____              ____  _
 /  _ \ _ __   ___ _ __   |  _ \  _____   __/ ___|| |__   ___  _ __
@@ -56,9 +67,34 @@ class Application extends BaseApplication
       |_|             http://getdevshop.com                  |_|
 </>';
 
-  public function __construct()
+  public function __construct($version, $release_date)
   {
-    parent::__construct('DevShop', DevShop::VERSION);
+
+    // If running from source (not in a phar), get the release date and source from git.
+    if ($release_date == '@release_date@') {
+      $this->release_date = $this->process('git log -1 --format=%ct');
+    }
+    else {
+      $this->release_date = $release_date;
+    }
+
+    if ($version == '@package_version@') {
+      $version = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD '));
+    }
+
+    parent::__construct('DevShop', $version);
+  }
+
+  /**
+   * Run a process and return it's output.
+   * @param $cmd
+   * @param string $dir
+   * @return string
+   */
+  public function process($cmd, $dir = __DIR__) {
+    $process = new Process($cmd, $dir);
+    $process->run();
+    return $process->getOutput();
   }
 
   /**
@@ -110,7 +146,7 @@ class Application extends BaseApplication
         }
       }
       if ($commandName !== 'self-update' && $commandName !== 'selfupdate') {
-        if (time() > DEVSHOP_DEV_WARNING_DELAY) {
+        if (time() > $this->release_date + DEVSHOP_DEV_WARNING_DELAY) {
           $output->writeln(
             sprintf(
               '<warning>Warning: This build of devshop is over 30 days old. It is recommended to update it by running "%s self-update" to get the latest version.</warning>',

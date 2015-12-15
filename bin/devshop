@@ -40,5 +40,5 @@ if (function_exists('ini_set')) {
 }
 
 // run the command application
-$application = new Application();
+$application = new Application('@package_version@', '@release_date@');
 $application->run();
