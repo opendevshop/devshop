@@ -1,6 +1,12 @@
 [
     {
         "name": "devshop.phar",
+        "sha1": "349c17156c81c68bb28a1606dc73437e",
+        "url": "http://opendevshop.github.io/devshop/downloads/devshop-0.6.1-rc3.phar",
+        "version": "0.6.1-rc3"
+    },
+    {
+        "name": "devshop.phar",
         "sha1": "ab46ccc4835232ce147d90ab99b0ff438a3a2b6a",
         "url": "http://opendevshop.github.io/devshop/downloads/devshop-0.6.1-rc2.phar",
         "version": "0.6.1-rc2"
