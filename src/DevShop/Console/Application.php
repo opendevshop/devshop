@@ -7,8 +7,8 @@
  *
  * It was started as a copy of Composer's Application, so big thanks to them!
  *
- * (c) Nils Adermann <naderman@naderman.de>
- *     Jordi Boggiano <j.boggiano@seld.be>
+ * Nils Adermann <naderman@naderman.de>
+ * Jordi Boggiano <j.boggiano@seld.be>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,12 +18,6 @@ namespace DevShop\Console;
 
 use DevShop\DevShop;
 use DevShop\Command;
-//use DevShop\Command\Status;
-//use DevShop\Command\Login;
-//use DevShop\Command\Install;
-//use DevShop\Command\Upgrade;
-//use DevShop\Command\RemoteInstall;
-//use DevShop\Command\SelfUpdate;
 
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -33,13 +27,6 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Formatter\OutputFormatter;
-//use Composer\Command;
-//use Composer\Composer;
-//use Composer\Factory;
-//use Composer\IO\IOInterface;
-//use Composer\IO\ConsoleIO;
-//use Composer\Json\JsonValidationException;
-//use Composer\Util\ErrorHandler;
 
 // Length of time past current version to warn user.
 define('DEVSHOP_DEV_WARNING_DELAY', 2592000);
@@ -59,11 +46,6 @@ class Application extends BaseApplication
    * @var DevShop
    */
   protected $devshop;
-
-//  /**
-//   * @var IOInterface
-//   */
-//  protected $io;
 
   private static $logo = '
   ___                     ____              ____  _
@@ -87,8 +69,6 @@ class Application extends BaseApplication
     OutputInterface $output = null
   ) {
     if (null === $output) {
-//      $styles = Factory::createAdditionalStyles();
-
       $styles = array(
         'highlight' => new OutputFormatterStyle('red'),
         'warning' => new OutputFormatterStyle('black', 'yellow'),
@@ -109,10 +89,6 @@ class Application extends BaseApplication
    */
   public function doRun(InputInterface $input, OutputInterface $output)
   {
-//    $this->io = new ConsoleIO($input, $output, $this->getHelperSet());
-//    ErrorHandler::register($this->io);
-//    $io = $this->getIO();
-
     if (PHP_VERSION_ID < 50302) {
       $output->writeln(
         '<warning>DevShop only officially supports PHP 5.3.2 and above, you will most likely encounter problems with your PHP '.PHP_VERSION.', upgrading is strongly recommended.</warning>'
@@ -125,7 +101,7 @@ class Application extends BaseApplication
       );
     }
 
-    if (defined('DEVSHOP_DEV_WARNING_TIME')) {
+    if (defined('DEVSHOP_DEV_WARNING_DELAY')) {
       $commandName = '';
       if ($name = $this->getCommandName($input)) {
         try {
@@ -134,10 +110,10 @@ class Application extends BaseApplication
         }
       }
       if ($commandName !== 'self-update' && $commandName !== 'selfupdate') {
-        if (time() > DEVSHOP_DEV_WARNING_TIME) {
+        if (time() > DEVSHOP_DEV_WARNING_DELAY) {
           $output->writeln(
             sprintf(
-              '<warning>Warning: This build of devshop is over 60 days old. It is recommended to update it by running "%s self-update" to get the latest version.</warning>',
+              '<warning>Warning: This build of devshop is over 30 days old. It is recommended to update it by running "%s self-update" to get the latest version.</warning>',
               $_SERVER['PHP_SELF']
             )
           );
