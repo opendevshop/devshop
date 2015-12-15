@@ -124,7 +124,7 @@ class Upgrade extends Command
       $latest_release = '0.x';
     }
     else {
-      $latest_release = $release['tags_name'];
+      $latest_release = $release['tag_name'];
     }
 
     $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
