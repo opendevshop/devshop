@@ -9,7 +9,12 @@
   ],
   "finder": [
     {
-      "name": "*.php;*.json",
+      "name": "*.php",
+      "exclude": ["Tests"],
+      "in": "vendor"
+    },
+    {
+      "name": "*.json",
       "exclude": ["Tests"],
       "in": "vendor"
     }
