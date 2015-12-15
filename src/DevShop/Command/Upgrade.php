@@ -126,7 +126,7 @@ class Upgrade extends Command
     }
     else {
       $latest_release = $release['tag_name'];
-      $output->writeln("Version <info>$latest_release</info>.");
+      $output->writeln("<info>Latest Version</info> $latest_release");
     }
 
     $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
