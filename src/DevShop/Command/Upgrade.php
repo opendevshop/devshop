@@ -122,13 +122,20 @@ class Upgrade extends Command
     if (empty($release)) {
       $output->writeln("<fg=red>Unable to retrieve releases from GitHub.  Try again later, or specify a release.</>");
       $latest_release = '0.x';
+      $output->writeln("Assuming development version <info>$latest_release</info>.");
     }
     else {
       $latest_release = $release['tag_name'];
+      $output->writeln("Version <info>$latest_release</info>.");
     }
 
     $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
     $target_version = '';
+
+    // Warn if default is not latest
+    if ($latest_release != $default_version) {
+        $output->writeln("<fg=red>WARNING: </> You have not selected the latest release.");
+    }
 
     // Confirm version
     while ($this->checkVersion($target_version) == FALSE) {
