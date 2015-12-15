@@ -27,6 +27,11 @@ class Upgrade extends Command
     $this
       ->setName('upgrade')
       ->setDescription('Upgrade devshop')
+      ->addArgument(
+        'devshop-version',
+        InputOption::VALUE_OPTIONAL,
+        'The git tag or branch to install.'
+      )
     ;
   }
 
@@ -112,7 +117,7 @@ class Upgrade extends Command
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
     $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
-    $default_version = $release['tag_name'];
+    $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $release['tag_name'];
     $target_version = '';
 
     // Confirm version
