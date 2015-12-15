@@ -69,20 +69,7 @@ class Application extends BaseApplication
 
   public function __construct($version, $release_date)
   {
-
-    // If running from source (not in a phar), get the release date and source from git.
-    if ($release_date == '@release_date@') {
-      $this->release_date = $this->process('git log -1 --format=%ct');
-    }
-    else {
-      $this->release_date = $release_date;
-    }
-
-    if ($version == '@package_version@') {
-      $version = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD '));
-    }
-
-    parent::__construct('DevShop', $version);
+    parent::__construct('DevShop', DevShop::VERSION);
   }
 
   /**
