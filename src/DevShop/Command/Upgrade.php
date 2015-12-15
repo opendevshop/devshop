@@ -117,7 +117,17 @@ class Upgrade extends Command
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
     $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
-    $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $release['tags_name'];
+
+    // Make sure we got the release info
+    if (empty($release)) {
+      $output->writeln("<fg=red>Unable to retrieve releases from GitHub.  Try again later, or specify a release.</>");
+      $latest_release = '0.x';
+    }
+    else {
+      $latest_release = $release['tags_name'];
+    }
+
+    $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
     $target_version = '';
 
     // Confirm version
