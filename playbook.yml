@@ -151,7 +151,7 @@
 
     - name: Make devshop CLI available globally.
       file:
-        src={{ playbook_path }}/devshop
+        src={{ playbook_path }}/bin/devshop
         dest={{ devshop_cli_path }}
         state=link
         force=yes
