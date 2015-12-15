@@ -2,8 +2,10 @@
 
 namespace DevShop\Command;
 
+use Herrera\Json\Exception\JsonException;
 use Herrera\Phar\Update\Manager;
 use Herrera\Phar\Update\Manifest;
+use Herrera\Json\Exception\FileException;
 
 use Github\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
@@ -47,7 +49,17 @@ EOT
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
-    $manager->update($this->getApplication()->getVersion(), true);
+
+    $file = self::MANIFEST_FILE;
+    $output->writeln("Loading <info>DevShop</info> release information from <comment>{$file}</comment>");
+
+    try {
+      $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
+      $manager->update($this->getApplication()->getVersion(), true);
+    }
+    catch (JsonException $e) {
+      $output->writeln('<error>' . $e->getMessage() . '</error>');
+      $output->writeln('Contact the DevShop maintainers if the problem persists.');
+    }
   }
 }
