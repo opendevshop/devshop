@@ -40,7 +40,6 @@ class Install extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $formatter = $this->getHelper('formatter');
     $helper = $this->getHelper('question');
 
     // Announce ourselves.
