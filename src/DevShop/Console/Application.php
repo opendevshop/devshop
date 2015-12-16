@@ -60,13 +60,12 @@ class Application extends BaseApplication
   protected $release_date;
 
   private static $logo = '<fg=cyan>
-  ___                     ____              ____  _
+ ____                     ____              ____  _
 /  _ \ _ __   ___ _ __   |  _ \  _____   __/ ___|| |__   ___  _ __
 | | | | \'_ \ / _ \ \'_ \  | | | |/ _ \ \ / /\___ \| \'_ \ / _ \| \'_ \
 | |_| | |_) |  __/ | | | | |_| |  __/\ V /  ___) | | | | (_) | |_) |
- \___/| .__/ \___|_| |_| |____/ \___| \_/  |____/|_| |_|\___/| .__/
-      |_|             http://getdevshop.com                  |_|
-</>';
+\____/| .__/ \___|_| |_| |____/ \___| \_/  |____/|_| |_|\___/| .__/
+      |_|             http://getdevshop.com                  |_|  </>';
 
   public function __construct($version, $release_date)
   {
@@ -315,6 +314,11 @@ class Application extends BaseApplication
   public function getHelp()
   {
     return self::$logo.parent::getHelp();
+  }
+
+  public function getLogo()
+  {
+    return self::$logo;
   }
 
   /**
