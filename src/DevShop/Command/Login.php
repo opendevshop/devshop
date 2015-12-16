@@ -2,7 +2,8 @@
 
 namespace DevShop\Command;
 
-use Symfony\Component\Console\Command\Command;
+use DevShop\Console\Command;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,7 +23,13 @@ class Login extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $output->writeln('Hello, DevShop!');
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce($output, 'Login');
+
+    $output->writeln('');
+
+
     if ($_SERVER['USER'] != 'aegir') {
       $output->writeln('<error>ERROR: Not running as "aegir" user.  Use "sudo su - aegir" to switch to aegir user, then try again.</error>');
       return;

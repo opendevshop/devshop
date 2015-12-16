@@ -2,7 +2,8 @@
 
 namespace DevShop\Command;
 
-use Symfony\Component\Console\Command\Command;
+use DevShop\Console\Command;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,7 +23,10 @@ class Status extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $output->writeln('Hello, DevShop!');
+
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce($output, 'Status');
 
     // Check for devshop
     $output->write("<comment>Checking for devshop...  </comment>");

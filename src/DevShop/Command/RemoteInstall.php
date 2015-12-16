@@ -2,7 +2,8 @@
 
 namespace DevShop\Command;
 
-use Symfony\Component\Console\Command\Command;
+use DevShop\Console\Command;
+
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,25 +33,13 @@ class RemoteInstall extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $formatter = $this->getHelper('formatter');
         $helper = $this->getHelper('question');
-        $errorMessages = array(
-            '╔═══════════════════════════════════════════════════════════════╗',
-            '║           ____  Welcome to  ____  _                           ║',
-            '║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║',
-            '║          | | | |/ _ \ \ / /\___ \|  _ \ / _ \|  _ \           ║',
-            '║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║',
-            '║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║',
-            '║               Remote Server Installer        |_|              ║',
-            '╚═══════════════════════════════════════════════════════════════╝',
-        );
-        $formattedBlock = $formatter->formatBlock(
-            $errorMessages,
-            'fg=black;bg=green'
-        );
-        $output->writeln($formattedBlock);
+
+        // Announce ourselves.
+        $output->writeln($this->getApplication()->getLogo());
+        $this->announce($output, 'Remote Server Installer');
         $output->writeln(
-            'Welcome to the Remote Server Installer!'
+            '<info>Welcome to the Remote Server Installer!</info>'
         );
         $output->writeln('');
 

@@ -2,8 +2,9 @@
 
 namespace DevShop\Command;
 
+use DevShop\Console\Command;
+
 use Github\Exception\RuntimeException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,22 +38,14 @@ class Upgrade extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $formatter = $this->getHelper('formatter');
-    $helper = $this->getHelper('question');
 
-    $errorMessages = array(
-      '╔═══════════════════════════════════════════════════════════════╗',
-      '║           ____  Welcome to  ____  _                           ║',
-      '║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║',
-      '║          | | | |/ _ \ \ / /\___ \|  _ \ / _ \|  _ \           ║',
-      '║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║',
-      '║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║',
-      '║                  Upgrade                     |_|              ║',
-      '╚═══════════════════════════════════════════════════════════════╝',
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce($output, 'Upgrade');
+
+    $output->writeln(
+      '<info>Welcome to the DevShop Upgrader!</info>'
     );
-    $formattedBlock = $formatter->formatBlock($errorMessages, 'fg=black;bg=green');
-    $output->writeln($formattedBlock);
-
     // Check for existing devshop install.
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
