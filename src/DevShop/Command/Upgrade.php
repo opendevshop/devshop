@@ -38,6 +38,7 @@ class Upgrade extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
+    $helper = $this->getHelper('question');
 
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
