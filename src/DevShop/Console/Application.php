@@ -313,7 +313,7 @@ class Application extends BaseApplication
 
   public function getHelp()
   {
-    return self::$logo.parent::getHelp();
+    return self::$logo . "\n" . parent::getHelp();
   }
 
   public function getLogo()
