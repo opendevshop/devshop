@@ -483,7 +483,7 @@ function devshop_github_webhook($project_node){
           $already_have_pr_info = FALSE;
 
           // When PR is opened... create new environment.
-          if ($data->action == 'opened'){
+          if ($data->action == 'opened' || $data->action == 'reopened') {
             $message = "Detected Pull Request creation for $branch \n";
             if (isset($project->environments[$environment_name])) {
               $message = "Environment $environment_name already exists! Not creating one... \n";
