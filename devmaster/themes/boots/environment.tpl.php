@@ -136,18 +136,18 @@
                     <div class="btn-group btn-group-smaller pull-right login-link" role="group">
 
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
+                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal-<?php print $environment->name ?>" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
                                 <i class="fa fa-sign-in"></i>
                                 <?php print $environment->login_text; ?>
                             </button>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
+                            <div class="modal fade" id="loginModal-<?php print $environment->name ?>" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel-<?php print $environment->name ?>">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="loginModalLabel">
+                                            <h4 class="modal-title" id="loginModalLabel-<?php print $environment->name ?>">
                                                 <?php print $environment->login_text; ?>
                                             </h4>
                                         </div>
