@@ -119,7 +119,7 @@ EOT
       } catch (GitException $e) {
         $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
       } catch (ProcessFailedException $e) {
-        echo $e->getMessage();
+        $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
       }
     }
   }
