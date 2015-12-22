@@ -107,7 +107,7 @@ EOT
         $output->writeln("DevShop CLI version <info>{$version}</info> has been checked out.");
 
         // Run 'composer install' in the directory.
-        $output->writeln("Running <info>composer install</info> in <comment>{$git->getDirectory()}</comment>.");
+        $output->writeln("Running <info>composer install</info> in <comment>{$git->getDirectory()}</comment>...");
         $process = new Process('composer install --ansi', $git->getDirectory());
         $process->setTimeout(NULL);
         $process->mustRun(function ($type, $buffer) {
