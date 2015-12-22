@@ -161,7 +161,7 @@
       register: cli_needs_manual_update
 
     - name: Upgrade CLI if self-update is not available.
-      command: git fetch && git checkout {{ devshop_version }} && git pull
+      command: cd {{ playbook_path }}; git fetch; git checkout {{ devshop_version }}; && git pull
       when: cli_needs_manual_update
 
     # DEBIAN only.  RedHat has rewrite enabled by default.
