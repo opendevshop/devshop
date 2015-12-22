@@ -124,6 +124,38 @@ function devshop_projects_load($node) {
     // Get last task
     $environment->last_task = node_load($environment->last_task_nid);
 
+    // Detect creation method.
+    // Some sites get installed. Others get imported.
+    $install_tasks = devshop_get_tasks($environment, 'install');
+    $import_tasks = devshop_get_tasks($environment, 'import');
+    $clone_tasks = devshop_get_tasks($environment, 'clone');
+
+    $environment->created = array();
+    if (!empty(current($install_tasks))) {
+      $environment->created['type'] = 'install';
+      $environment->created['date'] = current($install_tasks)->executed;
+      $environment->created['status'] = current($install_tasks)->task_status;
+      $environment->created['nid'] = current($install_tasks)->nid;
+    }
+    elseif (!empty(current($import_tasks))) {
+      $environment->created['type'] = 'import';
+      $environment->created['date'] = current($import_tasks)->executed;
+      $environment->created['status'] = current($import_tasks)->task_status;
+      $environment->created['nid'] = current($import_tasks)->nid;
+    }
+    elseif (!empty(current($clone_tasks))) {
+      $environment->created['type'] = 'clone';
+      $environment->created['date'] = current($clone_tasks)->executed;
+      $environment->created['status'] = current($clone_tasks)->task_status;
+      $environment->created['nid'] = current($clone_tasks)->nid;
+    }
+    // Neither import nor install nor clone was found.
+    else {
+      $environment->created['type'] = '';
+      $environment->created['date'] = '';
+      $environment->created['status'] = '';
+    }
+
     // Get the current git ref type.
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
