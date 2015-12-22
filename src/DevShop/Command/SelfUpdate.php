@@ -102,6 +102,11 @@ EOT
         $git->fetchAll();
         $git->checkout($version);
 
+        $output->writeln("<info>DevShop CLI version {$version} has been checked out.</info>");
+
+        // @TODO: Run 'composer install in the directory'
+
+
       } catch (GitException $e) {
         $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
       }
