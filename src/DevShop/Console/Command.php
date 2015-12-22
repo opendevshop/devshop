@@ -37,6 +37,27 @@ abstract class Command extends BaseCommand
   private $devshop;
 
   /**
+   * @var InputInterface
+   */
+  private $input;
+
+  /**
+   * @var OutputInterface
+   */
+  private $output;
+
+
+  /**
+   * @param \Symfony\Component\Console\Input\InputInterface $input
+   * @param \Symfony\Component\Console\Output\OutputInterface $output
+   */
+  protected function execute(InputInterface $input, OutputInterface $output)
+  {
+    $this->input = $input;
+    $this->output = $output;
+  }
+
+  /**
    * @param  bool $required
    * @param  bool $disablePlugins
    * @throws \RuntimeException
@@ -54,8 +75,9 @@ abstract class Command extends BaseCommand
    * @param $title
    * @param int $width
    */
-  public function announce(OutputInterface $output, $title, $width = 66)
+  public function announce($title, $width = 66)
   {
+    $output = $this->output;
     $title_characters = strlen($title);
 
     if ($title_characters > $width) {
@@ -140,4 +162,17 @@ abstract class Command extends BaseCommand
     }
     return $release['tag_name'];
   }
+
+  public function checkForRoot() {
+      // Check current user is root
+    $pwu_data = posix_getpwuid(posix_geteuid());
+    if ($pwu_data['name'] != 'root') {
+    $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
+    $output->writeln('Run "sudo devshop upgrade" to run as root.');
+    $output->writeln('<fg=red>Installation aborted.</>');
+    $output->writeln('');
+    return;
+    }
+  }
+
 }

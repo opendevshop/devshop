@@ -40,11 +40,14 @@ class Install extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
     $helper = $this->getHelper('question');
 
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
-    $this->announce($output, 'Interactive Installer');
+    $this->announce('Interactive Installer');
 
     $output->writeln('<info>Welcome to the Interactive DevShop Installer!</info>');
     $output->writeln('');

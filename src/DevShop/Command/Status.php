@@ -24,9 +24,12 @@ class Status extends Command
   protected function execute(InputInterface $input, OutputInterface $output)
   {
 
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
-    $this->announce($output, 'Status');
+    $this->announce('Status');
 
     // Check for devshop
     $output->write("<comment>Checking for devshop...  </comment>");

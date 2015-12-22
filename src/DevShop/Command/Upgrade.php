@@ -38,11 +38,15 @@ class Upgrade extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
+
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
     $helper = $this->getHelper('question');
 
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
-    $this->announce($output, 'Upgrade');
+    $this->announce('Upgrade');
 
     $output->writeln(
       '<info>Welcome to the DevShop Upgrader!</info>'

@@ -23,9 +23,12 @@ class Login extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
-    $this->announce($output, 'Login');
+    $this->announce('Login');
 
     $output->writeln('');
 
