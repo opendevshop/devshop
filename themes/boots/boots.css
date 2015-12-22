@@ -546,6 +546,10 @@ a.pull-request h4 {
   padding: 10px 15px;
   white-space: normal;
 }
+.environment > .list-group-item.text .btn-group {
+  margin-top: -10px;
+  margin-right: -15px;
+}
 
 .environment > .list-group-item.environment-header {
   padding:10px 25px 10px 10px;
