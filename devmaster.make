@@ -41,7 +41,7 @@ projects[views][subdir] = contrib
 projects[views_bulk_operations][version] = "1.17"
 projects[views_bulk_operations][subdir] = contrib
 
-projects[ctools][version] = "1.14"
+projects[ctools][version] = "1.15"
 projects[ctools][subdir] = contrib
 
 projects[features][version] = "1.2"
