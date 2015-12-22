@@ -156,6 +156,9 @@
         state=link
         force=yes
 
+    - name: Use DevShop CLI "self-update" command to upgrade the CLI to the desired version.
+      command: devshop self-update {{ devshop_version }}
+
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
