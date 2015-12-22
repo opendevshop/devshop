@@ -27,7 +27,9 @@ function devshop_projects_tasks_status_json($project_nid = '') {
     }
     $query = db_query($sql, $project_nid);
 
+    // Load up Hosting task language.
     $task_types = hosting_available_tasks();
+    $task_types = array_merge($task_types['site'], $task_types['platform']);
 
     // Get all environments and their status.
     while ($result = db_fetch_object($query)) {
@@ -61,8 +63,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         }
 
         // Set task type
-        $task_ref_type = $result->site == 0? 'platform': 'site';
-        $result->last_task->type_name = $task_types[$task_ref_type][$result->last_task->task_type]['title'];
+        $result->last_task->type_name = $task_types[$result->last_task->task_type]['title'];
 
         // Get Icon
         $result->last_task->icon = devshop_task_status_icon($result->last_task->task_status);
