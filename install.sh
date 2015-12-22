@@ -216,7 +216,7 @@ else
   echo "║                                                               ║"
   echo "║ Supervisor is running Hosting Queue Runner.                   ║"
   echo "╠═══════════════════════════════════════════════════════════════╣"
-  echo "║ Use this link to login:                               ║"
+  echo "║ Use this link to login:                                       ║"
   echo "╚═══════════════════════════════════════════════════════════════╝"
   sudo su - aegir -c "drush @hostmaster uli"
 fi
