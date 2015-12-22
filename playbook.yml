@@ -303,7 +303,7 @@
         content="{{ devshop_version }}"
         dest=/var/aegir/.devshop-version
         force=yes
-        user=aegir
+        owner=aegir
         group=aegir
         mode=0444
 
