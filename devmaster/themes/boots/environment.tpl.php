@@ -75,13 +75,56 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if (empty($environment->site)): ?>
+    <?php if ($environment->created['type'] == 'clone'): ?>
+        <div class="list-group-item center-block text text-muted">
+            <i class="fa fa-warning"></i> <?php print t('Environment clone failed.'); ?>
+        </div>
+        <div class="list-group-item center-block text text-muted">
+            <div class="btn-group " role="group">
+                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
+                    <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+                </a>
+                <?php if (empty($environment->site) && $environment->platform): ?>
+                    <a href="<?php print url("node/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                        <i class="fa fa-power-off"></i> <?php print t('Destroy the Environment'); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php elseif (empty($environment->site)): ?>
         <div class="list-group-item center-block text text-muted">
                 <?php print t('Environment not yet available.'); ?>
+        </div>
+    <?php elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
+
+        <div class="list-group-item center-block text text-muted">
+            <i class="fa fa-warning"></i>  <?php print t('Site Install failed. The environment is not available.'); ?>
+        </div>
+        <div class="list-group-item center-block text text-muted">
+            <div class="btn-group " role="group">
+                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
+                    <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+                </a>
+                <?php if (variable_get('hosting_require_disable_before_delete', TRUE) && $environment->site_status != HOSTING_SITE_DISABLED): ?>
+                <a href="<?php print url("node/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                    <i class="fa fa-power-off"></i> <?php print t('Disable the Environment'); ?>
+                </a>
+                <?php else: ?>
+                    <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> <?php print t('Destroy the Environment'); ?>
+                    </a>
+                <?php endif; ?>
+
+            </div>
         </div>
     <?php elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
         <div class="list-group-item center-block text text-muted">
                 <?php print t('Environment is disabled.'); ?>
+          <div class="btn-group pull-right">
+            <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
+            </a>
+          </div>
         </div>
     <?php else: ?>
 

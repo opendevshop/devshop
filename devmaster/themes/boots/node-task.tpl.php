@@ -64,7 +64,7 @@
 
     <h4>
 
-      <div class="task-badge pull-right">
+      <div class="task-badge pull-left">
         <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
       </div>
 
