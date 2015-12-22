@@ -65,11 +65,19 @@
         </div>
     </div>
 
+    <!-- Environment Warnings -->
+    <?php if (!empty($warnings)): ?>
+        <?php foreach ($warnings as $warning): ?>
+        <div class="list-group-item list-group-item-danger text">
+            <i class="fa fa-exclamation-triangle"></i>
+            <?php print $warning ?>
+        </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
     <?php if (empty($environment->site)): ?>
-        <div class="list-group-item center-block text-muted">
-            <p>
+        <div class="list-group-item center-block text text-muted">
                 <?php print t('Environment not yet available.'); ?>
-            </p>
         </div>
     <?php else: ?>
 
