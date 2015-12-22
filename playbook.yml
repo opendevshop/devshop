@@ -156,6 +156,14 @@
         state=link
         force=yes
 
+    - name: Check to see if the CLI needs a manual update to get the self-update command.
+      shell: if [ ! -f src/DevShop/Command/SelfUpdate.php ]; then echo 1; fi
+      register: cli_needs_manual_update
+
+    - name: Upgrade CLI if self-update is not available.
+      command: git fetch && git checkout {{ devshop_version }} && git pull
+      when: cli_needs_manual_update
+
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
