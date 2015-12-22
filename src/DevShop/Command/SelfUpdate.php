@@ -23,6 +23,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Github\Client;
 
 use Symfony\Component\Filesystem\Filesystem;
@@ -105,11 +106,20 @@ EOT
 
         $output->writeln("DevShop CLI version <info>{$version}</info> has been checked out.");
 
-        // @TODO: Run 'composer install in the directory'
-
-
+        // Run 'composer install' in the directory.
+        $process = new Process('composer install', $git->getDirectory());
+        $process->setTimeout(NULL);
+        $process->mustRun(function ($type, $buffer) {
+          if (Process::ERR === $type) {
+            echo $buffer;
+          } else {
+            echo $buffer;
+          }
+        });
       } catch (GitException $e) {
         $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
+      } catch (ProcessFailedException $e) {
+        echo $e->getMessage();
       }
     }
   }
