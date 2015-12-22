@@ -106,6 +106,11 @@ EOT
         $git->fetchAll();
         $git->checkout($version);
 
+        // If we are on a branch, pull.
+        if ($git->isTracking()) {
+          $git->pull();
+        }
+
         $output->writeln("DevShop CLI version <info>{$version}</info> has been checked out.");
 
         // Run 'composer install' in the directory.
