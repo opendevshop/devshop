@@ -412,38 +412,73 @@ HTML;
  * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
  * @param $environment_site_nid
  */
-function devshop_get_tasks($environment) {
+function devshop_get_tasks($environment, $type = NULL) {
 
-  // Load all tasks from hosting_task table.
+  // Load tasks from hosting_task table for both site and platform.
+  if ($environment->site) {
+    if ($type) {
+      $where = "(t.rid = %d OR t.rid = %d) AND t.task_type = '%s'";
+      $args = array(
+        $environment->platform,
+        $environment->site,
+        $type
+      );
+    }
+    else {
+      $where = "(t.rid = %d OR t.rid = %d)";
+      $args = array(
+        $environment->platform,
+        $environment->site,
+      );
+    }
+  }
+  else {
+    if ($type) {
+      $where = "t.rid = %d AND t.task_type = '%s'";
+      $args = array(
+        $environment->platform,
+        $type
+      );
+    }
+    else {
+      $where = "t.rid = %d";
+      $args = array(
+        $environment->platform,
+      );
+    }
+  }
+
   $query = db_query("
     SELECT t.nid, t.vid
       FROM {node} tn
       INNER JOIN {hosting_task} t ON tn.vid = t.vid
       WHERE
-        t.rid = %d OR t.rid = %d
+        $where
       ORDER BY t.vid DESC
       LIMIT 5
   ",
-      $environment->site,
-      $environment->platform
+    $args
   );
   while ($result = db_fetch_object($query)) {
     $tasks[$result->vid] = node_load($result->nid, $result->vid);
   }
 
   // Load "Clone" tasks
-  $query = db_query("
-    SELECT n.nid, n.vid
-      FROM {node} n
-      INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
-      WHERE
-        name = 'target_platform' AND value = %d
-      ORDER BY vid DESC
-  ",
+  if ($type == NULL || $type == 'clone') {
+    $query = db_query(
+      "
+      SELECT n.nid, n.vid
+        FROM {node} n
+        INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
+        WHERE
+          name = 'target_platform' AND value = %d
+        ORDER BY vid DESC
+    ",
       $environment->platform
-  );
-  while ($result = db_fetch_object($query)) {
-    $tasks[$result->vid] = node_load($result->nid, $result->vid);
+    );
+    while ($result = db_fetch_object($query)) {
+      $tasks[$result->vid] = node_load($result->nid, $result->vid);
+    }
   }
   krsort($tasks);
   return $tasks;
