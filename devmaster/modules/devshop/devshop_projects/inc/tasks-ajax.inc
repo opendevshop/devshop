@@ -34,6 +34,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
     // Get all environments and their status.
     while ($result = db_fetch_object($query)) {
         $result->last_task = node_load($result->last_task_nid);
+        $result->last_task->ref = node_load($result->last_task->rid);
 
         // In Aegir, "executed" and "delta" does not get updated properly.
         // Handle "delta" being not computed yet
@@ -64,6 +65,11 @@ function devshop_projects_tasks_status_json($project_nid = '') {
 
         // Set task type
         $result->last_task->type_name = $task_types[$result->last_task->task_type]['title'];
+
+        // If platform's first verify...
+        if ($result->last_task->ref->type == 'platform' && $result->last_task->ref->verified == 0) {
+            $result->last_task->type_name = t('Cloning Codebase');
+        }
 
         // Get Icon
         $result->last_task->icon = devshop_task_status_icon($result->last_task->task_status);
