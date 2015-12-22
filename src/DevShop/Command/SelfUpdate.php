@@ -90,7 +90,7 @@ EOT
         $output->writeln("Git repo found at <info>$path</info>");
 
         $latest = '0.x';
-        $name_question = new Question('Version? ', $latest);
+        $name_question = new Question("Version? [{$latest}] ", $latest);
         $version = $this->getAnswer($input, $output, $name_question, 'devshop-version', TRUE);
 
         // Bail if there are working copy changes, ignoring untracked files.
