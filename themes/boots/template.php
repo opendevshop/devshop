@@ -181,6 +181,13 @@ function boots_preprocess_environment(&$vars)
       '@type' => $environment->git_ref_type,
     ));
   }
+
+  // Load user into a variable.
+  global $user;
+  $vars['user'] = $user;
+
+  // Get token for task links
+  $vars['token'] = drupal_get_token($user->uid);
 }
 
 /**
