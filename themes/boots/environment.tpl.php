@@ -79,6 +79,10 @@
         <div class="list-group-item center-block text text-muted">
                 <?php print t('Environment not yet available.'); ?>
         </div>
+    <?php elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+        <div class="list-group-item center-block text text-muted">
+                <?php print t('Environment is disabled.'); ?>
+        </div>
     <?php else: ?>
 
         <!-- URLs -->
@@ -335,7 +339,6 @@
                 </div>
             </div>
         <?php endif; ?>
-    <?php endif; ?>
 
     <div class="list-group-item environment-dothooks">
         <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
@@ -436,6 +439,7 @@
             <?php endforeach; ?>
         </div>
     </div>
+    <?php endif; ?>
 
     <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
         <?php if ($page): ?>
