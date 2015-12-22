@@ -89,7 +89,8 @@ EOT
         $git->status();
         $output->writeln("Git repo found at <info>$path</info>");
 
-        $name_question = new Question('Version? ', '');
+        $latest = '0.x';
+        $name_question = new Question('Version? ', $latest);
         $version = $this->getAnswer($input, $output, $name_question, 'devshop-version', TRUE);
 
         // Bail if there are working copy changes, ignoring untracked files.
@@ -102,7 +103,7 @@ EOT
         $git->fetchAll();
         $git->checkout($version);
 
-        $output->writeln("<info>DevShop CLI version {$version} has been checked out.</info>");
+        $output->writeln("DevShop CLI version <info>{$version}</info> has been checked out.");
 
         // @TODO: Run 'composer install in the directory'
 
