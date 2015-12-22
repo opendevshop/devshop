@@ -2,13 +2,17 @@
 
 namespace DevShop\Command;
 
+use DevShop\Console\Command;
+
+use Phar;
+use GitWrapper\GitWrapper;
+use GitWrapper\GitException;
 use Herrera\Json\Exception\JsonException;
 use Herrera\Phar\Update\Manager;
 use Herrera\Phar\Update\Manifest;
 use Herrera\Json\Exception\FileException;
 
 use Github\Exception\RuntimeException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,6 +31,8 @@ use Symfony\Component\Finder\Finder;
 
 class SelfUpdate extends Command
 {
+  // @TODO: We don't have self-update fully working in PHAR mode.
+  // The URL of the DevShop Version manifest.  See the gh-pages branch.
   const MANIFEST_FILE = 'http://opendevshop.github.io/devshop/manifest.json';
 
   protected function configure()
@@ -44,22 +50,60 @@ The DevShop CLI uses git to configure releases. The current git reference is the
 
 EOT
       )
+      ->addArgument(
+        'devshop-version',
+        InputArgument::OPTIONAL,
+        'The git tag or branch to install.'
+      )
     ;
   }
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
+    if (Phar::running()) {
 
-    $file = self::MANIFEST_FILE;
-    $output->writeln("Loading <info>DevShop</info> release information from <comment>{$file}</comment>");
+      $file = self::MANIFEST_FILE;
+      $output->writeln("Loading <info>DevShop</info> release information from <comment>{$file}</comment>");
 
-    try {
-      $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
-      $manager->update($this->getApplication()->getVersion(), true);
+      try {
+        $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
+        $manager->update($this->getApplication()->getVersion(), true);
+      } catch (JsonException $e) {
+        $output->writeln('<error>'.$e->getMessage().'</error>');
+        $output->writeln(
+          'Contact the DevShop maintainers if the problem persists.'
+        );
+      }
+      $output->writeln("<error>Self-update for Phar is not yet supported. If you installed this phar you are a developer anyway!</error>");
     }
-    catch (JsonException $e) {
-      $output->writeln('<error>' . $e->getMessage() . '</error>');
-      $output->writeln('Contact the DevShop maintainers if the problem persists.');
+    // When this is not a PHAR...
+    else {
+
+      try {
+
+        // 1. Check if this script is a git repo.
+        $git_wrapper = new GitWrapper();
+        $path = realpath(__DIR__ . '/../../../');
+
+        $git = $git_wrapper->workingCopy($path);
+        $git->status();
+        $output->writeln("Git repo found at <info>$path</info>");
+
+        $name_question = new Question('Version? ', '');
+        $version = $this->getAnswer($input, $output, $name_question, 'devshop-version', TRUE);
+
+        // Bail if there are working copy changes.
+        if ($git->hasChanges()) {
+          throw new \Exception("There are changes to your working copy at $path.  Please resolve this and try again.");
+        }
+
+        // Checkout the desired version.
+        $git->fetchAll();
+        $git->checkout($version);
+
+      } catch (GitException $e) {
+        $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
+      }
     }
   }
 }
