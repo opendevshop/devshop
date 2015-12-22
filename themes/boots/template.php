@@ -176,10 +176,21 @@ function boots_preprocess_environment(&$vars)
   // Check for any potential problems
   // Branch or tag no longer exists in the project.
   if (!isset($project->settings->git['refs'][$environment->git_ref])) {
-    $vars['warnings'][] = t('The git reference %ref is no longer available.', array(
-      '%ref' => $environment->git_ref,
-      '@type' => $environment->git_ref_type,
-    ));
+    $vars['warnings'][] = array(
+      'text' =>  t('The git reference %ref is no longer available.', array(
+        '%ref' => $environment->git_ref,
+        '@type' => $environment->git_ref_type,
+      )),
+      'type' => 'error',
+    );
+  }
+
+  // No hooks configured.
+  if (count(array_filter($environment->settings->deploy)) == 0) {
+    $vars['warnings'][] = array(
+      'text' => t('No deploy hooks are configured. You might have to run database updates manually after deploying new code.'),
+      'type' => 'warning',
+    );
   }
 
   // Load user into a variable.
