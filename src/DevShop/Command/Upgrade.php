@@ -51,6 +51,9 @@ class Upgrade extends Command
     $output->writeln(
       '<info>Welcome to the DevShop Upgrader!</info>'
     );
+
+    // @TODO: Check the CLI for new releases.  If, we should tell the user to run "self-update" then "upgrade".
+
     // Check for existing devshop install.
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
