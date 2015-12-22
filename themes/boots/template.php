@@ -172,6 +172,15 @@ function boots_preprocess_environment(&$vars)
   if ($environment->active_tasks > 0) {
     $environment->class .= ' active';
   }
+
+  // Check for any potential problems
+  // Branch or tag no longer exists in the project.
+  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
+    $vars['warnings'][] = t('The git reference %ref is no longer available.', array(
+      '%ref' => $environment->git_ref,
+      '@type' => $environment->git_ref_type,
+    ));
+  }
 }
 
 /**

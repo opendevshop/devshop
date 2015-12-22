@@ -542,6 +542,11 @@ a.pull-request h4 {
   padding: 0px;
   white-space: nowrap;
 }
+.environment > .list-group-item.text {
+  padding: 10px 15px;
+  white-space: normal;
+}
+
 .environment > .list-group-item.environment-header {
   padding:10px 25px 10px 10px;
 }
