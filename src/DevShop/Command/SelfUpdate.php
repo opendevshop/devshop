@@ -90,7 +90,8 @@ EOT
         $git->status();
         $output->writeln("Git repo found at <info>$path</info>");
 
-        $latest = '0.x';
+        $output->writeln('Checking for latest releases...');
+        $latest = $this->getLatestVersion();
         $name_question = new Question("Version? [{$latest}] ", $latest);
         $version = $this->getAnswer($input, $output, $name_question, 'devshop-version', TRUE);
 

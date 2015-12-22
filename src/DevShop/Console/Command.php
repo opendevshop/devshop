@@ -122,4 +122,22 @@ abstract class Command extends BaseCommand
 
     return $value;
   }
+
+  /**
+   * Helper to get the latest Version.
+   * @return mixed
+   * @throws \Exception
+   */
+  public function getLatestVersion() {
+
+    // Lookup latest version.
+    $client = new \Github\Client();
+    $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
+
+    // Make sure we got the release info
+    if (empty($release)) {
+      return NULL;
+    }
+    return $release['tag_name'];
+  }
 }
