@@ -186,7 +186,7 @@ function boots_preprocess_environment(&$vars)
   }
 
   // No hooks configured.
-  if (count(array_filter($environment->settings->deploy)) == 0) {
+  if ($environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
       'text' => t('No deploy hooks are configured. You might have to run database updates manually after deploying new code.'),
       'type' => 'warning',
