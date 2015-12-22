@@ -93,6 +93,7 @@ EOT
         $version = $this->getAnswer($input, $output, $name_question, 'devshop-version', TRUE);
 
         // Bail if there are working copy changes, ignoring untracked files.
+        // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
         if ($git->getWrapper()->git('status -s --untracked-files=no', $git->getDirectory())) {
           throw new \Exception("There are changes to your working copy at $path.  Please resolve this and try again.");
         }
