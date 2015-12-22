@@ -303,6 +303,9 @@
         content="{{ devshop_version }}"
         dest=/var/aegir/.devshop-version
         force=yes
+        user=aegir
+        group=aegir
+        mode=0444
 
     - name: Set git user name and email
       shell: "git config --global user.email aegir@{{ server_hostname }}"
