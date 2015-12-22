@@ -123,6 +123,10 @@ EOT
       } catch (ProcessFailedException $e) {
         $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
       }
+
+      // Output a message, telling the user they should now run `devshop upgrade`.
+      $output->writeln('<info>DevShop CLI Updated.</info> You should now run the `devshop upgrade` command to upgrade your server.');
+
     }
   }
 }
