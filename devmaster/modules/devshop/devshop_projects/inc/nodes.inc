@@ -468,12 +468,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
 
-      $site->environment->last_task = array(
-          'status' => $node->task_status,
-          'type' => $node->task_type,
-          'nid' => $node->nid,
-          'executed' => $node->executed,
-      );
+      $site->environment->last_task = $node->nid;
       devshop_environment_save_last_task($site->environment);
     }
   }
