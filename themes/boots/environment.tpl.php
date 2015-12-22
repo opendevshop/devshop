@@ -67,10 +67,20 @@
 
     <!-- Environment Warnings -->
     <?php if (!empty($warnings)): ?>
-        <?php foreach ($warnings as $warning): ?>
-        <div class="list-group-item list-group-item-danger text">
-            <i class="fa fa-exclamation-triangle"></i>
-            <?php print $warning ?>
+        <?php foreach ($warnings as $warning):
+
+            if ($warning['type'] == 'warning') {
+                $icon = 'exclamation-triangle';
+                $class = 'warning';
+            }
+            elseif ($warning['type'] == 'error') {
+                $icon = 'exclamation-circle';
+                $class = 'danger';
+            }
+            ?>
+        <div class="list-group-item list-group-item-<?php print $class ?> text">
+            <i class="fa fa-<?php print $icon ?>"></i>
+            <?php print $warning['text'] ?>
         </div>
         <?php endforeach; ?>
     <?php endif; ?>
@@ -383,6 +393,7 @@
             </div>
         <?php endif; ?>
 
+    <?php if (count(array_filter($environment->settings->deploy)) > 0): ?>
     <div class="list-group-item environment-dothooks">
         <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
         <div class="btn-group btn-hooks" role="group">
@@ -482,6 +493,7 @@
             <?php endforeach; ?>
         </div>
     </div>
+    <?php endif; ?>
     <?php endif; ?>
 
     <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
