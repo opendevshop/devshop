@@ -85,10 +85,11 @@ EOT
         // 1. Check if this script is a git repo.
         $git_wrapper = new GitWrapper();
         $path = realpath(__DIR__ . '/../../../');
+        $version = $this->getApplication()->getVersion();
 
         $git = $git_wrapper->workingCopy($path);
         $git->status();
-        $output->writeln("Git repo found at <info>$path</info>");
+        $output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>.");
 
         $output->writeln('Checking for latest releases...');
         $latest = $this->getLatestVersion();
