@@ -62,6 +62,16 @@ class Application extends BaseApplication
   /**
    * @var string
    */
+  protected $devmaster_root;
+
+  /**
+   * @var string
+   */
+  protected $devmaster_uri;
+
+  /**
+   * @var string
+   */
   protected $release_date;
 
   private static $logo = '<fg=cyan>
@@ -89,7 +99,7 @@ class Application extends BaseApplication
       $this->release_date = $this->process('git log -1 --format=%ct');
     }
 
-    // Detect DevMaster version.
+    // Load DevMaster info, including root, URI and version.
     if (file_exists('/var/aegir/.drush/hostmaster.alias.drushrc.php')) {
       require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
       $devmaster_root = $aliases['hostmaster']['root'];
@@ -97,6 +107,9 @@ class Application extends BaseApplication
       if (file_exists($path_to_version)) {
         $this->devmaster_version = file_get_contents($path_to_version);
       }
+
+      $this->devmaster_root = $aliases['hostmaster']['root'];
+      $this->devmaster_uri = $aliases['hostmaster']['uri'];
     }
     else {
       $this->devmaster_version = NULL;
@@ -104,15 +117,39 @@ class Application extends BaseApplication
   }
 
   /**
-   * Gets the application version.
+   * Gets the DevMaster version.
    *
-   * @return string The application version
+   * @return string The version of the devmaster front-end.
    *
    * @api
    */
   public function getDevmasterVersion()
   {
     return $this->devmaster_version;
+  }
+
+  /**
+   * Gets the DevMaster root path.
+   *
+   * @return string The absolute path to the devmaster installation.
+   *
+   * @api
+   */
+  public function getDevmasterRoot()
+  {
+    return $this->devmaster_root;
+  }
+
+  /**
+   * Gets the DevMaster URI.
+   *
+   * @return string The URI to the devmaster installation.
+   *
+   * @api
+   */
+  public function getDevmasterUri()
+  {
+    return $this->devmaster_uri;
   }
 
   /**
