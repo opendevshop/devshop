@@ -26,7 +26,7 @@ class Install extends Command
       ->setDescription('Install devshop')
       ->addArgument(
         'devshop-version',
-        InputOption::VALUE_OPTIONAL,
+        InputArgument::OPTIONAL,
         'The git tag or branch to install.'
       )
       ->addOption(
