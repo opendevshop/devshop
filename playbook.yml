@@ -256,7 +256,7 @@
       sudo_user: aegir
       command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -y"
       args:
-        creates: /var/aegir/.devshop-version
+        creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
     - name: Supervisor | Set up queue runner script
       template:
@@ -297,15 +297,6 @@
         - { path: '.ssh', mode: '0700' }
         - { path: '.ssh/id_rsa', mode: '600' }
         - { path: '.ssh/id_rsa.pub', mode: '644' }
-
-    - name: DevShop | Save devshop version to a file.
-      copy:
-        content="{{ devshop_version }}"
-        dest=/var/aegir/.devshop-version
-        force=yes
-        owner=aegir
-        group=aegir
-        mode=0444
 
     - name: Set git user name and email
       shell: "git config --global user.email aegir@{{ server_hostname }}"

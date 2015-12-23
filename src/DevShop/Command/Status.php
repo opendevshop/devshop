@@ -79,5 +79,10 @@ class Status extends Command
     }
 
     $output->writeln('');
+
+    // Check for deprecated .devshop-version file.
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $output->writeln("<fg=red>A deprecated file was found. You should delete '/var/aegir/.devshop-version' to reduce confusion.</>");
+    }
   }
 }
