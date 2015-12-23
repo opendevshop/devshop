@@ -459,6 +459,7 @@ function devshop_get_tasks($environment, $type = NULL) {
   ",
     $args
   );
+  $tasks = array();
   while ($result = db_fetch_object($query)) {
     $tasks[$result->vid] = node_load($result->nid, $result->vid);
   }
