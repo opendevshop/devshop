@@ -1,5 +1,37 @@
 # Change Log
 
+# 0.7.0 (December 23, 2015)
+
+71 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.6.0...0.7.0
+20 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.6.0...0.7.0
+
+## DevMaster Fixes
+
+- Fixed "Last Task" bug that was causing inconsistent environment status displays.
+- Re-opening GitHub pull requests will recreate the environment.
+- Fixed "Login" modal window bug that prevented users from being able to log in to all environments.
+- Added "Environment Warnings" display that shows problems to the user, such as "No deploy hooks configured".
+- When a major problem is detected, such as "Installation failed", "Clone failed", we now show the user a message describing what happened, and offer Retry and Destroy buttons so they can take immediate action.
+- When an environment is being created, instead of saying "Verify" the first time, it says "Cloning codebase".
+- Adding a VERSION.txt file to the install profile to define the project's version.  Once we go to Drupal 7 we can move this to the .info file. 
+
+## DevShop CLI Fixes
+
+- Fixed versioning issues! 
+  - Banished the /var/aegir/.devshop-version file.  
+  - Separated DevShop CLI and DevMaster versions in the status command.
+  - Improved how devshop CLI interprets it's version.  If on a branch, it now specifies the SHA as well.
+- Major CLI Improvements:
+  - Added "self-update" command for the CLI that uses Git! Once Phar integration is complete self-update will update the phar as well.
+  - Added our own Application and Command classes inspired by composer.  Moving a lot of shared code to those classes.
+  - Added a sweet new logo for the CLI.
+  - Set the stage for packaging devshop CLI into a PHAR file: added box.json.  We will not distribute the Phar file until we know self-update fully works.
+  - Moved the executable from `devshop` to `bin/devshop`.
+
+**NOTES:**
+- After installing this release (once you have the self-update command), always run `devshop self-update` before `devshop upgrade`.  We will soon add code to enforce this by checking to see if devshop CLI is out of date before an upgrade.
+- We do not remove the old .devshop-version file for you automatically, but the `devshop status` command will warn you if it still exists.  Please remove `/var/aegir/.devshop-version` manually.
+
 # 0.6.0 (December 14, 2015)
 
 19 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.5.4...0.6.0
