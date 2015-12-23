@@ -77,19 +77,14 @@ class Upgrade extends Command
     $output->writeln('');
     $current_version = $this->getApplication()->getVersion();
 
-    // Look for an active hostmaster
-    require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
-    $devmaster_root = $aliases['hostmaster']['root'];
-    if (!file_exists($devmaster_root)) {
-      $output->writeln("<error>WARNING:</error> No active drush alias <comment>@hostmaster</comment> was found!");
-      $output->writeln("<fg=red>Aborting upgrade</>");
-      $output->writeln('');
-      return;
+    // Look for an active devmaster
+    $devmaster_version = $this->getApplication()->getDevmasterVersion();
+    if (empty($devmaster_version)) {
+      throw new \Exception('Unable to find a devmaster.  The drush @hostmaster alias does not exist.');
     }
 
-    $devmaster_root = $aliases['hostmaster']['root'];
-    $devmaster_uri = $aliases['hostmaster']['uri'];
-
+    $devmaster_root = $this->getApplication()->getDevmasterRoot();
+    $devmaster_uri = $this->getApplication()->getDevmasterUri();
 
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
@@ -150,9 +145,10 @@ class Upgrade extends Command
     $output->writeln('');
 
     $output->writeln('UPGRADE OPTIONS');
-    $output->writeln("<info>Current Version: </info> " . $current_version);
-    $output->writeln("<info>Current DevMaster Path: </info> $devmaster_root");
-    $output->writeln("<info>Current DevMaster Site: </info> " . $devmaster_uri);
+    $output->writeln("<info>Current CLI Version: </info>       $current_version");
+    $output->writeln("<info>Current DevMaster Version: </info> $devmaster_version");
+    $output->writeln("<info>Current DevMaster Path: </info>    $devmaster_root");
+    $output->writeln("<info>Current DevMaster Site: </info>    $devmaster_uri");
     $output->writeln('');
 
     $output->writeln("<info>Target Version: </info> " . $target_version);

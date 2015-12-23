@@ -74,17 +74,15 @@ class Status extends Command
       $output->writeln($process->getErrorOutput());
     }
     else {
-      $output->write("<info>Devmaster is installed.</info>");
-      require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
-      $devmaster_root = $aliases['hostmaster']['root'];
-      $path_to_version = "{$devmaster_root}/profiles/devmaster/VERSION.txt";
-      if (file_exists($path_to_version)) {
-        $version = file_get_contents($path_to_version);
-        $output->writeln("Version $version");
+      $output->write("<info>Devmaster is installed.  </info>");
+
+      $devmaster_version = $this->getApplication()->getDevmasterVersion();
+      if ($devmaster_version) {
+        $output->writeln($devmaster_version);
       }
       else {
         $output->writeln('');
-        $output->writeln("<error>`profiles/devmaster/VERSION.txt` was not found.</error> You should run `devshop upgrade` to get the latest version.");
+        $output->writeln("<fg=red>DevMaster is installed, but version is unknown.</> You should run `devshop upgrade` to get the latest release.");
       }
     }
 
