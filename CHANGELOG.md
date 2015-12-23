@@ -1,5 +1,10 @@
 # Change Log
 
+# 0.7.1 (December 23, 2015)
+
+1 commit to DevShop.
+Fixed a bug in the Install command when specifying a version.
+
 # 0.7.0 (December 23, 2015)
 
 71 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.6.0...0.7.0
