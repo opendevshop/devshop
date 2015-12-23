@@ -75,30 +75,7 @@ class Upgrade extends Command
       return;
     }
     $output->writeln('');
-
-    // Look for .devshop-version (Pre 0.3 does not have this file.)
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $current_version = file_get_contents('/var/aegir/.devshop-version');
-      if (!empty($current_version)) {
-        $output->writeln("<info>Current Version:</info> $current_version");
-      }
-      else {
-        $output->writeln("<error> ERROR: </error> /var/aegir/.devshop-version was found but was empty!");
-        return;
-      }
-    }
-    else {
-      $current_version = 'unknown';
-      $output->writeln("<fg=red>WARNING:</> Unable to detect current version of devshop.");
-      $output->writeln("There is no <comment>/var/aegir/.devshop-version</comment> file.");
-      $output->writeln("This is probably because you are running a version prior to 0.3.");
-      $output->writeln('');
-
-      $fs = new Filesystem();
-      $fs->dumpFile('/var/aegir/.devshop-version', '0.x');
-
-      $output->writeln("We have created this file for you.");
-    }
+    $current_version = $this->getApplication()->getVersion();
 
     // Look for an active hostmaster
     require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
