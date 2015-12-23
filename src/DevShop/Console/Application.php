@@ -57,6 +57,11 @@ class Application extends BaseApplication
   /**
    * @var string
    */
+  protected $devmaster_version;
+
+  /**
+   * @var string
+   */
   protected $release_date;
 
   private static $logo = '<fg=cyan>
@@ -83,6 +88,31 @@ class Application extends BaseApplication
 
       $this->release_date = $this->process('git log -1 --format=%ct');
     }
+
+    // Detect DevMaster version.
+    if (file_exists('/var/aegir/.drush/hostmaster.alias.drushrc.php')) {
+      require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
+      $devmaster_root = $aliases['hostmaster']['root'];
+      $path_to_version = "{$devmaster_root}/profiles/devmaster/VERSION.txt";
+      if (file_exists($path_to_version)) {
+        $this->devmaster_version = file_get_contents($path_to_version);
+      }
+    }
+    else {
+      $this->devmaster_version = NULL;
+    }
+  }
+
+  /**
+   * Gets the application version.
+   *
+   * @return string The application version
+   *
+   * @api
+   */
+  public function getDevmasterVersion()
+  {
+    return $this->devmaster_version;
   }
 
   /**
