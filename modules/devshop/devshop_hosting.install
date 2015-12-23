@@ -20,7 +20,7 @@ function devshop_hosting_install(){
 function devshop_hosting_requirements($phase) {
   $requirements = array();
 
-  $devshop_version = file_get_contents('/var/aegir/.devshop-version');
+  $devshop_version = file_get_contents(drupal_get_path('profile', 'devmaster') . '/VERSION.txt');
   $t = get_t();
 
   // Report DevShop version
