@@ -31,20 +31,11 @@ class Status extends Command
     $output->writeln($this->getApplication()->getLogo());
     $this->announce('Status');
 
-    // Check for devshop
-    $output->write("<comment>Checking for devshop...  </comment>");
-
-    // Check for devshop server install.
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $version = file_get_contents('/var/aegir/.devshop-version');
-      $output->write("<info>Devshop is installed.</info>  ");
-      $output->writeln("DevShop Version: $version");
-    }
-    else {
-      $version = trim($this->getApplication()->getVersion());
-      $output->write("<info>DevShop CLI is installed.</info>  ");
-      $output->writeln("DevShop CLI Version: $version");
-    }
+    // Check for DevShop CLI
+    $output->write("<comment>Checking for DevShop CLI...  </comment>");
+    $version = trim($this->getApplication()->getVersion());
+    $output->write("<info>DevShop CLI is installed.</info>  ");
+    $output->writeln($version);
 
     // Check for Drush
     $output->write("<comment>Checking for Drush...  </comment>");
@@ -83,7 +74,18 @@ class Status extends Command
       $output->writeln($process->getErrorOutput());
     }
     else {
-      $output->writeln("<info>Devmaster is installed.</info>");
+      $output->write("<info>Devmaster is installed.</info>");
+      require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
+      $devmaster_root = $aliases['hostmaster']['root'];
+      $path_to_version = "{$devmaster_root}/profiles/devmaster/VERSION.txt";
+      if (file_exists($path_to_version)) {
+        $version = file_get_contents($path_to_version);
+        $output->writeln("Version $version");
+      }
+      else {
+        $output->writeln('');
+        $output->writeln("<error>`profiles/devmaster/VERSION.txt` was not found.</error> You should run `devshop upgrade` to get the latest version.");
+      }
     }
 
     $output->writeln('');
