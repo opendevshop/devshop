@@ -79,12 +79,11 @@ class Upgrade extends Command
 
     // Look for an active devmaster
     $devmaster_version = $this->getApplication()->getDevmasterVersion();
-    if (empty($devmaster_version)) {
-      throw new \Exception('Unable to find a devmaster.  The drush @hostmaster alias does not exist.');
-    }
-
-    $devmaster_root = $this->getApplication()->getDevmasterRoot();
     $devmaster_uri = $this->getApplication()->getDevmasterUri();
+    $devmaster_root = $this->getApplication()->getDevmasterRoot();
+    if (empty($devmaster_root) || !file_exists($devmaster_root)) {
+      throw new \Exception('Unable to find a devmaster.  The drush @hostmaster alias does not exist.  Unable to upgrade.');
+    }
 
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
