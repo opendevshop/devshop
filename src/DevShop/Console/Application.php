@@ -107,12 +107,12 @@ class Application extends BaseApplication
       if (file_exists($path_to_version)) {
         $this->devmaster_version = file_get_contents($path_to_version);
       }
+      else {
+        $this->devmaster_version = '0.5 or earlier';
+      }
 
       $this->devmaster_root = $aliases['hostmaster']['root'];
       $this->devmaster_uri = $aliases['hostmaster']['uri'];
-    }
-    else {
-      $this->devmaster_version = NULL;
     }
   }
 

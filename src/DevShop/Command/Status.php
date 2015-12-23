@@ -75,15 +75,7 @@ class Status extends Command
     }
     else {
       $output->write("<info>Devmaster is installed.  </info>");
-
-      $devmaster_version = $this->getApplication()->getDevmasterVersion();
-      if ($devmaster_version) {
-        $output->writeln($devmaster_version);
-      }
-      else {
-        $output->writeln('');
-        $output->writeln("<fg=red>DevMaster is installed, but version is unknown.</> You should run `devshop upgrade` to get the latest release.");
-      }
+      $output->writeln($this->getApplication()->getDevmasterVersion());
     }
 
     $output->writeln('');
