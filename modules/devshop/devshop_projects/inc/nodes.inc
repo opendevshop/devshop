@@ -131,19 +131,19 @@ function devshop_projects_load($node) {
     $clone_tasks = devshop_get_tasks($environment, 'clone');
 
     $environment->created = array();
-    if (!empty(current($install_tasks))) {
+    if (!empty($install_tasks)) {
       $environment->created['type'] = 'install';
       $environment->created['date'] = current($install_tasks)->executed;
       $environment->created['status'] = current($install_tasks)->task_status;
       $environment->created['nid'] = current($install_tasks)->nid;
     }
-    elseif (!empty(current($import_tasks))) {
+    elseif (!empty($import_tasks)) {
       $environment->created['type'] = 'import';
       $environment->created['date'] = current($import_tasks)->executed;
       $environment->created['status'] = current($import_tasks)->task_status;
       $environment->created['nid'] = current($import_tasks)->nid;
     }
-    elseif (!empty(current($clone_tasks))) {
+    elseif (!empty($clone_tasks)) {
       $environment->created['type'] = 'clone';
       $environment->created['date'] = current($clone_tasks)->executed;
       $environment->created['status'] = current($clone_tasks)->task_status;
