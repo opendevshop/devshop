@@ -1,5 +1,12 @@
 # Change Log
 
+# 0.7.2 (December 23, 2015)
+
+3 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.1...0.7.2
+
+- Fixing a slew of PHP notices.
+- Removing Hosting Task Jenkins from the default build. It requires composer install, and we can't run that inside of hostmaster-migrate at the moment.
+
 # 0.7.1 (December 23, 2015)
 
 1 commit to DevShop.
