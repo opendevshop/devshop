@@ -39,6 +39,11 @@ function devshop_projects_tasks_status_json($project_nid = '') {
     // Get all environments and their status.
     while ($result = db_fetch_object($query)) {
         $result->last_task = node_load($result->last_task_nid);
+
+        // If no last task node was found, skip.
+        if (empty($result->last_task)) {
+            continue;
+        }
         $result->last_task->ref = node_load($result->last_task->rid);
 
         // In Aegir, "executed" and "delta" does not get updated properly.
