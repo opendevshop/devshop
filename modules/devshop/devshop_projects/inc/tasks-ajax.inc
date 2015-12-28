@@ -8,6 +8,7 @@
 function devshop_projects_tasks_status_json($project_nid = '') {
 
     $output = array();
+    $args = array();
 
     $sql = '
         SELECT
@@ -16,16 +17,20 @@ function devshop_projects_tasks_status_json($project_nid = '') {
             last_task AS last_task_nid,
             n.title as project,
             site,
-            platform
-        FROM {hosting_devshop_project_environment} h
-        LEFT JOIN {node} n ON h.project_nid = n.nid
-
+            e.platform,
+            s.status AS site_status
+        FROM {hosting_devshop_project_environment} e
+        LEFT JOIN {node} n ON e.project_nid = n.nid
+        LEFT JOIN {hosting_site} s ON e.site = s.nid
+          WHERE s.status != %d
         ';
+    $args[] = HOSTING_SITE_DELETED;
 
     if (!empty($project_nid)) {
         $sql .= ' WHERE project_nid = %d';
+        $args[] = $project_nid;
     }
-    $query = db_query($sql, $project_nid);
+    $query = db_query($sql, $args);
 
     // Load up Hosting task language.
     $task_types = hosting_available_tasks();
