@@ -202,6 +202,7 @@ function devshop_projects_preprocess_node(&$vars){
  */
 function devshop_task_get_messages($task_node) {
   $messages = array();
+  $outputs = array();
   $theme = new SolarizedXTermTheme();
   $styles = $theme->asCss();
   $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
