@@ -30,15 +30,15 @@ function devshop_projects_projects_page() {
 
     // Load an environment for extra info like version.
     // @TODO: load the chosen live environment.
-    $first_environment = array_shift(array_values($project->environments));
-    $platform_node = node_load($first_environment->platform);
+    $first_environment = current($project->environments);
+    if ($first_environment) {
+      $platform_node = node_load($first_environment->platform);
+      $row = array();
 
-    $row = array();
-
-    // Link to Project page
-    $url = url("node/$project->nid");
-    $version = $platform_node->release->version;
-    $row[] = <<<HTML
+      // Link to Project page
+      $url = url("node/$project->nid");
+      $version = $platform_node->release->version;
+      $row[] = <<<HTML
 
 <h4>
   <a href="$url">
@@ -51,10 +51,14 @@ function devshop_projects_projects_page() {
 
 HTML;
 
-    // Drupal Version
-    $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
+      // Drupal Version
+      $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
  $version
 </button>";
+    }
+    else {
+      $row[] = t('Unknown');
+    }
 
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
