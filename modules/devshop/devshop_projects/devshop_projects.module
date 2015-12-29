@@ -78,6 +78,7 @@ function devshop_projects_perm() {
  */
 function devshop_projects_devshop_environment_actions($environment) {
 
+  // Site specific actions.
   if ($environment->site) {
     $items[] = l('<i class="fa fa-copy"></i> ' . t('Clone Environment'), "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}", array(
         'html' => TRUE,
@@ -97,21 +98,21 @@ function devshop_projects_devshop_environment_actions($environment) {
     } elseif (!$environment->settings->locked){
       $items[] = 'disable';
     }
-  }
 
-  $items[] = '<div class="divider"></div>';
+    $items[] = '<div class="divider"></div>';
 
-  $items[] = 'verify';
-  $items[] = 'flush_cache';
-  $items[] = 'rebuild_registry';
-  $items[] = 'run_cron';
-  $items[] = 'update';
-  $items[] = '<div class="divider"></div>';
+    $items[] = 'verify';
+    $items[] = 'flush_cache';
+    $items[] = 'rebuild_registry';
+    $items[] = 'run_cron';
+    $items[] = 'update';
+    $items[] = '<div class="divider"></div>';
 
-  // Backup & Restore
-  $items[] = 'backup';
-  if (!$environment->settings->locked){
-    $items[] = 'restore';
+    // Backup & Restore
+    $items[] = 'backup';
+    if (!$environment->settings->locked) {
+      $items[] = 'restore';
+    }
   }
 
   return $items;
