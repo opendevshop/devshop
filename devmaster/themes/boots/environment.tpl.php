@@ -141,7 +141,7 @@
 
             </div>
         </div>
-    <?php elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+    <?php elseif (!$environment->deleted && $environment->site_status == HOSTING_SITE_DISABLED): ?>
         <div class="list-group-item center-block text text-muted">
                 <?php print t('Environment is disabled.'); ?>
           <div class="btn-group pull-right">

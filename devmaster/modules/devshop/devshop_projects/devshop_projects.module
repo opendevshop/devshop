@@ -100,30 +100,34 @@ function devshop_projects_devshop_environment_actions($environment) {
       $items[] = 'delete';
     } else {
 
-      $items[] = '<div class="divider"></div>';
-
-      $items[] = 'verify';
-      $items[] = 'flush_cache';
-      $items[] = 'rebuild_registry';
-      $items[] = 'run_cron';
-      $items[] = 'update';
-      $items[] = '<div class="divider"></div>';
-
-      // Backup & Restore
-      $items[] = 'backup';
-      if (!$environment->settings->locked) {
-        $items[] = 'restore';
+      if ($environment->site_status == HOSTING_SITE_DISABLED) {
+        $items[] = 'enable';
+        $items[] = 'delete';
+      } elseif (!$environment->settings->locked) {
+        $items[] = 'disable';
       }
     }
-  }
 
-  // Allow enabling, disabling, and deletion.
-  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+    $items[] = '<div class="divider"></div>';
+
+    $items[] = 'verify';
+    $items[] = 'flush_cache';
+    $items[] = 'rebuild_registry';
+    $items[] = 'run_cron';
+    $items[] = 'update';
+    $items[] = '<div class="divider"></div>';
+
+    // Backup & Restore
+    $items[] = 'backup';
+    if (!$environment->settings->locked) {
+      $items[] = 'restore';
+    }
+  }
+  elseif ($environment->site && $environment->site_status == HOSTING_SITE_DISABLED)  {
     $items[] = 'enable';
     $items[] = 'delete';
-  } elseif (!$environment->settings->locked) {
-    $items[] = 'disable';
   }
+
   return $items;
 }
 
