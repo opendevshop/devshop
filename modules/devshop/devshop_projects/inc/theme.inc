@@ -114,7 +114,7 @@ function devshop_projects_preprocess_node(&$vars){
   }
 
   // On task node page
-  if (isset($vars['node']) && $vars['node']->type == 'task' && $vars['page']){
+  if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && $vars['page']){
     $vars['content'] = '';
 
     // Prepare task icon, class, and label.
@@ -129,8 +129,8 @@ function devshop_projects_preprocess_node(&$vars){
       $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
     }
 
-    // Replace "Retry" button.
-    if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
+    // Add a "Retry" button, unless it's a clone task.  Retrying a clone can be bad if an old clone task is restarted, it uses the latest task arguments, not the one you are viewing.
+    if ($vars['node']->task_type != 'clone' && user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
       $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
     }
 
