@@ -66,7 +66,7 @@ function devshop_testing_hosting_tasks() {
  * Defines the list of tasks that appear under the gear icon.
  */
 function devshop_testing_devshop_environment_actions($environment) {
-  if ($environment->site) {
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     return array(
       'test'
     );

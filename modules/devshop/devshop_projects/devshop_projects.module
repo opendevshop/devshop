@@ -79,7 +79,7 @@ function devshop_projects_perm() {
 function devshop_projects_devshop_environment_actions($environment) {
 
   // Site specific actions.
-  if ($environment->site) {
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create tasks')) {
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
         "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
@@ -99,12 +99,6 @@ function devshop_projects_devshop_environment_actions($environment) {
     if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
       $items[] = 'delete';
     } else {
-      if ($environment->site_status == HOSTING_SITE_DISABLED) {
-        $items[] = 'enable';
-        $items[] = 'delete';
-      } elseif (!$environment->settings->locked) {
-        $items[] = 'disable';
-      }
 
       $items[] = '<div class="divider"></div>';
 
@@ -121,6 +115,14 @@ function devshop_projects_devshop_environment_actions($environment) {
         $items[] = 'restore';
       }
     }
+  }
+
+  // Allow enabling, disabling, and deletion.
+  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+    $items[] = 'enable';
+    $items[] = 'delete';
+  } elseif (!$environment->settings->locked) {
+    $items[] = 'disable';
   }
   return $items;
 }

@@ -159,6 +159,17 @@ function devshop_projects_load($node) {
       $environment->created['status'] = '';
     }
 
+    // Detect environment deletion
+    // Some sites get installed. Others get imported.
+    $delete_tasks = devshop_get_tasks($environment, 'delete');
+    if (!empty($delete_tasks)) {
+      $environment->deleted = TRUE;
+      $environment->delete_task = current($delete_tasks);
+    }
+    else {
+      $environment->deleted = FALSE;
+    }
+
     // Get the current git ref type.
     $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
