@@ -85,7 +85,16 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if ($environment->created['type'] == 'clone'): ?>
+    <?php if ($environment->deleted): ?>
+    <!-- Status Display -->
+    <div class="list-group-item center-block text text-muted">
+        <i class="fa fa-trash"></i>
+        <?php if ($environment->delete_task->task_status == HOSTING_TASK_QUEUED) print t('Environment scheduled for deletion.'); ?>
+    </div>
+    <?php endif; ?>
+
+
+    <?php if ($environment->created['type'] == 'clone' && !$environment->deleted): ?>
         <!-- Status Display -->
         <div class="list-group-item center-block text text-muted">
 
@@ -106,7 +115,7 @@
                 <?php endif; ?>
             </div>
         </div>
-    <?php elseif (empty($environment->site)): ?>
+    <?php elseif (empty($environment->site) && !$environment->deleted): ?>
         <div class="list-group-item center-block text text-muted">
                 <?php print t('Environment not yet available.'); ?>
         </div>
@@ -139,9 +148,12 @@
             <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
               <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
             </a>
+            <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
+            </a>
           </div>
         </div>
-    <?php else: ?>
+    <?php elseif (!$environment->deleted): ?>
 
         <!-- URLs -->
         <div class="environment-domains list-group-item <?php if ($environment->login_text) print 'login-available'; ?>">
