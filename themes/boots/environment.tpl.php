@@ -501,7 +501,7 @@
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
-        <div class="environment-tasks-alert alert-<?php print $environment->last_task_info['class'] ?>">
+        <div class="environment-tasks-alert alert-<?php print $environment->last_task->status_class ?>">
 
 
                 <label>Tasks</label>
@@ -514,10 +514,12 @@
                 </div>
             </div>
             <div class="btn-group text">
-                <a href="<?php print $environment->last_task_info['url']; ?>" class="alert-link">
-                    <i class="fa fa-<?php print $environment->last_task_info['icon'] ?>"></i>
-                    <span><?php print $environment->last_task_info['label'] ?></span>
-                    <em class="ago small"><?php print $environment->last_task_info['ago'] ?></em>
+                <a href="<?php print $environment->last_task->url; ?>" class="alert-link">
+                    <i class="fa fa-<?php print $environment->last_task->icon ?>"></i>
+                    <span class="type-name"><?php print $environment->last_task->type_name ?></span>
+                    <span class="status-name small"><?php print $environment->last_task->status_name ?></span>
+                      &nbsp;
+                    <em class="small"><i class="fa fa-calendar"></i> <span class="ago"><?php print $environment->last_task->ago ?></span></em>
                 </a>
             </div>
         </div>

@@ -101,71 +101,44 @@ function boots_preprocess_environment(&$vars)
         $environment->processing = TRUE;
       }
     }
-
-    switch ($task->task_status){
-      case HOSTING_TASK_SUCCESS:
-        $icon = 'check';
-        $item_class = 'success';
-        break;
-
-      case HOSTING_TASK_ERROR;
-        $icon = 'exclamation-circle';
-        $item_class = 'danger';
-        break;
-      case HOSTING_TASK_WARNING:
-        $icon = 'warning';
-        $item_class = 'warning';
-        break;
-
-      case HOSTING_TASK_PROCESSING;
-      case HOSTING_TASK_QUEUED;
-        $icon = 'cog';
-        $item_class = 'queued';
-        if ($environment->processing) {
-          $icon .= ' fa-spin';
-          $item_class = 'processing';
-        }
-        break;
-    }
+//
+//    switch ($task->task_status){
+//      case HOSTING_TASK_SUCCESS:
+//        $icon = 'check';
+//        $item_class = 'success';
+//        break;
+//
+//      case HOSTING_TASK_ERROR;
+//        $icon = 'exclamation-circle';
+//        $item_class = 'danger';
+//        break;
+//      case HOSTING_TASK_WARNING:
+//        $icon = 'warning';
+//        $item_class = 'warning';
+//        break;
+//
+//      case HOSTING_TASK_PROCESSING;
+//      case HOSTING_TASK_QUEUED;
+//        $icon = 'cog';
+//        $item_class = 'queued';
+//        if ($environment->processing) {
+//          $icon .= ' fa-spin';
+//          $item_class = 'processing';
+//        }
+//        break;
+//    }
 
     $label = drupal_ucfirst($tasks[$task->task_type]['title']);
-    $ago =  format_interval(time() - $task->executed, 1) .' '. t('ago');
 
-    // Override "ago" text.
-    if ($task->task_status == HOSTING_TASK_QUEUED) {
-      $ago = t('Queued');
-    }
-    elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
-      $ago = t('Running...');
-    }
+    $text = "<i class='fa fa-{$task->icon}'></i> {$label} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
 
-    $text = "<i class='fa fa-{$icon}'></i> {$label} <em class='small'>{$ago}</em>";
-
-    $items[] = l($text, 'node/' . $task->nid, array(
+    $items[] = l($text, "node/{$task->nid}/revisions/{$task->vid}/view", array(
         'html' => TRUE,
         'attributes' => array(
-            'class' => "list-group-item list-group-item-{$item_class}",
+            'class' => "list-group-item list-group-item-{$task->status_class}",
         ),
     ));
     $environment->task_logs = implode("\n", $items);
-
-    // Save last task
-    if (empty($environment->last_task_info)) {
-
-      // If the last task is a "verify" and it was successful, load the next task as the last task.
-      // Verifies happen a lot and if successful, are not useful information and knocks important ones like test runs off the list.
-      if (($task->task_type == 'verify' || $task->task_type == 'login-reset')
-          && $task->task_status == HOSTING_TASK_SUCCESS) {
-        continue;
-      }
-      $environment->last_task_info = array(
-          'class' => $item_class,
-          'icon' => $icon,
-          'ago' => $ago,
-          'label' => $label,
-          'url' => url("node/$task->nid"),
-      );
-    }
   }
 
   // Set a class showing the environment as active.

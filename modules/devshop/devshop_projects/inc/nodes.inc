@@ -522,6 +522,61 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 }
 
 /**
+ * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
+ */
+function devshop_projects_nodeapi_task_load(&$node, $a3, $a4) {
+
+  $task_types = hosting_available_tasks();
+  $task_types = array_merge($task_types['site'], $task_types['platform']);
+
+  // In Aegir, "executed" and "delta" does not get updated properly.
+  // Handle "delta" being not computed yet
+  if ($node->task_status == HOSTING_TASK_PROCESSING) {
+    $additions['duration'] = format_interval(time() - $node->executed, 1);
+  }
+  elseif ($node->task_status == HOSTING_TASK_QUEUED) {
+    $additions['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+  }
+  else  {
+    $additions['duration'] = format_interval($node->delta, 1);
+  }
+
+  // To test out constantly changing tasks, uncomment this line.
+  //        $node->task_status = rand(-1, 3);
+  $additions['status_class'] = devshop_task_status_class($node->task_status);
+  $additions['status_name'] = _hosting_parse_error_code($node->task_status);
+
+  // Override "ago" text.
+  $additions['ago'] = format_interval(time() - $node->executed, 1) .' '. t('ago');
+  if ($node->task_status == HOSTING_TASK_QUEUED) {
+    $additions['ago'] = t('Queued');
+  }
+  elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
+    $additions['ago'] = t('Running...');
+  }
+
+  // Set task type
+  $additions['type_name'] = $task_types[$node->task_type]['title'];
+
+  // If platform's first verify...
+  if ($node->ref->type == 'platform' && $node->ref->verified == 0) {
+    $additions['type_name'] = t('Cloning Codebase');
+  }
+
+  // Get Icon
+  $additions['icon'] = devshop_task_status_icon($node->task_status);
+
+  // Get desired URL
+  $additions['url'] = url("node/{$node->nid}");
+
+  // @TODO: Doesn't quite work. we need a different VID for each clone link.
+  //  if ($node->task_type == 'clone') {
+  //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
+  //  }
+  return $additions;
+}
+
+/**
  * @param $environment
  */
 function devshop_environment_save(stdClass &$environment) {
