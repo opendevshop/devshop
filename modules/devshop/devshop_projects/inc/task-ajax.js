@@ -52,6 +52,9 @@ var devshopTasksUpdate = function (data) {
             // Change icon.
             $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);
 
+            // Change href
+            $('.alert-link', $alert_div).attr('href', Drupal.settings.basePath + 'node/' + value.last_task.nid + '/revisions/' + value.last_task.vid + '/view');
+
             // Change "processing" div
         }
         // Task Node Page
