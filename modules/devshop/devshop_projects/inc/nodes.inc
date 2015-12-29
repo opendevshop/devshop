@@ -160,7 +160,6 @@ function devshop_projects_load($node) {
     }
 
     // Detect environment deletion
-    // Some sites get installed. Others get imported.
     $delete_tasks = devshop_get_tasks($environment, 'delete');
     if (!empty($delete_tasks)) {
       $environment->deleted = TRUE;
@@ -180,8 +179,6 @@ function devshop_projects_load($node) {
     else {
       $environment->git_ref_url = url("node/$environment->site/logs/commits");
     }
-
-
 
     // Environment Drupal version.
     $iid = db_result(db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type='platform' AND i.rid=%d", $environment->platform));
