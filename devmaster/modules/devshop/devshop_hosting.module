@@ -468,12 +468,12 @@ function devshop_get_tasks($environment, $type = NULL) {
   if ($type == NULL || $type == 'clone') {
     $query = db_query(
       "
-      SELECT n.nid, n.vid
-        FROM {node} n
-        INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
+      SELECT nid, vid
+        FROM {hosting_task_arguments}
         WHERE
           name = 'target_platform' AND value = %d
         ORDER BY vid DESC
+        LIMIT 1
     ",
       $environment->platform
     );
