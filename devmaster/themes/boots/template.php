@@ -159,9 +159,11 @@ function boots_preprocess_environment(&$vars)
   }
 
   // No hooks configured.
-  if ($environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
+  if ($project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
-      'text' => t('No deploy hooks are configured. You might have to run database updates manually after deploying new code.'),
+      'text' => t('No deploy hooks are configured. Check your !link.', array(
+        '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
+      )),
       'type' => 'warning',
     );
   }
@@ -648,6 +650,19 @@ HTML;
 
     // Render each environment.
     $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
+  }
+
+  // Warnings & Errors
+  // If environment-specific deploy hooks is not allowed and there are no default deploy hooks, warn the user
+  // that they will have to manually run updates.
+  if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+    $vars['project_messages'][] = array(
+      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
+        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
+      )),
+      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+      'type' => 'warning',
+    );
   }
 }
 
