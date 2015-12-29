@@ -649,6 +649,7 @@ html.js fieldset.collapsed {
 
 .btn-logs .list-group-item {
     white-space: nowrap;
+    min-width: 19em;
 }
 
 .environment-task-logs > .alert-default {

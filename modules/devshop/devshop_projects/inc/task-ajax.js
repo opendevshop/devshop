@@ -44,7 +44,8 @@ var devshopTasksUpdate = function (data) {
             $(id).addClass('task-' + value.last_task.status_class);
 
             // Set value of label span
-            $('.alert-link > span', $alert_div).html(value.last_task.type_name);
+            $('.alert-link > .type-name', $alert_div).html(value.last_task.type_name);
+            $('.alert-link > .status-name', $alert_div).html(value.last_task.status_name);
 
             // Set value of "ago"
             $('.alert-link > .ago', $alert_div).html(value.last_task.ago);
@@ -53,7 +54,7 @@ var devshopTasksUpdate = function (data) {
             $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);
 
             // Change href
-            $('.alert-link', $alert_div).attr('href', Drupal.settings.basePath + 'node/' + value.last_task.nid + '/revisions/' + value.last_task.vid + '/view');
+            $('.alert-link', $alert_div).attr('href', value.last_task.url);
 
             // Change "processing" div
         }
