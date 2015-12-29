@@ -1,6 +1,6 @@
 <div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_name; ?>-<?php print $environment->name ?>">
 
-    <?php if (!$page): ?>
+    <?php if (!empty($environment->task_links) && !$page): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">

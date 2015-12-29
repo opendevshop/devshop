@@ -542,10 +542,13 @@ a.pull-request h4 {
   padding: 0px;
   white-space: nowrap;
 }
-.environment > .list-group-item.text {
+.environment > .list-group-item.text,
+.environment-tasks > ul.dropdown-menu li .text
+{
   padding: 10px 15px;
   white-space: normal;
 }
+
 .environment > .list-group-item.text .btn-group {
   margin-top: -10px;
   margin-right: -15px;
