@@ -175,13 +175,49 @@ function devshop_environment_links($environment) {
   $tasks = hosting_available_tasks('site');
   $actions = module_invoke_all('devshop_environment_actions', $environment);
 
-  // Add environment settings link
-  $site = node_load($environment->site);
-  if (node_access('update', $site)) {
-    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array(
-      'html' => TRUE,
-    ));
-    $items[] = '<div class="divider"></div>';
+  $site = null;
+  $platform = null;
+  $items = array();
+  $aegir_items = array();
+
+  // Add environment settings link (If there is one).
+  if ($environment->site) {
+    $site = node_load($environment->site);
+    if (node_access('update', $site)) {
+      $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
+        "node/{$environment->project_nid}/edit/{$environment->name}",
+        array(
+          'html' => TRUE,
+        ));
+      $items[] = '<div class="divider"></div>';
+
+    }
+    if (node_access('view', $site)) {
+      $aegir_items[] = l('<i class="fa fa-globe"></i> '.t('Aegir Site'),
+        "node/{$environment->site}",
+        array(
+          'html' => TRUE,
+        ));
+    }
+  }
+  if ($environment->platform) {
+    $platform = node_load($environment->platform);
+    if (node_access('view', $platform)) {
+      $aegir_items[] = l('<i class="fa fa-code"></i> '.t('Aegir Platform'),
+        "node/{$environment->platform}",
+        array(
+          'html' => TRUE,
+        ));
+    }
+  }
+
+  // Add aegir items to items
+  if (!empty($aegir_items)) {
+    $items = array_merge($items, $aegir_items);
+
+    if (!empty($actions)) {
+      $items[] = '<div class="divider"></div>';
+    }
   }
 
   // Add all actions from hook_devshop_environment_actions()
