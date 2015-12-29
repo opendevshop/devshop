@@ -136,18 +136,21 @@ function devshop_projects_load($node) {
       $environment->created['date'] = current($install_tasks)->executed;
       $environment->created['status'] = current($install_tasks)->task_status;
       $environment->created['nid'] = current($install_tasks)->nid;
+      $environment->created['vid'] = current($install_tasks)->vid;
     }
     elseif (!empty($import_tasks)) {
       $environment->created['type'] = 'import';
       $environment->created['date'] = current($import_tasks)->executed;
       $environment->created['status'] = current($import_tasks)->task_status;
       $environment->created['nid'] = current($import_tasks)->nid;
+      $environment->created['vid'] = current($import_tasks)->vid;
     }
     elseif (!empty($clone_tasks)) {
       $environment->created['type'] = 'clone';
       $environment->created['date'] = current($clone_tasks)->executed;
       $environment->created['status'] = current($clone_tasks)->task_status;
       $environment->created['nid'] = current($clone_tasks)->nid;
+      $environment->created['vid'] = current($clone_tasks)->vid;
     }
     // Neither import nor install nor clone was found.
     else {
