@@ -45,10 +45,19 @@ var devshopTasksUpdate = function (data) {
 
             // Set value of label span
             $('.alert-link > .type-name', $alert_div).html(value.last_task.type_name);
-            $('.alert-link > .status-name', $alert_div).html(value.last_task.status_name);
+
+            // If queued or processing, make label empty.
+            if (value.last_task.status_class == 'queued' || value.last_task.status_class == 'processing') {
+                $('.alert-link > .status-name', $alert_div).html('');
+                $('.alert-link .ago-icon', $alert_div).removeClass('fa-calendar');
+                $('.alert-link .ago-icon', $alert_div).addClass('fa-clock-o');
+            }
+            else {
+                $('.alert-link > .status-name', $alert_div).html(value.last_task.status_name);
+            }
 
             // Set value of "ago"
-            $('.alert-link > .ago', $alert_div).html(value.last_task.ago);
+            $('.alert-link .ago', $alert_div).html(value.last_task.ago);
 
             // Change icon.
             $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);

@@ -522,9 +522,9 @@
                 <a href="<?php print $environment->last_task->url; ?>" class="alert-link">
                     <i class="fa fa-<?php print $environment->last_task->icon ?>"></i>
                     <span class="type-name"><?php print $environment->last_task->type_name ?></span>
-                    <span class="status-name small"><?php print $environment->last_task->status_name ?></span>
+                    <span class="status-name small"><?php if ($environment->last_task->task_status != HOSTING_TASK_QUEUED && $environment->last_task->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task->status_name ?></span>
                       &nbsp;
-                    <em class="small"><i class="fa fa-calendar"></i> <span class="ago"><?php print $environment->last_task->ago ?></span></em>
+                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task->task_status == HOSTING_TASK_QUEUED || $environment->last_task->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task->ago ?></span></em>
                 </a>
             </div>
         </div>
