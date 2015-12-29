@@ -66,10 +66,11 @@ function devshop_testing_hosting_tasks() {
  * Defines the list of tasks that appear under the gear icon.
  */
 function devshop_testing_devshop_environment_actions($environment) {
-  return array(
-    '<div class="divider"></div>',
-    'test'
-  );
+  if ($environment->site) {
+    return array(
+      'test'
+    );
+  }
 }
 
 /**
