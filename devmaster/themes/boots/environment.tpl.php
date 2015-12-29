@@ -85,18 +85,23 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
+    <!-- Status Display -->
     <?php if ($environment->created['type'] == 'clone'): ?>
         <div class="list-group-item center-block text text-muted">
+
+            <?php if ($environment->created['status'] == HOSTING_TASK_ERROR): ?>
             <i class="fa fa-warning"></i> <?php print t('Environment clone failed.'); ?>
+            <?php endif ;?>
+
         </div>
-        <div class="list-group-item center-block text text-muted">
-            <div class="btn-group " role="group">
-                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
-                    <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+        <div class="list-group-item">
+            <div class="btn-group" role="group">
+                <a href="<?php print url("node/{$environment->created['nid']}/revision/{$environment->created['vid']}/view"); ?>" class="btn btn-default">
+                    <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (empty($environment->site) && $environment->platform): ?>
                     <a href="<?php print url("node/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
-                        <i class="fa fa-power-off"></i> <?php print t('Destroy the Environment'); ?>
+                        <i class="fa fa-trash"></i> <?php print t('Destroy Environment'); ?>
                     </a>
                 <?php endif; ?>
             </div>
