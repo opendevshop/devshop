@@ -552,10 +552,11 @@ function devshop_projects_nodeapi_task_load(&$node, $a3, $a4) {
   // Override "ago" text.
   $additions['ago'] = format_interval(time() - $node->executed, 1) .' '. t('ago');
   if ($node->task_status == HOSTING_TASK_QUEUED) {
-    $additions['ago'] = t('Queued');
+    $additions['ago'] = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
   }
   elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
-    $additions['ago'] = t('Running...');
+    $additions['ago'] = format_interval(time() - $node->changed);
+
   }
 
   // Set task type
