@@ -164,6 +164,12 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   return $node;
 }
 
+/**
+ * Generates the list of links under the "Environment Settings" dropdown. (sliders icon)
+ *
+ * @param $environment
+ * @return array
+ */
 function devshop_environment_links($environment) {
   global $user;
   $tasks = hosting_available_tasks('site');
