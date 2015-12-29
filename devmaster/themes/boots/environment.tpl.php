@@ -85,8 +85,8 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <!-- Status Display -->
     <?php if ($environment->created['type'] == 'clone'): ?>
+        <!-- Status Display -->
         <div class="list-group-item center-block text text-muted">
 
             <?php if ($environment->created['status'] == HOSTING_TASK_ERROR): ?>
