@@ -485,6 +485,11 @@ function boots_preprocess_node(&$vars) {
   elseif ($vars['node']->type == 'task') {
     boots_preprocess_node_task($vars);
   }
+  elseif ($vars['node']->type == 'site') {
+    if (!empty($vars['node']->environment)) {
+      $vars['template_files'][] =  'node-site-environment';
+    }
+  }
 }
 
 /**
