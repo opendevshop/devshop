@@ -96,7 +96,7 @@
         </div>
         <div class="list-group-item">
             <div class="btn-group" role="group">
-                <a href="<?php print url("node/{$environment->created['nid']}/revision/{$environment->created['vid']}/view"); ?>" class="btn btn-default">
+                <a href="<?php print url("node/{$environment->created['nid']}/revisions/{$environment->created['vid']}/view"); ?>" class="btn btn-default">
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (empty($environment->site) && $environment->platform): ?>
