@@ -58,7 +58,7 @@ function hosting_task_download_form() {
 function aegir_download_devshop_environment_actions($environment)
 {
 
-    if ($environment->site) {
+    if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
         $items[] = 'download';
     }
     return $items;

@@ -54,6 +54,9 @@ var devshopTasksUpdate = function (data) {
             }
             else {
                 $('.alert-link > .status-name', $alert_div).html(value.last_task.status_name);
+
+                $('.alert-link .ago-icon', $alert_div).removeClass('fa-clock-o');
+                $('.alert-link .ago-icon', $alert_div).addClass('fa-calendar');
             }
 
             // Set value of "ago"
