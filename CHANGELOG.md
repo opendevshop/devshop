@@ -17,6 +17,7 @@
 - Improve output for failed tasks, giving users buttons to take their next steps: "Retry" or "Destroy".
 - Blocking clone tasks from being retried because old tasks will fail due to unversioned task arguments.
 - Added "Project Messages" so we can inform the user of project wide problems (such as no deploy hooks configured.)
+- Added a "release-prep.sh" and "release.sh" script to help make releases easier.
 
 # 0.7.2 (December 23, 2015)
 
