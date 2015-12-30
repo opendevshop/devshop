@@ -83,7 +83,7 @@ We have two active branches as we try to reach for Drupal 8 hosting in time for 
 
 DevShop version | Branch | DevMaster Versions | Hosted Drupal Versions | Aegir |Status
 ----------------|--------|--------------------|------------------------|-------|-------
-0.7.0 *CURRENT* | 0.x |  6.x           | 6, 7                   | 2.x | Stable
+0.7.3 *CURRENT* | 0.x |  6.x           | 6, 7                   | 2.x | Stable
 1.0.0 | 1.x |  7.x       | 6, 7, 8                | 3.x | non-functional
 
 Vagrant
