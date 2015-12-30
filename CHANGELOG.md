@@ -1,5 +1,23 @@
 # Change Log
 
+# 0.7.3 (December 30, 2015)
+
+22 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.2...0.7.3
+
+- Minor improvements to ajax task loader to improve performance: don't load deleted environments!
+- Removing a couple of PHP notices.
+- Separating node-site template to only affect sites that are in projects.
+- UI Improvements: 
+  - Don't show site-related links before there is a site.
+  - Add "Aegir Site" and "Aegir Platform" links to the dropdown, if user has access.
+  - Improving last task display: now displays text status. Much easier to tell the status, especially if you are color blind. 
+  - Improved "disabled" and "deleting" environment indicators.
+- Moved task icon/label/class determination to hook_load() so we don't have to do it in many places.
+- Properly load clone task on target environment.
+- Improve output for failed tasks, giving users buttons to take their next steps: "Retry" or "Destroy".
+- Blocking clone tasks from being retried because old tasks will fail due to unversioned task arguments.
+- Added "Project Messages" so we can inform the user of project wide problems (such as no deploy hooks configured.)
+
 # 0.7.2 (December 23, 2015)
 
 3 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.1...0.7.2
