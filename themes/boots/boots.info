@@ -1,6 +1,6 @@
 name = Boots
 description = Bootstrap-powered theme for devshop.
-core = 6.x
+core = 7.x
 engine = phptemplate
 stylesheets[all][] = bootstrap.min.css
 stylesheets[all][] = boots.css
