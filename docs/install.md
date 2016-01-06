@@ -23,7 +23,7 @@ Setup
 
 - Login to your server as root, and retrieve and run the install script:
 
-        root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/0.3.0/install.sh
+        root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/0.7.3/install.sh
         root@devshop:~# bash install.sh
 
 Chasing Head

@@ -2,7 +2,8 @@
 
 namespace DevShop\Command;
 
-use Symfony\Component\Console\Command\Command;
+use DevShop\Console\Command;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,22 +23,19 @@ class Status extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $output->writeln('Hello, DevShop!');
 
-    // Check for devshop
-    $output->write("<comment>Checking for devshop...  </comment>");
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
 
-    // Check for devshop server install.
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $version = file_get_contents('/var/aegir/.devshop-version');
-      $output->write("<info>Devshop is installed.</info>  ");
-      $output->writeln("DevShop Version: $version");
-    }
-    else {
-      $version = trim($this->getApplication()->getVersion());
-      $output->write("<info>DevShop CLI is installed.</info>  ");
-      $output->writeln("DevShop CLI Version: $version");
-    }
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce('Status');
+
+    // Check for DevShop CLI
+    $output->write("<comment>Checking for DevShop CLI...  </comment>");
+    $version = trim($this->getApplication()->getVersion());
+    $output->write("<info>DevShop CLI is installed.</info>  ");
+    $output->writeln($version);
 
     // Check for Drush
     $output->write("<comment>Checking for Drush...  </comment>");
@@ -76,9 +74,15 @@ class Status extends Command
       $output->writeln($process->getErrorOutput());
     }
     else {
-      $output->writeln("<info>Devmaster is installed.</info>");
+      $output->write("<info>Devmaster is installed.  </info>");
+      $output->writeln($this->getApplication()->getDevmasterVersion());
     }
 
     $output->writeln('');
+
+    // Check for deprecated .devshop-version file.
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $output->writeln("<fg=red>A deprecated file was found. You should delete '/var/aegir/.devshop-version' to reduce confusion.</>");
+    }
   }
 }
