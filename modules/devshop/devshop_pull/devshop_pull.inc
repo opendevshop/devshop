@@ -10,8 +10,6 @@ function devshop_pull_callback($project_hosting_context, $hash) {
   $project = $project_node->project;
   $deploy_settings = $project_node->project->settings->deploy;
 
-  print "TWT";
-  print_r($project_node);
   $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
   array_filter(array_map('trim', $allowed_ips));
 
@@ -80,11 +78,9 @@ function devshop_pull_default_webhook($project_node) {
     }
     $environments_to_pull[] = $environment->name;
 
-    $args = array();
+    // Default args to the environments deploy settings.
+    $args = $environment->settings->deploy;
     $args['git_ref'] = $environment->git_ref;
-    $args['update'] = $environment->settings->deploy['update'];
-    $args['revert'] = $environment->settings->deploy['revert'];
-    $args['cache'] = $environment->settings->deploy['cache'];
 
     // Ensure that environment site exists before trying to deploy it.
     if (isset($environment->site) && $node = node_load($environment->site)) {

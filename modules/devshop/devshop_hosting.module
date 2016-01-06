@@ -4,6 +4,39 @@
  *
  * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
  */
+require_once 'vendor/autoload.php';
+
+/**
+ * Implements hook_help()
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function devshop_hosting_help($path, $arg)
+{
+  switch ($path) {
+    // Main module help for the block module
+    case 'admin/help#devshop_hosting':
+      $welcome = t('Welcome to OpenDevShop Help');
+      $note = t("There isn't much help built into OpenDevShop yet.  Please visit the documentation site for more information.");
+      $link = t("DevShop Documentation");
+      $url = "http://docs.devshop.support";
+
+      return <<<HTML
+
+<h3>$welcome</h3>
+<p>$note</p>
+
+<a href="$url" class="btn btn-primary btn-large">
+  <large>$link</large>
+<br/>
+  <small>$url</small>
+</a>
+
+HTML;
+
+  }
+}
 
 /**
  * Implements hook_init().
@@ -379,39 +412,62 @@ HTML;
  * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
  * @param $environment_site_nid
  */
-function devshop_get_tasks($environment) {
+function devshop_get_tasks($environment, $type = NULL) {
 
-  // Load all tasks from hosting_task table.
-  $results = db_query("
+  // Load tasks from hosting_task table for both site and platform.
+  if ($environment->site) {
+    $args = array(
+      ':platform' => $environment->platform,
+      ':site' => $environment->site,
+      ':type' => $type
+    );
+
+    if ($type) {
+      $where = "(t.rid = :site OR t.rid = :platform) AND t.task_type = :type";
+    }
+    else {
+      $where = "(t.rid = :site OR t.rid = :platform)";
+    }
+  }
+  else {
+    if ($type) {
+      $where = "(t.rid = :platform AND t.task_type = :type)";
+    }
+    else {
+      $where = "(t.rid = :platform)";
+    }
+  }
+
+  $query = db_query("
     SELECT t.nid, t.vid
       FROM {node} tn
       INNER JOIN {hosting_task} t ON tn.vid = t.vid
       WHERE
-        t.rid = :site OR t.rid = :platform
+        $where
       ORDER BY t.vid DESC
       LIMIT 5
-  ", array(
-      ':site' => $environment->site,
-      ':platform' => $environment->platform,
-  ));
-  foreach ($results as $result) {
+  ",
+    $args
+  );
+  $tasks = array();
+  while ($result = db_fetch_object($query)) {
     $tasks[$result->vid] = node_load($result->nid, $result->vid);
   }
 
   // Load "Clone" tasks
-  $results = db_query("
+  if ($type == NULL || $type == 'clone') {
+    $results = db_query("
     SELECT n.nid, n.vid
       FROM {node} n
       INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
       WHERE
         name = 'target_platform' AND value = :platform
       ORDER BY vid DESC
-  ", array(
-      ':site' => $environment->site,
-      ':platform' => $environment->platform,
-  ));
-  foreach ($results as $result) {
-    $tasks[$result->vid] = node_load($result->nid, $result->vid);
+  ",
+      $args);
+    foreach ($results as $result) {
+      $tasks[ $result->vid ] = node_load($result->nid, $result->vid);
+    }
   }
   krsort($tasks);
   return $tasks;

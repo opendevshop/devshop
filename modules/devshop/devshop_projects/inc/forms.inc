@@ -84,7 +84,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         $form['#submit'] = array('hosting_task_devshop_create_form_submit');
         break;
 
-        // Migrate Form: used for changing database server.
+      // Migrate Form: used for changing database server.
       case 'migrate':
 
         // To change the database server, we use the migrate form.
@@ -292,9 +292,19 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Get the node object for this form.
   $node = $form['#node'];
 
+  // Look for #project (like on node create form)
+  if ($node->project) {
+    $project = $node->project;
+  } elseif (isset($form['#project'])) {
+    $project = $form['#project'];
+  }
+  else {
+    return;
+  }
+
   // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
-  if (!empty($node->project) && arg(1) == $node->nid) {
-    drupal_goto("node/{$node->project->nid}/edit/{$node->environment->name}");
+  if (!empty($project) && arg(1) == $node->nid) {
+    drupal_goto("node/{$project->nid}/edit/{$node->environment->name}");
     exit;
   }
 
@@ -360,44 +370,94 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#description' => t('Do not pull code to the server on commit & push.'),
   );
 
-  $form['environment']['settings']['deploy'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Deployment Hooks'),
-      '#description' => t('When code is deployed to this environment, do the following:'),
-  );
-  $form['environment']['settings']['deploy']['revert'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Revert all features.'),
-      '#description' => t('If features is enabled, revert all of them.'),
-      '#default_value' => empty($node->nid) ? 1 : $environment->settings->deploy['revert'],
-  );
-  $form['environment']['settings']['deploy']['update'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run database updates.'),
-      '#default_value' => empty($node->nid) ? 1 : $environment->settings->deploy['update'],
-  );
-  $form['environment']['settings']['deploy']['cache'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Clear all caches.'),
-      '#default_value' => empty($node->nid) ? 1 : $environment->settings->deploy['cache'],
-  );
+  // Load deploy hooks form element.
+  $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
 
-  // If acquia cloud hooks are detected, add the option to fire them.
-  if (file_exists($environment->repo_root . '/hooks/common/post-code-update')) {
-    $form['environment']['settings']['deploy']['acquia_hooks'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Run Acquia "post-code-update" hook scripts for environment "%env".', array('%env' => $environment->name)),
-        '#description' => 'Cloud hooks were detected in your project.  Check this box to run the "post-code-update" hook every time you deploy code to this environment.',
-        '#default_value' => empty($node->nid) ? 0 : $environment->settings->deploy['acquia_hooks'],
-    );
-  }
   $form['environment']['last_task'] = array(
-      '#type' => 'value',
-      '#value' => $environment->last_task,
+    '#type' => 'value',
+    '#value' => $environment->last_task,
   );
 
   // Add our own submit handler
   $form['#submit'][] = 'devshop_projects_environment_settings_submit';
+}
+
+/**
+ * Helper to output the forms selection for Deploy Hooks.
+ *
+ * Used in the Projects settings form, environment settings form, deploy task form, and sync form.
+ *
+ * @param $project
+ * @param null $environment
+ * @return array
+ */
+function devshop_environment_deploy_hooks_form($project, $environment = NULL, $task_type = NULL) {
+
+  // If environment not specified, just grab one.
+  if (!$environment) {
+    $environment = current($project->environments);
+    $is_environment_form = FALSE;
+  }
+  else {
+    $is_environment_form = TRUE;
+  }
+  $return = array(
+      '#type' => 'fieldset',
+      '#title' => t('Deployment Hooks'),
+  );
+  $return['update'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run database updates.'),
+      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['update']: $environment->settings->deploy['update'],
+  );
+  $return['cache'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Clear all caches.'),
+      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['cache']: $environment->settings->deploy['cache'],
+  );
+  $return['revert'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Revert all features.'),
+    '#description' => t('If features is enabled, revert all of them.'),
+    '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['revert']: $environment->settings->deploy['revert'],
+  );
+
+  // Look for .hooks or .hooks.yml
+  if (!$is_environment_form || $project->settings->deploy['default_hooks']['dothooks']) {
+    $return['dothooks'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
+      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['dothooks']: $environment->settings->deploy['dothooks'],
+      '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
+        '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
+      )),
+    );
+  }
+
+  // Look for acquia cloud hooks.
+  if (!$is_environment_form || $project->settings->deploy['default_hooks']['acquia_hooks']){
+    $return['acquia_hooks'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Acquia Cloud Hooks'),
+      '#description' => '<p>' . t('Acquia Cloud Hooks were detected in your project.  Check this box to run all acquia cloud hooks.') . '</p><p>' . t('Available cloud hooks are: "post-code-update" when deploying code via git, "post-code-deploy" when deploying code manually, "post-db-copy" when running a sync task with a database, and "post-files-copy" when running a sync task with files.') . '</p>',
+      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['acquia_hooks']: $environment->settings->deploy['acquia_hooks'],
+    );
+  }
+
+  // Disable deploy hooks on environment form, deploy task form ,and sync task form.
+  if (
+    // Environment form
+    ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
+    ($task_type == 'devshop-deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+  ) {
+
+    foreach (element_children($return) as $i) {
+      $return[$i]['#disabled'] = TRUE;
+    }
+
+    $return['#suffix'] = t('Environment-specific deploy hook configuration is not allowed. Check Project Settings to change.');
+  }
+  return $return;
 }
 
 /**
@@ -671,6 +731,37 @@ function devshop_projects_form(&$node) {
     '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
   );
 
+  // Load deploy hooks form element.
+  $form['project']['settings']['deploy']['default_hooks'] = devshop_environment_deploy_hooks_form($project);
+
+  // Deploy hooks configuration
+  $form['project']['settings']['deploy']['default_hooks']['label'] = array(
+    '#value' => t('Default Deploy Hooks:'),
+    '#prefix' => '<label>',
+    '#suffix' => '</label>',
+    '#weight' => -100,
+  );
+  $form['project']['settings']['deploy']['default_hooks']['description'] = array(
+    '#value' => t('New environments will run these actions when new code or data is deployed.'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+    '#weight' => -100,
+  );
+
+  $form['project']['settings']['deploy']['allow_environment_deploy_config'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow environment-specific deploy hook configuration.'),
+    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_config'],
+    '#description' => t('Each environment can be configured to have different deploy hooks. <em>Be sure to check your environments settings if you enable this.</em>' ),
+  );
+
+  $form['project']['settings']['deploy']['allow_environment_deploy_hooks_override'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow users to override hooks when deploying manually.'),
+    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_hooks_override'],
+    '#description' => t('Check this box to allow users to override the hooks that are run on manual deployments. If left unchecked, all environments will run the deploy hooks configured above on every deployment.' ),
+  );
+
   // @TODO: is there a better way to save certain values? We lose data without these.
   $form['project']['settings']['deploy']['last_webhook'] = array(
     '#type' => 'value',
@@ -754,4 +845,11 @@ function devshop_projects_validate($node, &$form, &$form_state) {
   if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)) {
     form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
   }
+}
+
+
+function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
+
+  $form['update-status']['#value'] = t('Cancel Task');
+  $form['update-status']['#attributes']['class'] = 'btn-link pull-right';
 }

@@ -55,9 +55,9 @@ function devmaster_bootstrap() {
   /* Make it compatible with more than apache and nginx */
   $master_server = d()->platform->server;
   hosting_services_add($node, 'http', $master_server->http_service_type, array(
-      'restart_cmd' => $master_server->http_restart_cmd,
-      'port' => 80,
-      'available' => 1,
+    'restart_cmd' => $master_server->http_restart_cmd,
+    'port' => 80,
+    'available' => 1,
   ));
 
   /* examine the db server associated with the hostmaster site */
@@ -109,6 +109,7 @@ function devmaster_bootstrap() {
   node_save($node);
   $package_id = $node->nid;
 
+  // @TODO: We need to still call these nodes "hostmaster" because the aliases are still @hostmaster and @platform_hostmaster
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'platform';

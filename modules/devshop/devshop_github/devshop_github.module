@@ -212,9 +212,13 @@ function devshop_github_project_create_webhook($form, $form_state) {
             'insecure_ssl' => '1',
         ),
     ));
-  } catch (Github\Exception\ValidationFailedException $e) {
+  }
+  catch (Github\Exception\ValidationFailedException $e) {
     // For some reason, github always returns an exception here when there is already webhooks on the project.
-    // drupal_set_message(t('GitHub Exception: ') . $e->getMessage(), 'warning');
+     drupal_set_message(t('GitHub Validation Exception: ') . $e->getMessage(), 'error');
+  }
+  catch (Github\Exception\RuntimeException $e) {
+    drupal_set_message(t('GitHub Runtime Exception: ') . $e->getMessage(), 'error');
   }
 }
 
@@ -446,11 +450,10 @@ function devshop_github_webhook($project_node) {
           if ($git_ref == $environment->git_ref && !$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
             $environments_to_pull[] = $environment->name;
 
-            $args = array();
+
+            // Default args to the environments deploy settings.
+            $args = $environment->settings->deploy;
             $args['git_ref'] = $environment->git_ref;
-            $args['update'] = $environment->settings->deploy['update'];
-            $args['revert'] = $environment->settings->deploy['revert'];
-            $args['cache'] = $environment->settings->deploy['cache'];
 
             if (isset($environment->site) && $node = node_load($environment->site)) {
               hosting_add_task($environment->site, 'devshop-deploy', $args);
@@ -476,7 +479,7 @@ function devshop_github_webhook($project_node) {
           $already_have_pr_info = FALSE;
 
           // When PR is opened... create new environment.
-          if ($data->action == 'opened') {
+          if ($data->action == 'opened' || $data->action == 'reopened') {
             $message = "Detected Pull Request creation for $branch \n";
             if (isset($project->environments[$environment_name])) {
               $message = "Environment $environment_name already exists! Not creating one... \n";

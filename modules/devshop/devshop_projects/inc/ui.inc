@@ -28,15 +28,15 @@ function devshop_projects_projects_page() {
 
     // Load an environment for extra info like version.
     // @TODO: load the chosen live environment.
-    $first_environment = array_shift(array_values($project->environments));
-    $platform_node = node_load($first_environment->platform);
+    $first_environment = current($project->environments);
+    if ($first_environment) {
+      $platform_node = node_load($first_environment->platform);
+      $row = array();
 
-    $row = array();
-
-    // Link to Project page
-    $url = url("node/$project->nid");
-    $version = $platform_node->release->version;
-    $row[] = <<<HTML
+      // Link to Project page
+      $url = url("node/$project->nid");
+      $version = $platform_node->release->version;
+      $row[] = <<<HTML
 
 <h4>
   <a href="$url">
@@ -49,10 +49,14 @@ function devshop_projects_projects_page() {
 
 HTML;
 
-    // Drupal Version
-    $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
+      // Drupal Version
+      $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
  $version
 </button>";
+    }
+    else {
+      $row[] = t('Unknown');
+    }
 
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
@@ -65,23 +69,23 @@ HTML;
         $class = 'status';
       }
       else {
-        if ($environment->last_task['status'] == HOSTING_TASK_SUCCESS) {
+        if ($environment->last_task->task_status == HOSTING_TASK_SUCCESS) {
           $icon = 'check';
           $class = 'success';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_QUEUED) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_QUEUED) {
           $icon = 'gear';
           $class = 'status';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_PROCESSING) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_PROCESSING) {
           $icon = 'gear fa-spin';
           $class = 'status active';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_WARNING) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_WARNING) {
           $icon = 'exclamation-triangle';
           $class = 'warning';
         }
-        elseif ($environment->last_task['status'] == HOSTING_TASK_ERROR) {
+        elseif ($environment->last_task->task_status == HOSTING_TASK_ERROR) {
           $icon = 'exclamation-circle';
           $class = 'danger';
         }
@@ -91,7 +95,7 @@ HTML;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
             'class' => array('btn btn-sm alert-' . $class),
-            'title' => $tasks[$environment->last_task['type']]['title'] . ': ' . _hosting_parse_error_code($environment->last_task['status']),
+            'title' => $tasks[$environment->last_task->task_type]['title'] . ': ' . _hosting_parse_error_code($environment->last_task->task_status),
             'id' => 'badge-' . $environment->project_name . '-' . $environment->name,
         ),
         'html' => TRUE,
@@ -193,18 +197,60 @@ function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
   return $node;
 }
 
+/**
+ * Generates the list of links under the "Environment Settings" dropdown. (sliders icon)
+ *
+ * @param $environment
+ * @return array
+ */
 function devshop_environment_links($environment) {
   global $user;
   $tasks = hosting_available_tasks('site');
   $actions = module_invoke_all('devshop_environment_actions', $environment);
 
-  // Add environment settings link
-  $site = node_load($environment->site);
-  if (node_access('update', $site)) {
-    $items[] = l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array(
-      'html' => TRUE,
-    ));
-    $items[] = '<div class="divider"></div>';
+  $site = null;
+  $platform = null;
+  $items = array();
+  $aegir_items = array();
+
+  // Add environment settings link (If there is one).
+  if ($environment->site) {
+    $site = node_load($environment->site);
+    if (node_access('update', $site)) {
+      $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
+        "node/{$environment->project_nid}/edit/{$environment->name}",
+        array(
+          'html' => TRUE,
+        ));
+      $items[] = '<div class="divider"></div>';
+
+    }
+    if (node_access('view', $site)) {
+      $aegir_items[] = l('<i class="fa fa-globe"></i> '.t('Aegir Site'),
+        "node/{$environment->site}",
+        array(
+          'html' => TRUE,
+        ));
+    }
+  }
+  if ($environment->platform) {
+    $platform = node_load($environment->platform);
+    if (node_access('view', $platform)) {
+      $aegir_items[] = l('<i class="fa fa-code"></i> '.t('Aegir Platform'),
+        "node/{$environment->platform}",
+        array(
+          'html' => TRUE,
+        ));
+    }
+  }
+
+  // Add aegir items to items
+  if (!empty($aegir_items)) {
+    $items = array_merge($items, $aegir_items);
+
+    if (!empty($actions)) {
+      $items[] = '<div class="divider"></div>';
+    }
   }
 
   // Add all actions from hook_devshop_environment_actions()
@@ -212,8 +258,11 @@ function devshop_environment_links($environment) {
     if (isset($tasks[$action])) {
 
       // Special handling for delete/disable/enable
-      if ($action == 'disable' || $action == 'delete' || $action == 'enable') {
+      if ($action == 'disable' || $action == 'enable') {
         $tasks[$action]['title'] = '<i class="fa fa-power-off"></i> ' . $tasks[$action]['title'] . ' ' . t('Environment');
+      }
+      elseif ($action == 'delete') {
+        $tasks[$action]['title'] = '<i class="fa fa-trash-o"></i> ' . t('Destroy Environment');
       }
 
       $href = "node/{$environment->site}/site_{$action}";

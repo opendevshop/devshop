@@ -1,5 +1,14 @@
 <?php
 
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+
 /**
  * Implements hook_theme()
  */
@@ -117,6 +126,190 @@ function devshop_projects_preprocess_node(&$vars) {
       $vars['access_note'] = t('NOTE: To access these environments with drush remotely, ask an administrator to add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
     }
   }
+
+  // On task node page
+  if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && $vars['page']){
+    $vars['content'] = '';
+
+    // Prepare task icon, class, and label.
+    $icon = devshop_task_status_icon($vars['node']->task_status);
+    $vars['task_label'] = "<i class='fa fa-$icon'></i> " . _hosting_parse_error_code($vars['node']->task_status);
+    $vars['task_label_class'] = devshop_task_status_class($vars['node']->task_status);
+    $vars['task_icon'] = devshop_task_status_icon($vars['node']->task_status);
+
+    // Load ref node
+    $ref_node = node_load($vars['rid']);
+    if ($ref_node->type == 'site') {
+      $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
+    }
+
+    // Add a "Retry" button, unless it's a clone task.  Retrying a clone can be bad if an old clone task is restarted, it uses the latest task arguments, not the one you are viewing.
+    if ($vars['node']->task_type != 'clone' && user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
+      $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+    }
+
+    // Show duration
+    if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
+      $vars['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $vars['node']->changed)));
+      $vars['date'] = date('D M j Y', $vars['node']->changed);
+      $vars['executed'] = '';
+    }
+    else {
+
+      if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
+        $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
+        $vars['executed'] = '';
+      }
+      else {
+        $vars['duration'] = format_interval($vars['node']->delta, 1);
+        $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
+      }
+      $vars['date'] = date('D M j Y', $vars['node']->executed);
+    }
+
+    // Load Logs
+    $ref = node_load($vars['rid']);
+      $messages = devshop_task_get_messages($vars['node']);
+        $vars['messages'] = implode("\n", $messages);
+        switch ($vars['task_type']) {
+          case 'devshop-deploy':
+            $vars['type'] = 'Deploy';
+            break;
+          case 'verify':
+          case 'test':
+          case 'sync':
+          case 'install':
+          default:
+            $vars['type'] = ucfirst($vars['task_type']);
+            break;
+        }
+
+    // Add "Follow Logs" button.
+    if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
+      $vars['follow_checkbox'] = array(
+        '#type' => 'markup',
+        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs',
+      );
+
+      $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
+    }
+
+    // Running indicator
+    if ($vars['task_status'] == HOSTING_TASK_QUEUED ||$vars['task_status'] == HOSTING_TASK_PROCESSING) {
+      $vars['is_active'] = 'active';
+
+      if ($vars['task_status'] == HOSTING_TASK_PROCESSING) {
+        $vars['is_running'] = 'fa-spin';
+        $vars['running_label'] = t('Processing...');
+      }
+      else {
+        $vars['running_label'] = t('Queued');
+      }
+    }
+  }
+}
+
+/**
+ * Helper to retrieve helpful messages from aegir task logs.
+ * @param $task_node
+ * @return array
+ */
+function devshop_task_get_messages($task_node) {
+  $messages = array();
+  $outputs = array();
+  $theme = new SolarizedXTermTheme();
+  $styles = $theme->asCss();
+  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
+
+  drupal_set_html_head("<style>$styles</style>");
+  $converter = new AnsiToHtmlConverter($theme);
+
+  $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $task_node->vid);
+  while ($results = db_fetch_object($query)) {
+
+    if ($results->type == 'devshop_command') {
+      if (empty($results->message)) {
+        continue;
+      }
+      $command = $results->message;
+      $outputs[$command] = array(
+        'status' => 'default',
+        'icon' => 'gear',
+        'output' => '',
+      );
+
+      if ($task_node->task_status == HOSTING_TASK_PROCESSING) {
+        $outputs[$command]['icon'] .= ' fa-spin';
+      }
+      continue;
+    } elseif ($results->type == 'devshop_info') {
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['status'] = 'default';
+      $outputs[$command]['icon'] = 'gear fa-spin';
+    } elseif ($results->type == 'devshop_ok') {
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['status'] = 'success';
+      $outputs[$command]['icon'] = 'check';
+    } elseif ($results->type == 'devshop_error') {
+      $outputs[$command]['status'] = 'danger';
+      $outputs[$command]['icon'] = 'exclamation-circle';
+      $outputs[$command]['output'] .= $results->message;
+    } elseif ($results->type == 'warning') {
+      $command = 'warning_' . count($outputs);
+      $outputs[$command]['status'] = 'warning';
+      $outputs[$command]['icon'] = 'exclamation-triangle';
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['command'] = 'warning';
+    } elseif ($results->type == 'error') {
+      $command = 'error_' . count($outputs);
+      $outputs[$command]['status'] = 'danger';
+      $outputs[$command]['icon'] = 'exclamation-circle';
+      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['command'] = 'error';
+    } elseif ($results->type == 'devshop_log') {
+      $command = 'notice_' . count($outputs);
+      $outputs[$command]['status'] = '';
+      $outputs[$command]['icon'] = '';
+      $outputs[$command]['command'] .= $results->message;
+      $outputs[$command]['output'] = '';
+    }
+  }
+
+  foreach ($outputs as $command => $data) {
+    $status = $data['status'];
+    $icon = $data['icon'];
+
+    // Allow $outputs array to override the displayed command.
+    if (isset($data['command'])) {
+      $command = $data['command'];
+    }
+
+    // If $command has brackets, convert to span.
+    if (strpos($command, '[') !== FALSE && strpos($command, ']') !== FALSE) {
+      $command = strtr($command, array(
+        '[' => '<div class="text-muted small">',
+        ']' => '</div>',
+      ));
+    }
+
+    // Convert ASCII to HTML
+    $output = $converter->convert($data['output']);
+
+    if (!empty($output)) {
+      $body = "<div class='panel-body ansi_color_bg_black'>
+<pre class=\"ansi_color_bg_black ansi_color_fg_white ansi_box\">$output</pre></div>";
+    }
+    else {
+      $body = '';
+    }
+    $messages[] = <<<HTML
+<div class="panel panel-$status devshop-command">
+  <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
+  $body
+</div>
+HTML;
+  }
+ return $messages;
 }
 
 /**

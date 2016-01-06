@@ -63,38 +63,109 @@
   <div class="well well-sm">
 
     <h4>
-      <span class="label label-<?php print $task_label_class ?>"><?php print $task_label ?></span>
+
+      <div class="task-badge pull-left">
+        <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
+      </div>
 
       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
 
       <?php if ($retry): ?>
-            <?php print $retry; ?>
+        <div class="retry-button pull-right">
+          <?php print $retry; ?>
+        </div>
       <?php endif; ?>
     </h4>
 
-      <p class="duration">
+    <p>
+      <span class="duration">
           <i class="fa fa-clock-o"></i>
-          <?php print $duration; ?>
-      </p>
-
-      <p class="executed">
+          <span class="duration-text">
+            <?php print $duration; ?>
+          </span>
+      </span>
+      <span>&nbsp;</span>
+      <span class="executed inline">
           <i class="fa fa-calendar-o"></i>
           <?php print $date; ?>
           <small><?php print $executed; ?></small>
-      </p>
+      </span>
+    </p>
 
     <?php if ($site_url): ?>
       <?php print $site_url ?>
     <?php endif; ?>
 
-    <?php if ($log_message): ?>
-        <div class="alert alert-<?php print $log_class; ?>" role="alert">
-            <?php print $log_message; ?>
-        </div>
+
+
+    <?php if ($task_well): ?>
+      <?php print $task_well; ?>
     <?php endif; ?>
+
   </div>
 
-<?php  if ($node->test_results_formatted): ?>
+  <?php if (count($task_args)): ?>
+    <div class="task-arguments well well-sm">
+      <!-- Default panel contents -->
+
+      <dl class="dl-horizontal">
+        <dt><?php print t('Task Arguments') ?></dt>
+        <dd>
+        <?php foreach (array_filter($task_args) as $arg => $value): ?>
+          <?php
+          if ($value === '1') {
+            $value = '';
+            $arg = '<i class="fa fa-check"></i>' . $arg;
+          }
+          ?>
+          <span class="task-arg small text-muted">
+            <strong><?php print $arg; ?></strong>
+            <span>
+              <?php print $value; ?>
+            </span>
+          </span>
+        <?php endforeach; ?>
+
+        </dd>
+      </dl>
+    </div>
+  <?php endif; ?>
+
+    <?php  if ($follow_checkbox): ?>
+        <div class="follow-logs-checkbox">
+            <?php print $follow_checkbox; ?>
+        </div>
+    <?php endif; ?>
+
+    <h3><?php print $type; ?></h3>
+
+    <div id='task-logs'>
+        <?php print $messages; ?>
+    </div>
+
+    <div class="running-indicator <?php print $is_active; ?>  text-muted small">
+        <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label;?></span>
+    </div>
+
+    <?php print $content; ?>
+
+    <div class="task-details">
+        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+            <i class="fa fa-list"></i> <?php print t('Details'); ?>
+        </button>
+
+        <?php if ($node->content['update-status']['#value']): ?>
+            <?php print $node->content['update-status']['#value']; ?>
+        <?php endif; ?>
+
+        <div class="collapse" id="collapseLogs">
+            <div class="well">
+                <?php print $node->content['hosting_log']['#value']; ?>
+            </div>
+        </div>
+    </div>
+
+    <?php  if ($node->test_results_formatted): ?>
   <div role="tabpanel">
 
     <!-- Nav tabs -->
@@ -124,8 +195,6 @@
       </div>
     </div>
   </div>
-<?php else: ?>
-  <?php print $content; ?>
 
 <?php endif; ?>
 

@@ -31,7 +31,7 @@ function devshop_hosting_install() {
 function devshop_hosting_requirements($phase) {
   $requirements = array();
 
-  $devshop_version = file_get_contents('/var/aegir/.devshop-version');
+  $devshop_version = file_get_contents(drupal_get_path('profile', 'devmaster') . '/VERSION.txt');
   $t = get_t();
 
   // Report DevShop version
@@ -67,4 +67,11 @@ function devshop_hosting_update_7002() {
  */
 function devshop_hosting_update_7003() {
   module_enable(array('devshop_hosting'));
+}
+
+/**
+ * Enable devshop_dothooks module.
+ */
+function devshop_hosting_update_7004() {
+  module_enable(array('devshop_dothooks'));
 }

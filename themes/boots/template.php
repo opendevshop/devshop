@@ -101,77 +101,79 @@ function boots_preprocess_environment(&$vars)
         $environment->processing = TRUE;
       }
     }
-
-    switch ($task->task_status){
-      case HOSTING_TASK_SUCCESS:
-        $icon = 'check';
-        $item_class = 'success';
-        break;
-
-      case HOSTING_TASK_ERROR;
-        $icon = 'exclamation-circle';
-        $item_class = 'danger';
-        break;
-      case HOSTING_TASK_WARNING:
-        $icon = 'warning';
-        $item_class = 'warning';
-        break;
-
-      case HOSTING_TASK_PROCESSING;
-      case HOSTING_TASK_QUEUED;
-        $icon = 'cog';
-        $item_class = 'queued';
-        if ($environment->processing) {
-          $icon .= ' fa-spin';
-          $item_class = 'processing';
-        }
-        break;
-    }
+//
+//    switch ($task->task_status){
+//      case HOSTING_TASK_SUCCESS:
+//        $icon = 'check';
+//        $item_class = 'success';
+//        break;
+//
+//      case HOSTING_TASK_ERROR;
+//        $icon = 'exclamation-circle';
+//        $item_class = 'danger';
+//        break;
+//      case HOSTING_TASK_WARNING:
+//        $icon = 'warning';
+//        $item_class = 'warning';
+//        break;
+//
+//      case HOSTING_TASK_PROCESSING;
+//      case HOSTING_TASK_QUEUED;
+//        $icon = 'cog';
+//        $item_class = 'queued';
+//        if ($environment->processing) {
+//          $icon .= ' fa-spin';
+//          $item_class = 'processing';
+//        }
+//        break;
+//    }
 
     $label = drupal_ucfirst($tasks[$task->task_type]['title']);
-    $ago = ' <em class="small">' . format_interval(time() - $task->executed, 1) .' '. t('ago') . '</em>';
 
-    // Override "ago" text.
-    if ($task->task_status == HOSTING_TASK_QUEUED) {
-      $ago = t('Queued');
-    }
-    elseif ($task->task_status == HOSTING_TASK_PROCESSING) {
-      $ago = t('Running...');
-    }
+    $text = "<i class='fa fa-{$task->icon}'></i> {$label} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
 
-    $text = "<i class='fa fa-{$icon}'></i> {$label} <em class='small'>{$ago}</em>";
-
-    $items[] = l($text, 'node/' . $task->nid, array(
+    $items[] = l($text, "node/{$task->nid}/revisions/{$task->vid}/view", array(
         'html' => TRUE,
         'attributes' => array(
-            'class' => "list-group-item list-group-item-{$item_class}",
+            'class' => "list-group-item list-group-item-{$task->status_class}",
         ),
     ));
     $environment->task_logs = implode("\n", $items);
-
-    // Save last task
-    if (empty($environment->last_task_info)) {
-
-      // If the last task is a "verify" and it was successful, load the next task as the last task.
-      // Verifies happen a lot and if successful, are not useful information and knocks important ones like test runs off the list.
-      if (($task->task_type == 'verify' || $task->task_type == 'login-reset')
-          && $task->task_status == HOSTING_TASK_SUCCESS) {
-        continue;
-      }
-      $environment->last_task_info = array(
-          'class' => $item_class,
-          'icon' => $icon,
-          'ago' => $ago,
-          'label' => $label,
-          'url' => url("node/$task->nid"),
-      );
-    }
   }
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
     $environment->class .= ' active';
   }
+
+  // Check for any potential problems
+  // Branch or tag no longer exists in the project.
+  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
+    $vars['warnings'][] = array(
+      'text' =>  t('The git reference %ref is no longer available.', array(
+        '%ref' => $environment->git_ref,
+        '@type' => $environment->git_ref_type,
+      )),
+      'type' => 'error',
+    );
+  }
+
+  // No hooks configured.
+  if ($project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
+    $vars['warnings'][] = array(
+      'text' => t('No deploy hooks are configured. Check your !link.', array(
+        '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
+      )),
+      'type' => 'warning',
+    );
+  }
+
+  // Load user into a variable.
+  global $user;
+  $vars['user'] = $user;
+
+  // Get token for task links
+  $vars['token'] = drupal_get_token($user->uid);
 }
 
 /**
@@ -458,6 +460,11 @@ function boots_preprocess_node(&$vars) {
   elseif ($vars['node']->type == 'task') {
     boots_preprocess_node_task($vars);
   }
+  elseif ($vars['node']->type == 'site') {
+    if (!empty($vars['node']->environment)) {
+      $vars['template_files'][] =  'node-site-environment';
+    }
+  }
 }
 
 /**
@@ -466,79 +473,6 @@ function boots_preprocess_node(&$vars) {
  */
 function boots_preprocess_node_task(&$vars) {
 
-  $revisions = node_revision_list($vars['node']);
-
-  $revision = array_shift($revisions);
-
-  $log_type = '';
-  switch ($vars['node']->task_status) {
-    case HOSTING_TASK_SUCCESS:
-      $vars['task_label'] = t('Success');
-      $vars['task_label_class'] = 'success';
-      break;
-    case HOSTING_TASK_ERROR:
-      $vars['task_label'] = t('Error');
-      $vars['task_label_class'] = 'danger';
-      $log_type = 'error';
-      break;
-    case HOSTING_TASK_WARNING:
-      $vars['task_label'] = t('Success (with warning)');
-      $vars['task_label_class'] = 'warning';
-      $log_type = 'warning';
-      break;
-    case HOSTING_TASK_PROCESSING:
-      $vars['task_label'] = t('Processing') . ' <i class="fa fa-gear fa-spin"></i>';
-      $vars['task_label_class'] = 'info';
-      break;
-    case HOSTING_TASK_QUEUED:
-      $vars['task_label'] = t('Queued');
-      $vars['task_label_class'] = 'info';
-      break;
-  }
-
-  // Load ref node
-  $ref_node = node_load($vars['rid']);
-  if ($ref_node->type == 'site') {
-    $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
-  }
-
-  // Load error or warning messages.
-  if ($log_type == 'error' || $log_type == 'warning') {
-    $query = db_query("SELECT message FROM {hosting_task_log} WHERE vid = %d AND type = '%s' ORDER BY vid, lid", $vars['node']->vid, $log_type);
-
-    while ($results = db_fetch_object($query)) {
-      $vars['log_message'][] = $results->message;
-    }
-
-    $vars['log_message'] = theme('item_list', $vars['log_message']);
-
-    $vars['log_class'] = $log_type == 'error'? 'danger': $log_type;
-  }
-  else {
-    $vars['log_message'] = '';
-  }
-
-  if (user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
-    $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
-  }
-
-  // Show duration
-  if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
-    $vars['duration'] = 'Queued';
-    $vars['date'] = date('D M j Y', $vars['node']->changed);
-    $vars['executed'] = t('Queued') . ' ' . format_interval(time() - $vars['node']->changed) . ' ' . t('ago');
-  }
-  else {
-
-    if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
-      $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
-    }
-    else {
-      $vars['duration'] = format_interval($vars['node']->delta, 1);
-    }
-    $vars['date'] = date('D M j Y', $vars['node']->executed);
-    $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
-  }
 }
 
 /**
@@ -716,6 +650,19 @@ HTML;
 
     // Render each environment.
     $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
+  }
+
+  // Warnings & Errors
+  // If environment-specific deploy hooks is not allowed and there are no default deploy hooks, warn the user
+  // that they will have to manually run updates.
+  if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+    $vars['project_messages'][] = array(
+      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
+        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
+      )),
+      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+      'type' => 'warning',
+    );
   }
 }
 
