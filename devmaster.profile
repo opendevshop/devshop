@@ -216,7 +216,7 @@ function devmaster_task_finalize() {
 
   // Enable "boots" theme.
   drupal_set_message(st('Enabling "boots" theme'));
-  $theme = 'eldir';
+  $theme = 'boots';
   theme_enable(array($theme));
   variable_set('theme_default', $theme);
 
