@@ -149,6 +149,15 @@
   </ul>
 </div>
 
+<?php if (count($project_messages)): ?>
+  <?php foreach ($project_messages as $message): ?>
+    <div class="alert alert-<?php print $message['type']; ?>">
+      <?php print $message['icon']; ?>
+      <?php print $message['message']; ?>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>
+
 <!-- ENVIRONMENTS-->
 <div class="row">
     <?php foreach ($environments as $environment): ?>

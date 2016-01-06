@@ -5,19 +5,19 @@
  * Provides Node Type, UI, and tools for DevShop Projects.
  */
 
-include_once 'inc/drush.inc';
-include_once 'inc/forms.inc';
-include_once 'inc/nodes.inc';
-include_once 'inc/queue.inc';
-include_once 'inc/theme.inc';
-include_once 'inc/ui.inc';
+include_once('inc/drush.inc');
+include_once('inc/forms.inc');
+include_once('inc/nodes.inc');
+include_once('inc/queue.inc');
+include_once('inc/theme.inc');
+include_once('inc/ui.inc');
 
 // Tasks Code
-include_once 'tasks/tasks.inc';
-include_once 'tasks/commit.inc';
-include_once 'tasks/create.inc';
-include_once 'tasks/pull.inc';
-include_once 'tasks/deploy.inc';
+include_once('tasks/tasks.inc');
+include_once('tasks/commit.inc');
+include_once('tasks/create.inc');
+include_once('tasks/pull.inc');
+include_once('tasks/deploy.inc');
 
 
 /**
@@ -31,9 +31,15 @@ function devshop_projects_init() {
   // If on the projects page, or a project or site node...
   if (arg(0) == 'node' && is_numeric(arg(1))) {
     $node = node_load(arg(1));
-    if ($node->type == 'project' || $node->type == 'site') {
+    if ($node->type == 'project' || $node->type == 'site' || $node->type == 'task') {
       drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
-      drupal_add_js(array('devshopProject' => arg(1)), array('type' => 'setting'));
+
+      if ($node->type == 'project') {
+        drupal_add_js(array('devshopProject' => arg(1)), 'setting');
+      }
+      if ($node->type == 'task') {
+        drupal_add_js(array('devshopTask' => arg(1)), 'setting');
+      }
     }
   }
   // If on the projects list page...
@@ -100,42 +106,54 @@ function devshop_projects_permission() {
  */
 function devshop_projects_devshop_environment_actions($environment) {
 
-  if ($environment->site) {
-    $items[] = l('<i class="fa fa-copy"></i> ' . t('Clone Environment'), "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}", array(
-        'html' => TRUE,
-    ));
-    $items[] = l('<i class="fa fa-code-fork"></i> ' . t('Fork Environment'), "node/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}", array(
-        'html' => TRUE,
-    ));
-  }
+  // Site specific actions.
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+    if (user_access('create devshop-create tasks')) {
+      $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
+        "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
+        array(
+          'html' => TRUE,
+        )
+      );
+      $items[] = l('<i class="fa fa-code-fork"></i> '.t('Fork Environment'),
+        "node/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}",
+        array(
+          'html' => TRUE,
+        )
+      );
+    }
 
-  // Add disable or delete task based on hosting variable.
-  if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
-    $items[] = 'delete';
-  }
-  else {
-    if ($environment->site_status == HOSTING_SITE_DISABLED) {
-      $items[] = 'enable';
+    // Add disable or delete task based on hosting variable.
+    if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
       $items[] = 'delete';
+    } else {
+
+      if ($environment->site_status == HOSTING_SITE_DISABLED) {
+        $items[] = 'enable';
+        $items[] = 'delete';
+      } elseif (!$environment->settings->locked) {
+        $items[] = 'disable';
+      }
     }
-    elseif (!$environment->settings->locked) {
-      $items[] = 'disable';
+
+    $items[] = '<div class="divider"></div>';
+
+    $items[] = 'verify';
+    $items[] = 'flush_cache';
+    $items[] = 'rebuild_registry';
+    $items[] = 'run_cron';
+    $items[] = 'update';
+    $items[] = '<div class="divider"></div>';
+
+    // Backup & Restore
+    $items[] = 'backup';
+    if (!$environment->settings->locked) {
+      $items[] = 'restore';
     }
   }
-
-  $items[] = '<div class="divider"></div>';
-
-  $items[] = 'verify';
-  $items[] = 'flush_cache';
-  $items[] = 'rebuild_registry';
-  $items[] = 'run_cron';
-  $items[] = 'update';
-  $items[] = '<div class="divider"></div>';
-
-  // Backup & Restore
-  $items[] = 'backup';
-  if (!$environment->settings->locked) {
-    $items[] = 'restore';
+  elseif ($environment->site && $environment->site_status == HOSTING_SITE_DISABLED)  {
+    $items[] = 'enable';
+    $items[] = 'delete';
   }
 
   return $items;

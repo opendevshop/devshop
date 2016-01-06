@@ -13,52 +13,49 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         SELECT
             project_nid,
             name,
-            last_task,
+            last_task AS last_task_nid,
             n.title as project,
             site,
-            platform
-        FROM {hosting_devshop_project_environment} h
-        LEFT JOIN {node} n ON h.project_nid = n.nid
-
+            e.platform,
+            s.status AS site_status
+        FROM {hosting_devshop_project_environment} e
+        LEFT JOIN {node} n ON e.project_nid = n.nid
+        LEFT JOIN {hosting_site} s ON e.site = s.nid
+          WHERE s.status != :status
         ';
 
   if (!empty($project_nid)) {
     $sql .= ' WHERE project_nid = :project';
   }
-  $results = db_query($sql, array(':project' => $project_nid));
+  $results = db_query($sql, array(
+    ':project' => $project_nid,
+    ':status' => HOSTING_SITE_DELETED,
+  ));
 
   $task_types = hosting_available_tasks();
 
   // Get all environments and their status.
   foreach ($results as $result) {
-    $result->last_task = (object) unserialize($result->last_task);
+    $result->last_task = node_load($result->last_task_nid);
+
+        // If no last task node was found, skip.
+        if (empty($result->last_task)) {
+            continue;
+        }
+        $result->last_task->ref = node_load($result->last_task->rid);
+
+        // If page is requesting this task's logs, load them.
+        if ($_GET['task'] == $result->last_task->nid) {
+            $task_node = node_load($result->last_task->nid);
+            $messages = devshop_task_get_messages($task_node);
+            if (count($messages)) {
+                $result->last_task->logs = implode("\n", $messages);
+            }
+        }
 
         // To test out constantly changing tasks, uncomment this line.
-//        $result->last_task->status = rand(-1, 3);
-    $result->last_task->status_name = devshop_task_status_class($result->last_task->status);
+        //$result->last_task->status = rand(-1, 3);
 
-        // Skip verify and password tasks unless they are running
-//        if ($result->last_task->status != HOSTING_TASK_PROCESSING && $result->last_task->status != HOSTING_TASK_QUEUED) {
-//            if ($result->last_task->type == 'verify' || $result->last_task->type == 'login-reset') {
-//                continue;
-//            }
-//        }
-
-        // Override "ago" text.
-        $result->last_task->ago = format_interval(REQUEST_TIME - $result->last_task->executed, 1) . ' ' . t('ago');
-        if ($result->last_task->status == HOSTING_TASK_QUEUED) {
-            $result->last_task->ago = t('Queued');
-        }
-        elseif ($result->last_task->status == HOSTING_TASK_PROCESSING) {
-            $result->last_task->ago = t('Running...');
-        }
-
-        // Set task type
-        $task_ref_type = $result->site == 0 ? 'platform' : 'site';
-        $result->last_task->type_name = $task_types[$task_ref_type][$result->last_task->type]['title'];
-
-        // Get Icon
-        $result->last_task->icon = devshop_task_status_icon($result->last_task->status);
         $output[] = $result;
   }
 

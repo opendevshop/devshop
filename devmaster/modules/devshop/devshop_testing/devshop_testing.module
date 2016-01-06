@@ -66,10 +66,11 @@ function devshop_testing_hosting_tasks() {
  * Defines the list of tasks that appear under the gear icon.
  */
 function devshop_testing_devshop_environment_actions($environment) {
-  return array(
-    '<div class="divider"></div>',
-    'test'
-  );
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+    return array(
+      'test'
+    );
+  }
 }
 
 /**
@@ -166,8 +167,6 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $settings->testing = array(
       'test_type' => 0,
       'tests_to_run' => '',
-      'behat_folder_path' => '',
-      'behat_bin' => 'bin/behat',
     );
   }
   
@@ -193,7 +192,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $tests[] = 'Something is wrong. Environment not found.';
   }
   else {
-    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
+    $directory = $environment->repo_root . '/' . $project->settings->testing['behat_folder_path'] . '/features';
 
     $files = file_scan_directory($directory, '.feature', array('.', '..'));
 
@@ -216,18 +215,10 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
   }
 
-  $testing_form['behat_folder_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Behat folder path'),
-    '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
-    '#default_value' => $settings->testing['behat_folder_path'],
-  );
-  
   // Lock fields in environment settings.
   if ($environment_name) {
     $locked = array(
       'test_type',
-      'behat_folder_path',
     );
     foreach ($locked as $field){
       $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
@@ -246,136 +237,6 @@ function devshop_testing_task_submit(&$form, &$form_state) {
   $value = implode(',', array_filter($form_state['values']['parameters']['tests_to_run']));
   form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
 }
-
-/**
- * Implements hook_nodeapi_TYPE_OP()
- *
- * @param $node
- * @param $a3
- * @param $a4
- */
-function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
-
-  if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
-    unset($node->task_args['test_results']);
-  }
-
-  if ($node->type == 'task' && !empty($node->task_args['output_path']) && file_exists($node->task_args['output_path'])) {
-    include_once('pages.inc');
-    $output = '';
-
-//    dsm(scandir($node->task_args['output_path']));
-
-    foreach (scandir($node->task_args['output_path']) as $file) {
-      // Don't load directories.
-      if ($file == '.' || $file == '..') {
-        continue;
-      }
-
-      // Load all files
-      $file_path = $node->task_args['output_path'] . '/' . $file;
-
-      if (strpos($file, 'results') === 0) {
-        $file_contents = file_get_contents($node->task_args['output_path'] . '/' . $file);
-        $output .= $file_contents;
-      }
-    }
-    $node->test_results_formatted = devshop_testing_results_to_html($output);
-  }
-}
-
-/**
- * Implements hook_nodeapi_TYPE_OP()
- * @param $node
- * @param $a3
- * @param $a4
- */
-function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
-
-  if ($node->type == 'task' && !empty($node->test_results_formatted)) {
-    // If task is still running, add the javascript to reload it.
-    $filename = pathinfo($node->task_args['output_path'], PATHINFO_BASENAME);
-    drupal_add_js(drupal_get_path('module', 'devshop_testing') . '/test-reload.js');
-    drupal_add_js(array(
-      'test_running' => TRUE,
-      'test_url' => url('devshop_tests/ansi-to-html/' . $filename),
-      'test_status_url' =>  url("devshop_tests/{$node->nid}/{$node->vid}/status"),
-    ), 'setting');
-
-    if ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED ) {
-      $node->content['follow_checkbox'] = array(
-        '#type' => 'markup',
-        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</div>',
-      );
-      drupal_add_css(drupal_get_path('module', 'devshop_testing') . '/testing.css');
-//      unset($node->content['update-status']);
-    }
-//    unset($node->content['info']);
-  }
-}
-
-/**
- * Implements hook_preprocess_node()
- * @param $var
- */
-function devshop_testing_preprocess_node(&$vars) {
-  global $user;
-  $node = &$vars['node'];
-  if (!empty($node->project->environments)) {
-    foreach ($node->project->environments as &$environment) {
-      $environment->testing = TRUE;
-
-      // Load test task.
-      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
-
-      $environment->test = $task;
-      $environment->test->task_node = node_load($environment->test->nid);
-      $environment->test->duration = format_interval($task->delta, 1);
-      $environment->test->permalink = url("devshop_tests/{$environment->test->nid}/{$environment->test->vid}");
-
-      if ($task->executed) {
-        $environment->test->time_ago = format_interval(time() - $task->executed, 1);
-        $environment->test->ago = t('@time ago', array('@time' => $environment->test->time_ago));
-      }
-      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
-      $environment->test->status_url = url('node/' . $task->nid);
-
-      $environment->test->results = $environment->test->task_node->test_results_formatted;
-
-      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
-        $environment->test->status_message = t('Failed');
-        $environment->test->status_class = 'danger';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
-        $environment->test->status_message = t('Passed!');
-        $environment->test->status_class = 'success';
-      }
-      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
-        $environment->test->status_message = t('Queued');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->test->status_message = t('Running...');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
-        $environment->test->status_message = t('Passed with Warnings');
-        $environment->test->status_class = 'warning';
-      }
-
-
-      else {
-        $environment->test->status_message = t('Ready');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-    }
-  }
-}
-
 
 /**
  * Implements hook_hosting_slack_message_alter()

@@ -21,15 +21,6 @@ function devshop_projects_node_info() {
   return $types;
 }
 
-
-/**
- * Implementation of hook_load().
- *
- * Loads data for project and environments.
- *
- * @param node
- *    Node object
- */
 /**
  * Implements hook_node_load().
  */
@@ -133,7 +124,8 @@ function devshop_projects_node_load($nodes, $types) {
           n.title as project_name,
           s.vid,
           sn.title as system_domain,
-          a.redirection as redirect_domain
+          a.redirection as redirect_domain,
+          e.last_task as last_task_nid
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -163,7 +155,54 @@ function devshop_projects_node_load($nodes, $types) {
 
       // Unserialize environment settings.
       $environment->settings = (object) unserialize($environment->settings);
-      $environment->last_task = array_filter((array) unserialize($environment->last_task));
+
+      // Get last task
+      $environment->last_task = node_load($environment->last_task_nid);
+
+      // Detect creation method.
+      // Some sites get installed. Others get imported.
+      $install_tasks = devshop_get_tasks($environment, 'install');
+      $import_tasks = devshop_get_tasks($environment, 'import');
+      $clone_tasks = devshop_get_tasks($environment, 'clone');
+
+      $environment->created = array();
+      if (!empty($install_tasks)) {
+        $environment->created['type'] = 'install';
+        $environment->created['date'] = current($install_tasks)->executed;
+        $environment->created['status'] = current($install_tasks)->task_status;
+        $environment->created['nid'] = current($install_tasks)->nid;
+        $environment->created['vid'] = current($install_tasks)->vid;
+      }
+      elseif (!empty($import_tasks)) {
+        $environment->created['type'] = 'import';
+        $environment->created['date'] = current($import_tasks)->executed;
+        $environment->created['status'] = current($import_tasks)->task_status;
+        $environment->created['nid'] = current($import_tasks)->nid;
+        $environment->created['vid'] = current($import_tasks)->vid;
+      }
+      elseif (!empty($clone_tasks)) {
+        $environment->created['type'] = 'clone';
+        $environment->created['date'] = current($clone_tasks)->executed;
+        $environment->created['status'] = current($clone_tasks)->task_status;
+        $environment->created['nid'] = current($clone_tasks)->nid;
+        $environment->created['vid'] = current($clone_tasks)->vid;
+      }
+      // Neither import nor install nor clone was found.
+      else {
+        $environment->created['type'] = '';
+        $environment->created['date'] = '';
+        $environment->created['status'] = '';
+      }
+
+      // Detect environment deletion
+      $delete_tasks = devshop_get_tasks($environment, 'delete');
+      if (!empty($delete_tasks)) {
+        $environment->deleted = TRUE;
+        $environment->delete_task = current($delete_tasks);
+      }
+      else {
+        $environment->deleted = FALSE;
+      }
 
       // Get the current git ref type.
       $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
@@ -175,8 +214,6 @@ function devshop_projects_node_load($nodes, $types) {
       else {
         $environment->git_ref_url = url("node/$environment->site/logs/commits");
       }
-
-
 
       // Environment Drupal version.
       $iid = db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type = :type AND i.rid = :nid", array(':type' => 'platform', ':nid' => $environment->platform))->fetchField();
@@ -215,12 +252,18 @@ function devshop_projects_node_load($nodes, $types) {
 
       // Last commit
       $path = $project->code_path . '/' . $environment->name;
-  //    $environment->git_current = shell_exec("cd $path; git log --pretty=format:'<b>%h</b> <i>%an</i> <small>%ar</small><br /> <small >%s</small>' HEAD^...HEAD");
-      $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
-  ");
-      $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
+      if (file_exists($path)) {
+        $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
+    ");
+        $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
 
-      $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+        $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+      }
+      else {
+        $environment->git_ref_id = '';
+        $environment->git_last = '';
+        $environment->git_sha = '';
+      }
 
       // Repo root
       $environment->repo_root = empty($project->drupal_path) ? $environment->root : str_replace($project->drupal_path, '', $environment->root);
@@ -245,9 +288,16 @@ function devshop_projects_node_load($nodes, $types) {
         $environment->url = $protocol . $environment->system_domain;
       }
 
+      // If per-environment hooks config is not allowed, load it from the project.
+      if (!$project->settings->deploy['allow_environment_deploy_config']) {
+        $environment->settings->deploy = $project->settings->deploy['default_hooks'];
+      }
+
       // Save to project environments collection.
-      $environments[$environment->name] = (object) $environment;
+      drupal_alter('devshop_environment', $environment, $project);
+      $environments[$environment->name] = $environment;
     }
+  }
 
     // Put live environment at the top.
     if ($project->settings->live['live_environment']) {
@@ -449,12 +499,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
 
     if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
 
-      $site->environment->last_task = array(
-          'status' => $node->task_status,
-          'type' => $node->task_type,
-          'nid' => $node->nid,
-          'executed' => $node->executed,
-      );
+      $site->environment->last_task = $node->nid;
       devshop_environment_save_last_task($site->environment);
     }
   }
@@ -475,6 +520,62 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
       ->condition($node->type, $node->nid)
       ->execute();
   }
+}
+
+/**
+ * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
+ */
+function devshop_projects_nodeapi_task_load(&$node, $a3, $a4) {
+
+  $task_types = hosting_available_tasks();
+  $task_types = array_merge($task_types['site'], $task_types['platform']);
+
+  // In Aegir, "executed" and "delta" does not get updated properly.
+  // Handle "delta" being not computed yet
+  if ($node->task_status == HOSTING_TASK_PROCESSING) {
+    $additions['duration'] = format_interval(time() - $node->executed, 1);
+  }
+  elseif ($node->task_status == HOSTING_TASK_QUEUED) {
+    $additions['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+  }
+  else  {
+    $additions['duration'] = format_interval($node->delta, 1);
+  }
+
+  // To test out constantly changing tasks, uncomment this line.
+  //        $node->task_status = rand(-1, 3);
+  $additions['status_class'] = devshop_task_status_class($node->task_status);
+  $additions['status_name'] = _hosting_parse_error_code($node->task_status);
+
+  // Override "ago" text.
+  $additions['ago'] = format_interval(time() - $node->executed, 1) .' '. t('ago');
+  if ($node->task_status == HOSTING_TASK_QUEUED) {
+    $additions['ago'] = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+  }
+  elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
+    $additions['ago'] = format_interval(time() - $node->changed);
+
+  }
+
+  // Set task type
+  $additions['type_name'] = $task_types[$node->task_type]['title'];
+
+  // If platform's first verify...
+  if ($node->ref->type == 'platform' && $node->ref->verified == 0) {
+    $additions['type_name'] = t('Cloning Codebase');
+  }
+
+  // Get Icon
+  $additions['icon'] = devshop_task_status_icon($node->task_status);
+
+  // Get desired URL
+  $additions['url'] = url("node/{$node->nid}");
+
+  // @TODO: Doesn't quite work. we need a different VID for each clone link.
+  //  if ($node->task_type == 'clone') {
+  //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
+  //  }
+  return $additions;
 }
 
 /**
@@ -509,11 +610,9 @@ function devshop_environment_save(stdClass &$environment) {
  */
 function devshop_environment_save_last_task($environment) {
 
-  $task_string = serialize($environment->last_task);
-
   db_update('hosting_devshop_project_environment')
     ->fields(array(
-      'last_task' => $task_string,
+      'last_task' => $environment->last_task,
     ))
     ->condition('name', $environment->name)
     ->condition('project_nid', $environment->project_nid)
