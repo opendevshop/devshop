@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
