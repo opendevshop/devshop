@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
 <head>
+  <?php print $head; ?>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,7 +15,7 @@
   <![endif]-->
 
   <?php print $styles ?>
-  <?php print $head; ?>
+  <?php print $scripts ?>
 </head>
 <body class='<?php print $body_classes ?>'>
 
