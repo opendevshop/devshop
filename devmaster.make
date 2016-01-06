@@ -49,3 +49,7 @@ projects[views][version] = "3.12"
 projects[views_bulk_operations][version] = "3.3"
 projects[ctools][version] = "1.9"
 projects[features][version] = "2.7"
+
+; Bootstrap base theme
+projects[bootstrap][type] = theme
+projects[bootstrap][version] = 3.4
