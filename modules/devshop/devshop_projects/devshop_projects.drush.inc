@@ -14,12 +14,35 @@ include 'drush/contexts.inc';
 function devshop_projects_hosting_task_update_status($task, $status) {
   $site = $task->ref;
   if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
-    $site->environment->last_task = array(
-        'status' => $status,
-        'type' => $task->task_type,
-        'nid' => $task->nid,
-        'executed' => $task->executed,
-    );
+    $site->environment->last_task = $task->nid;
+
+    // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
+    // If last task is a successful verify or reset password, load the task before that as the "last task".
+    if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
+
+      // If this object is a platform, lookup the latest tasks from the site node.
+      $tasks_list = hosting_get_tasks('rid', $site->type == 'site'? $site->nid: $site->site);
+
+      // The first item in $tasks should be this task.
+      // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
+      foreach ($tasks_list as &$task_list_item) {
+        // If the first task is this task, we want to skip it.
+        if ($task_list_item->nid == $task->nid && $task_list_item->vid == $task->vid) {
+          continue;
+        }
+        // If the next task is also a login-reset or verify, skip it.
+        if ($task_list_item->task_type == 'verify' || $task_list_item->task_type == 'login-reset') {
+          continue;
+        }
+
+        // Grab the first task that isn't this one or another skippable task
+        $site->environment->last_task = $task_list_item->nid;
+
+        // Stop the loop through the tasks.
+        break;
+      }
+    }
+
     devshop_environment_save_last_task($site->environment);
   }
 }
@@ -71,14 +94,14 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Deploy
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy') {
+
+    // The git_ref is the only argument
     $task->args['git_ref'] = $task->task_args['git_ref'];
 
-    // @TODO: Convert this to something more robust.
-    $task->options['update'] = $task->task_args['update'];
-    $task->options['revert'] = !empty($task->task_args['revert']);
-    $task->options['cache'] = $task->task_args['cache'];
-    $task->options['force'] = FALSE;
-    $task->options['test'] = $task->task_args['test'];
+    // Just load in all of the task_args as options(they come from the task form.)
+    foreach ($task->task_args as $arg => $value) {
+      $task->options[$arg] = $value;
+    }
   }
 
   // Commit
@@ -99,39 +122,6 @@ function drush_devshop_projects_pre_hosting_task() {
 
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
-    $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
-
-    // Check for devshop_testing folder. Create if it doesn't exist.
-    $file_directory_path = variable_get('file_directory_path', '') . '/devshop_testing/';
-    if (!file_exists($file_directory_path)) {
-      drush_log("Creating $file_directory_path", 'ok');
-      mkdir($file_directory_path);
-    }
-
-    // Find output path and relative-to-web path.
-    $output_path = $file_directory_path . 'task-' . $task->vid;
-    if (!file_exists($output_path)) {
-      drush_log("Creating $output_path", 'ok');
-      mkdir($output_path);
-    }
-
-    // Options are passed to drush command.
-    $task->options['output-path'] = realpath($output_path);
-
-    // Task Args are used to pass info back to devmaster
-    $task->task_args['output_path'] = realpath($output_path);
-    $task->task_args['output_link'] = url($output_path, array('absolute' => TRUE));
-    $task->no_verify = TRUE;
-    node_save($task);
-  }
-
-  // If task is set to clone, save a drush option so our hook knows to run a registry rebuild
-  if ($task->task_type == 'clone' && !empty($task->ref->project)) {
-
-    // @TODO This didn't work.
-    //  The rebuild-registry commands were passed only to provision-save!
-//    $task->options['rebuild-registry'] = 1;
-//    $task->options['strict'] = 0;
   }
 }
 
@@ -184,16 +174,17 @@ function drush_devshop_platform_verify() {
       $commands[] = "git checkout $git_ref";
     }
   }
-  // If the platform has been verified and has a branch and git url
-  else {
-    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
-
-    // Run git fetch to ensure we have all branches and tags
-    $output .= _devshop_projects_git_execute('git fetch', $root);
-
-    // Build the command string
-    $commands[] = "git checkout $git_ref";
-  }
+  // @TODO: Remove.  This is handled by the "deploy" task, right?
+//  // If the platform has been verified and has a branch and git url
+//  else {
+//    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
+//
+//    // Run git fetch to ensure we have all branches and tags
+//    $output .= _devshop_projects_git_execute('git fetch', $root);
+//
+//    // Build the command string
+//    $commands[] = "git checkout $git_ref";
+//  }
 
   // Execute clone or checkout.
   $output .=  _devshop_projects_git_execute($commands, $root);

@@ -242,7 +242,7 @@ body.admin-menu .navbar-static-top {
     width: 100%;
 }
 
-.environment.active .progress {
+.environment.task-processing .progress {
   display: block;
   width: 100%;
 }
@@ -342,7 +342,9 @@ input.form-control.webhook-url {
     padding: 0px;
 }
 .dropdown-menu li label,
-.environment label
+.environment label,
+.well label,
+.well dt
 {
   font-size: .7em;
   text-transform: uppercase;
@@ -350,6 +352,25 @@ input.form-control.webhook-url {
   font-weight: bold;
   margin-right: 10px;
   margin-left: 10px;
+}
+
+
+.task-arguments.well {
+  min-height: inherit;
+  margin-bottom: 0px;
+}
+.task-arguments.well dl {
+  margin-bottom: 0px;
+}
+.task-arguments.well .dl-horizontal dt {
+  width: 120px;
+  padding-top: .5em;
+  padding-right: 2em;
+  margin-bottom: 0px;
+}
+
+.task-arguments.well .dl-horizontal dd {
+  margin-left: 120px;
 }
 
 .environment-tests.list-group-item > label {
@@ -367,29 +388,6 @@ input.form-control.webhook-url {
   background: none;
   border: none;
   font-size: .9em;
-}
-
-.environment-deploy {
-    white-space: nowrap;
-
-}
-.environment-deploy button {
-    font-size: .8em;
-    text-transform: uppercase;
-    font-weight: bold;
-    border: none !important;
-    border-radius: 0px;
-    background: transparent !important;
-    color: gray;
-
-}
-
-.environment-deploy button:hover {
-    color: #333;
-}
-
-.environment-deploy .btn-group {
-    margin: 0px;
 }
 
 .btn-deploy-code li a {
@@ -542,12 +540,27 @@ a.pull-request h4 {
 
 .environment > .list-group-item {
   padding: 0px;
+  white-space: nowrap;
 }
+.environment > .list-group-item.text,
+.environment-tasks > ul.dropdown-menu li .text
+{
+  padding: 10px 15px;
+  white-space: normal;
+}
+
+.environment > .list-group-item.text .btn-group {
+  margin-top: -10px;
+  margin-right: -15px;
+}
+
 .environment > .list-group-item.environment-header {
   padding:10px 25px 10px 10px;
 }
 
-.environment > .list-group-item > .btn-group > a {
+.environment > .list-group-item  .btn-group > .btn,
+.environment > .list-group-item  .btn-group > button
+{
   font-size: .8em;
   text-transform: uppercase;
   font-weight: normal;
@@ -555,8 +568,18 @@ a.pull-request h4 {
   border-radius: 0px;
   background: transparent !important;
   color: gray;
+  /*padding-left: 0.75em;*/
+  /*padding-right: 0.75em;*/
+
 }
 
+.environment > .list-group-item  .btn-group > a.alert-link {
+  color: inherit;
+  font-size: inherit;
+}
+.environment > .list-group-item > .btn-group > button:hover {
+  color: #333;
+}
 .github-button {
   font-size: 1.5em;
 }
@@ -626,6 +649,7 @@ html.js fieldset.collapsed {
 
 .btn-logs .list-group-item {
     white-space: nowrap;
+    min-width: 19em;
 }
 
 .environment-task-logs > .alert-default {
@@ -713,4 +737,51 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 #project-add-status {
     margin-top: 15px;
     overflow-x: hidden;
+}
+
+
+.panel.devshop-command .panel-heading {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+.panel.devshop-command pre {
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+
+.environment-dothooks pre {
+  margin: 0 1em 1em;
+  font-size: .8em;
+  overflow-x: scroll;
+  word-wrap: normal;
+}
+
+.follow-checkbox {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+}
+
+.task-details {
+  margin-top: 3em;
+}
+
+.running-indicator {
+    display: none;
+}
+
+.running-indicator.active {
+    display: block;
+}
+
+.task-arg {
+  padding-right: 2em;
+  white-space: nowrap;
+}
+
+.task-arguments-list {
+  display: inline-block;
+
 }

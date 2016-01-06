@@ -61,5 +61,17 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
   );
+
+  // Server settings.
+  $form['server'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop Server'),
+  );
+  $form['server']['devshop_public_key'] = array(
+    '#title' => t('Aegir User Public Key'),
+    '#description' => t('The public key of the aegir user on this server. If you change the SSH keys located at <code>/var/aegir/.ssh/id_rsa.pub</code>, then you should update this variable. This variable is for user reference only. If using GitHub API, then devshop will check to make sure the server has access using this public key.'),
+    '#type' => 'textarea',
+    '#default_value' => variable_get('devshop_public_key', ''),
+  );
   return system_settings_form($form);
 }

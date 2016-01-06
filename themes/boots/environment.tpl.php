@@ -1,6 +1,6 @@
 <div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_name; ?>-<?php print $environment->name ?>">
 
-    <?php if (!$page): ?>
+    <?php if (!empty($environment->task_links) && !$page): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">
@@ -65,13 +65,95 @@
         </div>
     </div>
 
-    <?php if (empty($environment->site)): ?>
-        <div class="list-group-item center-block text-muted">
-            <p>
-                <?php print t('Environment not yet available.'); ?>
-            </p>
+    <!-- Environment Warnings -->
+    <?php if (!empty($warnings)): ?>
+        <?php foreach ($warnings as $warning):
+
+            if ($warning['type'] == 'warning') {
+                $icon = 'exclamation-triangle';
+                $class = 'warning';
+            }
+            elseif ($warning['type'] == 'error') {
+                $icon = 'exclamation-circle';
+                $class = 'danger';
+            }
+            ?>
+        <div class="list-group-item list-group-item-<?php print $class ?> text">
+            <i class="fa fa-<?php print $icon ?>"></i>
+            <?php print $warning['text'] ?>
         </div>
-    <?php else: ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php if ($environment->deleted): ?>
+    <!-- Status Display -->
+    <div class="list-group-item center-block text text-muted">
+        <i class="fa fa-trash"></i>
+        <?php if ($environment->delete_task->task_status == HOSTING_TASK_QUEUED) print t('Environment scheduled for deletion.'); ?>
+    </div>
+    <?php endif; ?>
+
+
+    <?php if ($environment->created['type'] == 'clone' && !$environment->deleted): ?>
+        <!-- Status Display -->
+        <div class="list-group-item center-block text text-muted">
+
+            <?php if ($environment->created['status'] == HOSTING_TASK_ERROR): ?>
+            <i class="fa fa-warning"></i> <?php print t('Environment clone failed.'); ?>
+            <?php endif ;?>
+
+        </div>
+        <div class="list-group-item">
+            <div class="btn-group" role="group">
+                <a href="<?php print url("node/{$environment->created['nid']}/revisions/{$environment->created['vid']}/view"); ?>" class="btn btn-default">
+                    <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
+                </a>
+                <?php if (empty($environment->site) && $environment->platform): ?>
+                    <a href="<?php print url("node/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> <?php print t('Destroy Environment'); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php elseif (empty($environment->site) && !$environment->deleted): ?>
+        <div class="list-group-item center-block text text-muted">
+                <?php print t('Environment not yet available.'); ?>
+        </div>
+    <?php elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
+
+        <div class="list-group-item center-block text text-muted">
+            <i class="fa fa-warning"></i>  <?php print t('Site Install failed. The environment is not available.'); ?>
+        </div>
+        <div class="list-group-item center-block text text-muted">
+            <div class="btn-group " role="group">
+                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
+                    <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+                </a>
+                <?php if (variable_get('hosting_require_disable_before_delete', TRUE) && $environment->site_status != HOSTING_SITE_DISABLED): ?>
+                <a href="<?php print url("node/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                    <i class="fa fa-power-off"></i> <?php print t('Disable the Environment'); ?>
+                </a>
+                <?php else: ?>
+                    <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> <?php print t('Destroy the Environment'); ?>
+                    </a>
+                <?php endif; ?>
+
+            </div>
+        </div>
+    <?php elseif (!$environment->deleted && $environment->site_status == HOSTING_SITE_DISABLED): ?>
+        <div class="list-group-item center-block text text-muted">
+                <?php print t('Environment is disabled.'); ?>
+          <div class="btn-group pull-right">
+            <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
+            </a>
+            <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
+            </a>
+          </div>
+        </div>
+    <?php elseif (!$environment->deleted): ?>
 
         <!-- URLs -->
         <div class="environment-domains list-group-item <?php if ($environment->login_text) print 'login-available'; ?>">
@@ -136,18 +218,18 @@
                     <div class="btn-group btn-group-smaller pull-right login-link" role="group">
 
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
+                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal-<?php print $environment->name ?>" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
                                 <i class="fa fa-sign-in"></i>
                                 <?php print $environment->login_text; ?>
                             </button>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
+                            <div class="modal fade" id="loginModal-<?php print $environment->name ?>" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel-<?php print $environment->name ?>">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="loginModalLabel">
+                                            <h4 class="modal-title" id="loginModalLabel-<?php print $environment->name ?>">
                                                 <?php print $environment->login_text; ?>
                                             </h4>
                                         </div>
@@ -327,16 +409,116 @@
                 </div>
             </div>
         <?php endif; ?>
+
+    <?php if (count(array_filter($environment->settings->deploy)) > 0): ?>
+    <div class="list-group-item environment-dothooks">
+        <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
+        <div class="btn-group btn-hooks" role="group">
+            <?php
+            /**
+             * @TODO:
+             * - Move this to a preprocessor.
+             * - Make a hook_devshop_hook_types() hook so other modules can expand on deploy hooks.
+             */ ?>
+            <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
+                <?php if ($enabled): ?>
+                    <div class="btn-group btn-hook-" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <?php
+                            if ($hook_type == 'dothooks') {
+                                $hook_type_title = t('Hooks YML');
+                            }
+                            elseif ($hook_type == 'acquia_hooks') {
+                                $hook_type_title = t('Acquia Cloud Hooks');
+                            }
+                            else {
+                                $hook_type_title = $hook_type;
+                            }
+                            ?>
+
+                            <?php print $hook_type_title ; ?>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <?php if ($hook_type == 'cache'): ?>
+                                <li><label><?php print t('Clear Caches'); ?></label></li>
+                                <li class="text">
+                                    <p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("All Drupal caches are cleared every time code is deployed."); ?>
+                                    </p>
+                                </li>
+                                <li>
+                                    <pre>drush clear-cache all</pre>
+                                </li>
+                            <?php elseif ($hook_type == 'update'): ?>
+                                <li><label><?php print t('Run Database Updates'); ?></label></li>
+                                <li class="text">
+                                    <p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("Drupal database updates are run every time new code is deployed."); ?>
+                                    </p>
+                                </li>
+                                <li>
+                                    <pre>drush update-db -y</pre>
+                                </li>
+                            <?php elseif ($hook_type == 'revert'): ?>
+                                <li><label><?php print t('Revert all features'); ?></label></li>
+                                <li class="text">
+                                    <p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                          <?php print t("All features modules are reverted every time new code is deployed."); ?>
+                                    </p>
+                                </li>
+                                <li>
+                                    <pre>drush features-revert-all -y</pre>
+                                </li>
+                            <?php elseif ($hook_type == 'dothooks'): ?>
+                                <li><label><?php print t('File-based Hooks'); ?></label></li>
+                                <li class="text"><p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("When code is deployed, the 'deploy' section of a .hooks or .hooks.yml file in your project. This is your %filename file.", array('%filename' => $environment->dothooks_file_name)); ?></p></li>
+                                <li>
+                                    <pre><?php print file_get_contents($environment->dothooks_file_path); ?></pre>
+                                </li>
+                            <?php elseif ($hook_type == 'acquia_hooks'): ?>
+                                <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
+                                <li class="text"><p class="text-info">
+                                        <i class="fa fa-question-circle"></i>
+                                        <?php print t("When code or data is deployed, the appropriate Acquia Cloud Hook within the project will be triggered."); ?></p></li>
+                                <li class="text"><p class="text-muted"><?php print t('See !link1 and !link2 for more information ', array(
+                                        '!link1' => l('Acquia Cloud Documentation', 'https://docs.acquia.com/cloud/manage/cloud-hooks'),
+                                        '!link2' => l('https://github.com/acquia/cloud-hooks', 'https://github.com/acquia/cloud-hooks'),
+                                        )); ?></p>
+                                </li>
+                                <li>
+                                    <label>Supported Cloud Hooks</label>
+                                </li>
+                                <li class="text">
+
+                                    <ul>
+                                        <li><strong>post-code-update:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
+                                        <li><strong>post-code-deploy:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
+                                        <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                                        <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                                    </ul>
+
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
     <?php endif; ?>
-
-
+    <?php endif; ?>
 
     <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
         <?php if ($page): ?>
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
-        <div class="environment-tasks-alert alert-<?php print $environment->last_task_info['class'] ?>">
+        <div class="environment-tasks-alert alert-<?php print $environment->last_task->status_class ?>">
 
 
                 <label>Tasks</label>
@@ -349,11 +531,12 @@
                 </div>
             </div>
             <div class="btn-group text">
-                <a href="<?php print $environment->last_task_info['url']; ?>" class="alert-link">
-                    <i class="fa fa-<?php print $environment->last_task_info['icon'] ?>"></i>
-                    <span><?php print $environment->last_task_info['label'] ?></span>
-                    <em class="small ago"><?php print $environment->last_task_info['ago'] ?></em>
-
+                <a href="<?php print $environment->last_task->url; ?>" class="alert-link">
+                    <i class="fa fa-<?php print $environment->last_task->icon ?>"></i>
+                    <span class="type-name"><?php print $environment->last_task->type_name ?></span>
+                    <span class="status-name small"><?php if ($environment->last_task->task_status != HOSTING_TASK_QUEUED && $environment->last_task->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task->status_name ?></span>
+                      &nbsp;
+                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task->task_status == HOSTING_TASK_QUEUED || $environment->last_task->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task->ago ?></span></em>
                 </a>
             </div>
         </div>
