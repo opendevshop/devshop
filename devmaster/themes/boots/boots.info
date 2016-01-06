@@ -2,6 +2,9 @@ name = Boots
 description = Bootstrap-powered theme for devshop.
 core = 7.x
 engine = phptemplate
+
+base theme = bootstrap
+
 stylesheets[all][] = bootstrap.min.css
 stylesheets[all][] = boots.css
 stylesheets[all][] = fontawesome/css/font-awesome.min.css
