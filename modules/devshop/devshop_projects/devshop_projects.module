@@ -373,7 +373,9 @@ function devshop_projects_block_view($delta) {
       $block['content'] = theme('devshop_project_add_status', array('project' => $project));
     }
   }
-  return $block;
+  if (isset($block)) {
+    return $block;
+  }
 }
 
 /**
