@@ -4,12 +4,9 @@ core = 7.x
 
 ; Drupal core
 dependencies[] = block
-dependencies[] = color
-dependencies[] = filter
 dependencies[] = help
 dependencies[] = menu
 dependencies[] = node
-dependencies[] = overlay
 dependencies[] = system
 dependencies[] = user
 dependencies[] = update
@@ -44,7 +41,6 @@ dependencies[] = hosting_site_backup_manager
 ; Drupal contrib
 dependencies[] = admin_menu
 dependencies[] = betterlogin
-dependencies[] = overlay_paths
 dependencies[] = views
 dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
