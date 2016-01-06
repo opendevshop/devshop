@@ -669,7 +669,7 @@ HTML;
 /**
  * Override for item_list
  */
-function boots_item_list($items = array(), $title = NULL, $type = 'ul', $attributes = NULL) {
+function boots_item_list($items = array(), $title = NULL, $type = 'ul', $attributes = array()) {
   $output = '';
   if (!empty($title)) {
     $output .= '<h3>' . $title . '</h3>';
