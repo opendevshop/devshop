@@ -15,3 +15,9 @@ scripts[] = js/jquery.matchHeight.js
 scripts[] = js/boots.js
 
 scripts[] = https://oss.maxcdn.com/respond/1.4.2/respond.min.js
+
+; Settings
+settings[toggle_logo] = 0
+settings[bootstrap_fluid_container] = 1
+settings[bootstrap_navbar_position] = 'static-top'
+settings[bootstrap_navbar_inverse] = 1
