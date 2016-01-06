@@ -329,7 +329,6 @@ function devshop_projects_node_load($nodes, $types) {
     $task->task_status = (int) $task->task_status;
     $node->verify = $task;
   }
-  }
 }
 
 /**
