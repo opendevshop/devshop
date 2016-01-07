@@ -97,16 +97,20 @@ function devshop_project_create_step_git($form, $form_state) {
   else {
     // @TODO: Make this Translatable
     $output = <<<HTML
-  <div class="empty-message">If you haven't granted this server access to your Git repository, you should do so now using it's <a href="#rsa" title="Click to see this server's public SSH key" onclick="$('#rsa').toggle().select()">public SSH key</a>.</div>
-  <textarea id="rsa" onclick="this.select()">$pubkey</textarea>
+  <div class="empty-message">If you haven't granted this server access to your Git repository, you should do so now using it's public SSH key.</div>
+  <textarea id="rsa" onclick='this.select()'>$pubkey</textarea>
 HTML;
   }
 
   // Add info about connecting to Repo
   $form['connect'] = array(
-    '#type' => 'item',
+    '#type' => 'fieldset',
     '#title' => t('Repository Access'),
-    '#description' => $output,
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['connect']['public_key'] = array(
+    '#markup' => $output,
   );
   return $form;
 }
