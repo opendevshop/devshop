@@ -305,30 +305,42 @@ HTML;
 function devshop_get_tasks($environment, $type = NULL) {
 
   // Load tasks from hosting_task table for both site and platform.
+  $args = array();
   if ($environment->site) {
-    $args = array(
-      ':platform' => $environment->platform,
-      ':site' => $environment->site,
-      ':type' => $type
-    );
 
     if ($type) {
       $where = "(t.rid = :site OR t.rid = :platform) AND t.task_type = :type";
+      $args = array(
+        ':site' => $environment->site,
+        ':platform' => $environment->platform,
+        ':type' => $type
+      );
     }
     else {
       $where = "(t.rid = :site OR t.rid = :platform)";
+      $args = array(
+        ':site' => $environment->site,
+        ':platform' => $environment->platform,
+      );
     }
   }
   else {
     if ($type) {
       $where = "(t.rid = :platform AND t.task_type = :type)";
+      $args = array(
+        ':platform' => $environment->platform,
+        ':type' => $type
+      );
     }
     else {
       $where = "(t.rid = :platform)";
+      $args = array(
+        ':platform' => $environment->platform,
+      );
     }
   }
 
-  $query = db_query("
+  $results = db_query("
     SELECT t.nid, t.vid
       FROM {node} tn
       INNER JOIN {hosting_task} t ON tn.vid = t.vid
@@ -340,7 +352,7 @@ function devshop_get_tasks($environment, $type = NULL) {
     $args
   );
   $tasks = array();
-  while ($result = db_fetch_object($query)) {
+  foreach ($results as $result) {
     $tasks[$result->vid] = node_load($result->nid, $result->vid);
   }
 
@@ -354,7 +366,10 @@ function devshop_get_tasks($environment, $type = NULL) {
         name = 'target_platform' AND value = :platform
       ORDER BY vid DESC
   ",
-      $args);
+      array(
+        ':platform' => $environment->platform,
+      )
+    );
     foreach ($results as $result) {
       $tasks[ $result->vid ] = node_load($result->nid, $result->vid);
     }
