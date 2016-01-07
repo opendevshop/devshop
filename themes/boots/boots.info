@@ -5,7 +5,6 @@ engine = phptemplate
 
 base theme = bootstrap
 
-stylesheets[all][] = bootstrap.min.css
 stylesheets[all][] = boots.css
 stylesheets[all][] = fontawesome/css/font-awesome.min.css
 
