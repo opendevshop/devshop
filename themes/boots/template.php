@@ -341,13 +341,6 @@ HTML;
  */
 function boots_preprocess_page(&$vars){
 
-  if ($primary = menu_primary_local_tasks()) {
-    $vars['tabs'] = "<ul class=\"nav nav-pills nav-stacked\">\n" . $primary . "</ul>\n";
-  }
-  if ($secondary = menu_secondary_local_tasks()) {
-    $vars['tabs2'] = "<ul class=\"nav nav-tabs\">\n" . $secondary . "</ul>\n";
-  }
-
   if (user_access('access task logs')){
     $vars['tasks'] = boots_render_tasks();
   }
@@ -664,4 +657,40 @@ HTML;
       'type' => 'warning',
     );
   }
+}
+
+/**
+ * Returns HTML for primary and secondary local tasks.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *     - primary: (optional) An array of local tasks (tabs).
+ *     - secondary: (optional) An array of local tasks (tabs).
+ *
+ * @return string
+ *   The constructed HTML.
+ *
+ * @see theme_menu_local_tasks()
+ * @see menu_local_tasks()
+ *
+ * @ingroup theme_functions
+ */
+function boots_menu_local_tasks(&$variables) {
+  $output = '';
+
+  if (!empty($variables['primary'])) {
+    $variables['primary']['#prefix'] = '<div class="col-xs-4 col-sm-3 col-md-3 container-fluid"><h2 class="element-invisible">' . t('Primary tabs') . '</h2>';
+    $variables['primary']['#prefix'] .= '<ul class="tabs--primary nav nav-pills nav-stacked">';
+    $variables['primary']['#suffix'] = '</ul></div>';
+    $output .= drupal_render($variables['primary']);
+  }
+
+  if (!empty($variables['secondary'])) {
+    $variables['secondary']['#prefix'] = '<h2 class="element-invisible">' . t('Secondary tabs') . '</h2>';
+    $variables['secondary']['#prefix'] .= '<ul class="tabs--secondary pagination pagination-sm">';
+    $variables['secondary']['#suffix'] = '</ul>';
+    $output .= drupal_render($variables['secondary']);
+  }
+
+  return $output;
 }
