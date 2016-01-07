@@ -40,6 +40,7 @@ dependencies[] = hosting_site_backup_manager
 
 ; Drupal contrib
 dependencies[] = admin_menu
+dependencies[] = admin_menu_toolbar
 dependencies[] = betterlogin
 dependencies[] = views
 dependencies[] = views_bulk_operations
