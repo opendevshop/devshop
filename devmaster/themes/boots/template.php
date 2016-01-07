@@ -365,15 +365,6 @@ function boots_preprocess_page(&$vars){
       $vars['node'] = node_load(arg(1));
     }
 
-    // Removing conflicting scripts.
-    // Not sure how this actually works.  Drupal 6 is fun!
-    // Thanks, http://drupal.stackexchange.com/questions/5076/remove-every-javascript-except-own-theme-scripts
-    drupal_add_js(path_to_theme(). '/js/bootstrap.min.js', 'theme');
-    $js = drupal_add_js();
-    unset($js['core']);
-    unset($js['module']);
-    $vars['scripts'] = $js;
-
     // Set subtitle
     $vars['subtitle'] = ucfirst($vars['node']->type);
     $vars['title_url'] = "node/" . $vars['node']->nid;
