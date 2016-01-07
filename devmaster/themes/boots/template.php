@@ -341,6 +341,18 @@ HTML;
  */
 function boots_preprocess_page(&$vars){
 
+  // Add information about the number of sidebars.
+  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
+  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
+    $vars['content_column_class'] = ' class="col-sm-6"';
+  }
+  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+    $vars['content_column_class'] = ' class="col-sm-9"';
+  }
+  else {
+    $vars['content_column_class'] = ' class="col-sm-12"';
+  }
+
   if (user_access('access task logs')){
     $vars['tasks'] = boots_render_tasks();
   }
@@ -679,9 +691,9 @@ function boots_menu_local_tasks(&$variables) {
   $output = '';
 
   if (!empty($variables['primary'])) {
-    $variables['primary']['#prefix'] = '<div class="col-xs-4 col-sm-3 col-md-3 container-fluid"><h2 class="element-invisible">' . t('Primary tabs') . '</h2>';
+    $variables['primary']['#prefix'] = '<h2 class="element-invisible">' . t('Primary tabs') . '</h2>';
     $variables['primary']['#prefix'] .= '<ul class="tabs--primary nav nav-pills nav-stacked">';
-    $variables['primary']['#suffix'] = '</ul></div>';
+    $variables['primary']['#suffix'] = '</ul>';
     $output .= drupal_render($variables['primary']);
   }
 
