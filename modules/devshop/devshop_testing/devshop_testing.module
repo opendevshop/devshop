@@ -95,6 +95,15 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
     ), devshop_testing_form_elements($form['#node']->project)
     );
+
+    // Default deploy hooks.
+    $form['project']['settings']['deploy']['default_hooks']['test'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Tests'),
+      '#description' => t('Run tests after every code deploy.'),
+      '#weight' => 100,
+      '#default_value' => $form['#node']->environment->settings->deploy['test'],
+    );
   }
 
   // If it's the site (environment) form, it is the override.
