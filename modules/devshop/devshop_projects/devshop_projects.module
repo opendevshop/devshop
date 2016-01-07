@@ -369,7 +369,7 @@ function devshop_projects_block_view($delta) {
     if (arg(0) == 'projects' && arg(1) == 'add') {
       ctools_include('object-cache');
       $project = ctools_object_cache_get('project', 'devshop_project');
-      $block['subject'] = $project->name;
+      $block['subject'] = '';
       $block['content'] = theme('devshop_project_add_status', array('project' => $project));
     }
   }
