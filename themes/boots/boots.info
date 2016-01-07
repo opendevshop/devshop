@@ -8,8 +8,6 @@ base theme = bootstrap
 stylesheets[all][] = boots.css
 stylesheets[all][] = fontawesome/css/font-awesome.min.css
 
-scripts[] = js/jquery.min.js
-scripts[] = js/bootstrap.min.js
 scripts[] = js/jquery.matchHeight.js
 scripts[] = js/boots.js
 
