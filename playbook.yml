@@ -136,8 +136,6 @@
 
     - name: Setup | Install Drush
       shell: /usr/local/bin/composer global require drush/drush:{{ drush_version }} -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
-      args:
-        creates: /usr/share/composer/vendor/bin/drush
 
     - name: Setup | Add composer bin to path
       command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' {{ bashrc_path }}
