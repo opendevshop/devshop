@@ -97,6 +97,7 @@ if [ ! `which ansible` ]; then
             PACKAGE=software-properties-common
         fi
 
+        apt-get update
         apt-get install git -y
         apt-get install $PACKAGE -y
         apt-add-repository ppa:ansible/ansible -y
