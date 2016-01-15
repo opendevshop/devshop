@@ -120,6 +120,33 @@
       <?php endif; ?>
 
     <?php
+      // SITUATION: Environment Disable Initiated
+      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-power-off"></i>
+          <?php print t('Environment is being disabled.'); ?>
+        </div>
+        <?php
+
+      // SITUATION: Site is Disabled
+      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+          <div class="list-group-item center-block text text-muted">
+            <i class="fa fa-power-off"></i>
+            <?php print t('Environment is disabled.'); ?>
+          </div>
+
+          <div class="list-group-item center-block text text-muted">
+            <div class="btn-group">
+              <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+                <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
+              </a>
+              <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+                <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
+              </a>
+            </div>
+        </div>
+
+    <?php
 
       // SITUATION: Clone Failure
       elseif ($environment->created['type'] == 'clone' && !empty($environment->tasks['delete'])): ?>
@@ -150,6 +177,7 @@
           <i class="fa fa-truck"></i>
           <?php print t('Environment is being created.'); ?>
         </div>
+
     <?php
       // SITUATION: Environment has platform but no site, verify failed
       elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR):
@@ -177,7 +205,9 @@
         ?>
         <div class="list-group-item center-block text text-muted">
           <?php print t('Environment clone failed.'); ?>
+        </div>
 
+        <div class="list-group-item center-block text text-muted">
           <div class="btn-group " role="group">
             <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
               <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
@@ -207,30 +237,6 @@
                 <?php endif; ?>
 
             </div>
-        </div>
-    <?php
-
-      // SITUATION: Site Disabled
-      elseif (!empty($environment->tasks['disable'])): ?>
-        <div class="list-group-item center-block text text-muted">
-          <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-
-            <i class="fa fa-power-off"></i>
-            <?php print t('Environment is disabled.'); ?>
-
-            <div class="btn-group pull-right">
-              <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-                <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
-              </a>
-              <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-                <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
-              </a>
-            </div>
-          <?php else: ?>
-            <i class="fa fa-power-off"></i>
-            <?php print t('Environment is being disabled.'); ?>
-          <?php endif; ?>
-
         </div>
 
     <?php
