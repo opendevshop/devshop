@@ -319,13 +319,10 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
   }
 
-  $environment->last_task = array(
-      'status' => HOSTING_TASK_QUEUED,
-      'type' => 'verify',
-      'nid' => $platform->nid,
-      'executed' => 0,
-  );
+  // Get platform verify task
+  $tasks = hosting_get_tasks('rid', $platform->nid);
+  $environment->last_task = current($tasks)->nid;
 
-  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings, last_task) VALUES (%d, "%s", "%s", %d, "%s", "%s");', $project->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings), serialize($environment->last_task));
+  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings, last_task) VALUES (%d, "%s", "%s", %d, "%s", "%s");', $project->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings), $environment->last_task);
 
 }
