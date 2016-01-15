@@ -124,49 +124,47 @@ function devshop_projects_load($node) {
     // Get last task
     $environment->last_task = node_load($environment->last_task_nid);
 
+    // Get all tasks, keyed by type.
+    $environment->tasks = devshop_get_tasks($environment);
+
+    // Create tasks list, keyed by VID
+    foreach ($environment->tasks as $task_type => $tasks) {
+      foreach ($tasks as $task) {
+        $environment->tasks_list[$task->vid] = $task;
+      }
+    }
+    krsort($environment->tasks_list);
+
     // Detect creation method.
     // Some sites get installed. Others get imported.
-    $install_tasks = devshop_get_tasks($environment, 'install');
-    $import_tasks = devshop_get_tasks($environment, 'import');
-    $clone_tasks = devshop_get_tasks($environment, 'clone');
 
     $environment->created = array();
-    if (!empty($install_tasks)) {
+    if (!empty($environment->tasks['install'])) {
       $environment->created['type'] = 'install';
-      $environment->created['date'] = current($install_tasks)->executed;
-      $environment->created['status'] = current($install_tasks)->task_status;
-      $environment->created['nid'] = current($install_tasks)->nid;
-      $environment->created['vid'] = current($install_tasks)->vid;
+      $environment->created['date'] = current($environment->tasks['install'])->executed;
+      $environment->created['status'] = current($environment->tasks['install'])->task_status;
+      $environment->created['nid'] = current($environment->tasks['install'])->nid;
+      $environment->created['vid'] = current($environment->tasks['install'])->vid;
     }
-    elseif (!empty($import_tasks)) {
+    elseif (!empty($environment->tasks['import'])) {
       $environment->created['type'] = 'import';
-      $environment->created['date'] = current($import_tasks)->executed;
-      $environment->created['status'] = current($import_tasks)->task_status;
-      $environment->created['nid'] = current($import_tasks)->nid;
-      $environment->created['vid'] = current($import_tasks)->vid;
+      $environment->created['date'] = current($environment->tasks['import'])->executed;
+      $environment->created['status'] = current($environment->tasks['import'])->task_status;
+      $environment->created['nid'] = current($environment->tasks['import'])->nid;
+      $environment->created['vid'] = current($environment->tasks['import'])->vid;
     }
-    elseif (!empty($clone_tasks)) {
+    elseif (!empty($environment->tasks['clone'])) {
       $environment->created['type'] = 'clone';
-      $environment->created['date'] = current($clone_tasks)->executed;
-      $environment->created['status'] = current($clone_tasks)->task_status;
-      $environment->created['nid'] = current($clone_tasks)->nid;
-      $environment->created['vid'] = current($clone_tasks)->vid;
+      $environment->created['date'] = current($environment->tasks['clone'])->executed;
+      $environment->created['status'] = current($environment->tasks['clone'])->task_status;
+      $environment->created['nid'] = current($environment->tasks['clone'])->nid;
+      $environment->created['vid'] = current($environment->tasks['clone'])->vid;
     }
     // Neither import nor install nor clone was found.
     else {
       $environment->created['type'] = '';
       $environment->created['date'] = '';
       $environment->created['status'] = '';
-    }
-
-    // Detect environment deletion
-    $delete_tasks = devshop_get_tasks($environment, 'delete');
-    if (!empty($delete_tasks)) {
-      $environment->deleted = TRUE;
-      $environment->delete_task = current($delete_tasks);
-    }
-    else {
-      $environment->deleted = FALSE;
     }
 
     // Get the current git ref type.
@@ -498,7 +496,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     // Load environment info into tasks.
   if ($op == 'load' && $node->type == 'task') {
     $additions = array();
-    $result = db_fetch_object(db_query("SELECT nid, title AS name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));
+    $result = db_fetch_object(db_query("SELECT nid, title AS name, name AS environment FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));
 
     // Load project and environment
     $additions['project'] = $result;
