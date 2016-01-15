@@ -154,7 +154,7 @@
       // SITUATION: Environment has platform but no site, verify failed
       elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR):
 
-        $verify_task = current($environment->tasks['verify'])
+        $verify_task = current($environment->tasks['verify']);
         ?>
         <div class="list-group-item center-block text text-muted">
           <?php print t('Platform creation failed'); ?>
