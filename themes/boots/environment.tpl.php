@@ -14,26 +14,15 @@
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
-        <!-- Environment Links -->
+      <?php  if (isset($environment->github_pull_request)): ?>
+        <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32" class="environment-avatar">
+      <?php endif; ?>
 
-        <?php  if (isset($environment->github_pull_request)): ?>
-            <!-- Pull Request -->
-            <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
-                <h4>
-                    <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32">
-                    <i class="fa fa-github"></i>
-                    <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>
-                </h4></a>
+      <!-- Environment Name -->
+        <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
+            <?php print $environment->name; ?></a>
 
-        <?php else: ?>
-
-
-            <!-- Environment Name -->
-            <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
-                <?php print $environment->name; ?></a>
-        <?php endif; ?>
-
-        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('View this !type', array('!type' => $environment->git_ref_type)); ?>">
+        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
             <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
 
@@ -41,7 +30,6 @@
             <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data environment-drupal-version btn btn-text">
                 <i class="fa fa-drupal"></i><?php print $environment->version; ?>
             </a>
-
         <?php endif; ?>
 
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
@@ -63,6 +51,21 @@
             <?php endif; ?>
 
         </div>
+
+      <?php  if (isset($environment->github_pull_request)): ?>
+        <!-- Pull Request -->
+
+
+        <h6>
+          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
+            <i class="fa fa-github"></i>
+            <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>:
+            <?php print $environment->github_pull_request->pull_request_object->title;?>
+          </a>
+        </h6>
+
+      <?php endif; ?>
+
     </div>
 
     <!-- Environment Warnings -->

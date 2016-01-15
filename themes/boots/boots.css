@@ -526,22 +526,30 @@ ul.dropdown-menu li.text {
   right: 0px;
 }
 
-.environment.pull-request > .list-group-item.environment-header {
-  padding-left: 45px;
+.environment.pull-request img.environment-avatar {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+.environment.pull-request .environment-header {
+  padding-left: 48px !important;
 }
 
-a.pull-request h4 {
-  margin-top: -4px;
-  margin-left: -40px;
-  float: left;
-  margin-right: 10px;
-  margin-bottom: -13px;
+.environment.pull-request .environment-header a.pull-request i.fa-github {
+  position: absolute;
+  left: 11px;
+  top: 51px;
+  font-size: 3em;
 }
 
 .environment > .list-group-item {
   padding: 0px;
   white-space: nowrap;
 }
+.environment > .environment-header.list-group-item {
+  white-space: normal;
+}
+
 .environment > .list-group-item.text,
 .environment-tasks > ul.dropdown-menu li .text
 {
@@ -555,7 +563,7 @@ a.pull-request h4 {
 }
 
 .environment > .list-group-item.environment-header {
-  padding:10px 25px 10px 10px;
+  padding:10px 36px 10px 10px;
 }
 
 .environment > .list-group-item  .btn-group > .btn,
