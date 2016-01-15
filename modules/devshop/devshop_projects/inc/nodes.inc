@@ -600,7 +600,7 @@ function devshop_environment_save(stdClass &$environment) {
   $info->site = $environment->site;
   $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);
-  $info->last_task = serialize($environment->last_task);
+  $info->last_task = $environment->last_task;
 
   // Save environment record.
   if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))){
