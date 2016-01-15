@@ -147,6 +147,7 @@
       // SITUATION: Environment has platform but no site, and verify is queued or processing
       elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && (current($environment->tasks['verify'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['verify'])->task_status == HOSTING_TASK_PROCESSING)): ?>
         <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-truck"></i>
           <?php print t('Environment is being created.'); ?>
         </div>
     <?php
