@@ -23,7 +23,7 @@
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=0.x
+DEVSHOP_VERSION=0.7.4
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
