@@ -16,8 +16,9 @@ var devshopTasksUpdate = function (data) {
 
     var lastTaskStatus = null;
     $.each(data, function(key, value){
+        var task = value.last_task;
         var id = '#' + value.project + '-' + value.name;
-        var new_class = 'alert-' + value.last_task.status_class;
+        var new_class = 'alert-' + task.status_class;
 
         var $alert_div = $('.environment-task-logs > div', id);
 
@@ -28,7 +29,7 @@ var devshopTasksUpdate = function (data) {
             $alert_div.attr('class', new_class);
 
             // Set or remove active class from environment div.
-            if (value.last_task.status_class == 'queued' || value.last_task.status_class == 'processing') {
+            if (task.status_class == 'queued' || task.status_class == 'processing') {
                 $(id).addClass('active');
             }
             else {
@@ -41,58 +42,58 @@ var devshopTasksUpdate = function (data) {
             $(id).removeClass('task-success');
             $(id).removeClass('task-error');
             $(id).removeClass('task-warning');
-            $(id).addClass('task-' + value.last_task.status_class);
+            $(id).addClass('task-' + task.status_class);
 
             // Set value of label span
-            $('.alert-link > .type-name', $alert_div).html(value.last_task.type_name);
+            $('.alert-link > .type-name', $alert_div).html(task.type_name);
 
             // If queued or processing, make label empty.
-            if (value.last_task.status_class == 'queued' || value.last_task.status_class == 'processing') {
+            if (task.status_class == 'queued' || task.status_class == 'processing') {
                 $('.alert-link > .status-name', $alert_div).html('');
                 $('.alert-link .ago-icon', $alert_div).removeClass('fa-calendar');
                 $('.alert-link .ago-icon', $alert_div).addClass('fa-clock-o');
             }
             else {
-                $('.alert-link > .status-name', $alert_div).html(value.last_task.status_name);
+                $('.alert-link > .status-name', $alert_div).html(task.status_name);
 
                 $('.alert-link .ago-icon', $alert_div).removeClass('fa-clock-o');
                 $('.alert-link .ago-icon', $alert_div).addClass('fa-calendar');
             }
 
             // Set value of "ago"
-            $('.alert-link .ago', $alert_div).html(value.last_task.ago);
+            $('.alert-link .ago', $alert_div).html(task.ago);
 
             // Change icon.
-            $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + value.last_task.icon);
+            $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + task.icon);
 
             // Change href
-            $('.alert-link', $alert_div).attr('href', value.last_task.url);
+            $('.alert-link', $alert_div).attr('href', task.url);
 
             // Change "processing" div
         }
         // Task Node Page
-        else if (Drupal.settings.devshopTask == value.last_task.nid) {
+        else if (Drupal.settings.devshopTask == task.nid) {
 
-            $badge = $('.label.task-status', '#node-' + value.last_task.nid);
+            $badge = $('.label.task-status', '#node-' + task.nid);
 
             // Change Badge
-            var html = '<i class="fa fa-' + value.last_task.icon + '"></i> ' + value.last_task.status_name;
+            var html = '<i class="fa fa-' + task.icon + '"></i> ' + task.status_name;
             $badge.html(html);
 
             // Change Class
-            $badge.attr('class', 'label label-default task-status label-' + value.last_task.status_class);
+            $badge.attr('class', 'label label-default task-status label-' + task.status_class);
 
             // Reload Logs
-            $logs = $('#task-logs', '#node-' + value.last_task.nid);
-            $logs.html(value.last_task.logs);
+            $logs = $('#task-logs', '#node-' + task.nid);
+            $logs.html(task.logs);
 
             // @TODO:
             // Change Duration
-            $('.duration .duration-text', '#node-' + value.last_task.nid).html(value.last_task.duration);
+            $('.duration .duration-text', '#node-' + task.nid).html(task.duration);
 
 
             // If task is not processing or queued, hide follow link.
-            if (value.last_task.task_status != 0 && value.last_task.task_status != -1 ) {
+            if (task.task_status != 0 && task.task_status != -1 ) {
                 // Scroll down one last time if checked.
                 if ($('#follow').prop('checked')) {
                     window.scrollTo(0,document.body.scrollHeight);
@@ -110,13 +111,13 @@ var devshopTasksUpdate = function (data) {
             }
 
             // If running, set text to indicate
-            if (value.last_task.task_status == -1) {
+            if (task.task_status == -1) {
                 $('.running-indicator .running-label').text('Processing...');
                 $('.running-indicator .fa-gear').addClass('fa-spin');
             }
 
             // If the last task was complete, and this task is complete, stop the autoloader.
-            if (Drupal.settings.lastTaskStopped && (value.last_task.task_status != -1 && value.last_task.task_status != 0)) {
+            if (Drupal.settings.lastTaskStopped && (task.task_status != -1 && task.task_status != 0)) {
                 console.log('Task is not processing or queued. Stopping the autoloader.')
                 return;
             }
@@ -127,27 +128,27 @@ var devshopTasksUpdate = function (data) {
             var id = '#badge-' + value.project + '-' + value.name;
 
             // Set class of badge
-            $(id).attr('class', 'btn btn-small alert-' + value.last_task.status_class);
+            $(id).attr('class', 'btn btn-small alert-' + task.status_class);
 
             // Set title
-            var title = value.last_task.type_name + ': ' + value.last_task.status_class;
+            var title = task.type_name + ': ' + task.status_class;
             $(id).attr('title', title);
 
             // Change icon.
-            $('.fa', id).attr('class', 'fa fa-' + value.last_task.icon);
+            $('.fa', id).attr('class', 'fa fa-' + task.icon);
         }
 
         // Update global tasks list.
         var task_id = '#task-' + value.project + '-' + value.name;
 
         // Set class of badge
-        $(task_id).attr('class', 'list-group-item list-group-item-' + value.last_task.status_class);
+        $(task_id).attr('class', 'list-group-item list-group-item-' + task.status_class);
 
         // Set value of "ago"
-        $('small.task-ago', task_id).html(value.last_task.ago);
+        $('small.task-ago', task_id).html(task.ago);
 
         // Change icon.
-        $('.fa', task_id).attr('class', 'fa fa-' + value.last_task.icon);
+        $('.fa', task_id).attr('class', 'fa fa-' + task.icon);
 
     });
 
