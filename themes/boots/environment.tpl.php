@@ -144,10 +144,25 @@
             </div>
         </div>
     <?php
-      // SITUATION: Site doesn't exist yet.
-      elseif (empty($environment->site) && !empty($environment->tasks['delete'])): ?>
+      // SITUATION: Environment has platform but no site, and verify is queued or processing
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify'])): ?>
         <div class="list-group-item center-block text text-muted">
-                <?php print t('Environment being created.'); ?>
+          <?php print t('Environment is being created.'); ?>
+        </div>
+    <?php
+      // SITUATION: Environment has platform but no site, verify failed
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR):
+
+        $verify_task = current($environment->tasks['verify'])
+        ?>
+        <div class="list-group-item center-block text text-muted">
+          <?php print t('Platform creation failed'); ?>
+
+          <div class="btn-group " role="group">
+            <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
+              <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+            </a>
+          </div>
         </div>
     <?php
       // SITUATION: Site Install Failed
