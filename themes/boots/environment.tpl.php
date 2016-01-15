@@ -157,8 +157,12 @@
         $verify_task = current($environment->tasks['verify']);
         ?>
         <div class="list-group-item center-block text text-muted">
-          <?php print t('Platform creation failed'); ?>
 
+          <i class="fa fa-warning"></i>
+          <?php print t('Codebase preparation failed.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
           <div class="btn-group " role="group">
             <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
               <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
