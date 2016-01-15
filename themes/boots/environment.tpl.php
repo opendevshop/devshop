@@ -152,7 +152,9 @@
     <?php
 
       // SITUATION: Clone Failure
-      elseif ($environment->created['type'] == 'clone' && !empty($environment->tasks['delete'])): ?>
+      elseif ($environment->created['type'] == 'clone' && !empty($environment->tasks['delete']) ||
+        empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['clone']) && current($environment->tasks['clone'])->task_status == HOSTING_TASK_ERROR
+      ): ?>
         <!-- Status Display -->
         <div class="list-group-item center-block text text-muted">
 
@@ -200,23 +202,7 @@
             </a>
           </div>
         </div>
-    <?php
-      // SITUATION: Environment has platform but no site, and clone failed
-      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['clone']) && current($environment->tasks['clone'])->task_status == HOSTING_TASK_ERROR):
 
-        $verify_task = current($environment->tasks['clone'])
-        ?>
-        <div class="list-group-item center-block text text-muted">
-          <?php print t('Environment clone failed.'); ?>
-        </div>
-
-        <div class="list-group-item center-block text text-muted">
-          <div class="btn-group " role="group">
-            <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
-              <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
-            </a>
-          </div>
-        </div>
     <?php
       // SITUATION: Site Install Failed
       elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
