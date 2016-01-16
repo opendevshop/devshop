@@ -4,11 +4,26 @@ Drupal.behaviors.devshopReload = function() {
 }
 
 var devshopCheckProject = function(){
-  $.get('/hosting/projects/add/status/' + Drupal.settings.devshopReload.type, null, devshopReloadPage , 'json');
+    console.log('Checking...');
+  $.get('/projects/add/status/' + Drupal.settings.devshopReload.type, null, devshopReloadPage , 'json');
 }
 
 var devshopReloadPage = function(data){
-  
+    // Populate versions and install profiles
+    $.each(data.tasks, function(i, platform) {
+        if (platform.version) {
+            $('#version-' + i).html(platform.version);
+        }
+        if (platform.profiles) {
+            $('#profiles-' + i).html(platform.profiles);
+        }
+        if (platform.status) {
+            if (platform.status == 'Processing') {
+                platform.status += ' <i class="fa fa-gear fa-spin"></i>';
+            }
+            $('#status-' + i).html(platform.status);
+        }
+    });
   if (data.tasks_complete){
     document.location.reload();
   } else {

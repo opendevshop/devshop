@@ -22,7 +22,7 @@ function devshop_projects_settings_form() {
     '#title' => t('Projects Base Path'),
     '#type' => 'textfield',
     '#description' => t('The default base path that all projects will be created in.  Projects each get their own folder inside this path.'),
-    '#default_value' => variable_get('devshop_project_default_path', '/var/aegir/projects'),
+    '#default_value' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
   );
   $form['paths']['devshop_project_default_drupal_path'] = array(
     '#title' => t('Default path to Drupal'),
@@ -49,6 +49,29 @@ function devshop_projects_settings_form() {
     '#type' => 'textfield',
     '#description' => t('Each environment (aegir site) gets an initial URL. You can use @project for project name and @hostname for "%host". Environments are put underneath this URL as subdomains.', array('%host' => $_SERVER['SERVER_NAME'])),
     '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
+  );
+
+  $form['support'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop Support'),
+  );
+  $form['support']['devshop_support_widget_enable'] = array(
+    '#title' => t('Show Help Widget'),
+    '#description' => t('Uncheck this box if you want to hide the Help widget that appears at the bottom right of the page.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
+  );
+
+  // Server settings.
+  $form['server'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('DevShop Server'),
+  );
+  $form['server']['devshop_public_key'] = array(
+    '#title' => t('Aegir User Public Key'),
+    '#description' => t('The public key of the aegir user on this server. If you change the SSH keys located at <code>/var/aegir/.ssh/id_rsa.pub</code>, then you should update this variable. This variable is for user reference only. If using GitHub API, then devshop will check to make sure the server has access using this public key.'),
+    '#type' => 'textarea',
+    '#default_value' => variable_get('devshop_public_key', ''),
   );
   return system_settings_form($form);
 }

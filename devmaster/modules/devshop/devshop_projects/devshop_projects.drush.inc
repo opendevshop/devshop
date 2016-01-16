@@ -7,6 +7,47 @@
 include 'drush/contexts.inc';
 
 /**
+ * Implements hook_hosting_task_update_status()
+ *
+ * Saves task status to environment
+ */
+function devshop_projects_hosting_task_update_status($task, $status) {
+  $site = $task->ref;
+  if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
+    $site->environment->last_task = $task->nid;
+
+    // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
+    // If last task is a successful verify or reset password, load the task before that as the "last task".
+    if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
+
+      // If this object is a platform, lookup the latest tasks from the site node.
+      $tasks_list = hosting_get_tasks('rid', $site->type == 'site'? $site->nid: $site->site);
+
+      // The first item in $tasks should be this task.
+      // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
+      foreach ($tasks_list as &$task_list_item) {
+        // If the first task is this task, we want to skip it.
+        if ($task_list_item->nid == $task->nid && $task_list_item->vid == $task->vid) {
+          continue;
+        }
+        // If the next task is also a login-reset or verify, skip it.
+        if ($task_list_item->task_type == 'verify' || $task_list_item->task_type == 'login-reset') {
+          continue;
+        }
+
+        // Grab the first task that isn't this one or another skippable task
+        $site->environment->last_task = $task_list_item->nid;
+
+        // Stop the loop through the tasks.
+        break;
+      }
+    }
+
+    devshop_environment_save_last_task($site->environment);
+  }
+}
+
+/**
  * Implements drush_HOOK_pre_COMMAND()
  *
  * This runs for each task during the command
@@ -17,11 +58,23 @@ include 'drush/contexts.inc';
  * the $task object, or if you don't need this functionality from the command
  * line.
  */
-function drush_devshop_projects_pre_hosting_task() {
+function drush_devshop_projects_pre_hosting_task()
+{
 
   drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
 
   $task =& drush_get_context('HOSTING_TASK');
+
+
+  // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
+  if ($task->task_type == 'download') {
+    drush_log('[AEGIR DEVSHOP_PROJECTS] Download package enabled...', 'ok');
+
+    $task->options['packages'] = $task->task_args['packages'];
+    $task->options['commit'] = $task->task_args['update'];
+    $task->options['message'] = $task->task_args['message'];
+    $task->options['update'] = $task->task_args['update'];
+  }
 
   // Verify Platform
   // Here is where we hook in and clone the site
@@ -42,14 +95,14 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Deploy
   if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy') {
+
+    // The git_ref is the only argument
     $task->args['git_ref'] = $task->task_args['git_ref'];
 
-    // @TODO: Convert this to something more robust.
-    $task->options['update'] = $task->task_args['update'];
-    $task->options['revert'] = !empty($task->task_args['revert']);
-    $task->options['cache'] = $task->task_args['cache'];
-    $task->options['force'] = FALSE;
-    $task->options['test'] = $task->task_args['test'];
+    // Just load in all of the task_args as options(they come from the task form.)
+    foreach ($task->task_args as $arg => $value) {
+      $task->options[$arg] = $value;
+    }
   }
 
   // Commit
@@ -67,10 +120,9 @@ function drush_devshop_projects_pre_hosting_task() {
 
   // Run tests
   if ($task->ref->type == 'site' && $task->task_type == 'test') {
+
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
-    $task->options['behat-folder-path'] = $task->task_args['behat_folder_path'];
-    $task->options['behat-bin-path'] = $task->task_args['behat_bin_path'];
   }
 }
 
@@ -123,16 +175,17 @@ function drush_devshop_platform_verify(){
       $commands[] = "git checkout $git_ref";
     }
   }
-  // If the platform has been verified and has a branch and git url
-  else {
-    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
-
-    // Run git fetch to ensure we have all branches and tags
-    $output .= _devshop_projects_git_execute('git fetch', $root);
-
-    // Build the command string
-    $commands[] = "git checkout $git_ref";
-  }
+  // @TODO: Remove.  This is handled by the "deploy" task, right?
+//  // If the platform has been verified and has a branch and git url
+//  else {
+//    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
+//
+//    // Run git fetch to ensure we have all branches and tags
+//    $output .= _devshop_projects_git_execute('git fetch', $root);
+//
+//    // Build the command string
+//    $commands[] = "git checkout $git_ref";
+//  }
 
   // Execute clone or checkout.
   $output .=  _devshop_projects_git_execute($commands, $root);
@@ -260,15 +313,14 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
       // Check for site to clone
       if ($platform->environment->settings->site_to_clone) {
-        $servers = hosting_get_servers('db');
-
+        $site = node_load($platform->environment->settings->site_to_clone);
         $args['target_platform'] = $platform->nid;
 
         // Ensure new URI doesn't contain underscores or other invalid characters.
         $args['new_uri'] = str_replace('_', '-', $platform->environment->name) .'.'. $platform->project->base_url;
 
-        // @TODO: Match settings of cloned environment.
-        $args['new_db_server'] = key($servers);
+        // Use the default database server for the project.
+        $args['new_db_server'] = $site->db_server;
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
 
         // Queue the Cloning of the site.
@@ -276,7 +328,15 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
       }
       else {
-        devshop_projects_create_site($platform->project, $platform, $platform->environment->name);
+
+        // Determine what DB server to use
+        if (isset($platform->environment->settings->db_server)) {
+          $db_server = $platform->environment->settings->db_server;
+        }
+        else {
+          $db_server = $platform->project->settings->default_environment['db_server'];
+        }
+        devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
         drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
       }
     }
@@ -316,10 +376,14 @@ function devshop_projects_post_hosting_import_task($task, $data) {
       // Save aliases if needed.
       if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
         $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
-        $site->aliases = array($domain);
+
+        $site->aliases[] = $domain;
         drush_log('[DEVSHOP] Saving domain to the environment:' . $domain);
         node_save($site);
       }
+
+      // Queue a verify task.
+      hosting_add_task($site->nid, 'verify');
     }
   }
 }
@@ -327,27 +391,37 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 /**
  * Utility for execute git commands.
  */
-function _devshop_projects_git_execute($commands, $root) {
+function _devshop_projects_git_execute($commands, $root = '') {
   // Execute
   $return = '';
+  if (is_string($commands)) {
+    $commands = array($commands);
+  }
   foreach ($commands as $command) {
     if (!empty($command)){
-      drush_log('[DEVSHOP] Running: ' . $command);
+      drush_log("[DEVSHOP] Running Command in $root: $command");
 
       // @TODO: Create a d()->server->shell_cd_and_exec() function
       //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
       // So instead, this is the code from d()->server->shell_exec
       // d()->server->shell_exec($cmd);
       if (provision_is_local_host(d()->server->remote_host)) {
-        drush_shell_cd_and_exec($root, escapeshellcmd($command));
+
+        // Run in $root if it exists.
+        if (file_exists($root)) {
+          drush_shell_cd_and_exec($root, escapeshellcmd($command));
+        }
+        else {
+          drush_shell_exec(escapeshellcmd($command));
+        }
       }
       else {
         drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
       }
 
       $output = drush_shell_exec_output();
-      drush_log('Shell Output: ' . implode("\n", $output) , 'warning');
-      $return .= $output;
+      drush_log('Shell Output: ' . implode("\n", $output) , 'ok');
+      $return .=  implode("\n", $output);
     }
   }
   return $return;

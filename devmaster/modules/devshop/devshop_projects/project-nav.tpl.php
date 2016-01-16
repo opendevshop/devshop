@@ -16,10 +16,12 @@
             <?php print t('Settings'); ?>
             <span class="caret"></span>
           </a>
-          <ul class="dropdown-menu" role="menu">
+          <ul class="dropdown-menu dropdown-settings" role="menu">
             <?php if (node_access('update', $node)): ?>
             <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
+                <li class="divider"></li>
             <?php endif; ?>
+
             <li><label><?php print t('Environment Settings'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
             <li>
@@ -57,8 +59,10 @@
       <div class="input-group">
 
         <!-- Link to github or an icon -->
-        <?php if (isset($github_url)): ?>
-          <a class="input-group-addon" href="<?php print $github_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github-alt"></i></a>
+        <?php if ($project->git_provider == 'github'): ?>
+          <a class="input-group-addon github-button" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github"></i></a>
+        <?php elseif ($project->git_repo_url): ?>
+          <a class="input-group-addon large" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View Git Repo'); ?>" target="_blank"><i class="fa fa-git"></i></a>
         <?php else: ?>
           <div class="input-group-addon"><i class="fa fa-git"></i></div>
         <?php endif; ?>

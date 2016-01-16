@@ -2,17 +2,26 @@ core = 6.x
 api = 2
 
 projects[drupal][type] = "core"
+projects[drupal][version] = "6.37"
 
 ; this makefile will make sure we get the development code from the
 ; aegir modules instead of the tagged releases
 includes[devshop] = "drupal-org.make"
 
 ; Aegir Modules
-projects[hosting][version] = "2.1"
-projects[hosting][subdir] = aegir
+; For development, use latest branch.
+; For release, use tagged version
+projects[hosting][version] = "2.5"
 
-projects[admin_menu][version] = "1.8"
+; Contrib Modules
+projects[modalframe][version] = "1.9"
+projects[modalframe][subdir] = contrib
+
+projects[admin_menu][version] = "1.9"
 projects[admin_menu][subdir] = contrib
+
+projects[adminrole][version] = "1.3"
+projects[adminrole][subdir] = contrib
 
 projects[openidadmin][version] = "1.2"
 projects[openidadmin][subdir] = contrib
@@ -26,44 +35,51 @@ projects[jquery_ui][subdir] = contrib
 projects[jquery_update][version] = "2.0-alpha1"
 projects[jquery_update][subdir] = contrib
 
-projects[modalframe][version] = "1.9"
-projects[modalframe][subdir] = contrib
-
-projects[views][version] = "3.0"
+projects[views][version] = "3.2"
 projects[views][subdir] = contrib
 
-projects[views_bulk_operations][version] = "1.16"
+projects[views_bulk_operations][version] = "1.17"
 projects[views_bulk_operations][subdir] = contrib
 
-projects[ctools][version] = "1.11"
+projects[ctools][version] = "1.15"
 projects[ctools][subdir] = contrib
+
+projects[features][version] = "1.2"
+projects[features][subdir] = contrib
+
+
+projects[hosting_filemanager][version] = "1.0-beta1"
+projects[hosting_filemanager][subdir] = contrib
+
+projects[hosting_tasks_extra][version] = "2.1"
+projects[hosting_tasks_extra][subdir] = contrib
+
+; Aegir Contrib maintained by devshop maintainers
+projects[hosting_solr][version] = "1"
+projects[hosting_solr][subdir] = contrib
+
+projects[hosting_logs][version] = "2"
+projects[hosting_logs][subdir] = contrib
+
+projects[hosting_site_backup_manager][version] = "2.0"
+projects[hosting_site_backup_manager][subdir] = contrib
+
+; Keeping this module out of the repo for now.  We don't have a way to run "composer install" in the module's folder before upgrading to it.
+;projects[hosting_tasks_jenkins][subdir] = "contrib"
+;projects[hosting_tasks_jenkins][type] = "module"
+;projects[hosting_tasks_jenkins][download][type] = "git"
+;projects[hosting_tasks_jenkins][download][branch] = "master"
+;projects[hosting_tasks_jenkins][version] = "master"
+;projects[hosting_tasks_jenkins][download][url] = "git://github.com/opendevshop/hosting_task_jenkins.git"
+
+projects[aegir_ssh][version] = "0"
+projects[aegir_ssh][subdir] = contrib
+
+projects[sshkey][version] = "2"
+projects[sshkey][subdir] = contrib
 
 ; Libraries
 libraries[jquery_ui][download][type] = "get"
 libraries[jquery_ui][destination] = "modules/contrib/jquery_ui"
 libraries[jquery_ui][download][url] = "http://jquery-ui.googlecode.com/files/jquery-ui-1.7.3.zip"
 libraries[jquery_ui][directory_name] = "jquery.ui"
-
-; Contrib modules
-projects[adminrole][subdir] = contrib
-projects[adminrole][version] = 1.3
-
-projects[jquery_update][subdir] = contrib
-projects[jquery_update][version] = 2.0-alpha1
-
-; Aegir Contrib
-projects[hosting_filemanager][subdir] = aegir
-projects[hosting_filemanager][version] = 1.0-beta1
-
-projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = 2.1
-
-; Aegir Contrib maintained by devshop maintainers
-projects[hosting_solr][subdir] = aegir
-projects[hosting_solr][version] = 1.0-beta1
-
-projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = 2.x
-
-projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = 2.0

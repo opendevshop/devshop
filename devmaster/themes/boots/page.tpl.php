@@ -13,10 +13,8 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-
   <?php print $styles ?>
-
+  <?php print $head; ?>
 </head>
 <body class='<?php print $body_classes ?>'>
 
@@ -73,14 +71,22 @@
     </div>
   </div>
   <div class="row">
-    <div class="main col-md-12 container-fluid">
-
+    <?php if ($tabs || $left): ?>
+    <div class="col-xs-4 col-sm-3 col-md-3 container-fluid">
       <?php if ($tabs) print $tabs ?>
-      <?php if (isset($tabs2)) print $tabs2 ?>
+      <?php if ($left) print $left ?>
+    </div>
+    <?php endif; ?>
+      <div class="main
+        col-xs-<?php print $tabs? '8': '12'; ?>
+        col-sm-<?php print $tabs? '9': '12'; ?>
+        col-md-<?php print $tabs? '9': '12'; ?>
 
-      <?php if ($help): print $help; endif; ?>
+         container-fluid">
+          <?php if (isset($tabs2)) print $tabs2 ?>
 
-      <?php print $content ?>
+          <?php if ($help): print $help; endif; ?>
+          <?php print $content ?>
     </div>
   </div>
 </div>

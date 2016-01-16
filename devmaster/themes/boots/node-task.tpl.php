@@ -1,3 +1,12 @@
+<script>
+  (function ($) {
+    $('#task-tabs a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    })
+  })(jQuery);
+</script>
+
 <?php
 
 /**
@@ -51,23 +60,143 @@
 
   <?php print $picture ?>
 
-  <?php if (!$page): ?>
-    <h2><a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a></h2>
-  <?php endif; ?>
+  <div class="well well-sm">
 
-  <div class="meta">
-    <?php if ($submitted): ?>
-      <p class="submitted alert alert-success"><?php print $submitted ?></p>
+    <h4>
+
+      <div class="task-badge pull-left">
+        <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
+      </div>
+
+      <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
+
+      <?php if ($retry): ?>
+        <div class="retry-button pull-right">
+          <?php print $retry; ?>
+        </div>
+      <?php endif; ?>
+    </h4>
+
+    <p>
+      <span class="duration">
+          <i class="fa fa-clock-o"></i>
+          <span class="duration-text">
+            <?php print $duration; ?>
+          </span>
+      </span>
+      <span>&nbsp;</span>
+      <span class="executed inline">
+          <i class="fa fa-calendar-o"></i>
+          <?php print $date; ?>
+          <small><?php print $executed; ?></small>
+      </span>
+    </p>
+
+    <?php if ($site_url): ?>
+      <?php print $site_url ?>
     <?php endif; ?>
 
-    <?php if ($terms): ?>
-      <div class="terms terms-inline"><?php print $terms ?></div>
-    <?php endif;?>
+
+
+    <?php if ($task_well): ?>
+      <?php print $task_well; ?>
+    <?php endif; ?>
+
   </div>
 
-  <div class="content">
-    <?php print $content ?>
+  <?php if (count($task_args)): ?>
+    <div class="task-arguments well well-sm">
+      <!-- Default panel contents -->
+
+      <dl class="dl-horizontal">
+        <dt><?php print t('Task Arguments') ?></dt>
+        <dd>
+        <?php foreach (array_filter($task_args) as $arg => $value): ?>
+          <?php
+          if ($value === '1') {
+            $value = '';
+            $arg = '<i class="fa fa-check"></i>' . $arg;
+          }
+          ?>
+          <span class="task-arg small text-muted">
+            <strong><?php print $arg; ?></strong>
+            <span>
+              <?php print $value; ?>
+            </span>
+          </span>
+        <?php endforeach; ?>
+
+        </dd>
+      </dl>
+    </div>
+  <?php endif; ?>
+
+    <?php  if ($follow_checkbox): ?>
+        <div class="follow-logs-checkbox">
+            <?php print $follow_checkbox; ?>
+        </div>
+    <?php endif; ?>
+
+    <h3><?php print $type; ?></h3>
+
+    <div id='task-logs'>
+        <?php print $messages; ?>
+    </div>
+
+    <div class="running-indicator <?php print $is_active; ?>  text-muted small">
+        <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label;?></span>
+    </div>
+
+    <?php print $content; ?>
+
+    <div class="task-details">
+        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+            <i class="fa fa-list"></i> <?php print t('Details'); ?>
+        </button>
+
+        <?php if ($node->content['update-status']['#value']): ?>
+            <?php print $node->content['update-status']['#value']; ?>
+        <?php endif; ?>
+
+        <div class="collapse" id="collapseLogs">
+            <div class="well">
+                <?php print $node->content['hosting_log']['#value']; ?>
+            </div>
+        </div>
+    </div>
+
+    <?php  if ($node->test_results_formatted): ?>
+  <div role="tabpanel">
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" id="task-tabs">
+      <li role="presentation" class="active"><a href="#task" aria-controls="task" role="tab" data-toggle="tab">
+          <?php print t('Results'); ?>
+        </a></li>
+      <li role="presentation"><a href="#logs" aria-controls="logs" role="tab" data-toggle="tab">
+          <?php print t('Details'); ?>
+        </a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="task">
+        <div class="padded-top">
+          <div class="results-wrapper">
+            <?php print $node->test_results_formatted; ?>
+          </div>
+          <label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</label>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="logs">
+        <div class="padded-top">
+          <?php print $content; ?>
+        </div>
+      </div>
+    </div>
   </div>
+
+<?php endif; ?>
 
   <?php print $links; ?>
 </div>

@@ -60,6 +60,7 @@ function hosting_task_devshop_create_form($node) {
           $form['environment_source_display'] = array(
             '#type' => 'item',
             '#title' => t('Clone'),
+            '#weight' => -1000,
             '#value' => t('!env environment', array('!env' => "<span class='environment'>{$site->environment->name}</span>")),
           );
           $form['environment_source'] = array(
@@ -113,17 +114,38 @@ function hosting_task_devshop_create_form($node) {
     );
   }
 
-//  // @TODO: I don't think this is needed. hosting_task_devshop_create_form_submit() looks for nid, these values end up in $form_state['values']['paramters'];
-//  $form['project_nid'] = array(
-//    '#type' => 'value',
-//    '#value' => $node->nid,
-//  );
+  // Server Selection
+  // Choose database server.
+  $servers = hosting_get_servers('db');
+  if (sizeof($servers) > 1) {
+    $form['db_server'] = array(
+      '#type' => 'radios',
+      '#title' => t('Database server'),
+      '#required' => true,
+      '#description' => t(
+        'The database server the site will use to host its content.'
+      ),
+      '#options' => $servers,
+      '#default_value' => $project->settings->default_environment['db_server'],
+    );
+  }
+
+  $servers = hosting_get_servers('http');
+  if (sizeof($servers) > 1) {
+    $form['web_server'] = array(
+      '#type' => 'radios',
+      '#title' => t('Web server'),
+      '#description' => t('The web server the sites will be hosted on.'),
+      '#options' => $servers,
+      '#default_value' => $project->settings->default_environment['web_server'],
+    );
+  }
 
   // Load in environment settings
-  // Load project and it's form
-//  $site_form = array();
+  // This allows modules that add settings to environments form to do so here as well.
   $form_state = array();
-  devshop_projects_form_alter($form, $form_state, 'site_node_form');
+  $form['#project'] = $project;
+  devshop_projects_form_site_node_form_alter($form, $form_state, 'site_node_form');
   return $form;
 }
 
@@ -163,10 +185,12 @@ function hosting_task_devshop_create_form_validate($form, &$form_state){
  * @see devshop_projects_form_alter().  We had to add the submit handler there.
  */
 function hosting_task_devshop_create_form_submit($form, &$form_state) {
-
   $project_node = node_load($form_state['values']['nid']);
   $environment_name = $form_state['values']['parameters']['environment_name'];
   $environment_settings = $form_state['values']['parameters']['environment']['settings'];
+  $environment_settings['db_server'] = $form_state['values']['parameters']['db_server'];
+  $environment_settings['web_server'] = $form_state['values']['parameters']['web_server'];
+  $environment_settings['deploy'] = $project_node->project->settings->deploy['default_hooks'];
 
   $action = $form_state['values']['parameters']['action'];
   $git_ref = $form_state['values']['parameters']['git_ref'];
@@ -180,6 +204,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'node/' . $values['nid'];
 
   // Friendly message
+  drupal_get_messages('status');
   drupal_set_message(t('Your environment is being created.'));
 }
 
@@ -197,7 +222,7 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
  *   If desired, the environment to clone. (Copy the database and create a new branch from)
  */
 function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create') {
-
+  $settings = (object) $settings;
   global $user;
 
   // First, create a platform node. Only aegir properties are needed.
@@ -208,10 +233,35 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $platform->uid = $user->uid;
   $platform->name = $user->name;
 
-  // Set servers
-  // @TODO: Use $settings to retrieve these.
-  $servers = hosting_get_servers('http');
-  $platform->web_server = variable_get('devshop_projects_default_web_server', key($servers));;
+  // Set web server to the project default.
+  if ($settings->web_server) {
+    $platform->web_server = $settings->web_server;
+  }
+
+  // If no web server was set and project has a default, make sure we set it.
+  elseif (!empty($project->settings->default_environment['web_server'])) {
+    $settings->web_server = $project->settings->default_environment['web_server'];
+    $platform->web_server = $project->settings->default_environment['web_server'];
+  }
+  else {
+    $servers = hosting_get_servers('http');
+    reset($servers);
+
+    // If no web server was set, make sure we set it.
+    $settings->web_server = key($servers);
+    $platform->web_server = key($servers);
+  }
+
+  // Set db server to the project default, if none was set.
+  if (empty($settings->db_server) && !empty($project->settings->default_environment['db_server'])) {
+    $settings->db_server = $project->settings->default_environment['db_server'];
+  }
+  // If no db server is set and there is no default set.
+  elseif (empty($settings->db_server)) {
+    $servers = hosting_get_servers('db');
+    reset($servers);
+    $settings->db_server = key($servers);
+  }
 
   // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
@@ -266,8 +316,13 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     // Use settings passed in to this function.
     $environment->settings = $settings;
+
   }
 
-  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings) VALUES (%d, "%s", "%s", %d, "%s");', $project->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings));
+  // Get platform verify task
+  $tasks = hosting_get_tasks('rid', $platform->nid);
+  $environment->last_task = current($tasks)->nid;
+
+  db_query('INSERT INTO {hosting_devshop_project_environment} (project_nid, name, git_ref, platform, settings, last_task) VALUES (%d, "%s", "%s", %d, "%s", "%s");', $project->nid, $environment->name, $environment->git_ref, $environment->platform, serialize($environment->settings), $environment->last_task);
 
 }
