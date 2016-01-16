@@ -8,7 +8,7 @@ use DigitalOceanV2\DigitalOceanV2;
  */
 function devshop_digital_ocean_menu(){
   $items = array();
-  $items['admin/hosting/devshop/digital_ocean'] = array(
+  $items['admin/devshop/digital_ocean'] = array(
     'title' => 'Digital Ocean',
     'description' => 'Retrieve options from Digital Ocean.',
     'page callback' => 'drupal_get_form',
