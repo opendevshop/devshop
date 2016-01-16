@@ -7,7 +7,7 @@ include_once('devshop_cloud.drush.inc');
  */
 function devshop_cloud_menu(){
   $items = array();
-  $items['admin/hosting/devshop/cloud'] = array(
+  $items['admin/devshop/cloud'] = array(
     'title' => 'Cloud',
     'description' => 'Configure cloud providers.',
     'page callback' => 'drupal_get_form',
