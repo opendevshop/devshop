@@ -18,7 +18,6 @@ function devshop_cloud_hosting_server_context_options(&$task) {
  * Implementation of hook_post_hosting_TASK_TYPE_task() for verified tasks.
  */
 function devshop_cloud_post_hosting_verify_task($task, $data) {
-
   // When a project is verified...
   if ($task->ref->type == 'server') {
     if (empty($data['context']['provider_server_identifier'])) {
@@ -35,13 +34,13 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
     else {
       return drush_set_error('DEVSHOP_CLOUD_UNABLE_TO_SAVE', dt('Unable to save server ID and data to database.'));
     }
-//
-//    // Save IP addresses.
-//    if (empty($task->ref->ip_addresses)){
-//      $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
-//    }
-//    else {
-//      $task->ref->ip_addresses = $data['context']['ip_addresses'];
-//    }
+
+    // Save IP addresses.
+    if (empty($task->ref->ip_addresses)){
+      $task->ref->new_ip_addresses = $data['context']['ip_addresses'];
+    }
+    else {
+      $task->ref->ip_addresses = $data['context']['ip_addresses'];
+    }
   }
 }

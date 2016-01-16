@@ -52,13 +52,6 @@ class hostingService_provider extends hostingService {
   }
 }
 
-/**
- * DigitalOcean provider.
- */
-class hostingService_provider_digitalocean extends hostingService_provider {
-  public $type = 'digitalocean';
-
-}
 
 /**
  * rackspace provider.
