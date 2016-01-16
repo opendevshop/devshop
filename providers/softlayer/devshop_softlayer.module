@@ -5,7 +5,7 @@
  */
 function devshop_softlayer_menu(){
   $items = array();
-  $items['admin/hosting/devshop/softlayer'] = array(
+  $items['admin/devshop/cloud_softlayer'] = array(
     'title' => 'SoftLayer',
     'description' => 'Retrieve options from softlayer.',
     'page callback' => 'drupal_get_form',
