@@ -13,7 +13,6 @@ function devshop_projects_create_wizard($step = NULL){
   ctools_include('wizard');
   ctools_include('object-cache');
   drupal_add_css(drupal_get_path('module', 'devshop_projects') . '/inc/devshop.css');
-  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
   // Setup form info
   $form_info = devshop_projects_create_wizard_info();
@@ -26,7 +25,7 @@ function devshop_projects_create_wizard($step = NULL){
 
   // Setup Step.
   if ($step == NULL){
-    drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+    drupal_goto('projects/add/' . current(array_keys($form_info['order'])));
   }
 
   // Create default project object
@@ -70,7 +69,7 @@ function devshop_projects_create_wizard($step = NULL){
     $project->verify_error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $project->verify_task_nid, 'error'));
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))){
-      drupal_goto('hosting/projects/add/' . current(array_keys($form_info['order'])));
+      drupal_goto('projects/add/' . current(array_keys($form_info['order'])));
     }
   } else {
     $project->verify_error = NULL;
@@ -93,7 +92,7 @@ function devshop_projects_create_wizard($step = NULL){
 function devshop_projects_create_wizard_info(){
   return array(
     'id' => 'devshop_project_create',
-    'path' => "hosting/projects/add/%step",
+    'path' => "projects/add/%step",
     'show trail' => TRUE,
     'show back' => TRUE,
     'show cancel' => TRUE,
@@ -156,7 +155,7 @@ function devshop_projects_create_wizard_cancel(&$form_state) {
   ctools_object_cache_clear('project', $form_state['cache name']);
 
   // Redirect to projects list
-  $form_state['redirect'] = 'hosting/projects';
+  $form_state['redirect'] = 'projects';
 
   // If we have a project node, create a "delete" hosting task
   if (!empty($project->project_nid)){
@@ -202,6 +201,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   unset($_SESSION['last_step']);
 
   // Friendly message
+  drupal_get_messages('status');
   drupal_set_message(t('Your project has been created.  Your sites are being installed.'));
 }
 
@@ -237,10 +237,26 @@ function devshop_projects_add_status($type = 'platform'){
   // Check verification task for all nids
   foreach ($nids as $nid){
     $task = hosting_get_most_recent_task($nid, 'verify');
-    $return['tasks'][$nid] = _hosting_parse_error_code($task->task_status);
+    $platform = node_load($nid);
+    $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+      $install_profiles = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
+    }
+    else {
+      $install_profiles = array();
+    }
 
+    $status = _hosting_parse_error_code($task->task_status);
+    if ($status == 'Queued') {
+      $status = '...';
+    }
+    $return['tasks'][$nid] = array(
+      'status' => $status,
+      'version' => $platform->release->version,
+      'profiles' => implode(', ', $install_profiles),
+    );
     // If task is not completed, mark all tasks not complete.
-    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR) {
+    if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_ERROR || $task->task_status == HOSTING_TASK_WARNING) {
       continue;
     } else {
       $all_tasks_completed = FALSE;
@@ -268,5 +284,5 @@ function devshop_form_reloader(&$form, $type = 'platform'){
   );
 
   drupal_add_js($settings, 'setting');
-  drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js');
+  drupal_add_js(drupal_get_path('module','devshop_projects') . '/inc/reload.js', 'core');
 }

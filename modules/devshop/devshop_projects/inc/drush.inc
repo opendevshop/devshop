@@ -12,7 +12,8 @@ function devshop_project_aliases($project) {
     $remote_user = 'aegir';
     $remote_host = $environment->remote_host;
     $root = $environment->root;
-    $uri = $environment->default_domain;
+    $uri = $environment->uri;
+    $file_path = "sites/{$environment->uri}/files";
 
     $output .= <<<PHP
 \$aliases['$name'] = array(
@@ -20,6 +21,9 @@ function devshop_project_aliases($project) {
   'uri' => '$uri',
   'remote-user' => '$remote_user',
   'remote-host' => '$remote_host',
+  'path-aliases' => array(
+    '%files' => '$file_path',
+  ),
 );
 
 PHP;

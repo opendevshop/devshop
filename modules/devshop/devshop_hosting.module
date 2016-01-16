@@ -4,6 +4,39 @@
  *
  * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
  */
+require_once 'vendor/autoload.php';
+
+/**
+ * Implements hook_help()
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function devshop_hosting_help($path, $arg)
+{
+  switch ($path) {
+    // Main module help for the block module
+    case 'admin/help#devshop_hosting':
+      $welcome = t('Welcome to OpenDevShop Help');
+      $note = t("There isn't much help built into OpenDevShop yet.  Please visit the documentation site for more information.");
+      $link = t("DevShop Documentation");
+      $url = "http://docs.devshop.support";
+
+      return <<<HTML
+
+<h3>$welcome</h3>
+<p>$note</p>
+
+<a href="$url" class="btn btn-primary btn-large">
+  <large>$link</large>
+<br/>
+  <small>$url</small>
+</a>
+
+HTML;
+
+  }
+}
 
  /**
   * Implements hook_init()
@@ -15,7 +48,7 @@ function devshop_hosting_init(){
   $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
   drupal_set_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
 
-  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">');
+  drupal_set_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
 
 
 }
@@ -33,6 +66,21 @@ function devshop_hosting_menu(){
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
+  $items['admin/reports/devshop_sites'] = array(
+    'title' => 'DevShop Environments',
+    'description' => "List all active sites and their IP addresses.",
+    'page callback' => 'devshop_hosting_sites_status',
+    'weight' => -60,
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['devshop/login/reset/%'] = array(
+    'title' => 'Reset Login',
+    'description' => "List all active sites and their IP addresses.",
+    'page callback' => 'devshop_hosting_login_reset',
+    'page arguments' => array(3),
+    'weight' => -60,
+    'access arguments' => array('create login-reset task'),
+  );
   return $items;
 }
 
@@ -43,7 +91,7 @@ function devshop_hosting_menu(){
  */
 function devshop_hosting_home(){
   if (user_is_logged_in()){
-    drupal_goto(variable_get('devshop_frontpage', 'hosting/projects'));
+    drupal_goto(variable_get('devshop_frontpage', 'projects'));
   } else {
     $output = '<p>' . t('Please log in.') . '</p>';
     return drupal_get_form('user_login');
@@ -280,5 +328,199 @@ function devshop_hosting_task_queue_block() {
 </div>
 
 HTML;
+  }
+}
+
+/**
+ * Page callback for devshop site status.
+ * @return string
+ */
+function devshop_hosting_sites_status() {
+
+  $query = db_query("SELECT nid FROM {node} WHERE type = 'project' AND status = 1");
+  while ($result = db_fetch_object($query)) {
+    $node = node_load($result->nid);
+
+    foreach ($node->project->environments as $environment) {
+      if ($environment->site_status == HOSTING_SITE_ENABLED && count($environment->ip_addresses)) {
+        $ip = array_shift($environment->ip_addresses);
+        $items[] = "$ip $environment->uri";
+      }
+    }
+  }
+  return theme('item_list', $items, t('Site Hosts'));
+}
+
+/**
+ * Special callback that waits for the login task to become available.
+ */
+function devshop_hosting_login_reset($site_nid) {
+
+  $site = node_load($site_nid);
+
+  // Set time limit to 3 minutes.
+  set_time_limit(180);
+
+  // Create new reset-login task, if needed
+  $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
+  if (!($cache && (time() < $cache->data['expire']))) {
+    $task = hosting_add_task($site_nid, 'login-reset');
+    drupal_get_messages();
+  }
+  else {
+    $task = hosting_get_most_recent_task($site_nid, 'login-reset');
+  }
+
+  // Wait for it to complete
+  while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+    sleep(1);
+    $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
+    if ($cache && (time() < $cache->data['expire'])) {
+      break;
+    }
+  }
+
+  // Output link to login.
+  $title = t('Log in');
+  $close = t('Close');
+  $login_text = t('Log in to !site', array('!site' => $site->environment->uri));
+  $url = url("node/{$site_nid}/goto_site");
+
+  print <<<HTML
+   <div class="modal-content">
+     <div class="modal-header">
+       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+       <h4 class="modal-title" id="loginModalLabel">
+         $title
+       </h4>
+     </div>
+     <div class="modal-body">
+       <a href="$url" target="_blank" class="btn btn-primary">
+         <i class="fa fa-sign-in"></i>
+         $login_text
+       </a>
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
+     </div>
+   </div>
+HTML;
+
+}
+
+/**
+ * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
+ * @param $environment
+ *   The environment object.
+ *
+ * @param null $type
+ *   The task type you wish to retrieve.
+ *
+ * @param null $key
+ *
+ *    If $key is specified, the return array will be re-ordered, with the key of
+ *    the array being set to $task_node->$key.
+ *
+ *    For example, if you want all tasks for an environment, sorted by date, use
+ *    'vid' for the $key parameter:
+ *
+ *    $tasks = devshop_get_tasks($environment, NULL, 'vid');
+ *
+ * @return array
+ *
+ *    By default, an array is returned with Task types as the keys. Each element
+ *    in the array is another array, keyed by VID.
+ *
+ */
+function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
+
+  // Load tasks from hosting_task table for both site and platform.
+  if ($environment->site) {
+    if ($type) {
+      $where = "(t.rid = %d OR t.rid = %d) AND t.task_type = '%s'";
+      $args = array(
+        $environment->platform,
+        $environment->site,
+        $type
+      );
+    }
+    else {
+      $where = "(t.rid = %d OR t.rid = %d)";
+      $args = array(
+        $environment->platform,
+        $environment->site,
+      );
+    }
+  }
+  else {
+    if ($type) {
+      $where = "t.rid = %d AND t.task_type = '%s'";
+      $args = array(
+        $environment->platform,
+        $type
+      );
+    }
+    else {
+      $where = "t.rid = %d";
+      $args = array(
+        $environment->platform,
+      );
+    }
+  }
+
+  $query = db_query("
+    SELECT t.nid, t.vid, t.task_type
+      FROM {node} tn
+      INNER JOIN {hosting_task} t ON tn.vid = t.vid
+      WHERE
+        $where
+      ORDER BY t.vid DESC
+      LIMIT 5
+  ",
+    $args
+  );
+  $tasks = array();
+  while ($result = db_fetch_object($query)) {
+    $tasks[$result->task_type][$result->vid] = node_load($result->nid, $result->vid);
+  }
+
+  // Load "Clone" tasks
+  if ($type == NULL || $type == 'clone') {
+    $query = db_query(
+      "
+      SELECT ta.nid, ta.vid
+        FROM {hosting_task_arguments} ta
+        INNER JOIN {hosting_task} t ON ta.vid = t.vid
+        WHERE
+          name = 'target_platform' AND value = %d
+        ORDER BY vid DESC
+        LIMIT 1
+    ",
+      $environment->platform
+    );
+    while ($result = db_fetch_object($query)) {
+      $task_node = node_load($result->nid, $result->vid);
+      $tasks[$task_node->task_type][$task_node->vid] = $task_node;
+    }
+  }
+
+  // If key is requested...
+  if ($key) {
+    foreach ($tasks as $task_type => $task_list) {
+      foreach ($task_list as $task) {
+        $new_task_list[$task->{$key}] = $task;
+      }
+    }
+    if ($key == 'vid' || $key == 'nid') {
+      krsort($new_task_list);
+    }
+    else {
+      ksort($new_task_list);
+    }
+    return $new_task_list;
+  }
+  else {
+    ksort($tasks);
+    return $tasks;
   }
 }

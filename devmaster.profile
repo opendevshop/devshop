@@ -35,13 +35,19 @@ function devmaster_profile_modules() {
     'devshop_projects',
     'devshop_log',
     'devshop_pull',
+    'devshop_github',
+    'devshop_dothooks',
 
     /* NICEITIES */
     'hosting_filemanager',
     'hosting_logs',
+    'hosting_ssl',
     'hosting_tasks_extra',
     'hosting_backup_queue',
     'hosting_site_backup_manager',
+    'sshkey',
+    'aegir_ssh',
+    'aegir_download',
   );
 }
 
@@ -229,11 +235,11 @@ function devmaster_task_finalize() {
   $menu_name = variable_get('menu_primary_links_source', 'primary-links');
 
   // @TODO - seriously need to simplify this, but in our own code i think, not install profile api
-  $items = install_menu_get_items('hosting/projects');
+  $items = install_menu_get_items('projects');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
-  $item['weight'] = 3;
+  $item['weight'] = 1;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
@@ -245,18 +251,27 @@ function devmaster_task_finalize() {
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
-  $items = install_menu_get_items('user');
+  $items = install_menu_get_items('admin/user/user');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
   $item['menu_name'] = $menu_name;
   $item['customized'] = 1;
+  $item['weight'] = 2;
+  $item['options'] = unserialize($item['options']);
+  install_menu_update_menu_item($item);
+
+  $items = install_menu_get_items('user/%');
+  $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
+  $item['menu_name'] = 'secondary-links';
+  $item['customized'] = 1;
+  $item['weight'] = 1;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
   $items = install_menu_get_items('logout');
   $item = db_fetch_array(db_query("SELECT * FROM {menu_links} WHERE mlid = %d", $items[0]['mlid']));
-  $item['menu_name'] = $menu_name;
+  $item['menu_name'] = 'secondary-links';
   $item['customized'] = 1;
-  $item['weight'] = 1;
+  $item['weight'] = 2;
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 

@@ -13,6 +13,29 @@ function devshop_hosting_install(){
 }
 
 /**
+ * Implements hook_requirements()
+ * @param $phase
+ * @return array
+ */
+function devshop_hosting_requirements($phase) {
+  $requirements = array();
+
+  $devshop_version = file_get_contents(drupal_get_path('profile', 'devmaster') . '/VERSION.txt');
+  $t = get_t();
+
+  // Report DevShop version
+  if ($phase == 'runtime') {
+    $requirements['devshop'] = array(
+      'title' => $t('DevShop Version'),
+      'value' => $devshop_version,
+      'severity' => REQUIREMENT_OK,
+    );
+  }
+
+  return $requirements;
+}
+
+/**
  * Set weight of this module higher than views.
  */
 function devshop_hosting_update_7001() {
@@ -26,4 +49,18 @@ function devshop_hosting_update_7001() {
  */
 function devshop_hosting_update_7002() {
   variable_set('hosting_welcome_page', 0);
+}
+
+/**
+ * Enable devshop_github module.
+ */
+function devshop_hosting_update_7003() {
+  module_enable(array('devshop_hosting'));
+}
+
+/**
+ * Enable devshop_dothooks module.
+ */
+function devshop_hosting_update_7004() {
+  module_enable(array('devshop_dothooks'));
 }

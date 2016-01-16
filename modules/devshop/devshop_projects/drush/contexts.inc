@@ -52,7 +52,7 @@ function devshop_projects_hosting_site_context_options(&$task) {
  * This allows project nodes to be created from contexts (aliases)
  */
 function devshop_projects_drush_context_import($context, &$node) {
-  if ($context->type == 'project') {
+  if ($context->type == 'Project') {
     $node->title = $context->project_name;
     $node->type = 'project';
     $node->project = $context->project;

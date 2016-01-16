@@ -58,23 +58,16 @@ function hosting_task_devshop_deploy_form($node) {
     );
   }
 
-  $form['revert'] = array(
-    '#title' => t('Revert all features.'),
-    '#description' => t('If features is enabled, revert all of them.'),
-    '#type' => 'checkbox',
-    '#default_value' => $node->environment->settings->deploy['revert'],
-  );
+  // Merge in the deploy hooks form.
+  $deploy_hooks_form = devshop_environment_deploy_hooks_form($project, $environment, 'devshop-deploy');
+  $form = array_merge($form, $deploy_hooks_form);
 
-  $form['update'] = array(
-    '#title' => t('Run database updates.'),
-    '#type' => 'checkbox',
-    '#default_value' => $node->environment->settings->deploy['update'],
-  );
-
-  $form['cache'] = array(
-    '#title' => t('Clear all caches.'),
-    '#type' => 'checkbox',
-    '#default_value' => $node->environment->settings->deploy['cache'],
+  // Pass through a value so hostmaster knows this was triggered manually.
+  // This is mainly to allow acquia cloud hooks compatibility. They have separate
+  // hooks for manual deployment vs. automatic deployment.
+  $form['manual'] = array(
+    '#type' => 'value',
+    '#value' => 1,
   );
 
   return $form;
