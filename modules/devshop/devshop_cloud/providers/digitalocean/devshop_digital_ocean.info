@@ -1,0 +1,6 @@
+name = DevShop Cloud: Digital Ocean
+description = Launches servers on Digital Ocean.
+core = 6.x
+package = DevShop
+
+dependencies[] = devshop_cloud
