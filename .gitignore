@@ -1,6 +1,3 @@
-
-# devshop repos
-source
-
-# Local config
-.vagrant
+; Ignore modules from make file.
+modules/contrib
+modules/hosting

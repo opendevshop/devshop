@@ -1,4 +1,151 @@
 <?php
+/**
+ * Implements hook_theme()
+ */
+function boots_theme() {
+  return array(
+      'environment' => array(
+          'arguments' => array(
+              'environment' => NULL,
+              'project' => NULL,
+              'page' => FALSE,
+          ),
+          'template' => 'environment',
+      ),
+  );
+}
+
+/**
+ * Preprocessor for environment template.
+ */
+function boots_preprocess_environment(&$vars)
+{
+  $environment = &$vars['environment'];
+  $project_node = node_load($environment->project_nid);
+  $project = $vars['project'] = $project_node->project;
+
+  // Load git refs and create links
+  $vars['git_refs'] = array();
+  foreach ($project_node->project->settings->git['refs'] as $ref => $type) {
+    $href = url('node/ENV_NID/site_devshop-deploy', array(
+        'query' => array(
+            'git_ref' => $ref,
+        )
+    ));
+    $icon = $type == 'tag' ? 'tag' : 'code-fork';
+
+    $vars['git_refs'][$ref] = "<a href='$href'>
+        <i class='fa fa-$icon'></i>
+        $ref
+      </a>";
+  }
+
+  // Look for all available source environments
+  foreach ($vars['project']->environments as &$source_environment) {
+    if ($source_environment->site) {
+      $vars['source_environments'][$source_environment->name] = $source_environment;
+    }
+  }
+
+  // Show user Login Link
+  if ($environment->site_status == HOSTING_SITE_ENABLED && user_access('create login-reset task')) {
+    $environment->login_text = t('Log in');
+
+  }
+
+  // Determine the CSS classes to use.
+
+  // Determine environment status
+  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+    $environment->class = 'disabled';
+    $environment->list_item_class = 'disabled';
+  }
+  elseif ($environment->name == $project->settings->live['live_environment']) {
+    $environment->class = ' live-environment';
+    $environment->list_item_class = 'info';
+  }
+  else {
+    $environment->class = ' normal-environment';
+    $environment->list_item_class = 'info';
+  }
+
+  // Pull Request?
+  if ($environment->github_pull_request) {
+    $environment->class .= ' pull-request';
+  }
+
+  // Load Task Links
+  $environment->task_links = devshop_environment_links($environment);
+
+  // Task Logs
+  $environment->task_count = count($environment->tasks);
+  $environment->active_tasks = 0;
+
+  $items = array();
+  $items[] = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$project->nid/logs/$environment->name", array(
+      'html' => TRUE,
+      'attributes' => array(
+          'class' => 'list-group-item',
+      ),
+  ));
+
+  $environment->processing = FALSE;
+
+  foreach ($environment->tasks_list as $task) {
+
+    if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+      $environment->active_tasks++;
+
+      if ($task->task_status == HOSTING_TASK_PROCESSING) {
+        $environment->processing = TRUE;
+      }
+    }
+
+    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
+
+    $items[] = l($text, "node/{$task->nid}/revisions/{$task->vid}/view", array(
+        'html' => TRUE,
+        'attributes' => array(
+            'class' => "list-group-item list-group-item-{$task->status_class}",
+        ),
+    ));
+    $environment->task_logs = implode("\n", $items);
+  }
+
+  // Set a class showing the environment as active.
+  if ($environment->active_tasks > 0) {
+    $environment->class .= ' active';
+  }
+
+  // Check for any potential problems
+  // Branch or tag no longer exists in the project.
+  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
+    $vars['warnings'][] = array(
+      'text' =>  t('The git reference %ref is no longer available.', array(
+        '%ref' => $environment->git_ref,
+        '@type' => $environment->git_ref_type,
+      )),
+      'type' => 'error',
+    );
+  }
+
+  // No hooks configured.
+  if ($project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
+    $vars['warnings'][] = array(
+      'text' => t('No deploy hooks are configured. Check your !link.', array(
+        '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
+      )),
+      'type' => 'warning',
+    );
+  }
+
+  // Load user into a variable.
+  global $user;
+  $vars['user'] = $user;
+
+  // Get token for task links
+  $vars['token'] = drupal_get_token($user->uid);
+}
 
 /**
  * A simple function to output tasks exactly as we need them.
@@ -11,7 +158,7 @@
  * $tasks = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING);
  * print boots_render_tasks($tasks);
  */
-function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
+function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $float = 'left'){
   global $user;
 
   if (is_null($tasks)){
@@ -91,12 +238,13 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
 
       $text = '<i class="fa fa-' . $icon . '"></i> ';
       $text .= $task->title;
-      $text .= ' <small class="btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
+      $text .= ' <small class="task-ago btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
 
       $task_items[] = l($text, 'node/' . $task->nid, array(
         'html' => TRUE,
         'attributes' => array(
           'class' => 'list-group-item ' . $item_class,
+            'id' => "task-{$task_node->environment->project_name}-{$task_node->environment->name}",
         ),
       ));
     }
@@ -115,8 +263,10 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
     array_unshift($items, array(
       'class' => 'divider',
     ));
+
+    // Add "Environment Settings" link
     if (node_access('update', $environment_node)) {
-      array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->project_nid}/edit/{$environment->name}", array('html' => TRUE)));
+      array_unshift($items, l('<i class="fa fa-sliders"></i> ' . t('Environment Settings'), "node/{$environment->site}/edit", array('html' => TRUE)));
     }
 
     $action_items = array();
@@ -137,7 +287,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
     );
   }
 
-  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-right', 'role' => 'menu'));
+  $tasks = theme('item_list', $items, '', 'ul', array('class' => 'devshop-tasks dropdown-menu dropdown-menu-' . $float, 'role' => 'menu'));
 
   if ($tasks_count == 0) {
     $tasks_count = '';
@@ -147,7 +297,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array()){
   return <<<HTML
     <div class="task-list btn-group">
       <button type="button" class="btn btn-link task-list-button dropdown-toggle $class" data-toggle="dropdown" title="$logs">
-          $tasks_count
+        <span class="count">$tasks_count</span>
         <i class="fa fa-gear $task_class"></i>
       </button>
       $tasks
@@ -162,11 +312,24 @@ HTML;
  */
 function boots_preprocess_page(&$vars){
 
+  if ($primary = menu_primary_local_tasks()) {
+    $vars['tabs'] = "<ul class=\"nav nav-pills nav-stacked\">\n" . $primary . "</ul>\n";
+  }
+  if ($secondary = menu_secondary_local_tasks()) {
+    $vars['tabs2'] = "<ul class=\"nav nav-tabs\">\n" . $secondary . "</ul>\n";
+  }
+
   if (user_access('access task logs')){
     $vars['tasks'] = boots_render_tasks();
   }
 
-  if ($vars['node']) {
+  // On any node/% page...
+  if ($vars['node'] || arg(0) == 'node' && is_numeric(arg(1))) {
+
+    // load $vars['node'] if it's not present (like on node/%/edit)
+    if (empty($vars['node'])) {
+      $vars['node'] = node_load(arg(1));
+    }
 
     // Removing conflicting scripts.
     // Not sure how this actually works.  Drupal 6 is fun!
@@ -178,26 +341,80 @@ function boots_preprocess_page(&$vars){
     $vars['scripts'] = $js;
 
     // Set subtitle
+    $vars['subtitle'] = ucfirst($vars['node']->type);
+    $vars['title_url'] = "node/" . $vars['node']->nid;
+
+    // Set title2 if on a node/%/* sub page.
+    if (!is_null(arg(2)) && $vars['title'] != $vars['node']->title) {
+      $vars['title2'] = $vars['title'];
+      $vars['title'] = $vars['node']->title;
+    }
+
     if ($vars['node']->type == 'project'){
       $vars['subtitle'] = t('Project');
 
       unset($vars['tabs']);
 
-      $vars['title'] = l($vars['title'], "node/" . $vars['node']->nid);
+      $vars['title_url'] = "node/" . $vars['node']->nid;
     }
 
     // Set header and subtitle 2 for nodes that have a project.
     elseif (isset($vars['node']->project)) {
 
       $vars['title2'] = $vars['title'];
-      $vars['subtitle2'] = ucfirst($vars['node']->type);
 
-      $name = is_string($vars['node']->project)? $vars['node']->project: $vars['node']->project->name;
+      if ($vars['node']->type == 'site') {
+        $vars['subtitle2'] = t('Environment');
+      }
+      else {
+        $vars['subtitle2'] = ucfirst($vars['node']->type);
+      }
 
-      $vars['title'] = l($name, "hosting/c/{$name}");
+      $vars['title'] = $vars['node']->project->name;
+      $vars['title_url'] = "node/" . $vars['node']->project->nid;
       $vars['subtitle'] = t('Project');
     }
 
+    // Improve tasks display
+    if ($vars['node']->type == 'task') {
+      $object = node_load($vars['node']->rid);
+
+      $vars['title2'] = $object->title;
+      if ($object->type == 'site') {
+        $vars['subtitle2'] = t('Environment');
+      }
+      else {
+        $vars['subtitle2'] = ucfirst($object->type);
+      }
+
+      // Only show environment name if site is in project.
+      if (isset($object->project)) {
+        $vars['title2'] = $object->environment->name;
+      }
+
+      $vars['title2_url'] = 'node/' . $object->nid;
+      $vars['title2'] = l($vars['title2'], $vars['title2_url']);
+
+    }
+
+
+    // For node/%/* pages where node is site, use the environment name as title2
+    if ($vars['node']->type == 'site' && isset($vars['node']->environment)){
+
+      $vars['title2_url'] = 'node/' . $vars['node']->nid;
+      $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
+
+    }
+
+    $vars['title'] = l($vars['title'], $vars['title_url']);
+
+  }
+  if (variable_get('devshop_support_widget_enable', TRUE)) {
+    $vars['head'] .= <<<HTML
+<!-- Start of devshop Zendesk Widget script -->
+<script>/*<![CDATA[*/window.zEmbed||function(e,t){var n,o,d,i,s,a=[],r=document.createElement("iframe");window.zEmbed=function(){a.push(arguments)},window.zE=window.zE||window.zEmbed,r.src="javascript:false",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="display: none",d=document.getElementsByTagName("script"),d=d[d.length-1],d.parentNode.insertBefore(r,d),i=r.contentWindow,s=i.document;try{o=s}catch(c){n=document.domain,r.src='javascript:var d=document.open();d.domain="'+n+'";void(0);',o=s}o.open()._l=function(){var o=this.createElement("script");n&&(this.domain=n),o.id="js-iframe-async",o.src=e,this.t=+new Date,this.zendeskHost=t,this.zEQueue=a,this.body.appendChild(o)},o.write('<body onload="document._l();">'),o.close()}("https://assets.zendesk.com/embeddable_framework/main.js","devshop.zendesk.com");/*]]>*/</script>
+<!-- End of devshop Zendesk Widget script -->
+HTML;
   }
 }
 
@@ -214,6 +431,11 @@ function boots_preprocess_node(&$vars) {
   elseif ($vars['node']->type == 'task') {
     boots_preprocess_node_task($vars);
   }
+  elseif ($vars['node']->type == 'site') {
+    if (!empty($vars['node']->environment)) {
+      $vars['template_files'][] =  'node-site-environment';
+    }
+  }
 }
 
 /**
@@ -222,17 +444,8 @@ function boots_preprocess_node(&$vars) {
  */
 function boots_preprocess_node_task(&$vars) {
 
-  $revisions = node_revision_list($vars['node']);
-
-  $revision = array_shift($revisions);
-
-  $vars['submitted'] = t('Task Queued by !user, @time (%ago)', array(
-    '!user' => l($revision->name, "user/$revision->uid"),
-    '@time' => format_date($revision->timestamp),
-    '%ago' => format_interval(time() - $revision->timestamp) . ' ' . t('ago'),
-  ));
-
 }
+
 /**
  * Preprocessor for Project Nodes.
  * @param $vars
@@ -353,7 +566,10 @@ function boots_preprocess_node_project(&$vars){
 
   $url =  $node->project->webhook_url;
   $project_name = $node->title;
-  $vars['webhook_url'] = <<<HTML
+
+  // Only show the webhook url to those who can create projects.
+  if (user_access('create project')) {
+    $vars['webhook_url'] = <<<HTML
 
             <a href="#" data-toggle="modal" class="btn btn-xs $class"
 data-target="#webhook-modal" title="Webhook URL">
@@ -391,82 +607,33 @@ data-target="#webhook-modal" title="Webhook URL">
               </div>
             </div>
 HTML;
-
+  }
+  else {
+    $vars['webhook_url'] = '';
+  }
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 
   // Available deploy data targets.
   $vars['target_environments'];
 
+  // Prepare environments output
   foreach ($vars['node']->project->environments as &$environment) {
 
-    // Environment Tasks
-    if ($environment->site) {
-      $environment->tasks = hosting_get_tasks('rid', $environment->site);
-    }
-    else {
-      $environment->tasks = hosting_get_tasks('rid', $environment->platform);
-    }
+    // Render each environment.
+    $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
+  }
 
-    $environment->task_count = count($environment->tasks);
-    $environment->active_tasks = 0;
-    $environment->tasks_list = boots_render_tasks($environment->tasks, 'environment btn btn-small btn-link', $node->environment_actions[$environment->name]);
-
-    foreach ($environment->tasks as &$task) {
-      if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->active_tasks++;
-      }
-    }
-
-    if ($environment->site) {
-      $vars['source_environments'][$environment->name] = $environment;
-    }
-
-    // Status
-    if ($environment->site_status == HOSTING_SITE_DISABLED) {
-      $environment->class = 'disabled';
-      $environment->list_item_class = 'disabled';
-    }
-    elseif ($environment->name == $project->settings->live['live_environment']) {
-      $environment->class = ' live-environment';
-      $environment->list_item_class = 'info';
-    }
-    else {
-      $environment->class = ' normal-environment';
-      $environment->list_item_class = 'info';
-    }
-
-    // Active?
-    if ($environment->active_tasks > 0) {
-      $environment->class .= ' active';
-      $environment->list_item_class = 'warning';
-    }
-
-    $environment->active_tasks_label = format_plural(
-      $environment->active_tasks,
-      t('1 active task'),
-      t('@count active tasks', array('@count' => $environment->active_tasks))
+  // Warnings & Errors
+  // If environment-specific deploy hooks is not allowed and there are no default deploy hooks, warn the user
+  // that they will have to manually run updates.
+  if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+    $vars['project_messages'][] = array(
+      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
+        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
+      )),
+      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+      'type' => 'warning',
     );
-
-    // Get login link
-    // @TODO: This is how aegir does it.  See _hosting_site_goto_link()
-    // @TODO: Detect and display "Generating login" message.
-    if ($environment->site_status == HOSTING_SITE_ENABLED) {
-      $cache = cache_get("hosting:site:" . $environment->site . ":login_link");
-      if ($cache && (time() < $cache->data['expire'])) {
-        $environment->login_url = url("node/" . $environment->site . "/goto_site");
-        $environment->login_text = t('Log in');
-      }
-      else {
-        $environment->login_url = url("node/{$environment->site}/site_login-reset", array('query' => array('token' => drupal_get_token($user->uid))));
-        $environment->login_text = t('Request Login');
-
-        $task = hosting_get_most_recent_task($environment->site, 'login-reset');
-        if (!empty($task) && $task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-          $environment->login_text = t('Please Wait...');
-          $environment->login_url = '#';
-        }
-      }
-    }
   }
 }
 
@@ -518,6 +685,23 @@ function boots_item_list($items = array(), $title = NULL, $type = 'ul', $attribu
 }
 
 /**
+ * Override for drupal's tabs.
+ * @return string
+ */
+function boots_menu_local_tasks() {
+  $output = '';
+
+  if ($primary = menu_primary_local_tasks()) {
+    $output .= "<ul class=\"nav nav-pills nav-stacked\">\n" . $primary . "</ul>\n";
+  }
+  if ($secondary = menu_secondary_local_tasks()) {
+    $output .= "<ul class=\"nav nav-tabs\">\n" . $secondary . "</ul>\n";
+  }
+
+  return $output;
+}
+
+/**
  * Implements hook_status_messages()
  */
 function boots_status_messages($display = NULL) {
@@ -547,4 +731,16 @@ function boots_status_messages($display = NULL) {
     $output .= "</div>\n";
   }
   return $output;
+}
+
+function boots_button($element) {
+  // Make sure not to overwrite classes.
+  if (isset($element ['#attributes']['class'])) {
+    $element ['#attributes']['class'] = 'form-' . $element ['#button_type'] . ' ' . $element ['#attributes']['class'];
+  }
+  else {
+    $element ['#attributes']['class'] = 'btn btn-default form-' . $element ['#button_type'];
+  }
+
+  return '<input type="submit" ' . (empty($element ['#name']) ? '' : 'name="' . $element ['#name'] . '" ') . 'id="' . $element ['#id'] . '" value="' . check_plain($element ['#value']) . '" ' . drupal_attributes($element ['#attributes']) . " />\n";
 }

@@ -17,6 +17,19 @@ function devshop_testing_menu() {
     'file' => 'pages.inc',
     'access arguments' => array('access test results'),
   );
+  $items['devshop_tests/%/%/status'] = array(
+    'title' => 'Test Status',
+    'page callback' => 'devshop_testing_results_status',
+    'page arguments' => array(1, 2),
+    'file' => 'pages.inc',
+    'access arguments' => array('access test results'),
+  );
+  $items['devshop_tests/ansi-to-html'] = array(
+    'page callback' => 'devshop_testing_results_page_raw',
+    'page arguments' => array(2),
+    'file' => 'pages.inc',
+    'access arguments' => array('access test results'),
+  );
   return $items;
 }
 
@@ -53,9 +66,11 @@ function devshop_testing_hosting_tasks() {
  * Defines the list of tasks that appear under the gear icon.
  */
 function devshop_testing_devshop_environment_actions($environment) {
-  return array(
-    'test'
-  );
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+    return array(
+      'test'
+    );
+  }
 }
 
 /**
@@ -79,6 +94,15 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#title' => t('Testing'),
       '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
     ), devshop_testing_form_elements($form['#node']->project)
+    );
+
+    // Default deploy hooks.
+    $form['project']['settings']['deploy']['default_hooks']['test'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run Tests'),
+      '#description' => t('Run tests after every code deploy.'),
+      '#weight' => 100,
+      '#default_value' => $form['#node']->environment->settings->deploy['test'],
     );
   }
 
@@ -152,8 +176,6 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $settings->testing = array(
       'test_type' => 0,
       'tests_to_run' => '',
-      'behat_folder_path' => '',
-      'behat_bin' => 'bin/behat',
     );
   }
   
@@ -179,7 +201,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $tests[] = 'Something is wrong. Environment not found.';
   }
   else {
-    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
+    $directory = $environment->repo_root . '/' . $project->settings->testing['behat_folder_path'] . '/features';
 
     $files = file_scan_directory($directory, '.feature', array('.', '..'));
 
@@ -202,25 +224,10 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
   }
 
-  $testing_form['behat_folder_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Behat folder path'),
-    '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
-    '#default_value' => $settings->testing['behat_folder_path'],
-  );
-  $testing_form['behat_bin_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Behat executable path'),
-    '#description' => t('Enter the path to your bin/behat executable file, relative to the Behat folder path.'),
-    '#default_value' => $settings->testing['behat_bin_path'],
-  );
-  
   // Lock fields in environment settings.
   if ($environment_name) {
     $locked = array(
       'test_type',
-      'behat_folder_path',
-      'behat_bin_path',
     );
     foreach ($locked as $field){
       $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
@@ -240,102 +247,23 @@ function devshop_testing_task_submit(&$form, &$form_state) {
   form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
 }
 
-
-//require_once 'ansi-to-html\SensioLabs\AnsiConverter\AnsiToHtmlConverter.php';
-require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
-
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-
-function devshop_testing_nodeapi_task_load(&$node, $a3, $a4) {
-
-  if ($node->task_type == 'test' && ($node->task_status == HOSTING_TASK_PROCESSING || $node->task_status == HOSTING_TASK_QUEUED)) {
-    unset($node->task_args['test_results']);
-  }
-
-  if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
-
-    $converter = new AnsiToHtmlConverter();
-    $output = $converter->convert($node->task_args['test_results']);
-
-    $output = strtr($output, array(
-      "\n" => "<br />",
-      "  " => "&nbsp; ",
-    ));
-
-    $node->test_results_formatted = '<div class="test-results" style="background-color: black; padding: 2em; font-family: Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">' . $output . '</div>';
-
-  }
-}
-
-function devshop_testing_nodeapi_task_view(&$node, $a3, $a4) {
-
-  if ($node->type == 'task' && !empty($node->task_args['test_results'])) {
-    $node->content['results'] = array(
-      '#type' => 'item',
-      '#value' => $node->test_results_formatted,
-      '#weight' => -100,
-    );
-  }
-}
-
 /**
- * Implements hook_preprocess_node()
- * @param $var
- */
-function devshop_testing_preprocess_node(&$vars) {
-  global $user;
-  $node = &$vars['node'];
-  if (!empty($node->project->environments)) {
-    foreach ($node->project->environments as &$environment) {
-      $environment->testing = TRUE;
+ * Implements hook_hosting_slack_message_alter()
+ */ 
+function devshop_testing_hosting_slack_message_alter(&$message_options) {
+  
+  
+  if ($message_options->task->task_type == 'test') {
 
-      // Load test task.
-      $task = db_fetch_object(db_query('SELECT * FROM {hosting_task} WHERE rid = %d AND task_type = "test" ORDER BY vid DESC', $environment->site));
+    $url = url('devshop_tests/' . $message_options->task->nid . '/' . $message_options->task->vid, array('absolute' => TRUE));
+    
+    $attachment = new stdClass();
+    $attachment->fallback = t('Results: ') . $url;
+    $attachment->title = t('Results: ');
+    $attachment->text = $url;
+    $attachment->title_link = $url;
+    
+    $message_options->attachments[] = $attachment;
 
-      $environment->test = $task;
-      $environment->test->task_node = node_load($environment->test->nid);
-      $environment->test->duration = format_interval($task->delta, 1);
-      $environment->test->permalink = url("devshop_tests/{$environment->test->nid}/{$environment->test->vid}");
-
-      if ($task->executed) {
-        $environment->test->time_ago = format_interval(time() - $task->executed, 1);
-        $environment->test->ago = t('@time ago', array('@time' => $environment->test->time_ago));
-      }
-      $environment->test->run_tests_url = url("node/$environment->site/site_test", array('query' => array('token' => drupal_get_token($user->uid))));
-      $environment->test->status_url = url('node/' . $task->nid);
-
-      $environment->test->results = $environment->test->task_node->test_results_formatted;
-
-      if ($environment->test->task_status == HOSTING_TASK_ERROR) {
-        $environment->test->status_message = t('Failed');
-        $environment->test->status_class = 'danger';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_SUCCESS) {
-        $environment->test->status_message = t('Passed!');
-        $environment->test->status_class = 'success';
-      }
-      elseif ($environment->test->task_status === HOSTING_TASK_QUEUED) {
-        $environment->test->status_message = t('Queued');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->test->status_message = t('Running...');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-      elseif ($environment->test->task_status == HOSTING_TASK_WARNING) {
-        $environment->test->status_message = t('Passed with Warnings');
-        $environment->test->status_class = 'warning';
-      }
-
-
-      else {
-        $environment->test->status_message = t('Ready');
-        $environment->test->status_class = 'default';
-        $environment->test->duration = '';
-      }
-    }
   }
 }

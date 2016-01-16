@@ -95,23 +95,39 @@ function devshop_project_create_step_environments(&$form, &$form_state) {
 
     // HTTP Server select.
     $http_servers = hosting_get_servers('http');
-    if (count($http_servers)) {
+    if (count($http_servers) == 1) {
+      $form['project']['environments'][$name]['settings']['web_server'] = array(
+          '#type' => 'value',
+          '#value' => key($http_servers),
+      );
+    }
+    elseif (count($http_servers) > 1) {
       $form['project']['environments'][$name]['settings']['web_server'] = array(
         '#title' => t('Web server'),
         '#type' => 'select',
         '#options' => $http_servers,
-        '#default_value' => $environment->settings->http_server,
+        '#default_value' => $environment->settings->web_server?
+          $environment->settings->web_server:
+          $project->settings->default_environment['web_server']
       );
     }
 
     // DB Server select.
     $db_servers = hosting_get_servers('db');
-    if (count($db_servers)) {
+    if (count($db_servers) == 1) {
+      $form['project']['environments'][$name]['settings']['db_server'] = array(
+          '#type' => 'value',
+          '#value' => $project->settings->default_environment['db_server'],
+      );
+    }
+    elseif (count($db_servers) > 1) {
       $form['project']['environments'][$name]['settings']['db_server'] = array(
         '#title' => t('Database server'),
         '#type' => 'select',
         '#options' => $db_servers,
-        '#default_value' => $environment->settings->db_server,
+        '#default_value' => $environment->settings->db_server?
+          $environment->settings->db_server:
+          $project->settings->default_environment['db_server']
       );
     }
 
@@ -184,7 +200,7 @@ function devshop_projects_save_environments($form, &$form_state) {
 
   // Go back to the same page.
   if ($form_state['clicked_button']['#name'] == 'add_environment') {
-    drupal_goto('hosting/projects/add/environments');
+    drupal_goto('projects/add/environments');
   }
 }
 
@@ -259,4 +275,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 //      hosting_add_task($platform_nid, 'delete');
 //    }
 //  }
+
+
+  // Remove default "task" messages.
+  drupal_get_messages('status');
+  drupal_set_message('Environments saved! Now preparing codebases...');
 }

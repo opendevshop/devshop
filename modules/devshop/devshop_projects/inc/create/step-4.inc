@@ -84,10 +84,10 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $error = db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error'));
+      $error = l(db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error')), "node/{$task->nid}");
 
       $row['version'] = array(
-        'data' => t('Platform verification failed: %error', array('%error' => $error)),
+        'data' => t('Platform verification failed: !error', array('!error' => $error)),
         'colspan' => 2,
       );
 
@@ -97,8 +97,8 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
-      $row['version'] = '...';
-      $row['profiles'] = '...';
+      $row['version'] = "<span id='version-{$platform->nid}'>...</span>";
+      $row['profiles'] = "<span id='profiles-{$platform->nid}'>...</span>";
     }
 
     // If a single task is not queued, $all_tasks_queued == FALSE
@@ -107,7 +107,11 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     }
 
     // Add hosting task status.
-    $row['status'] = _hosting_parse_error_code($task->task_status);
+    $status = _hosting_parse_error_code($task->task_status);
+    if ($status == 'Queued') {
+      $status = '...';
+    }
+    $row['status'] = l("<span id='status-{$platform->nid}'>{$status}</span>", "node/{$task->nid}", array('html' => TRUE));
 
     // Store rows for display
     $rows[] = $row;
@@ -122,7 +126,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
     $project->no_finish = TRUE;
-    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p><p><em>NOTE: There is a bug preventing automatic reloading of this page! Please reload occasionally to see if your project is cloned.</em></p>';
+    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
 
     $form['help'] = array(
       '#type' => 'markup',
@@ -136,12 +140,13 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'hosting/projects/add/environments'))) . '</p>';
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#type' => 'markup',
       '#value' => $note,
     );
+    $form['#no_finish'] = TRUE;
     return $form;
   }
   else {
@@ -174,7 +179,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
   if (empty($form_state['values']['install_profile'])) {
-    form_set_error('install_profile', t('You must choose an install profile'));
+    form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
   }
 }
 

@@ -16,6 +16,8 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
   $form += devshop_projects_form($node);
   $form['#node'] = $node;
 
+  drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
+
   // Remove "environment" selector.
   $form['project']['settings']['live']['live_environment']['#type'] = 'value';
 
@@ -28,8 +30,9 @@ function devshop_project_create_step_settings(&$form, &$form_state) {
     '#title' => t('Path to Drupal'),
     '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
     '#size' => 40,
-    '#default_Value' => $project->drupal_path,
+    '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
+    '#weight' => -100,
   );
 }
 
@@ -49,11 +52,13 @@ function devshop_project_create_step_settings_submit(&$from, &$form_state) {
   $project->drupal_path = $form_state['values']['project']['drupal_path'];
   $project->settings = $form_state['values']['project']['settings'];
 
-
   // Save the settings to the project node
   $node = $form_state['values']['old'];
   $node->project = $project;
 
   $node->no_verify = TRUE;
   node_save($node);
+
+  // Remove default "task" messages.
+  drupal_get_messages();
 }

@@ -19,13 +19,13 @@ function devshop_log_perm() {
  * Implementation of hook_menu()
  */
 function devshop_log_menu() {
-  $items['admin/hosting/devshop/gitlog'] = array(
+  $items['admin/devshop/gitlog'] = array(
     'title' => 'Commit Log',
     'description' => 'Configure Commit Log View',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devshop_git_log_settings'),
     'access arguments' => array('administer hosting settings'),
-    'tab_parent' => 'admin/hosting/devshop',
+    'tab_parent' => 'admin/devshop',
     'type' => MENU_LOCAL_TASK,
   );
   $items['node/%/logs/commits'] = array(
