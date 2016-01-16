@@ -186,6 +186,7 @@ ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-var
 cd $PLAYBOOK_PATH
 composer install
 
+# @TODO: Get rid of this, replace with devshop status and devshop login commands.
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
 
