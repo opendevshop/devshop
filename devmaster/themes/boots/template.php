@@ -77,9 +77,7 @@ function boots_preprocess_environment(&$vars)
   // Load Task Links
   $environment->task_links = devshop_environment_links($environment);
 
-  // Task Logs{
-  $tasks = hosting_available_tasks('site');
-  $environment->tasks = devshop_get_tasks($environment);
+  // Task Logs
   $environment->task_count = count($environment->tasks);
   $environment->active_tasks = 0;
 
@@ -93,7 +91,8 @@ function boots_preprocess_environment(&$vars)
 
   $environment->processing = FALSE;
 
-  foreach ($environment->tasks as &$task) {
+  foreach ($environment->tasks_list as $task) {
+
     if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
       $environment->active_tasks++;
 
@@ -101,36 +100,8 @@ function boots_preprocess_environment(&$vars)
         $environment->processing = TRUE;
       }
     }
-//
-//    switch ($task->task_status){
-//      case HOSTING_TASK_SUCCESS:
-//        $icon = 'check';
-//        $item_class = 'success';
-//        break;
-//
-//      case HOSTING_TASK_ERROR;
-//        $icon = 'exclamation-circle';
-//        $item_class = 'danger';
-//        break;
-//      case HOSTING_TASK_WARNING:
-//        $icon = 'warning';
-//        $item_class = 'warning';
-//        break;
-//
-//      case HOSTING_TASK_PROCESSING;
-//      case HOSTING_TASK_QUEUED;
-//        $icon = 'cog';
-//        $item_class = 'queued';
-//        if ($environment->processing) {
-//          $icon .= ' fa-spin';
-//          $item_class = 'processing';
-//        }
-//        break;
-//    }
 
-    $label = drupal_ucfirst($tasks[$task->task_type]['title']);
-
-    $text = "<i class='fa fa-{$task->icon}'></i> {$label} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
+    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
 
     $items[] = l($text, "node/{$task->nid}/revisions/{$task->vid}/view", array(
         'html' => TRUE,

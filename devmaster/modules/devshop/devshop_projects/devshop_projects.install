@@ -331,3 +331,10 @@ function devshop_projects_update_6010 () {
     devshop_environment_save_last_task($site->environment);
   }
 }
+
+/**
+ * Reset all environment's "last task" to the NID, again.
+ */
+function devshop_projects_update_6011 () {
+  devshop_reset_last_tasks();
+}

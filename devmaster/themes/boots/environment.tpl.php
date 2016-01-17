@@ -14,26 +14,15 @@
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
-        <!-- Environment Links -->
+      <?php  if (isset($environment->github_pull_request)): ?>
+        <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32" class="environment-avatar">
+      <?php endif; ?>
 
-        <?php  if (isset($environment->github_pull_request)): ?>
-            <!-- Pull Request -->
-            <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
-                <h4>
-                    <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32">
-                    <i class="fa fa-github"></i>
-                    <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>
-                </h4></a>
+      <!-- Environment Name -->
+        <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
+            <?php print $environment->name; ?></a>
 
-        <?php else: ?>
-
-
-            <!-- Environment Name -->
-            <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link">
-                <?php print $environment->name; ?></a>
-        <?php endif; ?>
-
-        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('View this !type', array('!type' => $environment->git_ref_type)); ?>">
+        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
             <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
 
@@ -41,7 +30,6 @@
             <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data environment-drupal-version btn btn-text">
                 <i class="fa fa-drupal"></i><?php print $environment->version; ?>
             </a>
-
         <?php endif; ?>
 
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
@@ -63,6 +51,21 @@
             <?php endif; ?>
 
         </div>
+
+      <?php  if (isset($environment->github_pull_request)): ?>
+        <!-- Pull Request -->
+
+
+        <h6>
+          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
+            <i class="fa fa-github"></i>
+            <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>:
+            <?php print $environment->github_pull_request->pull_request_object->title;?>
+          </a>
+        </h6>
+
+      <?php endif; ?>
+
     </div>
 
     <!-- Environment Warnings -->
@@ -85,16 +88,73 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if ($environment->deleted): ?>
-    <!-- Status Display -->
-    <div class="list-group-item center-block text text-muted">
+    <?php
+
+      // SITUATION: Environment Destroy Initiated
+      if (!empty($environment->tasks['delete'])): ?>
+      <!-- Status Display -->
+      <?php
+
+      foreach ($environment->tasks['delete'] as $task) {
+        if ($environment->site == $task->rid) {
+          $site_delete_task = $task;
+          $site_delete_status = l($site_delete_task->status_name, "node/{$site_delete_task->nid}");
+        }
+        elseif ($environment->platform == $task->rid) {
+          $platform_delete_task = $task;
+          $platform_delete_status = l($platform_delete_task->status_name, "node/{$platform_delete_task->nid}");
+        }
+      }
+
+      ?>
+
+      <?php if (isset($site_delete_task)): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-trash"></i>
+          <?php print t('Site Destroy'); ?>: <?php print $site_delete_status; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (isset($platform_delete_task)): ?>
+      <div class="list-group-item center-block text text-muted">
         <i class="fa fa-trash"></i>
-        <?php if ($environment->delete_task->task_status == HOSTING_TASK_QUEUED) print t('Environment scheduled for deletion.'); ?>
-    </div>
-    <?php endif; ?>
+        <?php print t('Platform Destroy'); ?>: <?php print $platform_delete_status; ?>
+      </div>
+      <?php endif; ?>
 
+    <?php
+      // SITUATION: Environment Disable Initiated
+      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-power-off"></i>
+          <?php print t('Environment is being disabled.'); ?>
+        </div>
+        <?php
 
-    <?php if ($environment->created['type'] == 'clone' && !$environment->deleted): ?>
+      // SITUATION: Site is Disabled
+      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+          <div class="list-group-item center-block text text-muted">
+            <i class="fa fa-power-off"></i>
+            <?php print t('Environment is disabled.'); ?>
+          </div>
+
+          <div class="list-group-item center-block text text-muted">
+            <div class="btn-group">
+              <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+                <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
+              </a>
+              <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+                <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
+              </a>
+            </div>
+        </div>
+
+    <?php
+
+      // SITUATION: Clone Failure
+      elseif ($environment->created['type'] == 'clone' && !empty($environment->tasks['delete']) ||
+        empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['clone']) && current($environment->tasks['clone'])->task_status == HOSTING_TASK_ERROR
+      ): ?>
         <!-- Status Display -->
         <div class="list-group-item center-block text text-muted">
 
@@ -115,11 +175,37 @@
                 <?php endif; ?>
             </div>
         </div>
-    <?php elseif (empty($environment->site) && !$environment->deleted): ?>
+    <?php
+      // SITUATION: Environment has platform but no site, and verify is queued or processing
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && (current($environment->tasks['verify'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['verify'])->task_status == HOSTING_TASK_PROCESSING)): ?>
         <div class="list-group-item center-block text text-muted">
-                <?php print t('Environment not yet available.'); ?>
+          <i class="fa fa-truck"></i>
+          <?php print t('Environment is being created.'); ?>
         </div>
-    <?php elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
+
+    <?php
+      // SITUATION: Environment has platform but no site, verify failed
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR):
+
+        $verify_task = current($environment->tasks['verify']);
+        ?>
+        <div class="list-group-item center-block text text-muted">
+
+          <i class="fa fa-warning"></i>
+          <?php print t('Codebase preparation failed.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
+          <div class="btn-group " role="group">
+            <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
+              <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+            </a>
+          </div>
+        </div>
+
+    <?php
+      // SITUATION: Site Install Failed
+      elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
 
         <div class="list-group-item center-block text text-muted">
             <i class="fa fa-warning"></i>  <?php print t('Site Install failed. The environment is not available.'); ?>
@@ -141,19 +227,10 @@
 
             </div>
         </div>
-    <?php elseif (!$environment->deleted && $environment->site_status == HOSTING_SITE_DISABLED): ?>
-        <div class="list-group-item center-block text text-muted">
-                <?php print t('Environment is disabled.'); ?>
-          <div class="btn-group pull-right">
-            <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-              <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
-            </a>
-            <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-              <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
-            </a>
-          </div>
-        </div>
-    <?php elseif (!$environment->deleted): ?>
+
+    <?php
+      // SITUATION: Environment is Active!
+      elseif (empty($environment->tasks['delete'])): ?>
 
         <!-- URLs -->
         <div class="environment-domains list-group-item <?php if ($environment->login_text) print 'login-available'; ?>">
