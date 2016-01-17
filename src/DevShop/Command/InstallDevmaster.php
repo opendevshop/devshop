@@ -26,19 +26,113 @@ class InstallDevmaster extends Command
       ->setName('install-devmaster')
       ->setDescription('Install the Devmaster front-end. This command is analogous to "drush hostmaster-install"')
 
+      // site
+      ->addOption(
+        'site', NULL, InputOption::VALUE_OPTIONAL,
+        'The front-end URL to use for Devmaster.'
+      )
+
+      // aegir_host
+      ->addOption(
+        'aegir_host', NULL, InputOption::VALUE_OPTIONAL,
+        'The aegir host. Will default to the detected hostname of this server.'
+      )
+
+      // script_user
+      ->addOption(
+        'script_user', NULL, InputOption::VALUE_OPTIONAL,
+        'The user running this script.'
+      )
+
       // aegir_db_host
       ->addOption(
         'aegir_db_host', NULL, InputOption::VALUE_OPTIONAL,
-        'The desired database host.',
+        'The database host.',
         'localhost'
       )
 
       // aegir_db_port
       ->addOption(
         'aegir_db_port', NULL, InputOption::VALUE_OPTIONAL,
-        'The desired database port.',
+        'The database server port.',
         '3306'
       )
+
+      // aegir_db_user
+      ->addOption(
+        'aegir_db_user', NULL, InputOption::VALUE_OPTIONAL,
+        'The database user, one that is allowed to CREATE new databases.',
+        'root'
+      )
+
+      // aegir_db_pass
+      ->addOption(
+        'aegir_db_pass', NULL, InputOption::VALUE_OPTIONAL,
+        'The database password for the "aegir_db_user"',
+        'root'
+      )
+
+      // profile
+      ->addOption(
+        'profile', NULL, InputOption::VALUE_OPTIONAL,
+        'The desired install profile.',
+        'devmaster'
+      )
+
+      // makefile
+      ->addOption(
+        'makefile', NULL, InputOption::VALUE_OPTIONAL,
+        'The makefile to use to build the platform.',
+        'devmaster'
+      )
+
+      // aegir_root
+      ->addOption(
+        'aegir_root', NULL, InputOption::VALUE_OPTIONAL,
+        'The home directory for the "aegir" user.  If not specified will be automatically detected.'
+      )
+
+      // root
+      ->addOption(
+        'root', NULL, InputOption::VALUE_OPTIONAL,
+        'The desired path to install to.  Example: /var/aegir/devmaster-0.x'
+      )
+
+      // http_service_type
+      ->addOption(
+        'http_service_type', NULL, InputOption::VALUE_OPTIONAL,
+        'The HTTP service to use: apache or nginx',
+        'apache'
+      )
+
+      // http_port
+      ->addOption(
+        'http_port', NULL, InputOption::VALUE_OPTIONAL,
+        'The port that the webserver should use.',
+        '80'
+      )
+
+      // web_group
+      ->addOption(
+        'web_group', NULL, InputOption::VALUE_OPTIONAL,
+        'The web server user group. If not specified, will be detected automatically.'
+      )
+
+      // client_name
+      ->addOption(
+        'client_name', NULL, InputOption::VALUE_OPTIONAL,
+        'The name of the aegir "client".',
+        'admin'
+      )
+
+      // client_email
+      // If not specified, will use the aegir_host
+      ->addOption(
+        'client_email', NULL, InputOption::VALUE_OPTIONAL,
+        'The email to use for the administrator user.'
+      )
+
+
 
     ;
   }
