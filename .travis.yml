@@ -15,7 +15,7 @@ install:
 script:
 
   # Test for DevShop
-  - sudo su - aegir -c "drush @hostmaster status"
+  - sudo su - aegir -c "devshop status"
 #  - sudo su -c "cd /usr/share/devshop/tests && composer update"
 #  - sudo su aegir -c "cd /usr/share/devshop/tests && bin/behat --profile travis"
 
