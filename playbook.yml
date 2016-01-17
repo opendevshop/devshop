@@ -223,7 +223,7 @@
         state=directory
 
     - name: Install required drush packages.
-      command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler=git_drupalorg -y"
+      command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler={{ drush_dl_method }} -y"
       with_dict: "{{ devshop_drush_packages }}"
 
     - name: Clear the drush cache.

@@ -1,5 +1,17 @@
 # Change Log
 
+# 0.7.4 (January 15, 2016)
+
+1 commits to DevShop: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
+15 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
+
+- Fixed bug that blocked non-uid-1 users from cloning and forking environments.
+- Now runs apt-get update before installing git.
+- Added "Run Tests" to Project Settings "Default Deploy Hooks".
+- Improvements to the way devshop_get_tasks() works, improving dynamic task loading performance.
+- Major improvements to Environment status user interface. It now clearly states to the user what an environment is doing: "Creating environment", "Cloning Environment", "Deleting Environment", "Disabling Environment", "Clone failed", "Delete Failed", Etc.  Added separate "Site Destroy" and "Platform destroy" indicators.
+- Major improvements to GitHub pull request environment interface. Now clearly shows PR number and environment name. Shows Pull request title as well.
+
 # 0.7.3 (December 30, 2015)
 
 22 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.2...0.7.3

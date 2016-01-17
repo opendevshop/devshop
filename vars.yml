@@ -7,6 +7,11 @@ devshop_version:              1.x
 # composer global require drush/drush:{{ drush_version }}
 drush_version: 8.*
 
+# The version of drush to install.
+# This is passed directly to the `composer global require` command:
+# composer global require drush/drush:{{ drush_version }}
+drush_version: 8.*
+
 # VAGRANT variables.
 # Set development to TRUE if you wish to contribute to devshop development.
 
@@ -38,6 +43,8 @@ ansible_playbook: playbook.yml
 devshop_working_copy: --working-copy
 
 devshop_provision_repo: https://github.com/opendevshop/devshop_provision.git
+
+drush_dl_method: wget
 
 devshop_drush_packages:
   provision: 7.x-3.x
