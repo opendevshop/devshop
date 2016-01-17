@@ -46,7 +46,6 @@ HTML;
 function devshop_hosting_init() {
   drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
   $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
-  drupal_add_html_head("<style>div#header div.logo a { background: url('/$path') !important; }</style>");
 
   drupal_add_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
 
@@ -300,14 +299,33 @@ HTML;
 
 /**
  * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
- * @param $environment_site_nid
+ * @param $environment
+ *   The environment object.
+ *
+ * @param null $type
+ *   The task type you wish to retrieve.
+ *
+ * @param null $key
+ *
+ *    If $key is specified, the return array will be re-ordered, with the key of
+ *    the array being set to $task_node->$key.
+ *
+ *    For example, if you want all tasks for an environment, sorted by date, use
+ *    'vid' for the $key parameter:
+ *
+ *    $tasks = devshop_get_tasks($environment, NULL, 'vid');
+ *
+ * @return array
+ *
+ *    By default, an array is returned with Task types as the keys. Each element
+ *    in the array is another array, keyed by VID.
+ *
  */
-function devshop_get_tasks($environment, $type = NULL) {
+function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
 
   // Load tasks from hosting_task table for both site and platform.
   $args = array();
   if ($environment->site) {
-
     if ($type) {
       $where = "(t.rid = :site OR t.rid = :platform) AND t.task_type = :type";
       $args = array(
@@ -341,7 +359,7 @@ function devshop_get_tasks($environment, $type = NULL) {
   }
 
   $results = db_query("
-    SELECT t.nid, t.vid
+    SELECT t.nid, t.vid, t.task_type
       FROM {node} tn
       INNER JOIN {hosting_task} t ON tn.vid = t.vid
       WHERE
@@ -353,28 +371,48 @@ function devshop_get_tasks($environment, $type = NULL) {
   );
   $tasks = array();
   foreach ($results as $result) {
-    $tasks[$result->vid] = node_load($result->nid, $result->vid);
+    $tasks[$result->task_type][$result->vid] = node_load($result->nid, $result->vid);
   }
 
   // Load "Clone" tasks
   if ($type == NULL || $type == 'clone') {
-    $results = db_query("
-    SELECT n.nid, n.vid
-      FROM {node} n
-      INNER JOIN {hosting_task_arguments} a ON a.vid = n.vid
-      WHERE
-        name = 'target_platform' AND value = :platform
-      ORDER BY vid DESC
-  ",
+    $results = db_query(
+      "
+      SELECT ta.nid, ta.vid
+        FROM {hosting_task_arguments} ta
+        INNER JOIN {hosting_task} t ON ta.vid = t.vid
+        WHERE
+          name = 'target_platform' AND value = %d
+        ORDER BY vid DESC
+        LIMIT 1
+    ",
       array(
         ':platform' => $environment->platform,
       )
     );
     foreach ($results as $result) {
-      $tasks[ $result->vid ] = node_load($result->nid, $result->vid);
+      $task_node = node_load($result->nid, $result->vid);
+      $tasks[$task_node->task_type][$task_node->vid] = $task_node;
     }
   }
-  krsort($tasks);
-  return $tasks;
-}
 
+  // If key is requested...
+  if ($key) {
+    foreach ($tasks as $task_type => $task_list) {
+      foreach ($task_list as $task) {
+        $new_task_list[$task->{$key}] = $task;
+      }
+    }
+    if ($key == 'vid' || $key == 'nid') {
+      krsort($new_task_list);
+    }
+    else {
+      ksort($new_task_list);
+    }
+    return $new_task_list;
+  }
+  else {
+    ksort($tasks);
+    return $tasks;
+  }
+}
