@@ -28,21 +28,18 @@ class InstallDevmaster extends Command
 
       // aegir_db_host
       ->addOption(
-        'aegir_db_host',
-        NULL,
-        InputOption::VALUE_OPTIONAL,
+        'aegir_db_host', NULL, InputOption::VALUE_OPTIONAL,
         'The desired database host.',
         'localhost'
       )
 
       // aegir_db_port
       ->addOption(
-        'aegir_db_port',
-        NULL,
-        InputOption::VALUE_OPTIONAL,
+        'aegir_db_port', NULL, InputOption::VALUE_OPTIONAL,
         'The desired database port.',
         '3306'
       )
+
     ;
   }
 
@@ -50,9 +47,11 @@ class InstallDevmaster extends Command
     // Attaches input and output to the Command class.
     parent::execute($input, $output);
 
-    // Validate the database
+    // Validate the database.
     $this->validateDatabase();
 
+    // Confirm all of the options.
+    $this->validateOptions();
   }
 
   /**
@@ -82,5 +81,12 @@ class InstallDevmaster extends Command
     } catch (ProcessFailedException $e) {
       throw new Exception($e->getMessage());
     }
+  }
+
+  /**
+   * Validate the users command line options.
+   */
+  private function validateOptions() {
+
   }
 }
