@@ -39,12 +39,12 @@ abstract class Command extends BaseCommand
   /**
    * @var InputInterface
    */
-  private $input;
+  public $input;
 
   /**
    * @var OutputInterface
    */
-  private $output;
+  public $output;
 
 
   /**
