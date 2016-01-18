@@ -104,6 +104,21 @@ abstract class Command extends BaseCommand
   }
 
   /**
+   * Helper for running processes.
+   *
+   * @param \Symfony\Component\Process\Process $process
+   */
+  public function runProcess(Process $process) {
+    $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        echo $buffer;
+      } else {
+        echo $buffer;
+      }
+    });
+  }
+
+  /**
    * Simple helper to output something inside an ANSI box.
    *
    * @param \Symfony\Component\Console\Output\OutputInterface $output
