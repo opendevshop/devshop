@@ -109,13 +109,20 @@ abstract class Command extends BaseCommand
    * @param \Symfony\Component\Process\Process $process
    */
   public function runProcess(Process $process) {
-    $process->run(function ($type, $buffer) {
-      if (Process::ERR === $type) {
-        echo $buffer;
-      } else {
-        echo $buffer;
-      }
-    });
+
+    try {
+      $process->mustRun(function ($type, $buffer) {
+        if (Process::ERR === $type) {
+          echo $buffer;
+        } else {
+          echo $buffer;
+        }
+      });
+      return TRUE;
+    } catch (ProcessFailedException $e) {
+      $this->output->writeln('<error>' . $e->getMessage() . '</error>');
+      return FALSE;
+    }
   }
 
   /**

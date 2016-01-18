@@ -446,6 +446,9 @@ class InstallDevmaster extends Command
   /**
    * Saves data to a aegir "context".
    *
+   * We skip using provision-save because of complexity.  It is much easier to
+   * just write a new context file.
+   *
    * @param $name
    * @param $data
    */
@@ -468,22 +471,23 @@ PHP;
     $home = $this->input->getOption('aegir_root');
     $path_to_alias_file = "{$home}/.drush/{$name}.alias.drushrc.php";
 
+    // Notify user.
+    $this->output->writeln("Writing alias file {$path_to_alias_file}...");
+    $this->output->writeln("<comment>$output</comment>");
+
     // Dump to file
     $fs = new Filesystem();
     $fs->dumpFile($path_to_alias_file, $output);
+    $this->output->writeln("<info>Done</info>");
 
-    // Notify user.
-    $this->output->writeln("Writing alias file {$path_to_alias_file}: ");
-    $this->output->writeln("<comment>$output</comment>");
-
-//    $process = $this->getProcess('drush --version'); //->process('drush status');
-//
-//    $process->run();
-//    print $process->getOutput();
-
-    //      drush_invoke_process('@none', "provision-save", array($dbserver), $dbserver_context);
-    //      provision_backend_invoke($dbserver, 'provision-verify');
-
+    // Run provision-verify
+    $this->output->writeln("");
+    $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
+    $process = $this->getProcess("drush @{$name} provision-verify");
+    $this->runProcess($process);
+    $this->output->writeln("");
+    $this->output->writeln("<info>Done</info>");
+    $this->output->writeln("");
 
   }
 }
