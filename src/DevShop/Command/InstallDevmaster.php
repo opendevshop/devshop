@@ -18,6 +18,7 @@ use Github\Client;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Translation\Dumper\PhpFileDumper;
 
 class InstallDevmaster extends Command
 {
@@ -236,6 +237,16 @@ class InstallDevmaster extends Command
 
     // Confirm all of the options.
     $this->validateOptions();
+
+    // Prepare "aegir contexts"
+    $this->prepareContexts();
+
+    // Verify "aegir contexts"
+    // $this->verifyContexts();
+
+    // Run site install.
+    // $this->installDevmaster();
+
   }
 
   /**
@@ -376,5 +387,103 @@ class InstallDevmaster extends Command
       $group = $info['name'];
     }
     return $group;
+  }
+
+  /**
+   * Prepares aegir "contexts" (aka drush aliases) for server_master,
+   * server_localhost, and platform_hostmaster.
+   */
+  private function prepareContexts() {
+
+    // Get Database Server Credentials from options.
+    $master_db = sprintf("mysql://%s:%s@%s:%s",
+      urlencode($this->input->getOption('aegir_db_user')),
+      urlencode($this->input->getOption('aegir_db_pass')),
+      $this->input->getOption('aegir_db_host'),
+      $this->input->getOption('aegir_db_port')
+    );
+
+    // If the db host and web host are different...
+    if ($this->input->getOption('aegir_host') != $this->input->getOption('aegir_db_host')) {
+
+      // Create Database Server Context.
+      $dbserver = 'server_' . $this->input->getOption('aegir_db_host');
+      $this->saveContext($dbserver, array(
+        'remote_host' => $this->input->getOption('aegir_db_host'),
+        'context_type' => 'server',
+        'db_service_type' => 'mysql',
+        'master_db' => $master_db,
+        'db_port' => $this->input->getOption('aegir_db_port'),
+      ));
+
+      $server_master_db_service_type = NULL;
+      $server_master_master_db = NULL;
+    }
+    // If the db host and web host are the same...
+    else {
+
+      // Save
+      $server_master_db_service_type = 'mysql';
+      $server_master_master_db = $master_db;
+    }
+
+    // Save @server_master
+    $this->saveContext('server_master', array(
+      'context_type'      => 'server',
+      'remote_host'       => $this->input->getOption('aegir_host'),
+      'aegir_root'        => $this->input->getOption('aegir_root'),
+      'script_user'       => $this->input->getOption('aegir_root'),
+      'http_service_type' => $this->input->getOption('http_service_type'),
+      'http_port'         => $this->input->getOption('http_port'),
+      'web_group'         => $this->input->getOption('web_group'),
+      'master_url'        => "http://" . $this->input->getOption('site'),
+      'db_port'           => $this->input->getOption('aegir_db_port'),
+      'db_service_type'   => $server_master_db_service_type,
+      'master_db'         => $server_master_master_db,
+    ));
+  }
+
+  /**
+   * Saves data to a aegir "context".
+   *
+   * @param $name
+   * @param $data
+   */
+  private function saveContext($name, $data) {
+
+    $data_export = var_export($data, TRUE);
+    $output = <<<PHP
+<?php
+/**
+ * @file
+ * An Aegir Context, written by the `devshop install-devmaster` command.
+ *
+ * Changes to this file will be overwritten on the next "provision-verify".
+ */
+\$aliases['$name'] = $data_export;
+
+PHP;
+
+    // Determine home path and path to alias file.
+    $home = $this->input->getOption('aegir_root');
+    $path_to_alias_file = "{$home}/.drush/{$name}.alias.drushrc.php";
+
+    // Dump to file
+    $fs = new Filesystem();
+    $fs->dumpFile($path_to_alias_file, $output);
+
+    // Notify user.
+    $this->output->writeln("Writing alias file {$path_to_alias_file}: ");
+    $this->output->writeln("<comment>$output</comment>");
+
+//    $process = $this->getProcess('drush --version'); //->process('drush status');
+//
+//    $process->run();
+//    print $process->getOutput();
+
+    //      drush_invoke_process('@none', "provision-save", array($dbserver), $dbserver_context);
+    //      provision_backend_invoke($dbserver, 'provision-verify');
+
+
   }
 }
