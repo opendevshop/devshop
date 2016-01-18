@@ -491,7 +491,7 @@ class InstallDevmaster extends Command
     $this->saveContext('hostmaster', array(
       'context_type' => 'site',
       'platform' => $platform_name,
-      'db_server' => $db_server,
+      'db_server' => '@' . $db_server,
       'uri' => $this->input->getOption('site'),
       'client_name' => $this->input->getOption('client_name'),
       'profile' => $this->input->getOption('profile'),
@@ -542,20 +542,21 @@ PHP;
 
     // If this is hostmaster, we need to install first.  provision-verify will fail, otherwise.
     if ($install) {
+      $client_email = $this->input->getOption('client_email');
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush @{$name} provision-install</comment> ...");
-      $process = $this->getProcess("drush @{$name} provision-install");
+      $this->output->writeln("Running <comment>drush @{$name} provision-install --client_email={$client_email}</comment> ...");
+      $process = $this->getProcess("drush @{$name} provision-install --client_email={$client_email}");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
       if ($this->runProcess($process)) {
         $this->output->writeln("");
-        $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment>: <info>Done</info>");
+        $this->output->writeln("Running <comment>drush @{$name} provision-install</comment>: <info>Done</info>");
         $this->output->writeln("");
       }
       else {
         $this->output->writeln("");
-        $this->output->writeln("<error>Unable to run drush @{$name} provision-verify.");
+        $this->output->writeln("<error>Unable to run drush @{$name} provision-install.");
         $this->output->writeln("");
         exit(1);
       }
