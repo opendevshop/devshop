@@ -21,6 +21,9 @@ use DevShop\DevShop;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+
+use Symfony\Component\Process\Process;
+
 use Github\Exception\RuntimeException;
 
 use Symfony\Component\Console\Command\Command as BaseCommand;
@@ -47,6 +50,11 @@ abstract class Command extends BaseCommand
    */
   public $output;
 
+  /**
+   * @var Process
+   * Process
+   */
+  protected $process = NULL;
 
   /**
    * @param \Symfony\Component\Console\Input\InputInterface $input
@@ -67,6 +75,30 @@ abstract class Command extends BaseCommand
   public function getDevShop($required = true, $disablePlugins = false)
   {
     return $this->devshop;
+  }
+
+  /**
+   * Used instead of Symfony\Component\Process\Process so we can easily mock it.
+   *
+   * This returns either an instantiated Symfony\Component\Process\Process or a mock object.
+   * @param $commandline
+   * @param null $cwd
+   * @param array $env
+   * @param null $input
+   * @param int $timeout
+   * @param array $options
+   * @return Process
+   *
+   * @see Symfony\Component\Process\Process
+   */
+  public function getProcess($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array()) {
+    if ($this->process === NULL) {
+      // @codeCoverageIgnoreStart
+      // We ignore this since we mock it.
+      return new Process($commandline, $cwd, $env, $input, $timeout, $options);
+      // @codeCoverageIgnoreEnd
+    }
+    return $this->process;
   }
 
   /**
