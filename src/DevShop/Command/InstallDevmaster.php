@@ -486,7 +486,7 @@ class InstallDevmaster extends Command
       'makefile' => $this->input->getOption('makefile'),
     ));
 
-    // Save Hostmaster Site
+    // Save Hostmaster Site context, and flag for installation, pre-verify.
     $platform_name = '@platform_hostmaster';
     $this->saveContext('hostmaster', array(
       'context_type' => 'site',
@@ -496,7 +496,7 @@ class InstallDevmaster extends Command
       'client_name' => $this->input->getOption('client_name'),
       'profile' => $this->input->getOption('profile'),
       'drush_aliases' => 'hm',
-    ));
+    ), TRUE);
 
     // So... saveContext() saves the alias, then runs provision-verify.
     // install.hostmaster.inc runs provision-save, then runs provision-install, then runs provision-verify.
@@ -512,7 +512,7 @@ class InstallDevmaster extends Command
    * @param $name
    * @param $data
    */
-  private function saveContext($name, $data) {
+  private function saveContext($name, $data, $install = FALSE) {
 
     $data_export = var_export($data, TRUE);
     $output = <<<PHP
@@ -539,6 +539,27 @@ PHP;
     $fs = new Filesystem();
     $fs->dumpFile($path_to_alias_file, $output);
     $this->output->writeln("<info>Done</info>");
+
+    // If this is hostmaster, we need to install first.  provision-verify will fail, otherwise.
+    if ($install) {
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>drush @{$name} provision-install</comment> ...");
+      $process = $this->getProcess("drush @{$name} provision-install");
+      $process->setTimeout(NULL);
+
+      // Ensure process runs sucessfully.
+      if ($this->runProcess($process)) {
+        $this->output->writeln("");
+        $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment>: <info>Done</info>");
+        $this->output->writeln("");
+      }
+      else {
+        $this->output->writeln("");
+        $this->output->writeln("<error>Unable to run drush @{$name} provision-verify.");
+        $this->output->writeln("");
+        exit(1);
+      }
+    }
 
     // Run provision-verify
     $this->output->writeln("");
