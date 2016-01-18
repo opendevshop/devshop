@@ -518,6 +518,8 @@ PHP;
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
     $process = $this->getProcess("drush @{$name} provision-verify");
+    $process->setTimeout(NULL);
+
     $this->runProcess($process);
     $this->output->writeln("");
     $this->output->writeln("<info>Done</info>");
