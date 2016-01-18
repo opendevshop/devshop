@@ -32,6 +32,12 @@ class InstallDevmaster extends Command
         'The front-end URL to use for Devmaster.'
       )
 
+      // devshop_version
+      ->addOption(
+        'devshop_version', NULL, InputOption::VALUE_OPTIONAL,
+        'The version to install. Will default to the latest devshop version.'
+      )
+
       // aegir_host
       ->addOption(
         'aegir_host', NULL, InputOption::VALUE_OPTIONAL,
@@ -82,8 +88,7 @@ class InstallDevmaster extends Command
       // makefile
       ->addOption(
         'makefile', NULL, InputOption::VALUE_OPTIONAL,
-        'The makefile to use to build the platform.',
-        'devmaster'
+        'The makefile to use to build the platform.'
       )
 
       // aegir_root
@@ -131,10 +136,61 @@ class InstallDevmaster extends Command
         'client_email', NULL, InputOption::VALUE_OPTIONAL,
         'The email to use for the administrator user.'
       )
-
-
-
     ;
+  }
+
+  /**
+   * Initializes the command. We set more complex default options here.
+   *
+   * @param InputInterface  $input  An InputInterface instance
+   * @param OutputInterface $output An OutputInterface instance
+   */
+  protected function initialize(InputInterface $input, OutputInterface $output) {
+
+    // devshop_version
+    if (!$input->getOption('devshop_version')) {
+      $output->writeln('Checking for latest version...');
+      $input->setOption('devshop_version', $this->getLatestVersion());
+    }
+    else {
+      // Validate chosen version
+      if (!$this->checkVersion($input->getOption('devshop_version'))) {
+        throw new \Exception('Version');
+      }
+    }
+
+    // site
+    if (!$input->getOption('site')) {
+      $input->setOption('site', $this->findFqdn());
+    }
+
+    // aegir_host
+    if (!$input->getOption('aegir_host')) {
+      $input->setOption('aegir_host', $this->findFqdn());
+    }
+
+    // script_user
+    if (!$input->getOption('script_user')) {
+      $input->setOption('script_user', $this->findCurrentUser());
+    }
+
+    // makefile
+    if (!$input->getOption('makefile')) {
+      $input->setOption('makefile', realpath(dirname(__FILE__) . '/../../../build-devmaster.make'));
+    }
+
+    // aegir_root
+    if (!$input->getOption('aegir_root')) {
+      $input->setOption('aegir_root', getenv('HOME'));
+    }
+
+    // root
+    $root = $input->getOption('aegir_root') . '/' . $input->getOption('profile') . '-' . $input->getOption('devshop_version');
+    $input->setOption('root', $root);
+
+    // web_group
+    // client_email
+
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -193,5 +249,66 @@ class InstallDevmaster extends Command
     foreach ($options as $option => $value) {
       $this->output->writeln("<info>{$option}:</info> {$value}");
     }
+  }
+
+  /**
+   * Determine which web server user group exists on this server.
+   *
+   * @return null
+   */
+  private function findDefaultWebGroup() {
+    $info = posix_getgrgid(posix_getgid());
+    $common_groups = array(
+      'www-data',
+      'apache',
+      'nginx',
+      'www',
+      '_www',
+      'webservd',
+      'httpd',
+      'nogroup',
+      'nobody',
+      $info['name']);
+
+    foreach ($common_groups as $group) {
+      if (provision_posix_groupname($group)) {
+        return $group;
+        break;
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * return the FQDN of the machine or provided host
+   *
+   * this replicates hostname -f, which is not portable
+   *
+   * Copy of provision_fqdn()
+   */
+  private function findFqdn($host = NULL) {
+    if (is_null($host)) {
+      $host = php_uname('n');
+    }
+    return strtolower(gethostbyaddr(gethostbyname($host)));
+  }
+
+  /**
+   * Get's the current user (the one running this command.)
+   * @return int
+   *
+   * Copy of provision_current_user();
+   */
+  private function findCurrentUser() {
+    $user = posix_geteuid();
+    if (is_numeric($user)) {
+      $info = posix_getpwuid($user);
+      $user = $info['name'];
+    }
+    else {
+      $info = posix_getpwnam($user);
+      $user = $info['name'];
+    }
+    return $user;
   }
 }

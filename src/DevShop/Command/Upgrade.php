@@ -262,27 +262,4 @@ class Upgrade extends Command
       echo $buffer;
     });
   }
-
-  public function checkVersion($version) {
-    if (empty($version)) {
-      return FALSE;
-    }
-
-    $client = new \Github\Client();
-
-    try {
-      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/heads/' . $version);
-      return TRUE;
-    }
-    catch (RuntimeException $e) {
-    }
-
-    try {
-      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/tags/' . $version);
-      return TRUE;
-    }
-    catch (RuntimeException $e) {
-      return FALSE;
-    }
-  }
 }
