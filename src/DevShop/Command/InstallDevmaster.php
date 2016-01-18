@@ -142,7 +142,13 @@ class InstallDevmaster extends Command
     parent::execute($input, $output);
 
     // Validate the database.
-    $this->validateDatabase();
+    if ($this->validateSecureDatabase()) {
+      $this->output->writeln('<info>Database is secure.</info>');
+    }
+    else {
+      $this->output->writeln('<error>Database is NOT Secure. Run "mysql_secure_installation" or see https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html for more information.</error>');
+      return;
+    }
 
     // Confirm all of the options.
     $this->validateOptions();
@@ -152,7 +158,7 @@ class InstallDevmaster extends Command
    * Ensure the database cannot be accessed by anonymous users, as it will
    * otherwise fail later in the install, and thus be harder to recover from.
    */
-  private function validateDatabase() {
+  private function validateSecureDatabase() {
     $command = sprintf('mysql -u intntnllyInvalid -h %s -P %s -e "SELECT VERSION()"', $this->input->getOption('aegir_db_host'), $this->input->getOption('aegir_db_port'));
 
     // Run the Mysql process to test the database.
@@ -169,11 +175,11 @@ class InstallDevmaster extends Command
         return TRUE;
       }
       else {
-        throw new Exception('Anonymous user was able to log into the database server. This is insecure, Devmaster install cannot continue.  Please run "mysql_secure_installation" or see https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html for more information.');
+        return FALSE;
       }
 
     } catch (ProcessFailedException $e) {
-      throw new Exception($e->getMessage());
+      return TRUE;
     }
   }
 
@@ -182,5 +188,10 @@ class InstallDevmaster extends Command
    */
   private function validateOptions() {
 
+    $options = $this->input->getOptions();
+
+    foreach ($options as $option => $value) {
+      $this->output->writeln("<info>{$option}:</info> {$value}");
+    }
   }
 }
