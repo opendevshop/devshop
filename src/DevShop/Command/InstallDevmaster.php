@@ -241,9 +241,6 @@ class InstallDevmaster extends Command
     // Prepare "aegir contexts"
     $this->prepareContexts();
 
-    // Verify "aegir contexts"
-    // $this->verifyContexts();
-
     // Run site install.
     // $this->installDevmaster();
 
@@ -392,6 +389,16 @@ class InstallDevmaster extends Command
   /**
    * Prepares aegir "contexts" (aka drush aliases) for server_master,
    * server_localhost, and platform_hostmaster.
+   *
+   * Contexts:
+   *
+   * - [x] server_master: This server. Home to devmaster site.
+   * - [x] server_localhost: The database server.  Not used if "aegir_db_host" is
+   *   the same as "aegir_host".
+   * - [ ] platform_hostmaster: The aegir platform for the hostmaster/devmaster front-end site.
+   * - [ ] hostmaster: The hostmaster/devmaster front-end site.
+   *
+   * @TODO: This is still in progress. Platform and site are not yet saved.*
    */
   private function prepareContexts() {
 
