@@ -102,7 +102,7 @@ class Application extends BaseApplication
     // Load DevMaster info, including root, URI and version.
     if (file_exists('/var/aegir/.drush/hostmaster.alias.drushrc.php')) {
       require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
-      if (isset($aliases['hostmaster'])) {
+      if (isset($aliases['hostmaster']['root'])) {
         $devmaster_root = $aliases['hostmaster']['root'];
         $path_to_version = "{$devmaster_root}/profiles/devmaster/VERSION.txt";
         if (file_exists($path_to_version)) {
