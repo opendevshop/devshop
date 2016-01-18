@@ -1,4 +1,30 @@
 <?php
+/**
+ * @file InstallDevmaster.php
+ *
+ * This command file is a replacement for `drush hostmaster-install`.
+ *
+ * You can see the original command here: http://api.aegirproject.org/api/Provision/install.hostmaster.inc/7.x-3.x
+ *
+ * This was built because hostmaster-install wasn't working for devshop as we upgrade to aegir 3.
+ *
+ * I decided to see if I could replace hostmaster-install with a Symfony console
+ * command.
+ *
+ * What resulted is this file.
+ *
+ * This is a proof of concept of where Aegir could go.
+ *
+ * Symfony console is incredibly elegant, easy to use, and easy to develop.
+ *
+ * I am going to continue to experiment in DevShop, with the hope that the Aegir
+ * project will adopt these tools in the future.
+ *
+ * @TODO: Hostmaster install is still failing, even if you set profile=hostmaster:
+ *   `We could not find an applicable site for that command.               [error]`
+
+ *
+ */
 
 namespace DevShop\Command;
 
