@@ -90,6 +90,8 @@ abstract class Command extends BaseCommand
    * @return Process
    *
    * @see Symfony\Component\Process\Process
+   *
+   *  @author Eric Duran <eric@ericduran.io>
    */
   public function getProcess($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array()) {
     if ($this->process === NULL) {
