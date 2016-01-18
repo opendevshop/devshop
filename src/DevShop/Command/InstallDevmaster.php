@@ -414,8 +414,8 @@ class InstallDevmaster extends Command
     if ($this->input->getOption('aegir_host') != $this->input->getOption('aegir_db_host')) {
 
       // Create Database Server Context.
-      $dbserver = 'server_' . $this->input->getOption('aegir_db_host');
-      $this->saveContext($dbserver, array(
+      $db_server = 'server_' . $this->input->getOption('aegir_db_host');
+      $this->saveContext($db_server, array(
         'remote_host' => $this->input->getOption('aegir_db_host'),
         'context_type' => 'server',
         'db_service_type' => 'mysql',
@@ -430,6 +430,7 @@ class InstallDevmaster extends Command
     else {
 
       // Save
+      $db_server = 'server_master';
       $server_master_db_service_type = 'mysql';
       $server_master_master_db = $master_db;
     }
@@ -448,6 +449,32 @@ class InstallDevmaster extends Command
       'db_service_type'   => $server_master_db_service_type,
       'master_db'         => $server_master_master_db,
     ));
+
+    // Save Hostmaster Platform
+    $server = '@server_master';
+    $this->saveContext('platform_hostmaster', array(
+      'context_type'      => 'platform',
+      'server' => $server,
+      'web_server' => $server,
+      'root' => $this->input->getOption('root'),
+      'makefile' => $this->input->getOption('makefile'),
+    ));
+
+    // Save Hostmaster Site
+    $platform_name = '@platform_hostmaster';
+    $this->saveContext('hostmaster', array(
+      'context_type' => 'site',
+      'platform' => $platform_name,
+      'db_server' => $db_server,
+      'uri' => $this->input->getOption('site'),
+      'client_name' => $this->input->getOption('client_name'),
+      'profile' => $this->input->getOption('profile'),
+      'drush_aliases' => 'hm',
+    ));
+
+    // So... saveContext() saves the alias, then runs provision-verify.
+    // install.hostmaster.inc runs provision-save, then runs provision-install, then runs provision-verify.
+    // I'm going to leave it for the moment, and let $this->saveContext() verify before install, to see what happens.
   }
 
   /**
