@@ -546,10 +546,16 @@ PHP;
     $process = $this->getProcess("drush @{$name} provision-verify");
     $process->setTimeout(NULL);
 
-    $this->runProcess($process);
-    $this->output->writeln("");
-    $this->output->writeln("<info>Done</info>");
-    $this->output->writeln("");
-
+    if ($this->runProcess($process)) {
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment>: <info>Done</info>");
+      $this->output->writeln("");
+    }
+    else {
+      $this->output->writeln("");
+      $this->output->writeln("<error>Unable to run drush @{$name} provision-verify.");
+      $this->output->writeln("");
+      exit(1);
+    }
   }
 }
