@@ -147,6 +147,16 @@ class InstallDevmaster extends Command
    */
   protected function initialize(InputInterface $input, OutputInterface $output) {
 
+    $output->writeln('');
+
+    $output->writeln('This command will operate the following changes in your system:');
+    $output->writeln('');
+    $output->writeln(' 1. Create server-level configuration directores.)');
+    $output->writeln(' 2. Create the Devmaster frontend platform.');
+    $output->writeln(' 3. Install the frontend site.');
+    $output->writeln(' 4. Setup the dispatcher (a user cron job)');
+    $output->writeln('');
+
     // devshop_version
     if (empty($input->getOption('devshop_version'))) {
       $output->writeln('Checking for latest version...');
