@@ -148,14 +148,18 @@ class InstallDevmaster extends Command
   protected function initialize(InputInterface $input, OutputInterface $output) {
 
     // devshop_version
-    if (!$input->getOption('devshop_version')) {
+    if (empty($input->getOption('devshop_version'))) {
       $output->writeln('Checking for latest version...');
       $input->setOption('devshop_version', $this->getLatestVersion());
     }
     else {
       // Validate chosen version
-      if (!$this->checkVersion($input->getOption('devshop_version'))) {
-        throw new \Exception('Version');
+      $output->writeln('Validating version...');
+      try {
+        $this->checkVersion($input->getOption('devshop_version'));
+      }
+      catch (\Exception $e) {
+        throw new \Exception($e->getMessage());
       }
     }
 
@@ -185,12 +189,26 @@ class InstallDevmaster extends Command
     }
 
     // root
-    $root = $input->getOption('aegir_root') . '/' . $input->getOption('profile') . '-' . $input->getOption('devshop_version');
-    $input->setOption('root', $root);
+    if (!$input->getOption('root')) {
+      $root = $input->getOption('aegir_root') . '/' . $input->getOption('profile') . '-' . $input->getOption('devshop_version');
+      $input->setOption('root', $root);
+    }
 
     // web_group
-    // client_email
+    if (!$input->getOption('web_group')) {
+      $input->setOption('web_group', $this->findDefaultWebGroup());
+    }
 
+    // client_email
+    if (!$input->getOption('client_email')) {
+      if ($input->getOption('aegir_host') == 'localhost') {
+        $default_email = 'webmaster@example.com';
+      }
+      else {
+        $default_email = 'webmaster@' . $input->getOption('aegir_host');
+      }
+      $input->setOption('client_email', $default_email);
+    }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -271,7 +289,7 @@ class InstallDevmaster extends Command
       $info['name']);
 
     foreach ($common_groups as $group) {
-      if (provision_posix_groupname($group)) {
+      if ($this->findPosixGroupname($group)) {
         return $group;
         break;
       }
@@ -310,5 +328,25 @@ class InstallDevmaster extends Command
       $user = $info['name'];
     }
     return $user;
+  }
+
+  /**
+   * Replacement for provision_posix_groupname()
+   *
+   * @param $group
+   * @return mixed
+   */
+  private function findPosixGroupname($group){
+    // TODO: make these singletons with static variables for caching.
+    // we do this both ways, so that the function returns NULL if no such user was found.
+    if (is_numeric($group)) {
+      $info = posix_getgrgid($group);
+      $group = $info['name'];
+    }
+    else {
+      $info = posix_getgrnam($group);
+      $group = $info['name'];
+    }
+    return $group;
   }
 }
