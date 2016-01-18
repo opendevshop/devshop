@@ -298,7 +298,7 @@ class InstallDevmaster extends Command
 
     $this->output->writeln('');
     $question = new ConfirmationQuestion('Continue installation with these options? ', false);
-    if (!$this->getHelper('question')->ask($this->input, $this->output, $question)) {
+    if ($this->input->isInteractive() && !$this->getHelper('question')->ask($this->input, $this->output, $question)) {
       $this->output->writeln('<fg=red>Installation aborted.');
       $this->output->writeln('');
       exit(1);
