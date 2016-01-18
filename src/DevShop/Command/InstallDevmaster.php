@@ -151,7 +151,7 @@ class InstallDevmaster extends Command
 
     $output->writeln('This command will operate the following changes in your system:');
     $output->writeln('');
-    $output->writeln(' 1. Create server-level configuration directores.)');
+    $output->writeln(' 1. Create server-level configuration directores.');
     $output->writeln(' 2. Create the Devmaster frontend platform.');
     $output->writeln(' 3. Install the frontend site.');
     $output->writeln(' 4. Setup the dispatcher (a user cron job)');
@@ -286,6 +286,14 @@ class InstallDevmaster extends Command
 
     foreach ($options as $option => $value) {
       $this->output->writeln("<info>{$option}:</info> {$value}");
+    }
+
+    $this->output->writeln('');
+    $question = new ConfirmationQuestion('Continue installation with these options? ', false);
+    if (!$this->getHelper('question')->ask($this->input, $this->output, $question)) {
+      $this->output->writeln('<fg=red>Installation aborted.');
+      $this->output->writeln('');
+      exit(1);
     }
   }
 
