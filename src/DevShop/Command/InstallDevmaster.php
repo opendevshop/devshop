@@ -264,6 +264,16 @@ class InstallDevmaster extends Command
 
     $options = $this->input->getOptions();
 
+    $options = array_diff_key($options, array(
+      'help' => '',
+      'quiet' => '',
+      'verbose' => '',
+      'version' => '',
+      'ansi' => '',
+      'no-ansi' => '',
+      'no-interaction' => '',
+    ));
+
     foreach ($options as $option => $value) {
       $this->output->writeln("<info>{$option}:</info> {$value}");
     }
