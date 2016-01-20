@@ -188,6 +188,7 @@
     - name: Install MySQL Securely
       include: ./tasks/mysql-secure.yml
       when: not mysqlsecured.stat.exists
+      become: yes
 
     - name: Add aegir to sudoers for restarting apache.
       template:
