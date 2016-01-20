@@ -4,4 +4,4 @@ machine:
     
 dependencies:
   override:
-    - bash install.sh
+    - sudo bash install.sh
