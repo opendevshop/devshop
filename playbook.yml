@@ -26,10 +26,15 @@
       when: ansible_os_family == "Debian"
       with_items: packages
 
-    - name: Setup | DEBIAN | Install web server packages.
+    - name: Setup | DEBIAN | Install NGINX server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
-      when: ansible_os_family == "Debian"
-      with_items: {{ server_webserver + "_packages" }}
+      when: ansible_os_family == "Debian" && server_webserver == "nginx"
+      with_items: nginx_packages
+
+    - name: Setup | DEBIAN | Install Apache server packages.
+      action: apt pkg={{ item }} state=installed update_cache=yes
+      when: ansible_os_family == "Debian" && server_webserver == "apache"
+      with_items: apache_packages
 
     # REDHAT
     - name: Setup | REDHAT | Install common packages.
@@ -39,8 +44,13 @@
 
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
-      when: ansible_os_family == "RedHat"
-      with_items: {{ server_webserver + "_packages" }}
+      when: ansible_os_family == "RedHat" && server_webserver == "nginx"
+      with_items: nginx_packages
+
+    - name: Setup | REDHAT | Install web server packages.
+      action: yum name={{ item }} state=present
+      when: ansible_os_family == "RedHat" && server_webserver == "apache"
+      with_items: apache_packages
 
     - name: Add aegir to apache group.
       when: server_webserver == "apache"
