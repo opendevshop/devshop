@@ -2,8 +2,9 @@
 
 namespace DevShop\Command;
 
+use DevShop\Console\Command;
+
 use Github\Exception\RuntimeException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,26 +28,31 @@ class Upgrade extends Command
     $this
       ->setName('upgrade')
       ->setDescription('Upgrade devshop')
+      ->addArgument(
+        'devshop-version',
+        InputArgument::OPTIONAL,
+        'The git tag or branch to install.'
+      )
     ;
   }
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $formatter = $this->getHelper('formatter');
+
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
     $helper = $this->getHelper('question');
 
-    $errorMessages = array(
-      '╔═══════════════════════════════════════════════════════════════╗',
-      '║           ____  Welcome to  ____  _                           ║',
-      '║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║',
-      '║          | | | |/ _ \ \ / /\___ \|  _ \ / _ \|  _ \           ║',
-      '║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║',
-      '║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║',
-      '║                  Upgrade                     |_|              ║',
-      '╚═══════════════════════════════════════════════════════════════╝',
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce('Upgrade');
+
+    $output->writeln(
+      '<info>Welcome to the DevShop Upgrader!</info>'
     );
-    $formattedBlock = $formatter->formatBlock($errorMessages, 'fg=black;bg=green');
-    $output->writeln($formattedBlock);
+
+    // @TODO: Check the CLI for new releases.  If, we should tell the user to run "self-update" then "upgrade".
 
     // Check for existing devshop install.
     // Look for aegir user
@@ -69,51 +75,39 @@ class Upgrade extends Command
       return;
     }
     $output->writeln('');
+    $current_version = $this->getApplication()->getVersion();
 
-    // Look for .devshop-version (Pre 0.3 does not have this file.)
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $current_version = file_get_contents('/var/aegir/.devshop-version');
-      if (!empty($current_version)) {
-        $output->writeln("<info>Current Version:</info> $current_version");
-      }
-      else {
-        $output->writeln("<error> ERROR: </error> /var/aegir/.devshop-version was found but was empty!");
-        return;
-      }
+    // Look for an active devmaster
+    $devmaster_version = $this->getApplication()->getDevmasterVersion();
+    $devmaster_uri = $this->getApplication()->getDevmasterUri();
+    $devmaster_root = $this->getApplication()->getDevmasterRoot();
+    if (empty($devmaster_root) || !file_exists($devmaster_root)) {
+      throw new \Exception('Unable to find a devmaster.  The drush @hostmaster alias does not exist.  Unable to upgrade.');
     }
-    else {
-      $current_version = 'unknown';
-      $output->writeln("<fg=red>WARNING:</> Unable to detect current version of devshop.");
-      $output->writeln("There is no <comment>/var/aegir/.devshop-version</comment> file.");
-      $output->writeln("This is probably because you are running a version prior to 0.3.");
-      $output->writeln('');
-
-      $fs = new Filesystem();
-      $fs->dumpFile('/var/aegir/.devshop-version', '0.x');
-
-      $output->writeln("We have created this file for you.");
-    }
-
-    // Look for an active hostmaster
-    require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
-    $devmaster_root = $aliases['hostmaster']['root'];
-    if (!file_exists($devmaster_root)) {
-      $output->writeln("<error>WARNING:</error> No active drush alias <comment>@hostmaster</comment> was found!");
-      $output->writeln("<fg=red>Aborting upgrade</>");
-      $output->writeln('');
-      return;
-    }
-
-    $devmaster_root = $aliases['hostmaster']['root'];
-    $devmaster_uri = $aliases['hostmaster']['uri'];
-
 
     // Lookup latest version.
     $output->writeln('Checking for latest releases...');
     $client = new \Github\Client();
     $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
-    $default_version = $release['tag_name'];
+
+    // Make sure we got the release info
+    if (empty($release)) {
+      $output->writeln("<fg=red>Unable to retrieve releases from GitHub.  Try again later, or specify a release.</>");
+      $latest_release = '0.x';
+      $output->writeln("Assuming development version <info>$latest_release</info>.");
+    }
+    else {
+      $latest_release = $release['tag_name'];
+      $output->writeln("<info>Latest Version</info> $latest_release");
+    }
+
+    $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
     $target_version = '';
+
+    // Warn if default is not latest
+    if ($latest_release != $default_version) {
+        $output->writeln("<fg=red>WARNING:</> You have specified a release that is not the latest.");
+    }
 
     // Confirm version
     while ($this->checkVersion($target_version) == FALSE) {
@@ -150,9 +144,10 @@ class Upgrade extends Command
     $output->writeln('');
 
     $output->writeln('UPGRADE OPTIONS');
-    $output->writeln("<info>Current Version: </info> " . $current_version);
-    $output->writeln("<info>Current DevMaster Path: </info> $devmaster_root");
-    $output->writeln("<info>Current DevMaster Site: </info> " . $devmaster_uri);
+    $output->writeln("<info>Current CLI Version: </info>       $current_version");
+    $output->writeln("<info>Current DevMaster Version: </info> $devmaster_version");
+    $output->writeln("<info>Current DevMaster Path: </info>    $devmaster_root");
+    $output->writeln("<info>Current DevMaster Site: </info>    $devmaster_uri");
     $output->writeln('');
 
     $output->writeln("<info>Target Version: </info> " . $target_version);
@@ -187,7 +182,7 @@ class Upgrade extends Command
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
     // If they say no, exit.
-    if (!$helper->ask($input, $output, $question)) {
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
       $output->writeln("<fg=red>Upgrade cancelled.</>");
       $output->writeln('');
       return;
@@ -219,7 +214,7 @@ class Upgrade extends Command
     $question = new ConfirmationQuestion("STEP 2: Run playbook (y/n) ", false);
 
     // If they say no, exit.
-    if (!$helper->ask($input, $output, $question)) {
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
       $output->writeln("<fg=red>Upgrade cancelled.</>");
       $output->writeln('');
       return;
@@ -254,7 +249,7 @@ class Upgrade extends Command
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
 
     // If they say no, exit.
-    if (!$helper->ask($input, $output, $question)) {
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
       $output->writeln("<fg=red>Old devmaster platform was not deleted.</> You should find and delete the platform at {$devmaster_root}");
       $output->writeln('');
       return;

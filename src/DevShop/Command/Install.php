@@ -2,7 +2,7 @@
 
 namespace DevShop\Command;
 
-use Symfony\Component\Console\Command\Command;
+use DevShop\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,7 +26,7 @@ class Install extends Command
       ->setDescription('Install devshop')
       ->addArgument(
         'devshop-version',
-        InputOption::VALUE_OPTIONAL,
+        InputArgument::OPTIONAL,
         'The git tag or branch to install.'
       )
       ->addOption(
@@ -40,21 +40,14 @@ class Install extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $formatter = $this->getHelper('formatter');
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
     $helper = $this->getHelper('question');
 
-    $errorMessages = array(
-      '╔═══════════════════════════════════════════════════════════════╗',
-      '║           ____  Welcome to  ____  _                           ║',
-      '║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║',
-      '║          | | | |/ _ \ \ / /\___ \|  _ \ / _ \|  _ \           ║',
-      '║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║',
-      '║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║',
-      '║               Interactive Installer          |_|              ║',
-      '╚═══════════════════════════════════════════════════════════════╝',
-    );
-    $formattedBlock = $formatter->formatBlock($errorMessages, 'fg=black;bg=green');
-    $output->writeln($formattedBlock);
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce('Interactive Installer');
 
     $output->writeln('<info>Welcome to the Interactive DevShop Installer!</info>');
     $output->writeln('');

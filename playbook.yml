@@ -67,9 +67,7 @@
         state=directory
 
     - name: Setup | Install Drush
-      shell: /usr/local/bin/composer global require drush/drush:6.* -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
-      args:
-        creates: /usr/share/composer/vendor/bin/drush
+      shell: /usr/local/bin/composer global require drush/drush:{{ drush_version }} -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
 
     - name: Setup | Add composer bin to path
       command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' {{ bashrc_path }}
@@ -83,7 +81,7 @@
 
     - name: Make devshop CLI available globally.
       file:
-        src={{ playbook_path }}/devshop
+        src={{ playbook_path }}/bin/devshop
         dest={{ devshop_cli_path }}
         state=link
         force=yes
@@ -193,8 +191,23 @@
         owner=aegir group=aegir mode=0744
         state=directory
 
+    - name: Install devshop_provision from github.
+      git:
+        repo: "{{ devshop_provision_repo }}"
+        dest: /var/aegir/.drush/commands/devshop_provision
+        version: "{{ devshop_version }}"
+        force: yes
+        update: yes
+
+    - name: Make sure devshop_provision is owned by aegir
+      file:
+        path: /var/aegir/.drush/commands/devshop_provision
+        owner: aegir
+        group: aegir
+        recurse: yes
+
     - name: Install required drush packages.
-      command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler=git_drupalorg -y"
+      command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler={{ drush_dl_method }} -y"
       with_dict: "{{ devshop_drush_packages }}"
 
     - name: Clear the drush cache.
@@ -210,7 +223,7 @@
       sudo_user: aegir
       command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
       args:
-        creates: /var/aegir/.devshop-version
+        creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
     - name: Supervisor | Set up queue runner script
       template:
@@ -258,11 +271,6 @@
         - { path: '.ssh', mode: '0700' }
         - { path: '.ssh/id_rsa', mode: '600' }
         - { path: '.ssh/id_rsa.pub', mode: '644' }
-
-    - name: DevShop | Save devshop version to a file.
-      copy:
-        content="{{ devshop_version }}"
-        dest=/var/aegir/.devshop-version
 
     - name: Set git user name and email
       shell: "git config --global user.email aegir@{{ server_hostname }}"

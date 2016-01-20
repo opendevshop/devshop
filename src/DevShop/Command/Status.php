@@ -2,7 +2,8 @@
 
 namespace DevShop\Command;
 
-use Symfony\Component\Console\Command\Command;
+use DevShop\Console\Command;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,19 +23,22 @@ class Status extends Command
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $output->writeln('Hello, DevShop!');
 
-    // Check for devshop
-    $output->write("<comment>Checking for devshop...  </comment>");
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
 
-    if (file_exists('/var/aegir/.devshop-version')) {
-      $version = file_get_contents('/var/aegir/.devshop-version');
-    }
-    else {
-      $version = "unknown";
-    }
-    $output->write("<info>Devshop is installed.</info>  ");
-    $output->writeln("DevShop Version: $version");
+    // Track if we found an error, so we can return an exit code.
+    $error = FALSE;
+
+    // Announce ourselves.
+    $output->writeln($this->getApplication()->getLogo());
+    $this->announce('Status');
+
+    // Check for DevShop CLI
+    $output->write("<comment>Checking for DevShop CLI...  </comment>");
+    $version = trim($this->getApplication()->getVersion());
+    $output->write("<info>DevShop CLI is installed.</info>  ");
+    $output->writeln($version);
 
     // Check for Drush
     $output->write("<comment>Checking for Drush...  </comment>");
@@ -44,6 +48,7 @@ class Status extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<question>Drush not detected.</question>");
       $output->writeln($process->getErrorOutput());
+      $error = TRUE;
     }
     else {
       $output->write("<info>Drush is installed.  </info>");
@@ -58,6 +63,7 @@ class Status extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<error>Provision not detected.</error>");
       $output->writeln($process->getErrorOutput());
+      $error = TRUE;
     }
     else {
       $output->writeln("<info>Provision is installed.</info>");
@@ -71,11 +77,23 @@ class Status extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<error>Devmaster not detected.</error>");
       $output->writeln($process->getErrorOutput());
+      $error = TRUE;
     }
     else {
-      $output->writeln("<info>Devmaster is installed.</info>");
+      $output->write("<info>Devmaster is installed.  </info>");
+      $output->writeln($this->getApplication()->getDevmasterVersion());
     }
 
     $output->writeln('');
+
+    // Check for deprecated .devshop-version file.
+    if (file_exists('/var/aegir/.devshop-version')) {
+      $output->writeln("<fg=red>A deprecated file was found. You should delete '/var/aegir/.devshop-version' to reduce confusion.</>");
+    }
+
+    // If an error was detected, return a non-zero exit code.
+    if ($error) {
+      exit(1);
+    }
   }
 }

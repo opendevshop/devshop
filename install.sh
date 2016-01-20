@@ -20,14 +20,16 @@
 #  If using a playbook path option, the makefile used to build devmaster is defined
 #  in the vars.yml file: devshop_makefile.
 #
-echo "============================================="
-echo " Welcome to the DevShop Standalone Installer "
-echo "                   v 0.x                     "
-echo "============================================="
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=0.x
+
+echo "============================================="
+echo " Welcome to the DevShop Standalone Installer "
+echo "                   v $DEVSHOP_VERSION        "
+echo "============================================="
+
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
@@ -48,6 +50,12 @@ elif [ -f '/etc/lsb-release' ]; then
     if [ $OS == "Ubuntu" ]; then
       OS=ubuntu
     fi
+fi
+
+# If on travis, use localhost as the hostname
+if [ "$TRAVIS" == "true" ]; then
+  echo "TRAVIS DETECTED! Setting Hostname to 'localhost'."
+  HOSTNAME_FQDN="localhost"
 fi
 
 LINE=---------------------------------------------
@@ -118,6 +126,7 @@ if [ ! `which ansible` ]; then
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
         fi
 
+        apt-get update
         apt-get install git -y
         apt-get install $PACKAGE -y
         apt-add-repository ppa:ansible/ansible -y
@@ -138,11 +147,14 @@ else
     echo $LINE
 fi
 
+MAKEFILE_PATH=''
+
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make"
 fi
 
 if [ -f '/root/.my.cnf' ]
@@ -161,7 +173,6 @@ echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo $LINE
 
 # Clone the installer code if a playbook path was not set.
-MAKEFILE_PATH=''
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
@@ -204,6 +215,7 @@ ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-var
 cd $PLAYBOOK_PATH
 composer install
 
+# @TODO: Get rid of this, replace with devshop status and devshop login commands.
 # DevShop Installed!
 if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
 
@@ -220,8 +232,10 @@ else
   echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
   echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
   echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                              |_|   v 0.x      ║"
-  echo "╟───────────────────────────────────────────────────────────────╢"
+  echo "║                                              |_|              ║"
+  echo "╚═══════════════════════════════════════════════════════════════╝"
+  echo "                            v $DEVSHOP_VERSION"
+  echo "╔═══════════════════════════════════════════════════════════════╗"
   echo "║ Submit any issues to                                          ║"
   echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
   echo "╟───────────────────────────────────────────────────────────────╢"
@@ -233,7 +247,7 @@ else
   echo "║                                                               ║"
   echo "║ Supervisor is running Hosting Queue Runner.                   ║"
   echo "╠═══════════════════════════════════════════════════════════════╣"
-  echo "║ Use this link to login:                               ║"
+  echo "║ Use this link to login:                                       ║"
   echo "╚═══════════════════════════════════════════════════════════════╝"
   sudo su - aegir -c "drush @hostmaster uli"
 fi
