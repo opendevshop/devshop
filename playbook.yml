@@ -29,7 +29,7 @@
     - name: Setup | DEBIAN | Install web server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian"
-      with_items: "{{ server_webserver }}_packages"
+      with_items: {{ server_webserver + "_packages" }}
 
     # REDHAT
     - name: Setup | REDHAT | Install common packages.
@@ -40,7 +40,7 @@
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat"
-      with_items: "{{ server_webserver }}_packages"
+      with_items: {{ server_webserver + "_packages" }}
 
     - name: Add aegir to apache group.
       when: server_webserver == "apache"
@@ -212,15 +212,15 @@
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     # Runs the drush devshop-install command with all of our options:
     - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
 
     - name: Install Devmaster
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
       command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
       args:
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
@@ -262,8 +262,8 @@
 
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Ensure privacy of SSH Keys
       file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
@@ -274,18 +274,18 @@
 
     - name: Set git user name and email
       shell: "git config --global user.email aegir@{{ server_hostname }}"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Set git user name and email
       shell: "git config --global user.name DevShop"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Set git user name and email
       shell: "git config --global push.default simple"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
   handlers:
     - name: restart supervisor
