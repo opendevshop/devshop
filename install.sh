@@ -123,6 +123,7 @@ if [ ! `which ansible` ]; then
             PACKAGE=software-properties-common
         fi
 
+        # @TODO: We should figure out how to add this to the playbook. It's tricky because of the lsb_release thing.
         if [ $SERVER_WEBSERVER == 'nginx' ]; then
             echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
