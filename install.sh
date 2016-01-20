@@ -24,6 +24,7 @@
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=0.x
+SERVER_WEBSERVER=apache
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -63,7 +64,6 @@ LINE=---------------------------------------------
 echo " OS: $OS"
 echo " Version: $VERSION"
 echo " Hostname: $HOSTNAME_FQDN"
-echo $LINE
 
 # Detect playbook path option
 while [ $# -gt 0 ]; do
@@ -73,7 +73,6 @@ while [ $# -gt 0 ]; do
       ;;
     --server-webserver=*)
       SERVER_WEBSERVER="${1#*=}"
-      echo " Installing webserver $SERVER_WEBSERVER";
       ;;
     *)
       echo $LINE
@@ -83,6 +82,10 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# Output Web Server
+echo " Web Server: $SERVER_WEBSERVER"
+
 if [ $PLAYBOOK_PATH ]; then
     :
 # Detect playbook next to the install script
@@ -92,20 +95,19 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
-if [ -z "$SERVER_WEBSERVER" ]; then
-    SERVER_WEBSERVER=apache
-fi
-
-echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
-echo $LINE
-
-echo " Using webserver $SERVER_WEBSERVER"
+echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
-    echo "This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
+    echo " This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
     exit 1
+fi
+
+# Fail if server_webserver is not apache or nginx
+if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
+  echo ' Invalid Web server. Must be nginx or apache (default).'
+  exit 1
 fi
 
 # If ansible command is not available, install it.
@@ -121,7 +123,7 @@ if [ ! `which ansible` ]; then
             PACKAGE=software-properties-common
         fi
 
-        if [ "$SERVER_WEBSERVER" == "nginx" ]; then
+        if [ $SERVER_WEBSERVER == 'nginx' ]; then
             echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
         fi
