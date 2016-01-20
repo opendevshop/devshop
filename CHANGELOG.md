@@ -1,5 +1,173 @@
 # Change Log
 
+# 0.7.4 (January 15, 2016)
+
+1 commits to DevShop: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
+15 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
+
+- Fixed bug that blocked non-uid-1 users from cloning and forking environments.
+- Now runs apt-get update before installing git.
+- Added "Run Tests" to Project Settings "Default Deploy Hooks".
+- Improvements to the way devshop_get_tasks() works, improving dynamic task loading performance.
+- Major improvements to Environment status user interface. It now clearly states to the user what an environment is doing: "Creating environment", "Cloning Environment", "Deleting Environment", "Disabling Environment", "Clone failed", "Delete Failed", Etc.  Added separate "Site Destroy" and "Platform destroy" indicators.
+- Major improvements to GitHub pull request environment interface. Now clearly shows PR number and environment name. Shows Pull request title as well.
+
+# 0.7.3 (December 30, 2015)
+
+22 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.2...0.7.3
+
+- Minor improvements to ajax task loader to improve performance: don't load deleted environments!
+- Removing a couple of PHP notices.
+- Separating node-site template to only affect sites that are in projects.
+- UI Improvements: 
+  - Don't show site-related links before there is a site.
+  - Add "Aegir Site" and "Aegir Platform" links to the dropdown, if user has access.
+  - Improving last task display: now displays text status. Much easier to tell the status, especially if you are color blind. 
+  - Improved "disabled" and "deleting" environment indicators.
+- Moved task icon/label/class determination to hook_load() so we don't have to do it in many places.
+- Properly load clone task on target environment.
+- Improve output for failed tasks, giving users buttons to take their next steps: "Retry" or "Destroy".
+- Blocking clone tasks from being retried because old tasks will fail due to unversioned task arguments.
+- Added "Project Messages" so we can inform the user of project wide problems (such as no deploy hooks configured.)
+- Added a "release-prep.sh" and "release.sh" script to help make releases easier.
+
+# 0.7.2 (December 23, 2015)
+
+3 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.1...0.7.2
+
+- Fixing a slew of PHP notices.
+- Removing Hosting Task Jenkins from the default build. It requires composer install, and we can't run that inside of hostmaster-migrate at the moment.
+
+# 0.7.1 (December 23, 2015)
+
+1 commit to DevShop.
+Fixed a bug in the Install command when specifying a version.
+
+# 0.7.0 (December 23, 2015)
+
+71 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.6.0...0.7.0
+20 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.6.0...0.7.0
+
+## DevMaster Fixes
+
+- Fixed "Last Task" bug that was causing inconsistent environment status displays.
+- Re-opening GitHub pull requests will recreate the environment.
+- Fixed "Login" modal window bug that prevented users from being able to log in to all environments.
+- Added "Environment Warnings" display that shows problems to the user, such as "No deploy hooks configured".
+- When a major problem is detected, such as "Installation failed", "Clone failed", we now show the user a message describing what happened, and offer Retry and Destroy buttons so they can take immediate action.
+- When an environment is being created, instead of saying "Verify" the first time, it says "Cloning codebase".
+- Adding a VERSION.txt file to the install profile to define the project's version.  Once we go to Drupal 7 we can move this to the .info file. 
+
+## DevShop CLI Fixes
+
+- Fixed versioning issues! 
+  - Banished the /var/aegir/.devshop-version file.  
+  - Separated DevShop CLI and DevMaster versions in the status command.
+  - Improved how devshop CLI interprets it's version.  If on a branch, it now specifies the SHA as well.
+- Major CLI Improvements:
+  - Added "self-update" command for the CLI that uses Git! Once Phar integration is complete self-update will update the phar as well.
+  - Added our own Application and Command classes inspired by composer.  Moving a lot of shared code to those classes.
+  - Added a sweet new logo for the CLI.
+  - Set the stage for packaging devshop CLI into a PHAR file: added box.json.  We will not distribute the Phar file until we know self-update fully works.
+  - Moved the executable from `devshop` to `bin/devshop`.
+
+**NOTES:**
+- After installing this release (once you have the self-update command), always run `devshop self-update` before `devshop upgrade`.  We will soon add code to enforce this by checking to see if devshop CLI is out of date before an upgrade.
+- We do not remove the old .devshop-version file for you automatically, but the `devshop status` command will warn you if it still exists.  Please remove `/var/aegir/.devshop-version` manually.
+
+# 0.6.0 (December 14, 2015)
+
+19 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.5.4...0.6.0
+137 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.5.4...0.6.0
+32 commits to devshop_provision: https://github.com/opendevshop/devshop_provision/compare/0.5.0...0.6.0
+
+## Web Developer Improvements
+- Added "DevShop dotHooks" module: Add deploy hooks to your project's source code in a `.hooks` or `.hooks.yml` file.  Easily hook into any task: verify, install, deploy, test, etc.  See [docs.devshop.support](http://docs.devshop.support/en/latest/deployment-hooks/#devshop-dothooks) for more information.
+- Added "DevShop Acquia" module: Use Acquia Cloud Hooks as deploy hooks in devshop. See [docs.devshop.support](http://docs.devshop.support/en/latest/deployment-hooks-acquia/) for more information.  We had partial support but now, all acquia cloud hooks are supported, and logging is much more clear.
+
+## User Interface Improvements
+- Total redesign of Tasks and logs: now we only output the logs that are pertinent to developers.
+- Dynamic task logs loading for all types. Now you can sit back and watch your tasks run, with only the logs you want to see appearing.
+- Renamed "Update Status" button to "Cancel Task". (TODO: Fail the task if the button is pushed.)
+- Much improved deploy hooks configuration: 
+  - Each environment now displays the deploy hooks that are configured, making it clear what is supposed to happen every time you deploy.
+  - Project defaults are passed to all environments.
+  - Block environment-specific deploy hooks.
+  - Standardized deploy hook form across environment settings, deploy task, etc.
+  - Automated deploy tasks respect all deploy hook types.
+- Added settings form for "DevShop Public Key", in case you have to rebuild your devshop server's public key.
+- Fixing problems with Aegir Download module.
+- Fixed up some quirks with dynamically updating environment status.
+- Created "Hosting Task Jenkins" module, allowing you to setup jenkins to run all of your tasks.  See [Hosting Tasks: Jenkins README](https://github.com/opendevshop/hosting_task_jenkins/blob/master/README.md) for more information.
+- Lots of subtle design improvements.
+
+## Internal Development Improvements
+- Added hook_devshop_environment_alter(): Allow other modules to alter the environment object
+- Added composer.json to devmaster and devshop_provision.
+- Swapped drush_shell_exec's for Symfony Process in devshop_provision.
+- Swapped provision-git-deploy for Symfony GitWrapper in devshop_provision and devshop_projects.drush.inc.  
+- Added a new drush log type: devshop_command + devshop_log + devshop_ok + devshop_error.  These will output logs in a new prettier format in the front-end.  Documentation coming soon.
+- Finally fully moving devshop_provision to [github](https://github.com/opendevshop/devshop_provision), Created proper tags and branches and cleaned up old ones.
+- Adding a shared function for adding the deploy hooks checkboxes to all forms that need it:  devshop_environment_deploy_hooks_form()
+- Cleaned out a lot of old code and comments.
+
+# Documentation Improvements
+- Added Deployment Hooks page to documentation: http://docs.devshop.support/en/latest/deployment-hooks/
+- Added Automated Testing page to documentation: http://docs.devshop.support/en/latest/testing/
+- Modified and cleaned up the roadmap: http://docs.devshop.support/en/latest/roadmap/
+- Added hook_help() in order to improve the built in documentation!  
+
+## New Contributors
+
+Radim Klaška - https://github.com/radimklaska
+Commit 84f9068ff4114e9f0ac9a468b8a0854f35b62e48 
+
+Radim fixed a typo in our documentation.  Thanks, Radim!
+
+## Site Development
+
+- Added hook_devshop_environment_alter()
+- Added "DevShop dotHooks" module: Add deploy hooks to your project's source code in a `.hooks` or `.hooks.yml` file.
+- Added "DevShop Acquia" module: Use Acquia Cloud Hooks as deploy hooks in devshop.
+- Total redesign of Tasks and logs: now we only output the logs that are pertinant to developers.
+- Renamed "Update Status" button to "Cancel Task".
+- Much improved deploy hooks configuration: 
+  - Project defaults are passed to all environments.
+  - Block environment-specific deploy hooks.
+  - Standardized deploy hook form across environment settings, deploy task, etc.
+  - Automated deploy tasks respect all deploy hook types.
+- Added settings form for "DevShop Public Key", in case you have to rebuild your devshop server's public key.
+- Fixing problems with Aegir Download module.
+- Added composer.json to devmaster and devshop_provision.
+- Swapped drush_shell_exec's for Symfony Process
+- Swapped provision-git-deploy for Symfony GitWrapper
+- Added Deployment Hooks page to documentation.
+- Cleaned up the roadmap.
+
+
+## 0.5.4 (November 7, 2015)
+
+- Adding a "Project Info" box to the project create wizard, to show the user what they've added so far and to make it testable.
+- Actually fixes #26. On project create form, the environmental default web_server was sometimes not being set.  If there is only one server, the "Step 3: Environments" form now force defaults to the only server.
+- Remove the "Finish" button on the last step until all platforms are verified.
+- Fixed playbook not writing a new /var/aegir/.devshop-version file on upgrade
+- Slightly improved behat tests.
+- Updates to travis-ci.org file.
+
+## 0.5.3 (November 2, 2015)
+
+- Fixing bad version number in getdevshop.com.
+- Docs cleanup from @yograf (Pull Request #25)
+- When calling "vagrant destroy", we now notify you that you need to delete the existing sites/devshop.local folder.
+- Fix for Issue #26: "Error: cannot load node id 0 to find its context"
+- Adding devshop_permissions module to (finally) provide default permissions. 
+- Adding "features.module" to devshop so we can provide exported permissions.
+
+## 0.5.2 (October 8, 2015)
+
+- `devshop:upgrade` command can now be run interactively.
+- Fixed a bug preventing saving of Aegir data on "environment settings" page, when using the site node edit form.  We moved the environment settings page back to the node/{project_nid}/edit/{environment_name} URL for now.
+
 ## 0.5.1 (September 22, 2015)
 
 - Fixing a bug caused by our move away from the path alias "hosting/c/NAME": hosting_context_register() saves the context AND sets the path alias. We must do both.

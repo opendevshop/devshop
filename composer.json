@@ -6,7 +6,8 @@
         "symfony/process": "^2.7",
         "knplabs/github-api": "^1.4",
         "symfony/filesystem": "^2.7",
-        "symfony/finder": "^2.7"
+        "herrera-io/phar-update": "1.*",
+        "cpliakas/git-wrapper": "1.*"
     },
     "authors": [
         {
