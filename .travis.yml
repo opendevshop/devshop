@@ -7,15 +7,12 @@ install:
 
   # Install DevShop with the standalone installer, using local playbooks.
   # Run as actual root?  Testing to see if this is a problem.
-  - shell: install.sh --server-webserver=nginx
-    become: yes
+  - sudo su root -c "bash install.sh --server-webserver=nginx"
     
 
 script:
   # Run `devshop status` command.
-  - command: devshop status
-    become: yes
-    become_user: aegir
+  - sudo su aegir -c "devshop status"
 
   # Test for DevShop
   # Not quite ready yet.
