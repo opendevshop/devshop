@@ -235,8 +235,8 @@
         version: "{{ devshop_version }}"
         force: yes
         update: yes
-        become: yes
-        become_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Make sure devshop_provision is owned by aegir
       file:
