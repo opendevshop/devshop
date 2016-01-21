@@ -3,25 +3,12 @@ machine:
     America/New_York
   php:
     version: '5.5.9'
-    
+
 dependencies:
   pre:
     - sudo apt-get update;
-    - ln -sf /usr/lib/php5/20121212/opcache.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/pdo.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/curl.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/gd.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/json.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/ldap.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/mysql.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/mysql.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/mysqli.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/pdo_mysql.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/pdo_sqlite.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/sqlite3.so /home/ubuntu/php/extensions
-    - ln -sf /usr/lib/php5/20121212/xsl.so /home/ubuntu/php/extensions
-    - mkdir -p ~/.ssh
-    - echo "ForwardAgent yes" >> ~/.ssh/config
+    - sudo sed -i 's/^extension_dir = \/home\/ubuntu\/php\/extensions$/extension_dir = \/usr\/lib\/php5\/20121212/' /etc/php5/cli/php.ini
+    - echo "extension_dir = /usr/lib/php5/20121212" >> /home/ubuntu/.phpenv/versions/$(phpenv global)/etc/php.ini
 
 test:
   override:
