@@ -6,18 +6,9 @@ machine:
     
 dependencies:
   pre:
-    - echo "extension=opcache.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=pdo.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=curl.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=gd.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=json.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=ldap.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=mysql.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=mysqli.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=pdo_mysql.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=pdo_sqlite.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=sqlite3.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
-    - echo "extension=xsl.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
+    - sudo apt-get update;
+
+tests:
   override:
     - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh --server-webserver=apache ;; 1) sudo bash install.sh --server-webserver=nginx ;; esac:
         parallel: true
