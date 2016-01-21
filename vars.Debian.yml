@@ -25,7 +25,7 @@ bashrc_path: /etc/bash.bashrc
 
 packages:
   - mysql-server
-  - php5
+  - php5-fpm
   - php5-cli
   - php5-curl
   - php5-gd
