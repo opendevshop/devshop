@@ -83,6 +83,18 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# If /var/aegir/config/server_master/nginx.conf is found, use NGINX to install.
+# If /var/aegir/config/server_master/apache.conf is found, use apache to install.
+
+# This will override any selected option for web server. This is so we don't install
+# a second webserver accidentally.
+
+if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
+  SERVER_WEBSERVER=nginx
+elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
+  SERVER_WEBSERVER=apache
+fi
+
 # Output Web Server
 echo " Web Server: $SERVER_WEBSERVER"
 
@@ -97,6 +109,15 @@ fi
 
 echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
+
+# Notify user we are using the found webserver.
+if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
+  echo " An existing Aegir NGINX installation was found. Using 'nginx' for variable 'server_webserver'"
+  echo $LINE
+elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
+  echo " An existing Aegir Apache installation was found. Using 'apache' for variable 'server_webserver'"
+  echo $LINE
+fi
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
