@@ -248,8 +248,8 @@ function devshop_provision_provision_nginx_vhost_config($data) {
 
   return <<<PHP
   # Saving project and environment server variables
-  fastcgi_param DEVSHOP_PROJECT $project
-  fastcgi_param DEVSHOP_ENVIRONMENT $environment
+  fastcgi_param DEVSHOP_PROJECT $project;
+  fastcgi_param DEVSHOP_ENVIRONMENT $environment;
 
 PHP;
 }
