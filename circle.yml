@@ -1,0 +1,9 @@
+machine:
+  timezone:
+    America/New_York
+  php:
+    version: '5.5.21'
+    
+dependencies:
+  override:
+    - sudo bash install.sh
