@@ -9,8 +9,6 @@
 
 - name: MySQL | Config for easy access as root user
   action: template src=templates/root-my.cnf.j2 dest=/root/.my.cnf
-  login_user: root
-  login_password: mysql_root_password
 
 - name: MySQL | Delete anonymous MySQL server user for {{ server_hostname }}
   action: mysql_user user="" host="{{ server_hostname }}" state="absent"
