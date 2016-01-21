@@ -233,9 +233,10 @@
         repo: "{{ devshop_provision_repo }}"
         dest: /var/aegir/.drush/commands/devshop_provision
         version: "{{ devshop_version }}"
-        clone: yes
         force: yes
         update: yes
+        become: yes
+        become_user: aegir
 
     - name: Make sure devshop_provision is owned by aegir
       file:
@@ -250,15 +251,15 @@
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     # Runs the drush devshop-install command with all of our options:
     - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -y"
 
     - name: Install Devmaster
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
       command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -y"
       args:
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
@@ -293,8 +294,8 @@
 
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Ensure privacy of SSH Keys
       file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
@@ -305,18 +306,18 @@
 
     - name: Set git user name and email
       shell: "git config --global user.email aegir@{{ server_hostname }}"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Set git user name and email
       shell: "git config --global user.name DevShop"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Set git user name and email
       shell: "git config --global push.default simple"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
   handlers:
     - name: restart supervisor
