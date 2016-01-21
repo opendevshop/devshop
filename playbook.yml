@@ -227,6 +227,7 @@
         repo: "{{ devshop_provision_repo }}"
         dest: /var/aegir/.drush/commands/devshop_provision
         version: "{{ devshop_version }}"
+        clone: yes
         force: yes
         update: yes
 
