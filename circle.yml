@@ -20,6 +20,7 @@ dependencies:
     - ln -sf /usr/lib/php5/20121212/pdo_sqlite.so /home/ubuntu/php/extensions
     - ln -sf /usr/lib/php5/20121212/sqlite3.so /home/ubuntu/php/extensions
     - ln -sf /usr/lib/php5/20121212/xsl.so /home/ubuntu/php/extensions
+    - echo "ForwardAgent yes" >> .ssh/config
 
 test:
   override:
