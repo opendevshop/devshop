@@ -222,6 +222,12 @@
         owner=aegir group=aegir mode=0744
         state=directory
 
+    - name: Create /var/aegir/.drush/commands
+      file:
+        path=/var/aegir/.drush/commands
+        owner=aegir group=aegir mode=0744
+        state=directory
+
     - name: Install devshop_provision from github.
       git:
         repo: "{{ devshop_provision_repo }}"
