@@ -8,7 +8,7 @@ dependencies:
   pre:
     - sudo apt-get update;
 
-tests:
+test:
   override:
     - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh --server-webserver=apache ;; 1) sudo bash install.sh --server-webserver=nginx ;; esac:
         parallel: true
