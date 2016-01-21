@@ -7,6 +7,7 @@ machine:
 dependencies:
   pre:
     - sudo apt-get update;
+    - sudo sed -i 's/\/home\/ubuntu\/extensions/\/usr\/lib\/php5\/20121212/' /etc/php5/cli/php.ini
 
 test:
   override:
