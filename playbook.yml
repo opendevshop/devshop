@@ -21,107 +21,49 @@
       action: template src=templates/motd.j2 dest={{ motd_path }} mode=755
 
     # DEBIAN
-    - name: Setup | Install required packages.
+    - name: Setup | DEBIAN | Install common packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian"
-      with_items:
-        - apache2
-        - mysql-server
-        - php5
-        - php5-cli
-        - php5-curl
-        - php5-gd
-        - php5-mysql
-        - php5-mcrypt
-        - php-pear
-        - postfix
-        - sudo
-        - rsync
-        - git-core
-        - unzip
-        - vim
-        - git
-        - curl
-        - supervisor
-        - python-mysqldb
-        - openssl
+      with_items: packages
+
+    - name: Setup | DEBIAN | Install NGINX server packages.
+      action: apt pkg={{ item }} state=installed update_cache=yes
+      when: ansible_os_family == "Debian" and server_webserver == "nginx"
+      with_items: nginx_packages
+
+    - name: Setup | DEBIAN | Install Apache server packages.
+      action: apt pkg={{ item }} state=installed update_cache=yes
+      when: ansible_os_family == "Debian" and server_webserver == "apache"
+      with_items: apache_packages
 
     # REDHAT
-    - name: Setup | Install required packages.
+    - name: Setup | REDHAT | Install common packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat"
-      with_items:
-#      httpd php php-mysql php-cli php-gd php-process sudo rsync git postfix
-        - httpd
-        - php
-        - php-mysql
-        - php-cli
-        - php-gd
-        - php-process
-        - php-pear
-        - php-xml
-        - php-mcrypt
-        - php-mbstring
-        - postfix
-        - sudo
-        - rsync
-        - git-core
-        - unzip
-        - vim
-        - git
-        - cronie
-        - mariadb
-        - mariadb-server
-        - MySQL-python
-        - epel-release
-        - supervisor
-        - openssl
-        - mod_ssl
+      with_items: packages
 
-#
-#    - name: Create Aegir Group (so we can set the GID)
-#      group:
-#        name=aegir
-#        state=present
-#        gid={{ aegir_user_uid }}
-#
-#    - name: Create Aegir user
-#      user:
-#        name=aegir
-#        shell=/bin/bash
-#        group=aegir
-#        groups={{ apache_user }}
-#        append=yes
-#        system=yes
-#        home=/var/aegir
-#        generate_ssh_key=yes
-#        uid={{ aegir_user_uid }}
-#
-#    - name: Ensure /var/aegir is owned by aegir user.
-#      file:
-#        state=directory
-#        path=/var/aegir
-#        group=aegir
-#        owner=aegir
-#
-#    # Aegir's CentOS installation requires this.
-#    - name: Set appropriate permissions for Aegir's home folder.
-#      command: chmod -R 755 /var/aegir
-#      when: ansible_os_family == "RedHat"
-#
-#
-#    - name: Setup SSH config for aegir user.
-#      template:
-#        src=templates/ssh-config.j2
-#        dest=/var/aegir/.ssh/config
-#        mode=0600
-#        owner=aegir
-#        group=aegir
+    - name: Setup | REDHAT | Install web server packages.
+      action: yum name={{ item }} state=present
+      when: ansible_os_family == "RedHat" and server_webserver == "nginx"
+      with_items: nginx_packages
+
+    - name: Setup | REDHAT | Install web server packages.
+      action: yum name={{ item }} state=present
+      when: ansible_os_family == "RedHat" and server_webserver == "apache"
+      with_items: apache_packages
 
     - name: Add aegir to apache group.
+      when: server_webserver == "apache"
       user:
         name=aegir
         groups={{ apache_user }}
+        append=yes
+
+    - name: Add aegir to nginx group.
+      when: server_webserver == "nginx"
+      user:
+        name=aegir
+        groups={{ nginx_user }}
         append=yes
 
     - name: Setup | Install Composer
@@ -157,14 +99,15 @@
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family == "Debian" and server_webserver == "apache"
 
     - name: Enable mod ssl
       command: a2enmod ssl
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family == "Debian" and server_webserver == "apache"
 
+    # Apache Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Apache Config
-      when: ansible_distribution != "Ubuntu" or ansible_lsb.major_release|int >= 14
+      when: server_webserver == "apache" and (ansible_distribution != "Ubuntu" or ansible_lsb.major_release|int >= 14)
       file:
         src=/var/aegir/config/apache.conf
         dest={{ apache_confd_path }}
@@ -173,9 +116,8 @@
       notify:
         - restart apache
 
-    # Apache Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Apache Config (When ubuntu < 14.04)
-      when: ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14
+      when: server_webserver == "apache" and ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14
       file:
         src=/var/aegir/config/apache.conf
         dest=/etc/apache2/conf.d/aegir.conf
@@ -184,10 +126,47 @@
       notify:
         - restart apache
 
+    # Nginx Symlink for 14.04 and higher.
+    - name: Symbolic link to Aegir's Nginx Config
+      when: server_webserver == "nginx" and (ansible_distribution != "Ubuntu" or ansible_lsb.major_release|int >= 14)
+      file:
+        src=/var/aegir/config/nginx.conf
+        dest={{ nginx_confd_path }}
+        state=link
+        force=yes
+      notify:
+        - restart nginx
+
+
+    - name: Symbolic link to Aegir's Nginx Config (When ubuntu < 14.04)
+      when: server_webserver == "nginx" and (ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14)
+      file:
+        src=/var/aegir/config/nginx.conf
+        dest=/etc/nginx/sites-enabled/aegir.conf
+        state=link
+        force=yes
+      notify:
+        - restart nginx
+
+    - name: Write www.conf file. # @TODO: Restart apache if changed.
+      when: server_webserver == "nginx"
+      template:
+        src=templates/www.conf.j2
+        dest={{ nginx_www_pool_path }}
+        mode=0644
+
     - name: Write php.ini file. # @TODO: Restart apache if changed.
+      when: server_webserver == "apache"
       template:
         src=templates/php.ini.j2
-        dest={{ php_ini_path }}
+        dest={{ apache_php_ini_path }}
+        mode=0644
+
+    - name: Write php.ini file. # @TODO: Restart apache if changed.
+      when: server_webserver == "nginx"
+      template:
+        src=templates/php.ini.j2
+        dest={{ nginx_php_ini_path }}
         mode=0644
 
     - name: Write my.cnf file.
@@ -243,16 +222,16 @@
 
     - name: Clear the drush cache.
       command: "{{ drush_path }} cc drush"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     # Runs the drush devshop-install command with all of our options:
-    - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -y"
+    - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
 
     - name: Install Devmaster
-      sudo: yes
-      sudo_user: aegir
-      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -y"
+      become: yes
+      become_user: aegir
+      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
       args:
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
@@ -280,14 +259,21 @@
         enabled=yes
 
     - name: Service | Ensure Apache is restarted
+      when: server_webserver == "apache"
       service:
         name={{ apache_daemon }}
         state=restarted
 
+    - name: Service | Ensure Nginx is restarted
+      when: server_webserver == "nginx"
+      service:
+        name={{ nginx_daemon }}
+        state=restarted
+
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Ensure privacy of SSH Keys
       file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
@@ -298,18 +284,18 @@
 
     - name: Set git user name and email
       shell: "git config --global user.email aegir@{{ server_hostname }}"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Set git user name and email
       shell: "git config --global user.name DevShop"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
     - name: Set git user name and email
       shell: "git config --global push.default simple"
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
 
   handlers:
     - name: restart supervisor
@@ -326,4 +312,9 @@
     - name: restart apache
       service:
         name={{ apache_daemon }}
+        state=restarted
+
+    - name: restart nginx
+      service:
+        name={{ nginx_daemon }}
         state=restarted
