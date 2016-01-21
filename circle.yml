@@ -2,8 +2,21 @@ machine:
   timezone:
     America/New_York
   php:
-    version: '5.5.21'
+    version: '5.5.9'
     
 dependencies:
+  pre:
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/opcache.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/pdo.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/curl.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/gd.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/json.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/ldap.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/mysql.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/mysqli.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/pdo_mysql.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/pdo_sqlite.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/sqlite3.ini
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xsl.ini
   override:
     - sudo bash install.sh
