@@ -7,7 +7,19 @@ machine:
 dependencies:
   pre:
     - sudo apt-get update;
-    - sudo sed -i 's/\/home\/ubuntu\/extensions/\/usr\/lib\/php5\/20121212/' /etc/php5/cli/php.ini
+    - ln -s /usr/lib/php5/20121212/opcache.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/pdo.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/curl.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/gd.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/json.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/ldap.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/mysql.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/mysql.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/mysqli.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/pdo_mysql.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/pdo_sqlite.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/sqlite3.so /home/ubuntu/php/extensions
+    - ln -s /usr/lib/php5/20121212/xls.so /home/ubuntu/php/extensions
 
 test:
   override:
