@@ -10,3 +10,5 @@
 # /var/aegir/devshop-6.x-1.x (devshop front-end) is owned by aegir.
 sudo adduser www-data aegir
 sudo service apache2 restart
+
+sudo ln -s /vagrant /usr/share/devshop
