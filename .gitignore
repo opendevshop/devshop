@@ -10,3 +10,6 @@ vendor
 
 # Development Mode Indicator File
 .development_mode
+
+# Ansible inventory file.
+inventory

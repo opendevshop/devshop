@@ -6,16 +6,9 @@ machine:
 
 test:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh ;; 1) git checkout release-0.7.4 && sudo bash install.sh && sudo devshop upgrade 1.x -n ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh --server-webserver=apache ;; 1) sudo bash install.sh --server-webserver=nginx ;; esac:
         parallel: true
-  post:
-    # Run `devshop status` command.
-    #- sudo su aegir -c "devshop status"
 
-    # Test for DevShop
-    # Not quite ready yet.
-    #  - cd tests && sudo composer install && sudo su aegir -c "bin/behat --profile travis"
-    
 notify:
   webhooks:
     # A list of hook hashes, containing the url field

@@ -24,3 +24,37 @@ supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 motd_path: /etc/motd
 
 bashrc_path: /etc/bashrc
+
+packages:
+  - php-fpm
+  - php-mysql
+  - php-cli
+  - php-gd
+  - php-process
+  - php-pear
+  - php-xml
+  - php-mcrypt
+  - php-mbstring
+  - postfix
+  - sudo
+  - rsync
+  - git-core
+  - unzip
+  - vim
+  - git
+  - cronie
+  - mariadb
+  - mariadb-server
+  - MySQL-python
+  - epel-release
+  - supervisor
+  - openssl
+  - mod_ssl
+
+apache_packages:
+  - httpd
+
+nginx_packages:
+  - nginx
+
+
