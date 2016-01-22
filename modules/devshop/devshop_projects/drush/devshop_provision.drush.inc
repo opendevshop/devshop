@@ -204,7 +204,7 @@ function devshop_provision_provision_services() {
  * @see Provision_Config_Apache_Site
  * provision_logs_provision_apache_vhost_config
  */
-function devshop_provision_provision_apache_vhost_config($uri, $data, Provision_Config_Apache_Site $site_config) {
+function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
   $environment = d()->environment['name'];
   $project = d()->environment['project_name'];
