@@ -6,11 +6,12 @@ machine:
 
 test:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh ;; 1) sed -i 's/^DEVSHOP_VERSION=1.x$/DEVSHOP_VERSION=0.x/' install.sh && sudo bash install.sh && sudo devshop upgrade 1.x -n ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh ;; 1) git checkout release-0.7.4 && sudo bash install.sh && sudo devshop upgrade 1.x -n ;; esac:
         parallel: true
   post:
     # Run `devshop status` command.
     - sudo su aegir -c "devshop status"
+        parallel: true
 
     # Test for DevShop
     # Not quite ready yet.
