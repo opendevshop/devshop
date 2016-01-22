@@ -334,6 +334,21 @@ function devshop_project_logs_access() {
 }
 
 /**
+ * Implements hook_block_info_alter()
+ *
+ * Disables Aegir's queue and "supporting aegir" block.
+ *
+ * @param $blocks
+ * @param $theme
+ * @param $code_blocks
+ */
+function devshop_projects_block_info_alter(&$blocks, $theme, $code_blocks) {
+  $blocks['hosting']['hosting_queues']['status'] = 0;
+  $blocks['hosting']['hosting_queues_summary']['status'] = 0;
+  $blocks['hosting']['hosting_supporting_aegir']['status'] = 0;
+}
+
+/**
  * Implements hook_block_info().
  */
 function devshop_projects_block_info() {
