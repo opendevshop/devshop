@@ -568,7 +568,7 @@ PHP;
       $client_email = $this->input->getOption('client_email');
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$name} provision-install --client_email={$client_email}</comment> ...");
-      $process = $this->getProcess("drush @{$name} provision-install --client_email={$client_email}");
+      $process = $this->getProcess("drush @{$name} provision-install --client_email={$client_email} -v");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
