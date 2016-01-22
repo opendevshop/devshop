@@ -180,7 +180,7 @@ if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
-ansible-playbook -i inventory playbook.yml --connection=local --sudo --extra-vars "$ANSIBLE_EXTRA_VARS"
+ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
 # Run Composer install to enable devshop cli
 cd $PLAYBOOK_PATH

@@ -1,5 +1,6 @@
 site_name: 'Open DevShop'
 docs_dir: 'docs'
+repo_url: https://github.com/opendevshop/devshop
 theme: 'flatly'
 pages:
 - 'About':
@@ -14,6 +15,7 @@ pages:
   - 'Setup Examples': 'examples.md'
 - 'Site Development':
   - 'Deployment Hooks': 'deployment-hooks.md'
+  - 'Customizing settings.php': 'settings-php.md'
   - 'Automated Testing': 'testing.md'
   - 'Acquia Cloud Hooks Integration': 'deployment-hooks-acquia.md'
 - 'DevShop Development':

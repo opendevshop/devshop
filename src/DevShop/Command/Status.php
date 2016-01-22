@@ -27,6 +27,9 @@ class Status extends Command
     // Attaches input and output to the Command class.
     parent::execute($input, $output);
 
+    // Track if we found an error, so we can return an exit code.
+    $error = FALSE;
+
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
     $this->announce('Status');
@@ -45,6 +48,7 @@ class Status extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<question>Drush not detected.</question>");
       $output->writeln($process->getErrorOutput());
+      $error = TRUE;
     }
     else {
       $output->write("<info>Drush is installed.  </info>");
@@ -59,6 +63,7 @@ class Status extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<error>Provision not detected.</error>");
       $output->writeln($process->getErrorOutput());
+      $error = TRUE;
     }
     else {
       $output->writeln("<info>Provision is installed.</info>");
@@ -72,6 +77,7 @@ class Status extends Command
     if (!$process->isSuccessful()) {
       $output->writeln("<error>Devmaster not detected.</error>");
       $output->writeln($process->getErrorOutput());
+      $error = TRUE;
     }
     else {
       $output->write("<info>Devmaster is installed.  </info>");
@@ -83,6 +89,11 @@ class Status extends Command
     // Check for deprecated .devshop-version file.
     if (file_exists('/var/aegir/.devshop-version')) {
       $output->writeln("<fg=red>A deprecated file was found. You should delete '/var/aegir/.devshop-version' to reduce confusion.</>");
+    }
+
+    // If an error was detected, return a non-zero exit code.
+    if ($error) {
+      exit(1);
     }
   }
 }
