@@ -10,8 +10,7 @@ test:
         parallel: true
   post:
     # Run `devshop status` command.
-    - sudo su aegir -c "devshop status"
-        parallel: true
+    #- sudo su aegir -c "devshop status"
 
     # Test for DevShop
     # Not quite ready yet.
