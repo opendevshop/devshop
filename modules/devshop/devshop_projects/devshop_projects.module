@@ -373,7 +373,7 @@ function devshop_projects_block_info() {
  * Implements hook_block_view().
  */
 function devshop_projects_block_view($delta) {
-  if ($delta == 'project_nav') {
+  if ($delta == 'project_nav' && arg(0) == 'node') {
     $node = node_load(arg(1));
     if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
 
