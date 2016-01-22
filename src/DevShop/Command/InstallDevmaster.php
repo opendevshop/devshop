@@ -238,6 +238,7 @@ class InstallDevmaster extends Command
       include $input->getOption('aegir_root') . '/.drush/server_localhost.alias.drushrc.php';
       if (isset($aliases['server_localhost']['master_db'])) {
         $input->setOption('aegir_db_pass', parse_url($aliases['server_localhost']['master_db'], PHP_URL_PASS));
+        $input->setOption('aegir_db_user', parse_url($aliases['server_localhost']['master_db'], PHP_URL_USER));
       }
 
     }
