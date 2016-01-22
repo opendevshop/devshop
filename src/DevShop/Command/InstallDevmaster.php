@@ -515,6 +515,7 @@ class InstallDevmaster extends Command
       'platform' => $platform_name,
       'db_server' => '@' . $db_server,
       'uri' => $this->input->getOption('site'),
+      'root' => $this->input->getOption('root'),
       'client_name' => $this->input->getOption('client_name'),
       'profile' => $this->input->getOption('profile'),
       'drush_aliases' => 'hm',
