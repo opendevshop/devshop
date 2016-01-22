@@ -6,7 +6,6 @@ machine:
 
 dependencies:
   pre:
-    - sudo apt-get update;
     - sudo sed -i 's/^extension_dir = \/home\/ubuntu\/php\/extensions$/extension_dir = \/usr\/lib\/php5\/20121212/' /etc/php5/cli/php.ini
     - echo "extension_dir = /usr/lib/php5/20121212" >> /home/ubuntu/.phpenv/versions/$(phpenv global)/etc/php.ini
 
