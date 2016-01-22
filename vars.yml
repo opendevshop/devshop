@@ -28,6 +28,8 @@ remote2_server_hostname: devshop.remote2
 server_hostname: devshop.site
 server_webserver: apache
 
+local_bin_path: /usr/local/bin
+
 mysql_root_password: RandomizedByInstallSh
 php_memory_limit: 256M
 php_post_max_size: 32M
@@ -56,5 +58,5 @@ devshop_makefile: build-devmaster.make
 
 aegir_user_uid: 12345
 
-drush_path: /usr/local/bin/drush
-devshop_cli_path: /usr/local/bin/devshop
+drush_path: "{{ local_bin_path }}/drush"
+devshop_cli_path: "{{ local_bin_path }}/devshop"
