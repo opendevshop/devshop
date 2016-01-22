@@ -474,7 +474,7 @@ function devshop_projects_delete($node) {
 
 
 /**
-vagra * Implementation of hook_nodeapi()
+ * Implementation of hook_nodeapi()
  * For site and platform nodes, load project and environment objects.
  *
  * @see devshop_projects_load()
