@@ -190,39 +190,15 @@ ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANS
 cd $PLAYBOOK_PATH
 composer install
 
-# @TODO: Get rid of this, replace with devshop status and devshop login commands.
-# DevShop Installed!
-if [  ! -f '/var/aegir/.drush/hostmaster.alias.drushrc.php' ]; then
-
-  echo "╔═════════════════════════════════════════════════════════════════════╗"
-  echo "║ It appears something failed during installation.                    ║"
-  echo "║ There is no '/var/aegir/.drush/hostmaster.alias.drushrc.php' file.  ║"
-  echo "╚═════════════════════════════════════════════════════════════════════╝"
-  exit 1
+# Run devshop status, return exit code.
+su - aegir -c "devshop status"
+if [ ${PIPESTATUS[0]} == 0 ]; then
+  su - aegir -c "devshop login"
+  echo ""
+  echo "The command 'devshop status' ran successfully! Welcome to OpenDevShop!"
+  echo ""
+  exit 0
 else
-
-  echo "╔═══════════════════════════════════════════════════════════════╗"
-  echo "║           ____  Welcome to  ____  _                           ║"
-  echo "║          |  _ \  _____   __/ ___|| |__   ___  _ __            ║"
-  echo "║          | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \           ║"
-  echo "║          | |_| |  __/\ V /  ___) | | | | (_) | |_) |          ║"
-  echo "║          |____/ \___| \_/  |____/|_| |_|\___/| .__/           ║"
-  echo "║                                              |_|              ║"
-  echo "╚═══════════════════════════════════════════════════════════════╝"
-  echo "                            v $DEVSHOP_VERSION"
-  echo "╔═══════════════════════════════════════════════════════════════╗"
-  echo "║ Submit any issues to                                          ║"
-  echo "║ http://drupal.org/node/add/project-issue/devshop              ║"
-  echo "╟───────────────────────────────────────────────────────────────╢"
-  echo "║ NOTES                                                         ║"
-  echo "║ Your MySQL root password was set as a long secure string.     ║"
-  echo "║ It was saved at /root/.my.cnf                                 ║"
-  echo "║                                                               ║"
-  echo "║ An SSH keypair has been created in /var/aegir/.ssh            ║"
-  echo "║                                                               ║"
-  echo "║ Supervisor is running Hosting Queue Runner.                   ║"
-  echo "╠═══════════════════════════════════════════════════════════════╣"
-  echo "║ Use this link to login:                                       ║"
-  echo "╚═══════════════════════════════════════════════════════════════╝"
-  sudo su - aegir -c "drush @hostmaster uli"
+  echo "The command 'devshop status' had an error. Check the logs and try again."
+  exit 1
 fi
