@@ -237,18 +237,21 @@ function devshop_projects_menu() {
   );
 
   // hosting tasks ajax pages.
-  foreach (hosting_available_tasks('project') as $task => $info) {
-    $path = 'node/%/project_' . $task;
-    $items[$path] = array(
-      'title' => $info['title'],
-      'description' => $info['description'],
-      'page callback' => 'devshop_projects_hosting_task_confirm_form_page',
-      'page arguments' => array(1, $task),
-      'access callback' => 'hosting_task_menu_access_csrf',
-      'access arguments' => array(1, $task),
-      'type' => MENU_CALLBACK,
-    );
-    $items[$path] = array_merge($items[$path], $info);
+  $tasks = hosting_available_tasks('project') ;
+  if (!empty($tasks)) {
+    foreach (hosting_available_tasks('project') as $task => $info) {
+      $path = 'node/%/project_' . $task;
+      $items[$path] = array(
+        'title' => $info['title'],
+        'description' => $info['description'],
+        'page callback' => 'devshop_projects_hosting_task_confirm_form_page',
+        'page arguments' => array(1, $task),
+        'access callback' => 'hosting_task_menu_access_csrf',
+        'access arguments' => array(1, $task),
+        'type' => MENU_CALLBACK,
+      );
+      $items[$path] = array_merge($items[$path], $info);
+    }
   }
 
   // Environment settings pages
