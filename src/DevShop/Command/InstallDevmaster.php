@@ -163,6 +163,12 @@ class InstallDevmaster extends Command
         'client_email', NULL, InputOption::VALUE_OPTIONAL,
         'The email to use for the administrator user.'
       )
+
+      // working_copy
+      ->addOption(
+        'working_copy', NULL, InputOption::VALUE_NONE,
+        'Passed to drush make: use to clone the source code using git.'
+      )
     ;
   }
 
