@@ -382,12 +382,13 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
         FROM {hosting_task_arguments} ta
         INNER JOIN {hosting_task} t ON ta.vid = t.vid
         WHERE
-          name = 'target_platform' AND value = %d
+          name = :name AND value = :platform
         ORDER BY vid DESC
         LIMIT 1
     ",
       array(
         ':platform' => $environment->platform,
+        ':name' => 'target_platform',
       )
     );
     foreach ($results as $result) {
