@@ -178,10 +178,13 @@ class InstallDevmaster extends Command
 
     $output->writeln('This command will operate the following changes in your system:');
     $output->writeln('');
-    $output->writeln(' 1. Create server-level configuration directores.');
-    $output->writeln(' 2. Create the Devmaster frontend platform.');
-    $output->writeln(' 3. Install the frontend site.');
-    $output->writeln(' 4. Setup the dispatcher (a user cron job)');
+    $output->writeln(' 1. Create aegir "contexts" (drush aliases) for:');
+    $output->writeln('   - server_master (web server)');
+    $output->writeln('   - server_localhost (db server)');
+    $output->writeln('   - platform_hostmaster (devmaster codebase)');
+    $output->writeln('   - hostmaster (devmaster site)');
+    $output->writeln(' 2. Install the Devmaster site');
+    $output->writeln(' 3. Setup the dispatcher (a user cron job)');
     $output->writeln('');
 
     // devshop_version
