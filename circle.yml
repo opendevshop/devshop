@@ -1,0 +1,23 @@
+machine:
+  timezone:
+    America/New_York
+  php:
+    version: '5.6.14'
+
+test:
+  override:
+    - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh ;; 1) sed -i 's/^DEVSHOP_VERSION=1.x$/DEVSHOP_VERSION=0.x/' install.sh && sudo bash install.sh && sudo devshop upgrade 1.x -n ;; esac:
+        parallel: true
+  post:
+    # Run `devshop status` command.
+    - sudo su aegir -c "devshop status"
+
+    # Test for DevShop
+    # Not quite ready yet.
+    #  - cd tests && sudo composer install && sudo su aegir -c "bin/behat --profile travis"
+    
+notify:
+  webhooks:
+    # A list of hook hashes, containing the url field
+    # gitter hook
+    - url: https://webhooks.gitter.im/e/70d4223b45d445ea23b3
