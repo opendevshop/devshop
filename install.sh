@@ -150,12 +150,12 @@ if [ ! `which ansible` ]; then
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
         fi
 
-        apt-get update
-        apt-get install git -y
-        apt-get install $PACKAGE -y
+        apt-get update -qq
+        apt-get install git -y -qq
+        apt-get install $PACKAGE -y -qq
         apt-add-repository ppa:ansible/ansible -y
-        apt-get update
-        apt-get install ansible -y
+        apt-get update -qq
+        apt-get install ansible -y -qq
 
     elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
