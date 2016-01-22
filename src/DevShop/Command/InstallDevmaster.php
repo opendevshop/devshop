@@ -166,7 +166,7 @@ class InstallDevmaster extends Command
 
       // working_copy
       ->addOption(
-        'working_copy', NULL, InputOption::VALUE_NONE,
+        'working-copy', NULL, InputOption::VALUE_NONE,
         'Passed to drush make: use to clone the source code using git.'
       )
     ;
