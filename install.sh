@@ -97,12 +97,18 @@ if [ ! `which ansible` ]; then
             PACKAGE=software-properties-common
         fi
 
-        apt-get update
-        apt-get install git -y
-        apt-get install $PACKAGE -y
+        # @TODO: We should figure out how to add this to the playbook. It's tricky because of the lsb_release thing.
+        if [ $SERVER_WEBSERVER == 'nginx' ]; then
+            echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
+        fi
+
+        apt-get update -qq
+        apt-get install git -y -qq
+        apt-get install $PACKAGE -y -qq
         apt-add-repository ppa:ansible/ansible -y
-        apt-get update
-        apt-get install ansible -y
+        apt-get update -qq
+        apt-get install ansible -y -qq
 
     elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
