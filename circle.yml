@@ -8,3 +8,9 @@ test:
   override:
     - case $CIRCLE_NODE_INDEX in 0) sudo bash install.sh --server-webserver=apache ;; 1) sudo bash install.sh --server-webserver=nginx ;; esac:
         parallel: true
+
+notify:
+  webhooks:
+    # A list of hook hashes, containing the url field
+    # gitter hook
+    - url: https://webhooks.gitter.im/e/70d4223b45d445ea23b3
