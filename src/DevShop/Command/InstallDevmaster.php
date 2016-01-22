@@ -231,6 +231,18 @@ class InstallDevmaster extends Command
       $input->setOption('root', $root);
     }
 
+    // aegir_db_pass
+    // Here, we look for an existing server_localhost and load the root password from there.
+    if (file_exists($input->getOption('aegir_root') . '/.drush/server_localhost.alias.drushrc.php')) {
+      $aliases = array('server_localhost');
+      include $input->getOption('aegir_root') . '/.drush/server_localhost.alias.drushrc.php';
+      if (isset($aliases['server_localhost']['master_db'])) {
+        $input->setOption('aegir_db_pass', parse_url($aliases['server_localhost']['master_db'], PHP_URL_PASS));
+      }
+
+    }
+
+
     // web_group
     if (!$input->getOption('web_group')) {
       $input->setOption('web_group', $this->findDefaultWebGroup());
