@@ -272,6 +272,7 @@ function devmaster_place_blocks($theme) {
           'region' => 'content',
           'visibility' => 0,
           'pages' => '',
+          'cache' => -1,
       ),
       array(
           'module' => 'devshop_projects',
@@ -282,6 +283,7 @@ function devmaster_place_blocks($theme) {
           'region' => 'sidebar_first',
           'visibility' => 0,
           'pages' => '',
+          'cache' => -1,
       ),
   );
 
