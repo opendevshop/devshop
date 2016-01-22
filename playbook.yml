@@ -13,6 +13,9 @@
     - vars.yml
     - vars.{{ ansible_os_family }}.yml
 
+  vars:
+    devmaster_install_command: "{{ devshop_cli_path }} install-devmaster --site={{ server_hostname }} --devshop_version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} -n"
+
   tasks:
 
     - hostname: name={{ server_hostname }}
@@ -232,12 +235,12 @@
       sudo_user: aegir
 
     # Runs the drush devshop-install command with all of our options:
-    - debug: msg="$ {{ drush_path }} hostmaster-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} --strict=0 -y"
+    - debug: msg="{{ devmaster_install_command }}"
 
     - name: Install Devmaster
       sudo: yes
       sudo_user: aegir
-      command: "{{ drush_path }} hostmaster-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} {{ devshop_working_copy }} --strict=0 -y"
+      command: "{{ devmaster_install_command }}"
       args:
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
