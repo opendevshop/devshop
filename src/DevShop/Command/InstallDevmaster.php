@@ -74,7 +74,7 @@ class InstallDevmaster extends Command
       // script_user
       ->addOption(
         'script_user', NULL, InputOption::VALUE_OPTIONAL,
-        'The user running this script.'
+        'The user running this script. Will default to the detected user.'
       )
 
       // aegir_db_host
@@ -127,7 +127,7 @@ class InstallDevmaster extends Command
       // root
       ->addOption(
         'root', NULL, InputOption::VALUE_OPTIONAL,
-        'The desired path to install to.  Example: /var/aegir/devmaster-0.x'
+        'The desired path to install to.  Example: /var/aegir/devmaster-0.x. If not specified, will be created from aegir_root, profile, and version.'
       )
 
       // http_service_type
