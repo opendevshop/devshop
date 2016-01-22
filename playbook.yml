@@ -128,9 +128,9 @@
         append=yes
 
     - name: Setup | Install Composer
-      shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
+      shell: "curl -sS https://getcomposer.org/installer | php;  mv composer.phar {{ local_bin_path }}/composer"
       args:
-        creates: /usr/local/bin/composer
+        creates: "{{ local_bin_path }}/composer"
 
     - name: Setup | Prepare composer directory
       file:
@@ -138,7 +138,7 @@
         state=directory
 
     - name: Setup | Install Drush
-      shell: /usr/local/bin/composer global require drush/drush:{{ drush_version }} -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
+      shell: "{{ local_bin_path }}/composer global require drush/drush:{{ drush_version }} -d /usr/share/composer; /usr/share/composer/vendor/bin/drush"
 
     - name: Setup | Add composer bin to path
       command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' {{ bashrc_path }}
@@ -146,7 +146,7 @@
     - name: Make drush available globally.
       file:
         src=/usr/share/composer/vendor/bin/drush
-        dest={{ drush_path }}
+        dest="{{ local_bin_path }}/drush"
         state=link
         force=yes
 

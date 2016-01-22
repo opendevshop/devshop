@@ -1,5 +1,7 @@
 ---
 # for vars.RedHat.yml
+local_bin_path: /usr/local/sbin
+
 apache_user: apache
 apache_confd_path: /etc/httpd/conf.d/aegir.conf
 apache_control: /usr/sbin/apachectl
