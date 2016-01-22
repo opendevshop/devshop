@@ -165,6 +165,7 @@ function devshop_projects_node_load($nodes, $types) {
       $environment->tasks = devshop_get_tasks($environment);
 
       // Create tasks list, keyed by VID
+      $environment->tasks_list = array();
       foreach ($environment->tasks as $task_type => $tasks) {
         foreach ($tasks as $task) {
           $environment->tasks_list[$task->vid] = $task;
