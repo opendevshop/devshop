@@ -26,7 +26,6 @@ motd_path: /etc/motd
 bashrc_path: /etc/bashrc
 
 packages:
-  - php-fpm
   - php-mysql
   - php-cli
   - php-gd
@@ -53,8 +52,11 @@ packages:
 
 apache_packages:
   - httpd
+  - php
+
 
 nginx_packages:
   - nginx
+  - php-fpm
 
 
