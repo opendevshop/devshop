@@ -113,8 +113,6 @@
         dest={{ apache_confd_path }}
         state=link
         force=yes
-      notify:
-        - restart apache
 
     - name: Symbolic link to Aegir's Apache Config (When ubuntu < 14.04)
       when: server_webserver == "apache" and ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14
@@ -123,15 +121,6 @@
         dest=/etc/apache2/conf.d/aegir.conf
         state=link
         force=yes
-      notify:
-        - restart apache
-
-    - name: Ensure Apache is started and enabled on boot.
-      when: server_webserver == "apache"
-      service:
-        name={{ apache_daemon }}
-        state=started
-        enabled=yes
 
     # Nginx Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Nginx Config
@@ -141,8 +130,6 @@
         dest={{ nginx_confd_path }}
         state=link
         force=yes
-      notify:
-        - restart nginx
 
     - name: Override Nginx Config (When ansible_os_family == "Redhat")
       when: server_webserver == "nginx" and ansible_os_family == "Redhat"
@@ -151,15 +138,6 @@
         dest={{ nginx_conf_path }}
         mode=0644
         force=yes
-      notify:
-        - restart nginx
-
-    - name: Ensure Nginx is started and enabled on boot.
-      when: server_webserver == "nginx"
-      service:
-        name={{ nginx_daemon }}
-        state=started
-        enabled=yes
 
     - name: Symbolic link to Aegir's Nginx Config (When ubuntu < 14.04)
       when: server_webserver == "nginx" and (ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14)
@@ -168,8 +146,6 @@
         dest=/etc/nginx/sites-enabled/aegir.conf
         state=link
         force=yes
-      notify:
-        - restart nginx
 
     - name: Ensure PHP is started and enabled on boot.
       service:
@@ -315,12 +291,14 @@
       service:
         name={{ apache_daemon }}
         state=restarted
+        enabled=yes
 
     - name: Service | Ensure Nginx is restarted
       when: server_webserver == "nginx"
       service:
         name={{ nginx_daemon }}
         state=restarted
+        enabled=yes
 
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
@@ -362,11 +340,13 @@
         state=restarted
 
     - name: restart apache
+      when: conf.stat.exists
       service:
         name={{ apache_daemon }}
         state=restarted
 
     - name: restart nginx
+      when: conf.stat.exists
       service:
         name={{ nginx_daemon }}
         state=restarted
