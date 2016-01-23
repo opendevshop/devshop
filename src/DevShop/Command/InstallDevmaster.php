@@ -642,7 +642,7 @@ PHP;
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
     $master_drush_alias = $this->input->getOption('master_drush_alias');
-    if ($this->runProcess(new Process("drush @{$master_drush_alias} hosting-setup"))) {
+    if ($this->runProcess(new Process("drush @{$master_drush_alias} hosting-setup -y"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$master_drush_alias} hosting-setup</comment>: <info>Done</info>");
       $this->output->writeln("");
