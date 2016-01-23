@@ -1,5 +1,7 @@
 ---
 # for vars.RedHat.yml
+local_bin_path: /usr/local/sbin
+
 apache_user: apache
 apache_confd_path: /etc/httpd/conf.d/aegir.conf
 apache_control: /usr/sbin/apachectl
@@ -16,7 +18,6 @@ nginx_php_ini_path: /etc/php.ini
 nginx_www_pool_path: /etc/php-fpm.d/www.conf
 nginx_daemon: nginx
 
-php_ini_path: /etc/php.ini
 mysql_cnf_path: /etc/my.cnf
 mysql_daemon: mariadb.service
 
