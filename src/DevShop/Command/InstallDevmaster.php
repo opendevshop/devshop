@@ -90,7 +90,7 @@ class InstallDevmaster extends Command
       ->addOption(
         'master_drush_alias', NULL, InputOption::VALUE_OPTIONAL,
         "The string to use for the master site's drush alias.",
-        'devmaster'
+        'hostmaster'
       )
 
       // site
