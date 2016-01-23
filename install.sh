@@ -24,7 +24,7 @@
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
-SERVER_WEBSERVER=apache
+SERVER_WEBSERVER=nginx
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -76,7 +76,7 @@ while [ $# -gt 0 ]; do
       ;;
     *)
       echo $LINE
-      echo " Error: Invalid argument for --server-webserver."
+      echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
       echo $LINE
       exit 1
   esac
@@ -127,7 +127,7 @@ fi
 
 # Fail if server_webserver is not apache or nginx
 if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
-  echo ' Invalid Web server. Must be nginx or apache (default).'
+  echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
   exit 1
 fi
 
