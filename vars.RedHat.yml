@@ -2,13 +2,14 @@
 # for vars.RedHat.yml
 local_bin_path: /usr/local/sbin
 
+php_daemon: php-fpm
+
 apache_user: apache
 apache_confd_path: /etc/httpd/conf.d/aegir.conf
 apache_control: /usr/sbin/apachectl
 apache_daemon: httpd
 apache_php_ini_path: /etc/php.ini
 apache_www_pool_path: /etc/php-fpm.d/www.conf
-php_daemon: php-fpm
 
 nginx_user: nginx
 nginx_conf_path: /etc/nginx/nginx.conf

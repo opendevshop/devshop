@@ -147,7 +147,7 @@
         state=link
         force=yes
 
-    - name: Ensure PHP is started and enabled on boot.
+    - name: Service | Ensure PHP is started and enabled on boot.
       service:
         name={{ php_daemon }}
         state=started
