@@ -10,6 +10,6 @@ RUN yum clean all
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
 # Install Ansible inventory file
-RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
+RUN echo -e '[local]\nlocalhost ansible_connection=local\n10.10.10.10' > /etc/ansible/hosts
 
 CMD ["/usr/sbin/init"]
