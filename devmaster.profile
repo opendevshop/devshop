@@ -255,7 +255,8 @@ function devmaster_task_finalize() {
   // Make sure blocks are setup properly.
 //  _block_rehash();
 
-//  node_access_rebuild();
+  // Rebuild node access permissions.
+  node_access_rebuild();
 }
 
 /**
