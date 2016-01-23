@@ -53,6 +53,13 @@ class InstallDevmaster extends Command
       ->setName('install-devmaster')
       ->setDescription('Install the Devmaster front-end. This command is analogous to "drush hostmaster-install"')
 
+      // master_drush_alias
+      ->addOption(
+        'master_drush_alias', NULL, InputOption::VALUE_OPTIONAL,
+        "The string to use for the master site's drush alias.",
+        'devmaster'
+      )
+
       // site
       ->addOption(
         'site', NULL, InputOption::VALUE_OPTIONAL,
@@ -190,7 +197,7 @@ class InstallDevmaster extends Command
     $output->writeln('   - platform_hostmaster (devmaster codebase)');
     $output->writeln('   - hostmaster (devmaster site)');
     $output->writeln(' 2. Install the Devmaster site');
-    $output->writeln(' 3. Setup the dispatcher (a user cron job)');
+    $output->writeln(' 3. Setup a cron job to run `drush @hostmaster hosting-tasks.`');
     $output->writeln('');
 
     // devshop_version
@@ -289,9 +296,8 @@ class InstallDevmaster extends Command
     // Prepare "aegir contexts"
     $this->prepareContexts();
 
-    // Run site install.
-    // $this->installDevmaster();
-
+    // Finalize setup: Clear drush caches and run "hosting-setup" to create cronjobs.
+    $this->finalize();
   }
 
   /**
@@ -599,6 +605,41 @@ PHP;
     else {
       $this->output->writeln("");
       $this->output->writeln("<error>Unable to run drush @{$name} provision-verify.");
+      $this->output->writeln("");
+      exit(1);
+    }
+  }
+
+  /**
+   * Last steps:
+   *   Clear drush cache.
+   *   Run `drush hosting-setup`
+   */
+  private function finalize() {
+
+    // Run `drush cc drush`
+    if ($this->runProcess(new Process("drush cc drush"))) {
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
+      $this->output->writeln("");
+    }
+    else {
+      $this->output->writeln("");
+      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
+      $this->output->writeln("");
+      exit(1);
+    }
+    // Run `drush @hostmaster hosting-setup`
+    // @see install.hostmaster.inc: 275
+    $master_drush_alias = $this->input->getOption('master_drush_alias');
+    if ($this->runProcess(new Process("drush @{$master_drush_alias} hosting-setup"))) {
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>drush @{$master_drush_alias} hosting-setup</comment>: <info>Done</info>");
+      $this->output->writeln("");
+    }
+    else {
+      $this->output->writeln("");
+      $this->output->writeln("<error>Unable to run drush @{$master_drush_alias} hosting-setup.</error>");
       $this->output->writeln("");
       exit(1);
     }
