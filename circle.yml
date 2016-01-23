@@ -6,7 +6,7 @@ machine:
 
 dependencies:
   pre:
-    - apt-get install php5-fpm=5.5.9+dfsg-1ubuntu4.14
+    - sudo apt-get install php5-fpm=5.5.9+dfsg-1ubuntu4.14
 
 test:
   override:
