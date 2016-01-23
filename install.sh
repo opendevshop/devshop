@@ -244,7 +244,11 @@ su - aegir -c "devshop status"
 if [ ${PIPESTATUS[0]} == 0 ]; then
   su - aegir -c "devshop login"
   echo ""
-  echo "The command 'devshop status' ran successfully! Welcome to OpenDevShop!"
+  echo "Welcome to OpenDevShop! Use the link above to login."
+  echo "Please visit http://getdevshop.com for help and information."
+  echo ""
+  echo "Thanks!"
+  echo "--The OpenDevShop Team"
   echo ""
   exit 0
 else
