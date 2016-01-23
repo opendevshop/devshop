@@ -2,11 +2,11 @@ sudo: required
 
 env:
   - distribution: centos
-    version: 6
+    version: centos6
     init: /sbin/init
     run_opts: ""
   - distribution: centos
-    version: 7
+    version: centos7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
   - distribution: ubuntu
@@ -22,11 +22,8 @@ services:
   - docker
 
 before_install:
-  # - sudo apt-get update
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
-  # Customize container
-  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
 
 script:
   - container_id=$(mktemp)
