@@ -21,6 +21,13 @@ Resources
 * [Issue Queue](https://www.drupal.org/project/issues/devshop) drupal.org/project/issues/devshop
 * [Development Information](https://devshop.readthedocs.org/en/latest/help/DEVELOPMENT/)  Developer documentation will walk you through contributing to DevShop.
 
+Roadmap
+-------
+
+We are starting to track our efforts using EPICs and Huboard: [https://huboard.com/opendevshop/devshop](https://huboard.com/opendevshop/devshop)
+
+You can browse the tag EPIC in the GitHub issues to get an idea of what efforts are underway [https://github.com/opendevshop/devshop/labels/EPIC](https://github.com/opendevshop/devshop/labels/EPIC)
+
 Components
 ----------
 DevShop currenly consists of four main components:
