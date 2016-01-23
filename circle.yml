@@ -6,9 +6,11 @@ machine:
 
 dependencies:
   pre:
-    - echo 'alias php5="~/.phpenv/shims/php"' >> ~/.bashrc
-    - echo 'alias php5-fpm="~/.phpenv/shims/php"' >> ~/.bashrc
-    - source ~/.bashrc
+    - sudo apt-get install language-pack-en-base -y
+    - sudo LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php5 -y
+    - sudo apt-get update -y
+    - sudo aptitude versions php5-fpm
+    - sudo apt-get install --only-upgrade php5-fpm -y
 
 test:
   override:
