@@ -8,7 +8,8 @@ dependencies:
   pre:
     - sudo add-apt-repository ppa:ondrej/php5-oldstable -y
     - sudo apt-get update -y
-    - sudo apt-get install php5-fpm=5.6.17+dfsg-3+deb.sury.org~precise+1 -y
+    - aptitude versions php5-fpm
+#    - sudo apt-get install php5-fpm=5.6.17+dfsg-3+deb.sury.org~precise+1 -y
     - sudo apt-get autoremove -y
 
 test:
