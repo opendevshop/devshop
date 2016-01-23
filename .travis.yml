@@ -2,11 +2,11 @@ sudo: required
 
 env:
   - distribution: centos
-    version: centos6
+    version: 6
     init: /sbin/init
     run_opts: ""
   - distribution: centos
-    version: centos7
+    version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
   - distribution: ubuntu
