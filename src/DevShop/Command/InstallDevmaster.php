@@ -48,6 +48,39 @@ use Symfony\Component\Translation\Dumper\PhpFileDumper;
 
 class InstallDevmaster extends Command
 {
+
+  /**
+   * Executes the command.
+   *
+   * @param \Symfony\Component\Console\Input\InputInterface $input
+   * @param \Symfony\Component\Console\Output\OutputInterface $output
+   */
+  protected function execute(InputInterface $input, OutputInterface $output) {
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
+
+    // Validate the database.
+    if ($this->validateSecureDatabase()) {
+      $this->output->writeln('<info>Database is secure.</info>');
+    }
+    else {
+      $this->output->writeln('<error>Database is NOT Secure. Run "mysql_secure_installation" or see https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html for more information.</error>');
+      return;
+    }
+
+    // Confirm all of the options.
+    $this->validateOptions();
+
+    // Prepare "aegir contexts"
+    $this->prepareContexts();
+
+    // Finalize setup: Clear drush caches and run "hosting-setup" to create cronjobs.
+    $this->finalize();
+  }
+
+  /**
+   * Set console options.
+   */
   protected function configure() {
     $this
       ->setName('install-devmaster')
@@ -275,29 +308,6 @@ class InstallDevmaster extends Command
       }
       $input->setOption('client_email', $default_email);
     }
-  }
-
-  protected function execute(InputInterface $input, OutputInterface $output) {
-    // Attaches input and output to the Command class.
-    parent::execute($input, $output);
-
-    // Validate the database.
-    if ($this->validateSecureDatabase()) {
-      $this->output->writeln('<info>Database is secure.</info>');
-    }
-    else {
-      $this->output->writeln('<error>Database is NOT Secure. Run "mysql_secure_installation" or see https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html for more information.</error>');
-      return;
-    }
-
-    // Confirm all of the options.
-    $this->validateOptions();
-
-    // Prepare "aegir contexts"
-    $this->prepareContexts();
-
-    // Finalize setup: Clear drush caches and run "hosting-setup" to create cronjobs.
-    $this->finalize();
   }
 
   /**
