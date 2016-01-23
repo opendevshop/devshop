@@ -214,6 +214,11 @@
       become: yes
       become_user: aegir
 
+    - name: Clear the hostmaster drush cache.
+      command: "{{ drush_path }} @hostmaster cc drush"
+      become: yes
+      become_user: aegir
+
     # Runs the drush devshop-install command with all of our options:
     - debug: msg="{{ devmaster_install_command }}"
 
