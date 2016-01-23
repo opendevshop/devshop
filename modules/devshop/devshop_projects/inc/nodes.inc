@@ -301,14 +301,14 @@ function devshop_projects_node_load($nodes, $types) {
   }
 
     // Put live environment at the top.
-    if ($project->settings->live['live_environment']) {
+    $project->environments = array();
+    if (!empty($environments) && $project->settings->live['live_environment']) {
       $live_env = $project->settings->live['live_environment'];
-      $project->environments = array();
       $project->environments[$live_env] = $environments[$live_env];
       unset($environments[$live_env]);
       $project->environments += $environments;
     }
-    else {
+    elseif (!empty($environments)) {
       $project->environments = $environments;
     }
 
