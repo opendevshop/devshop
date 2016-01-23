@@ -30,13 +30,13 @@ before_install:
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/playbook.yml:ro ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/devshop:ro ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Ansible syntax check.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook playbook.yml --syntax-check'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
   - >
-    sudo docker exec "$(cat ${container_id})" bash install.sh
+    sudo docker exec "$(cat ${container_id})" bash /etc/ansible/devshop/install.sh
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
