@@ -7,7 +7,7 @@
 - name: MySQL | Set the root password.
   action: mysql_user user=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
   with_items:
-    - "{{ ansible_hostname }}"
+    - "{{ server_hostname }}"
     - 127.0.0.1
     - ::1
     - localhost
