@@ -1,10 +1,11 @@
 sudo: required
 
 env:
-  - distribution: centos
-    version: 6
-    init: /sbin/init
-    run_opts: ""
+  # CentOS 6: Not supported yet.
+  #- distribution: centos
+  #  version: 6
+  #  init: /sbin/init
+  #  run_opts: ""
   - distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
@@ -13,10 +14,11 @@ env:
     version: 14.04
     init: /sbin/init
     run_opts: ""
-  - distribution: ubuntu
-    version: 12.04
-    init: /sbin/init
-    run_opts: ""
+  # Ubuntu 12.04: Not supported yet.
+  #- distribution: ubuntu
+  #  version: 12.04
+  #  init: /sbin/init
+  #  run_opts: ""
 
 services:
   - docker
