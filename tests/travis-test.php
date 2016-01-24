@@ -6,7 +6,12 @@ require_once '../vendor/autoload.php';
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-$hostname = $argv[1];
+if (isset($argv[1]))  {
+  $hostname = $argv[1];
+}
+else {
+  $hostname = 'devshop.site';
+}
 
 // Look for hostmaster alias file.
 
