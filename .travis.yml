@@ -1,0 +1,58 @@
+sudo: required
+
+env:
+  # CentOS 6: Not supported yet.
+  #- distribution: centos
+  #  version: 6
+  #  init: /sbin/init
+  #  run_opts: ""
+  - distribution: centos
+    version: 7
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+  # Ubuntu 12.04: Not supported yet.
+  #- distribution: ubuntu
+  #  version: 12.04
+  #  init: /sbin/init
+  #  run_opts: ""
+
+services:
+  - docker
+
+before_install:
+  # Pull container
+  - 'sudo docker pull ${distribution}:${version}'
+  # Customize container
+  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
+
+script:
+  - container_id=$(mktemp)
+    # Run container in detached state
+  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+
+  # Ansible syntax check.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
+
+  # Test install script.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh'
+
+  # Test for DevShop.
+  - >
+    sudo docker exec "$(cat ${container_id})" curl http://"$(cat ${container_id} | cut -c1-12)"
+    | grep -q 'DevShop'
+    && (echo 'DevShop test: pass' && exit 0)
+    || (echo 'DevShop test: fail' && exit 1)
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+
+  # - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "cd /etc/ansible/devshop/tests &&  bin/behat"'
+  # Attempting to pass $container_id into an environment variable so that behat picks up the base_url.
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "cd /etc/ansible/devshop/tests && drush cc drush && php travis-test.php $(cat ${container_id} | cut -c1-12)"'
+
+  # Clean up
+  - 'sudo docker stop "$(cat ${container_id})"'

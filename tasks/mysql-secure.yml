@@ -5,7 +5,12 @@
 # Distribution independent.
 #
 - name: MySQL | Set the root password.
-  action: mysql_user user=root password={{ mysql_root_password }} host=localhost
+  action: mysql_user user=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
+  with_items:
+    - "{{ server_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
 
 - name: MySQL | Config for easy access as root user
   action: template src=templates/root-my.cnf.j2 dest=/root/.my.cnf
