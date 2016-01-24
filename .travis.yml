@@ -1,0 +1,64 @@
+sudo: required
+
+env:
+  # CentOS 6: Not supported yet.
+  #- distribution: centos
+  #  version: 6
+  #  init: /sbin/init
+  #  run_opts: ""
+  # Ubuntu 12.04: Not supported yet.
+  #- distribution: ubuntu
+  #  version: 12.04
+  #  init: /sbin/init
+  #  run_opts: ""
+  - distribution: centos
+    version: 7
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    script_opts: "--server-webserver=apache"
+  - distribution: centos
+    version: 7
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    script_opts: "--server-webserver=nginx"
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=apache"
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=nginx"
+
+services:
+  - docker
+
+before_install:
+  # Pull container
+  - 'sudo docker pull ${distribution}:${version}'
+  # Customize container
+  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
+
+script:
+  - container_id=$(mktemp)
+    # Run container in detached state
+  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+
+  # Ansible syntax check.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
+
+  # Test install script.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh ${script_opts}'
+
+  # Test for DevShop.
+  - >
+    sudo docker exec "$(cat ${container_id})" curl http://"$(cat ${container_id} | cut -c1-12)"
+    | grep -q 'DevShop'
+    && (echo 'DevShop test: pass' && exit 0)
+    || (echo 'DevShop test: fail' && exit 1)
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
+  # Clean up
+  - 'sudo docker stop "$(cat ${container_id})"'
