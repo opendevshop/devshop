@@ -9,6 +9,8 @@ default:
     Behat\MinkExtension:
       goutte: ~
       selenium2: ~
+      # We do not include base_url here because then we cannot override it on the command line.
+      # base_url: http://devshop.site
       show_cmd: firefox %s
     Drupal\DrupalExtension:
       blackbox: ~
