@@ -50,6 +50,10 @@ elif [ -f '/etc/lsb-release' ]; then
     if [ $OS == "Ubuntu" ]; then
       OS=ubuntu
     fi
+elif [ -f '/etc/redhat-release' ]; then
+    OS=$(cat /etc/redhat-release | awk '{print tolower($1);}')
+    VERSION=$(cat /etc/redhat-release | awk '{print $3;}')
+    HOSTNAME_FQDN=`hostname --fqdn`
 fi
 
 # If on travis, use localhost as the hostname
@@ -222,4 +226,3 @@ else
   echo "╚═══════════════════════════════════════════════════════════════╝"
   sudo su - aegir -c "drush @hostmaster uli"
 fi
-
