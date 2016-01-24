@@ -639,6 +639,7 @@ PHP;
       $this->output->writeln("");
       exit(1);
     }
+
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
     $master_drush_alias = $this->input->getOption('master_drush_alias');
@@ -650,6 +651,19 @@ PHP;
     else {
       $this->output->writeln("");
       $this->output->writeln("<error>Unable to run drush @{$master_drush_alias} hosting-setup.</error>");
+      $this->output->writeln("");
+      exit(1);
+    }
+
+    // Run `drush @hostmaster cc drush`
+    if ($this->runProcess(new Process("drush @{$master_drush_alias} cc drush"))) {
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>drush @{$master_drush_alias} cc drush</comment>: <info>Done</info>");
+      $this->output->writeln("");
+    }
+    else {
+      $this->output->writeln("");
+      $this->output->writeln("<error>Unable to run drush @{$master_drush_alias} cc drush. Cannot continue.</error>");
       $this->output->writeln("");
       exit(1);
     }
