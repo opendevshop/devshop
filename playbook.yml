@@ -218,8 +218,8 @@
     - debug: msg="{{ devmaster_install_command }}"
 
     - name: Install Devmaster
-      sudo: yes
-      sudo_user: aegir
+      become: yes
+      become_user: aegir
       command: "{{ devmaster_install_command }}"
       args:
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
