@@ -15,12 +15,4 @@ default:
       blackbox: ~
       api_driver: 'drush'
       drush:
-        root: /var/aegir/devmaster-0.x
-        alias: 'hostmaster'
-travis:
-  extensions:
-    Behat\MinkExtension:
-      base_url: http://localhost
-    Drupal\DrupalExtension:
-      drush:
         alias: 'hostmaster'
