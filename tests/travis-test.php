@@ -37,9 +37,6 @@ $process->setEnv(array('BEHAT_PARAMS' => json_encode(array(
       'drush' => array(
         'root' => $path
       ),
-      'drupal' => array(
-        'drupal_root' => $path
-      )
     )
   )
 ))));
