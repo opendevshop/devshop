@@ -9,7 +9,8 @@ default:
     Behat\MinkExtension:
       goutte: ~
       selenium2: ~
-      base_url: http://devshop.site
+      # We do not include base_url here because then we cannot override it on the command line.
+      # base_url: http://devshop.site
       show_cmd: firefox %s
     Drupal\DrupalExtension:
       blackbox: ~
@@ -17,12 +18,6 @@ default:
       drupal:
         drupal_root: /var/aegir/devmaster-1.x
       drush:
-        root: /var/aegir/devmaster-1.x
         alias: 'hostmaster'
-travis:
-  extensions:
-    Behat\MinkExtension:
-      base_url: http://localhost
-    Drupal\DrupalExtension:
-      drush:
-        alias: 'hostmaster'
+        # We do not include root here because then we cannot override it on the command line.
+        # root: /var/aegir/devmaster-0.x

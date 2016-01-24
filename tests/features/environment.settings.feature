@@ -11,12 +11,15 @@ Feature: Create an environment
     Then break
 
 
+# @TODO: Commented out until the drush user-create bug is fixed.
 #Feature: Environment settings save.
-#  @TODO This was used to fix a specific bug and will not pass yet.
-#
+#  @TODO: Only works if you have a project named "drupal".  Coming Soon.
 #  Scenario: Check environment settings.
-#
 #    Given I am on the homepage
+#    And I fill in "jon" for "Username"
+#    And I fill in "jon" for "Password"
+#    Then I press "Log in"
+#
 #    When I am at "project/drupal"
 #    Then I click "Environment Settings"
 #    When I fill in "NewUsername" for "Username"
