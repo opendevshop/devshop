@@ -2,6 +2,7 @@ FROM ubuntu:12.04
 RUN apt-get update
 
 # Install Ansible
+RUN sed -i 's/101/0/' /usr/sbin/policy-rc.d
 RUN apt-get install -y software-properties-common python-software-properties git
 RUN apt-add-repository -y ppa:ansible/ansible
 RUN apt-get update
