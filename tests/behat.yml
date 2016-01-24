@@ -17,3 +17,5 @@ default:
       api_driver: 'drush'
       drush:
         alias: 'hostmaster'
+        # We do not include root here because then we cannot override it on the command line.
+        # root: /var/aegir/devmaster-0.x

@@ -8,13 +8,30 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 $hostname = $argv[1];
 
-$process = new Process('bin/behat');
+// Look for hostmaster alias file.
+
+if (file_exists('/var/aegir/.drush/hostmaster.alias.drushrc.php')) {
+  require_once '/var/aegir/.drush/hostmaster.alias.drushrc.php';
+  $path = $aliases['hostmaster']['root'];
+}
+else {
+  echo "Hostmaster alias not found.\n";
+  exit(1);
+}
+
+
+$process = new Process('bin/behat --colors');
 $process->setTimeout(NULL);
 $process->setWorkingDirectory(__DIR__);
 $process->setEnv(array('BEHAT_PARAMS' => json_encode(array(
   'extensions' => array(
     'Behat\\MinkExtension' => array(
       'base_url' => "http://{$hostname}"
+    ),
+    'Drupal\\DrupalExtension' => array(
+      'drush' => array(
+        'root' => $path
+      )
     )
   )
 ))));
