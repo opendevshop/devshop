@@ -234,7 +234,8 @@ class InstallDevmaster extends Command
     $output->writeln('');
 
     // devshop_version
-    if (empty($input->getOption('devshop_version'))) {
+    $version = $input->getOption('devshop_version');
+    if (empty($version)) {
       $output->writeln('Checking for latest version...');
       $input->setOption('devshop_version', $this->getLatestVersion());
     }
@@ -242,7 +243,7 @@ class InstallDevmaster extends Command
       // Validate chosen version
       $output->writeln('Validating version...');
       try {
-        $this->checkVersion($input->getOption('devshop_version'));
+        $this->checkVersion($version);
       }
       catch (\Exception $e) {
         throw new \Exception($e->getMessage());
