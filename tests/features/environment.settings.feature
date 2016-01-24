@@ -1,4 +1,4 @@
-Feature: Environment settings save.
+#Feature: Environment settings save.
 #  @TODO: Only works if you have a project named "drupal".  Coming Soon.
 #  Scenario: Check environment settings.
 #    Given I am on the homepage
