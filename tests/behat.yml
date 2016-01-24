@@ -17,4 +17,3 @@ default:
       api_driver: 'drush'
       drush:
         alias: 'hostmaster'
-
