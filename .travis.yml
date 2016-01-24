@@ -1,9 +1,5 @@
 sudo: required
 
-addons:
-  hosts:
-    - devshop.site
-
 env:
   - distribution: centos
     version: 6
@@ -44,10 +40,10 @@ script:
 
   # Test for DevShop.
   - >
-    sudo docker exec "$(cat ${container_id})" curl http://devshop.site
+    sudo docker exec "$(cat ${container_id})" curl http://"$(cat ${container_id} | cut -c1-12)"
     | grep -q 'DevShop'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
+    && (echo 'DevShop test: pass' && exit 0)
+    || (echo 'DevShop test: fail' && exit 1)
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
   # Clean up
