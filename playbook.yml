@@ -201,10 +201,6 @@
         name={{ mysql_daemon }}
         state=started
         enabled=yes
-      register: start
-
-    - name: start output
-      debug: var=start
 
     - name: Check for secured installation of MySQL
       stat: path=/var/mysql-secured
