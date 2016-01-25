@@ -239,9 +239,10 @@ fi
 
 ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
+# @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli
-cd $PLAYBOOK_PATH
-composer install
+#cd $PLAYBOOK_PATH
+#composer install
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
