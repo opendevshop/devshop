@@ -337,6 +337,7 @@ function boots_preprocess_page(&$vars){
     }
 
     // Set subtitle
+    $vars['title'] = $vars['node']->title;
     $vars['subtitle'] = ucfirst($vars['node']->type);
     $vars['title_url'] = "node/" . $vars['node']->nid;
 
