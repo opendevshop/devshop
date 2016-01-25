@@ -32,6 +32,10 @@ env:
     run_opts: ""
     script_opts: "--server-webserver=nginx"
 
+addons:
+  hosts:
+    - devshop.travis
+
 services:
   - docker
 
@@ -50,7 +54,7 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
   # Test install script.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh ${script_opts}'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
   - >
