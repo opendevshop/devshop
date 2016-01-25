@@ -92,7 +92,10 @@
         state=link
         force=yes
 
-    - name: Make devshop CLI available globally.
+    - name: DevShop CLI | composer install
+      command: cd {{ devshop_cli_path }} && composer install
+
+    - name: DevShop CLI | Make devshop CLI available globally.
       file:
         src={{ playbook_path }}/bin/devshop
         dest={{ devshop_cli_path }}
