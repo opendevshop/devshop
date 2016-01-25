@@ -13,6 +13,8 @@ else {
   $hostname = 'devshop.site';
 }
 
+echo "Running tests on $hostname";
+
 // Look for hostmaster alias file.
 
 if (file_exists('/var/aegir/.drush/hostmaster.alias.drushrc.php')) {
