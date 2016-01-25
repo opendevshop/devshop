@@ -585,7 +585,7 @@ PHP;
       $client_email = $this->input->getOption('client_email');
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$name} provision-install --client_email={$client_email}</comment> ...");
-      $process = $this->getProcess("drush @{$name} provision-install --client_email={$client_email} -v");
+      $process = $this->getProcess("/usr/share/composer/vendor/bin/drush @{$name} provision-install --client_email={$client_email} -v");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
@@ -605,7 +605,7 @@ PHP;
     // Run provision-verify
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
-    $process = $this->getProcess("drush @{$name} provision-verify");
+    $process = $this->getProcess("/usr/share/composer/vendor/bin/drush @{$name} provision-verify");
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {
@@ -644,7 +644,7 @@ PHP;
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
     $master_drush_alias = $this->input->getOption('master_drush_alias');
-    if ($this->runProcess(new Process("drush @{$master_drush_alias} hosting-setup -y"))) {
+    if ($this->runProcess(new Process("/usr/share/composer/vendor/bin/drush @{$master_drush_alias} hosting-setup -y"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$master_drush_alias} hosting-setup</comment>: <info>Done</info>");
       $this->output->writeln("");
@@ -657,7 +657,7 @@ PHP;
     }
 
     // Run `drush @hostmaster cc drush`
-    if ($this->runProcess(new Process("drush @{$master_drush_alias} cc drush"))) {
+    if ($this->runProcess(new Process("/usr/share/composer/vendor/bin/drush @{$master_drush_alias} cc drush"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$master_drush_alias} cc drush</comment>: <info>Done</info>");
       $this->output->writeln("");
