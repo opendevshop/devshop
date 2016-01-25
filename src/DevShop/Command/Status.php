@@ -72,15 +72,20 @@ class Status extends Command
     // Check for devmaster
     $output->write("<comment>Checking for DevMaster...  </comment>");
 
-    $process = new Process('drush @hostmaster status');
+    $process = new Process('drush @hostmaster vget install_profile');
     $process->run();
-    if (!$process->isSuccessful()) {
-      $output->writeln("<error>Devmaster not detected.</error>");
+    $profile = trim($process->getOutput());
+    if (empty($profile)) {
+      $output->writeln("<error>Devmaster not installed.</error>");
+
       $output->writeln($process->getErrorOutput());
+      $output->writeln('');
+      $output->writeln("<error>Devmaster site not detected.</error>");
+      $output->writeln('The command <comment>drush @hostmaster vget install_profile</comment> failed.');
       $error = TRUE;
     }
     else {
-      $output->write("<info>Devmaster is installed.  </info>");
+      $output->write("<info>Devmaster is installed.</info>");
       $output->writeln($this->getApplication()->getDevmasterVersion());
     }
 
