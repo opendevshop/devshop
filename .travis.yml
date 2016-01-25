@@ -64,11 +64,6 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
-  - >
-    sudo docker exec "$(cat ${container_id})" curl http://"$(cat ${container_id} | cut -c1-12)"
-    | grep -q 'devmaster'
-    && (echo 'DevShop test: pass' && exit 0)
-    || (echo 'DevShop test: fail' && exit 1)
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
   - 'sudo docker exec "$(cat ${container_id})" sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
