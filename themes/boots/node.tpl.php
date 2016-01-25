@@ -66,8 +66,7 @@
   </div>
 
   <div class="content">
-    <?php print $content ?>
+    <?php print render($content) ?>
   </div>
 
-  <?php print $links; ?>
 </div>
