@@ -85,8 +85,16 @@ class Status extends Command
       $error = TRUE;
     }
     else {
-      $output->write("<info>Devmaster is installed.</info>");
+      $output->write("<info>Devmaster is installed.</info>  ");
+
+      // Output drush status --fields=drupal-version,uri
       $output->writeln($this->getApplication()->getDevmasterVersion());
+
+      $process = new Process('drush @hostmaster status --fields=drupal-version,uri,database');
+      $process->run();
+
+      $output->writeln(preg_replace('!\s+!', ' ', $process->getOutput()));
+      $output->writeln('');
     }
 
     $output->writeln('');
