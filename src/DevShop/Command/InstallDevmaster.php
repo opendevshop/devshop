@@ -20,10 +20,6 @@
  * I am going to continue to experiment in DevShop, with the hope that the Aegir
  * project will adopt these tools in the future.
  *
- * @TODO: Hostmaster install is still failing, even if you set profile=hostmaster:
- *   `We could not find an applicable site for that command.               [error]`
-
- *
  */
 
 namespace DevShop\Command;
