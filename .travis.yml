@@ -37,10 +37,10 @@ script:
   - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Ansible syntax check.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
   # Test install script.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh ${script_opts}'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts}'
 
   # Test for DevShop.
   - >
