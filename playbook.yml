@@ -153,8 +153,6 @@
         src=templates/nginx-pool.conf.j2
         dest={{ nginx_www_pool_path }}
         mode=0644
-      notify:
-        - restart php
 
     - name: Write apache-pool.conf file.
       when: server_webserver == "apache"
@@ -162,8 +160,6 @@
         src=templates/apache-pool.conf.j2
         dest={{ apache_www_pool_path }}
         mode=0644
-      notify:
-        - restart php
 
     - name: Write php.ini file.
       when: server_webserver == "apache"
