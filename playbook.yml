@@ -147,12 +147,6 @@
         state=link
         force=yes
 
-    - name: Service | Ensure PHP is started and enabled on boot.
-      service:
-        name={{ php_daemon }}
-        state=started
-        enabled=yes
-
     - name: Write nginx-pool.conf file.
       when: server_webserver == "nginx"
       template:
@@ -177,8 +171,6 @@
         src=templates/php.ini.j2
         dest={{ apache_php_ini_path }}
         mode=0644
-      notify:
-        - restart php
 
     - name: Write php.ini file.
       when: server_webserver == "nginx"
@@ -186,8 +178,6 @@
         src=templates/php.ini.j2
         dest={{ nginx_php_ini_path }}
         mode=0644
-      notify:
-        - restart php
 
     - name: Write my.cnf file.
       template:
@@ -349,9 +339,4 @@
       when: conf.stat.exists
       service:
         name={{ nginx_daemon }}
-        state=restarted
-
-    - name: restart php
-      service:
-        name={{ php_daemon }}
         state=restarted
