@@ -24,7 +24,8 @@ motd_path: /etc/update-motd.d/95-ansible
 bashrc_path: /etc/bash.bashrc
 
 packages:
-  - mysql-server
+  - mariadb-client
+  - mariadb-server-5.5
   - php5-cli
   - php5-curl
   - php5-gd
