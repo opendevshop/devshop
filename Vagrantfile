@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # Prepare host for development
-  if (development_mode)
+  if (development_mode && ARGV[0] == 'up')
     system('bash ' + File.dirname(__FILE__) + '/vagrant-prepare-host.sh ' + File.dirname(__FILE__) + ' ' + settings["devshop_version"])
   end
 
@@ -77,8 +77,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 
 if (ARGV[0] == 'destroy')
+  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
   print "DEVSHOP: Vagrant Destroy detected. \n"
-  print "DEVSHOP: You must delete the 'source/devmaster-0.x/sites/devshop.site' folder before you 'vagrant up' again. \n"
+  print "DEVSHOP: You must delete the 'source/devmaster-" + settings["devshop_version"] + "/sites/devshop.site' folder before you 'vagrant up' again. \n"
 end
 
 class NoSettingsException < Vagrant::Errors::VagrantError
