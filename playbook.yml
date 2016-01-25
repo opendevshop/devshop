@@ -92,8 +92,8 @@
         state=link
         force=yes
 
-    - name: DevShop CLI | composer install
-      command: cd {{ playbook_path }} && composer install
+#    - name: DevShop CLI | composer install
+#      command: cd {{ playbook_path }} && composer install
 
     - name: DevShop CLI | Make devshop CLI available globally.
       file:
