@@ -40,6 +40,7 @@ function devshop_projects_node_load($nodes, $types) {
   }
 
   global $user;
+  $project = new stdClass();
 
   foreach ($nodes as $nid => &$node) {
 
@@ -304,8 +305,8 @@ function devshop_projects_node_load($nodes, $types) {
     }
 
     // Put live environment at the top.
-    $project->environments = array();
     if (!empty($environments) && $project->settings->live['live_environment']) {
+      $project->environments = array();
       $live_env = $project->settings->live['live_environment'];
       $project->environments[$live_env] = $environments[$live_env];
       unset($environments[$live_env]);
@@ -313,6 +314,9 @@ function devshop_projects_node_load($nodes, $types) {
     }
     elseif (!empty($environments)) {
       $project->environments = $environments;
+    }
+    elseif (!empty($node->title)) {
+      $project->environments = array();
     }
 
     // Make project name and status available.
