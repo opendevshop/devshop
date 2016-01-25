@@ -4,8 +4,7 @@
  * Page callback for the settings page.
  */
 function devshop_pull_settings_page() {
-  $output .= drupal_get_form('devshop_pull_settings_form');
-  return $output;
+  return drupal_get_form('devshop_pull_settings_form');
 }
 
 /**
