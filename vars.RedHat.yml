@@ -2,8 +2,6 @@
 # for vars.RedHat.yml
 local_bin_path: /usr/local/sbin
 
-php_daemon: php-fpm
-
 apache_user: apache
 apache_confd_path: /etc/httpd/conf.d/aegir.conf
 apache_control: /usr/sbin/apachectl
@@ -30,7 +28,6 @@ motd_path: /etc/motd
 bashrc_path: /etc/bashrc
 
 packages:
-  - php-fpm
   - php-mysql
   - php-cli
   - php-gd
@@ -57,6 +54,8 @@ packages:
 
 apache_packages:
   - httpd
+  - php
 
 nginx_packages:
   - nginx
+  - php-fpm

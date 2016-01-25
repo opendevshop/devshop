@@ -1,7 +1,5 @@
 ---
 # for vars.Debian.yml
-php_daemon: php5-fpm
-
 apache_user: www-data
 apache_confd_path: /etc/apache2/conf-enabled/aegir.conf
 apache_control: /usr/sbin/apache2ctl
@@ -27,8 +25,8 @@ motd_path: /etc/update-motd.d/95-ansible
 bashrc_path: /etc/bash.bashrc
 
 packages:
-  - mysql-server
-  - php5-fpm
+  - mariadb-client
+  - mariadb-server-5.5
   - php5-cli
   - php5-curl
   - php5-gd
@@ -49,6 +47,7 @@ packages:
 
 apache_packages:
   - apache2
+  - php5
 
 nginx_packages:
   - nginx
