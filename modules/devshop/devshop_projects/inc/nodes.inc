@@ -52,8 +52,11 @@ function devshop_projects_node_load($nodes, $types) {
       ))->fetchAssoc();
 
       $project_node = node_load($result->project_nid);
-      $node->project = $project_node->project;
-      $node->environment = $project_node->project->environments[$result->name];
+
+      if (!empty($project_node->project)) {
+        $node->project = $project_node->project;
+        $node->environment = $project_node->project->environments[$result->name];
+      }
       return;
     }
 
