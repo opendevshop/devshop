@@ -78,6 +78,9 @@ while [ $# -gt 0 ]; do
     --server-webserver=*)
       SERVER_WEBSERVER="${1#*=}"
       ;;
+    --hostname=*)
+      HOSTNAME_FQDN="${1#*=}"
+      ;;
     *)
       echo $LINE
       echo " Error: Invalid argument for --server-webserver."

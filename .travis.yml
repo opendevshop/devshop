@@ -36,6 +36,12 @@ env:
     run_opts: ""
     script_opts: "--server-webserver=nginx"
 
+<<<<<<< HEAD
+=======
+addons:
+  hosts:
+    - devshop.travis
+>>>>>>> b04d1ed... Attempting to set hostname on travis, and adding hostname as an option for the install.sh script.
 
 services:
   - docker
@@ -55,7 +61,7 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
   # Test install script.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts}'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
   - >
