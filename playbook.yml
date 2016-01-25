@@ -243,9 +243,9 @@
     - debug: msg="$ {{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
 
     - name: Install Devmaster
+      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
       become: yes
       become_user: aegir
-      command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }}  {{ devshop_working_copy }} --http_service_type={{ server_webserver }} -y"
       args:
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
