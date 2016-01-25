@@ -68,8 +68,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
       // Otherwise we create a deployment and a commit status.
       else {
 
-
-      $params->target_url = $task->ref->environment->url;
+      $params->target_url = $environment->url;
       $params->description = t('Visit !url', array('!url' => $task->ref->environment->url));
       $post_url = "/repos/$owner/$repo/deployments/{$deployment_id}/statuses";
 
