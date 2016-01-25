@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env php
 <?php
 
 require_once '../vendor/autoload.php';
@@ -36,7 +36,7 @@ $process->setEnv(array('BEHAT_PARAMS' => json_encode(array(
     'Drupal\\DrupalExtension' => array(
       'drush' => array(
         'root' => $path
-      )
+      ),
     )
   )
 ))));
