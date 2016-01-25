@@ -93,8 +93,7 @@
         force=yes
 
     - name: DevShop CLI | composer install
-      command: composer install
-      become: yes
+      command: "{{ local_bin_path }}/composer install"
 
     - name: DevShop CLI | Make devshop CLI available globally.
       file:
