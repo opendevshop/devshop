@@ -14,7 +14,7 @@
     - vars.{{ ansible_os_family }}.yml
 
   vars:
-    devmaster_install_command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} --http_service_type={{ server_webserver }} {{ devshop_working_copy }} -y -v"
+    devmaster_install_command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} --http_service_type={{ server_webserver }} {{ devshop_working_copy }} -y"
 
 
   tasks:
