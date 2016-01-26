@@ -52,9 +52,20 @@
 <div class="container">
 <div class="row">
     <div class="environment-wrapper col-sm-4 col-md-3 col-lg-3">
-        <?php print theme('environment', $node->environment, $node->project, TRUE); ?>
+        <?php print theme('environment', array(
+          'environment' => $node->environment,
+          'project' => $node->project,
+          'page' => TRUE
+        )); ?>
     </div>
     <div class="col-sm-4 col-md-4">
-        <?php print theme("item_list", $environment->task_links, '', 'ul', array('class' => 'environment-tasks-nav nav nav-pills nav-stacked')); ?>
+        <?php print theme("item_list", array(
+          'items' => $environment->task_links,
+          'attributes' => array(
+            'class' => array(
+              'environment-tasks-nav nav nav-pills nav-stacked',
+            ),
+          ),
+        )); ?>
     </div>
 </div>
