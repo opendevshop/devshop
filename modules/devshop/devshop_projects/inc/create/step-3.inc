@@ -286,12 +286,20 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform->db_server = $environment->settings->db_server;
 
       // Save the node
-      $platform_node = _devshop_projects_node_create($platform);
+      global $user;
+      node_object_prepare($platform);
+      $platform->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+      $platform->uid = $user->uid;
+      $platform->status = 1;
+      $platform->promote = 0;
+      $platform->comment = 0;
+      $platform = node_submit($platform);
+      node_save($platform);
 
-      if (!$platform_node->nid) {
+      if (!$platform->nid) {
         form_set_error('projects', t('An unknown problem has occured: the platform node was not created for the %env environment.', array('%env' => $environment->name)));
       }
-      $environment->platform = $platform_node->nid;
+      $environment->platform = $platform->nid;
 
       // Update environment with our platform
       db_update('hosting_devshop_project_environment')
