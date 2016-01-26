@@ -123,8 +123,6 @@
         dest={{ apache_confd_path }}
         state=link
         force=yes
-      notify:
-        - restart apache
 
     - name: Symbolic link to Aegir's Apache Config (When ubuntu < 14.04)
       when: server_webserver == "apache" and ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14
@@ -133,8 +131,6 @@
         dest=/etc/apache2/conf.d/aegir.conf
         state=link
         force=yes
-      notify:
-        - restart apache
 
     # Nginx Symlink for 14.04 and higher.
     - name: Symbolic link to Aegir's Nginx Config
@@ -144,9 +140,14 @@
         dest={{ nginx_confd_path }}
         state=link
         force=yes
-      notify:
-        - restart nginx
 
+    - name: Override Nginx Config (When ansible_os_family == "RedHat")
+      when: server_webserver == "nginx" and ansible_os_family == "RedHat"
+      template:
+        src=templates/nginx.conf.Redhat.j2
+        dest={{ nginx_conf_path }}
+        mode=0644
+        force=yes
 
     - name: Symbolic link to Aegir's Nginx Config (When ubuntu < 14.04)
       when: server_webserver == "nginx" and (ansible_os_family == "Debian" and ansible_lsb.major_release|int < 14)
@@ -155,24 +156,22 @@
         dest=/etc/nginx/sites-enabled/aegir.conf
         state=link
         force=yes
-      notify:
-        - restart nginx
 
-    - name: Write www.conf file. # @TODO: Restart apache if changed.
+    - name: Write nginx-pool.conf file.
       when: server_webserver == "nginx"
       template:
-        src=templates/www.conf.j2
+        src=templates/nginx-pool.conf.j2
         dest={{ nginx_www_pool_path }}
         mode=0644
 
-    - name: Write php.ini file. # @TODO: Restart apache if changed.
+    - name: Write php.ini file.
       when: server_webserver == "apache"
       template:
         src=templates/php.ini.j2
         dest={{ apache_php_ini_path }}
         mode=0644
 
-    - name: Write php.ini file. # @TODO: Restart apache if changed.
+    - name: Write php.ini file.
       when: server_webserver == "nginx"
       template:
         src=templates/php.ini.j2
@@ -204,6 +203,7 @@
         src=templates/sudoers-d-aegir.j2
         dest=/etc/sudoers.d/aegir
         mode=0440
+        validate='visudo -cf %s'
 
     - name: Create /var/aegir/.drush
       file:
@@ -259,12 +259,21 @@
       service:
         name={{ apache_daemon }}
         state=restarted
+        enabled=yes
 
     - name: Service | Ensure Nginx is restarted
       when: server_webserver == "nginx"
       service:
         name={{ nginx_daemon }}
         state=restarted
+        enabled=yes
+
+    - name: Service | Ensure PHP Fast Process Manager is restarted
+      when: server_webserver == "nginx"
+      service:
+        name={{ fpm_daemon }}
+        state=restarted
+        enabled=yes
 
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
@@ -306,11 +315,13 @@
         state=restarted
 
     - name: restart apache
+      when: conf.stat.exists
       service:
         name={{ apache_daemon }}
         state=restarted
 
     - name: restart nginx
+      when: conf.stat.exists
       service:
         name={{ nginx_daemon }}
         state=restarted

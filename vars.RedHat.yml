@@ -9,11 +9,15 @@ apache_daemon: httpd
 apache_php_ini_path: /etc/php.ini
 
 nginx_user: nginx
+nginx_conf_path: /etc/nginx/nginx.conf
 nginx_confd_path: /etc/nginx/conf.d/aegir.conf
-nginx_control: /sbin/nginx
+nginx_control: /usr/sbin/nginx
 nginx_php_ini_path: /etc/php.ini
 nginx_www_pool_path: /etc/php-fpm.d/www.conf
 nginx_daemon: nginx
+fpm_daemon: php-fpm
+fpm_user: aegir
+fpm_group: aegir
 
 mysql_cnf_path: /etc/my.cnf
 mysql_daemon: mariadb.service
@@ -54,9 +58,6 @@ apache_packages:
   - httpd
   - php
 
-
 nginx_packages:
   - nginx
   - php-fpm
-
-

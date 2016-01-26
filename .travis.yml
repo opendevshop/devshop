@@ -29,7 +29,11 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
+<<<<<<< HEAD
   - test: Ubuntu 14.04 NGINX
+=======
+  - test: Ubuntu 14.04 Nginx
+>>>>>>> 0.x
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
@@ -54,14 +58,13 @@ script:
     # Run container in detached state
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-  # Ansible syntax check.
-  - 'sudo docker exec --tty devshop_container env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
-
   # Test install script.
-  - 'sudo docker exec --tty devshop_container env TERM=bash /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
+  - 'sudo docker exec --tty devshop_container env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
-  - 'sudo docker exec devshop_container sudo su - aegir -c "drush @hostmaster status"'
-  - 'sudo docker exec devshop_container sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
-  - 'sudo docker exec devshop_container sudo su - aegir -c "devshop devmaster:test"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
+
+  # Stop container.
   - 'sudo docker stop devshop_container'
