@@ -327,7 +327,7 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   global $user;
   $node = $vars['node'];
-  $project = $vars['project'] = $vars['node']->project;
+  $project = $vars['project'] = $vars['project']->project;
 
   // @TODO: Detect other web URLs for other git hosts.
   if ($project->git_repo_url) {

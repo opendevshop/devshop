@@ -69,7 +69,7 @@
 
 
         <!-- Git URL -->
-        <input type="text" class="form-control" size="26" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
+        <input type="text" class="form-control" size="26" value="<?php print $project->git_url; ?>" onclick="this.select()">
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">
