@@ -38,7 +38,7 @@ function drush_run_acquia_hook($task) {
   $project = (object) $task->ref->project;
 
   // If project has no path to drupal, we know it's not acquia.
-  if ($project->drupal_path != 'docroot' || !file_exists($environment->repo_root.'/hooks')) {
+  if ($project->drupal_path != 'docroot' || !file_exists($environment->repo_root . '/hooks')) {
     drush_log('Acquia Cloud Hooks error', 'devshop_command');
     drush_log('./docroot or ./hooks folder is missing, but Acquia hooks are configured to run.  Please create the hooks or turn off Acquia Cloud Hooks for the project.', 'devshop_error');
     return drush_set_error('DRUSH_ERROR');
@@ -126,7 +126,8 @@ function drush_run_acquia_hook($task) {
     $exit_code = $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
         drush_log($buffer, 'devshop_ok');
-      } else {
+      }
+      else {
         drush_log($buffer, 'devshop_ok');
       }
     });
