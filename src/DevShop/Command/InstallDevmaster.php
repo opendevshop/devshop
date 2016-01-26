@@ -79,7 +79,7 @@ class InstallDevmaster extends Command
    */
   protected function configure() {
     $this
-      ->setName('install-devmaster')
+      ->setName('devmaster:install')
       ->setDescription('Install the Devmaster front-end. This command is analogous to "drush hostmaster-install"')
 
       // master_drush_alias
@@ -555,7 +555,7 @@ class InstallDevmaster extends Command
 <?php
 /**
  * @file
- * An Aegir Context, written by the `devshop install-devmaster` command.
+ * An Aegir Context, written by the `devshop devmaster:install` command.
  *
  * Changes to this file will be overwritten on the next "provision-verify".
  */
