@@ -16,13 +16,13 @@ env:
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  - test: CentOS 7 Nginx
+    script_opts: "--server-webserver=apache"
+  - test: CentOS 7 NGINX
     distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=nginx"
-    script_opts: "--server-webserver=apache"
   - test: Ubuntu 14.04 Apache
     distribution: ubuntu
     version: 14.04
@@ -36,6 +36,9 @@ env:
     run_opts: ""
     script_opts: "--server-webserver=nginx"
 
+addons:
+  hosts:
+    - devshop.travis
 
 services:
   - docker
@@ -49,24 +52,20 @@ before_install:
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Ansible syntax check.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
+  - 'sudo docker exec --tty devshop_container env TERM=xterm ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
-  # Test install script.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts}'
+  # Install script.
+  - 'sudo docker exec --tty devshop_container env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
-  # Test for DevShop.
-  - >
-    sudo docker exec "$(cat ${container_id})" curl http://"$(cat ${container_id} | cut -c1-12)"
-    | grep -q 'devmaster'
-    && (echo 'DevShop test: pass' && exit 0)
-    || (echo 'DevShop test: fail' && exit 1)
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
-  # Run ./tests/travis-test.php. That file prepares BEHAT_PARAMS environment variable.
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "cd /etc/ansible/devshop/tests && drush cc drush && php travis-test.php $(cat ${container_id} | cut -c1-12)"'
-  # Clean up
-  - 'sudo docker stop "$(cat ${container_id})"'
+  # Hostmaster Status
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
+
+  # Build and Run Tests
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
+
+  # Stop container.
+  - 'sudo docker stop devshop_container'
