@@ -262,7 +262,7 @@ function devshop_projects_add_status($type = 'platform') {
       $install_profiles = array();
     }
 
-    $status = _hosting_parse_error_code($platform->verify->task_status);
+    $status = _hosting_parse_error_code($platform->environment->last_task->task_status);
     if ($status == 'Queued') {
       $status = '...';
     }
@@ -272,7 +272,7 @@ function devshop_projects_add_status($type = 'platform') {
       'profiles' => implode(', ', $install_profiles),
     );
     // If task is not completed, mark all tasks not complete.
-    if ($platform->verify->task_status == HOSTING_TASK_SUCCESS || $platform->verify->task_status == HOSTING_TASK_ERROR || $platform->verify->task_status == HOSTING_TASK_WARNING) {
+    if ($platform->environment->last_task->task_status == HOSTING_TASK_SUCCESS || $platform->environment->last_task->task_status == HOSTING_TASK_ERROR || $platform->environment->last_task->task_status == HOSTING_TASK_WARNING) {
       continue;
     }
     else {
