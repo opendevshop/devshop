@@ -19,39 +19,49 @@ Feature: Create a project
     When I press "Next"
     And I press "Next"
     Then I should see "Please wait while we connect to your repository and determine any branches."
+
+    # @TODO: Make it happen!
     When I run drush "hosting-tasks"
     And I reload the page
-    Then I should see "Create as many new environments as you would like."
-
-    When I fill in "dev" for "edit-project-environments-new-name"
-    And I press "Next"
-    Then I should see "Environments saved! Now preparing codebases..."
-    And I should see "Please wait while we clone your repo and verify your drupal code."
-
-    Then I run drush "hosting-tasks"
-    And I reload the page
-    Then I should see "dev"
-    And I should see "master"
-    And I should not see "Platform verification failed"
+    Then print current URL
+    And print last response
 
 
-  Scenario: Create and Cancel a new Project
-    Given users:
-      | name       | mail       | status | roles          |
-      | admin user | admin@user | 1      | administrator |
+    When I press "Cancel"
+    Then I should see "Project creation cancelled."
+    And I should be on "projects"
 
-    Given I am logged in as "admin user"
-    And I am on the homepage
-    When I click "Projects"
-    And I click "Start a new Project"
-    Then I should see "Step 1"
-    Then I fill in "testproject" for "Project Code Name"
-    And I fill in "http://testurl" for "Git URL"
-    When I press "Next"
+#    Then I should see "Create as many new environments as you would like."
+#
+#    When I fill in "dev" for "edit-project-environments-new-name"
+#    And I press "Next"
+#    Then I should see "Environments saved! Now preparing codebases..."
+#    And I should see "Please wait while we clone your repo and verify your drupal code."
+#
+#    Then I run drush "hosting-tasks"
+#    And I reload the page
+#    Then I should see "dev"
+#    And I should see "master"
+#    And I should not see "Platform verification failed"
 
-    # Project node form
-    Then I should see "testproject"
-    And I should see "http://testurl"
+
+#  Scenario: Create and Cancel a new Project
+#    Given users:
+#      | name       | mail       | status | roles          |
+#      | admin user | admin@user | 1      | administrator |
+#
+#    Given I am logged in as "admin user"
+#    And I am on the homepage
+#    When I click "Projects"
+#    And I click "Start a new Project"
+#    Then I should see "Step 1"
+#    Then I fill in "testproject" for "Project Code Name"
+#    And I fill in "http://testurl" for "Git URL"
+#    When I press "Next"
+#
+#    # Project node form
+#    Then I should see "testproject"
+#    And I should see "http://testurl"
 
     # @TODO: Fill in all the settings.
 #    Then I fill in "docroot" for "Path to Drupal"
@@ -83,9 +93,9 @@ Feature: Create a project
 #    When I fill in "changedroot" for "Path to Drupal"
 #    And I press "Next"
 #    Then I should see "Path to Drupal: changedroot"
-
-    When I press "Cancel"
-    Then I should see "Project creation cancelled."
-    And I should be on "projects"
-
-
+#
+#    When I press "Cancel"
+#    Then I should see "Project creation cancelled."
+#    And I should be on "projects"
+#
+#
