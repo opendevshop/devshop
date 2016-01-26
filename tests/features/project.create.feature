@@ -4,7 +4,7 @@ Feature: Create a project
   As a project admin
   I need to create a new project
 
-  Scenario: Create a new Project
+  Scenario: Create and Cancel a new Project
     Given users:
       | name       | mail       | status | roles          |
       | admin user | admin@user | 1      | administrator |
