@@ -19,8 +19,8 @@
 ; Unix user/group of processes
 ; Note: The user is mandatory. If the group is not set, the default user's group
 ;       will be used.
-user = nginx
-group = nginx
+user = {{ nginx_user }}
+group = {{ nginx_group }}
 
 ; The address on which to accept FastCGI requests.
 ; Valid syntaxes are:
@@ -41,8 +41,8 @@ listen = 127.0.0.1:9000
 ; BSD-derived systems allow connections regardless of permissions.
 ; Default Values: user and group are set as the running user
 ;                 mode is set to 0660
-listen.owner = www-data
-listen.group = www-data
+listen.owner = {{ nginx_user }}
+listen.group = {{ nginx_group }}
 ;listen.mode = 0660
 
 ; List of ipv4 addresses of FastCGI clients which are allowed to connect.
