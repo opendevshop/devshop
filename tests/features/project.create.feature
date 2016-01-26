@@ -14,13 +14,13 @@ Feature: Create a project
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "xxxxx" for "Project Code Name"
-    And I fill in "http://specialurl" for "Git URL"
+    Then I fill in "testproject" for "Project Code Name"
+    And I fill in "http://testurl" for "Git URL"
     When I press "Next"
 
     # Project node form
-    Then I should see "xxxxx"
-    And I should see "http://specialurl"
+    Then I should see "testproject"
+    And I should see "http://testurl"
 
     # @TODO: Fill in all the settings.
 #    Then I fill in "docroot" for "Path to Drupal"
