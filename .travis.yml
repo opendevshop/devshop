@@ -55,7 +55,7 @@ script:
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Ansible syntax check.
-  - 'sudo docker exec --tty sd env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
+  - 'sudo docker exec --tty devshop_container env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
   # Test install script.
   - 'sudo docker exec --tty devshop_container env TERM=bash /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
