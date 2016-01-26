@@ -45,14 +45,14 @@ function devshop_pull_schema() {
  * no-op: code fixed in devshop_pull_update_6201()
  */
 function devshop_pull_update_6000() {
-  $ret = array();
+  $ret = t('Update success.');
   return $ret;
 }
 /**
  * Add last_pull_ip column to our hosting_devshop_pull_projects table.
  */
 function devshop_pull_update_6001() {
-  $ret = array();
+  $ret = t('Update success.');
   db_add_field($ret, 'hosting_devshop_pull_projects', 'last_pull_ip', array('type' => 'varchar', 'not null' => TRUE, 'default' => '', 'length' => 15));
   return $ret;
 }
@@ -61,7 +61,7 @@ function devshop_pull_update_6001() {
  * Remove legacy `hosting_devshop_pull_platforms` table.
  */
 function devshop_pull_update_6002() {
-  $ret = array();
+  $ret = t('Update sucess.');
   db_drop_table($ret, 'hosting_devshop_pull_platforms');
   return $ret;
 }
