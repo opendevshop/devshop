@@ -8,13 +8,14 @@ apache_www_pool_path: /etc/php5/fpm/pool.d/www.conf
 apache_daemon: apache2
 
 nginx_user: www-data
-nginx_group: www-data
 nginx_confd_path: /etc/nginx/sites-enabled/aegir.conf
 nginx_control: /etc/init.d/nginx
 nginx_php_ini_path: /etc/php5/fpm/php.ini
 nginx_www_pool_path: /etc/php5/fpm/pool.d/www.conf
 nginx_daemon: nginx
 fpm_daemon: php5-fpm
+nginx_user: www-data
+nginx_group: www-data
 
 mysql_cnf_path: /etc/mysql/my.cnf
 mysql_daemon: mysql
