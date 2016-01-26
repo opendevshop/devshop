@@ -638,20 +638,6 @@ function devshop_projects_git_ref_options($project, $current_ref = '') {
 }
 
 /**
- * Nodemaker
- */
-function _devshop_projects_node_create($node) {
-  global $user;
-  $node->status = 1;
-  $node->uid = $user->uid;
-  $node->name = $user->name;
-  if ($node = node_submit($node)) {
-    node_save($node);
-  }
-  return $node;
-}
-
-/**
  * Check if a site has features diff enabled.
  */
 function _devshop_projects_site_has_module($nid, $module) {
