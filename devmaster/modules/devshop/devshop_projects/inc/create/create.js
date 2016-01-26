@@ -21,7 +21,7 @@
 
     }
   };
-}(jQuery))
+}(jQuery));
 
 /**
  * Step 2: Settings
@@ -47,4 +47,4 @@
 
     }
   };
-}(jQuery))
+}(jQuery));
