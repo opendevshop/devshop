@@ -23,6 +23,12 @@ function devshop_project_create_step_settings($form, &$form_state) {
   // Merge project node form into ctools wizard form.
   $form = array_merge($project_form, $form);
 
+  // Make sure the project isn't re-verified on this page.
+  $form['no_verify'] = array(
+    '#type' => 'value',
+    '#value' => TRUE,
+  );
+
   // Add additional additional submit and validate handlers for the node form.
   $form['buttons']['next']['#submit'][] = 'node_form_submit';
   $form['buttons']['next']['#submit'][] = 'ctools_wizard_submit';
