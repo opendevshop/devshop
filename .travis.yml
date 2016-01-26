@@ -11,22 +11,26 @@ env:
   #  version: 12.04
   #  init: /sbin/init
   #  run_opts: ""
-  - distribution: centos
+  - test: CentOS 7 Apache
+    distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
-  - distribution: centos
+  - test: CentOS 7 NGINX
+    distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=nginx"
-  - distribution: ubuntu
+  - test: Ubuntu 14.04 Apache
+    distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-  - distribution: ubuntu
+  - test: Ubuntu 14.04 NGINX
+    distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
@@ -57,6 +61,7 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
+
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
   - 'sudo docker exec "$(cat ${container_id})" sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
