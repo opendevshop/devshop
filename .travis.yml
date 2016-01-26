@@ -11,7 +11,7 @@ env:
   #  version: 12.04
   #  init: /sbin/init
   #  run_opts: ""
-  - test: CentOS 7 apache
+  - test: CentOS 7 Apache
     distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
