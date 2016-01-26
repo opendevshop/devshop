@@ -6,8 +6,8 @@ Feature: Create a project
 
   Scenario: Create a new Project
     Given users:
-      | name       | mail       | status | role
-      | admin user | admin@user | 1      | administrator
+      | name       | mail       | status | roles          |
+      | admin user | admin@user | 1      | administrator |
 
     Given I am logged in as "admin user"
     And I am on the homepage
