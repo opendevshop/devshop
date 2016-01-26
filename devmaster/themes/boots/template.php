@@ -245,7 +245,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
 
       $text = '<i class="fa fa-' . $icon . '"></i> ';
       $text .= $task->title;
-      $text .= ' <small class="task-ago btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
+      $text .= ' <small class="task-ago btn-block">' . format_interval(REQUEST_TIME - $task->changed) .' '. t('ago') . '</small>';
 
       $task_items[] = l($text, 'node/' . $task->nid, array(
         'html' => TRUE,
@@ -531,7 +531,7 @@ function boots_preprocess_node_project(&$vars){
 
   // Set webhook interval
   if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
-    $interval = format_interval(time() - $project->settings->deploy['last_webhook']);
+    $interval = format_interval(REQUEST_TIME - $project->settings->deploy['last_webhook']);
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
