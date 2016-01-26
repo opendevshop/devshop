@@ -52,20 +52,16 @@ before_install:
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/etc/ansible/devshop:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Ansible syntax check.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
+  - 'sudo docker exec --tty sd env TERM=bash ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
   # Test install script.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=bash /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
+  - 'sudo docker exec --tty devshop_container env TERM=bash /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
-
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "drush @hostmaster status"'
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
-  # Run ./tests/travis-test.php. That file prepares BEHAT_PARAMS environment variable.
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop devmaster:test"'
-  # Clean up
-  - 'sudo docker stop "$(cat ${container_id})"'
+  - 'sudo docker exec devshop_container sudo su - aegir -c "drush @hostmaster status"'
+  - 'sudo docker exec devshop_container sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+  - 'sudo docker exec devshop_container sudo su - aegir -c "devshop devmaster:test"'
+  - 'sudo docker stop devshop_container'
