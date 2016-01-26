@@ -7,14 +7,14 @@ Feature: Create a project
   Scenario: Create a new drupal 8 project
     Given users:
       | name       | status | roles          |
-      | admin user | 1      | administrator |
+      | testadminuser | 1      | administrator |
 
-    Given I am logged in as "admin user"
+    Given I am logged in as "testadminuser"
     And I am on the homepage
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "d8" for "Project Code Name"
+    Then I fill in "drpl8" for "Project Code Name"
     And I fill in "http://github.com/jonpugh/drupal8" for "Git URL"
     When I press "Next"
     And I press "Next"
