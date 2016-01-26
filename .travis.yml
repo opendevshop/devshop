@@ -29,11 +29,7 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-<<<<<<< HEAD
-  - test: Ubuntu 14.04 NGINX
-=======
   - test: Ubuntu 14.04 Nginx
->>>>>>> 0.x
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
