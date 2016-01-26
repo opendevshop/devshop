@@ -25,8 +25,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Uncomment to test with other types of boxes.
   # config.vm.box = "hashicorp/precise64"
-  # config.vm.box = "chef/centos-6.5"
-  # config.vm.box = "chef/centos-7.0"
+  # config.vm.box = "bento/centos-6.5"
+  # config.vm.box = "bento/centos-7.1"
 
   # DevShop Master
   # Set to be the default machine.
@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Set SH as our provisioner
     devmaster.vm.provision "shell",
       path: settings["vagrant_install_script"],
-      args: "/vagrant"
+      args: settings["vagrant_install_script_args"]
 
     # Prepare development environment
     if (development_mode)

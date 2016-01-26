@@ -24,6 +24,7 @@
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=0.x
+SERVER_WEBSERVER=apache
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -67,11 +68,42 @@ LINE=---------------------------------------------
 echo " OS: $OS"
 echo " Version: $VERSION"
 echo " Hostname: $HOSTNAME_FQDN"
-echo $LINE
 
 # Detect playbook path option
-if [ $1 ]; then
-    PLAYBOOK_PATH=$1
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --playbook=*)
+      PLAYBOOK_PATH="${1#*=}"
+      ;;
+    --server-webserver=*)
+      SERVER_WEBSERVER="${1#*=}"
+      ;;
+    *)
+      echo $LINE
+      echo " Error: Invalid argument for --server-webserver."
+      echo $LINE
+      exit 1
+  esac
+  shift
+done
+
+# If /var/aegir/config/server_master/nginx.conf is found, use NGINX to install.
+# If /var/aegir/config/server_master/apache.conf is found, use apache to install.
+
+# This will override any selected option for web server. This is so we don't install
+# a second webserver accidentally.
+
+if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
+  SERVER_WEBSERVER=nginx
+elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
+  SERVER_WEBSERVER=apache
+fi
+
+# Output Web Server
+echo " Web Server: $SERVER_WEBSERVER"
+
+if [ $PLAYBOOK_PATH ]; then
+    :
 # Detect playbook next to the install script
 elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
@@ -79,13 +111,28 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
-echo " Using playbook $PLAYBOOK_PATH/playbook.yml "
+echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
+
+# Notify user we are using the found webserver.
+if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
+  echo " An existing Aegir NGINX installation was found. Using 'nginx' for variable 'server_webserver'"
+  echo $LINE
+elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
+  echo " An existing Aegir Apache installation was found. Using 'apache' for variable 'server_webserver'"
+  echo $LINE
+fi
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
-    echo "This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
+    echo " This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
     exit 1
+fi
+
+# Fail if server_webserver is not apache or nginx
+if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
+  echo ' Invalid Web server. Must be nginx or apache (default).'
+  exit 1
 fi
 
 # If ansible command is not available, install it.
@@ -99,6 +146,12 @@ if [ ! `which ansible` ]; then
             PACKAGE=python-software-properties
         else
             PACKAGE=software-properties-common
+        fi
+
+        # @TODO: We should figure out how to add this to the playbook. It's tricky because of the lsb_release thing.
+        if [ $SERVER_WEBSERVER == 'nginx' ]; then
+            echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
         fi
 
         apt-get update -qq
@@ -178,7 +231,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER"
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
