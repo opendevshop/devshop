@@ -13,6 +13,7 @@ nginx_control: /etc/init.d/nginx
 nginx_php_ini_path: /etc/php5/fpm/php.ini
 nginx_www_pool_path: /etc/php5/fpm/pool.d/www.conf
 nginx_daemon: nginx
+fpm_daemon: php5-fpm
 
 mysql_cnf_path: /etc/mysql/my.cnf
 mysql_daemon: mysql

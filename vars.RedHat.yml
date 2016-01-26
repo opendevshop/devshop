@@ -16,6 +16,7 @@ nginx_control: /usr/sbin/nginx
 nginx_php_ini_path: /etc/php.ini
 nginx_www_pool_path: /etc/php-fpm.d/www.conf
 nginx_daemon: nginx
+fpm_daemon: php-fpm
 
 mysql_cnf_path: /etc/my.cnf
 mysql_daemon: mariadb.service

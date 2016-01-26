@@ -291,6 +291,13 @@
         state=restarted
         enabled=yes
 
+    - name: Service | Ensure PHP Fast Process Manager is restarted
+      when: server_webserver == "nginx"
+      service:
+        name={{ fpm_daemon }}
+        state=restarted
+        enabled=yes
+
     - name: Save SSH key as variable
       shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
       become: yes
