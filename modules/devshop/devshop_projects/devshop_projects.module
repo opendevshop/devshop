@@ -640,11 +640,8 @@ function devshop_projects_git_ref_options($project, $current_ref = '') {
 /**
  * Nodemaker
  */
-function _devshop_projects_node_create($type, $node = stdClass) {
+function _devshop_projects_node_create($node) {
   global $user;
-
-  // @TODO: Validate type
-  $node->type = $type;
   $node->status = 1;
   $node->uid = $user->uid;
   $node->name = $user->name;
