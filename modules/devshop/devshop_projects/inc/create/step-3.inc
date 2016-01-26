@@ -87,10 +87,21 @@ function devshop_project_create_step_environments($form, &$form_state) {
 
     // HTTP Server select.
     $http_servers = hosting_get_servers('http');
+
+    // Determine default web server.
+    $default_web_server = $environment->settings->web_server ?
+      $environment->settings->web_server :
+      $project->settings->default_environment['web_server'];
+
+    // Fallback if environment or default not found.
+    if (empty($default_web_server)) {
+      $default_web_server = key($http_servers);
+    }
+
     if (count($http_servers) == 1) {
       $form['project']['environments'][$name]['settings']['web_server'] = array(
           '#type' => 'value',
-          '#value' => key($http_servers),
+          '#value' => $default_web_server,
       );
     }
     elseif (count($http_servers) > 1) {
@@ -98,18 +109,27 @@ function devshop_project_create_step_environments($form, &$form_state) {
         '#title' => t('Web server'),
         '#type' => 'select',
         '#options' => $http_servers,
-        '#default_value' => $environment->settings->web_server ?
-          $environment->settings->web_server :
-          $project->settings->default_environment['web_server']
+        '#default_value' => $default_web_server
       );
     }
 
     // DB Server select.
     $db_servers = hosting_get_servers('db');
+
+    // Determine default db server.
+    $default_db_server = $environment->settings->db_server ?
+      $environment->settings->db_server :
+      $project->settings->default_environment['db_server'];
+
+    // Fallback if environment or default not found.
+    if (empty($default_db_server) || !isset($db_servers[$default_db_server])) {
+      $default_db_server = key($db_servers);
+    }
+
     if (count($db_servers) == 1) {
       $form['project']['environments'][$name]['settings']['db_server'] = array(
           '#type' => 'value',
-          '#value' => $project->settings->default_environment['db_server'],
+          '#default_value' => $default_db_server,
       );
     }
     elseif (count($db_servers) > 1) {
@@ -117,9 +137,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
         '#title' => t('Database server'),
         '#type' => 'select',
         '#options' => $db_servers,
-        '#default_value' => $environment->settings->db_server ?
-          $environment->settings->db_server :
-          $project->settings->default_environment['db_server']
+        '#default_value' => $default_db_server
       );
     }
 
@@ -168,82 +186,91 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   }
 }
 
-/**
- * Functionality for add a new environment.
- */
-function devshop_projects_save_environments($form, &$form_state) {
-
-  $environments = $form_state['values']['project']['environments'];
-
-  if (!empty($environments['NEW']['name'])) {
-    $new_environment_name = $environments['NEW']['name'];
-    $environments[$new_environment_name] = $environments['NEW'];
-  }
-  unset($environments['NEW']);
-
-  // Delete all environments
-  db_delete('hosting_devshop_project_environment')
-    ->condition('project_nid', $form_state['values']['nid'])
-    ->execute();
-
-  // Create all environments
-  foreach ($environments as $environment) {
-    $name = trim($environment['name']);
-    if (!empty($name)) {
-      $id = db_insert('hosting_devshop_project_environment')
-              ->fields(array(
-                'project_nid' => $form_state['values']['nid'],
-                'name' => $environment['name'],
-                'git_ref' => $environment['git_ref'],
-                'platform' => $environment['platform'],
-                'settings' => serialize($environment['settings']),
-              ))
-              ->execute();
-    }
-  }
-
-  // Go back to the same page.
-  if ($form_state['clicked_button']['#name'] == 'add_environment') {
-    drupal_goto('projects/add/environments');
-  }
-}
+///**
+// * Functionality for add a new environment.
+// */
+//function devshop_projects_save_environments($form, &$form_state) {
+//
+//  $environments = $form_state['values']['project']['environments'];
+//
+//  if (!empty($environments['NEW']['name'])) {
+//    $new_environment_name = $environments['NEW']['name'];
+//    $environments[$new_environment_name] = $environments['NEW'];
+//  }
+//  unset($environments['NEW']);
+//
+//  // Delete all environments
+//  db_delete('hosting_devshop_project_environment')
+//    ->condition('project_nid', $form_state['values']['nid'])
+//    ->execute();
+//
+//  // Create all environments
+//  foreach ($environments as $environment) {
+//    $name = trim($environment['name']);
+//    if (!empty($name)) {
+//      $id = db_insert('hosting_devshop_project_environment')
+//              ->fields(array(
+//                'project_nid' => $form_state['values']['nid'],
+//                'name' => $environment['name'],
+//                'git_ref' => $environment['git_ref'],
+//                'platform' => $environment['platform'],
+//                'settings' => serialize($environment['settings']),
+//              ))
+//              ->execute();
+//    }
+//  }
+//
+//  // Go back to the same page.
+//  if ($form_state['clicked_button']['#name'] == 'add_environment') {
+//    drupal_goto('projects/add/environments');
+//  }
+//}
 
 /**
  * STEP 3: SUBMIT
  */
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
-  // Save all environments.
-  devshop_projects_save_environments($form, $form_state);
-
   // Get project and reset properties..
   $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
   $project = $project_node->project;
 
-  // Create these platforms, if they don't exist yet
-  foreach ($project->environments as $name => $environment) {
+  // Save environments data
+  $environments = $form_state['values']['project']['environments'];
+  if (!empty($environments['NEW']['name'])) {
+    $new_environment_name = $environments['NEW']['name'];
+    $environments[$new_environment_name] = $environments['NEW'];
+  }
+  unset($environments['NEW']);
 
-    // If platform exists, it's because user went back in the wizard.
-    $platform_nid = $environment->platform;
+  // Delete all existing environments
+  db_delete('hosting_devshop_project_environment')
+    ->condition('project_nid', $project_node->nid)
+    ->execute();
 
-    // If the platform already exists, update settings and verify it again.
-    if ($platform_nid) {
-      // @TODO: Apply settings and re-save platform.
-      //hosting_add_task($platform_nid, 'verify');
+  // Create all environments
+  foreach ($environments as $name => $environment) {
+    $environment = (object) $environment;
+    $environment->settings = (object) $environment->settings;
+    $name = trim($environment->name);
 
-      $platform = node_load($platform_nid);
-      $platform->publish_path = $project->code_path . '/' . $environment->name . '/' . $project->drupal_path;
-      $environment->platform = $platform_nid;
-      $platform->web_server = $environment->settings->web_server;
-      $platform->db_server = $environment->settings->db_server;
-      node_save($platform);
+    if (!empty($name)) {
+      $id = db_insert('hosting_devshop_project_environment')
+        ->fields(array(
+          'project_nid' => $form_state['values']['nid'],
+          'name' => $environment->name,
+          'git_ref' => $environment->git_ref,
+          'platform' => $environment->platform,
+          'settings' => serialize($environment->settings),
+        ))
+        ->execute();
     }
 
-    // If platform hasn't been created yet, do so now!
-    else {
-
-      // Build platform node
+    // Create platform node if we don't have one.
+    if (empty($environment->platform)) {
+      //If platform hasn't been created yet, build platform node
       $platform = new stdClass;
+      $platform->type = 'platform';
       $platform->title = $project->name . '_' . $name;
 
       // Platform publish_path
@@ -257,18 +284,29 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       // Other attributes
       $platform->web_server = $environment->settings->web_server;
       $platform->db_server = $environment->settings->db_server;
-      $platform_node = _devshop_projects_node_create('platform', $platform);
-      $environment->platform = $platform_node->nid;
-    }
 
-    // Update environment with our platform
-    db_update('hosting_devshop_project_environment')
-      ->fields(array(
-        'platform' => $environment->platform,
-      ))
-      ->condition('project_nid', $form_state['values']['nid'])
-      ->condition('name', $environment->name)
-      ->execute();
+      // Save the node
+      $platform_node = _devshop_projects_node_create($platform);
+
+      if (!$platform_node->nid) {
+        form_set_error('projects', t('An unknown problem has occured: the platform node was not created for the %env environment.', array('%env' => $environment->name)));
+      }
+      $environment->platform = $platform_node->nid;
+
+      // Update environment with our platform
+      db_update('hosting_devshop_project_environment')
+        ->fields(array(
+          'platform' => $environment->platform,
+        ))
+        ->condition('project_nid', $form_state['values']['nid'])
+        ->condition('name', $environment->name)
+        ->execute();
+    }
+  }
+
+  // Go back to the same page.
+  if ($form_state['clicked_button']['#name'] == 'add_environment') {
+    drupal_goto('projects/add/environments');
   }
 
   // For all removed platforms, trigger a delete task
@@ -289,6 +327,5 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
 
   // Remove default "task" messages.
-  drupal_get_messages('status');
   drupal_set_message('Environments saved! Now preparing codebases...');
 }
