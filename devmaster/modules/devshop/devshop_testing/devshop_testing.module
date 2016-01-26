@@ -2,7 +2,7 @@
 
 /**
  * @file devshop_projects.module
- * a module in the DevShop module group which enables the user to create 
+ * a module in the DevShop module group which enables the user to create
  * proects and group sites/platforms into project groups.
  */
 
@@ -36,7 +36,7 @@ function devshop_testing_menu() {
 /**
  * Implementation of hook_perm()
  */
-function devshop_testing_perm() {
+function devshop_testing_permission() {
   return array(
     'create test task',
     'access test results',
@@ -118,7 +118,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#weight' => 100,
     );
     $form['environment']['settings']['testing'] = devshop_testing_form_elements($form['#node']->project,  $form['#node']->environment->name);
-    
+
     // Add to deploy hooks.
     $form['environment']['settings']['deploy']['test'] = array(
       '#type' => 'checkbox',
@@ -148,8 +148,8 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
  * Helper that returns the common form elements for running tests.
  */
 function devshop_testing_form_elements($project, $environment_name = NULL) {
-  
-  
+
+
   // Load environment object and settings, if we need it.
   if ($environment_name) {
     $environment = $project->environments[$environment_name];
@@ -165,12 +165,12 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     }
     $settings = $project->settings;
   }
-  
+
   // If this is an environment form, and we are missing testing settings, inherit the project settings.
   if (isset($environment) && !isset($settings->testing)) {
     $settings->testing = $project->settings->testing;
-  } 
-  // If a project and we are missing testing settings, load defaults.  
+  }
+  // If a project and we are missing testing settings, load defaults.
   // @TODO: Move this to the node API?
   elseif (!isset($settings->testing)) {
     $settings->testing = array(
@@ -178,7 +178,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
       'tests_to_run' => '',
     );
   }
-  
+
   // build this group of fields.
   $testing_form = array();
   $testing_form['test_type'] = array(
@@ -191,11 +191,11 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     '#type' => 'radios',
     '#default_value' => $settings->testing['test_type'],
   );
-  
+
   // Look for behat feature files.
   // @TODO: Extract this to a hook to make tests types extensible.
   $tests = array();
-  
+
   // Final check for repo root.
   if (empty($environment->repo_root)){
     $tests[] = 'Something is wrong. Environment not found.';
@@ -203,7 +203,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
   else {
     $directory = $environment->repo_root . '/' . $project->settings->testing['behat_folder_path'] . '/features';
 
-    $files = file_scan_directory($directory, '.feature', array('.', '..'));
+    $files = file_scan_directory($directory, '.feature', '/(\.\.?)$/');
 
     $tests = array();
     foreach ($files as $file) {
@@ -211,7 +211,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
       $tests[$value] = $file->basename;
     }
   }
- 
+
   $testing_form['tests_to_run'] = array(
     '#type' => 'checkboxes',
     '#options' => $tests,
@@ -219,7 +219,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     '#default_value' => $settings->testing['tests_to_run'],
     '#description' => t('Select the tests you wish to run.  Leave all unchecked to run all of them.'),
   );
-  
+
   if (empty($environment_name)) {
     $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
   }
@@ -241,7 +241,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
  * Helper to stringify the tests to run.
  */
 function devshop_testing_task_submit(&$form, &$form_state) {
-  
+
   // Implode tests to run
   $value = implode(',', array_filter($form_state['values']['parameters']['tests_to_run']));
   form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
@@ -249,20 +249,20 @@ function devshop_testing_task_submit(&$form, &$form_state) {
 
 /**
  * Implements hook_hosting_slack_message_alter()
- */ 
+ */
 function devshop_testing_hosting_slack_message_alter(&$message_options) {
-  
-  
+
+
   if ($message_options->task->task_type == 'test') {
 
     $url = url('devshop_tests/' . $message_options->task->nid . '/' . $message_options->task->vid, array('absolute' => TRUE));
-    
+
     $attachment = new stdClass();
     $attachment->fallback = t('Results: ') . $url;
     $attachment->title = t('Results: ');
     $attachment->text = $url;
     $attachment->title_link = $url;
-    
+
     $message_options->attachments[] = $attachment;
 
   }
