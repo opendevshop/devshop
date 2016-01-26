@@ -65,6 +65,6 @@ script:
   - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop status"'
   - 'sudo docker exec "$(cat ${container_id})" sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
   # Run ./tests/travis-test.php. That file prepares BEHAT_PARAMS environment variable.
-  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "cd /etc/ansible/devshop/tests && drush cc drush && php travis-test.php devshop.travis"'
+  - 'sudo docker exec "$(cat ${container_id})" sudo su - aegir -c "devshop devmaster:test"'
   # Clean up
   - 'sudo docker stop "$(cat ${container_id})"'
