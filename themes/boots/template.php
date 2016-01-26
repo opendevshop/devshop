@@ -440,7 +440,7 @@ function boots_preprocess_node(&$vars) {
   }
   elseif ($vars['node']->type == 'site') {
     if (!empty($vars['node']->environment)) {
-      $vars['template_files'][] =  'node-site-environment';
+      $vars['theme_hook_suggestions'][] =  'node__site_environment';
     }
   }
 }
@@ -627,7 +627,10 @@ HTML;
   foreach ($vars['node']->project->environments as &$environment) {
 
     // Render each environment.
-    $vars['environments'][] = theme('environment', $environment, $vars['node']->project);
+    $vars['environments'][] = theme('environment', array(
+      'environment' => $environment,
+      'project' => $vars['node']->project,
+    ));
   }
 
   // Warnings & Errors
