@@ -300,7 +300,7 @@ function devshop_projects_node_load($nodes, $types) {
         }
 
         // If per-environment hooks config is not allowed, load it from the project.
-        if (!$project->settings->deploy['allow_environment_deploy_config']) {
+        if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
           $environment->settings->deploy = $project->settings->deploy['default_hooks'];
         }
 
