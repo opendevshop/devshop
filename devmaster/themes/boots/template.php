@@ -76,6 +76,13 @@ function boots_preprocess_environment(&$vars)
 
   // Load Task Links
   $environment->task_links = devshop_environment_links($environment);
+  $environment->task_links_rendered = theme("item_list", array(
+    'items' => $environment->task_links,
+    'attributes' => array(
+      'class' => array('dropdown-menu dropdown-menu-right'),
+      )
+    )
+  );
 
   // Task Logs
   $environment->task_count = count($environment->tasks);
