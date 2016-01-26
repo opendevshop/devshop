@@ -1,6 +1,6 @@
 (function ($) {
     Drupal.behaviors.devshopReload = {
-        attach: function () {
+        attach: function (context, settings) {
             setTimeout("checkProject()", Drupal.settings.devshopReload.delay);
 
             var checkProject =  function() {
