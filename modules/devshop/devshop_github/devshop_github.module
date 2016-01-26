@@ -223,32 +223,38 @@ function devshop_github_project_create_webhook($form, $form_state) {
 }
 
 /**
- * Implements hook_nodeapi_TYPE_OP().
+ * Implements hook_node_load().
  */
-function devshop_github_nodeapi_project_load(&$node) {
+function devshop_github_node_load($nodes, $types) {
 
-  $pull_request = (object) db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $node->nid))->fetchAssoc();
+  if (count(array_intersect(array('project'), $types))) {
+    foreach ($nodes as $nid => $node) {
+      $pull_request = (object) db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid))->fetchAssoc();
 
-  $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-  if (isset( $node->project->environments[$pull_request->environment_name])) {
-    $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+      $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
+      if (isset( $node->project->environments[$pull_request->environment_name])) {
+        $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+      }
+
+      // Parse github owner and repo.
+      if ($node->project->git_provider == 'github') {
+        $node->project->github_owner =
+          $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
+        $node->project->github_owner = $parts[1];
+        $node->project->github_repo = $parts[2];
+      }
+
+    }
   }
 
-  // Parse github owner and repo.
-  if ($node->project->git_provider == 'github') {
-    $node->project->github_owner =
-      $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-    $node->project->github_owner = $parts[1];
-    $node->project->github_repo = $parts[2];
-  }
 }
 
 /**
- * Implements hook_nodeapi_TYPE_OP() for task insert().
+ * Implements hook_node_update() for task insert().
  *
  * If task is a test run, send a "pending" commit status.
  */
-function devshop_github_nodeapi_task_update($node) {
+function devshop_github_node_update($node) {
 
   // Only act on test triggers.
   if ($node->task_type != 'test' || $node->task_type != 'deploy') {
@@ -294,97 +300,97 @@ function devshop_github_nodeapi_task_update($node) {
 
     watchdog('devshop_github','Test run initiated. GitHub has been notified.');
   } catch (Github\Exception\RuntimeException $e) {
-    watchdog('devshop_github', 'GitHub Runtime Error in devshop_github_nodeapi_task_update(): ' . $e->getMessage());
+    watchdog('devshop_github', 'GitHub Runtime Error in devshop_github_node_update(): ' . $e->getMessage());
   }
 }
 
-//
-///**
-// * Implements hook_hosting_task_update_status()
-// */
-//function devshop_github_hosting_task_update_status($task, $status) {
-//
-//  $task_types = array(
-//    'test',
-//    'import',
-//    'devshop-deploy',
-//  );
-//
-//  if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->github_pull_request)) {
-//
-//    // If autoloader is not available, return.
-//    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-//      return;
-//    }
-//
-//    // If project is not from github, return.
-//    if ($task->ref->project->git_provider != 'github') {
-//      return;
-//    }
-//
-//    // Include vendors
-//    require_once 'vendor/autoload.php';
-//
-//    drush_log('===========================================', 'ok');
-//    drush_log('Notifying github...', 'ok');
-//
-//    // Extract username and repo
-//    list($s, $owner, $repo) = explode('/', parse_url($task->ref->project->git_repo_url, PHP_URL_PATH));
-//
-//    try {
-//      $token = variable_get('devshop_github_token', '');
-//      $client = new \Github\Client();
-//      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-//
-//      // Create a status
-//      $sha = $task->ref->environment->github_pull_request->pull_request_object->head->sha;
-//
-//      if ($task->task_type == 'devshop-deploy'){
-//        $description = t('Deployed to Environment: ') . _hosting_parse_error_code($status);
-//        $url = $task->ref->environment->url;
-//      }
-//      elseif ($task->task_type == 'test') {
-//        $description = t('Tests: ') . _hosting_parse_error_code($status);
-//        $url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
-//      }
-//      else {
-//        $description = 'Something happened...';
-//        $url = $task->ref->environment->url;
-//      }
-//
-//      if ($status == HOSTING_TASK_ERROR) {
-//        $state = 'error';
-//      }
-//      elseif ($status == HOSTING_TASK_PROCESSING) {
-//        $state = 'pending';
-//      }
-//      elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
-//        $state = 'success';
-//      }
-//      else {
-//        $state = 'error';
-//      }
-//
-//      $params = new stdClass();
-//      $params->state = $state;
-//      $params->target_url = $url;
-//      $params->description = $description;
-//      $params->context = 'devshop/' . $task->task_type;
-//
-//      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-//
-//      drush_log('Status posted! ', 'ok');
-//    } catch (Github\Exception\RuntimeException $e) {
-//      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
-//      drush_log(l(t('Configure GitHub API'), 'admin/devshop/github'), 'error');
-//    } catch (Github\Exception\ValidationFailedException $e) {
-//      drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
-//    }
-//
-//    drush_log('done trying... ', 'ok');
-//
-//  }
-//}
+
+/**
+* Implements hook_hosting_task_update_status()
+*/
+function devshop_github_hosting_task_update_status($task, $status) {
+
+ $task_types = array(
+   'test',
+   'import',
+   'devshop-deploy',
+ );
+
+ if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->github_pull_request)) {
+
+   // If autoloader is not available, return.
+   if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+     return;
+   }
+
+   // If project is not from github, return.
+   if ($task->ref->project->git_provider != 'github') {
+     return;
+   }
+
+   // Include vendors
+   require_once 'vendor/autoload.php';
+
+   drush_log('===========================================', 'ok');
+   drush_log('Notifying github...', 'ok');
+
+   // Extract username and repo
+   list($s, $owner, $repo) = explode('/', parse_url($task->ref->project->git_repo_url, PHP_URL_PATH));
+
+   try {
+     $token = variable_get('devshop_github_token', '');
+     $client = new \Github\Client();
+     $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+     // Create a status
+     $sha = $task->ref->environment->github_pull_request->pull_request_object->head->sha;
+
+     if ($task->task_type == 'devshop-deploy'){
+       $description = t('Deployed to Environment: ') . _hosting_parse_error_code($status);
+       $url = $task->ref->environment->url;
+     }
+     elseif ($task->task_type == 'test') {
+       $description = t('Tests: ') . _hosting_parse_error_code($status);
+       $url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
+     }
+     else {
+       $description = 'Something happened...';
+       $url = $task->ref->environment->url;
+     }
+
+     if ($status == HOSTING_TASK_ERROR) {
+       $state = 'error';
+     }
+     elseif ($status == HOSTING_TASK_PROCESSING) {
+       $state = 'pending';
+     }
+     elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
+       $state = 'success';
+     }
+     else {
+       $state = 'error';
+     }
+
+     $params = new stdClass();
+     $params->state = $state;
+     $params->target_url = $url;
+     $params->description = $description;
+     $params->context = 'devshop/' . $task->task_type;
+
+     $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+
+     drush_log('Status posted! ', 'ok');
+   } catch (Github\Exception\RuntimeException $e) {
+     drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+     drush_log(l(t('Configure GitHub API'), 'admin/devshop/github'), 'error');
+   } catch (Github\Exception\ValidationFailedException $e) {
+     drush_log('GitHub API Error: ' . $e->getMessage(), 'error');
+   }
+
+   drush_log('done trying... ', 'ok');
+
+ }
+}
 
 /**
  *
