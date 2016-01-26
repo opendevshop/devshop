@@ -302,6 +302,37 @@ function devshop_project_logs_access() {
 }
 
 /**
+ * Implements hook_block()
+ */
+function devshop_projects_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['project_nav'] = array(
+        'info' => t('DevShop Project Nav'),
+        'weight' => '-10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'pre_content',
+      );
+      return $blocks;
+      break;
+
+    case 'view':
+      if ($delta == 'project_nav'){
+        $node = node_load(arg(1));
+        if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
+
+          // If viewed node is project, use that.
+          $project = $node->type == 'project'? $node: ($node->project->vid? $node->project: node_load($node->project->nid));
+          $block['subject'] = '';
+          $block['content'] = theme('devshop_project_nav', $project);
+        }
+      }
+      return $block;
+  }
+}
+
+/**
  * Environment settings page menu callback.
  *
  * Pulls in the node edit form for the site of the project.
