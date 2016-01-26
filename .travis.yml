@@ -16,13 +16,13 @@ env:
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  - test: CentOS 7 Nginx
+    script_opts: "--server-webserver=apache"
+  - test: CentOS 7 NGINX
     distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=nginx"
-    script_opts: "--server-webserver=apache"
   - test: Ubuntu 14.04 Apache
     distribution: ubuntu
     version: 14.04
@@ -36,12 +36,9 @@ env:
     run_opts: ""
     script_opts: "--server-webserver=nginx"
 
-<<<<<<< HEAD
-=======
 addons:
   hosts:
     - devshop.travis
->>>>>>> b04d1ed... Attempting to set hostname on travis, and adding hostname as an option for the install.sh script.
 
 services:
   - docker
