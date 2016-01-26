@@ -135,8 +135,8 @@
         state=link
         force=yes
 
-    - name: Override Nginx Config (When ansible_os_family == "Redhat")
-      when: server_webserver == "nginx" and ansible_os_family == "Redhat"
+    - name: Override Nginx Config (When ansible_os_family == "RedHat")
+      when: server_webserver == "nginx" and ansible_os_family == "RedHat"
       template:
         src=templates/nginx.conf.Redhat.j2
         dest={{ nginx_conf_path }}
@@ -204,6 +204,7 @@
         src=templates/sudoers-d-aegir.j2
         dest=/etc/sudoers.d/aegir
         mode=0440
+        validate='visudo -cf %s'
 
     - name: Create /var/aegir/.drush
       file:
