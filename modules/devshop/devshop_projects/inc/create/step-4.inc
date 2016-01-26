@@ -35,9 +35,19 @@ function devshop_project_create_step_sites($form, &$form_state) {
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
+    $tasks = devshop_get_tasks($environment);
+    $task = current($tasks);
 
-    $tasks = hosting_get_tasks('rid', $platform_nid, 1);
-    $task = array_shift($tasks);
+    if (empty($task)) {
+      $row = array(
+        $environment->name,
+        $environment->git_ref,
+        t('Error: Platform node was not saved. Unable to continue.'),
+        '', '',
+      );
+      $rows[] = $row;
+      continue;
+    }
 
     // Build a table.
     $row = array();
