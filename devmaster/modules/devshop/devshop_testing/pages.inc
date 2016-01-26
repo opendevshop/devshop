@@ -53,7 +53,7 @@ function devshop_testing_results_page($nid, $vid = NULL) {
 
       $row = array();
       $row[] = l(t('Test Result #!vid', array('!vid' => $revision->vid)), "devshop_tests/$nid/{$revision->vid}");
-      $row[] = format_date($revision->timestamp) . '  <small>' . t('!time ago', array('!time' => format_interval(time() - $revision->timestamp, 1))) . '</small>';
+      $row[] = format_date($revision->timestamp) . '  <small>' . t('!time ago', array('!time' => format_interval(REQUEST_TIME - $revision->timestamp, 1))) . '</small>';
 
       $row[] = _hosting_parse_error_code($node_revision->task_status) . ' ' . t('in !time', array('!time' => format_interval($node->delta, 1)));
       $rows[] = $row;
