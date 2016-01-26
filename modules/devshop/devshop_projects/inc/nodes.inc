@@ -77,6 +77,11 @@ function devshop_projects_node_load($nodes, $types) {
     // Projects
     elseif ($node->type == 'project') {
 
+      // Load verification status of project node.
+      $task = (object) db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid))->fetchAssoc();
+      $task->task_status = (int) $task->task_status;
+      $node->verify = $task;
+
       // Load the "hosting context". The unique name in the aegir system.
       $name = db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = :nid", array(':nid' => $node->nid))->fetchField();
       $node->hosting_name = 'project_' . $name;
@@ -333,10 +338,6 @@ function devshop_projects_node_load($nodes, $types) {
     // Save project object be available at $node->project.
     $node->project = $project;
 
-    // Load verification status of project node.
-    $task = (object) db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid))->fetchAssoc();
-    $task->task_status = (int) $task->task_status;
-    $node->verify = $task;
   }
 }
 
