@@ -68,18 +68,21 @@ class DevmasterTest extends Command {
     $process = new Process('bin/behat --colors');
     $process->setTimeout(NULL);
     $process->setWorkingDirectory(__DIR__ . '/../../../tests');
-    $process->setEnv(array('BEHAT_PARAMS' => json_encode(array(
-      'extensions' => array(
-        'Behat\\MinkExtension' => array(
-          'base_url' => "http://{$uri}"
-        ),
-        'Drupal\\DrupalExtension' => array(
-          'drush' => array(
-            'root' => $root
+    $process->setEnv(array(
+      'HOME' => '/var/aegir',
+      'BEHAT_PARAMS' => json_encode(array(
+        'extensions' => array(
+          'Behat\\MinkExtension' => array(
+            'base_url' => "http://{$uri}"
           ),
+          'Drupal\\DrupalExtension' => array(
+            'drush' => array(
+              'root' => $root
+            ),
+          )
         )
       )
-    ))));
+    )));
 
     $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
