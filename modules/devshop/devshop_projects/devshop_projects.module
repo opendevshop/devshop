@@ -357,7 +357,7 @@ function devshop_projects_block_info() {
         'weight' => '-10',
         'cache' => BLOCK_NO_CACHE,
         'status' => 1,
-        'region' => 'pre_content',
+        'region' => 'header',
       );
   $blocks['project_create'] = array(
         'info' => t('DevShop Create Project'),
