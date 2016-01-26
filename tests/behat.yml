@@ -21,3 +21,11 @@ default:
         alias: 'hostmaster'
         # We do not include root here because then we cannot override it on the command line.
         # root: /var/aegir/devmaster-0.x
+
+# Use this profile when running bin/behat directly.
+# Usage:
+#    bin/behat --profile=devmaster
+devmaster:
+  extensions:
+    Behat\MinkExtension:
+      base_url: http://devshop.site
