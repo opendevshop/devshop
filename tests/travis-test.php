@@ -13,7 +13,7 @@ else {
   $hostname = 'devshop.site';
 }
 
-echo "Running tests on $hostname";
+echo "Running tests on $hostname... \n";
 
 // Look for hostmaster alias file.
 
