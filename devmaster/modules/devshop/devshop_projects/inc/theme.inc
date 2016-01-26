@@ -150,19 +150,19 @@ function devshop_projects_preprocess_node(&$vars) {
 
     // Show duration
     if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
-      $vars['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $vars['node']->changed)));
+      $vars['duration'] = t('Queued for %time', array('%time' => format_interval(REQUEST_TIME - $vars['node']->changed)));
       $vars['date'] = date('D M j Y', $vars['node']->changed);
       $vars['executed'] = '';
     }
     else {
 
       if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
-        $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
+        $vars['duration'] = format_interval(REQUEST_TIME - $vars['node']->executed, 1);
         $vars['executed'] = '';
       }
       else {
         $vars['duration'] = format_interval($vars['node']->delta, 1);
-        $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
+        $vars['executed'] = format_interval(REQUEST_TIME - $vars['node']->executed) . ' ' . t('ago');
       }
       $vars['date'] = date('D M j Y', $vars['node']->executed);
     }
