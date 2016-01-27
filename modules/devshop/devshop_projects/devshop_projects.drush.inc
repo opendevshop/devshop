@@ -21,7 +21,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
     if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
 
       // If this object is a platform, lookup the latest tasks from the site node.
-      $tasks_list = hosting_get_tasks('rid', $site->type == 'site'? $site->nid: $site->site);
+      $tasks_list = hosting_get_tasks('rid', $site->nid);
 
       // The first item in $tasks should be this task.
       // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
