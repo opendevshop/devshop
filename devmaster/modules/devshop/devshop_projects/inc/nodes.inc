@@ -63,6 +63,57 @@ function devshop_projects_node_load($nodes, $types) {
 
     // Tasks
     elseif ($node->type == 'task') {
+
+      // Prepare bootstrap-compatible things.
+      // Load up task types to get our language.
+      $task_types = hosting_available_tasks();
+      $task_types = array_merge($task_types['site'], $task_types['platform']);
+
+      // In Aegir, "executed" and "delta" does not get updated properly.
+      // Handle "delta" being not computed yet
+      if ($node->task_status == HOSTING_TASK_PROCESSING) {
+        $node->duration = format_interval(time() - $node->executed, 1);
+      }
+      elseif ($node->task_status == HOSTING_TASK_QUEUED) {
+        $node->duration = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+      }
+      else  {
+        $node->duration = format_interval($node->delta, 1);
+      }
+
+      // To test out constantly changing tasks, uncomment this line.
+      //        $node->task_status = rand(-1, 3);
+      $node->status_class = devshop_task_status_class($node->task_status);
+      $node->status_name = _hosting_parse_error_code($node->task_status);
+
+      // Override "ago" text.
+      $node->ago = format_interval(time() - $node->executed, 1) .' '. t('ago');
+      if ($node->task_status == HOSTING_TASK_QUEUED) {
+        $node->ago = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+      }
+      elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
+        $node->ago = format_interval(time() - $node->changed);
+      }
+
+      // Set task type
+      $node->type_name = $task_types[$node->task_type]['title'];
+
+      // If platform's first verify...
+      if ($node->ref->type == 'platform' && $node->ref->verified == 0) {
+        $node->type_name = t('Cloning Codebase');
+      }
+
+      // Get Icon
+      $node->icon = devshop_task_status_icon($node->task_status);
+
+      // Get desired URL
+      $node->url = url("node/{$node->nid}");
+
+      // @TODO: Doesn't quite work. we need a different VID for each clone link.
+      //  if ($node->task_type == 'clone') {
+      //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
+      //  }
+
       // @TODO: This is causing a major SEGFAULT. It destroys apache! unable to restart the service, even!
 //      $result = (object) db_query("SELECT nid, name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
 //          ':site' => $node->rid,
