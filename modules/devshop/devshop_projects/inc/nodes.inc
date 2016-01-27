@@ -48,8 +48,9 @@ function devshop_projects_node_load($nodes, $types) {
     if ($node->type == 'platform' || $node->type == 'site') {
 
       // Load project and environment
-      $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :type", array(
+      $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :nid", array(
           ':type' => $node->type,
+          ':nid' => $node->nid,
       ))->fetchAssoc();
 
       $project_node = node_load($result->project_nid);
