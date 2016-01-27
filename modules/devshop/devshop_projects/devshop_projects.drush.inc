@@ -21,7 +21,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
     if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
 
       // If this object is a platform, lookup the latest tasks from the site node.
-      $tasks_list = hosting_get_tasks('rid', $site->type == 'site'? $site->nid: $site->site);
+      $tasks_list = hosting_get_tasks('rid', $site->nid);
 
       // The first item in $tasks should be this task.
       // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
@@ -58,7 +58,8 @@ function devshop_projects_hosting_task_update_status($task, $status) {
  * the $task object, or if you don't need this functionality from the command
  * line.
  */
-function drush_devshop_projects_pre_hosting_task() {
+function drush_devshop_projects_pre_hosting_task()
+{
 
   drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
 
@@ -311,7 +312,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
 
     // If the platform has a site already, trigger verification, then bail.
-    if ($platform->environment->site) {
+    if (!empty($platform->environment->site)){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
       // hosting_add_task($platform->environment->site, 'verify');
       return;
@@ -320,7 +321,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
       // Check for site to clone
-      if ($platform->environment->settings->site_to_clone) {
+      if (!empty($platform->environment->settings->site_to_clone)) {
         $site = node_load($platform->environment->settings->site_to_clone);
         $args['target_platform'] = $platform->nid;
 
