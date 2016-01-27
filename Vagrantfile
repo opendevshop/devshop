@@ -1,13 +1,15 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Require YAML
+require 'yaml'
+  
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # Load Variables
-  require 'yaml'
+# Load Variables  
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
   development_mode = settings["vagrant_development"] || File.exist?(File.dirname(__FILE__) + '/.development_mode')
 
