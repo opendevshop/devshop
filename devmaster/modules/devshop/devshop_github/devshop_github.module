@@ -37,22 +37,26 @@ function devshop_github_menu() {
 /**
  * Implements hook_form_FORM_ID_alter() for project_node_form().
  */
-function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+function devshop_github_form_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
+
   if ($node->project->git_provider != 'github') {
     return;
   }
 
   //All settings git pull in project page
-  $form['project']['settings']['github'] = array(
+  $form['github'] = array(
       '#type' => 'fieldset',
+      '#tree' => TRUE,
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
+      '#group' => 'additional_settings',
       '#title' => t('GitHub Integration'),
+      '#weight' => -50
   );
 
   // Pull Requests create environments?
-  $form['project']['settings']['github']['pull_request_environments'] = array(
+  $form['github']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
       '#default_value' => $node->project->settings->github['pull_request_environments'],
@@ -60,7 +64,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   // Delete Pull Request environments?
-  $form['project']['settings']['github']['pull_request_environments_delete'] = array(
+  $form['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Delete Pull Request Environments'),
       '#default_value' => $node->project->settings->github['pull_request_environments_delete'],
@@ -68,7 +72,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   // Pull Request Environment method.
-  $form['project']['settings']['github']['pull_request_environments_method'] = array(
+  $form['github']['pull_request_environments_method'] = array(
       '#type' => 'radios',
       '#title' => t('Pull Request Environment Deploy Method'),
       '#default_value' => $node->project->settings->github['pull_request_environments_method'],
@@ -226,11 +230,9 @@ function devshop_github_project_create_webhook($form, $form_state) {
  * Implements hook_node_load().
  */
 function devshop_github_node_load($nodes, $types) {
-
   if (count(array_intersect(array('project'), $types))) {
     foreach ($nodes as $nid => $node) {
       $pull_request = (object) db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid))->fetchAssoc();
-
       $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
       if (isset( $node->project->environments[$pull_request->environment_name])) {
         $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
@@ -243,14 +245,24 @@ function devshop_github_node_load($nodes, $types) {
         $node->project->github_owner = $parts[1];
         $node->project->github_repo = $parts[2];
       }
-
     }
   }
 
 }
 
 /**
- * Implements hook_node_update() for task insert().
+ * Implements hook_node_presave().
+ */
+function devshop_github_node_presave($node) {
+  if ($node->type != 'project' && $node->project->git_provider != 'github') {
+    return;
+  }
+
+  $node->project->settings->github = $node->github;
+}
+
+/**
+ * Implements hook_node_update() for task insert.
  *
  * If task is a test run, send a "pending" commit status.
  */
