@@ -109,7 +109,7 @@ function boots_preprocess_environment(&$vars)
 
     $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
 
-    $items[] = l($text, "node/{$task->nid}/revisions/{$task->vid}/view", array(
+    $items[] = l($text, "node/{$task->nid}", array(
         'html' => TRUE,
         'attributes' => array(
             'class' => "list-group-item list-group-item-{$task->status_class}",
