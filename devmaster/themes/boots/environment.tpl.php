@@ -204,6 +204,26 @@
         </div>
 
     <?php
+      // SITUATION: Environment has platform but no site, verify succeeded
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS):
+
+        $verify_task = current($environment->tasks['verify']);
+        ?>
+        <div class="list-group-item center-block text text-muted">
+
+          <i class="fa fa-warning"></i>
+          <?php print t('Aegir Platform has been created, but Site is missing. Something is wrong. Contact your administrator.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
+          <div class="btn-group " role="group">
+            <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
+              <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+            </a>
+          </div>
+        </div>
+
+    <?php
       // SITUATION: Site Install Failed
       elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
 
