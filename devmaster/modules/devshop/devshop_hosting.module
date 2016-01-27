@@ -359,31 +359,29 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
   }
 
   $results = db_query("
-    SELECT t.nid, t.vid, t.task_type
+    SELECT t.nid, t.task_type
       FROM {node} tn
-      INNER JOIN {hosting_task} t ON tn.vid = t.vid
+      INNER JOIN {hosting_task} t ON tn.nid = t.nid
       WHERE
         $where
-      ORDER BY t.vid DESC
       LIMIT 5
   ",
     $args
   );
   $tasks = array();
   foreach ($results as $result) {
-    $tasks[$result->task_type][$result->vid] = node_load($result->nid, $result->vid);
+    $tasks[$result->task_type][$result->nid] = node_load($result->nid);
   }
 
   // Load "Clone" tasks
   if ($type == NULL || $type == 'clone') {
     $results = db_query(
       "
-      SELECT ta.nid, ta.vid
+      SELECT ta.nid
         FROM {hosting_task_arguments} ta
-        INNER JOIN {hosting_task} t ON ta.vid = t.vid
+        INNER JOIN {hosting_task} t ON ta.nid = t.nid
         WHERE
           name = :name AND value = :platform
-        ORDER BY vid DESC
         LIMIT 1
     ",
       array(
@@ -392,8 +390,8 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
       )
     );
     foreach ($results as $result) {
-      $task_node = node_load($result->nid, $result->vid);
-      $tasks[$task_node->task_type][$task_node->vid] = $task_node;
+      $task_node = node_load($result->nid);
+      $tasks[$task_node->task_type][$task_node->nid] = $task_node;
     }
   }
 
@@ -404,7 +402,7 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
         $new_task_list[$task->{$key}] = $task;
       }
     }
-    if ($key == 'vid' || $key == 'nid') {
+    if ($key == 'nid') {
       krsort($new_task_list);
     }
     else {

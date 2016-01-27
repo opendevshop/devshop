@@ -178,7 +178,7 @@ function devshop_projects_node_load($nodes, $types) {
         $environment->tasks_list = array();
         foreach ($environment->tasks as $task_type => $tasks) {
           foreach ($tasks as $task) {
-            $environment->tasks_list[$task->vid] = $task;
+            $environment->tasks_list[$task->nid] = $task;
           }
         }
         krsort($environment->tasks_list);
