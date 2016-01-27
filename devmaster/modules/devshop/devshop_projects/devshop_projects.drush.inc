@@ -303,7 +303,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
 
     // If the platform has a site already, trigger verification, then bail.
-    if ($platform->environment->site){
+    if (!empty($platform->environment->site)){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
       // hosting_add_task($platform->environment->site, 'verify');
       return;
@@ -312,7 +312,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
       // Check for site to clone
-      if ($platform->environment->settings->site_to_clone) {
+      if (!empty($platform->environment->settings->site_to_clone)) {
         $site = node_load($platform->environment->settings->site_to_clone);
         $args['target_platform'] = $platform->nid;
 
