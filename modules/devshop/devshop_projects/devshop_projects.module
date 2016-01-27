@@ -355,14 +355,14 @@ function devshop_projects_block_info() {
   $blocks['project_nav'] = array(
         'info' => t('DevShop Project Nav'),
         'weight' => '-10',
-        'cache' => BLOCK_NO_CACHE,
+        'cache' => BLOCK_CACHE_GLOBAL,
         'status' => 1,
         'region' => 'header',
       );
   $blocks['project_create'] = array(
         'info' => t('DevShop Create Project'),
         'weight' => '-10',
-        'cache' => BLOCK_NO_CACHE,
+        'cache' => BLOCK_CACHE_PER_USER,
         'status' => 1,
         'region' => 'sidebar_first',
       );
