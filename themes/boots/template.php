@@ -21,12 +21,11 @@ function boots_theme() {
 function boots_preprocess_environment(&$vars)
 {
   $environment = &$vars['environment'];
-  $project_node = node_load($environment->project_nid);
-  $project = $vars['project'] = $project_node->project;
+  $project = &$vars['project'];
 
   // Load git refs and create links
   $vars['git_refs'] = array();
-  foreach ($project_node->project->settings->git['refs'] as $ref => $type) {
+  foreach ($project->settings->git['refs'] as $ref => $type) {
     $href = url('node/ENV_NID/site_devshop-deploy', array(
         'query' => array(
             'git_ref' => $ref,
