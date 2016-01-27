@@ -25,6 +25,7 @@
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
+MAKEFILE_PATH=''
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -80,6 +81,9 @@ while [ $# -gt 0 ]; do
       ;;
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
+      ;;
+    --makefile=*)
+      MAKEFILE_PATH="${1#*=}"
       ;;
     *)
       echo $LINE
@@ -178,7 +182,6 @@ else
     echo $LINE
 fi
 
-MAKEFILE_PATH=''
 
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
