@@ -625,7 +625,7 @@ PHP;
   private function finalize() {
 
     // Run `drush cc drush`
-    if ($this->runProcess(new Process("drush cc drush"))) {
+    if ($this->runProcess(new Process("/usr/share/composer/vendor/bin/drush cc drush"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
       $this->output->writeln("");
