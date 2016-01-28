@@ -76,6 +76,7 @@ class DevmasterTest extends Command {
 
     // Write to local.settings.php
     $path = "{$root}/sites/{$uri}/local.settings.php";
+    $settings_default_path = "{$root}/sites/default/settings.php";
     $output->writeln("Writing db credentials to $path...");
 
     $db_url = "{$db->driver}://{$db->username}:{$db->password}@{$db->host}:{$db->port}/{$db->database}";
@@ -88,6 +89,7 @@ class DevmasterTest extends Command {
 PHP;
     $fs = new Filesystem();
     $fs->dumpFile($path, trim($output));
+    $fs->dumpFile($settings_default_path, trim($output));
 
     // Run bin/behat
     $process = new Process('bin/behat --colors');
@@ -119,6 +121,7 @@ PHP;
 
     // Delete the local.settings.php file.
     $fs->remove($path);
+    $fs->remove($settings_default_path);
 
     // executes after the command finishes
     if (!$process->isSuccessful()) {
