@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/trusty64"
 
   config.vm.provider "virtualbox" do |v|
-    v.memory = 2048
+    v.memory = settings.vagrant_virtualbox_memory
   end
 
   # Prepare host for development

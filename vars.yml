@@ -15,6 +15,7 @@ vagrant_development: FALSE
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
 vagrant_install_script_args: [--playbook=/vagrant]
+vagrant_virtualbox_memory: 4096
 
 remote_vagrant_private_network_ip: 10.10.10.11
 remote_server_hostname: devshop.remote
