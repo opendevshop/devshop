@@ -78,10 +78,9 @@ class DevmasterTest extends Command {
     $path = "{$root}/sites/{$uri}/local.settings.php";
     $output->writeln("Writing db credentials to $path...");
 
-      $output = '<?php  ';
     $db_url = "{$db->driver}://{$db->username}:{$db->password}@{$db->host}:{$db->port}/{$db->database}";
 
-    $output .= <<<PHP
+    $output = <<<PHP
 <?php
   \$databases['default']['default'] = $db_var_export;
   \$db_url = "$db_url";
