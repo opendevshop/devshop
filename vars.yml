@@ -14,7 +14,7 @@ drush_version: 6.*
 vagrant_development: FALSE
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
-vagrant_install_script_args: [--playbook=/vagrant, --server-webserver=nginx]
+vagrant_install_script_args: [--playbook=/vagrant]
 
 remote_vagrant_private_network_ip: 10.10.10.11
 remote_server_hostname: devshop.remote
