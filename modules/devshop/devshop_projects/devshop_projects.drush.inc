@@ -61,10 +61,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
 function drush_devshop_projects_pre_hosting_task()
 {
 
-  drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
-
   $task =& drush_get_context('HOSTING_TASK');
-
 
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
   if ($task->task_type == 'download') {
@@ -134,7 +131,7 @@ function drush_devshop_projects_pre_hosting_task()
  */
 function drush_devshop_platform_verify(){
 
-  drush_log(dt("[DEVSHOP] Hello. Verifying Platform..."));
+  drush_log(dt("[DEVSHOP] Hello. Preparing aegir platform codebase..."));
 
   // Verify Platform
   $task =& drush_get_context('HOSTING_TASK');
@@ -147,9 +144,6 @@ function drush_devshop_platform_verify(){
   $drupal_path = $platform->project->drupal_path;
 
   $create_branch = FALSE;
-
-  $output = '';
-  $commands = array();
 
   //Remove drupal_path to clone.
   if ($drupal_path) {
@@ -164,44 +158,28 @@ function drush_devshop_platform_verify(){
 
   // Check if the platform code exists. If it doesn't, clone it.
   if (!is_dir($root)) {
-    drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
-    // Build the clone command string
-    $commands[] = "git clone --recursive $git_remote $root";
+    // Clone the repo.
+    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('[DevShop] Cloning git repository'));
 
-    // If a branch is selected, add --branch to the command.
+    // If there is a git ref, check it out.
+    // We don't do this on clone, because it could be a tag.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
-      $commands[] = "git checkout $git_ref";
+      devshop_drush_process("git checkout $git_ref", $root, dt('[DevShop] Checking out specified version'));
     }
   }
-  // @TODO: Remove.  This is handled by the "deploy" task, right?
-//  // If the platform has been verified and has a branch and git url
-//  else {
-//    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
-//
-//    // Run git fetch to ensure we have all branches and tags
-//    $output .= _devshop_projects_git_execute('git fetch', $root);
-//
-//    // Build the command string
-//    $commands[] = "git checkout $git_ref";
-//  }
-
-  // Execute clone or checkout.
-  $output .=  _devshop_projects_git_execute($commands, $root);
+  else {
+    drush_log(dt('Platform found at this path.'), 'devshop_ok');
+  }
 
   // If branch needs to be created (for "fork environment")
   if ($create_branch) {
-    $commands = array();
-    // Checkout the new branch.
-    $commands[] = "git checkout -b {$platform->environment->git_ref}";
+    devshop_drush_process("git checkout -b {$platform->environment->git_ref}");
 
     // Push the branch
-    $commands[] = "git push -u origin {$platform->environment->git_ref}";
-    $output .=  _devshop_projects_git_execute($commands, $root);
+    devshop_drush_process("git push -u origin {$platform->environment->git_ref}");
   }
-
-  return $output;
 }
 
 /**
