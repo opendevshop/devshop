@@ -1,3 +1,16 @@
+#Feature: Create an environment
+#
+#  @api
+#  Scenario: Get a project
+#    Given I am logged in as a user with the "administrator" role
+#    Given I am viewing a project named "demo" with the git url "http://github.com/jonpugh/drupal.git"
+#    Then I should see "Project Name"
+#    And I should see "demo"
+#    And I should see "http://github.com/jonpugh/drupal.git"
+#
+#    Then break
+
+
 # @TODO: Commented out until the drush user-create bug is fixed.
 #Feature: Environment settings save.
 #  @TODO: Only works if you have a project named "drupal".  Coming Soon.

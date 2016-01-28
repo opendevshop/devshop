@@ -21,6 +21,29 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
   }
 
   /**
+   * Creates a project.
+   *
+   * @Given I am viewing a project named :title with the git url :git_url
+   */
+  public function createProject($title, $git_url) {
+    $node = (object) array(
+        'title' => $title,
+        'type' => 'project',
+        'project' => (object) array(
+          'git_url' => $git_url,
+          'install_profile' => 'standard',
+          'settings' => (object) array(
+            'git' => array(),
+          ),
+        ),
+    );
+    $saved = $this->nodeCreate($node);
+
+    // Set internal page on the new node.
+    $this->getSession()->visit($this->locatePath('/node/' . $saved->nid));
+  }
+
+  /**
    * @Then then field :field should have the value :value
    */
   public function thenFieldShouldHaveTheValue($field, $value)
