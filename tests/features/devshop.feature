@@ -3,7 +3,7 @@ Feature: Anonymous Homepage
   Scenario: The homepage works
 
     Given I am on the homepage
-    Then I should see "Login"
+    Then I should see "DevShop"
     And I should see "Username"
     And I should see "Password"
     When I fill in "wrong" for "Username"
