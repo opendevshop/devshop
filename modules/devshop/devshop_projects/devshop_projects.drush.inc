@@ -169,9 +169,6 @@ function drush_devshop_platform_verify(){
       devshop_drush_process("git checkout $git_ref", $root, dt('[DevShop] Checking out specified version'));
     }
   }
-  else {
-    drush_log(dt('Platform found at this path.'), 'devshop_ok');
-  }
 
   // If branch needs to be created (for "fork environment")
   if ($create_branch) {
@@ -265,8 +262,8 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
-    drush_log('[DEVSHOP] Platform Verification complete.', 'notice');
-    
+    drush_log('[DevShop] Platform Verification Complete', 'devshop_log');
+
     // If this platform isn't in a project, bail.
     $platform = $task->ref;
     if (empty($platform->project)){
@@ -287,7 +284,6 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       return;
     }
     else {
-      drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
       // Check for site to clone
       if (!empty($platform->environment->settings->site_to_clone)) {
@@ -303,7 +299,11 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
         // Queue the Cloning of the site.
         // @see devshop_projects_post_hosting_import_task().
+        drush_log("[DevShop] Environment Clone", 'devshop_command');
+
         hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
+
+        drush_log("Environment {$site->environment->name} is scheduled to be cloned to {$platform->environment->name}.", 'devshop_ok');
       }
       else {
 
@@ -314,8 +314,12 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         else {
           $db_server = $platform->project->settings->default_environment['db_server'];
         }
-        devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
-        drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
+
+        drush_log("[DevShop] Environment Install", 'devshop_command');
+        $new_site = devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
+
+        drush_log("Environment {$platform->environment->name} is scheduled to be installed. Please wait.", 'devshop_ok');
+
       }
     }
   }
