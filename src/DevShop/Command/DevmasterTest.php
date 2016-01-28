@@ -117,6 +117,9 @@ PHP;
       }
     });
 
+    // Delete the local.settings.php file.
+    $fs->remove($path);
+
     // executes after the command finishes
     if (!$process->isSuccessful()) {
       exit(1);
