@@ -65,6 +65,32 @@ class DevmasterTest extends Command {
     $uri = $input->getOption('uri');
     $root = $input->getOption('root');
 
+    // @TODO: This is all to get these tests running on Drupal6 devmaster! should be able to remove this for drupal7
+    // Lookup password from @hostmaster alias
+    $output->writeln('Looking up hostmaster database credentials...');
+
+    $process = new Process('drush @hostmaster sql-conf --format=var_export --show-passwords');
+    $process->mustRun();
+    $db_var_export = $process->getOutput();
+    $db = (object) eval("return {$db_var_export};");
+
+    // Write to local.settings.php
+    $path = "{$root}/sites/{$uri}/local.settings.php";
+    $output->writeln("Writing db credentials to $path...");
+
+      $output = '<?php  ';
+    $db_url = "{$db->driver}://{$db->username}:{$db->password}@{$db->host}:{$db->port}/{$db->database}";
+
+    $output .= <<<PHP
+<?php
+  \$databases['default']['default'] = $db_var_export;
+  \$db_url = "$db_url";
+
+PHP;
+    $fs = new Filesystem();
+    $fs->dumpFile($path, trim($output));
+
+    // Run bin/behat
     $process = new Process('bin/behat --colors');
     $process->setTimeout(NULL);
     $process->setWorkingDirectory(__DIR__ . '/../../../tests');
@@ -76,6 +102,9 @@ class DevmasterTest extends Command {
         'Drupal\\DrupalExtension' => array(
           'drush' => array(
             'root' => $root
+          ),
+          'drupal' => array(
+            'drupal_root' => $root
           ),
         )
       )
