@@ -261,7 +261,7 @@ function devshop_projects_load($node) {
   }
 
   // Put live environment at the top.
-  if ($project->settings->live['live_environment']) {
+  if (isset($project->settings->live) && $project->settings->live['live_environment']) {
     $live_env = $project->settings->live['live_environment'];
     $project->environments = array();
     $project->environments[$live_env] = $environments[$live_env];
