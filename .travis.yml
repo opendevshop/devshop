@@ -67,8 +67,8 @@ script:
 
   # Turn off supervisor, hosting queued, and the hosting task queue.
     - 'sudo docker exec devshop_container env sudo service supervisor stop'
-    - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v'
-    - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y'
+    - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
+    - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
 
   # Build and Run Tests
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
