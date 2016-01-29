@@ -569,6 +569,10 @@ function devshop_projects_nodeapi_task_load(&$node, $a3, $a4) {
   $additions['type_name'] = $task_types[$node->task_type]['title'];
 
   // If platform's first verify...
+  if (empty($node->ref)) {
+    $node->ref = node_load($node->rid);
+  }
+
   if (isset($node->ref) && $node->ref->type == 'platform' && $node->ref->verified == 0) {
     $additions['type_name'] = t('Cloning Codebase');
   }
