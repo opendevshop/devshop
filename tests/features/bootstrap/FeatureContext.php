@@ -25,11 +25,11 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
    */
   public function saveLastResponse()
   {
-    $path = '/var/aegir/devmaster-0.x/test-output.html';
+    $path = '/var/aegir/devmaster-0.x/sites/devshop.site/files/test-output.html';
 
     $file = file_save_data($this->getSession()->getPage()->getContent(), $path);
 
-    $link = str_replace('/var/aegir/devmaster-0.x/', 'http://devshop.site/', $file);
+    $link = str_replace('/var/aegir/devmaster-0.x/sites/devshop.site/files/', 'http://devshop.site/sites/devshop.site/files/', $file);
     echo "Saved output to $link";
   }
 
