@@ -17,18 +17,34 @@ Feature: Create a project
     Then I fill in "drpl8" for "Project Code Name"
     And I fill in "http://github.com/jonpugh/drupal" for "Git URL"
     When I press "Next"
-    And I press "Next"
+
+    # Step 2
+    Then I should see "drpl8"
+    And I should see "http://github.com/opendevshop/drupal"
+    And I should see "Path to Drupal"
+
+    # Step 3
+    When I press "Next"
     Then I should see "Please wait while we connect to your repository and determine any branches."
 
     When I run drush "hosting-tasks"
-    And I reload the page
-    Then print current URL
-    And print last response
+    And I visit "projects/add"
+    Then I should see "Create as many new environments as you would like."
+    When I fill in "dev" for "project[environments][NEW][name]"
+    And I select "7.x-releases" from "project[environments][NEW][git_ref]"
 
+    And I press "Add Environment"
+    And I fill in "live" for "project[environments][NEW][name]"
+    And I select "7.41" from "project[environments][NEW][git_ref]"
+    And I press "Next"
 
-    When I press "Cancel"
-    Then I should see "Project creation cancelled."
-    And I should be on "projects"
+    # Step 4
+    Then I should see "Please wait while we clone your repo and verify your drupal code."
+
+    When I run drush "hosting-tasks"
+    And I am on "projects/add"
+    Then I should see "dev"
+    And I should see "test"
 
 #    Then I should see "Create as many new environments as you would like."
 #
