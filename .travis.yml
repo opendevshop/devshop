@@ -17,24 +17,28 @@ env:
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
+    supervisor_stop: "systemctl stop supervisord"
   - test: CentOS 7 NGINX
     distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=nginx"
+    supervisor_stop: "systemctl stop supervisord"
   - test: Ubuntu 14.04 Apache
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
+    supervisor_stop: "/usr/sbin/service supervisor stop"
   - test: Ubuntu 14.04 Nginx
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=nginx"
+    supervisor_stop: "/usr/sbin/service supervisor stop"
 
 addons:
   hosts:
@@ -66,7 +70,7 @@ script:
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
 
   # Turn off supervisor, hosting queued, and the hosting task queue.
-  - 'sudo docker exec devshop_container env sudo service supervisor stop'
+  - 'sudo docker exec devshop_container env ${supervisor_stop}'
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
 
