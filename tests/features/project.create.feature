@@ -5,6 +5,11 @@ Feature: Create a project
   I need to create a new project
 
   Scenario: Create a new drupal 8 project
+
+    # Turn off all queues
+    Given I run drush "dis hosting_queued -y -v"
+    Given I run drush "vset hosting_queue_tasks_enabled 0 -y"
+
     Given users:
       | name       | status | roles          |
       | testadminuser | 1      | administrator |
@@ -30,9 +35,10 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
     And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks"
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks -v"
+    Then print last drush output
     And I reload the page
+
 #    Then save last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
