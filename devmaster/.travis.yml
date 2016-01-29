@@ -17,7 +17,7 @@ services:
 before_install:
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
-  - 'sudo docker build --rm=true --tag=${distribution}-${version}:ansible https://raw.githubusercontent.com/opendevshop/devshop/1.x/tests/Dockerfile.ubuntu-14.04
+  - 'sudo docker build --rm=true --tag=${distribution}-${version}:ansible https://raw.githubusercontent.com/opendevshop/devshop/1.x/tests/Dockerfile.${distribution}-${version}'
 
 script:
   - container_id=$(mktemp)
