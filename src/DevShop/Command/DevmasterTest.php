@@ -97,6 +97,7 @@ PHP;
     $process->setWorkingDirectory(__DIR__ . '/../../../tests');
     $process->setEnv(array(
       'HOME' => '/var/aegir',
+      'PATH' => getenv('PATH') . ':/usr/share/composer/vendor/bin/',
       'BEHAT_PARAMS' => json_encode(array(
         'extensions' => array(
           'Behat\\MinkExtension' => array(
