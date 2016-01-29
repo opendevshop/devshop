@@ -232,16 +232,6 @@
       command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler={{ drush_dl_method }} -y"
       with_dict: "{{ devshop_drush_packages }}"
 
-    - name: Clear the drush cache.
-      command: "{{ drush_path }} cc drush"
-      become: yes
-      become_user: aegir
-
-    - name: Clear the hostmaster drush cache.
-      command: "{{ drush_path }} @hostmaster cc drush"
-      become: yes
-      become_user: aegir
-
     # Runs the drush devshop-install command with all of our options:
     - debug: msg="{{ devmaster_install_command }}"
 
@@ -320,6 +310,11 @@
 
     - name: Set git user name and email
       shell: "git config --global push.default simple"
+      become: yes
+      become_user: aegir
+
+    - name: Clear the drush cache.
+      command: "{{ drush_path }} cc drush"
       become: yes
       become_user: aegir
 
