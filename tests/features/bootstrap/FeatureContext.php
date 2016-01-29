@@ -21,6 +21,19 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
   }
 
   /**
+   * @Then save last response
+   */
+  public function saveLastResponse()
+  {
+    $path = '/var/aegir/devmaster-0.x/test-output.html';
+
+    $file = file_save_data($this->getSession()->getPage()->getContent(), $path);
+
+    $link = str_replace('/var/aegir/devmaster-0.x/', 'http://devshop.site/', $file);
+    echo "Saved output to $link";
+  }
+
+  /**
    * Creates a project.
    *
    * @Given I am viewing a project named :title with the git url :git_url
