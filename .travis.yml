@@ -15,14 +15,14 @@ env:
     distribution: centos
     version: 7
     init: /sbin/init 
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    run_opts: ""
     script_opts: "--server-webserver=apache"
     supervisor_stop: "systemctl stop supervisord"
   - test: CentOS 7 NGINX
     distribution: centos
     version: 7
     init: /sbin/init
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    run_opts: ""
     script_opts: "--server-webserver=nginx"
     supervisor_stop: "systemctl stop supervisord"
   - test: Ubuntu 14.04 Apache
