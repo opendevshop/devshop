@@ -47,11 +47,37 @@ Feature: Create a project
 
     # Step 4
     Then I should see "Please wait while we clone your repo and verify your drupal code."
+    And I should see "dev"
+    And I should see "live"
+    And I should see "7.41"
+    And I should see "7.x-releases"
 
-    When I run drush "hosting-tasks"
-    And I am on "projects/add"
+    When I run drush "hosting-tasks -v"
+    Then print last drush output
+    And I reload the page
+
     Then I should see "dev"
     And I should see "test"
+    And I should see "7.41"
+    And I should see "7.x-releases"
+    And I should see "Minimal, Standard"
+
+    # FINISH!
+    When I press "Finish"
+    Then I should see "Your project has been created. Your sites are being installed."
+    And I should see "Dashboard"
+    And I should see "Settings"
+    And I should see "Logs"
+    And I should see "http://github.com/opendevshop/drupal"
+    And I should see the link "dev"
+    And I should see the link "live"
+
+    When I run drush "hosting-tasks -v"
+    Then print last drush output
+    And I reload the page
+
+    When I click "Visit Environment"
+    Then I should see "No front page content has been created yet."
 
 #    Then I should see "Create as many new environments as you would like."
 #
