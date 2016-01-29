@@ -31,7 +31,7 @@ Feature: Create a project
     And I should see "Path to Drupal: docroot"
 
     When I run drush "hosting-tasks"
-    Then print last drush output
+    When I run drush "hosting-tasks"
     And I reload the page
 #    Then save last response
     Then I should see "Create as many new environments as you would like."
