@@ -6,10 +6,6 @@ Feature: Create a project
 
   Scenario: Create a new drupal 8 project
 
-    # Turn off all queues
-    Given I run drush "dis hosting_queued -y -v"
-    Given I run drush "vset hosting_queue_tasks_enabled 0 -y"
-
     Given users:
       | name       | status | roles          |
       | testadminuser | 1      | administrator |
