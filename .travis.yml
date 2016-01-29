@@ -39,6 +39,8 @@ env:
 addons:
   hosts:
     - devshop.travis
+    - dev.projectname.devshop.travis
+    - live.projectname.devshop.travis
 
 services:
   - docker
