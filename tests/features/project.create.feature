@@ -20,7 +20,7 @@ Feature: Create a project
 
     # Step 2
     Then print current URL
-    Then save last response
+#    Then save last response
     Then I should see "projectname"
     And I should see "http://github.com/opendevshop/drupal"
     When I fill in "docroot" for "Path to Drupal"
