@@ -31,7 +31,7 @@ script:
 
   # Test for DevShop.
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
 
   # Stop container.
