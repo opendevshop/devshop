@@ -11,10 +11,17 @@ addons:
   hosts:
     - devshop.travis
 
+services:
+  - docker
+
+before_install:
+  # Pull container
+  - 'sudo docker pull ${distribution}:${version}'
+
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container ${run_opts} -h devshop.travis ${distribution}-${version} "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --name devshop_container ${run_opts} -h devshop.travis ${distribution}:${version} "${init}" > "${container_id}"'
 
   # Test install script.
   - 'sudo docker exec --tty devshop_container env TERM=xterm wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh'
