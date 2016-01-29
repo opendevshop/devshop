@@ -31,14 +31,14 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    supervisor_stop: "/usr/sbin/service supervisor stop"
+    supervisor_stop: "service supervisor stop"
   - test: Ubuntu 14.04 Nginx
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=nginx"
-    supervisor_stop: "/usr/sbin/service supervisor stop"
+    supervisor_stop: "service supervisor stop"
 
 addons:
   hosts:
