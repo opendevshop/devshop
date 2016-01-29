@@ -1,24 +1,29 @@
----
-##
+sudo: required
 
-language: python
-python: "2.7"
-install:
+env:
+  - test: Ubuntu 14.04 Apache
+    distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
 
-  # Install DevShop with the standalone installer, using local playbooks.
-  # Run as actual root?  Testing to see if this is a problem.
-  - wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
-  - sudo su root -c "bash install.sh"
-
-  # @TODO: Pass the git URL of the repo that is being tested to the install script so this can run on pull requests.
+addons:
+  hosts:
+    - devshop.travis
 
 script:
+  - container_id=$(mktemp)
+    # Run container in detached state
+  - 'sudo docker run --detach --name devshop_container ${run_opts} -h devshop.travis ${distribution}-${version} "${init}" > "${container_id}"'
 
-  # Test for DevShop
-  - sudo su - aegir -c "devshop status"
-  - sudo su -c "cd /usr/share/devshop/tests && composer update"
-  - sudo su aegir -c "devshop devmaster:test"
+  # Test install script.
+  - 'sudo docker exec --tty devshop_container env TERM=xterm wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh'
+  - 'sudo docker exec --tty devshop_container env TERM=xterm bash install.sh ${script_opts} --hostname=devshop.travis'
 
-# Notify devshop IRC chatroom.
-notifications:
-  irc: "chat.freenode.net#devshop"
+  # Test for DevShop.
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
+
+  # Stop container.
+  - 'sudo docker stop devshop_container'
