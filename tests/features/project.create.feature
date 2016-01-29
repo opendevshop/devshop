@@ -20,7 +20,6 @@ Feature: Create a project
     And I press "Next"
     Then I should see "Please wait while we connect to your repository and determine any branches."
 
-    When I run drush "cc drush"
     When I run drush "hosting-tasks"
     And I reload the page
     Then print current URL
