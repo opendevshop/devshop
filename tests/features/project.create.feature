@@ -44,7 +44,7 @@ Feature: Create a project
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "7.x-releases" from "project[environments][NEW][git_ref]"
 
-    And I press "Add Environment"
+    And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "7.41" from "project[environments][NEW][git_ref]"
     And I press "Next"
