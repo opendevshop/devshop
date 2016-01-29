@@ -14,14 +14,15 @@ Feature: Create a project
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "drpl8" for "Project Code Name"
+    Then I fill in "projectname" for "Project Code Name"
     And I fill in "http://github.com/opendevshop/drupal" for "Git URL"
     When I press "Next"
 
     # Step 2
-    Then I should see "drpl8"
+    Then print current URL
+    Then save last response
+    Then I should see "projectname"
     And I should see "http://github.com/opendevshop/drupal"
-    And I should see "Default Stack"
     When I fill in "docroot" for "Path to Drupal"
 
     # Step 3
