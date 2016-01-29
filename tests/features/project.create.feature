@@ -34,8 +34,6 @@ Feature: Create a project
     When I run drush "hosting-tasks -v"
     Then print last drush output
     And I reload the page
-    And I reload the page
-    And I reload the page
 
 #    Then save last response
     Then I should see "Create as many new environments as you would like."
