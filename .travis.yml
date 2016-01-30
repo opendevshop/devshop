@@ -1,24 +1,72 @@
----
-##
+sudo: required
 
-language: python
-python: "2.7"
-install:
+env:
+  - test: CentOS 7 Apache
+    distribution: centos
+    version: 7
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=apache"
+    supervisor_stop: "systemctl stop supervisord"
+  - test: CentOS 7 NGINX
+    distribution: centos
+    version: 7
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=nginx"
+    supervisor_stop: "systemctl stop supervisord"
+  - test: Ubuntu 14.04 Apache
+    distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=apache"
+    supervisor_stop: "service supervisor stop"
+  - test: Ubuntu 14.04 Nginx
+    distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=nginx"
+    supervisor_stop: "service supervisor stop"
 
-  # Install DevShop with the standalone installer, using local playbooks.
-  # Run as actual root?  Testing to see if this is a problem.
-  - wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
-  - sudo su root -c "bash install.sh"
+addons:
+  hosts:
+    - devshop.travis
+    - dev.projectname.devshop.travis
+    - live.projectname.devshop.travis
 
-  # @TODO: Pass the git URL of the repo that is being tested to the install script so this can run on pull requests.
+services:
+  - docker
+
+before_install:
+  # Pull container
+  - 'sudo docker pull ${distribution}:${version}'
+  # Customize container
+  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
 
 script:
+  - container_id=$(mktemp)
+    # Run container in detached state
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-  # Test for DevShop
-  - sudo su - aegir -c "devshop status"
-#  - sudo su -c "cd /usr/share/devshop/tests && composer update"
-#  - sudo su aegir -c "cd /usr/share/devshop/tests && bin/behat --profile travis"
+  # Ansible syntax check.
+  - 'sudo docker exec --tty devshop_container env TERM=xterm ansible-playbook /etc/ansible/devshop/playbook.yml --syntax-check'
 
-# Notify devshop IRC chatroom.
-notifications:
-  irc: "chat.freenode.net#devshop"
+  # Install script.
+  - 'sudo docker exec --tty devshop_container env TERM=xterm /etc/ansible/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
+
+  # Hostmaster Status
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
+
+  # Turn off supervisor, hosting queued, and the hosting task queue.
+  - 'sudo docker exec devshop_container env sudo su - ${supervisor_stop}'
+  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
+  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
+
+  # Build and Run Tests
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /etc/ansible/devshop/tests && composer update"'
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
+
+  # Stop container.
+  - 'sudo docker stop devshop_container'
