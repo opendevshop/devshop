@@ -249,6 +249,12 @@ if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
+# If testing in travis, disable supervisor.
+if [ "$TRAVIS" == "true" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
+fi
+
+
 ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
 # Run Composer install to enable devshop cli

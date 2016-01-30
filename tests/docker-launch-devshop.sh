@@ -9,6 +9,7 @@ SCRIPT_OPTS='--server-webserver=nginx'
 CONTAINER_HOSTNAME=devshop.docker
 SUPERVISOR_STOP='service supervisor stop'
 HOST_PORT=8000
+TRAVIS=true
 
 composer install
 

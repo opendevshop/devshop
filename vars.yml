@@ -67,3 +67,5 @@ aegir_user_uid: 12345
 
 drush_path: "{{ local_bin_path }}/drush"
 devshop_cli_path: "{{ local_bin_path }}/devshop"
+
+supervisor_running: true
