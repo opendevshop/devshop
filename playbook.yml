@@ -221,19 +221,11 @@
       become: yes
       become_user: aegir
 
-    - debug: msg="{{ travis }}"
-    - debug: msg="{{ travis_repo_slug }}"
-    - debug: msg="{{ travis_branch }}"
-    - debug: msg="{{ travis_commit }}"
-
-    - name: TRAVIS | Test the PR Code for devmaster.
+    - name: TRAVIS | Change to the branch we are testing in build-devmaster.make.
       when: travis == "true" and travis_repo_slug == "opendevshop/devmaster"
-      get_url: url={{ devshop_makefile }} dest=/usr/share/devshop/build-devmaster.make
-
-    - name: TRAVIS | Record updated makefile path.
-      when: travis == "true" and travis_repo_slug == "opendevshop/devmaster"
-      set_fact:
-        devshop_makefile: "/usr/share/devshop/build-devmaster.make"
+      lineinfile:
+        dest={{ devshop_makefile }}
+        line='projects[devmaster][download][branch] = "{{ travis_branch }}"'
 
     - name: TRAVIS | Change to the commit we are testing in build-devmaster.make.
       when: travis == "true" and travis_repo_slug == "opendevshop/devmaster"
