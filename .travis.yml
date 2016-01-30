@@ -44,6 +44,7 @@ before_install:
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${TRAVIS_BRANCH}
+  - cd ..
 
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
