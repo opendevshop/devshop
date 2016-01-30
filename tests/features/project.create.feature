@@ -75,6 +75,9 @@ Feature: Create a project
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
+    Then drush output should not contain "This task is already running, use --force"
+    And I reload the page
+    And I reload the page
     And I reload the page
 
     When I click "Visit Environment"
