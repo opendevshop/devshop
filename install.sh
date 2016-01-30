@@ -117,7 +117,6 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
-echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
 # Notify user we are using the found webserver.
@@ -202,7 +201,6 @@ fi
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-echo $LINE
 
 # Clone the installer code if a playbook path was not set.
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
@@ -224,6 +222,11 @@ if [ ! -f "$MAKEFILE_PATH" ]; then
   MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
   echo $LINE
 fi
+
+echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
+echo " Makefile: $MAKEFILE_PATH "
+echo $LINE
+
 
 cd $PLAYBOOK_PATH
 
