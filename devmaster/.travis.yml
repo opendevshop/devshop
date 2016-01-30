@@ -30,7 +30,6 @@ script:
   - 'sudo docker exec --tty devshop_container env TERM=xterm bash install.sh ${script_opts} --hostname=devshop.travis'
 
   # Test for DevShop.
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "rm -rf ~/devmaster-1.x/profiles/devmaster; ln -sf ${TRAVIS_BUILD_DIR} ~/devmaster-1.x/profiles/devmaster"'
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
