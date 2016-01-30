@@ -61,6 +61,7 @@ function devshop_hosting_init() {
 function devshop_hosting_menu() {
   $items['devshop'] = array(
     'title' => 'Welcome to DevShop',
+    'description' => '',
     'page callback' => 'devshop_hosting_home',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
