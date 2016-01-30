@@ -236,6 +236,12 @@ echo $LINE
 
 ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER"
 
+if [ "$TRAVIS" == "true" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_commit=$TRAVIS_COMMIT"
+else
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=false"
+fi
+
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
