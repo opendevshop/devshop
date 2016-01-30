@@ -40,18 +40,18 @@ services:
   - docker
 
 before_install:
+  # Clone devshop
+  - git clone http://github.com/opendevshop/devshop --branch=$TRAVIS_BRANCH
+
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
   # Customize container
-  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
+  - 'sudo docker build --rm=true --file=devshop/tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible devshop/tests'
 
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
-
-  # Get devshop repo so we have the files.
-  - 'sudo docker exec devshop_container git clone http://github.com/opendevshop/devshop /usr/share/devshop'
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
   - 'sudo docker exec --tty devshop_container env TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
