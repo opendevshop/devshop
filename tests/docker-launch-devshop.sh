@@ -8,7 +8,7 @@ RUN_OPTS="--name=$CONTAINER_NAME"
 SCRIPT_OPTS='--server-webserver=nginx'
 CONTAINER_HOSTNAME=devshop.docker
 SUPERVISOR_STOP='service supervisor stop'
-HOST_PORT=8000
+HOST_PORT=80
 
 composer install
 
