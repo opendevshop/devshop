@@ -30,7 +30,7 @@ script:
   - 'sudo docker exec --tty devshop_container env TERM=xterm wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make'
   - 'sudo docker exec --tty devshop_container env TERM=xterm echo "projects[devmaster][download][branch] = $TRAVIS_BRANCH" >> build-devmaster.make'
   - 'sudo docker exec --tty devshop_container env TERM=xterm echo "projects[devmaster][download][revision] = $TRAVIS_COMMIT" >> build-devmaster.make'
-  - 'sudo docker exec --tty devshop_container env TERM=xterm bash install.sh ${script_opts} --makefile=${PWD}/build-devmaster.make --hostname=devshop.travis'
+  - 'sudo docker exec --tty devshop_container env TERM=xterm TRAVIS=$TRAVIS TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_COMMIT=$TRAVIS_COMMIT bash install.sh ${script_opts} --makefile=${PWD}/build-devmaster.make --hostname=devshop.travis'
 
   # Test for DevShop.
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
