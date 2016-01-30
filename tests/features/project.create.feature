@@ -42,18 +42,17 @@ Feature: Create a project
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "7.x-releases" from "project[environments][NEW][git_ref]"
 
-    And I press "Add environment"
-    And I fill in "live" for "project[environments][NEW][name]"
-    And I select "7.41" from "project[environments][NEW][git_ref]"
-    And I press "Add environment"
+#    And I press "Add environment"
+#    And I fill in "live" for "project[environments][NEW][name]"
+#    And I select "7.41" from "project[environments][NEW][git_ref]"
+#    And I press "Add environment"
     Then I press "Next"
+#    Then print last response
 
     # Step 4
-    Then I should see "Please wait while we clone your repo and verify your drupal code."
     And I should see "dev"
-    And I should see "live"
-    And I should see "7.41"
-    Then print last response
+#    And I should see "live"
+#    And I should see "7.41"
     And I should see "7.x-releases"
 
     When I run drush "hosting-tasks -v"
@@ -63,11 +62,11 @@ Feature: Create a project
 
     Then I should see "dev"
     And I should see "test"
-    And I should see "7.41"
+#    And I should see "7.41"
 
-    Then show last response
     And I should see "7.x-releases"
-    When I select "Minimal" from "Project Install Profile"
+    Then print last response
+    When I select "Minimal" from "install_profile"
     And I press "Finish"
 
     # FINISH!
@@ -78,13 +77,13 @@ Feature: Create a project
     And I should see "minimal"
     And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
-    And I should see the link "live"
+#    And I should see the link "live"
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
-    And I reload the page
-    And I reload the page
+
+    Then I wait "5" seconds
     And I reload the page
 
     When I click "Visit Environment"
