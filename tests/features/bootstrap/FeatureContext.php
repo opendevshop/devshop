@@ -38,6 +38,7 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
 //
 //    $file = file_save_data($this->getSession()->getPage()->getContent(), $path);
 //
+//    $link = str_replace('/var/aegir/devmaster-0.x/sites/devshop.site/files/', 'http://devshop.site/sites/devshop.site/files/', $file);
 //    echo "Saved output to $link";
   }
 
