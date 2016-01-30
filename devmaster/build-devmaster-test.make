@@ -9,4 +9,5 @@ projects[drupal][type] = "core"
 ; Before we merge your pull request, change this URL back to the opendevshop/devmaster repo.
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
+projects[devmaster][download][branch] = "0.x-tests"
 projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
