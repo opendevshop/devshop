@@ -60,14 +60,15 @@ Feature: Create a project
     And I should see "test"
     And I should see "7.41"
     And I should see "7.x-releases"
-    And I should see "Minimal, Standard"
+    When I select "Minimal" from "Project Install Profile"
+    And I press "Finish"
 
     # FINISH!
-    When I press "Finish"
     Then I should see "Your project has been created. Your sites are being installed."
     And I should see "Dashboard"
     And I should see "Settings"
     And I should see "Logs"
+    And I should see "minimal"
     And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
     And I should see the link "live"
