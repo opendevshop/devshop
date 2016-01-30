@@ -75,6 +75,9 @@ while [ $# -gt 0 ]; do
     --playbook=*)
       PLAYBOOK_PATH="${1#*=}"
       ;;
+    --makefile=*)
+      MAKEFILE_PATH="${1#*=}"
+      ;;
     --server-webserver=*)
       SERVER_WEBSERVER="${1#*=}"
       ;;
@@ -178,8 +181,6 @@ else
     echo $LINE
 fi
 
-MAKEFILE_PATH=''
-
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
@@ -214,9 +215,14 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     git pull
   fi
   PLAYBOOK_PATH=/usr/share/devshop
+#  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
+  echo $LINE
+fi
+
+# If MAKEFILE PATH is not found, default to CLI's build-devmaster.
+if [ ! -f "$MAKEFILE_PATH" ]; then
   MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
   echo $LINE
-
 fi
 
 cd $PLAYBOOK_PATH
