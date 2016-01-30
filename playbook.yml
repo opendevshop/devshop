@@ -221,6 +221,8 @@
       become: yes
       become_user: aegir
 
+    - debug msg="{{ travis }} {{ travis_repo_slug }} {{ travis_commit }}"
+
     - name: TRAVIS | Test the PR Code for devmaster.
       when: travis == "true" and travis_repo_slug == "opendevshop/devmaster"
       get_url: url={{ devshop_makefile }} dest=/usr/share/devshop/build-devmaster.make
