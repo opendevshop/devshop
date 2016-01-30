@@ -75,7 +75,7 @@ Feature: Create a project
     And I should see "Settings"
     And I should see "Logs"
     And I should see "Minimal"
-    And I should see "http://github.com/opendevshop/drupal"
+#    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
 #    And I should see the link "live"
 
