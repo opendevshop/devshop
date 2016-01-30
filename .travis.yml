@@ -41,7 +41,9 @@ services:
 
 before_install:
   # Clone devshop
-  - git clone http://github.com/opendevshop/devshop --branch=$TRAVIS_BRANCH
+  - git clone http://github.com/opendevshop/devshop
+  - cd devshop
+  - git checkout -qf ${TRAVIS_BRANCH}
 
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
