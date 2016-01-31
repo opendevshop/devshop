@@ -40,7 +40,11 @@ before_install:
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${TRAVIS_BRANCH}
+  - echo projects[devmaster][download][branch] = "${TRAVIS_BRANCH}" >> build-devmaster.make
+  - echo projects[devmaster][download][revision] = "${TRAVIS_COMMIT}" >> build-devmaster.make
+  - cat build-devmaster.make
   - cd ..
+
 
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
@@ -55,7 +59,7 @@ script:
   - echo "echo 127.0.0.1 dev.projectname.devshop.travis >> /etc/hosts && cat /etc/hosts" | docker exec -i devshop_container /bin/bash -
 
   # Install script.
-  - 'sudo docker exec --tty devshop_container env TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
+  - 'sudo docker exec --tty devshop_container env TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/build-devmaster.make'
 
   # Hostmaster Status
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
