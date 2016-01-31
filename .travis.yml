@@ -41,7 +41,7 @@ before_install:
   - cd devshop
   - git checkout -qf ${TRAVIS_BRANCH}
   - echo projects[devmaster][download][type] = "folder" >> build-devmaster.make
-  - echo projects[devmaster][download][url] = "file://${TRAVIS_BUILD_DIR}" >> build-devmaster.make
+  - echo projects[devmaster][download][url] = "${TRAVIS_BUILD_DIR}" >> build-devmaster.make
   - cat build-devmaster.make
   - cd ..
 
