@@ -20,6 +20,7 @@
   tasks:
 
     - hostname: name={{ server_hostname }}
+      become: yes
 
     - name: Setup | Message of the day.
       action: template src=templates/motd.j2 dest={{ motd_path }} mode=755
