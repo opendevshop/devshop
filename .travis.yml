@@ -45,6 +45,8 @@ before_install:
   - cd devshop
   - git checkout -qf ${TRAVIS_BRANCH}
   - cd ..
+  - cat /etc/hosts
+  - echo '127.0.0.1 dev.projectname.devshop.travis' >> /etc/hosts
 
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
