@@ -176,6 +176,8 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $settings->testing = array(
       'test_type' => 0,
       'tests_to_run' => '',
+      'behat_folder_path' => '',
+      'behat_bin' => 'bin/behat',
     );
   }
   
@@ -201,7 +203,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $tests[] = 'Something is wrong. Environment not found.';
   }
   else {
-    $directory = $environment->repo_root . '/' . $project->settings->testing['behat_folder_path'] . '/features';
+    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
 
     $files = file_scan_directory($directory, '.feature', array('.', '..'));
 
@@ -224,10 +226,18 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
   }
 
+  $testing_form['behat_folder_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Behat folder path'),
+    '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
+    '#default_value' => $settings->testing['behat_folder_path'],
+  );
+  
   // Lock fields in environment settings.
   if ($environment_name) {
     $locked = array(
       'test_type',
+      'behat_folder_path',
     );
     foreach ($locked as $field){
       $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
