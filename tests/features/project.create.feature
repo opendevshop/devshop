@@ -65,7 +65,6 @@ Feature: Create a project
 #    And I should see "7.41"
 
     And I should see "7.x-releases"
-    Then print last response
     And I wait "10" seconds
     And I reload the page
     When I select "minimal" from "install_profile"
