@@ -45,7 +45,6 @@ before_install:
   - cd devshop
   - git checkout -qf ${TRAVIS_BRANCH}
   - cd ..
-  - echo "echo 127.0.0.1 dev.projectname.devshop.travis >> /etc/hosts && cat /etc/hosts" | docker exec -i devshop_server /bin/bash -
 
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
@@ -56,6 +55,8 @@ script:
   - container_id=$(mktemp)
     # Run container in detached state
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+
+  - echo "echo 127.0.0.1 dev.projectname.devshop.travis >> /etc/hosts && cat /etc/hosts" | docker exec -i devshop_container /bin/bash -
 
   # Install script.
   - 'sudo docker exec --tty devshop_container env TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
