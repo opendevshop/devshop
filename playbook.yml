@@ -19,7 +19,8 @@
 
   tasks:
 
-    - hostname: name={{ server_hostname }}
+#    server_hostname is already the same as hostname --fqdn.
+#    - hostname: name={{ server_hostname }}
 
     - name: Setup | Message of the day.
       action: template src=templates/motd.j2 dest={{ motd_path }} mode=755
