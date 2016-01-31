@@ -36,14 +36,12 @@ services:
   - docker
 
 before_install:
-  # Get the PR Commit
-  - REVISION=$(git rev-parse HEAD)
   # Clone devshop
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${TRAVIS_BRANCH}
-  - echo projects[devmaster][download][branch] = "${TRAVIS_BRANCH}" >> build-devmaster.make
-  - echo projects[devmaster][download][revision] = "${REVISION}" >> build-devmaster.make
+  - echo projects[devmaster][download][type] = "folder" >> build-devmaster.make
+  - echo projects[devmaster][download][url] = "file://${TRAVIS_BUILD_DIR}" >> build-devmaster.make
   - cat build-devmaster.make
   - cd ..
 
