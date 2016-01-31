@@ -23,7 +23,7 @@ Feature: Create a project
     # Step 2
     Then print current URL
 #    Then save last response
-    Then I should see "projectname"
+    Then I should see "drpl8"
     And I should see "http://github.com/opendevshop/drupal"
 #   Uncomment once we have steps to unset the path to drupal.
 #    When I fill in "docroot" for "Path to Drupal"
@@ -87,7 +87,7 @@ Feature: Create a project
 
     Then I wait "5" seconds
     And I reload the page
-    Given I go to "http://dev.projectname.devshop.travis"
+    Given I go to "http://dev.drpl8.devshop.travis"
 #    When I click "Visit Environment"
     Then I should see "No front page content has been created yet."
 
