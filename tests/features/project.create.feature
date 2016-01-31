@@ -54,7 +54,7 @@ Feature: Create a project
     And I should see "dev"
 #    And I should see "live"
 #    And I should see "7.41"
-    And I should see "7.x-releases"
+    And I should see "master"
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
@@ -65,7 +65,7 @@ Feature: Create a project
     And I should see "test"
 #    And I should see "7.41"
 
-    And I should see "7.x-releases"
+    And I should see "master"
     And I wait "10" seconds
     And I reload the page
     When I select "minimal" from "install_profile"
