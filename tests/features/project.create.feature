@@ -68,6 +68,7 @@ Feature: Create a project
     And I should see "master"
     And I wait "10" seconds
     And I reload the page
+    Then print last response
     When I select "minimal" from "install_profile"
     And I press "Finish"
 
