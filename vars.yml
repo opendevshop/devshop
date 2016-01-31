@@ -17,7 +17,7 @@ vagrant_install_script: install.sh
 
 # Default server_webserver is apache, for now. In vagrant, let's default to nginx.
 # vagrant_install_script_args: [--playbook=/vagrant]
-vagrant_install_script_args: [--playbook=/vagrant, --server-webserver=nginx]
+vagrant_install_script_args: [--playbook=/vagrant]
 
 # Defaults virtualbox vagrant machines to 4GB.
 vagrant_virtualbox_memory: 4096
@@ -67,3 +67,5 @@ aegir_user_uid: 12345
 
 drush_path: "{{ local_bin_path }}/drush"
 devshop_cli_path: "{{ local_bin_path }}/devshop"
+
+supervisor_running: true

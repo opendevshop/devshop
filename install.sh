@@ -75,6 +75,9 @@ while [ $# -gt 0 ]; do
     --playbook=*)
       PLAYBOOK_PATH="${1#*=}"
       ;;
+    --makefile=*)
+      MAKEFILE_PATH="${1#*=}"
+      ;;
     --server-webserver=*)
       SERVER_WEBSERVER="${1#*=}"
       ;;
@@ -114,7 +117,6 @@ else
     PLAYBOOK_PATH=/usr/share/devshop
 fi
 
-echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
 # Notify user we are using the found webserver.
@@ -178,8 +180,6 @@ else
     echo $LINE
 fi
 
-MAKEFILE_PATH=''
-
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
   echo "TRAVIS DETECTED! Setting 'root' user password."
@@ -201,7 +201,6 @@ fi
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-echo $LINE
 
 # Clone the installer code if a playbook path was not set.
 if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
@@ -214,10 +213,20 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     git pull
   fi
   PLAYBOOK_PATH=/usr/share/devshop
+#  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
+  echo $LINE
+fi
+
+# If MAKEFILE PATH is not found, default to CLI's build-devmaster.
+if [ ! -f "$MAKEFILE_PATH" ]; then
   MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
   echo $LINE
-
 fi
+
+echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
+echo " Makefile: $MAKEFILE_PATH "
+echo $LINE
+
 
 cd $PLAYBOOK_PATH
 
@@ -234,11 +243,17 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
+
+# If testing in travis, disable supervisor.
+if [ "$TRAVIS" == "true" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
+fi
+
 
 ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 

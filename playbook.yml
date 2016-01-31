@@ -232,11 +232,6 @@
       command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler={{ drush_dl_method }} -y"
       with_dict: "{{ devshop_drush_packages }}"
 
-    - name: Clear the drush cache.
-      command: "{{ drush_path }} cc drush"
-      become: yes
-      become_user: aegir
-
     # Runs the drush devshop-install command with all of our options:
     - debug: msg="{{ devmaster_install_command }}"
 
@@ -248,6 +243,7 @@
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
     - name: Supervisor | Set up queue runner script
+      when: supervisor_running == true
       template:
         src=templates/hosting-queue-runner.j2
         dest=/usr/bin/hosting-queue-runner
@@ -256,6 +252,7 @@
         group=aegir
 
     - name: Supervisor | Set up supervisor job
+      when: supervisor_running == true
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
         dest={{ supervisor_hosting_queued_conf_path }}
@@ -264,6 +261,7 @@
         - restart supervisor
 
     - name: Service | Ensure Supervisor is restarted
+      when: supervisor_running == true
       service:
         name={{ supervisor_daemon }}
         state=restarted
@@ -315,6 +313,11 @@
 
     - name: Set git user name and email
       shell: "git config --global push.default simple"
+      become: yes
+      become_user: aegir
+
+    - name: Clear the drush cache.
+      command: "{{ drush_path }} cc drush"
       become: yes
       become_user: aegir
 
