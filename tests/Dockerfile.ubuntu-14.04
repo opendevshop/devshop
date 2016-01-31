@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-RUN apt-get update
+RUN apt-get update -qq
 
 # Install Ansible
 RUN sed -i 's/101/0/' /usr/sbin/policy-rc.d
