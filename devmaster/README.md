@@ -50,3 +50,4 @@ See DEVELOPMENT.md in the main devshop project for more information.
 Issues for devshop or devmaster should be submitted to the github issue queue:
 
 https://github.com/opendevshop/devshop/issues
+
