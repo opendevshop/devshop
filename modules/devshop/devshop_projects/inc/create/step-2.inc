@@ -15,7 +15,7 @@ function devshop_project_create_step_settings($form, &$form_state) {
   $node = node_load($project->nid);
 
   $form_state['build_info']['args'] = array($node);
-  $project_form = drupal_retrieve_form('project_node_form', $form_state);
+  $project_form = devshop_projects_form($node);
 
   // Remove node buttons
   unset($project_form['actions']);
@@ -30,9 +30,9 @@ function devshop_project_create_step_settings($form, &$form_state) {
   );
 
   // Add additional additional submit and validate handlers for the node form.
-  $form['buttons']['next']['#submit'][] = 'node_form_submit';
+//  $form['buttons']['next']['#submit'][] = 'node_form_submit';
   $form['buttons']['next']['#submit'][] = 'ctools_wizard_submit';
-  $form['buttons']['next']['#validate'][] = 'node_form_validate';
+//  $form['buttons']['next']['#validate'][] = 'node_form_validate';
 
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 

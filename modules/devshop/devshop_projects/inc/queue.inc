@@ -35,7 +35,7 @@ function devshop_projects_get_deploy_queue_environments() {
       continue;
     }
     $project = $node->project;
-    if ($project->settings->deploy['method'] == 'queue') {
+    if (isset($project->settings->deploy) && $project->settings->deploy['method'] == 'queue'){
       foreach ($project->environments as $environment) {
         if ($environment->git_ref_type == 'branch' && $environment->settings->pull_disabled == 0) {
           $environments[] = $environment;
