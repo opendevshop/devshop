@@ -10,6 +10,14 @@ installer will use this install profile as a part of the setup process.
 
 See http://github.com/opendevshop/devshop for more information.
 
+Contribution
+============
+
+To contribute to this project, please fork this repo, do your work in a separate
+branch and submit a Pull Request.
+
+Travis-CI.org is configured to run tests on all pull requests for devmaster.
+
 Contents
 ========
 
