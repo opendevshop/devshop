@@ -58,7 +58,7 @@ before_install:
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Ansible syntax check.
   - 'sudo docker exec --tty devshop_container env TERM=xterm ansible-playbook /usr/share/devshop/playbook.yml --syntax-check'
