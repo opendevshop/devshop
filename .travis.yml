@@ -60,7 +60,7 @@ script:
   - 'sudo docker exec --tty devshop_container env TERM=xterm ansible-playbook /usr/share/devshop/playbook.yml --syntax-check'
 
   # Install script.
-  - 'sudo docker exec --tty devshop_container env TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis'
+  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis'
 
   # Hostmaster Status
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
