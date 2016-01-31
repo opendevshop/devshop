@@ -39,8 +39,7 @@ before_install:
   # Clone devshop
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
-  - git checkout -qf $TRAVIS_BRANCH
-  - echo $TRAVIS_BRANCH
+  - git checkout 1.x
   - git status
   - echo projects[devmaster][download][type] = "copy" >> build-devmaster.make
   - echo projects[devmaster][download][url] = "/usr/share/devshop/devmaster" >> build-devmaster.make
