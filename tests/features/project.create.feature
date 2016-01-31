@@ -87,8 +87,7 @@ Feature: Create a project
 
     Then I wait "5" seconds
     And I reload the page
-
-    Given I am on "http://dev.projectname.devshop.travis"
+    Given I go to "http://dev.projectname.devshop.travis"
 #    When I click "Visit Environment"
     Then I should see "No front page content has been created yet."
 
