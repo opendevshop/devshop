@@ -100,7 +100,7 @@ function devshop_projects_node_load($nodes, $types) {
       $node->type_name = $task_types[$node->task_type]['title'];
 
       // If platform's first verify...
-      if ($node->ref->type == 'platform' && $node->ref->verified == 0) {
+      if (isset($node->ref) && $node->ref->type == 'platform' && $node->ref->verified == 0) {
         $node->type_name = t('Cloning Codebase');
       }
 
