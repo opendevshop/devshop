@@ -43,7 +43,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
       }
     }
 
-    devshop_environment_save_last_task($site->environment);
+    // devshop_environment_save_last_task($site->environment);
   }
 }
 
@@ -58,11 +58,10 @@ function devshop_projects_hosting_task_update_status($task, $status) {
  * the $task object, or if you don't need this functionality from the command
  * line.
  */
-function drush_devshop_projects_pre_hosting_task() {
+function drush_devshop_projects_pre_hosting_task()
+{
 
-  drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
-
-  $task = &drush_get_context('HOSTING_TASK');
+  $task =& drush_get_context('HOSTING_TASK');
 
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
   if ($task->task_type == 'download') {
@@ -272,7 +271,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
-    drush_log('[DEVSHOP] Platform Verification complete.', 'notice');
+    drush_log('[DevShop] Platform Verification Complete', 'devshop_log');
 
     // If this platform isn't in a project, bail.
     $platform = $task->ref;
@@ -288,7 +287,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
 
     // If the platform has a site already, trigger verification, then bail.
-    if ($platform->environment->site) {
+    if (!empty($platform->environment->site)){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
       // hosting_add_task($platform->environment->site, 'verify');
       return;
@@ -355,7 +354,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
     if ($platform->environment->name) {
 
       // Save environment record.
-      drush_log('[DEVSHOP] Project & Environment found:' . $platform->project->name . '.' . $platform->environment->name);
+      drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
       db_update('hosting_devshop_project_environment')
         ->fields(array(
           'site' => $site->nid,
@@ -363,7 +362,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
         ->condition('project_nid', $platform->project->nid)
         ->condition('name', $platform->environment->name)
         ->execute();
-      drush_log('[DEVSHOP] Site saved to environment.');
+      drush_log("Saved {$platform->environment->name} in project {$platform->project->name}.", 'devshop_ok');
 
       // Save aliases if needed.
       if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
