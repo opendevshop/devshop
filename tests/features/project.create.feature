@@ -24,7 +24,7 @@ Feature: Create a project
     Then print current URL
 #    Then save last response
     Then I should see "drpl8"
-    And I should see "http://github.com/opendevshop/drupal"
+    And I should see "http://github.com/jonpugh/drupal8"
 #   Uncomment once we have steps to unset the path to drupal.
 #    When I fill in "docroot" for "Path to Drupal"
 
