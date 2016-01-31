@@ -14,17 +14,17 @@ env:
   - test: CentOS 7 Apache
     distribution: centos
     version: 7
-    init: /sbin/init
-    run_opts: "-v /tmp/$(mktemp -d):/run"
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
-    supervisor_stop: "service stop supervisord"
+    supervisor_stop: "systemctl supervisord stop"
   - test: CentOS 7 NGINX
     distribution: centos
     version: 7
-    init: /sbin/init
-    run_opts: "-v /tmp/$(mktemp -d):/run"
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=nginx"
-    supervisor_stop: "service stop supervisord"
+    supervisor_stop: "systemctl supervisord stop"
   - test: Ubuntu 14.04 Apache
     distribution: ubuntu
     version: 14.04
