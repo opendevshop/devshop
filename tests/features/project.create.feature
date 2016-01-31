@@ -41,7 +41,7 @@ Feature: Create a project
 #    Then save last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
-    And I select "7.x-releases" from "project[environments][NEW][git_ref]"
+    And I select "master" from "project[environments][NEW][git_ref]"
 
 #    And I press "Add environment"
 #    And I fill in "live" for "project[environments][NEW][name]"
@@ -91,4 +91,3 @@ Feature: Create a project
 #    When I click "Visit Environment"
     Then I should see "No front page content has been created yet."
 
-#    Then I should see "Create as many new environments as you would like."
