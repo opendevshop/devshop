@@ -47,7 +47,6 @@ before_install:
   - cat build-devmaster.make
   - cd ..
 
-
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
   # Customize container
@@ -58,10 +57,8 @@ script:
     # Run container in detached state
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-  - echo "echo 127.0.0.1 dev.projectname.devshop.travis >> /etc/hosts && cat /etc/hosts" | docker exec -i devshop_container /bin/bash -
-
   # Install script.
-  - 'sudo docker exec --tty devshop_container env TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/build-devmaster.make'
+  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
 
   # Hostmaster Status
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
