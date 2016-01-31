@@ -204,6 +204,26 @@
         </div>
 
     <?php
+      // SITUATION: Environment has platform but no site, verify succeeded, and there is NOT a clone task...
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING && empty($environment->tasks['clone'])):
+
+        $verify_task = current($environment->tasks['verify']);
+        ?>
+        <div class="list-group-item center-block text text-muted">
+
+          <i class="fa fa-warning"></i>
+          <?php print t('Aegir Platform has been created, but Site is missing. Please contact your administrator.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
+          <div class="btn-group " role="group">
+            <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
+              <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+            </a>
+          </div>
+        </div>
+
+    <?php
       // SITUATION: Site Install Failed
       elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
 
@@ -242,12 +262,13 @@
                 if (count($environment->domains) > 1):
                     ?>
                     <div class="btn-group btn-group-smaller btn-urls" role="group">
-                        <a href="<?php print $environment->url ?>" target="_blank">
+                        <a href="<?php print $environment->url ?>" target="_blank" class="environment-link">
                             <?php if (!empty($environment->ssl_enabled)): ?>
                                 <i class="fa fa-lock text-success"></i>
                             <?php else: ?>
                                 <i class="fa fa-globe"></i>
                             <?php endif; ?>
+                            <span class="hidden">Visit Environment:</span>
                             <?php print $environment->url ?>
                         </a>
                     </div>
