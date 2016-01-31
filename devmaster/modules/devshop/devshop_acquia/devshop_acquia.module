@@ -120,7 +120,13 @@ function drush_run_acquia_hook($task) {
     //
     // So, by passing "environment->name" as $site, and project.hostname as $target_env,
     // we can trick the Acquia cloud script to use the right alias.
-    $command = "sh $file {$environment->name} {$environment->project_name}.{$environment->web_server} {$environment->name} old_branch {$environment->git_ref} repo_url repo_type";
+    $alias = explode('.', $environment->drush_alias);
+    $environment_name = substr($alias[0], 1);
+
+    $command = "sh $file {$environment_name} {$project->base_url} {$environment_name} old_branch {$environment->git_ref} repo_url repo_type";
+
+    drush_log('[Running] ' . $command, 'devshop_log');
+
     $process = new Process($command);
     $process->setTimeout(NULL);
     $exit_code = $process->run(function ($type, $buffer) {

@@ -212,6 +212,7 @@ function devshop_projects_menu() {
   );
   $items['projects/list'] = array(
     'title' => t('All Projects'),
+    'description' => '',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
   $items['projects/add'] = array(
@@ -257,6 +258,7 @@ function devshop_projects_menu() {
   // Environment settings pages
   $items['node/%node/edit/%'] = array(
     'title' => 'Edit',
+    'description' => '',
     'page callback' => 'devshop_project_environment_settings_page',
     'page arguments' => array(1, 3),
     'access callback' => 'node_access',
@@ -269,6 +271,7 @@ function devshop_projects_menu() {
   // Environment logs pages
   $items['node/%node/logs/%'] = array(
     'title' => 'Logs',
+    'description' => '',
     'page callback' => 'devshop_project_logs_page',
     'page arguments' => array(1, 3),
     'access callback' => 'devshop_project_logs_access',
@@ -280,6 +283,7 @@ function devshop_projects_menu() {
   // Drush aliases download.
   $items['node/%node/aliases'] = array(
     'title' => 'Drush Aliases',
+    'description' => '',
     'page callback' => 'devshop_project_drush_aliases_page',
     'page arguments' => array(1),
     'access callback' => 'node_access',
@@ -293,6 +297,7 @@ function devshop_projects_menu() {
   $items['devshop/tasks'] = array(
       'page callback' => 'devshop_projects_tasks_status_json',
       'page arguments' => array(2),
+      'description' => '',
       'access arguments' => array('access task logs'),
       'file' => 'tasks-ajax.inc',
       'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
