@@ -44,6 +44,7 @@ function devshop_projects_hosting_tasks() {
   // This task might as well be in hosting_git.module
   $tasks['site']['devshop-deploy'] = array(
     'title' => t('Deploy'),
+    'description' => t('Checkout or Pull new code to this environment.'),
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
