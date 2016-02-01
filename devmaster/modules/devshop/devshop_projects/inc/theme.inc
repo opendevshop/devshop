@@ -325,7 +325,7 @@ function template_preprocess_devshop_project_add_status(&$vars) {
 function template_preprocess_devshop_project_nav(&$vars) {
 
   global $user;
-  $project = $vars['project'] = $vars['project']->project;
+  $project = $vars['project'];
   $node = $vars['node'] = node_load($project->nid);
 
   // @TODO: Detect other web URLs for other git hosts.
