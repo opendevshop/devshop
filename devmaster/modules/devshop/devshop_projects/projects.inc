@@ -69,9 +69,13 @@ SELECT
  */
 function devshop_project_load($node) {
 
+  if (empty($node->nid) || $node->type != 'project') {
+    return;
+  }
+
   // Load verification status of project node.
-  $task = (object) db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid))->fetchAssoc();
-  $task->task_status = (int) $task->task_status;
+  $query = db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid));
+  $task = $query->fetch();
 
   // Load project data
   $project = (object) db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = :nid', array(':nid' => $node->nid))->fetchAssoc();
@@ -80,7 +84,10 @@ function devshop_project_load($node) {
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
 
-  $project->verify = $task;
+  if (!empty($task)) {
+    $project->verify = $task;
+    $task->task_status = (int) $task->task_status;
+  }
 
   // Create "refs" array to determine ref type.
   $project->settings->git['refs'] = array();
@@ -241,7 +248,12 @@ function devshop_project_load($node) {
 
     // Web Server IP
     $server = node_load($environment->web_server_nid);
-    $environment->ip_addresses = $server->ip_addresses;
+    if (!empty($server)) {
+      $environment->ip_addresses = $server->ip_addresses;
+    }
+    else {
+      $environment->ip_addresses = array();
+    }
 
     // Load Solr if present
     if (module_exists('hosting_solr')) {
