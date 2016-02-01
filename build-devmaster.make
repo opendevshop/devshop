@@ -16,10 +16,6 @@ projects[devmaster][download][type] = "git"
 projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
 projects[devmaster][download][branch] = "1.x"
 
-; Change this URL to your own fork to develop devshop devmaster.
-;projects[devmaster][download][url] = "git@github.com:opendevshop/devmaster.git"
-;projects[devmaster][download][branch] = "0.x"
-
 ; RELEASE
 ; When releasing, lock in the devmaster version.
 ;projects[devmaster][download][branch] = "1.0.0"
