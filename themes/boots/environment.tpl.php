@@ -236,11 +236,11 @@
                     <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
                 </a>
                 <?php if (variable_get('hosting_require_disable_before_delete', TRUE) && $environment->site_status != HOSTING_SITE_DISABLED): ?>
-                <a href="<?php print url("node/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                <a href="<?php print url("hosting_confirm/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                     <i class="fa fa-power-off"></i> <?php print t('Disable the Environment'); ?>
                 </a>
                 <?php else: ?>
-                    <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                    <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                         <i class="fa fa-trash"></i> <?php print t('Destroy the Environment'); ?>
                     </a>
                 <?php endif; ?>
@@ -466,7 +466,7 @@
                                     // DB: Migrate Task
                                     if ($type == 'db') {
                                         $icon = 'database';
-                                        $url = "node/{$environment->site}/site_migrate";
+                                        $url = "hosting_confirm/{$environment->site}/site_migrate";
                                     }
                                     // HTTP: Edit Platform
                                     elseif ($type == 'http') {
