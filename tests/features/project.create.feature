@@ -44,16 +44,16 @@ Feature: Create a project
     And I select "master" from "project[environments][NEW][git_ref]"
 
 #    And I press "Add environment"
-#    And I fill in "live" for "project[environments][NEW][name]"
-#    And I select "7.41" from "project[environments][NEW][git_ref]"
-#    And I press "Add environment"
+    And I fill in "live" for "project[environments][NEW][name]"
+    And I select "master" from "project[environments][NEW][git_ref]"
+    And I press "Add environment"
     Then I press "Next"
 #    Then print last response
 
     # Step 4
     And I should see "dev"
-#    And I should see "live"
-#    And I should see "7.41"
+    And I should see "live"
+    And I should see "master"
     And I should see "master"
 
     When I run drush "hosting-tasks -v"
@@ -62,8 +62,8 @@ Feature: Create a project
     And I reload the page
 
     Then I should see "dev"
-    And I should see "test"
-#    And I should see "7.41"
+    And I should see "live"
+    And I should see "master"
 
     And I should see "master"
     And I wait "10" seconds
@@ -81,7 +81,7 @@ Feature: Create a project
     And I should see "standard"
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
-#    And I should see the link "live"
+    And I should see the link "live"
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
@@ -89,7 +89,8 @@ Feature: Create a project
 
     Then I wait "5" seconds
     And I reload the page
-    Then I should see the link "http://dev.drup.devshop.travis"
+    Then I should see the link "dev"
+    Then I should see the link "live"
     Given I go to "http://dev.drup.devshop.travis"
 #    When I click "Visit Environment"
     Then I should see "No front page content has been created yet."
