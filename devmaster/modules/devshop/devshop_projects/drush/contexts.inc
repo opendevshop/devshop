@@ -39,10 +39,34 @@ function devshop_projects_hosting_project_context_options(&$task) {
  */
 function devshop_projects_hosting_site_context_options(&$task) {
 
+  drush_log(print_r($task, 1), 'devshop_log');
   if (isset($task->ref->environment)) {
     $task->context_options['environment'] = $task->ref->environment;
     $task->context_options['project'] = $task->ref->project->name;
     $task->context_options['git_ref'] = $task->ref->environment->git_ref;
+    drush_log('task ref environment was found!!', 'devshop_success');
+  }
+  else {
+    drush_log('task ref environment not found!', 'devshop_error');
+  }
+}
+
+/**
+ * Implements hook_hosting_site_context_options().
+ *
+ * Runs on verify task. Passes data to the drush alias.
+ * Save environment name, project name, and git ref to site aliases.
+ */
+function devshop_projects_hosting_platform_context_options(&$task) {
+
+  if (isset($task->ref->environment)) {
+    $task->context_options['environment'] = $task->ref->environment;
+    $task->context_options['project'] = $task->ref->project->name;
+    $task->context_options['git_ref'] = $task->ref->environment->git_ref;
+    drush_log('task ref environment was found!', 'devshop_log');
+  }
+  else {
+    drush_log('task ref environment not found!', 'devshop_error');
   }
 }
 
