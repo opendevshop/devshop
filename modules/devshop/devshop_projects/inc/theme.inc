@@ -224,14 +224,14 @@ function devshop_task_get_messages($task_node) {
   drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
 
-  $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $task_node->vid);
-  while ($results = db_fetch_object($query)) {
+  $result = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", array(':vid' => $task_node->vid));
+  foreach ($result as $record) {
 
-    if ($results->type == 'devshop_command') {
-      if (empty($results->message)) {
+    if ($record->type == 'devshop_command') {
+      if (empty($record->message)) {
         continue;
       }
-      $command = $results->message;
+      $command = $record->message;
       $outputs[$command] = array(
         'status' => 'default',
         'icon' => 'gear',
@@ -242,35 +242,35 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
-    } elseif ($results->type == 'devshop_info') {
+    } elseif ($record->type == 'devshop_info') {
       $outputs[$command]['output'] .= $results->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
-    } elseif ($results->type == 'devshop_ok') {
+    } elseif ($record->type == 'devshop_ok') {
       $outputs[$command]['output'] .= $results->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
-    } elseif ($results->type == 'devshop_error') {
+    } elseif ($record->type == 'devshop_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] .= $results->message;
-    } elseif ($results->type == 'warning') {
+    } elseif ($record->type == 'warning') {
       $command = 'warning_' . count($outputs);
       $outputs[$command]['status'] = 'warning';
       $outputs[$command]['icon'] = 'exclamation-triangle';
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['command'] = 'warning';
-    } elseif ($results->type == 'error') {
+    } elseif ($record->type == 'error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['command'] = 'error';
-    } elseif ($results->type == 'devshop_log') {
+    } elseif ($record->type == 'devshop_log') {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
-      $outputs[$command]['command'] .= $results->message;
+      $outputs[$command]['command'] .= $record->message;
       $outputs[$command]['output'] = '';
     }
   }
