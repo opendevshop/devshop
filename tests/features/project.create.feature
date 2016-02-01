@@ -91,7 +91,7 @@ Feature: Create a project
     And I reload the page
     Then I should see the link "dev"
     Then I should see the link "live"
-    Given I go to "http://dev.drpl8.devshop.travis"
+#    Given I go to "http://dev.drpl8.devshop.travis"
 #    When I click "Visit Environment"
 
 # @TODO: Fix our site installation.
