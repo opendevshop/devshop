@@ -419,7 +419,7 @@
                                     <li><label><?php print t('Deploy data from'); ?></label></li>
                                     <?php foreach ($source_environments as $source): ?>
                                         <?php if ($source->name == $environment->name) continue; ?>
-                                        <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
+                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
                                                 <?php if ($project->settings->live['live_environment'] == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
                                                 <?php elseif ($source->settings->locked): ?>
@@ -433,7 +433,7 @@
                                     <?php endforeach; ?>
                                     <?php if ($project->settings->deploy['allow_deploy_data_from_alias']): ?>
                                         <li class="divider"></li>
-                                        <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=other&dest=<?php print $source->name ?>">
+                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=other&dest=<?php print $source->name ?>">
                                                 <strong class="btn-block"><?php print t('Other...'); ?></strong>
                                                 <small><?php print t('Enter a drush alias to deploy from.'); ?></small>
                                             </a>
