@@ -793,3 +793,7 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   display: inline-block;
 
 }
+
+.ansi_color_bg_black {
+    background: #262626;
+}
