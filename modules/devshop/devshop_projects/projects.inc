@@ -76,7 +76,6 @@ function devshop_project_load($node) {
   // Load verification status of project node.
   $query = db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid));
   $task = $query->fetch();
-  $task->task_status = (int) $task->task_status;
 
   // Load project data
   $project = (object) db_query('SELECT * FROM {hosting_devshop_project} WHERE nid = :nid', array(':nid' => $node->nid))->fetchAssoc();
@@ -85,7 +84,10 @@ function devshop_project_load($node) {
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
 
-  $project->verify = $task;
+  if (!empty($task)) {
+    $project->verify = $task;
+    $task->task_status = (int) $task->task_status;
+  }
 
   // Create "refs" array to determine ref type.
   $project->settings->git['refs'] = array();
