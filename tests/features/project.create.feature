@@ -68,8 +68,9 @@ Feature: Create a project
     And I should see "master"
     And I wait "10" seconds
     And I reload the page
+    Then I should see "8.0.2"
     Then I should not see "Platform verification failed"
-    When I select "minimal" from "install_profile"
+    When I select "standard" from "install_profile"
     And I press "Finish"
 
     # FINISH!
@@ -77,9 +78,10 @@ Feature: Create a project
     And I should see "Dashboard"
     And I should see "Settings"
     And I should see "Logs"
-    And I should see "Minimal"
+    And I should see "standard"
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
+    And I should see the link "http://dev.drup.devshop.site"
 #    And I should see the link "live"
 
     When I run drush "hosting-tasks -v"
