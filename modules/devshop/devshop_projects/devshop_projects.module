@@ -195,12 +195,10 @@ function devshop_projects_menu() {
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
     'type' => MENU_NORMAL_ITEM,
   );
-
-  $items['admin/devshop/projects'] = $items['admin/devshop'];
-  $items['admin/devshop/projects']['title'] = 'Projects';
-  $items['admin/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
-  $items['admin/devshop/projects']['tab_parent'] = 'admin/devshop';
-  $items['admin/devshop/projects']['weight'] = -10;
+  $items['admin/devshop/settings'] = array(
+    'title' => t('DevShop Settings'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
 
   $items['projects'] = array(
     'title' => t('Projects'),
