@@ -116,7 +116,7 @@
             <span class="text-danger">
               <i class="fa fa-warning"></i> <?php print t('Access Denied'); ?>
             </span>
-            <a href="<?php print url('admin/devshop/devshop/pull')?>">
+            <a href="<?php print url('admin/devshop/pull')?>">
               <?php print t('Configure Webhook Access'); ?>
             </a>
           <?php else: ?>
