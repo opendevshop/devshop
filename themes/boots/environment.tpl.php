@@ -140,10 +140,10 @@
 
           <div class="list-group-item center-block text text-muted">
             <div class="btn-group">
-              <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
                 <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
               </a>
-              <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
                 <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
               </a>
             </div>
