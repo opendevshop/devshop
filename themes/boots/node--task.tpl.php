@@ -72,7 +72,7 @@
 
       <?php if ($retry): ?>
         <div class="retry-button pull-right">
-          <?php print $retry; ?>
+          <?php print render($retry); ?>
         </div>
       <?php endif; ?>
     </h4>
