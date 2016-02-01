@@ -384,7 +384,7 @@ function devshop_projects_block_view($delta) {
     if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
 
       // If viewed node is project, use that.
-      $project = $node->type == 'project' ? $node : ($node->project->vid ? $node->project : node_load($node->project->nid));
+      $project = $node->type == 'project' ? $node : ($node->project->vid ? $node->project : node_load($node->project));
       $block['subject'] = '';
       $block['content'] = theme('devshop_project_nav', array('project' => $project));
     }
