@@ -221,7 +221,7 @@ function devshop_task_get_messages($task_node) {
   $styles = $theme->asCss();
   $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
 
-  drupal_set_html_head("<style>$styles</style>");
+  drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
 
   $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $task_node->vid);
