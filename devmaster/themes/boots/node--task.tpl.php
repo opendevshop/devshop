@@ -147,8 +147,6 @@
         <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label;?></span>
     </div>
 
-    <?php print $content; ?>
-
     <div class="task-details">
         <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
             <i class="fa fa-list"></i> <?php print t('Details'); ?>
@@ -160,7 +158,7 @@
 
         <div class="collapse" id="collapseLogs">
             <div class="well">
-                <?php print $node->content['hosting_log']['#value']; ?>
+                <?php print render($content['hosting_log']); ?>
             </div>
         </div>
     </div>
