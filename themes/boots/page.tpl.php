@@ -141,7 +141,6 @@
     <?php if (!empty($site_slogan)): ?>
       <p class="lead"><?php print $site_slogan; ?></p>
     <?php endif; ?>
-    <?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 
     <?php print render($page['header']); ?>
 
