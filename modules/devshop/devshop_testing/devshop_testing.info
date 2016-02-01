@@ -1,5 +1,5 @@
 name = DevShop Testing
 description = Allow simpletests to be run easily on your DevShop projects.
-core = 6.x
+core = 7.x
 package = DevShop
 dependencies[] = devshop_projects
