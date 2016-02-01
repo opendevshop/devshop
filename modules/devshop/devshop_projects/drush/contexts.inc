@@ -72,11 +72,11 @@ function getBranchesAndTags($git_url = NULL) {
   drush_shell_exec($command);
   $exec_output = drush_shell_exec_output();
   if ($exec_output) {
-    drush_log("[DEVSHOP] git ls-remote {$git_url} \n {$exec_output}", 'ok');
+    drush_log("[DEVSHOP] git ls-remote {$git_url} " . implode('\n', $exec_output), 'ok');
   }
   else {
     $exec_output = drush_shell_exec_output();
-    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] No output from git ls-remote.') . implode("\n", $exec_output), 'error');
+    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] No output from git ls-remote.') . implode(" ", $exec_output), 'error');
     return;
   }
 
