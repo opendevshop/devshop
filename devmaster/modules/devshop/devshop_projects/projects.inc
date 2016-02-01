@@ -248,7 +248,12 @@ function devshop_project_load($node) {
 
     // Web Server IP
     $server = node_load($environment->web_server_nid);
-    $environment->ip_addresses = $server->ip_addresses;
+    if (!empty($server)) {
+      $environment->ip_addresses = $server->ip_addresses;
+    }
+    else {
+      $environment->ip_addresses = array();
+    }
 
     // Load Solr if present
     if (module_exists('hosting_solr')) {
