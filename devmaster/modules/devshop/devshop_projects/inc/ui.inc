@@ -265,7 +265,7 @@ function devshop_environment_links($environment) {
         $tasks[$action]['title'] = '<i class="fa fa-trash-o"></i> ' . t('Destroy Environment');
       }
 
-      $href = "node/{$environment->site}/site_{$action}";
+      $href = "hosting_confirm/{$environment->site}/site_{$action}";
       $url = url($href, array(
           'query' => array(
               'token' => drupal_get_token($user->uid),
