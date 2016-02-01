@@ -11,9 +11,7 @@ function devshop_projects_entity_load($entities, $type) {
     $types = array(
       'site',
       'platform',
-
-      // @TODO: Loading project and environment into task nodes causes recursion.
-       'task',
+      'task',
     );
 
     foreach ($entities as &$entity) {
@@ -21,16 +19,33 @@ function devshop_projects_entity_load($entities, $type) {
 
         // Load project and environment
         if ($entity->type == 'task') {
+
+          // If this is a Verify Project task, we don't want to load anything.
+          if (strpos($entity->title, 'Verify Project:') === 0) {
+            $entity->project = $entity->rid;
+            $entity->environment = NULL;
+            continue;
+          }
+
           $nid = $entity->rid;
         }
         else {
           $nid = $entity->nid;
         }
 
-        $result = db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE site  = :site OR platform = :platform", array(
+        $query = db_query("
+SELECT
+  project_nid, name FROM {hosting_devshop_project_environment}
+  WHERE site  = :site
+    OR platform = :platform
+    OR project_nid = :project
+", array(
           ':site' => $nid,
           ':platform' => $nid,
-        ))->fetch();
+          ':project' => $nid,
+        ));
+
+        $result = $query->fetch();
 
         // Only load the project node if there is no task
         if ($entity->type == 'task') {
