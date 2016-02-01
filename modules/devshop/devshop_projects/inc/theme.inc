@@ -342,24 +342,24 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   if ($vars['branches_count'] == 0) {
     // If branches are 0 and last verifying is queued...
-    if ($node->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status == HOSTING_TASK_QUEUED) {
+    if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status == HOSTING_TASK_QUEUED) {
       $vars['branches_show_label'] = TRUE;
       $vars['branches_label'] = t('Refreshing...');
       $vars['branches_class'] = 'btn-warning';
       $vars['branches_icon'] = 'gear fa-spin';
-      $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->verify->nid);
+      $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->project->verify->nid);
 
     }
     // If branches are 0 and last verifying failed...
-    elseif ($node->verify->task_status == HOSTING_TASK_ERROR) {
+    elseif ($node->project->verify->task_status == HOSTING_TASK_ERROR) {
       $vars['branches_show_label'] = TRUE;
       $vars['branches_label'] = t('Error');
       $vars['branches_class'] = 'btn-danger';
       $vars['branches_items'][] = t('There was a problem refreshing branches and tags.');
-      $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->verify->nid);
+      $vars['branches_items'][] = l(t('View task log'), 'node/' . $node->project->verify->nid);
     }
     // If branches are 0 and last verifying has completed... This should never happen, because the task would error out.
-    elseif ($node->verify->task_status == HOSTING_TASK_SUCCESS) {
+    elseif ($node->project->verify->task_status == HOSTING_TASK_SUCCESS) {
       $vars['branches_show_label'] = TRUE;
       $vars['branches_label'] = t('No branches found!');
     }
