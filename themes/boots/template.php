@@ -250,11 +250,12 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
       $text .= $task->title;
       $text .= ' <small class="task-ago btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
 
+      $id = isset($task_node->environment)? "task-{$task_node->environment->project_name}-{$task_node->environment->name}": "task-";
       $task_items[] = l($text, 'node/' . $task->nid, array(
         'html' => TRUE,
         'attributes' => array(
           'class' => array('list-group-item ' . $item_class),
-            'id' => "task-{$task_node->environment->project_name}-{$task_node->environment->name}",
+            'id' => $id,
         ),
       ));
     }
