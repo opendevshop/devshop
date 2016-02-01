@@ -81,7 +81,6 @@ Feature: Create a project
     And I should see "standard"
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
-    And I should see the link "http://dev.drup.devshop.travis"
 #    And I should see the link "live"
 
     When I run drush "hosting-tasks -v"
@@ -90,6 +89,7 @@ Feature: Create a project
 
     Then I wait "5" seconds
     And I reload the page
+    Then I should see the link "http://dev.drup.devshop.travis"
     Given I go to "http://dev.drup.devshop.travis"
 #    When I click "Visit Environment"
     Then I should see "No front page content has been created yet."
