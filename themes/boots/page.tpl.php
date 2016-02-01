@@ -129,6 +129,15 @@
       </h1>
     <?php endif; ?>
 
+    <?php if ($title2): ?>
+      <h3>
+        <?php print $title2 ?>
+        <?php if ($subtitle2): ?>
+          <small><?php print $subtitle2 ?></small>
+        <?php endif; ?>
+      </h3>
+    <?php endif; ?>
+
     <?php if (!empty($site_slogan)): ?>
       <p class="lead"><?php print $site_slogan; ?></p>
     <?php endif; ?>
