@@ -115,16 +115,24 @@ function devshop_projects_node_load($nodes, $types) {
       //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
       //  }
 
-      // @TODO: This is causing a major SEGFAULT. It destroys apache! unable to restart the service, even!
-//      $result = (object) db_query("SELECT nid, name FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
-//          ':site' => $node->rid,
-//          ':platform' => $node->rid
-//      ))->fetchAssoc();
-//
-//      // Load project and environment
-//      $project_node = node_load($result->nid);
-//      $node->project = $project_node->project;
-//      $node->environment = $project_node->project->environments[$result->name];
+      //Load the project and environment info for this task.
+      $results = (object) db_query("
+        SELECT
+          title as project,
+          e.*
+        FROM {hosting_devshop_project_environment} e
+          LEFT JOIN {hosting_devshop_project} p ON e.project_nid = p.nid
+          LEFT JOIN {node} n ON p.nid = n.nid
+          WHERE site = :site OR platform = :platform
+
+", array(
+        ':site' => $node->rid,
+        ':platform' => $node->rid
+      ))->fetchAssoc();
+
+      $node->project = $results->project;
+      $node->environment = $results;
+      $node->environment->settings = $results->settings;
     }
     // Projects
     elseif ($node->type == 'project') {
