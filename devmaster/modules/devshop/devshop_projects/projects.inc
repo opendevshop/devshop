@@ -69,8 +69,13 @@ SELECT
  */
 function devshop_project_load($node) {
 
+  if (empty($node->nid) || $node->type != 'project') {
+    return;
+  }
+
   // Load verification status of project node.
-  $task = (object) db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid))->fetchAssoc();
+  $query = db_query('SELECT * FROM {hosting_task} WHERE rid = :rid ORDER BY vid DESC', array(':rid' => $node->nid));
+  $task = $query->fetch();
   $task->task_status = (int) $task->task_status;
 
   // Load project data
