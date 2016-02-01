@@ -129,7 +129,6 @@ function devshop_projects_preprocess_node(&$vars) {
 
   // On task node page
   if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && $vars['page']){
-    $vars['content'] = '';
 
     // Prepare task icon, class, and label.
     $icon = devshop_task_status_icon($vars['node']->task_status);
