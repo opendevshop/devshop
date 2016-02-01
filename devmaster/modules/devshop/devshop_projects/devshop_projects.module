@@ -5,6 +5,7 @@
  * Provides Node Type, UI, and tools for DevShop Projects.
  */
 
+include_once('projects.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
