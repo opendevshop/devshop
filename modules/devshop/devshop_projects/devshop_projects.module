@@ -111,13 +111,13 @@ function devshop_projects_devshop_environment_actions($environment) {
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
-        "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
+        "hosting_confirm/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
         array(
           'html' => TRUE,
         )
       );
       $items[] = l('<i class="fa fa-code-fork"></i> '.t('Fork Environment'),
-        "node/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}",
+        "hosting_confirm/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}",
         array(
           'html' => TRUE,
         )
@@ -242,7 +242,7 @@ function devshop_projects_menu() {
   $tasks = hosting_available_tasks('project') ;
   if (!empty($tasks)) {
     foreach (hosting_available_tasks('project') as $task => $info) {
-      $path = 'node/%/project_' . $task;
+      $path = 'hosting_confirm/%/project_' . $task;
       $items[$path] = array(
         'title' => $info['title'],
         'description' => $info['description'],
@@ -379,7 +379,7 @@ function devshop_projects_block_info() {
  * Implements hook_block_view().
  */
 function devshop_projects_block_view($delta) {
-  if ($delta == 'project_nav' && arg(0) == 'node') {
+  if ($delta == 'project_nav' && (arg(0) == 'node' || arg(0) == 'hosting_confirm')) {
     $node = node_load(arg(1));
     if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
 
