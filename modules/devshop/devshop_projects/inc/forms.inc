@@ -5,12 +5,12 @@
  */
 
 /**
- * Implementation of hook_form().
+ * Implementation of hook_form_FORM_ID_alter().
  *
  * The Project Node Form.
  */
-function devshop_projects_form(&$node) {
-
+function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+  $node = $form['#node'];
   $project = $node->project;
 
   // Save last project data
@@ -334,7 +334,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     global $user;
 
     $project = $form['#node'];
-
     unset($form['menu']);
     unset($form['revision_information']);
     unset($form['author']);
