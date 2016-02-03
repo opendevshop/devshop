@@ -14,3 +14,5 @@ if [ -f '/etc/init.d/apache2' ]; then
 elif [ -f '/etc/init.d/nginx' ]; then
   sudo service nginx restart
 fi
+
+sudo ln -s /vagrant /usr/share/devshop

@@ -1,11 +1,11 @@
 
 # The version to install.
-devshop_version:              0.x
+devshop_version:              1.x
 
 # The version of drush to install.
 # This is passed directly to the `composer global require` command:
 # composer global require drush/drush:{{ drush_version }}
-drush_version: 6.*
+drush_version: 8.*
 
 # VAGRANT variables.
 # Set development to TRUE if you wish to contribute to devshop development.
@@ -14,9 +14,6 @@ drush_version: 6.*
 vagrant_development: FALSE
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
-
-# Default server_webserver is apache, for now. In vagrant, let's default to nginx.
-# vagrant_install_script_args: [--playbook=/vagrant]
 vagrant_install_script_args: [--playbook=/vagrant]
 
 # Defaults virtualbox vagrant machines to 4GB.
@@ -45,6 +42,7 @@ php_timezone: America/New_York
 
 ansible_playbook: playbook.yml
 
+
 devshop_working_copy: --working-copy
 
 devshop_provision_repo: https://github.com/opendevshop/devshop_provision.git
@@ -52,12 +50,7 @@ devshop_provision_repo: https://github.com/opendevshop/devshop_provision.git
 drush_dl_method: wget
 
 devshop_drush_packages:
-  provision: 6.x-2.x
-  provision_git: 6.x-1.x
-  provision_logs: 6.x-1.x
-  provision_solr: 6.x-2.x
-  provision_tasks_extra: 6.x-2.x
-  provision_site_backup_manager: 6.x-2.x
+  provision: 7.x-3.x
   registry_rebuild: 7.x-2.2
 
 devshop_makefile: build-devmaster.make

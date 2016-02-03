@@ -22,6 +22,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Github\Exception\RuntimeException;
+
 use Symfony\Component\Console\Command\Command as BaseCommand;
 
 /**
@@ -39,13 +43,18 @@ abstract class Command extends BaseCommand
   /**
    * @var InputInterface
    */
-  private $input;
+  public $input;
 
   /**
    * @var OutputInterface
    */
-  private $output;
+  public $output;
 
+  /**
+   * @var Process
+   * Process
+   */
+  protected $process = NULL;
 
   /**
    * @param \Symfony\Component\Console\Input\InputInterface $input
@@ -66,6 +75,54 @@ abstract class Command extends BaseCommand
   public function getDevShop($required = true, $disablePlugins = false)
   {
     return $this->devshop;
+  }
+
+  /**
+   * Used instead of Symfony\Component\Process\Process so we can easily mock it.
+   *
+   * This returns either an instantiated Symfony\Component\Process\Process or a mock object.
+   * @param $commandline
+   * @param null $cwd
+   * @param array $env
+   * @param null $input
+   * @param int $timeout
+   * @param array $options
+   * @return Process
+   *
+   * @see Symfony\Component\Process\Process
+   *
+   *  @author Eric Duran <eric@ericduran.io>
+   */
+  public function getProcess($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array()) {
+    if ($this->process === NULL) {
+      // @codeCoverageIgnoreStart
+      // We ignore this since we mock it.
+      return new Process($commandline, $cwd, $env, $input, $timeout, $options);
+      // @codeCoverageIgnoreEnd
+    }
+    return $this->process;
+  }
+
+  /**
+   * Helper for running processes.
+   *
+   * @param \Symfony\Component\Process\Process $process
+   */
+  public function runProcess(Process $process) {
+
+    try {
+      $process->mustRun(function ($type, $buffer) {
+        if (Process::ERR === $type) {
+          echo $buffer;
+        } else {
+          echo $buffer;
+        }
+      });
+      return TRUE;
+    } catch (ProcessFailedException $e) {
+      $this->output->writeln('<error>' . $e->getMessage() . '</error>');
+      return FALSE;
+    }
   }
 
   /**
@@ -167,12 +224,45 @@ abstract class Command extends BaseCommand
       // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
     if ($pwu_data['name'] != 'root') {
-    $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
-    $output->writeln('Run "sudo devshop upgrade" to run as root.');
-    $output->writeln('<fg=red>Installation aborted.</>');
-    $output->writeln('');
-    return;
+      $this->output->writeln('<error>WARNING:</error> You must run this command as the root user.');
+      $this->output->writeln('Run "sudo devshop upgrade" to run as root.');
+      $this->output->writeln('<fg=red>Installation aborted.</>');
+      $this->output->writeln('');
+      return;
     }
   }
 
+  /**
+   * Validates version string against GitHub branches or tags.
+   *
+   * @param $version
+   * @throws \Exception
+   */
+  public function checkVersion($version) {
+    if (empty($version)) {
+      throw new \Exception('Version not specified.');
+    }
+
+    $client = new \Github\Client();
+
+    try {
+      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/heads/' . $version);
+      $branch_found = TRUE;
+    }
+    catch (RuntimeException $e) {
+      $branch_found = FALSE;
+    }
+
+    try {
+      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/tags/' . $version);
+      $tag_found = TRUE;
+    }
+    catch (RuntimeException $e) {
+      $tag_found = FALSE;
+    }
+
+    if (!$branch_found && !$tag_found) {
+      throw new \Exception('No branch or tag found named ' . $version);
+    }
+  }
 }
