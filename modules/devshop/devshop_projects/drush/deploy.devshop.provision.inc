@@ -99,7 +99,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
     drush_log($git->getOutput(), 'devshop_ok');
     drush_log($e->getMessage(), 'devshop_error');
-    return drush_set_error('DEVSHOP_GIT_ERROR');
+    return drush_set_error($e->getMessage());
   }
 }
 
@@ -108,8 +108,9 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
+ // @TODO: Add the "force" option back.
   if (drush_get_context('devshop_block_deploy_hooks')){
-    drush_log(dt('[DEVSHOP] Skipping deploy hooks. No changes detected.'), 'ok');
+    drush_log(dt('[DevShop] Skipping all deploy hooks. No changes detected.'), 'devshop_log');
     return;
   }
   else {
@@ -120,6 +121,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $revert = drush_get_option('revert');
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
+  $composer = drush_get_option('composer', TRUE);
 
   $environment = (object) d()->environment;
   $project_name = d()->project;
@@ -128,6 +130,15 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   drush_log("[{$project_name}] {$environment->name}: " . dt('Running deploy hooks.'), 'notice');
 
+  // Built in Hooks
+  if ($composer) {
+    // @TODO: We should automatically look for any composer.json files and run composer install on them. This is what Platform.sh does!
+    $commands[] = "composer install";
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped running composer install...'), 'ok');
+  }
+  
   // Built in Hooks
   if ($update) {
     $commands[] = "drush {$environment->drush_alias} updatedb --yes";
