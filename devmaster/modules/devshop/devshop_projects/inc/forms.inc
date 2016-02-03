@@ -487,6 +487,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
               '#title' => t('Drush Alias for Source'),
               '#description' => t('Enter a full drush alias to use as the source. Make sure to include the "@" character at the beginning.'),
             );
+            $form['parameters']['destination'] = array(
+              '#type' => 'value',
+              '#value' => $node->environment->drush_alias,
+            );
           }
           // If a source is specified, add help and set it as a value.
           else {
@@ -501,6 +505,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             $form['parameters']['source'] = array(
               '#type' => 'value',
               '#value' => $source->environment->drush_alias,
+            );
+            $form['parameters']['destination'] = array(
+              '#type' => 'value',
+              '#value' => $node->environment->drush_alias,
             );
           }
 
