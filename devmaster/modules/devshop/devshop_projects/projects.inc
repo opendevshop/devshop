@@ -271,6 +271,8 @@ function devshop_project_load($node) {
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
     if (file_exists($path . '/.git')) {
+      $environment->git_ref = shell_exec("cd $path; git rev-parse --abbrev-ref HEAD");
+
       $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
     ");
       $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
