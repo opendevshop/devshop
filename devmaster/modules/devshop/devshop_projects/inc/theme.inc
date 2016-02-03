@@ -325,8 +325,8 @@ function template_preprocess_devshop_project_add_status(&$vars) {
 function template_preprocess_devshop_project_nav(&$vars) {
 
   global $user;
-  $node = $vars['node'];
-  $project = $vars['project'] = $vars['project']->project;
+  $project = $vars['project'];
+  $node = $vars['node'] = node_load($project->nid);
 
   // @TODO: Detect other web URLs for other git hosts.
   if ($project->git_repo_url) {
@@ -389,10 +389,6 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   $vars['dashboard_link'] = l('<i class="fa fa-cubes"></i> ' . t('Dashboard'), "node/$project->nid", array('html' => TRUE));
-
-  if (node_access('update', $node)) {
-    $vars['settings_link'] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/$node->nid/edit", array('html' => TRUE));
-  }
 
   if (arg(2) == 'edit') {
     $vars['settings_active'] = 'active';
