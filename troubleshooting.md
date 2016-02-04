@@ -66,3 +66,26 @@ The solution is to re-visit the settings page and try again once the verify task
 
 A fix for this might be to block the user from loading the settings form if we detect a running verify task.
 
+## PROVISION_SITE_INSTALLED
+
+This obscure message comes from Aegir. It happens during an Install task, if there is already a `sites/env.proj.devshop.site` folder within the environment. Sometimes the install task ran successfully first,
+and then for some reason, it a second install was attempted.
+
+If you receive a PROVISION_SITE_INSTALLED error in an install task, but the site does work, you can simply verify 
+the environment and ignore the failed installation
+
+
+If a database was created as well as the `sites/env.proj.devshop.site` folder, you can ignore it and the next install will create a new database and leave the old one.  You can delete the database manually, or you can try a `provision-delete`:
+
+```sh
+$ drush @env.proj.devshop.site provision-delete
+```
+
+If the site does not work and there is no settings.php and database created, you can just remove the `sites/env.proj.devshop.site` folder:
+
+```sh
+$ rm -rf /var/aegir/projects/proj/env/sites/env.proj.devshop.site
+```
+
+...then Retry the Install task.  Your site will install as normal.
+
