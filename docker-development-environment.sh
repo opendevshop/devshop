@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+VERSION='0.x'
 DISTRIBUTION='ubuntu'
 VERSION='14.04'
 INIT='/sbin/init'
@@ -12,7 +12,7 @@ HOST_PORT=8000
 TRAVIS=true
 
 echo "Running 'vagrant-prepare-host.sh' to get source code..."
-bash vagrant-prepare-host.sh $PWD 0.x
+bash vagrant-prepare-host.sh $PWD $VERSION
 
 # Changing UID:GID of source code to Aegir's UID so it can write to these folders.
 # We can change it back to the user later so they can edit the files.
