@@ -34,3 +34,13 @@ docker exec $CONTAINER_NAME $SUPERVISOR_STOP
 docker exec $CONTAINER_NAME env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"
 
 bash docker-test-devshop.sh
+
+
+echo "NEXT: Please add '127.0.0.1 devshop.docker' to your /etc/hosts file."
+echo " You must access the site at http://devshop.docker:$HOST_PORT "
+echo " To get into the server, run:
+echo "    $ docker exec -ti devshop_server su - aegir "
+echo " Then to get into the front end, run:"
+echo "    $ devshop login "
+echo " You will get a URL like http://devshop.docker/user/login/13abc.  you will have to add the port $HOST_PORT."
+echo " Good luck! We hope to improve on this soon.  Please post issues at https://github.com/opendevshop/devshop/issues"
