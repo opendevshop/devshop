@@ -34,3 +34,5 @@ docker exec $CONTAINER_NAME $SUPERVISOR_STOP
 docker exec $CONTAINER_NAME env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"
 
 bash docker-test-devshop.sh
+
+sudo chown $(whoami):$(whoami) source -R
