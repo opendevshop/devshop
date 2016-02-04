@@ -35,4 +35,4 @@ docker exec $CONTAINER_NAME env sudo su - aegir -c "drush @hostmaster dis hostin
 
 bash docker-test-devshop.sh
 
-sudo chown $(whoami):$(whoami) source -R
+sudo chown $(whoami):$(whoami) ../source -R
