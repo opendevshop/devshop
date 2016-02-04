@@ -26,7 +26,7 @@ docker pull $DISTRIBUTION:$VERSION
 docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$VERSION --tag=$DISTRIBUTION-$VERSION:devmaster .
 docker run --detach -p $HOST_PORT:80 $RUN_OPTS \
     --volume=$PWD/..:/usr/share/devshop:rw \
-    --volume=$PWD/../source/devmaster-0.x:/var/aegir/devmaster-0.x \
+    --volume=$PWD/../source/devmaster-1.x:/var/aegir/devmaster-1.x \
     --volume=$PWD/../source/drush/commands:/var/aegir/.drush/commands \
     -h $CONTAINER_HOSTNAME $DISTRIBUTION-$VERSION:devmaster $INIT
 docker exec --tty $CONTAINER_NAME env TERM=xterm sudo su -c "/usr/share/devshop/install.sh $SCRIPT_OPTS --hostname=$CONTAINER_HOSTNAME"
