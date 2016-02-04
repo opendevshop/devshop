@@ -52,3 +52,17 @@ This can happen if a site fails on clone, or cannot import the data for some rea
   ```
   
   5. Retry the platform deletion task.
+
+## "This content has been modified by another user, changes cannot be saved."
+
+You might see this when submitting either a project or an environment settings form. 
+
+This is core Drupal behavior. If you open any node form, then someone else saves a node, then you submit the form, 
+you will receive this message.  This is to prevent you from overwriting the other users changes.
+
+This happens occasionally in devshop without the other user, because "Verify" tasks save the node object.
+
+The solution is to re-visit the settings page and try again once the verify tasks are complete.
+
+A fix for this might be to block the user from loading the settings form if we detect a running verify task.
+
