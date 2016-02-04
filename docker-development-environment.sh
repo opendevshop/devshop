@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 VERSION='1.x'
 DISTRIBUTION='ubuntu'
-VERSION='14.04'
+DISTRIBUTION_VERSION='14.04'
 INIT='/sbin/init'
 CONTAINER_NAME='devshop_server'
 RUN_OPTS="--name=$CONTAINER_NAME"
