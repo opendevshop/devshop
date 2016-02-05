@@ -5,10 +5,18 @@ This is the DevShop web-based front-end, called Devmaster.
 
 This is a Drupal 6.x distribution.
 
-This project should not be used on it's own.  The main devshop project 
+This project should not be used on it's own.  The main devshop project
 installer will use this install profile as a part of the setup process.
 
 See http://github.com/opendevshop/devshop for more information.
+
+Contribution
+============
+
+To contribute to this project, please fork this repo, do your work in a separate
+branch and submit a Pull Request.
+
+Travis-CI.org is configured to run tests on all pull requests for devmaster.
 
 Contents
 ========
@@ -22,10 +30,10 @@ This project contains:
 2. devmaster.profile
 
   The Drupal installation profile for Devmaster.
-  
+
 3. DevShop modules:
 
-  All of the modules needed for devshop are contained in this repo, with the 
+  All of the modules needed for devshop are contained in this repo, with the
   exception of contrib modules that are also useful for Aegir.
 
 4. The DevShop theme "Boots":
@@ -38,7 +46,7 @@ Issues & Development
 This repo may be forked if you wish to contribute to development.  
 
 See DEVELOPMENT.md in the main devshop project for more information.
- 
-Issues for devshop may be submitted to the drupal.org issue queue for devshop:
 
-https://www.drupal.org/project/issues/devshop
+Issues for devshop or devmaster should be submitted to the github issue queue:
+
+https://github.com/opendevshop/devshop/issues

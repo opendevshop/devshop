@@ -146,7 +146,6 @@ function devshop_project_create_step_environments($form, &$form_state) {
       '#type' => 'submit',
       '#value' => t('Add environment'),
       '#name' => 'add_environment',
-      '#submit' => array('devshop_projects_save_environments'),
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',
     );
@@ -230,10 +229,15 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
  * STEP 3: SUBMIT
  */
 function devshop_project_create_step_environments_submit(&$form, &$form_state) {
-
   // Get project and reset properties..
   $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
   $project = $project_node->project;
+  if (isset($form_state['project']->code_path) && empty($project->code_path)) {
+    $project->code_path = $form_state['project']->code_path;
+  }
+  if (isset($form_state['project']->drupal_path) && empty($project->drupal_path)) {
+    $project->drupal_path = $form_state['project']->drupal_path;
+  }
 
   // Save environments data
   $environments = $form_state['values']['project']['environments'];

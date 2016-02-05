@@ -5,6 +5,7 @@
  * Provides Node Type, UI, and tools for DevShop Projects.
  */
 
+include_once('projects.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
@@ -110,13 +111,13 @@ function devshop_projects_devshop_environment_actions($environment) {
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
-        "node/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
+        "hosting_confirm/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
         array(
           'html' => TRUE,
         )
       );
       $items[] = l('<i class="fa fa-code-fork"></i> '.t('Fork Environment'),
-        "node/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}",
+        "hosting_confirm/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}",
         array(
           'html' => TRUE,
         )
@@ -212,6 +213,7 @@ function devshop_projects_menu() {
   );
   $items['projects/list'] = array(
     'title' => t('All Projects'),
+    'description' => '',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
   $items['projects/add'] = array(
@@ -240,7 +242,7 @@ function devshop_projects_menu() {
   $tasks = hosting_available_tasks('project') ;
   if (!empty($tasks)) {
     foreach (hosting_available_tasks('project') as $task => $info) {
-      $path = 'node/%/project_' . $task;
+      $path = 'hosting_confirm/%/project_' . $task;
       $items[$path] = array(
         'title' => $info['title'],
         'description' => $info['description'],
@@ -257,6 +259,7 @@ function devshop_projects_menu() {
   // Environment settings pages
   $items['node/%node/edit/%'] = array(
     'title' => 'Edit',
+    'description' => '',
     'page callback' => 'devshop_project_environment_settings_page',
     'page arguments' => array(1, 3),
     'access callback' => 'node_access',
@@ -269,6 +272,7 @@ function devshop_projects_menu() {
   // Environment logs pages
   $items['node/%node/logs/%'] = array(
     'title' => 'Logs',
+    'description' => '',
     'page callback' => 'devshop_project_logs_page',
     'page arguments' => array(1, 3),
     'access callback' => 'devshop_project_logs_access',
@@ -280,6 +284,7 @@ function devshop_projects_menu() {
   // Drush aliases download.
   $items['node/%node/aliases'] = array(
     'title' => 'Drush Aliases',
+    'description' => '',
     'page callback' => 'devshop_project_drush_aliases_page',
     'page arguments' => array(1),
     'access callback' => 'node_access',
@@ -293,6 +298,7 @@ function devshop_projects_menu() {
   $items['devshop/tasks'] = array(
       'page callback' => 'devshop_projects_tasks_status_json',
       'page arguments' => array(2),
+      'description' => '',
       'access arguments' => array('access task logs'),
       'file' => 'tasks-ajax.inc',
       'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
@@ -355,14 +361,14 @@ function devshop_projects_block_info() {
   $blocks['project_nav'] = array(
         'info' => t('DevShop Project Nav'),
         'weight' => '-10',
-        'cache' => BLOCK_NO_CACHE,
+        'cache' => BLOCK_CACHE_GLOBAL,
         'status' => 1,
         'region' => 'header',
       );
   $blocks['project_create'] = array(
         'info' => t('DevShop Create Project'),
         'weight' => '-10',
-        'cache' => BLOCK_NO_CACHE,
+        'cache' => BLOCK_CACHE_PER_USER,
         'status' => 1,
         'region' => 'sidebar_first',
       );
@@ -373,12 +379,12 @@ function devshop_projects_block_info() {
  * Implements hook_block_view().
  */
 function devshop_projects_block_view($delta) {
-  if ($delta == 'project_nav' && arg(0) == 'node') {
+  if ($delta == 'project_nav' && (arg(0) == 'node' || arg(0) == 'hosting_confirm')) {
     $node = node_load(arg(1));
     if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
 
       // If viewed node is project, use that.
-      $project = $node->type == 'project' ? $node : ($node->project->vid ? $node->project : node_load($node->project->nid));
+      $project = $node->type == 'project' ? $node : ($node->project->vid ? $node->project : node_load($node->project));
       $block['subject'] = '';
       $block['content'] = theme('devshop_project_nav', array('project' => $project));
     }

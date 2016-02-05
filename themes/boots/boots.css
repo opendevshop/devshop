@@ -783,7 +783,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .running-indicator.active {
     display: block;
 }
-
+.task-badge {
+    margin-right: 5px;
+}
 .task-arg {
   padding-right: 2em;
   white-space: nowrap;
@@ -792,4 +794,8 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .task-arguments-list {
   display: inline-block;
 
+}
+
+.ansi_color_bg_black {
+    background: #262626;
 }

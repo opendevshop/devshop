@@ -140,10 +140,10 @@
 
           <div class="list-group-item center-block text text-muted">
             <div class="btn-group">
-              <a href="<?php print url("node/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
                 <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
               </a>
-              <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
                 <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
               </a>
             </div>
@@ -165,7 +165,7 @@
         </div>
         <div class="list-group-item">
             <div class="btn-group" role="group">
-                <a href="<?php print url("node/{$environment->created['nid']}/revisions/{$environment->created['vid']}/view"); ?>" class="btn btn-default">
+                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (empty($environment->site) && $environment->platform): ?>
@@ -204,6 +204,26 @@
         </div>
 
     <?php
+      // SITUATION: Environment has platform but no site, verify succeeded, and there is NOT a clone task...
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING && empty($environment->tasks['clone'])):
+
+        $verify_task = current($environment->tasks['verify']);
+        ?>
+        <div class="list-group-item center-block text text-muted">
+
+          <i class="fa fa-warning"></i>
+          <?php print t('Aegir Platform has been created, but Site is missing. Please contact your administrator.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
+          <div class="btn-group " role="group">
+            <a href="<?php print url("node/{$verify_task->nid}"); ?>" class="btn btn-default">
+              <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
+            </a>
+          </div>
+        </div>
+
+    <?php
       // SITUATION: Site Install Failed
       elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_ERROR): ?>
 
@@ -216,11 +236,11 @@
                     <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
                 </a>
                 <?php if (variable_get('hosting_require_disable_before_delete', TRUE) && $environment->site_status != HOSTING_SITE_DISABLED): ?>
-                <a href="<?php print url("node/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                <a href="<?php print url("hosting_confirm/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                     <i class="fa fa-power-off"></i> <?php print t('Disable the Environment'); ?>
                 </a>
                 <?php else: ?>
-                    <a href="<?php print url("node/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                    <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                         <i class="fa fa-trash"></i> <?php print t('Destroy the Environment'); ?>
                     </a>
                 <?php endif; ?>
@@ -242,12 +262,13 @@
                 if (count($environment->domains) > 1):
                     ?>
                     <div class="btn-group btn-group-smaller btn-urls" role="group">
-                        <a href="<?php print $environment->url ?>" target="_blank">
+                        <a href="<?php print $environment->url ?>" target="_blank" class="environment-link">
                             <?php if (!empty($environment->ssl_enabled)): ?>
                                 <i class="fa fa-lock text-success"></i>
                             <?php else: ?>
                                 <i class="fa fa-globe"></i>
                             <?php endif; ?>
+                            <span class="hidden">Visit Environment:</span>
                             <?php print $environment->url ?>
                         </a>
                     </div>
@@ -398,7 +419,7 @@
                                     <li><label><?php print t('Deploy data from'); ?></label></li>
                                     <?php foreach ($source_environments as $source): ?>
                                         <?php if ($source->name == $environment->name) continue; ?>
-                                        <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
+                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
                                                 <?php if ($project->settings->live['live_environment'] == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
                                                 <?php elseif ($source->settings->locked): ?>
@@ -412,7 +433,7 @@
                                     <?php endforeach; ?>
                                     <?php if ($project->settings->deploy['allow_deploy_data_from_alias']): ?>
                                         <li class="divider"></li>
-                                        <li><a href="/node/<?php print $environment->site ?>/site_sync/?source=other&dest=<?php print $source->name ?>">
+                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=other&dest=<?php print $source->name ?>">
                                                 <strong class="btn-block"><?php print t('Other...'); ?></strong>
                                                 <small><?php print t('Enter a drush alias to deploy from.'); ?></small>
                                             </a>
@@ -445,7 +466,7 @@
                                     // DB: Migrate Task
                                     if ($type == 'db') {
                                         $icon = 'database';
-                                        $url = "node/{$environment->site}/site_migrate";
+                                        $url = "hosting_confirm/{$environment->site}/site_migrate";
                                     }
                                     // HTTP: Edit Platform
                                     elseif ($type == 'http') {

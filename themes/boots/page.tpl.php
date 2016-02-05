@@ -102,6 +102,7 @@
           <?php if (!empty($primary_nav)): ?>
             <?php print render($primary_nav); ?>
           <?php endif; ?>
+          <?php print($tasks); ?>
           <?php if (!empty($secondary_nav)): ?>
             <?php print render($secondary_nav); ?>
           <?php endif; ?>
@@ -128,10 +129,18 @@
       </h1>
     <?php endif; ?>
 
+    <?php if ($title2): ?>
+      <h3>
+        <?php print $title2 ?>
+        <?php if ($subtitle2): ?>
+          <small><?php print $subtitle2 ?></small>
+        <?php endif; ?>
+      </h3>
+    <?php endif; ?>
+
     <?php if (!empty($site_slogan)): ?>
       <p class="lead"><?php print $site_slogan; ?></p>
     <?php endif; ?>
-    <?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 
     <?php print render($page['header']); ?>
 
