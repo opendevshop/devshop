@@ -123,33 +123,6 @@
       <?php endif; ?>
 
     <?php
-      // SITUATION: Environment Disable Initiated
-      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-power-off"></i>
-          <?php print t('Environment is being disabled.'); ?>
-        </div>
-        <?php
-
-      // SITUATION: Site is Disabled
-      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-          <div class="list-group-item center-block text text-muted">
-            <i class="fa fa-power-off"></i>
-            <?php print t('Environment is disabled.'); ?>
-          </div>
-
-          <div class="list-group-item center-block text text-muted">
-            <div class="btn-group">
-              <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-                <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
-              </a>
-              <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-                <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
-              </a>
-            </div>
-        </div>
-
-    <?php
 
       // SITUATION: Clone Failure
       elseif ($environment->created['type'] == 'clone' && !empty($environment->tasks['delete']) ||
@@ -255,6 +228,33 @@
         <div class="list-group-item center-block text text-muted">
           <i class="fa fa-truck"></i>
           <?php print t('Environment install in progress.'); ?>
+        </div>
+
+        <?php
+      // SITUATION: Environment Disable Initiated
+      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-power-off"></i>
+          <?php print t('Environment is being disabled.'); ?>
+        </div>
+        <?php
+
+      // SITUATION: Site is Disabled
+      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-power-off"></i>
+          <?php print t('Environment is disabled.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
+          <div class="btn-group">
+            <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
+            </a>
+            <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
+            </a>
+          </div>
         </div>
 
     <?php
