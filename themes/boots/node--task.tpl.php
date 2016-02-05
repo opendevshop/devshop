@@ -174,7 +174,7 @@
       </div>
       <div role="tabpanel" class="tab-pane" id="logs">
         <div class="padded-top">
-          <?php print $content; ?>
+          <?php print render($content); ?>
         </div>
       </div>
     </div>
