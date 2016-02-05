@@ -120,6 +120,16 @@ function devshop_projects_node_load($nodes, $types) {
  */
 function devshop_projects_node_insert($node) {
 
+  // On task insert, save last task.
+  if ($node->type == 'task') {
+    $site = node_load($node->rid);
+
+    if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
+      $site->environment->last_task = $node->nid;
+      devshop_environment_save_last_task($site->environment);
+    }
+  }
+
   if ($node->type != 'project') {
     return;
   }
