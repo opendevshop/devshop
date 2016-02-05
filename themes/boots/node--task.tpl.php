@@ -1,12 +1,3 @@
-<script>
-  (function ($) {
-    $('#task-tabs a').click(function (e) {
-      e.preventDefault()
-      $(this).tab('show')
-    })
-  })(jQuery);
-</script>
-
 <?php
 
 /**
@@ -58,7 +49,7 @@
 ?>
 <div id="node-<?php print $node->nid; ?>" class="node<?php if ($sticky) { print ' sticky'; } ?><?php if (!$status) { print ' node-unpublished'; } ?> clear-block">
 
-  <?php print $picture ?>
+  <?php print $user_picture ?>
 
   <div class="well well-sm">
 
@@ -72,7 +63,7 @@
 
       <?php if ($retry): ?>
         <div class="retry-button pull-right">
-          <?php print $retry; ?>
+          <?php print render($retry); ?>
         </div>
       <?php endif; ?>
     </h4>
@@ -147,20 +138,13 @@
         <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label;?></span>
     </div>
 
-    <?php print $content; ?>
-
     <div class="task-details">
         <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
             <i class="fa fa-list"></i> <?php print t('Details'); ?>
         </button>
-
-        <?php if ($node->content['update-status']['#value']): ?>
-            <?php print $node->content['update-status']['#value']; ?>
-        <?php endif; ?>
-
         <div class="collapse" id="collapseLogs">
             <div class="well">
-                <?php print $node->content['hosting_log']['#value']; ?>
+                <?php print render($content['hosting_log']); ?>
             </div>
         </div>
     </div>
