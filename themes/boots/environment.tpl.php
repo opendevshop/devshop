@@ -248,6 +248,15 @@
             </div>
         </div>
 
+        <?php
+      // SITUATION: Site Install Queued or processing.
+      elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_QUEUED || $environment->created['status'] == HOSTING_TASK_PROCESSING): ?>
+
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-truck"></i>
+          <?php print t('Environment install in progress.'); ?>
+        </div>
+
     <?php
       // SITUATION: Environment is Active!
       elseif (empty($environment->tasks['delete'])): ?>
