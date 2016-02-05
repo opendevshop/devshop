@@ -43,7 +43,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
       }
     }
 
-    // devshop_environment_save_last_task($site->environment);
+    devshop_environment_save_last_task($site->environment);
   }
 }
 
