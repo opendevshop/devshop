@@ -324,7 +324,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         }
 
         $new_site = devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
-        drush_log(t("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. See the !link for status.", array('!link' => l(t('Environment Dashboard'), "node/{$new_site}"))), 'devshop_log');
+        drush_log(t("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. See the !link for status.", array('!link' => l(t('Environment Dashboard'), "node/{$new_site->nid}"))), 'devshop_log');
       }
     }
   }
