@@ -16,9 +16,9 @@ Drupal.behaviors.devshopTasks = {
             $.each(data, function (key, value) {
                 var task = value.last_task_node;
                 var id = '#' + value.project + '-' + value.name;
-                var new_class = 'alert-' + task.status_class;
+                var new_class = 'environment-task-alert alert-' + task.status_class;
 
-                var $alert_div = $('.environment-task-logs > div', id);
+                var $alert_div = $('.environment-task-alert', id);
 
                 // Project Node Page
                 if (Drupal.settings.devshopProject) {
