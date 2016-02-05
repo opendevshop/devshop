@@ -225,9 +225,11 @@ function devshop_task_get_messages($task_node) {
   $result = db_query("
     SELECT message, type, timestamp FROM {hosting_task_log}
       WHERE nid = :nid
+        AND vid = :vid
         AND (type LIKE :devshop OR type = :error OR type = :warning)
       ORDER BY lid", array(
     ':nid' => $task_node->nid,
+    ':vid' => $task_node->vid,
     ':devshop' => 'devshop_%',
     ':error' => 'error',
     ':warning' => 'warning',
