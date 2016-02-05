@@ -110,6 +110,8 @@ function theme_devshop_projects_create_settings_form($vars) {
  */
 function devshop_projects_preprocess_node(&$vars) {
 
+  $node = $vars['node'];
+
   // On project node edit page
   if (isset($vars['node']) && $vars['node']->type == 'project') {
 
@@ -128,8 +130,7 @@ function devshop_projects_preprocess_node(&$vars) {
   }
 
   // On task node page
-  if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && $vars['page']){
-
+  if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && ($vars['page'] || current_path() == "hosting/task/{$node->nid}")){
     // Prepare task icon, class, and label.
     $icon = devshop_task_status_icon($vars['node']->task_status);
     $vars['task_label'] = "<i class='fa fa-$icon'></i> " . _hosting_parse_error_code($vars['node']->task_status);
@@ -167,21 +168,20 @@ function devshop_projects_preprocess_node(&$vars) {
     }
 
     // Load Logs
-    $ref = node_load($vars['rid']);
-      $messages = devshop_task_get_messages($vars['node']);
-        $vars['messages'] = implode("\n", $messages);
-        switch ($vars['task_type']) {
-          case 'devshop-deploy':
-            $vars['type'] = 'Deploy';
-            break;
-          case 'verify':
-          case 'test':
-          case 'sync':
-          case 'install':
-          default:
-            $vars['type'] = ucfirst($vars['task_type']);
-            break;
-        }
+    $messages = devshop_task_get_messages($vars['node']);
+    $vars['messages'] = implode("\n", $messages);
+    switch ($vars['task_type']) {
+      case 'devshop-deploy':
+        $vars['type'] = 'Deploy';
+        break;
+      case 'verify':
+      case 'test':
+      case 'sync':
+      case 'install':
+      default:
+        $vars['type'] = ucfirst($vars['task_type']);
+        break;
+    }
 
     // Add "Follow Logs" button.
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
@@ -222,10 +222,18 @@ function devshop_task_get_messages($task_node) {
 
   drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
+  $result = db_query("
+    SELECT message, type, timestamp FROM {hosting_task_log}
+      WHERE nid = :nid
+        AND (type LIKE :devshop OR type = :error OR type = :warning)
+      ORDER BY lid", array(
+    ':nid' => $task_node->nid,
+    ':devshop' => 'devshop_%',
+    ':error' => 'error',
+    ':warning' => 'warning',
+  ));
 
-  $result = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", array(':vid' => $task_node->vid));
   foreach ($result as $record) {
-
     if ($record->type == 'devshop_command') {
       if (empty($record->message)) {
         continue;
