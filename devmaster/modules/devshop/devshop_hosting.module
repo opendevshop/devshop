@@ -61,6 +61,7 @@ function devshop_hosting_init() {
 function devshop_hosting_menu() {
   $items['devshop'] = array(
     'title' => 'Welcome to DevShop',
+    'description' => '',
     'page callback' => 'devshop_hosting_home',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
@@ -221,6 +222,119 @@ function devshop_hosting_form_user_login_block_alter(&$form) {
 }
 
 /**
+ * Implements hook_block()
+ *
+ * Provides three blocks:
+ *  - DevShop Tasks
+ *  - Created by ThinkDrop
+ *  - Powered by Aegir
+ */
+function devshop_hosting_block($op = 'list', $delta = 0, $edit = NULL) {
+  switch ($op) {
+    case 'list':
+      $blocks['devshop_tasks'] = array(
+        'info' => t('DevShop Tasks'),
+        'enabled' => 1,
+        'region' => 'header',
+        'weight' => 0,
+      );
+      $blocks['built'] = array(
+        'info' => t('Created by THINKDROP'),
+        'weight' => '10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'footer',
+      );
+      $blocks['driven'] = array(
+        'info' => t('Driven by Aegir'),
+        'weight' => '10',
+        'cache' => BLOCK_NO_CACHE,
+        'status' => 1,
+        'region' => 'footer',
+      );
+      return $blocks;
+    case 'view':
+      if ($delta == 'built'){
+        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-td.png';
+        $block['subject'] = t('Created by'); // Don't display a title
+        $block['content'] = l(theme('image', $image_path), 'http://thinkdrop.net/', array('html' => TRUE));
+      }
+      elseif ($delta == 'driven') {
+        $image_path = drupal_get_path('module', 'devshop_hosting') . '/logo-aegir.png';
+        $block['subject'] = t('Powered by'); // Don't display a title
+        $block['content'] = l(theme('image', $image_path), 'http://aegirproject.org/', array('html' => TRUE));
+      }
+      elseif ($delta = 'devshop_tasks') {
+        $block['subject'] = '';
+        $block['content'] = devshop_hosting_task_queue_block();
+      }
+      return $block;
+  }
+}
+
+/**
+ * DevShop Tasks block.
+ * @todo: Ajaxify.
+ */
+function devshop_hosting_task_queue_block() {
+  if (user_access('access task logs')){
+    drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
+
+    $settings['hostingTaskRefresh'] = array(
+      'queueBlock' => 1,
+    );
+    drupal_add_js($settings, 'setting');
+
+    $tasks['processing'] = hosting_get_tasks('task_status', HOSTING_TASK_PROCESSING, 5);
+    $tasks['queued'] = hosting_get_tasks('task_status', HOSTING_TASK_QUEUE);
+
+    $total_tasks = count($tasks['queued']) + count($tasks['processing']);
+    $status = format_plural($total_tasks, '1 active task.', '@count active tasks.');
+
+    if ($total_tasks == 0){
+      $status_class = 'inactive';
+    } else {
+      $status_class = 'active';
+    }
+
+    // Build our own table
+    foreach ($tasks as $task_status => $nodes){
+      foreach ($nodes as $node) {
+        $row = array();
+        $row['type'] = array(
+          'data' => drupal_ucfirst(str_replace('_', ' ', $node->task_type)) . ' ' . _hosting_node_link($node->rid),
+          'class' => 'hosting-status',
+        );
+        $class = hosting_task_status_class($node->task_status);
+        $rows[] = array(
+          'data' => $row,
+          'class' => $class,
+        );
+      }
+    }
+
+    // Build Strings
+    $link = l('Tasks Logs', 'hosting/queues/tasks', array('attributes' => array('class' => 'task-logs-link')));
+
+    $headers = array();
+
+    if (isset($rows)){
+      $table = theme('table', $headers, $rows, array('class' => 'hosting-table'));
+    }
+
+    // Output our "template"
+    return <<<HTML
+<div id='devshop-task-status' class='$status_class'>$status</div>
+<div id='hosting-task-queue-block'>
+  <div class='item'>$table</div>
+  <div class='item'>$link</div>
+</div>
+
+HTML;
+  }
+}
+
+/**
  * Page callback for devshop site status.
  * @return string
  */
@@ -257,7 +371,7 @@ function devshop_hosting_login_reset($site_nid) {
     drupal_get_messages();
   }
   else {
-    $task = hosting_get_most_recent_task($site_nid, 'login-reset');
+    $tasks = hosting_get_tasks('rid', $site_nid, 'login-reset');
   }
 
   // Wait for it to complete
@@ -359,31 +473,29 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
   }
 
   $results = db_query("
-    SELECT t.nid, t.vid, t.task_type
+    SELECT t.nid, t.task_type
       FROM {node} tn
-      INNER JOIN {hosting_task} t ON tn.vid = t.vid
+      INNER JOIN {hosting_task} t ON tn.nid = t.nid
       WHERE
         $where
-      ORDER BY t.vid DESC
       LIMIT 5
   ",
     $args
   );
   $tasks = array();
   foreach ($results as $result) {
-    $tasks[$result->task_type][$result->vid] = node_load($result->nid, $result->vid);
+    $tasks[$result->task_type][$result->nid] = node_load($result->nid);
   }
 
   // Load "Clone" tasks
   if ($type == NULL || $type == 'clone') {
     $results = db_query(
       "
-      SELECT ta.nid, ta.vid
+      SELECT ta.nid
         FROM {hosting_task_arguments} ta
-        INNER JOIN {hosting_task} t ON ta.vid = t.vid
+        INNER JOIN {hosting_task} t ON ta.nid = t.nid
         WHERE
           name = :name AND value = :platform
-        ORDER BY vid DESC
         LIMIT 1
     ",
       array(
@@ -392,8 +504,8 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
       )
     );
     foreach ($results as $result) {
-      $task_node = node_load($result->nid, $result->vid);
-      $tasks[$task_node->task_type][$task_node->vid] = $task_node;
+      $task_node = node_load($result->nid);
+      $tasks[$task_node->task_type][$task_node->nid] = $task_node;
     }
   }
 
@@ -404,7 +516,7 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
         $new_task_list[$task->{$key}] = $task;
       }
     }
-    if ($key == 'vid' || $key == 'nid') {
+    if ($key == 'nid') {
       krsort($new_task_list);
     }
     else {

@@ -270,7 +270,7 @@ function devmaster_place_blocks($theme) {
           'theme' => $theme,
           'status' => 1,
           'weight' => -1,
-          'region' => 'content',
+          'region' => 'header',
           'visibility' => 0,
           'pages' => '',
           'cache' => -1,

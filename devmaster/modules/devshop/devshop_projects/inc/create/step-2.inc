@@ -15,13 +15,21 @@ function devshop_project_create_step_settings($form, &$form_state) {
   $node = node_load($project->nid);
 
   $form_state['build_info']['args'] = array($node);
-  $project_form = drupal_retrieve_form('project_node_form', $form_state);
+  $form_state['build_info']['files'][] = array('inc', 'node', 'node.pages');
+  module_load_include('inc', 'node', 'node.pages');
+  $project_form = drupal_build_form('project_node_form', $form_state);
 
   // Remove node buttons
   unset($project_form['actions']);
 
   // Merge project node form into ctools wizard form.
   $form = array_merge($project_form, $form);
+
+  // Make sure the project isn't re-verified on this page.
+  $form['no_verify'] = array(
+    '#type' => 'value',
+    '#value' => TRUE,
+  );
 
   // Add additional additional submit and validate handlers for the node form.
   $form['buttons']['next']['#submit'][] = 'node_form_submit';
