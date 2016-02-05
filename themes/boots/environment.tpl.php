@@ -625,7 +625,7 @@
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
-        <div class="environment-tasks-alert alert-<?php print $environment->last_task->status_class ?>">
+        <div class="environment-tasks-alert alert-<?php print $environment->last_task_node->status_class ?>">
 
 
                 <label>Tasks</label>
@@ -638,12 +638,12 @@
                 </div>
             </div>
             <div class="btn-group text">
-                <a href="<?php print $environment->last_task->url; ?>" class="alert-link">
-                    <i class="fa fa-<?php print $environment->last_task->icon ?>"></i>
-                    <span class="type-name"><?php print $environment->last_task->type_name ?></span>
-                    <span class="status-name small"><?php if ($environment->last_task->task_status != HOSTING_TASK_QUEUED && $environment->last_task->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task->status_name ?></span>
+                <a href="<?php print $environment->last_task_node->url; ?>" class="alert-link">
+                    <i class="fa fa-<?php print $environment->last_task_node->icon ?>"></i>
+                    <span class="type-name"><?php print $environment->last_task_node->type_name ?></span>
+                    <span class="status-name small"><?php if ($environment->last_task_node->task_status != HOSTING_TASK_QUEUED && $environment->last_task_node->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task_node->status_name ?></span>
                       &nbsp;
-                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task->task_status == HOSTING_TASK_QUEUED || $environment->last_task->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task->ago ?></span></em>
+                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task_node->task_status == HOSTING_TASK_QUEUED || $environment->last_task_node->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task_node->ago ?></span></em>
                 </a>
             </div>
         </div>
