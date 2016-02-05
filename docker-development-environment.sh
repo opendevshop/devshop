@@ -5,7 +5,7 @@ DISTRIBUTION_VERSION='14.04'
 INIT='/sbin/init'
 CONTAINER_NAME='devshop_server'
 RUN_OPTS="--name=$CONTAINER_NAME"
-SCRIPT_OPTS='--server-webserver=nginx'
+SCRIPT_OPTS="--server-webserver=nginx --aegir_user_uid=$UID"
 CONTAINER_HOSTNAME=devshop.docker
 SUPERVISOR_STOP='service supervisor stop'
 HOST_PORT=8000
