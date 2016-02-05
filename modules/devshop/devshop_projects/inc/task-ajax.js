@@ -14,7 +14,7 @@ Drupal.behaviors.devshopTasks = {
 
             var lastTaskStatus = null;
             $.each(data, function (key, value) {
-                var task = value.last_task;
+                var task = value.last_task_node;
                 var id = '#' + value.project + '-' + value.name;
                 var new_class = 'alert-' + task.status_class;
 
