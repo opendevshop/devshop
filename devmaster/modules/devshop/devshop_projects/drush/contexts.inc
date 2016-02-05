@@ -43,10 +43,6 @@ function devshop_projects_hosting_site_context_options(&$task) {
     $task->context_options['environment'] = $task->ref->environment;
     $task->context_options['project'] = $task->ref->project->name;
     $task->context_options['git_ref'] = $task->ref->environment->git_ref;
-    drush_log('task ref environment was found!!', 'devshop_success');
-  }
-  else {
-    drush_log('task ref environment not found!', 'devshop_error');
   }
 }
 
