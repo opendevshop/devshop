@@ -133,7 +133,7 @@ function devshop_project_load($node) {
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
-          e.last_task as last_task_nid
+          e.last_task
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -178,6 +178,7 @@ function devshop_project_load($node) {
       }
     }
     krsort($environment->tasks_list);
+    $environment->last_task_node = $environment->tasks_list[$environment->last_task];
 
     // Detect creation method.
     // Some sites get installed. Others get imported.
