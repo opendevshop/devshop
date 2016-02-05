@@ -30,7 +30,7 @@ projects[hosting_tasks_extra][subdir] = aegir
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
 ; Aegir SSH not ready yet.
-; projects[aegir_ssh][subdir] = aegir
+projects[aegir_ssh][subdir] = aegir
 
 ; Not working yet.
 ;projects[hosting_solr][version] = "1"
