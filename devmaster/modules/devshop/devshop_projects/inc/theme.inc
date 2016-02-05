@@ -250,17 +250,17 @@ function devshop_task_get_messages($task_node) {
       }
       continue;
     } elseif ($record->type == 'devshop_info') {
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
     } elseif ($record->type == 'devshop_ok') {
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
     } elseif ($record->type == 'devshop_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
     } elseif ($record->type == 'warning') {
       $command = 'warning_' . count($outputs);
       $outputs[$command]['status'] = 'warning';
