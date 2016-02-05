@@ -479,6 +479,20 @@ function devshop_projects_menu_alter(&$items) {
   $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_devshop-deploy", 'deploy', 'deploy', 'devshop-deploy');
   $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
 
+  // Redirect hosting/task/% to the node
+  $items['hosting/task/%'] = array(
+    'page callback' => 'drupal_goto_nid',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+  );
+}
+
+/**
+ * Helper to redirect to a node page.
+ * @param $nid
+ */
+function drupal_goto_nid($nid) {
+  drupal_goto("node/{$nid}");
 }
 
 /**
