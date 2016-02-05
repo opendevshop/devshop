@@ -160,13 +160,13 @@ function drush_devshop_platform_verify() {
   if (!is_dir($root)) {
 
     // Clone the repo.
-    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('[DevShop] Cloning git repository'));
+    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
     // If there is a git ref, check it out.
     // We don't do this on clone, because it could be a tag.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
-      devshop_drush_process("git checkout $git_ref", $root, dt('[DevShop] Checking out specified version'));
+      devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
     }
   }
 
