@@ -103,7 +103,7 @@
     - name: DevShop CLI | composer install
       command: "composer install"
       args:
-        chdir: {{ playbook_path }}
+        chdir: "{{ playbook_path }}"
 
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
