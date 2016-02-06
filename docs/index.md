@@ -1,4 +1,4 @@
-Open DevShop
+OpenDevShop
 ============
 
 ![OpenDevShop Project Dashboard](images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
