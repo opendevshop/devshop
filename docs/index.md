@@ -36,7 +36,7 @@ The OpenDevShop Homepage shows you a birds evey view of all of your projects.  T
 
 Each environment indicator is updated in realtime. You can see the status of the latest task for every site in your system.
 
-## DevShop Project Dashboard
+### DevShop Project Dashboard
 
 ![OpenDevShop Project Dashboard](images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
 
@@ -76,7 +76,7 @@ At the bottom of each environment block is a status indicator for the last task 
 
 You can click any task to view the detailed logs of any task.
 
-## DevShop Logs
+### DevShop Logs
 
 DevShop is designed for developers. We want to give them exactly the information they need.  No more, no less.
 
