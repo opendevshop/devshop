@@ -261,6 +261,13 @@ abstract class Command extends BaseCommand
       $tag_found = FALSE;
     }
 
+    // Detect GitHub limit issues and just pass.
+    if (strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
+      $this->output->writeln();
+      return TRUE;
+    }
+
+    // If we don't find a branch or tag, throw an exception
     if (!$branch_found && !$tag_found) {
       throw new \Exception("An exception was thrown when trying to find a branch or tag named {$version}:" . $e->getCode() . ' ' . $e->getMessage());
     }
