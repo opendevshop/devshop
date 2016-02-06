@@ -1,6 +1,8 @@
 Open DevShop
 ============
 
+![OpenDevShop Project Dashboard](images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
+
 <img src="https://www.drupal.org/files/devshop.png" width="100%">
 
 [![Join the chat at https://gitter.im/opendevshop/devshop](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/opendevshop/devshop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
