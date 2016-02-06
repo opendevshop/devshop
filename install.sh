@@ -25,6 +25,8 @@
 # Must be a branch or tag.
 DEVSHOP_VERSION=0.x
 SERVER_WEBSERVER=apache
+MAKEFILE_PATH=''
+AEGIR_USER_UID=12345
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -84,9 +86,12 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
+    --aegir_user_uid=*)
+      AEGIR_USER_UID="${1#*=}"
+      ;;
     *)
       echo $LINE
-      echo " Error: Invalid argument for --server-webserver."
+      echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
       echo $LINE
       exit 1
   esac
@@ -136,7 +141,7 @@ fi
 
 # Fail if server_webserver is not apache or nginx
 if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
-  echo ' Invalid Web server. Must be nginx or apache (default).'
+  echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
   exit 1
 fi
 
@@ -179,6 +184,7 @@ else
     echo " Ansible already installed. Skipping installation."
     echo $LINE
 fi
+
 
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
@@ -243,7 +249,13 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
+
+if [ "$TRAVIS" == "true" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
+else
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=false supervisor_running=false"
+fi
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
@@ -254,12 +266,16 @@ if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
 fi
 
+if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
+fi
 
 ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
+# @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli
-cd $PLAYBOOK_PATH
-composer install
+#cd $PLAYBOOK_PATH
+#composer install
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
