@@ -3,7 +3,8 @@ DevShop DevMaster
 
 This is the DevShop web-based front-end, called Devmaster.
 
-This is a Drupal 6.x distribution.
+The stable branch, 0.x is a Drupal 6 Distribution.
+The next branch, 1.x is a Drupal distribution.  It is mostly working, and will see a release soon.
 
 This project should not be used on it's own.  The main devshop project 
 installer will use this install profile as a part of the setup process.
