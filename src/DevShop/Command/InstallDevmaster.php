@@ -242,7 +242,8 @@ class InstallDevmaster extends Command
         $this->checkVersion($version);
       }
       catch (\Exception $e) {
-        throw new \Exception($e->getMessage());
+        $output->writeln('<error>' . $e->getMessage() . '</error>');
+        exit(1);
       }
     }
 
