@@ -262,7 +262,7 @@ abstract class Command extends BaseCommand
     }
 
     if (!$branch_found && !$tag_found) {
-      throw new \Exception('No branch or tag found named ' . $version);
+      throw new \Exception("An exception was thrown when trying to find a branch or tag named {$version}:" . $e->getCode() . ' ' . $e->getMessage());
     }
   }
 }
