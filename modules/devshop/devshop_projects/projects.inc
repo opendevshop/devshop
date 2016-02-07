@@ -133,7 +133,7 @@ function devshop_project_load($node) {
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
-          e.last_task as last_task_nid
+          e.last_task
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -178,6 +178,7 @@ function devshop_project_load($node) {
       }
     }
     krsort($environment->tasks_list);
+    $environment->last_task_node = $environment->tasks_list[$environment->last_task];
 
     // Detect creation method.
     // Some sites get installed. Others get imported.
@@ -271,6 +272,8 @@ function devshop_project_load($node) {
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
     if (file_exists($path . '/.git')) {
+      $environment->git_ref = trim(shell_exec("cd $path; git rev-parse --abbrev-ref HEAD"));
+
       $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
     ");
       $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
