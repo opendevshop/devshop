@@ -25,6 +25,9 @@ function devshop_projects_theme() {
     'devshop_project_nav' => array(
       'variables' => array(
         'node' => NULL,
+        'settings_active' => NULL,
+        'logs_active' => NULL,
+        'branches_class' => NULL,
       ),
       'template' => 'project-nav',
     ),
