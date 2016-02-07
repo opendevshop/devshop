@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * Implementation of hook_hosting_tasks()
+ */
+function aegir_features_hosting_tasks() {
+    $tasks['site']['features_update'] = array(
+        'title' => t('Update features'),
+        'access callback' => 'devshop_hosting_task_menu_access',
+        'dialog' => TRUE,
+        'icon' => 'save'
+    );
+    return $tasks;
+}
+
+/**
+ * Implements hook_perm()
+ * @return array
+ */
+function aegir_features_perm() {
+    return array('create features_update task');
+}
+
+/**
+ * @return mixed
+ */
+function hosting_task_features_update_form($node) {
+    if (_devshop_projects_site_has_module($node, 'features')) {
+        drupal_set_message(t('The site must have the "features" module enabled to use this task.'));
+        drupal_goto("node/{$node->nid}");
+    }
+
+    $form['note'] = array(
+      '#value' => t('Run <code>drush features-update MODULE_NAME</code> or <code>drush feature-update-all</code>, then <code>git commit</code> and <code>git push</code> (optionally).'),
+      '#type' => 'markup',
+      '#prefix' => '<div class="alert alert-info">',
+      '#suffix' => '</div>',
+    );
+    // @TODO: I can't get these options to pass to drush, so commenting out for now.
+//    $form['features'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Features to update'),
+//        '#description' => '<p>' . t('Enter the names of the features modules you would like to recreate.  If left empty, all features will be updated.') . '</p>',
+//    );
+//    $form['revert'] = array(
+//        '#title' => t('Run a force revert after creating.'),
+//        '#type' => 'checkbox',
+//        '#default_value' => 1,
+//        '#description' => t('Once the features have been updated, run a forced revert. This can help avoid. This is recommended to keep this environment in the desired state.'),
+//    );
+    return $form;
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function aegir_features_devshop_environment_actions($environment)
+{
+
+    if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+        $items[] = 'features_update';
+    }
+    return $items;
+}
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task()
+ * for Verify tasks.
+ *
+ * Runs the "verify" dotHook
+ */
+function aegir_features_post_hosting_features_update_task($task, $data) {
+
+}
