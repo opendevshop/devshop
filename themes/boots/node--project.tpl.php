@@ -150,7 +150,7 @@
   </ul>
 </div>
 
-<?php if (count($project_messages)): ?>
+<?php if (isset($project_messages) && count($project_messages)): ?>
   <?php foreach ($project_messages as $message): ?>
     <div class="alert alert-<?php print $message['type']; ?>">
       <?php print $message['icon']; ?>

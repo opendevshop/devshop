@@ -631,7 +631,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
   if (!empty($project) && arg(1) == $node->nid) {
-    drupal_goto("node/{$project->nid}/edit/{$node->environment->name}");
+    drupal_goto("node/{$project->nid}/edit/env/{$node->environment->name}");
     exit;
   }
 
@@ -686,14 +686,14 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['locked'] = array(
       '#type' => 'checkbox',
       '#title' => t('Lock Database'),
-      '#default_value' => $environment->settings->locked,
+      '#default_value' => isset($environment->settings->locked) ? $environment->settings->locked : FALSE,
       '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
   );
 
   $form['environment']['settings']['pull_disabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Disable Deploy on Commit'),
-      '#default_value' => $environment->settings->pull_disabled,
+      '#default_value' => isset($environment->settings->pull_disabled) ? $environment->settings->pull_disabled : FALSE,
       '#description' => t('Do not pull code to the server on commit & push.'),
   );
 

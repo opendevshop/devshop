@@ -25,7 +25,7 @@
             <li><label><?php print t('Environment Settings'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
             <li>
-              <?php print l($environment->name, "node/{$project->nid}/edit/{$environment->name}"); ?>
+              <?php print l($environment->name, "node/{$project->nid}/edit/env/{$environment->name}"); ?>
             </li>
             <?php endforeach; ?>
           </ul>
@@ -43,7 +43,7 @@
             <li><label><?php print t('Environment Logs'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
               <li>
-                <?php print l($environment->name, "node/{$project->nid}/logs/{$environment->name}"); ?>
+                <?php print l($environment->name, "node/{$project->nid}/logs/env/{$environment->name}"); ?>
               </li>
             <?php endforeach; ?>
           </ul>
