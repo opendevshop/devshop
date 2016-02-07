@@ -61,7 +61,7 @@
 
       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
 
-      <?php if ($retry): ?>
+      <?php if (isset($retry)): ?>
         <div class="retry-button pull-right">
           <?php print render($retry); ?>
         </div>
@@ -89,7 +89,7 @@
 
 
 
-    <?php if ($task_well): ?>
+    <?php if (isset($task_well)): ?>
       <?php print $task_well; ?>
     <?php endif; ?>
 
@@ -122,7 +122,7 @@
     </div>
   <?php endif; ?>
 
-    <?php  if ($follow_checkbox): ?>
+    <?php  if (isset($follow_checkbox)): ?>
         <div class="follow-logs-checkbox">
             <?php print $follow_checkbox; ?>
         </div>
@@ -134,8 +134,10 @@
         <?php print $messages; ?>
     </div>
 
-    <div class="running-indicator <?php print $is_active; ?>  text-muted small">
-        <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label;?></span>
+    <div class="running-indicator <?php print isset($is_active) ? $is_active : ''; ?>  text-muted small">
+      <?php if (isset($is_running)): ?>
+        <i class="fa fa-gear <?php print $is_running; ?>"></i> <span class="running-label"><?php print $running_label; ?></span>
+      <?php endif; ?>
     </div>
 
     <div class="task-details">
@@ -149,7 +151,7 @@
         </div>
     </div>
 
-    <?php  if ($node->test_results_formatted): ?>
+    <?php  if (isset($node->test_results_formatted) && $node->test_results_formatted): ?>
   <div role="tabpanel">
 
     <!-- Nav tabs -->
@@ -182,5 +184,5 @@
 
 <?php endif; ?>
 
-  <?php print $links; ?>
+  <?php print isset($links) ? $links : ''; ?>
 </div>
