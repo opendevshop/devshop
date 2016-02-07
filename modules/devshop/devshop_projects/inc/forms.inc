@@ -340,7 +340,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     unset($form['options']);
     unset($form['buttons']['delete']);
     unset($form['buttons']['preview']);
-    if ($form['retry']['#value']) {
+    if (isset($form['retry']['#value'])) {
       $form['buttons']['submit']['#value'] = t('Save and Retry');
     }
 
@@ -359,10 +359,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     $form_id == 'devshop_project_create_step_settings' ||
     $form_id == 'devshop_project_create_step_environments'
   ){
-    if ($form['#no_finish']){
+    if (isset($form['#no_finish'])) {
       unset($form['buttons']['return']);
     }
-    if ($form['#no_next']) {
+    if (isset($form['#no_next'])) {
       unset($form['buttons']['next']);
     }
     $form['buttons']['next']['#attributes'] =
