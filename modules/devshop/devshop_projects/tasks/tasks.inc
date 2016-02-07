@@ -23,18 +23,6 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
     'hidden' => TRUE,
   );
-  $tasks['project']['devshop-commit'] = array(
-    'title' => t('Commit Features'),
-    'description' => t('Recreates all Features and commits the result.'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-  );
-  $tasks['project']['devshop-pull'] = array(
-    'title' => t('Pull Code'),
-    'description' => t('Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-  );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
