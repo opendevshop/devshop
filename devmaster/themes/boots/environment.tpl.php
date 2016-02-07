@@ -344,17 +344,63 @@
                     </div>
                 <?php endif;?>
             </div>
-
         </div>
+
+        <?php if ($environment->git_status): ?>
+
+          <?php
+          // Figure out status
+          $item_class = 'default';
+          if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
+            $icon = 'exclamation-circle';
+            $label = t('Untracked Files');
+            $item_class = 'warning';
+          }
+
+          if (strpos($environment->git_status, 'modified:') !== FALSE) {
+            $icon = 'warning';
+            $label = t('Modified Files');
+            $item_class = 'danger';
+          }
+
+          ?>
+        <div class="list-group-item list-group-item-<?php print $item_class; ?>">
+          <label><?php print t('Git') ?></label>
+
+          <!-- Git Status -->
+          <div class="btn-group btn-git-status" role="group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-<?php print $icon; ?>"></i>
+              <?php print $label ?>
+              <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" role="menu">
+              <label>Git Status</label>
+              <pre>
+<?php print $environment->git_status; ?>
+              </pre>
+            </div>
+          </div>
+
+          <!-- Git Commit -->
+          <div class="btn-group btn-git-commit" role="group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-file-code-o"></i>
+              <?php print $environment->git_ref_id ?>
+              <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" role="menu">
+              <label>Git Status</label>
+              <pre>
+<?php print $environment->git_last; ?>
+              </pre>
+            </div>
+          </div>
+        </div>
+        <?php endif; ?>
 
         <div class="list-group-item">
             <div class="btn-group" role="group">
-
-                <!-- Last Commit -->
-                <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="btn btn-text text-muted small" title="<?php print $environment->git_last; ?>">
-                    <i class="fa fa-file-code-o"></i>
-                    <?php print $environment->git_ref_id; ?>
-                </a>
 
                 <!-- Browse Files -->
                 <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
