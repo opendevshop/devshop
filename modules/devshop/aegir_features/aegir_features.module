@@ -31,7 +31,7 @@ function hosting_task_features_update_form($node) {
     }
 
     $form['note'] = array(
-      '#value' => t('Run <code>drush features-update MODULE_NAME</code> or <code>drush feature-update-all</code>, then <code>git commit</code> and <code>git push</code> (optionally).'),
+      '#value' => t('Run <code>drush features-update-all</code>.'),
       '#type' => 'markup',
       '#prefix' => '<div class="alert alert-info">',
       '#suffix' => '</div>',
