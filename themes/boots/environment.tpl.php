@@ -1,6 +1,6 @@
 <div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_name; ?>-<?php print $environment->name ?>">
 
-    <?php if (!empty($environment->task_links) && !$page): ?>
+    <?php if (!empty($environment->task_links) && !isset($page)): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">
@@ -38,7 +38,7 @@
 
         <!-- Environment Status Indicators -->
         <div class="environment-indicators">
-            <?php if ($environment->settings->locked): ?>
+            <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
                 <span class="environment-meta-data text-muted" title="<?php print t('This database is locked.'); ?>">
               <i class="fa fa-lock"></i><?php print t('Locked') ?>
             </span>
@@ -420,7 +420,7 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                <?php if ($environment->settings->locked): ?>
+                                <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
                                     <li><label><?php print t('This environment is locked. You cannot deploy data here.'); ?></label></li>
                                 <?php elseif (count($target_environments) == 1): ?>
                                     <li><label><?php print t('No other environments available.'); ?></label></li>
@@ -517,7 +517,7 @@
             </div>
         <?php endif; ?>
 
-    <?php if (count(array_filter($environment->settings->deploy)) > 0): ?>
+    <?php if (isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) > 0): ?>
     <div class="list-group-item environment-dothooks">
         <label title="<?php print t('These hooks will run on every automatic deploy.');?>"><?php print t('Hooks'); ?></label>
         <div class="btn-group btn-hooks" role="group">
@@ -620,8 +620,8 @@
     <?php endif; ?>
     <?php endif; ?>
 
-    <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
-        <?php if ($page): ?>
+    <div class="environment-task-logs <?php if (!isset($page)) print 'list-group-item' ?>">
+        <?php if (isset($page)): ?>
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->

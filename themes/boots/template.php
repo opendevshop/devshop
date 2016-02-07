@@ -18,10 +18,17 @@ function boots_theme() {
 /**
  * Preprocessor for environment template.
  */
-function boots_preprocess_environment(&$vars)
-{
+function boots_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
+
+  // Load last task node.
+  if (isset($environment->last_task_nid)) {
+    $environment->last_task_node = node_load($environment->last_task_nid);
+  }
+
+  // Available deploy data targets.
+  $vars['target_environments'] = $project->environments;
 
   // Load git refs and create links
   $vars['git_refs'] = array();
@@ -69,7 +76,7 @@ function boots_preprocess_environment(&$vars)
   }
 
   // Pull Request?
-  if ($environment->github_pull_request) {
+  if (isset($environment->github_pull_request) && $environment->github_pull_request) {
     $environment->class .= ' pull-request';
   }
 
@@ -138,7 +145,7 @@ function boots_preprocess_environment(&$vars)
   }
 
   // No hooks configured.
-  if ($project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
+  if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
       'text' => t('No deploy hooks are configured. Check your !link.', array(
         '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
@@ -648,7 +655,7 @@ HTML;
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 
   // Available deploy data targets.
-  $vars['target_environments'];
+  $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
   foreach ($vars['node']->project->environments as &$environment) {
