@@ -13,7 +13,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         SELECT
             project_nid,
             name,
-            last_task AS last_task_nid,
+            last_task,
             n.title as project,
             site,
             e.platform
@@ -34,7 +34,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
 
   // Get all environments and their status.
   foreach ($results as $result) {
-    $result->last_task = node_load($result->last_task_nid);
+    $result->last_task_node = node_load($result->last_task);
 
         if ($result->site) {
           $result->site_node = node_load($result->site);
@@ -45,15 +45,15 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         }
 
         // If no last task node was found, skip.
-        if (empty($result->last_task)) {
+        if (empty($result->last_task_node)) {
             continue;
         }
 
         // If page is requesting this task's logs, load them.
-        if ($_GET['task'] == $result->last_task->nid) {
-            $messages = devshop_task_get_messages($result->last_task);
+        if ($_GET['task'] == $result->last_task_node->nid) {
+            $messages = devshop_task_get_messages($result->last_task_node);
             if (count($messages)) {
-                $result->last_task->logs = implode("\n", $messages);
+                $result->last_task_node->logs = implode("\n", $messages);
             }
         }
 
