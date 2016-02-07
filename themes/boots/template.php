@@ -354,7 +354,7 @@ function boots_preprocess_page(&$vars){
   }
 
   // On any node/% page...
-  if ($vars['node'] || arg(0) == 'node' && is_numeric(arg(1))) {
+  if (isset($vars['node']) || arg(0) == 'node' && is_numeric(arg(1))) {
 
     // Task nodes only have project nid and environment name.
     if (is_numeric($vars['node']->project)) {
@@ -439,14 +439,16 @@ function boots_preprocess_page(&$vars){
 
   }
   if (variable_get('devshop_support_widget_enable', TRUE)) {
-    $vars['closure'] .= <<<HTML
-<script>
+    $vars['page']['page_bottom']['intercomSettings'] = array(
+      '#attached' => array('js' => array(
+"<script>
   window.intercomSettings = {
-    app_id: "ufeta82d"
+    app_id: \"ufeta82d\"
   };
 </script>
-<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ufeta82d';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
-HTML;
+<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic===\"function\"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ufeta82d';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>"
+     => array('type' => 'inline')
+    )));
   }
 }
 
