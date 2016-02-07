@@ -236,6 +236,7 @@ function devshop_task_get_messages($task_node) {
   ));
 
   foreach ($result as $record) {
+
     if ($record->type == 'devshop_command') {
       if (empty($record->message)) {
         continue;
@@ -262,18 +263,18 @@ function devshop_task_get_messages($task_node) {
     } elseif ($record->type == 'devshop_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
     } elseif ($record->type == 'warning') {
       $command = 'warning_' . count($outputs);
       $outputs[$command]['status'] = 'warning';
       $outputs[$command]['icon'] = 'exclamation-triangle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'warning';
     } elseif ($record->type == 'error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'error';
     } elseif ($record->type == 'devshop_log') {
       $command = 'notice_' . count($outputs);
