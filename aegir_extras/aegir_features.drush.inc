@@ -1,61 +1,73 @@
 <?php
 
-use Symfony\Component\Process\Process;
-use GitWrapper\GitWrapper;
-use GitWrapper\GitWorkingCopy;
-use GitWrapper\GitException;
-
 /**
- * Implementation of hook_drush_command().
- * Provides provision commands for all devshop tasks.
+ * Pre provision-devshop-commit hook
+ *
+ * Implements drush_hook_pre_COMMAND() hook.
  */
-function aegir_features_drush_command()
-{
-  $items['provision-features_update'] = array(
-    'description' => 'Dummy command. Does nothing.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'features' => 'The list of features to update.',
-      'revert' => 'Whether or not to revert the features afterwards.',
-    ),
-  );
-  return $items;
+function drush_devshop_provision_pre_provision_devshop_commit(){
+  devshop_provision_pre_flight();
 }
 
+
 /**
- * Implements the provision-fua command.
+ * Implements the provision-devshop-commit command.
  */
-function drush_aegir_features_provision_features_update() {
+function drush_devshop_provision_provision_devshop_commit($platform_name = NULL) {
 
-  if (d()->type == 'site') {
+  // Must specify environment to pull
+  if (empty($platform_name)){
+    return drush_set_error(DRUSH_FRAMEWORK_ERROR, 'You must specify an environment to commit from.');
+  }
+  
+  drush_log(dt('[DEVSHOP] Provision DevShop Commit started...'), 'ok');
 
-    $environment = (object) d()->environment;
+  
+  // Get platform & site object
+  $project_name = d()->project_name;
+  $site_alias = '@' . $platform_name . '.' . d()->project['base_url'];
+  $platform = d();
+  
+  $platform_alias = '@' . implode('_', array('platform', $project_name, $platform_name));
+  $platform = d($platform_alias);
+  
+  // Ensure it's a git repo.
+  provision_git_is_repo($platform->root);
+  
+  // Update All Features
+  drush_log(dt('[DEVSHOP] Recreating all features...'), 'ok');
+  provision_backend_invoke($site_alias, 'features-update-all');
 
-    $features = trim(drush_get_option('features', ''));
-    $revert = drush_get_option('revert', FALSE);
+  // Generate commit message.
+  $message = array();
+  $message[] = "Exported from: $target";
+  $message[] = str_repeat('-', strlen($message[0]));
+  if (drush_get_option('message')){
+    $message[] = drush_get_option('message');
+  }
+  $message = implode("\n", $message);
 
-    // If features were specified...
-    if (!empty($features)) {
-      devshop_drush_process("drush {$environment->drush_alias} fu {$features} -y", NULL, dt('Update Features'));
-    }
-    else {
-      devshop_drush_process("drush {$environment->drush_alias} fua -y", NULL, dt('Update All Features'));
-    }
+  $data = array(
+    'message' => $message,
+  );
 
-    // Show git status
-    devshop_drush_process("git status", $environment->repo_root, NULL, dt('Checking git status'));
+  drush_log(dt('[DEVSHOP] Committing all features...'), 'ok');
+ 
+  // @TODO: Add "path_to_commit option in each project?
+  // Invoke provision-git-add to add any new files to the index
+  provision_backend_invoke($site_alias, 'provision-git-add', 
+    array("sites/all/modules/features"), $data);
 
-    // Revert force revert the features if the user asked.
-    if ($revert) {
-      if (!empty($features)) {
-        devshop_drush_process("drush {$environment->drush_alias} fr {$features} --force -y", NULL, dt('Revert Features'));
-      }
-      else {
-        devshop_drush_process("drush {$environment->drush_alias} fra --force -y", NULL, t('Revert Features'));
-      }
-    }
-    else {
-      drush_log('Revert skipped...!!!', 'devshop_log');
-    }
+  // Invoke provision-git-commit
+  provision_backend_invoke($site_alias, 'provision-git-commit', array(), $data);
+  
+  // Push, unless the user doesn't want to.
+  if (drush_get_option('push', TRUE)){
+    provision_backend_invoke($site_alias, 'provision-git-push');
+  }
+  
+  // Revert, if the user wants.
+  if (drush_get_option('revert')){
+    provision_backend_invoke($site_alias, 'provision-git-reset');
   }
 }
