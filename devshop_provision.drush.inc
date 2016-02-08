@@ -51,49 +51,6 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('deploy'),
   );
-  $items['provision-devshop-pull'] = array(
-    'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'update' => 'Run update.php after code pull.',
-      'revert' => 'Revert all features after code pull.',
-      'cache' => 'Clear all caches after code pull.',
-      'reset' => 'Runs "git reset --hard" before pulling.',
-      'force' => 'Runs always update,revert and cache options',
-    ),
-    'arguments' => array(
-      'environments' => 'A list of environment names to Pull Code to.',
-    ),
-    'examples' => array(
-      'drush @project_mysite provision-devshop-pull dev test --cache' => 'Triggers a git pull and a clear cache command on @project_mysite\'s dev and test environments.',
-    ),
-    'aliases' => array('pdp'),
-  );
-  $items['provision-devshop-commit'] = array(
-    'description' => 'Export the site\'s Features and commit the result.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'message' => 'Add a commit message',
-      'revert' => 'Force revert all features after exporting and committing.',
-    ),
-    'arguments' => array(
-      'environment' => 'The name of the environment to commit from.',
-    ),
-    'examples' => array(
-      'drush @project_mysite provision-devshop-commit dev --message="changed some settings"' => 'Recreates and Commits all features from the dev environment of @project_mysite with an additional commit message.',
-    ),
-    'aliases' => array('pdc'),
-  );
-  /* @TODO: Make devshop dl an addon module.
-  $items['provision-devshop-dl'] = array(
-    'description' => 'Download modules.  This is just a wrapper for dl, it is here for hostmaster.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'modules' => 'The list of modules to DL.',
-    ),
-    'aliases' => array('pdl'),
-  );
-  */
   $items['provision-test'] = array(
     'description' => 'Run a set of tests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
