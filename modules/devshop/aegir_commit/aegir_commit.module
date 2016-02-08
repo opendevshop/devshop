@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * Implementation of hook_hosting_tasks()
+ */
+function aegir_commit_hosting_tasks() {
+    $tasks['site']['commit'] = array(
+        'title' => t('Commit Code'),
+        'access callback' => 'devshop_hosting_task_menu_access',
+        'dialog' => TRUE,
+        'icon' => 'save'
+    );
+    return $tasks;
+}
+
+/**
+ * Implements hook_perm()
+ * @return array
+ */
+function aegir_commit_perm() {
+    return array('create commit task');
+}
+
+/**
+ * @return mixed
+ */
+function hosting_task_commit_form($node) {
+    $form['note'] = array(
+      '#value' => t('Choose the files to commit to git.'),
+      '#type' => 'markup',
+      '#prefix' => '<div class="alert alert-info">',
+      '#suffix' => '</div>',
+    );
+    $form['push'] = array(
+        '#title' => t('Push code after committing.'),
+        '#type' => 'checkbox',
+        '#default_value' => 1,
+    );
+    return $form;
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function aegir_commit_devshop_environment_actions($environment)
+{
+
+    if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+        $items[] = 'commit';
+    }
+    return $items;
+}
