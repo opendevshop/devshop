@@ -1,4 +1,28 @@
 
+<?php
+  /**
+   *  Not ideal - but if a repo master forces password in the exchange, it will be shown plaintext.
+   *  Therefore - we should hide it from display here.
+   * 
+   **/
+function scrub_repo_url($project_git_url){
+  $clean_project_url_input = $project_git_url;
+  $clean_project_url_output = $project_git_url;
+  $clean_project_url_haspassword = strchr($clean_project_url_input,':',7) && strrchr($clean_project_url_input,'@');
+  if($clean_project_url_haspassword){
+    /** 
+     *  In this case the password will be in a syntactically static place:
+     *     protocol://username:password@fqdn-url
+     *   Since password can contain : or @ we have to look from left and from right for the delimiters.
+     **/
+    $clean_project_url_stopleft = strpos($clean_project_url_input,':',7)+1;
+    $clean_project_url_stopright = strrpos($clean_project_url_input,'@');
+    $clean_project_url_output = substr($clean_project_url_input,0,$clean_project_url_stopleft) . '****' . substr($clean_project_url_input,$clean_project_url_stopright);
+    }
+  return $clean_project_url_output;
+}
+?>
+
 <nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
     <!-- First Links -->
@@ -60,16 +84,16 @@
 
         <!-- Link to github or an icon -->
         <?php if ($project->git_provider == 'github'): ?>
-          <a class="input-group-addon github-button" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github"></i></a>
+          <a class="input-group-addon github-button" href="<?php print scrub_repo_url($project->git_repo_url); ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github"></i></a>
         <?php elseif ($project->git_repo_url): ?>
-          <a class="input-group-addon large" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View Git Repo'); ?>" target="_blank"><i class="fa fa-git"></i></a>
+          <a class="input-group-addon large" href="<?php print scrub_repo_url($project->git_repo_url); ?>" title="<?php print t('View Git Repo'); ?>" target="_blank"><i class="fa fa-git"></i></a>
         <?php else: ?>
           <div class="input-group-addon"><i class="fa fa-git"></i></div>
         <?php endif; ?>
 
 
         <!-- Git URL -->
-        <input type="text" class="form-control" size="26" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
+        <input type="text" class="form-control" size="26" value="<?php print scrub_repo_url($project->git_url); ?>" onclick="this.select()">
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">
