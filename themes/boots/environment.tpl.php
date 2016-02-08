@@ -346,75 +346,23 @@
             </div>
         </div>
 
-        <?php if ($environment->git_status): ?>
-
-          <?php
-          // Figure out status
-          $item_class = 'default';
-          if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
-            $icon = 'exclamation-circle';
-            $label = t('Untracked Files');
-            $item_class = 'warning';
-          }
-
-          if (strpos($environment->git_status, 'modified:') !== FALSE) {
-            $icon = 'warning';
-            $label = t('Modified Files');
-            $item_class = 'danger';
-          }
-
-          ?>
-        <div class="list-group-item list-group-item-<?php print $item_class; ?>">
-          <label><?php print t('Git') ?></label>
-
-          <!-- Git Status -->
-          <div class="btn-group btn-git-status" role="group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-<?php print $icon; ?>"></i>
-              <?php print $label ?>
-              <span class="caret"></span>
-            </button>
-            <div class="dropdown-menu" role="menu">
-              <label>Git Status</label>
-              <pre>
-<?php print $environment->git_status; ?>
-              </pre>
-            </div>
-          </div>
-
-          <!-- Git Commit -->
-          <div class="btn-group btn-git-commit" role="group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-file-code-o"></i>
-              <?php print $environment->git_ref_id ?>
-              <span class="caret"></span>
-            </button>
-            <div class="dropdown-menu" role="menu">
-              <label>Git Status</label>
-              <pre>
-<?php print $environment->git_last; ?>
-              </pre>
-            </div>
-          </div>
-        </div>
-        <?php endif; ?>
-
         <div class="list-group-item">
-            <div class="btn-group" role="group">
+          <div class="btn-group" role="group">
 
-                <!-- Browse Files -->
-                <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
-                    <i class="fa fa-folder-o"></i>
-                    <?php print t('Files'); ?>
-                </a>
+            <!-- Browse Files -->
+            <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
+              <i class="fa fa-folder-o"></i>
+              <?php print t('Files'); ?>
+            </a>
 
-                <!-- Browse Backups -->
-                <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
-                    <i class="fa fa-database"></i>
-                    <?php print t('Backups'); ?>
-                </a>
-            </div>
+            <!-- Browse Backups -->
+            <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
+              <i class="fa fa-database"></i>
+              <?php print t('Backups'); ?>
+            </a>
+          </div>
         </div>
+
         <?php
         // Only show this area if they have at least one of these permissions.
         if (
@@ -656,6 +604,59 @@
     </div>
     <?php endif; ?>
     <?php endif; ?>
+
+  <?php if ($environment->git_status): ?>
+
+    <?php
+    // Figure out status
+    $item_class = 'default';
+    if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
+      $icon = 'exclamation-circle';
+      $label = t('Untracked Files');
+      $item_class = 'warning';
+    }
+
+    if (strpos($environment->git_status, 'modified:') !== FALSE) {
+      $icon = 'warning';
+      $label = t('Modified Files');
+      $item_class = 'danger';
+    }
+
+    ?>
+    <div class="list-group-item list-group-item-<?php print $item_class; ?>">
+      <label><?php print t('Git') ?></label>
+
+      <!-- Git Status -->
+      <div class="btn-group btn-git-status" role="group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <i class="fa fa-<?php print $icon; ?>"></i>
+          <?php print $label ?>
+          <span class="caret"></span>
+        </button>
+        <div class="dropdown-menu" role="menu">
+          <label>Git Status</label>
+              <pre>
+<?php print $environment->git_status; ?>
+              </pre>
+        </div>
+      </div>
+
+      <!-- Git Commit -->
+      <div class="btn-group btn-git-commit" role="group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <i class="fa fa-file-code-o"></i>
+          <?php print $environment->git_ref_id ?>
+          <span class="caret"></span>
+        </button>
+        <div class="dropdown-menu" role="menu">
+          <label>Git Show</label>
+              <pre>
+<?php print $environment->git_last; ?>
+              </pre>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
 
     <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
         <?php if ($page): ?>
