@@ -594,6 +594,10 @@ ul.dropdown-menu li.text {
 .environment > .list-group-item  .btn-group > button.btn-info {
     color: #428bca;
 }
+.environment > .list-group-item  .btn-group > button.btn-success {
+    color: #3c763d;
+}
+
 .environment > .list-group-item-git > .dropdown-menu {
     max-width: 350px;
 }
