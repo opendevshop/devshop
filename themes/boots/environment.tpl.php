@@ -636,7 +636,7 @@
 
         $note .= t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
 
-        $node .= '<pre>
+        $note .= '<pre>
 # Aegir files
 sites/sites.php
 sites/*/drushrc.php
@@ -666,7 +666,7 @@ sites/all/drush/drushrc.php
         <div class="dropdown-menu" role="menu">
           <label>Git Status</label>
           <p>
-            <?php print $node; ?>
+            <?php print $note; ?>
           </p>
               <pre>
 <?php print $environment->git_status; ?>
