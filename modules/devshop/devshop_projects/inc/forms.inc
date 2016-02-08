@@ -474,7 +474,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             '#suffix' => '</div>',
 
             'target' => array(
-              '#value' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
+              '#markup' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
               '#prefix' => '<p class="text-danger">',
               '#suffix' => '</p>',
             ),
@@ -487,13 +487,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
               '#title' => t('Drush Alias for Source'),
               '#description' => t('Enter a full drush alias to use as the source. Make sure to include the "@" character at the beginning.'),
             );
+            $form['parameters']['destination'] = array(
+              '#type' => 'value',
+              '#value' => $node->environment->drush_alias,
+            );
           }
           // If a source is specified, add help and set it as a value.
           else {
 
             $source_environment = $source->environment;
             $form['help']['source'] = array(
-              '#value' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
+              '#markup' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
               '#prefix' => '<p>',
               '#suffix' => '</p>',
             );
@@ -501,6 +505,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             $form['parameters']['source'] = array(
               '#type' => 'value',
               '#value' => $source->environment->drush_alias,
+            );
+            $form['parameters']['destination'] = array(
+              '#type' => 'value',
+              '#value' => $node->environment->drush_alias,
             );
           }
 
@@ -517,7 +525,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $form['actions']['submit']['#value'] = t('Deploy Data');
           $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
 
-          $form['warning']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+          $form['warning']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
         }
         break;
       case 'delete':
@@ -537,7 +545,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $environments = theme('item_list', array('items' => $items));
 
           // Display a scary warning message.
-          $form['help']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Are you sure you wish to destroy the project !project and all of these environments?', array(
+          $form['help']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Are you sure you wish to destroy the project !project and all of these environments?', array(
               '!project' => l($node->project->name, "node/{$node->nid}"),
             )) . $environments . '</div>';
 
@@ -567,7 +575,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     if ($_GET['web_server']) {
       $environment = $platform_node->environment;
       $form['help'] = array(
-        '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
+        '#markup' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
         '#weight' => -10,
       );
 
@@ -586,7 +594,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
       $form['old'] = array(
         '#type' => 'item',
         '#title' => t('Current Web Server'),
-        '#value' => l($environment->servers['http']['name'], 'node/' . $environment->servers['http']['nid']) . '<br />' . implode($old_server->ip_addresses, '<br />'),
+        '#markup' => l($environment->servers['http']['name'], 'node/' . $environment->servers['http']['nid']) . '<br />' . implode($old_server->ip_addresses, '<br />'),
         '#weight' => '-1',
       );
 
@@ -594,7 +602,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
       $form['new'] = array(
         '#type' => 'item',
         '#title' => t('New Web Server'),
-        '#value' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
+        '#markup' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
         '#weight' => '0',
       );
     }
@@ -635,7 +643,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // Help Text
   $form['note'] = array(
-      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
+      '#markup' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
     );
 
   $form['environment'] = array(
@@ -832,7 +840,7 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
   $items[] = t('If you have already provisioned the server, add the key to the <code>aegir</code> user.');
 
   $form['note'] = array(
-    '#value' => theme('item_list', array('items' => $items)),
+    '#markup' => theme('item_list', array('items' => $items)),
     '#weight' => -100,
     '#prefix' => '<div class="alert alert-info">',
     '#suffix' => '</div>',
@@ -843,7 +851,7 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
     '#title' => t(' SSH Public Key for %aegir', array(
       '%aegir' => "aegir@" . $_SERVER['HTTP_HOST'],
     )),
-    '#value' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
+    '#markup' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
     '#weight' => -99,
   );
 }

@@ -195,12 +195,10 @@ function devshop_projects_menu() {
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
     'type' => MENU_NORMAL_ITEM,
   );
-
-  $items['admin/devshop/projects'] = $items['admin/devshop'];
-  $items['admin/devshop/projects']['title'] = 'Projects';
-  $items['admin/devshop/projects']['type'] = MENU_DEFAULT_LOCAL_TASK;
-  $items['admin/devshop/projects']['tab_parent'] = 'admin/devshop';
-  $items['admin/devshop/projects']['weight'] = -10;
+  $items['admin/devshop/settings'] = array(
+    'title' => t('DevShop Settings'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
 
   $items['projects'] = array(
     'title' => t('Projects'),
@@ -381,10 +379,21 @@ function devshop_projects_block_info() {
 function devshop_projects_block_view($delta) {
   if ($delta == 'project_nav' && (arg(0) == 'node' || arg(0) == 'hosting_confirm')) {
     $node = node_load(arg(1));
-    if (node_access('view', $node) && ($node->type == 'project' || $node->project)) {
+    if (node_access('view', $node) && ($node->type == 'project' || !empty($node->project))) {
 
       // If viewed node is project, use that.
-      $project = $node->type == 'project' ? $node : ($node->project->vid ? $node->project : node_load($node->project));
+      if (is_numeric($node->project)) {
+        if ($project_node = node_load($node->project)) {
+          $project = $project_node->project;
+        }
+      }
+      elseif (!empty($node->project)) {
+        $project = $node->project;
+      }
+      else {
+        return '';
+      }
+
       $block['subject'] = '';
       $block['content'] = theme('devshop_project_nav', array('project' => $project));
     }
@@ -465,6 +474,45 @@ function devshop_projects_menu_alter(&$items) {
 
   $items['node/%node/view']['weight'] = -10;
   $items['node/%node/edit']['weight'] = -9;
+
+  // Hosting now hides all but migrate and clone tasks.
+  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_devshop-deploy", 'deploy', 'deploy', 'devshop-deploy');
+  $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
+
+  // Redirect hosting/task/% to the node
+  $items['hosting/task/%'] = array(
+    'page callback' => 'drupal_goto_nid',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+  );
+}
+
+/**
+ * Helper to redirect to a node page.
+ * @param $nid
+ */
+function drupal_goto_nid($nid) {
+  drupal_goto("node/{$nid}");
+}
+
+/**
+ * Access callback helper for hosting task menu items.
+ * A copy of hosting_task_menu_access() except we allow devshop-deploy tasks.
+ * @see hosting_task_menu_access()
+ */
+function devshop_hosting_task_menu_access_csrf($node, $task) {
+  global $user;
+
+  $interactive_tasks = array('migrate', 'clone', 'devshop-deploy');
+
+  // To prevent CSRF attacks, a unique token based upon user is used. Deny
+  // access if the token is missing or invalid. We only do this on
+  // non-interactive tasks.
+  if (!in_array($task, $interactive_tasks) && (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], $user->uid))) {
+    return FALSE;
+  }
+  // Call the main menu access handler.
+  return hosting_task_menu_access($node, $task);
 }
 
 /**
@@ -697,11 +745,14 @@ function devshop_projects_url($name, $environment = NULL) {
 function devshop_reset_last_tasks () {
 
   // Lookup all environments
-  $query = db_query('SELECT * FROM {hosting_devshop_project_environment}');
-  while ($result = db_fetch_object($query)) {
+  $results = db_query('SELECT * FROM {hosting_devshop_project_environment}');
+  foreach ($results as $result) {
     $site = node_load($result->site);
-    $result = db_fetch_object(db_query("SELECT t.nid, t.vid FROM {hosting_task} t INNER JOIN node n ON n.vid = t.vid WHERE rid = %d GROUP BY t.nid ORDER BY vid DESC", $site->nid));
-    $site->environment->last_task = $result->nid;
+    $nid = db_query("SELECT t.nid FROM hosting_task t INNER JOIN node n ON n.nid = t.nid WHERE rid = :site", array(
+      ':site' => $site->nid
+    ))->fetchField();
+
+    $site->environment->last_task = $nid;
     devshop_environment_save_last_task($site->environment);
   }
 }
