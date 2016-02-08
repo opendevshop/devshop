@@ -632,6 +632,7 @@
 
       $note = t("You have untracked files in the site's codebase.");
 
+      // Detect Aegir files we should be ignoring.
       if (strpos($environment->git_status, 'sites/sites.php') !== FALSE || strpos($environment->git_status, 'sites/' . $environment->uri) !== FALSE || strpos($environment->git_status, 'sites/all/drush') !== FALSE) {
 
         $note .= t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
@@ -646,10 +647,16 @@ sites/all/drush/drushrc.php
       }
     }
 
-    if (strpos($environment->git_status, 'modified:') !== FALSE) {
+    if (strpos($environment->git_status, 'modified:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {
       $icon = 'warning';
       $label = t('Modified Files');
       $item_class = 'danger';
+    }
+
+    if (strpos($environment->git_status, 'Changes to be committed:') !== FALSE) {
+      $icon = 'check-square-o';
+      $label = t('Staged to Commit');
+      $item_class = 'warning';
     }
 
     ?>
