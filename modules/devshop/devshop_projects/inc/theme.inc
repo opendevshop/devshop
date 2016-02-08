@@ -86,7 +86,7 @@ function theme_devshop_projects_create_settings_form($vars) {
 
     foreach (element_children($settings_element) as $setting) {
       if (!isset($header[$setting])) {
-        $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
+        $header[$setting] = isset($form[$env_name]['settings'][$setting]['#title']) ? $form[$env_name]['settings'][$setting]['#title'] : '';
       }
       $form[$env_name]['settings'][$setting]['#title'] = '';
 
@@ -329,8 +329,10 @@ HTML;
  * Preprocess for project_add_status.tpl.php
  */
 function template_preprocess_devshop_project_add_status(&$vars) {
-  $vars['web_server_node'] = node_load($vars['project']->settings->default_environment['web_server']);
-  $vars['db_server_node'] = node_load($vars['project']->settings->default_environment['db_server']);
+  if (isset($vars['project']->settings, $vars['project']->settings->default_environment)) {
+    $vars['web_server_node'] = isset($vars['project']->settings->default_environment['web_server']) ? node_load($vars['project']->settings->default_environment['web_server']) : NULL;
+    $vars['db_server_node'] = isset($vars['project']->settings->default_environment['db_server']) ? node_load($vars['project']->settings->default_environment['db_server']) : NULL;
+  }
 }
 
 /**

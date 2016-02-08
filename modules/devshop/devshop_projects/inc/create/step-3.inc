@@ -41,7 +41,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
   );
 
   // Ensure a blank row exists (happens when using 'Back' button)
-  if (!is_array($project->environments['NEW'])) {
+  if (!isset($project->environments['NEW']) || !is_array($project->environments['NEW'])) {
     $project->environments['NEW'] = array();
   }
   foreach ($project->environments as $name => $environment) {
@@ -73,23 +73,23 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
     $form['project']['environments'][$name]['site'] = array(
       '#type' => 'value',
-      '#value' => $environment->site,
+      '#value' => isset($environment->site) ? $environment->site : NULL,
     );
     $form['project']['environments'][$name]['platform'] = array(
       '#type' => 'value',
-      '#value' => $environment->platform,
+      '#value' => isset($environment->platform) ? $environment->platform : NULL,
     );
     $form['project']['environments'][$name]['git_ref'] = array(
       '#type' => 'select',
       '#options' => devshop_projects_git_ref_options($project),
-      '#default_value' => $environment->git_ref,
+      '#default_value' => isset($environment->git_ref) ? $environment->git_ref : 'HEAD',
     );
 
     // HTTP Server select.
     $http_servers = hosting_get_servers('http');
 
     // Determine default web server.
-    $default_web_server = $environment->settings->web_server ?
+    $default_web_server = isset($environment->settings, $environment->settings->web_server) ?
       $environment->settings->web_server :
       $project->settings->default_environment['web_server'];
 
@@ -117,7 +117,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     $db_servers = hosting_get_servers('db');
 
     // Determine default db server.
-    $default_db_server = $environment->settings->db_server ?
+    $default_db_server = isset($environment->settings, $environment->settings->db_server) ?
       $environment->settings->db_server :
       $project->settings->default_environment['db_server'];
 
@@ -162,20 +162,23 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   $project = &$form_state['project'];
 
   $values = &$form_state['values'];
+  dpm($values);
 
   // Check environment titles
-  foreach ($values['project']['environments'] as $env => $env_settings) {
-    // Check for illegal chars
-    if ($env != 'NEW' && !empty($env_settings['name'])) {
-      if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
-        $form_item = 'environments][' . $env . '][name';
-        form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+  if (isset($values['project'])) {
+    foreach ($values['project']['environments'] as $env => $env_settings) {
+      // Check for illegal chars
+      if ($env != 'NEW' && !empty($env_settings['name'])) {
+        if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
+          $form_item = 'environments][' . $env . '][name';
+          form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+        }
       }
     }
   }
 
   // Reject if empty
-  if (count($values['project']['environments']) < 1) {
+  if (isset($values['project']) && empty($values['project']['environments']['NEW']['name'])) {
     if ($form_state['clicked_button']['#name'] == 'add_environment') {
       form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
     }

@@ -431,7 +431,7 @@
                                         <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
                                                 <?php if ($project->settings->live['live_environment'] == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
-                                                <?php elseif ($source->settings->locked): ?>
+                                                <?php elseif (isset($source->settings->locked) && $source->settings->locked): ?>
                                                     <i class="fa fa-lock deploy-db-indicator"></i>
                                                 <?php endif; ?>
 
@@ -583,9 +583,9 @@
                                 <li><label><?php print t('File-based Hooks'); ?></label></li>
                                 <li class="text"><p class="text-info">
                                         <i class="fa fa-question-circle"></i>
-                                        <?php print t("When code is deployed, the 'deploy' section of a .hooks or .hooks.yml file in your project. This is your %filename file.", array('%filename' => $environment->dothooks_file_name)); ?></p></li>
+                                        <?php print t("When code is deployed, the 'deploy' section of a .hooks or .hooks.yml file in your project. This is your %filename file.", array('%filename' => isset($environment->dothooks_file_name) ? $environment->dothooks_file_name : '')); ?></p></li>
                                 <li>
-                                    <pre><?php print file_get_contents($environment->dothooks_file_path); ?></pre>
+                                    <pre><?php if (isset($environment->dothooks_file_path)) { print file_get_contents($environment->dothooks_file_path); } ?></pre>
                                 </li>
                             <?php elseif ($hook_type == 'acquia_hooks'): ?>
                                 <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
