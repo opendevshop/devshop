@@ -1,4 +1,10 @@
 <?php
+
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+
 /**
  * Implements hook_theme()
  */
@@ -23,6 +29,15 @@ function boots_preprocess_environment(&$vars)
   $environment = &$vars['environment'];
   $project_node = node_load($environment->project_nid);
   $project = $vars['project'] = $project_node->project;
+
+  // Prepare ASCII Converter
+    // Prepare ASCII Converter
+  $theme = new SolarizedXTermTheme();
+  $styles = $theme->asCss();
+  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
+
+  drupal_set_html_head("<style>$styles</style>");
+  $vars['ascii'] = new AnsiToHtmlConverter($theme);
 
   // Load git refs and create links
   $vars['git_refs'] = array();

@@ -544,8 +544,12 @@ ul.dropdown-menu li.text {
 
 .environment > .list-group-item {
   padding: 0px;
-  white-space: nowrap;
 }
+
+.environment > .list-group-item pre {
+  white-space: pre;
+}
+
 .environment > .environment-header.list-group-item {
   white-space: normal;
 }
