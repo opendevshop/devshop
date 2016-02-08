@@ -610,6 +610,21 @@
     <?php
     // Figure out status
     $item_class = 'default';
+    $icon = 'check';
+    $label = t('Clean');
+
+    if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
+      $icon = 'arrow-right';
+      $label = t('Ahead');
+      $item_class = 'info';
+    }
+
+    if (strpos($environment->git_status, 'Your branch is behind') !== FALSE) {
+      $icon = 'arrow-left';
+      $label = t('Behind');
+      $item_class = 'info';
+    }
+
     if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
       $icon = 'exclamation-circle';
       $label = t('Untracked Files');
