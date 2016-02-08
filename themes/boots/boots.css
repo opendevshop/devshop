@@ -581,6 +581,14 @@ ul.dropdown-menu li.text {
 
 }
 
+.environment > .list-group-item  .btn-group > button.btn-danger {
+    color: #a94442;
+}
+.environment > .list-group-item  .btn-group > button.btn-warning {
+    color: #f0ad4e;
+}
+
+
 .environment > .list-group-item  .btn-group > a.alert-link {
   color: inherit;
   font-size: inherit;
