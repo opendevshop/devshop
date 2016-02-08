@@ -31,11 +31,11 @@ function drush_aegir_commit_provision_commit() {
   if (d()->type == 'site') {
 
     $environment = (object) d()->environment;
+    $project = (object) d('project_' . $environment->project_name);
+    $git_url = $project->project['git_url'];
 
     $message = trim(drush_get_option('message', ''));
     $push = drush_get_option('push', FALSE);
-
-    drush_log('[DevShop Commit]');
 
     // Git Add All
     try {
@@ -44,7 +44,7 @@ function drush_aegir_commit_provision_commit() {
 
       $git = $wrapper->workingCopy($environment->repo_root);
 
-      if ($git->clean()) {
+      if (empty($git->getStatus())) {
         drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
       }
       else {
@@ -64,8 +64,17 @@ Committed by OpenDevShop via http://$hostmaster_uri");
 
       // Push the result, if desired.
       if ($push) {
-        devshop_drush_process("git push", $environment->repo_root, 'Pushing code to remote repository...');
-        drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+
+        // Do a little pre-check to ensure we don't hang at http password.
+        $git_url = parse_url($git_url);
+        if (($git_url['scheme'] == 'http' || $git_url['scheme'] == 'https') && empty($git_url['pass'])) {
+          drush_log('http git url detected, with no password. Unable to push to this repository.', 'warning');
+          return;
+        }
+        else {
+          devshop_drush_process("git push", $environment->repo_root, 'Pushing code to remote repository...');
+          drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+        }
       }
     }
     catch (GitException $e) {
