@@ -43,7 +43,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
       }
     }
 
-    // devshop_environment_save_last_task($site->environment);
+    devshop_environment_save_last_task($site->environment);
   }
 }
 
@@ -160,13 +160,13 @@ function drush_devshop_platform_verify() {
   if (!is_dir($root)) {
 
     // Clone the repo.
-    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('[DevShop] Cloning git repository'));
+    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
     // If there is a git ref, check it out.
     // We don't do this on clone, because it could be a tag.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
-      devshop_drush_process("git checkout $git_ref", $root, dt('[DevShop] Checking out specified version'));
+      devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
     }
   }
 
@@ -324,7 +324,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         }
 
         $new_site = devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
-        drush_log("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. Please wait...", 'devshop_log');
+        drush_log(t("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. See the !link for status.", array('!link' => l(t('Environment Dashboard'), "node/{$new_site->nid}"))), 'devshop_log');
       }
     }
   }

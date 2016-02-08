@@ -49,7 +49,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   try {
 
     $wrapper = new GitWrapper();
-
+    $wrapper->streamOutput();
     $git = $wrapper->workingCopy($environment->repo_root);
     chdir($git->getDirectory());
     drush_log('[Current Working Directory]' . $git->getDirectory(), 'devshop_log');
@@ -97,9 +97,9 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 
   } catch (GitException $e) {
     drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
-    drush_log($git->getOutput(), 'devshop_ok');
     drush_log($e->getMessage(), 'devshop_error');
-    return drush_set_error('DEVSHOP_GIT_ERROR');
+    drush_log($e->getMessage(), 'error');
+    return FALSE;
   }
 }
 

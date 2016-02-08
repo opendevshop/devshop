@@ -45,18 +45,17 @@ function devshop_github_form_node_form_alter(&$form, &$form_state, $form_id) {
   }
 
   //All settings git pull in project page
-  $form['github'] = array(
+  $form['project']['settings']['github'] = array(
       '#type' => 'fieldset',
-      '#tree' => TRUE,
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
-      '#group' => 'additional_settings',
       '#title' => t('GitHub Integration'),
       '#weight' => -50
   );
 
   // Pull Requests create environments?
-  $form['github']['pull_request_environments'] = array(
+  // $form['github']['pull_request_environments'] = array(
+  $form['project']['settings']['github']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
       '#default_value' => $node->project->settings->github['pull_request_environments'],
@@ -64,7 +63,8 @@ function devshop_github_form_node_form_alter(&$form, &$form_state, $form_id) {
   );
 
   // Delete Pull Request environments?
-  $form['github']['pull_request_environments_delete'] = array(
+  // $form['github']['pull_request_environments_delete'] = array(
+  $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Delete Pull Request Environments'),
       '#default_value' => $node->project->settings->github['pull_request_environments_delete'],
@@ -72,7 +72,8 @@ function devshop_github_form_node_form_alter(&$form, &$form_state, $form_id) {
   );
 
   // Pull Request Environment method.
-  $form['github']['pull_request_environments_method'] = array(
+  // $form['github']['pull_request_environments_method'] = array(
+  $form['project']['settings']['github']['pull_request_environments_method'] = array(
       '#type' => 'radios',
       '#title' => t('Pull Request Environment Deploy Method'),
       '#default_value' => $node->project->settings->github['pull_request_environments_method'],
@@ -232,14 +233,18 @@ function devshop_github_project_create_webhook($form, $form_state) {
 function devshop_github_node_load($nodes, $types) {
   if (count(array_intersect(array('project'), $types))) {
     foreach ($nodes as $nid => $node) {
+
+      // Look for a pull request object.
       $pull_request = (object) db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid))->fetchAssoc();
-      $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-      if (isset( $node->project->environments[$pull_request->environment_name])) {
-        $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+      if (!empty($pull_request->pull_request_object)) {
+        $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
+        if (isset($node->project->environments[$pull_request->environment_name])) {
+          $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+        }
       }
 
       // Parse github owner and repo.
-      if ($node->project->git_provider == 'github') {
+      if (isset($node->project) && $node->project->git_provider == 'github') {
         $node->project->github_owner =
           $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
         $node->project->github_owner = $parts[1];
@@ -248,20 +253,6 @@ function devshop_github_node_load($nodes, $types) {
     }
   }
 
-}
-
-/**
- * Implements hook_node_presave().
- */
-function devshop_github_node_presave($node) {
-  if ($node->type != 'project' ||
-      $node->type == 'project' && isset($node->project, $node->project->github_provider) && $node->project->git_provider != 'github') {
-    return;
-  }
-
-  if (!isset($node->project->settings->github) && isset($node->github)) {
-    $node->project->settings->github = $node->github;
-  }
 }
 
 /**
