@@ -663,7 +663,7 @@ sites/all/drush/drushrc.php
           <?php print $label ?>
         </button>
         <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
