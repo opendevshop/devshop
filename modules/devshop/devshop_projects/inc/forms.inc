@@ -88,11 +88,11 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
-    '#value' => $project->settings->git['branches'],
+    '#value' => isset($project->settings->git['branches']) ? $project->settings->git['branches'] : NULL,
   );
   $form['project']['settings']['git']['tags'] = array(
     '#type' => 'value',
-    '#value' => $project->settings->git['tags'],
+    '#value' => isset($project->settings->git['tags']) ? $project->settings->git['tags'] : NULL,
   );
 
   // Live Environment settings.
@@ -118,7 +118,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Live environment'),
     '#description' => t('The environment for the live website.  This locks the live environment from overwrites and disabling, and allows syncing to other environments.'),
     '#options' => $environments_options,
-    '#default_value' => $project->settings->live['live_environment'],
+    '#default_value' => isset($project->settings->live) ? $project->settings->live['live_environment'] : '',
   );
 
   // Live Domain
@@ -127,7 +127,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Live Domain'),
     '#description' => t('The live domain for this project. Used only for links and when creating subdomain aliases for other environments. <em>You must still add the Domain to your live environment manually.</em>'),
     '#size' => 40,
-    '#default_value' => $node->project->settings->live['live_domain'],
+    '#default_value' => isset($project->settings->live) ? $node->project->settings->live['live_domain'] : '',
   );
 
   // Use aliases
@@ -135,7 +135,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'checkbox',
     '#title' => t('For new environments, create subdomains under Live Domain.'),
     '#description' => t('When new environments are created, automatically add a domain name such as http://ENVIRONMENT.LIVEDOMAIN.com. <em>Does not affect existing environments. Does not remove domains when disabled.</em>'),
-    '#default_value' => $project->settings->live['environment_aliases'],
+    '#default_value' => isset($project->settings->live) ? $project->settings->live['environment_aliases'] : FALSE,
   );
 
   // Pull Code Method
@@ -204,7 +204,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form['project']['settings']['deploy']['allow_deploy_data_from_alias'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow deploying data from drush aliases.'),
-    '#default_value' => $node->project->settings->deploy['allow_deploy_data_from_alias'],
+    '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_deploy_data_from_alias'] : FALSE,
     '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
   );
 
@@ -228,29 +228,29 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form['project']['settings']['deploy']['allow_environment_deploy_config'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow environment-specific deploy hook configuration.'),
-    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_config'],
+    '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_environment_deploy_config'] : FALSE,
     '#description' => t('Each environment can be configured to have different deploy hooks. <em>Be sure to check your environments settings if you enable this.</em>' ),
   );
 
   $form['project']['settings']['deploy']['allow_environment_deploy_hooks_override'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow users to override hooks when deploying manually.'),
-    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_hooks_override'],
+    '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_environment_deploy_hooks_override'] : FALSE,
     '#description' => t('Check this box to allow users to override the hooks that are run on manual deployments. If left unchecked, all environments will run the deploy hooks configured above on every deployment.' ),
   );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
   $form['project']['settings']['deploy']['last_webhook'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->deploy['last_webhook'],
+    '#value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['last_webhook'] : NULL,
   );
   $form['project']['settings']['deploy']['last_webhook_status'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->deploy['last_webhook_status'],
+    '#value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['last_webhook_status'] : NULL,
   );
   $form['project']['settings']['deploy']['last_webhook_ip'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->deploy['last_webhook_ip'],
+    '#value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['last_webhook_ip'] : NULL,
   );
 
   //All settings git pull in project page
@@ -269,7 +269,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#title' => t('Web server'),
       '#type' => 'select',
       '#options' => $http_servers,
-      '#default_value' => $project->settings->default_environment['web_server'],
+      '#default_value' => isset($project->settings->default_environment) ? $project->settings->default_environment['web_server'] : current($http_servers),
     );
   }
 
@@ -280,7 +280,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#title' => t('Database server'),
       '#type' => 'select',
       '#options' => $db_servers,
-      '#default_value' => $project->settings->default_environment['db_server'],
+      '#default_value' => isset($project->settings->default_environment) ? $project->settings->default_environment['db_server'] : current($db_servers),
     );
   }
 
@@ -732,29 +732,41 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       '#type' => 'fieldset',
       '#title' => t('Deployment Hooks'),
   );
+
+  $environment_update = isset($environment->settings->deploy) ? $environment->settings->deploy['update'] : FALSE;
+  $environment_cache = isset($environment->settings->deploy) ? $environment->settings->deploy['cache'] : FALSE;
+  $environment_revert = isset($environment->settings->deploy) ? $environment->settings->deploy['revert'] : FALSE;
+  $environment_dothooks = isset($environment->settings->deploy) ? $environment->settings->deploy['dothooks'] : FALSE;
+  $environment_acquia_hooks = isset($environment->settings->deploy) ? $environment->settings->deploy['acquia_hooks'] : FALSE;
+  $project_update = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['update'] : FALSE;
+  $project_cache = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['cache'] : FALSE;
+  $project_revert = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['revert'] : FALSE;
+  $project_dothooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['dothooks'] : FALSE;
+  $project_acquia_hooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['acquia_hooks'] : FALSE;
+
   $return['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['update']: $environment->settings->deploy['update'],
+      '#default_value' => empty($environment->settings->deploy) ? $project_update : $environment_update,
   );
   $return['cache'] = array(
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['cache']: $environment->settings->deploy['cache'],
+      '#default_value' => empty($environment->settings->deploy)? $project_cache : $environment_cache,
   );
   $return['revert'] = array(
     '#type' => 'checkbox',
     '#title' => t('Revert all features.'),
     '#description' => t('If features is enabled, revert all of them.'),
-    '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['revert']: $environment->settings->deploy['revert'],
+    '#default_value' => empty($environment->settings->deploy)? $project_revert : $environment_revert,
   );
 
   // Look for .hooks or .hooks.yml
-  if (!$is_environment_form || $project->settings->deploy['default_hooks']['dothooks']) {
+  if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['dothooks'])) {
     $return['dothooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['dothooks']: $environment->settings->deploy['dothooks'],
+      '#default_value' => empty($environment->settings->deploy) ? $project_dothooks : $environment_dothooks,
       '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
         '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
       )),
@@ -762,12 +774,12 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
 
   // Look for acquia cloud hooks.
-  if (!$is_environment_form || $project->settings->deploy['default_hooks']['acquia_hooks']){
+  if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['acquia_hooks'])) {
     $return['acquia_hooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run Acquia Cloud Hooks'),
       '#description' => '<p>' . t('Acquia Cloud Hooks were detected in your project.  Check this box to run all acquia cloud hooks.') . '</p><p>' . t('Available cloud hooks are: "post-code-update" when deploying code via git, "post-code-deploy" when deploying code manually, "post-db-copy" when running a sync task with a database, and "post-files-copy" when running a sync task with files.') . '</p>',
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['acquia_hooks']: $environment->settings->deploy['acquia_hooks'],
+      '#default_value' => empty($environment->settings->deploy) ? $project_acquia_hooks : $environment_acquia_hooks,
     );
   }
 
