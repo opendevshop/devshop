@@ -162,7 +162,6 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
   $project = &$form_state['project'];
 
   $values = &$form_state['values'];
-  dpm($values);
 
   // Check environment titles
   if (isset($values['project'])) {
