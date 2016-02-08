@@ -1,5 +1,8 @@
 <?php
 
+use GitWrapper\GitWrapper;
+use GitWrapper\GitWorkingCopy;
+use GitWrapper\GitException;
 /**
  * Implementation of hook_hosting_tasks()
  */
@@ -25,18 +28,38 @@ function aegir_commit_perm() {
  * @return mixed
  */
 function hosting_task_commit_form($node) {
-    $form['note'] = array(
-      '#value' => t('Choose the files to commit to git.'),
-      '#type' => 'markup',
-      '#prefix' => '<div class="alert alert-info">',
-      '#suffix' => '</div>',
-    );
-    $form['push'] = array(
-        '#title' => t('Push code after committing.'),
-        '#type' => 'checkbox',
-        '#default_value' => 1,
-    );
-    return $form;
+
+  $environment = $node->environment;
+
+  try {
+    $wrapper = new GitWrapper();
+    $git = $wrapper->workingCopy($environment->repo_root);
+    $status = $git->getStatus();
+  }
+  catch (GitException $e) {
+    drupal_set_message("Cannot Commit Changes: Unable to load git repository at path '{$environment->repo_root}'. Something is wrong: either the path in the database is wrong, or the files are missing from their intended location.", 'error');
+    drupal_set_message($e->getMessage(), 'error');
+    drupal_goto("node/{$environment->project_nid}");
+  }
+
+  $form['note'] = array(
+    '#value' => t('Choose the files to commit to git.'),
+    '#type' => 'markup',
+    '#prefix' => '<div class="alert alert-info">',
+    '#suffix' => '</div>',
+  );
+  $form['status'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<div class="alert alert-info">',
+    '#value' => $status,
+    '#suffix' => '</div>',
+  );
+  $form['push'] = array(
+      '#title' => t('Push code after committing.'),
+      '#type' => 'checkbox',
+      '#default_value' => 1,
+  );
+  return $form;
 }
 
 /**
