@@ -591,11 +591,8 @@ ul.dropdown-menu li.text {
     color: #428bca;
 }
 
-.list-group-item-git {
-    white-space: normal;
-}
-.environment > .list-group-item .dropdown-menu {
-
+.environment > .list-group-item-git {
+  white-space: normal;
 }
 
 .environment > .list-group-item  .btn-group > a.alert-link {
