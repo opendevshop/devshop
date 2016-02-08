@@ -40,8 +40,33 @@ function drush_aegir_commit_provision_commit() {
     // Git Add All
     try {
       $wrapper = new GitWrapper();
+      $wrapper->streamOutput();
+
       $git = $wrapper->workingCopy($environment->repo_root);
-      drush_log($git->getStatus(), 'devshop_ok');
+
+      if ($git->clean()) {
+        drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
+      }
+      else {
+        drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+        devshop_drush_process('git add -A', $environment->repo_root, 'Adding all files to local repository...');
+        drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+
+        $hostmaster_uri = d('hostmaster')->uri;
+        $message = escapeshellarg("$message
+--------------
+Committed by OpenDevShop via http://$hostmaster_uri");
+
+        devshop_drush_process("git commit -m {$message}", $environment->repo_root, 'Committing changes to local repository...');
+
+        drush_log('[Git Show] ' . $git->getStatus(), 'devshop_log');
+      }
+
+      // Push the result, if desired.
+      if ($push) {
+        devshop_drush_process("git push", $environment->repo_root, 'Pushing code to remote repository...');
+        drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+      }
     }
     catch (GitException $e) {
       drush_log('Git Error', 'devshop_command');
