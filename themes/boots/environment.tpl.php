@@ -665,12 +665,13 @@ sites/all/drush/drushrc.php
         </button>
         <div class="dropdown-menu" role="menu">
           <label>Git Status</label>
-          <p>
-            <?php print $note; ?>
-          </p>
               <pre>
 <?php print $environment->git_status; ?>
               </pre>
+
+          <p>
+            <?php print $note; ?>
+          </p>
         </div>
       </div>
 
