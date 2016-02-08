@@ -632,7 +632,7 @@
 
       $note = t("You have untracked files in the site's codebase.");
 
-      if (strpos($environment->git_status, 'sites/sites.php') !== FALSE || strpos($environment->git_status, 'sites/' . $environment->uri) !== FALSE) {
+      if (strpos($environment->git_status, 'sites/sites.php') !== FALSE || strpos($environment->git_status, 'sites/' . $environment->uri) !== FALSE || strpos($environment->git_status, 'sites/all/drush') !== FALSE) {
 
         $note .= t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
 
