@@ -83,7 +83,7 @@
       </span>
     </p>
 
-    <?php if ($site_url): ?>
+    <?php if (isset($site_url)): ?>
       <?php print $site_url ?>
     <?php endif; ?>
 

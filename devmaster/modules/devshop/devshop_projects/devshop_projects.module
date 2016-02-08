@@ -106,7 +106,8 @@ function devshop_projects_permission() {
  * Defines the list of tasks that appear under the gear icon.
  */
 function devshop_projects_devshop_environment_actions($environment) {
-
+  $items = array();
+  
   // Site specific actions.
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {

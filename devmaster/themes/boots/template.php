@@ -189,6 +189,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
     }
   }
 
+  $task_class = '';
   if ($tasks_count > 0) {
     $task_class = 'active-task fa-spin';
   }
