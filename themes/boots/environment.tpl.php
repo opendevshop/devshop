@@ -629,6 +629,21 @@
       $icon = 'exclamation-circle';
       $label = t('Untracked Files');
       $item_class = 'warning';
+
+      $note = t("You have untracked files in the site's codebase.");
+
+      if (strpos($environment->git_status, 'sites/sites.php') !== FALSE || strpos($environment->git_status, 'sites/' . $environment->uri) !== FALSE) {
+
+        $note .= t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
+
+        $node .= '<pre>
+# Aegir files
+sites/sites.php
+sites/*/drushrc.php
+sites/all/drush/drushrc.php
+</pre>';
+
+      }
     }
 
     if (strpos($environment->git_status, 'modified:') !== FALSE) {
@@ -650,6 +665,9 @@
         </button>
         <div class="dropdown-menu" role="menu">
           <label>Git Status</label>
+          <p>
+            <?php print $node; ?>
+          </p>
               <pre>
 <?php print $environment->git_status; ?>
               </pre>
