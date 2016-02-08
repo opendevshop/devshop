@@ -658,20 +658,37 @@ sites/all/drush/drushrc.php
 
       <!-- Git Status -->
       <div class="btn-group btn-git-status" role="group">
-        <button type="button" class="btn btn-<?php print $item_class; ?> dropdown-toggle" data-toggle="dropdown">
+        <button type="button" class="btn btn-<?php print $item_class; ?>" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>">
           <i class="fa fa-<?php print $icon; ?>"></i>
           <?php print $label ?>
-          <span class="caret"></span>
         </button>
-        <div class="dropdown-menu" role="menu">
-          <label>Git Status</label>
-              <pre>
-<?php print $environment->git_status; ?>
-              </pre>
+        <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="drush-alias-modal">
+                  <?php print $environment->name ?> <?php print t('environment'); ?>
+                  <small>git status</small>
+                </h4>
+              </div>
+              <div class="modal-body">
+                <?php print t('Environment Directory') ?>
+                <pre><?php print $environment->repo_root ?></pre>
 
-          <p>
-            <?php print $note; ?>
-          </p>
+                    <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box"><?php print $ascii->convert($environment->git_status); ?></pre>
+
+                <?php if ($environment->git_diff): ?>
+                  <label>Git Diff</label>
+                  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box"><?php print $ascii->convert($environment->git_diff); ?></pre>
+                <?php endif; ?>
+
+                <p>
+                  <?php print $note; ?>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

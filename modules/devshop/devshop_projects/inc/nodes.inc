@@ -221,7 +221,10 @@ function devshop_projects_load($node) {
       $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
 
       $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
-      $environment->git_status = trim(shell_exec("cd $path; git status"));
+      $environment->git_status = trim(shell_exec("cd $path; git -c color.ui=always  status"));
+
+      $environment->git_diff = trim(shell_exec("cd $path; git -c color.ui=always diff"));
+
     }
     else {
       $environment->git_ref_id = '';
