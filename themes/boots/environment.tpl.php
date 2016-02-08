@@ -123,33 +123,6 @@
       <?php endif; ?>
 
     <?php
-      // SITUATION: Environment Disable Initiated
-      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-power-off"></i>
-          <?php print t('Environment is being disabled.'); ?>
-        </div>
-        <?php
-
-      // SITUATION: Site is Disabled
-      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-          <div class="list-group-item center-block text text-muted">
-            <i class="fa fa-power-off"></i>
-            <?php print t('Environment is disabled.'); ?>
-          </div>
-
-          <div class="list-group-item center-block text text-muted">
-            <div class="btn-group">
-              <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-                <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
-              </a>
-              <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-                <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
-              </a>
-            </div>
-        </div>
-
-    <?php
 
       // SITUATION: Clone Failure
       elseif ($environment->created['type'] == 'clone' && !empty($environment->tasks['delete']) ||
@@ -246,6 +219,42 @@
                 <?php endif; ?>
 
             </div>
+        </div>
+
+        <?php
+      // SITUATION: Site Install Queued or processing.
+      elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_QUEUED || $environment->created['status'] == HOSTING_TASK_PROCESSING): ?>
+
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-truck"></i>
+          <?php print t('Environment install in progress.'); ?>
+        </div>
+
+        <?php
+      // SITUATION: Environment Disable Initiated
+      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-power-off"></i>
+          <?php print t('Environment is being disabled.'); ?>
+        </div>
+        <?php
+
+      // SITUATION: Site is Disabled
+      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-power-off"></i>
+          <?php print t('Environment is disabled.'); ?>
+        </div>
+
+        <div class="list-group-item center-block text text-muted">
+          <div class="btn-group">
+            <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
+            </a>
+            <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
+              <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
+            </a>
+          </div>
         </div>
 
     <?php
@@ -616,7 +625,7 @@
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
-        <div class="environment-tasks-alert alert-<?php print $environment->last_task->status_class ?>">
+        <div class="environment-tasks-alert alert-<?php print $environment->last_task_node->status_class ?>">
 
 
                 <label>Tasks</label>
@@ -629,12 +638,12 @@
                 </div>
             </div>
             <div class="btn-group text">
-                <a href="<?php print $environment->last_task->url; ?>" class="alert-link">
-                    <i class="fa fa-<?php print $environment->last_task->icon ?>"></i>
-                    <span class="type-name"><?php print $environment->last_task->type_name ?></span>
-                    <span class="status-name small"><?php if ($environment->last_task->task_status != HOSTING_TASK_QUEUED && $environment->last_task->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task->status_name ?></span>
+                <a href="<?php print $environment->last_task_node->url; ?>" class="alert-link">
+                    <i class="fa fa-<?php print $environment->last_task_node->icon ?>"></i>
+                    <span class="type-name"><?php print $environment->last_task_node->type_name ?></span>
+                    <span class="status-name small"><?php if ($environment->last_task_node->task_status != HOSTING_TASK_QUEUED && $environment->last_task_node->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task_node->status_name ?></span>
                       &nbsp;
-                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task->task_status == HOSTING_TASK_QUEUED || $environment->last_task->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task->ago ?></span></em>
+                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task_node->task_status == HOSTING_TASK_QUEUED || $environment->last_task_node->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task_node->ago ?></span></em>
                 </a>
             </div>
         </div>

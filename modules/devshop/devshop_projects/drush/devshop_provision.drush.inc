@@ -188,7 +188,7 @@ PHP;
  */
 function devshop_provision_provision_services() {
   devshop_provision_register_autoload();
-  return array('site_project' => NULL);
+  return array('project' => NULL);
 }
 
 /**

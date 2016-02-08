@@ -110,6 +110,8 @@ function theme_devshop_projects_create_settings_form($vars) {
  */
 function devshop_projects_preprocess_node(&$vars) {
 
+  $node = $vars['node'];
+
   // On project node edit page
   if (isset($vars['node']) && $vars['node']->type == 'project') {
 
@@ -128,8 +130,7 @@ function devshop_projects_preprocess_node(&$vars) {
   }
 
   // On task node page
-  if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && $vars['page']){
-
+  if (isset($vars['node']) && $vars['node']->type == 'task' && ($vars['page'] || current_path() == "hosting/task/{$node->nid}")){
     // Prepare task icon, class, and label.
     $icon = devshop_task_status_icon($vars['node']->task_status);
     $vars['task_label'] = "<i class='fa fa-$icon'></i> " . _hosting_parse_error_code($vars['node']->task_status);
@@ -167,21 +168,20 @@ function devshop_projects_preprocess_node(&$vars) {
     }
 
     // Load Logs
-    $ref = node_load($vars['rid']);
-      $messages = devshop_task_get_messages($vars['node']);
-        $vars['messages'] = implode("\n", $messages);
-        switch ($vars['task_type']) {
-          case 'devshop-deploy':
-            $vars['type'] = 'Deploy';
-            break;
-          case 'verify':
-          case 'test':
-          case 'sync':
-          case 'install':
-          default:
-            $vars['type'] = ucfirst($vars['task_type']);
-            break;
-        }
+    $messages = devshop_task_get_messages($vars['node']);
+    $vars['messages'] = implode("\n", $messages);
+    switch ($vars['task_type']) {
+      case 'devshop-deploy':
+        $vars['type'] = 'Deploy';
+        break;
+      case 'verify':
+      case 'test':
+      case 'sync':
+      case 'install':
+      default:
+        $vars['type'] = ucfirst($vars['task_type']);
+        break;
+    }
 
     // Add "Follow Logs" button.
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
@@ -222,10 +222,20 @@ function devshop_task_get_messages($task_node) {
 
   drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
+  $result = db_query("
+    SELECT message, type, timestamp FROM {hosting_task_log}
+      WHERE nid = :nid
+        AND vid = :vid
+        AND (type LIKE :devshop OR type = :error OR type = :warning)
+      ORDER BY lid", array(
+    ':nid' => $task_node->nid,
+    ':vid' => $task_node->vid,
+    ':devshop' => 'devshop_%',
+    ':error' => 'error',
+    ':warning' => 'warning',
+  ));
 
-  $result = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", array(':vid' => $task_node->vid));
   foreach ($result as $record) {
-
     if ($record->type == 'devshop_command') {
       if (empty($record->message)) {
         continue;
@@ -242,17 +252,17 @@ function devshop_task_get_messages($task_node) {
       }
       continue;
     } elseif ($record->type == 'devshop_info') {
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
     } elseif ($record->type == 'devshop_ok') {
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
     } elseif ($record->type == 'devshop_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
     } elseif ($record->type == 'warning') {
       $command = 'warning_' . count($outputs);
       $outputs[$command]['status'] = 'warning';
@@ -325,8 +335,8 @@ function template_preprocess_devshop_project_add_status(&$vars) {
 function template_preprocess_devshop_project_nav(&$vars) {
 
   global $user;
-  $node = $vars['node'];
-  $project = $vars['project'] = $vars['project']->project;
+  $project = $vars['project'];
+  $node = $vars['node'] = node_load($project->nid);
 
   // @TODO: Detect other web URLs for other git hosts.
   if ($project->git_repo_url) {
@@ -390,10 +400,6 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   $vars['dashboard_link'] = l('<i class="fa fa-cubes"></i> ' . t('Dashboard'), "node/$project->nid", array('html' => TRUE));
 
-  if (node_access('update', $node)) {
-    $vars['settings_link'] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/$node->nid/edit", array('html' => TRUE));
-  }
-
   if (arg(2) == 'edit') {
     $vars['settings_active'] = 'active';
   }
@@ -403,6 +409,6 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
   if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
-    $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+    $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
   }
 }
