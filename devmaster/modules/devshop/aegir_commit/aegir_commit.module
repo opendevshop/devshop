@@ -54,10 +54,15 @@ function hosting_task_commit_form($node) {
     '#value' => $status,
     '#suffix' => '</div>',
   );
+  $form['message'] = array(
+    '#title' => t('Commit Message'),
+    '#type' => 'textarea',
+    '#description' => t('A note to attach to the commit message. A small automated timestamp will be added to indicate this was committed by devshop.'),
+  );
   $form['push'] = array(
-      '#title' => t('Push code after committing.'),
-      '#type' => 'checkbox',
-      '#default_value' => 1,
+    '#title' => t('Push code after committing.'),
+    '#type' => 'checkbox',
+    '#default_value' => 1,
   );
   return $form;
 }
@@ -75,3 +80,21 @@ function aegir_commit_devshop_environment_actions($environment)
     }
     return $items;
 }
+
+/**
+ * Implements drush_hook_pre_hosting_task()
+ *
+ * Runs before the command "hosting-task" is run. Passes "task_args" from
+ * the task node into "$task->options" which become drush options.
+ */
+function drush_aegir_commit_pre_hosting_task()
+{
+  $task =& drush_get_context('HOSTING_TASK');
+
+  if ($task->task_type != 'commit') {
+    return;
+  }
+  $task->options['message'] = $task->task_args['message'];
+  $task->options['push'] = $task->task_args['push'];
+}
+
