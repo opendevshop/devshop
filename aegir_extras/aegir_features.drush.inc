@@ -12,7 +12,7 @@ use GitWrapper\GitException;
 function aegir_features_drush_command()
 {
   $items['provision-features_update'] = array(
-    'description' => 'Dummy command. Does nothing.',
+    'description' => 'Runs drush features-update-all.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'options' => array(
       'features' => 'The list of features to update.',
