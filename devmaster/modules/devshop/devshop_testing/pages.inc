@@ -1,11 +1,5 @@
 <?php
 
-require_once __DIR__.'/ansi-to-html/vendor/autoload.php';
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-use SensioLabs\AnsiConverter\Theme\Theme;
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
-use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
-
 /**
  * Callback for devshop_tests/NID/VID
  * @param $nid
@@ -104,26 +98,6 @@ function devshop_testing_results_page_raw($task_dir) {
       $output .= $file_contents;
     }
   }
-  $output = devshop_testing_results_to_html($output);
+  $output = theme('devshop_ascii', $output);
   print $output;
-}
-
-/**
- * Helper to format test results.
- * @param $ascii
- * @return string
- */
-function devshop_testing_results_to_html($ascii) {
-
-  $theme = new Theme();
-  $converter = new AnsiToHtmlConverter($theme, false);
-  $html = $converter->convert($ascii);
-  $html = strtr($html, array(
-    "\n" => "<br />",
-    "  " => "&nbsp; ",
-  ));
-
-  $output = "<style> .results { overflow: auto; padding: 10px 15px; font-family: monospace; }" . $theme->asCss() . "</style>";
-  $output .= "<div class='results ansi_color_bg_black'>$html</div>";
-  return $output;
 }

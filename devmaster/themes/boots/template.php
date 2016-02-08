@@ -30,15 +30,6 @@ function boots_preprocess_environment(&$vars)
   $project_node = node_load($environment->project_nid);
   $project = $vars['project'] = $project_node->project;
 
-  // Prepare ASCII Converter
-    // Prepare ASCII Converter
-  $theme = new SolarizedXTermTheme();
-  $styles = $theme->asCss();
-  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
-
-  drupal_set_html_head("<style>$styles</style>");
-  $vars['ascii'] = new AnsiToHtmlConverter($theme);
-
   // Load git refs and create links
   $vars['git_refs'] = array();
   foreach ($project_node->project->settings->git['refs'] as $ref => $type) {
