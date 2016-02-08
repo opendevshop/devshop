@@ -35,5 +35,18 @@ function drush_aegir_commit_provision_commit() {
     $message = trim(drush_get_option('message', ''));
     $push = drush_get_option('push', FALSE);
 
+    drush_log('[DevShop Commit]');
+
+    // Git Add All
+    try {
+      $wrapper = new GitWrapper();
+      $git = $wrapper->workingCopy($environment->repo_root);
+      drush_log($git->getStatus(), 'devshop_ok');
+    }
+    catch (GitException $e) {
+      drush_log('Git Error', 'devshop_command');
+      drush_log("Unable to load git repository at path '{$environment->repo_root}'", 'devshop_error');
+      drush_set_error($e->getMessage());
+    }
   }
 }
