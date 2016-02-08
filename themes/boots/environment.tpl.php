@@ -623,12 +623,12 @@
     }
 
     ?>
-    <div class="list-group-item list-group-item-<?php print $item_class; ?>">
+    <div class="list-group-item">
       <label><?php print t('Git') ?></label>
 
       <!-- Git Status -->
       <div class="btn-group btn-git-status" role="group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <button type="button" class="btn btn-<?php print $item_class; ?> dropdown-toggle" data-toggle="dropdown">
           <i class="fa fa-<?php print $icon; ?>"></i>
           <?php print $label ?>
           <span class="caret"></span>
