@@ -653,7 +653,7 @@ sites/all/drush/drushrc.php
     }
 
     ?>
-    <div class="list-group-item">
+    <div class="list-group-item list-group-item-git">
       <label><?php print t('Git') ?></label>
 
       <!-- Git Status -->
