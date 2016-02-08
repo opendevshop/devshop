@@ -689,11 +689,11 @@ sites/all/drush/drushrc.php
 
                 </div>
 
-                <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box"><?php print $ascii->convert($environment->git_status); ?></pre>
+                <?php print theme('devshop_ascii', $environment->git_status); ?>
 
                 <?php if ($environment->git_diff): ?>
                   <label>Git Diff</label>
-                  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box"><?php print $ascii->convert($environment->git_diff); ?></pre>
+                  <?php print theme('devshop_ascii', $environment->git_diff); ?>
                 <?php endif; ?>
 
                 <p>
