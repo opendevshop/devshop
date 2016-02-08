@@ -673,10 +673,16 @@ sites/all/drush/drushrc.php
                 </h4>
               </div>
               <div class="modal-body">
-                <?php print t('Environment Directory') ?>
-                <pre><?php print $environment->repo_root ?></pre>
 
-                    <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box"><?php print $ascii->convert($environment->git_status); ?></pre>
+                <div class="well well-sm">
+                  <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary pull-right">
+                    <i class="fa fa-code"></i> <?php print t('Commit Changes'); ?>
+                  </a>
+                  <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
+
+                </div>
+
+                <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box"><?php print $ascii->convert($environment->git_status); ?></pre>
 
                 <?php if ($environment->git_diff): ?>
                   <label>Git Diff</label>
