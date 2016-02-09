@@ -36,10 +36,10 @@ function drush_aegir_features_provision_features_update() {
 
     // If features were specified...
     if (!empty($features)) {
-      devshop_drush_process("drush {$environment->drush_alias} fu {$features} -y", NULL, dt('Update Features'));
+      devshop_drush_process("drush {$environment->drush_alias} features-update {$features} -y", NULL, dt('Update Features'));
     }
     else {
-      devshop_drush_process("drush {$environment->drush_alias} fua -y", NULL, dt('Update All Features'));
+      devshop_drush_process("drush {$environment->drush_alias} features-update-all -y", NULL, dt('Update All Features'));
     }
 
     // Show git status
@@ -53,9 +53,6 @@ function drush_aegir_features_provision_features_update() {
       else {
         devshop_drush_process("drush {$environment->drush_alias} fra --force -y", NULL, t('Revert Features'));
       }
-    }
-    else {
-      drush_log('Revert skipped...!!!', 'devshop_log');
     }
   }
 }
