@@ -30,6 +30,7 @@ function aegir_commit_perm() {
 function hosting_task_commit_form($node) {
 
   $environment = $node->environment;
+  $options = array();
 
   try {
     $wrapper = new GitWrapper();
@@ -38,7 +39,6 @@ function hosting_task_commit_form($node) {
     $status = array_filter(explode(PHP_EOL, $git->getStatus()));
 
     // Generate list of files
-    $options = array();
     foreach ($status as &$line) {
       $items = array_filter(explode(' ', trim($line)));
       $file  = array_combine(array('status', 'path'), $items);
