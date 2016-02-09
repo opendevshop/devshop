@@ -820,3 +820,16 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     white-space: nowrap;
     max-width: 80%;
 }
+
+#hosting-task-confirm-form .form-checkboxes .form-item span {
+    width: 6em;
+    display: inline-block;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    text-align: right;
+    padding-right: 1em;
+}
+
+#hosting-task-confirm-form .form-checkboxes .form-item code {
+    background: transparent;
+}
