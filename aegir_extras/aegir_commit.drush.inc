@@ -35,9 +35,10 @@ function drush_aegir_commit_provision_commit() {
     $git_url = $project->project['git_url'];
 
     $message = trim(drush_get_option('message', ''));
+    $files = json_decode(drush_get_option('files', '[]'));
     $push = drush_get_option('push', FALSE);
 
-    // Git Add All
+    // Git Add
     try {
       $wrapper = new GitWrapper();
       $wrapper->streamOutput();
@@ -49,9 +50,19 @@ function drush_aegir_commit_provision_commit() {
         drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
       }
       else {
-        drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
-        devshop_drush_process('git add -A', $environment->repo_root, 'Adding all files to local repository...');
-        drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+        devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
+
+        // If files option was detected
+        if ($files) {
+          $files_list = implode(' ', $files);
+          $cmd = "git add {$files_list}";
+        }
+        else {
+          $cmd = 'git add -A';
+        }
+
+        devshop_drush_process($cmd, $environment->repo_root, 'Adding files to local repository...');
+        devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
 
         $hostmaster_uri = d('hostmaster')->uri;
         $message = escapeshellarg("$message
@@ -60,7 +71,7 @@ Committed by OpenDevShop via http://$hostmaster_uri");
 
         devshop_drush_process("git commit -m {$message}", $environment->repo_root, 'Committing changes to local repository...');
 
-        drush_log('[Git Show] ' . $git->getStatus(), 'devshop_log');
+        devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
       }
 
       // Push the result, if desired.
@@ -74,7 +85,7 @@ Committed by OpenDevShop via http://$hostmaster_uri");
         }
         else {
           devshop_drush_process("git push", $environment->repo_root, 'Pushing code to remote repository...');
-          drush_log('[Git Status] ' . $git->getStatus(), 'devshop_log');
+          devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
         }
       }
     }
