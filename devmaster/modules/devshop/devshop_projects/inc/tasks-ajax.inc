@@ -50,7 +50,7 @@ function devshop_projects_tasks_status_json($project_nid = '') {
         }
 
         // If page is requesting this task's logs, load them.
-        if ($_GET['task'] == $result->last_task_node->nid) {
+        if (isset($_GET['task']) && $_GET['task'] == $result->last_task_node->nid) {
             $messages = devshop_task_get_messages($result->last_task_node);
             if (count($messages)) {
                 $result->last_task_node->logs = implode("\n", $messages);
