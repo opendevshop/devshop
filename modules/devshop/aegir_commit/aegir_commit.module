@@ -29,6 +29,7 @@ function aegir_commit_perm() {
  */
 function hosting_task_commit_form($node) {
 
+  global $user;
   $environment = $node->environment;
   $options = array();
 
@@ -101,6 +102,14 @@ function hosting_task_commit_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $user->name,
+  );
+  $form['mail'] = array(
+    '#type' => 'value',
+    '#value' => $user->mail,
+  );
   return $form;
 }
 
@@ -148,5 +157,7 @@ function drush_aegir_commit_pre_hosting_task()
   $task->options['files'] = $task->task_args['files'];
   $task->options['message'] = $task->task_args['message'];
   $task->options['push'] = $task->task_args['push'];
+  $task->options['name'] = $task->task_args['name'];
+  $task->options['mail'] = $task->task_args['mail'];
 }
 
