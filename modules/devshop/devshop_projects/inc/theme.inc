@@ -284,7 +284,7 @@ function devshop_task_get_messages($task_node) {
     $output = theme('devshop_ascii', $data['output']);
 
     if (!empty($output)) {
-      $body = "<div class='panel-body ansi_color_bg_black'>$output</div>";
+      $body = "<div class='panel-body panel-ansii'>$output</div>";
     }
     else {
       $body = '';
