@@ -18,6 +18,8 @@ function aegir_commit_drush_command()
       'message' => 'The commit message to use.',
       'push' => 'Push the code after committing.',
       'files' => 'A list of files, if desired.',
+      'name' => 'The name of the user to commit as.',
+      'mail' => 'The email of the user to commit as.',
     ),
   );
   return $items;
@@ -37,6 +39,8 @@ function drush_aegir_commit_provision_commit() {
     $message = trim(drush_get_option('message', ''));
     $files = json_decode(drush_get_option('files', '[]'));
     $push = drush_get_option('push', FALSE);
+    $name = drush_get_option('name', FALSE);
+    $mail = drush_get_option('mail', FALSE);
 
     // Git Add
     try {
@@ -69,7 +73,10 @@ function drush_aegir_commit_provision_commit() {
 --------------
 Committed by OpenDevShop via http://$hostmaster_uri");
 
-        devshop_drush_process("git commit -m {$message}", $environment->repo_root, 'Committing changes to local repository...');
+        devshop_drush_process("git commit -m {$message}", $environment->repo_root, 'Committing changes to local repository...', array(
+          'GIT_AUTHOR_NAME' => $name,
+          'GIT_AUTHOR_EMAIL' => $mail,
+        ));
 
         devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
       }
