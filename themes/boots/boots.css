@@ -838,3 +838,10 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     background: #262626;
 
 }
+
+.errors-table td > div {
+    color: rgb(51, 51, 51);
+    display: block;
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+}
