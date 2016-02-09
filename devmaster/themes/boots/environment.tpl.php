@@ -349,7 +349,7 @@
         <div class="list-group-item">
           <div class="btn-group" role="group">
             <!-- Browse Logs -->
-            <a href="<?php print url("node/$environment->site/logs"); ?>" class="btn btn-text text-muted small" title="<?php print t('Error logs for this environment.'); ?>">
+            <a href="<?php print url("node/$environment->site/logs/error"); ?>" class="btn btn-text text-muted small" title="<?php print t('Error logs for this environment.'); ?>">
               <i class="fa fa-tasks"></i>
               <?php print t('Logs'); ?>
             </a>
