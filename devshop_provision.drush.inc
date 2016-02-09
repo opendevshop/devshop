@@ -256,9 +256,11 @@ function drush_devshop_provision_pre_updatedb() {
 /**
  * Run a Symfony Process saving to drush logs.
  */
-function devshop_drush_process($command, $cwd = null, $label = 'Process') {
+function devshop_drush_process($command, $cwd = null, $label = 'Process', $env = array()) {
   drush_log("[$label] $command", 'devshop_command');
-  $process = new Process($command, $cwd);
+
+  $env = array_merge($_SERVER, $env);
+  $process = new Process($command, $cwd, $env);
   $process->setTimeout(NULL);
   $exit_code = $process->run(function ($type, $buffer) {
     if (Process::ERR === $type) {
