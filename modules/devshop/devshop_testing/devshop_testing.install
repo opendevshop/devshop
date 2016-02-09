@@ -30,20 +30,3 @@ function devshop_testing_schema() {
 
   return $schema;
 }
-
-/**
- * Implementation of hook_install().
- */
-function devshop_testing_install() {  
-  // Create tables.
-  drupal_install_schema('devshop_testing');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function devshop_testing_uninstall() {  
-  // Delete tables.
-  drupal_uninstall_schema('devshop_testing');
-}
-
