@@ -259,7 +259,14 @@ function drush_devshop_provision_pre_updatedb() {
 function devshop_drush_process($command, $cwd = null, $label = 'Process', $env = array()) {
   drush_log("[$label] $command", 'devshop_command');
 
-  $env = array_merge($_SERVER, $env);
+  // Merge in env vars, inheriting the CLI's
+  if (is_array($env)) {
+    $env = array_merge($_SERVER, $env);
+  }
+  else {
+    $env = $_SERVER;
+  }
+
   $process = new Process($command, $cwd, $env);
   $process->setTimeout(NULL);
   $exit_code = $process->run(function ($type, $buffer) {
