@@ -588,8 +588,8 @@
                                 <li class="text">
 
                                     <ul>
-                                        <li><strong>post-code-update:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
-                                        <li><strong>post-code-deploy:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
+                                        <li><strong>post-code-deploy:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
+                                        <li><strong>post-code-update:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
                                         <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
                                         <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
                                     </ul>
