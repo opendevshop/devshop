@@ -88,6 +88,7 @@ function hosting_task_commit_form($node) {
     '#description' => t('Check the boxes next to the files you wish to commit.  If you leave all boxes unchecked, all new and changed files will be committed.'),
     '#type' => 'checkboxes',
     '#options' => $options,
+    '#element_validate' => array('aegir_commit_validate_files'),
   );
   $form['message'] = array(
     '#title' => t('Message'),
@@ -100,10 +101,22 @@ function hosting_task_commit_form($node) {
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
-
-
   return $form;
 }
+
+
+/**
+ * Converts list of files to json encode for hosting task arguments table.
+ * @param $element
+ * @param $form_state
+ */
+function aegir_commit_validate_files($element, &$form_state) {
+  if (!empty($element['#value'])) {
+    $values = json_encode(array_filter(array_values($element['#value'])));
+    form_set_value($element, $values, $form_state);
+  }
+}
+
 
 /**
  * Implements hook_devshop_environment_actions().
@@ -132,6 +145,7 @@ function drush_aegir_commit_pre_hosting_task()
   if ($task->task_type != 'commit') {
     return;
   }
+  $task->options['files'] = $task->task_args['files'];
   $task->options['message'] = $task->task_args['message'];
   $task->options['push'] = $task->task_args['push'];
 }
