@@ -52,7 +52,7 @@ SELECT
           $entity->project = $result->project_nid;
           $entity->environment = $result->name;
         }
-        else {
+        else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
             $entity->project = $project_node->project;
@@ -133,7 +133,7 @@ function devshop_project_load($node) {
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
-          e.last_task
+          e.last_task as last_task_nid
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
@@ -165,7 +165,7 @@ function devshop_project_load($node) {
     $environment->settings = (object) unserialize($environment->settings);
 
     // Get last task
-//    $environment->last_task = node_load($environment->last_task_nid);
+    $environment->last_task_node = node_load($environment->last_task_nid);
 
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);
@@ -178,7 +178,6 @@ function devshop_project_load($node) {
       }
     }
     krsort($environment->tasks_list);
-    $environment->last_task_node = $environment->tasks_list[$environment->last_task];
 
     // Detect creation method.
     // Some sites get installed. Others get imported.
@@ -272,8 +271,6 @@ function devshop_project_load($node) {
     // Last commit
     $path = $project->code_path . '/' . $environment->name;
     if (file_exists($path . '/.git')) {
-      $environment->git_ref = trim(shell_exec("cd $path; git rev-parse --abbrev-ref HEAD"));
-
       $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
     ");
       $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");

@@ -25,6 +25,9 @@ function devshop_projects_theme() {
     'devshop_project_nav' => array(
       'variables' => array(
         'node' => NULL,
+        'settings_active' => NULL,
+        'logs_active' => NULL,
+        'branches_class' => NULL,
       ),
       'template' => 'project-nav',
     ),
@@ -83,7 +86,7 @@ function theme_devshop_projects_create_settings_form($vars) {
 
     foreach (element_children($settings_element) as $setting) {
       if (!isset($header[$setting])) {
-        $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
+        $header[$setting] = isset($form[$env_name]['settings'][$setting]['#title']) ? $form[$env_name]['settings'][$setting]['#title'] : '';
       }
       $form[$env_name]['settings'][$setting]['#title'] = '';
 
@@ -236,6 +239,7 @@ function devshop_task_get_messages($task_node) {
   ));
 
   foreach ($result as $record) {
+
     if ($record->type == 'devshop_command') {
       if (empty($record->message)) {
         continue;
@@ -262,18 +266,18 @@ function devshop_task_get_messages($task_node) {
     } elseif ($record->type == 'devshop_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
     } elseif ($record->type == 'warning') {
       $command = 'warning_' . count($outputs);
       $outputs[$command]['status'] = 'warning';
       $outputs[$command]['icon'] = 'exclamation-triangle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'warning';
     } elseif ($record->type == 'error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'error';
     } elseif ($record->type == 'devshop_log') {
       $command = 'notice_' . count($outputs);
@@ -325,8 +329,10 @@ HTML;
  * Preprocess for project_add_status.tpl.php
  */
 function template_preprocess_devshop_project_add_status(&$vars) {
-  $vars['web_server_node'] = node_load($vars['project']->settings->default_environment['web_server']);
-  $vars['db_server_node'] = node_load($vars['project']->settings->default_environment['db_server']);
+  if (isset($vars['project']->settings, $vars['project']->settings->default_environment)) {
+    $vars['web_server_node'] = isset($vars['project']->settings->default_environment['web_server']) ? node_load($vars['project']->settings->default_environment['web_server']) : NULL;
+    $vars['db_server_node'] = isset($vars['project']->settings->default_environment['db_server']) ? node_load($vars['project']->settings->default_environment['db_server']) : NULL;
+  }
 }
 
 /**

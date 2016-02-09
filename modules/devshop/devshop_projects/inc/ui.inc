@@ -218,7 +218,7 @@ function devshop_environment_links($environment) {
     $site = node_load($environment->site);
     if (node_access('update', $site)) {
       $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
-        "node/{$environment->project_nid}/edit/{$environment->name}",
+        "node/{$environment->project_nid}/edit/env/{$environment->name}",
         array(
           'html' => TRUE,
         ));
@@ -272,7 +272,7 @@ function devshop_environment_links($environment) {
           )
       ));
       $title = $tasks[$action]['title'];
-      if ($tasks[$action]['icon']) {
+      if (isset($tasks[$action]['icon'])) {
         $icon = '<i class="fa fa-' . $tasks[$action]['icon'] . '""></i>';
       }
       else {
@@ -339,6 +339,9 @@ function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
 function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
 
   $rows = array();
+  if (!isset($node->task_args)) {
+    $node->task_args = array();
+  }
   foreach ($node->task_args as $key => $value) {
     $rows[] = array(
       '<strong>' . $key . '</strong>',

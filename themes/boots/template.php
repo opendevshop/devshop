@@ -18,10 +18,17 @@ function boots_theme() {
 /**
  * Preprocessor for environment template.
  */
-function boots_preprocess_environment(&$vars)
-{
+function boots_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
+
+  // Load last task node.
+  if (isset($environment->last_task_nid)) {
+    $environment->last_task_node = node_load($environment->last_task_nid);
+  }
+
+  // Available deploy data targets.
+  $vars['target_environments'] = $project->environments;
 
   // Load git refs and create links
   $vars['git_refs'] = array();
@@ -69,7 +76,7 @@ function boots_preprocess_environment(&$vars)
   }
 
   // Pull Request?
-  if ($environment->github_pull_request) {
+  if (isset($environment->github_pull_request) && $environment->github_pull_request) {
     $environment->class .= ' pull-request';
   }
 
@@ -138,7 +145,7 @@ function boots_preprocess_environment(&$vars)
   }
 
   // No hooks configured.
-  if ($project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
+  if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
       'text' => t('No deploy hooks are configured. Check your !link.', array(
         '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
@@ -182,6 +189,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
     }
   }
 
+  $task_class = '';
   if ($tasks_count > 0) {
     $task_class = 'active-task fa-spin';
   }
@@ -354,7 +362,7 @@ function boots_preprocess_page(&$vars){
   }
 
   // On any node/% page...
-  if ($vars['node'] || arg(0) == 'node' && is_numeric(arg(1))) {
+  if (isset($vars['node']) || arg(0) == 'node' && is_numeric(arg(1))) {
 
     // Task nodes only have project nid and environment name.
     if (is_numeric($vars['node']->project)) {
@@ -439,14 +447,7 @@ function boots_preprocess_page(&$vars){
 
   }
   if (variable_get('devshop_support_widget_enable', TRUE)) {
-    $vars['closure'] .= <<<HTML
-<script>
-  window.intercomSettings = {
-    app_id: "ufeta82d"
-  };
-</script>
-<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ufeta82d';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
-HTML;
+    drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
   }
 }
 
@@ -646,7 +647,7 @@ HTML;
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 
   // Available deploy data targets.
-  $vars['target_environments'];
+  $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
   foreach ($vars['node']->project->environments as &$environment) {
