@@ -237,7 +237,6 @@ function devshop_projects_load($node) {
       $environment->git_last = '';
       $environment->git_commit = '';
       $environment->git_sha = '';
-      $environment->git_ref = 'unknown';
       $environment->git_status = '';
       $environment->git_diff = '';
     }
