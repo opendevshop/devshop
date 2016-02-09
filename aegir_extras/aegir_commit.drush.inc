@@ -43,8 +43,9 @@ function drush_aegir_commit_provision_commit() {
       $wrapper->streamOutput();
 
       $git = $wrapper->workingCopy($environment->repo_root);
+      $status = $git->getStatus();
 
-      if (empty($git->getStatus())) {
+      if (empty($status)) {
         drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
       }
       else {
