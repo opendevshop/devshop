@@ -34,36 +34,74 @@ function hosting_task_commit_form($node) {
   try {
     $wrapper = new GitWrapper();
     $git = $wrapper->workingCopy($environment->repo_root);
-    $status = $git->getStatus();
+    $diff_stat = array_filter(explode(PHP_EOL,$wrapper->git('diff --numstat', $environment->repo_root)));
+    $status = array_filter(explode(PHP_EOL, $git->getStatus()));
+
+    // Generate list of files
+    $options = array();
+    foreach ($status as &$line) {
+      $items = array_filter(explode(' ', trim($line)));
+      $file  = array_combine(array('status', 'path'), $items);
+
+      if ($file['status'] == 'A') {
+        $options[$file['path']] = '<span class="text-success">Added</span>';
+      }
+      elseif ($file['status'] == 'M') {
+        $options[$file['path']] = '<span class="text-info">Modified</span>';
+      }
+      elseif ($file['status'] == 'D') {
+        $options[$file['path']] = '<span class="text-danger">Deleted</span>';
+      }
+      elseif ($file['status'] == '??') {
+        $options[$file['path']] = '<span class="text-muted">New</span>';
+      }
+      $options[$file['path']] .= "<code class='text-muted'>{$file['path']}</code>";
+    }
   }
   catch (GitException $e) {
     drupal_set_message("Cannot Commit Changes: Unable to load git repository at path '{$environment->repo_root}'. Something is wrong: either the path in the database is wrong, or the files are missing from their intended location.", 'error');
     drupal_set_message($e->getMessage(), 'error');
     drupal_goto("node/{$environment->project_nid}");
   }
-
-  $form['note'] = array(
-    '#value' => t('Choose the files to commit to git.'),
+  $form['title'] = array(
     '#type' => 'markup',
-    '#prefix' => '<div class="alert alert-info">',
-    '#suffix' => '</div>',
+    '#value' => '<h3>' . t('Commit Changes') . '</h3>',
   );
-  $form['status'] = array(
-    '#type' => 'markup',
+  $form['git_info'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Git Status & Diff'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#weight' => 100,
     '#prefix' => '<div class="alert alert-info">',
-    '#value' => $status,
-    '#suffix' => '</div>',
+      '#suffix' => t('It is recommended to read the git diff before you commit.') . '</div>',
+  );
+  $form['git_info']['status'] = array(
+    '#type' => 'markup',
+    '#value' => theme('devshop_ascii', $environment->git_status),
+  );
+  $form['git_info']['diff'] = array(
+    '#type' => 'markup',
+    '#value' => theme('devshop_ascii', $environment->git_diff),
+  );
+  $form['files'] = array(
+    '#description' => t('Check the boxes next to the files you wish to commit.  If you leave all boxes unchecked, all new and changed files will be committed.'),
+    '#type' => 'checkboxes',
+    '#options' => $options,
   );
   $form['message'] = array(
-    '#title' => t('Commit Message'),
+    '#title' => t('Message'),
+    '#rows' => 2,
     '#type' => 'textarea',
-    '#description' => t('A note to attach to the commit message. A small automated timestamp will be added to indicate this was committed by devshop.'),
+    '#description' => t('A commit message. A small automated timestamp will be added to indicate this was committed by devshop.'),
   );
   $form['push'] = array(
     '#title' => t('Push code after committing.'),
     '#type' => 'checkbox',
     '#default_value' => 1,
   );
+
+
   return $form;
 }
 
