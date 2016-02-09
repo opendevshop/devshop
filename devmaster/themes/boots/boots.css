@@ -677,7 +677,7 @@ html.js fieldset.collapsed {
 
 .btn-logs .list-group-item {
     white-space: nowrap;
-    min-width: 19em;
+    min-width: 22em;
 }
 
 .environment-task-logs > .alert-default {
@@ -812,4 +812,11 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .task-arguments-list {
   display: inline-block;
 
+}
+
+.btn-last-task {
+    padding: 5px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80%;
 }

@@ -727,10 +727,8 @@ sites/all/drush/drushrc.php
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
+          <label class="sr-only"><?php print t('Last Task') ?></label>
         <div class="environment-tasks-alert alert-<?php print $environment->last_task->status_class ?>">
-
-
-                <label>Tasks</label>
             <div class="btn-group btn-logs pull-right" role="group">
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-list-alt"></i>
@@ -739,7 +737,7 @@ sites/all/drush/drushrc.php
                     <?php print $environment->task_logs; ?>
                 </div>
             </div>
-            <div class="btn-group text">
+            <div class="btn-group btn-last-task text">
                 <a href="<?php print $environment->last_task->url; ?>" class="alert-link">
                     <i class="fa fa-<?php print $environment->last_task->icon ?>"></i>
                     <span class="type-name"><?php print $environment->last_task->type_name ?></span>
