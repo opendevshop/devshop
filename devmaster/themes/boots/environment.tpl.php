@@ -612,6 +612,7 @@
     $item_class = 'default';
     $icon = 'check';
     $label = t('Clean');
+    $node = '';
 
     if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
       $icon = 'arrow-right';
@@ -630,12 +631,10 @@
       $label = t('Untracked Files');
       $item_class = 'warning';
 
-      $note = t("You have untracked files in the site's codebase.");
-
       // Detect Aegir files we should be ignoring.
       if (strpos($environment->git_status, 'sites/sites.php') !== FALSE || strpos($environment->git_status, 'sites/' . $environment->uri) !== FALSE || strpos($environment->git_status, 'sites/all/drush') !== FALSE) {
 
-        $note .= t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
+        $note = t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
 
         $note .= '<pre>
 # Aegir files
@@ -656,7 +655,13 @@ sites/all/drush/drushrc.php
     if (strpos($environment->git_status, 'Changes to be committed:') !== FALSE) {
       $icon = 'check-square-o';
       $label = t('Staged to Commit');
-      $item_class = 'warning';
+      $item_class = 'success';
+    }
+
+    if (strpos($environment->git_status, 'deleted:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {
+      $icon = 'warning';
+      $label = t('deleted Files');
+      $item_class = 'danger';
     }
 
     ?>
@@ -709,13 +714,13 @@ sites/all/drush/drushrc.php
       <div class="btn-group btn-git-commit" role="group">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <i class="fa fa-file-code-o"></i>
-          <?php print $environment->git_ref_id ?>
+          <?php print $environment->git_last ?>
           <span class="caret"></span>
         </button>
         <div class="dropdown-menu" role="menu">
           <label>Git Show</label>
               <pre>
-<?php print $environment->git_last; ?>
+<?php print $environment->git_commit; ?>
               </pre>
         </div>
       </div>
