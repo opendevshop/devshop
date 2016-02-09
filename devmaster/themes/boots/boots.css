@@ -833,3 +833,8 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 #hosting-task-confirm-form .form-checkboxes .form-item code {
     background: transparent;
 }
+
+.panel-ansii {
+    background: #262626;
+
+}
