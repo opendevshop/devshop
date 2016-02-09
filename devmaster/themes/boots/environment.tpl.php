@@ -674,6 +674,9 @@ sites/all/drush/drushrc.php
           <i class="fa fa-<?php print $icon; ?>"></i>
           <?php print $label ?>
         </button>
+        <button type="button" class="btn btn-text" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>" title="<?php print t('Last Commit'); ?>">
+          <?php print $environment->git_last ?>
+        </button>
         <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -681,25 +684,29 @@ sites/all/drush/drushrc.php
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="drush-alias-modal">
                   <?php print $environment->name ?> <?php print t('environment'); ?>
-                  <small>git status</small>
+                  <small>Git Information</small>
                 </h4>
               </div>
               <div class="modal-body">
 
-                <div class="well well-sm">
-                  <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary pull-right">
-                    <i class="fa fa-code"></i> <?php print t('Commit Changes'); ?>
-                  </a>
+                <div class="well">
+                  <div class="pull-right">
+                    <?php if ($project->git_provider == 'github'): ?>
+                      <a href="https://github.com/<?php print $project->github_owner ?>/<?php print $project->github_repo ?>/commit/<?php print $environment->git_sha ?>" class="btn btn-link">
+                        <i class="fa fa-github"></i>
+                        <?php print t('View Commit on GitHub'); ?>
+                      </a>
+                    <?php endif; ?>
+                    <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
+                      <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
+                    </a>
+                  </div>
                   <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
-
                 </div>
 
+                <?php print theme('devshop_ascii', $environment->git_commit); ?>
                 <?php print theme('devshop_ascii', $environment->git_status); ?>
-
-                <?php if ($environment->git_diff): ?>
-                  <label>Git Diff</label>
-                  <?php print theme('devshop_ascii', $environment->git_diff); ?>
-                <?php endif; ?>
+                <?php print theme('devshop_ascii', $environment->git_diff); ?>
 
                 <p>
                   <?php print $note; ?>
@@ -707,21 +714,6 @@ sites/all/drush/drushrc.php
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Git Commit -->
-      <div class="btn-group btn-git-commit" role="group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <i class="fa fa-file-code-o"></i>
-          <?php print $environment->git_last ?>
-          <span class="caret"></span>
-        </button>
-        <div class="dropdown-menu" role="menu">
-          <label>Git Show</label>
-              <pre>
-<?php print $environment->git_commit; ?>
-              </pre>
         </div>
       </div>
     </div>
