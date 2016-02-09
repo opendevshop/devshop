@@ -620,12 +620,6 @@
       $item_class = 'info';
     }
 
-    if (strpos($environment->git_status, 'Your branch is behind') !== FALSE) {
-      $icon = 'arrow-left';
-      $label = t('Behind');
-      $item_class = 'info';
-    }
-
     if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
       $icon = 'exclamation-circle';
       $label = t('Untracked Files');
@@ -656,6 +650,12 @@ sites/all/drush/drushrc.php
       $icon = 'check-square-o';
       $label = t('Staged to Commit');
       $item_class = 'success';
+    }
+
+    if (strpos($environment->git_status, 'Your branch is behind') !== FALSE) {
+      $icon = 'arrow-left';
+      $label = t('Behind');
+      $item_class = 'info';
     }
 
     if (strpos($environment->git_status, 'deleted:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {
