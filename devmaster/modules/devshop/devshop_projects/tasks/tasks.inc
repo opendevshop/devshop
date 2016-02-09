@@ -59,11 +59,10 @@ function devshop_projects_tasks_add_environment_to_form(&$form, $node, $descript
   $options = array_combine($keys, $keys);
   $form[$key] = array(
     '#type' => $type,
-    '#title' => t($title),
+    '#title' => t('@title', array('@title' => $title)),
     '#options' => $options,
     '#default_value' => $type == 'radios' ? key($options) : array(key($options)),
     '#required' => $type == 'checkboxes',
-    '#description' => $description,
+    '#description' => t('@description', array('@description' => $description)),
   );
 }
-
