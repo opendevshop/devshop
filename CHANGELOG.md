@@ -380,8 +380,62 @@ Radim fixed a typo in our documentation.  Thanks, Radim!
 * TravisCI integration.
 * Numerous other improvements
 
-## Previous
+## Legacy
 
 The changelog began with version 0.1.0 so any changes prior to that can be seen by checking the tagged releases and reading git commit messages.
 
 Before 0.1.0, devshop releases were tagged as if it were a module: 6.x-1.x.
+
+There was a long history of addon modules for aegir before devshop. 
+
+### Hosting & Provision Logs (December 20, 2012)
+
+https://www.drupal.org/project/hosting_logs
+https://www.drupal.org/project/provision_logs
+
+Improved error log handling by setting Apache logs to an aegir-readable location, and making
+them accessible to users through the devshop UI and a URL on the site.
+
+### Hosting & Provision Solr (September 12, 2012)
+
+https://www.drupal.org/project/hosting_solr
+https://www.drupal.org/project/provision_solr
+
+This module allows Solr servers to be added to Aegir. Once you have a server, you can give an Aegir Site a Solr database as easily as choosing it's DB Server.
+
+### DevMaster (September 9, 2012)
+
+https://www.drupal.org/project/devmaster
+
+It wasn't until September of 2012 that we decided we needed a dedicated install profile, 
+separate from Aegir's Hostmaster.
+
+### DevShop Hosting (March 1, 2012)
+
+https://www.drupal.org/project/devshop_hosting
+
+Provided the front-end interface for DevShop before it was merged into the DevMaster install profile project.
+
+### DevShop Provision (March 1, 2012)
+
+https://www.drupal.org/project/devshop_provision
+
+Provision drush commands for devshop. Still in use until 1.x release!
+
+### Hosting Features (February 25, 2012)
+
+https://www.drupal.org/project/hosting_features
+
+Allows Hostmaster users with the right permission to trigger a "Update & Commit Features" task. This re-creates all of a site's features (as in features.module features) and commits (and pushes) them
+
+### Provision Git Features (February 25, 2012) 
+
+https://www.drupal.org/project/provision_git_features
+
+The backend commands that Hosting Features needs to work.
+
+### Provision Git (February 21, 2012)
+
+https://www.drupal.org/project/provision_git
+
+Provides Provision with simple git commands.
