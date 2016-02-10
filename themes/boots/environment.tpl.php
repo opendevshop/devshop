@@ -737,9 +737,11 @@ sites/all/drush/drushrc.php
                         <?php print t('View Commit on GitHub'); ?>
                       </a>
                     <?php endif; ?>
+                    <?php if (!empty($environment->git_status)): ?>
                     <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
                       <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
                     </a>
+                    <?php endif; ?>
                   </div>
                   <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
                 </div>
