@@ -26,7 +26,7 @@ function boots_theme() {
  */
 function boots_preprocess_environment(&$vars)
 {
-  $environment = &$vars['environment'];
+  $environment = $vars['environment'];
   $project_node = node_load($environment->project_nid);
   $project = $vars['project'] = $project_node->project;
 
@@ -182,6 +182,8 @@ function boots_preprocess_environment(&$vars)
     $environment->git_status = '';
     $environment->git_diff = '';
   }
+
+  $vars['environment'] = $environment;
 }
 
 /**
