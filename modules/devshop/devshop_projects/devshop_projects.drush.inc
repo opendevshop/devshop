@@ -380,7 +380,9 @@ function devshop_projects_post_hosting_import_task($task, $data) {
         hosting_add_task($site->nid, 'verify');
 
         // Trigger a deploy using the project's default hooks.
-        hosting_add_task($site->nid, 'devshop-deploy', $platform->project->settings->deploy['default_hooks']);
+        $args = $platform->project->settings->deploy['default_hooks'];
+        $args['git_ref'] = $platform->environment->git_ref;
+        hosting_add_task($site->nid, 'devshop-deploy', $args);
 
       } else {
         // Trigger a verify of the site, so the alias has project information.
