@@ -541,10 +541,10 @@ ul.dropdown-menu li.text {
 }
 
 .environment.pull-request .environment-header a.pull-request i.fa-github {
-  position: absolute;
-  left: 11px;
-  top: 51px;
-  font-size: 3em;
+    font-size: 1.5em;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .environment > .list-group-item {
