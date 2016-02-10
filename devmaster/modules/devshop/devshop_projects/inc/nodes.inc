@@ -92,10 +92,9 @@ function devshop_projects_node_load($nodes, $types) {
       // Get desired URL
       $node->url = url("node/{$node->nid}");
 
-      // @TODO: Doesn't quite work. we need a different VID for each clone link.
-      //  if ($node->task_type == 'clone') {
-      //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
-      //  }
+    // The URL that the branch or tag links to.
+    if ($project->git_provider == 'github') {
+      $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
     }
     // Projects
     elseif ($node->type == 'project') {

@@ -16,6 +16,8 @@ function devshop_projects_hosting_task_update_status($task, $status) {
   if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
     $site->environment->last_task = $task->nid;
 
+    // @TODO: Look for environment_target on clone task, so we can update that environment's last task as well.
+
     // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
     // If last task is a successful verify or reset password, load the task before that as the "last task".
     if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
@@ -162,8 +164,21 @@ function drush_devshop_platform_verify() {
     // Clone the repo.
     devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
+    // If there is "site_to_clone", checkout that site's git ref.
+    // This is done for Pull Request Environments. When a PR comes in, we want
+    // to clone the site to an identical platform first. This will always succeed.
+    // Then, we trigger a deployment to the new branch.
+    //
+    // This ensures that initial pull request environments run the same "deploy"
+    // hooks. It means we don't have to hack into the "clone" task to run deploy
+    // hooks anymore.
+    if ($platform->environment->settings->site_to_clone) {
+      $site = node_load($platform->environment->settings->site_to_clone);
+      $git_ref = $site->environment->git_ref;
+    }
+
     // If there is a git ref, check it out.
-    // We don't do this on clone, because it could be a tag.
+    // We don't do this on git clone, because it could be a tag.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
       devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
@@ -172,10 +187,10 @@ function drush_devshop_platform_verify() {
 
   // If branch needs to be created (for "fork environment")
   if ($create_branch) {
-    devshop_drush_process("git checkout -b {$platform->environment->git_ref}");
+    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", dt('Creating a new branch.'));
 
     // Push the branch
-    devshop_drush_process("git push -u origin {$platform->environment->git_ref}");
+    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", dt('Pushing new branch.'));
   }
 }
 
@@ -304,6 +319,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
         // Use the default database server for the project.
         $args['new_db_server'] = $site->db_server;
+        $args['environment_target'] = $platform->environment->name;
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
 
         // Queue the Cloning of the site.
@@ -336,7 +352,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  * Ensures that cloned sites that are on project platforms inherit the project.
  */
 function devshop_projects_post_hosting_clone_task($task, $data) {
-  devshop_projects_post_hosting_import_task($task, $data);
+//  devshop_projects_post_hosting_import_task($task, $data);
 }
 
 /**
@@ -375,8 +391,21 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 
       }
 
-      // Queue a verify task.
-      hosting_add_task($site->nid, 'verify');
+      // If we have been cloned from another environment, run a deploy task.
+      if (!empty($platform->environment->settings->site_to_clone)) {
+
+        // Trigger a verify of the site, so the alias has project information.
+        hosting_add_task($site->nid, 'verify');
+
+        // Trigger a deploy using the project's default hooks.
+        $args = $platform->project->settings->deploy['default_hooks'];
+        $args['git_ref'] = $platform->environment->git_ref;
+        hosting_add_task($site->nid, 'devshop-deploy', $args);
+
+      } else {
+        // Trigger a verify of the site, so the alias has project information.
+        hosting_add_task($site->nid, 'verify');
+      }
     }
   }
 }

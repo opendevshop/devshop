@@ -27,12 +27,6 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-//  $tasks['project']['devshop-pull'] = array(
-//    'title' => t('Pull Code'),
-//    'description' => t('Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.'),
-//    'access callback' => 'devshop_hosting_task_menu_access',
-//    'dialog' => TRUE,
-//  );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
@@ -40,8 +34,6 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
     'hidden' => TRUE,
   );
-  // We must figure out how to create a new "deploy" task.
-  // This task might as well be in hosting_git.module
   $tasks['site']['devshop-deploy'] = array(
     'title' => t('Deploy'),
     'description' => t('Checkout or Pull new code to this environment.'),
