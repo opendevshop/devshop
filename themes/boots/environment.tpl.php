@@ -645,7 +645,7 @@
     <?php endif; ?>
     <?php endif; ?>
 
-  <?php if ($environment->git_status): ?>
+  <?php if ($environment->git_sha): ?>
 
     <?php
     // Figure out status
