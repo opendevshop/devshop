@@ -1,5 +1,37 @@
 # Change Log
 
+# 0.8.0 (February 10, 2016)
+
+307 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.7.4...0.x
+149 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.4...0.x
+
+- Full test suite running on Travis-ci.org, on both repositories, for both NGINX and Apache, Ubuntu 14.04 and CentOS7!.  See https://travis-ci.org/opendevshop/devmaster and https://travis-ci.org/opendevshop/devshop for more info.
+- Refactored travis tests and install scripts to allow testing of Pull Requests on devmaster repo.
+- Behat tests now run through entire project creation, even testing the environment was installed properly.
+- Created `docker-development-environment.sh` to launch a DevShop development environment in docker!  See `docker-destroy-devshop.sh` to remove the containers.
+- Adding a 'devshop devmaster:test` command to the CLI for easy Behat testing of the front-end.
+- Improve `devshop status` command, it now fully bootstraps the devmaster site to ensure it is working and properly exits with a non-zero exit code if something fails.
+- Output devmaster drupal version and site URL in `devshop status` command.
+- Use `devshop status` and `devshop login` at end of install script, making it much more friendly.
+- Added command line options to `install.sh` script: 
+  - `--server-webserver` can be `apache` or `nginx`.  
+  - `--hostname` will pass a desired hostname to ansible, which will change the hostname on the system.
+  - `--makefile` passes a different "build-devmaster.make" file, allowing for pull request testing.
+  - `--aegir_user_uid` will pass to ansible variables, setting the aegir user to use the desired UID.
+  
+... more to come...
+
+
+## New Contributors!
+
+We're so excited to welcome Andrew Rosborough (@arosboro) from DropForgeLabs.com, and Daniel Hesoyam (@Hesoyam) to OpenDevShop as our newest contributors!
+
+Andrew did immense work on tests, NGINX, and our 1.x branch upgrading devmaster to Drupal 7.
+
+Daniel submitted a small patch fixing a warning in old versions of Vagrant.
+
+Welcome!
+
 # 0.7.4 (January 15, 2016)
 
 1 commits to DevShop: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
