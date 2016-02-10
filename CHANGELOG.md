@@ -1,28 +1,52 @@
 # Change Log
 
-# 0.8.0 (February 10, 2016 pending)
+##  0.8.0 (February 10, 2016, pending)
 
 307 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.7.4...0.x
 149 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.4...0.x
 
-- Full test suite running on Travis-ci.org, on both repositories, for both NGINX and Apache, Ubuntu 14.04 and CentOS7!.  See https://travis-ci.org/opendevshop/devmaster and https://travis-ci.org/opendevshop/devshop for more info.
-- Refactored travis tests and install scripts to allow testing of Pull Requests on devmaster repo.
-- Behat tests now run through entire project creation, even testing the environment was installed properly.
-- Created `docker-development-environment.sh` to launch a DevShop development environment in docker!  See `docker-destroy-devshop.sh` to remove the containers.
-- Adding a 'devshop devmaster:test` command to the CLI for easy Behat testing of the front-end.
+### Newly Redesigned Tasks
+
+- *Recreate Features* button allows you to update some or all of your Features modules in one click. Yes, this is an old feature, but it needed some dusting off. We've decoupled the "recreate" process from the "commit" process, making it much easier to avoid mistakes.
+- *Download Modules* button allows you download and commit modules to git with the press of a button, or you can save your commit for the...
+- *Commit* button, in the *Git Information* panel.  This task allows you to easily fill in a commit message and commit some or all of your changes. The name and user in DevMaster is automatically passed to git, so keep your devshop users accurate and you will have accurate git history.
+
+These new features are not enabled by default, yet.  To check them out, please enable `aegir_features`, `aegir_download`, and `aegir_commit`.
+
+### UI Improvements
+
+- *Git Information* tells you when you have untracked, modified, added or deleted files. It will indicate if the repo is ahead or behind. Click for a modal window showing you the current git status, last commit, and full git diff for every environment.
+- Git reference displayed on environments is now loaded in *realtime*. 
+- *Situational Indicators* now tell you more about what is happening with your environments, especially when something failed.
+- Situational buttons now appear on failed tasks or disabled environments giving you easy access to your options, such as 'View Logs & Retry', or 'Destroy Environment'.
 - Improve `devshop status` command, it now fully bootstraps the devmaster site to ensure it is working and properly exits with a non-zero exit code if something fails.
 - Output devmaster drupal version and site URL in `devshop status` command.
 - Use `devshop status` and `devshop login` at end of install script, making it much more friendly.
+- Moved all commands to use devshop_drush_process() and our new logging system, making all task logs beautiful.
+- Added a `theme('devshop_ascii', $string)` function for easy beautiful ascii color in browser.
+- Fixed the problem of GitHub Pull Request Environments often causing the "Clone" task to fail, which would prevent the environment from being created. In addition, "Deploy" task would not run on Cloned sites.  Now, new PR environments are exact clones of live, on the same git ref. After that, a new "Deploy" task is created that runs all appropriate deploy hooks.
+- Clones of locked environments are automatically unlocked, since they are assumed to be destructible. Be sure to check your environment settings if you need to lock environments.
+- Removing our special devshop_tests drupal page, and altering the menu to allow access to test tasks to users with the permission "access test logs". Now github links to the correct place to view tests in action!
+- Fixed the funky "Logs" page for environments, and removed devshop_logs.module altogether!
+- Added a [Tour](http://docs.devshop.support/en/latest/#tour) section to the documentation with screenshots.
+
+
+### System & DevShop Development Features
+
+- NGINX! You can now install NGINX + PHP-FPM on the devmaster server using the install script option `--server-webserver=nginx`.
+- Full test suite running on Travis-ci.org, on both repositories, for both NGINX and Apache, Ubuntu 14.04 and CentOS7!.  See https://travis-ci.org/opendevshop/devmaster and https://travis-ci.org/opendevshop/devshop for more info.
+- Refactored travis tests and install scripts to allow testing of Pull Requests on devmaster repo.
+- DevShop Behat tests now run through entire project creation, even testing the environment was installed properly.
+- Created `docker-development-environment.sh` to launch a DevShop development environment in docker!  See `docker-destroy-devshop.sh` to remove the containers.
+- Adding a 'devshop devmaster:test` command to the CLI for easy Behat testing of the front-end.
 - Added command line options to `install.sh` script: 
   - `--server-webserver` can be `apache` or `nginx`.  
   - `--hostname` will pass a desired hostname to ansible, which will change the hostname on the system.
   - `--makefile` passes a different "build-devmaster.make" file, allowing for pull request testing.
   - `--aegir_user_uid` will pass to ansible variables, setting the aegir user to use the desired UID.
-  
-... more to come...
 
 
-## New Contributors!
+### New Contributors!
 
 We're so excited to welcome Andrew Rosborough (@arosboro) from DropForgeLabs.com, and Daniel Hesoyam (@Hesoyam) to OpenDevShop as our newest contributors!
 
