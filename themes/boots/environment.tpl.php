@@ -22,9 +22,34 @@
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
             <?php print $environment->name; ?></a>
 
-        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
+      <?php
+      // If we detect a currently running deploy...
+      if (isset($environment->tasks['devshop-deploy'])):
+        $task = current($environment->tasks['devshop-deploy']);
+
+        if (($environment->git_ref != $task->task_args['git_ref'] || $environment->git_ref != $environment->git_ref_stored) && ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING)): ?>
+        <span title="<?php print t('Deploying from @source to @target...', array('@source' => $environment->git_ref, '@target' => $task->task_args['git_ref'])); ?>">
+          <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank"  title="<?php print t('Current actual git ref.'); ?>">
+            <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print (!empty($environment->git_ref_stored)? $environment->git_ref_stored: $environment->git_ref); ?>
+          </a>
+          <i class="fa fa-caret-right text-muted small"></i>
+          <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank"  title="<?php print t('Desired git ref.'); ?>">
+          <i class='fa fa-<?php print $project->settings->git['refs'][$task->task_args['git_ref']] == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $task->task_args['git_ref']; ?>
+          </a>
+          </span>
+
+          <?php else: ?>
+            <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
             <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
+          </a>
+        <?php endif; ?>
+
+      <?php else: ?>
+        <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
+          <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
+      <?php endif; ?>
+
 
         <?php if ($environment->version): ?>
             <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data environment-drupal-version btn btn-text">
@@ -56,13 +81,13 @@
         <!-- Pull Request -->
 
 
-        <h6>
+        <div class="environment-pull-request">
           <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
             <i class="fa fa-github"></i>
             <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>:
             <?php print $environment->github_pull_request->pull_request_object->title;?>
           </a>
-        </h6>
+        </div>
 
       <?php endif; ?>
 
@@ -157,6 +182,14 @@
         </div>
 
     <?php
+      // SITUATION: Environment has platform but no site, and clone is queued or processing
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['clone']) && (current($environment->tasks['clone'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['clone'])->task_status == HOSTING_TASK_PROCESSING)): ?>
+        <div class="list-group-item center-block text text-muted">
+          <i class="fa fa-truck"></i>
+          <?php print t('Environment is being created.'); ?>
+        </div>
+
+    <?php
       // SITUATION: Environment has platform but no site, verify failed
       elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR):
 
@@ -178,7 +211,7 @@
 
     <?php
       // SITUATION: Environment has platform but no site, verify succeeded, and there is NOT a clone task...
-      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING && empty($environment->tasks['clone'])):
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && empty($environment->tasks['clone']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING):
 
         $verify_task = current($environment->tasks['verify']);
         ?>
@@ -221,7 +254,7 @@
             </div>
         </div>
 
-        <?php
+    <?php
       // SITUATION: Site Install Queued or processing.
       elseif ($environment->created['type'] == 'install' && $environment->created['status'] == HOSTING_TASK_QUEUED || $environment->created['status'] == HOSTING_TASK_PROCESSING): ?>
 
@@ -353,31 +386,32 @@
                     </div>
                 <?php endif;?>
             </div>
-
         </div>
 
         <div class="list-group-item">
-            <div class="btn-group" role="group">
+          <label><?php print t('Browse'); ?></label>
+          <div class="btn-group" role="group">
 
-                <!-- Last Commit -->
-                <a href="<?php print url("node/$environment->site/logs/commits"); ?>" class="btn btn-text text-muted small" title="<?php print $environment->git_last; ?>">
-                    <i class="fa fa-file-code-o"></i>
-                    <?php print $environment->git_ref_id; ?>
-                </a>
+            <!-- Browse Logs -->
+            <a href="<?php print url("node/$environment->site/errors"); ?>" class="btn btn-text text-muted small" title="<?php print t('Error logs for this environment.'); ?>">
+              <i class="fa fa-tasks"></i>
+              <?php print t('Logs'); ?>
+            </a>
 
-                <!-- Browse Files -->
-                <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
-                    <i class="fa fa-folder-o"></i>
-                    <?php print t('Files'); ?>
-                </a>
+            <!-- Browse Files -->
+            <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
+              <i class="fa fa-folder-o"></i>
+              <?php print t('Files'); ?>
+            </a>
 
-                <!-- Browse Backups -->
-                <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
-                    <i class="fa fa-database"></i>
-                    <?php print t('Backups'); ?>
-                </a>
-            </div>
+            <!-- Browse Backups -->
+            <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
+              <i class="fa fa-database"></i>
+              <?php print t('Backups'); ?>
+            </a>
+          </div>
         </div>
+
         <?php
         // Only show this area if they have at least one of these permissions.
         if (
@@ -603,8 +637,8 @@
                                 <li class="text">
 
                                     <ul>
-                                        <li><strong>post-code-update:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
-                                        <li><strong>post-code-deploy:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
+                                        <li><strong>post-code-deploy:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
+                                        <li><strong>post-code-update:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
                                         <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
                                         <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
                                     </ul>
@@ -620,15 +654,127 @@
     <?php endif; ?>
     <?php endif; ?>
 
-    <div class="environment-task-logs <?php if (!isset($page)) print 'list-group-item' ?>">
-        <?php if (isset($page)): ?>
+  <?php if ($environment->git_status): ?>
+
+    <?php
+    // Figure out status
+    $item_class = 'default';
+    $icon = 'check';
+    $label = t('Clean');
+    $node = '';
+
+    if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
+      $icon = 'arrow-right';
+      $label = t('Ahead');
+      $item_class = 'info';
+    }
+
+    if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
+      $icon = 'exclamation-circle';
+      $label = t('Untracked Files');
+      $item_class = 'warning';
+
+      // Detect Aegir files we should be ignoring.
+      if (strpos($environment->git_status, 'sites/sites.php') !== FALSE || strpos($environment->git_status, 'sites/' . $environment->uri) !== FALSE || strpos($environment->git_status, 'sites/all/drush') !== FALSE) {
+
+        $note = t('Aegir files were detected by git. It is recommended to add the following to your <code>.gitignore</code> file: ');
+
+        $note .= '<pre>
+# Aegir files
+sites/sites.php
+sites/*/drushrc.php
+sites/all/drush/drushrc.php
+</pre>';
+
+      }
+    }
+
+    if (strpos($environment->git_status, 'modified:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {
+      $icon = 'warning';
+      $label = t('Modified Files');
+      $item_class = 'danger';
+    }
+
+    if (strpos($environment->git_status, 'Changes to be committed:') !== FALSE) {
+      $icon = 'check-square-o';
+      $label = t('Staged to Commit');
+      $item_class = 'success';
+    }
+
+    if (strpos($environment->git_status, 'Your branch is behind') !== FALSE) {
+      $icon = 'arrow-left';
+      $label = t('Behind');
+      $item_class = 'info';
+    }
+
+    if (strpos($environment->git_status, 'deleted:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {
+      $icon = 'warning';
+      $label = t('deleted Files');
+      $item_class = 'danger';
+    }
+
+    ?>
+    <div class="list-group-item list-group-item-git">
+      <label><?php print t('Git') ?></label>
+
+      <!-- Git Status -->
+      <div class="btn-group btn-git-status" role="group">
+        <button type="button" class="btn btn-<?php print $item_class; ?>" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>">
+          <i class="fa fa-<?php print $icon; ?>"></i>
+          <?php print $label ?>
+        </button>
+        <button type="button" class="btn btn-text" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>" title="<?php print t('Last Commit'); ?>">
+          <?php print $environment->git_last ?>
+        </button>
+        <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="drush-alias-modal">
+                  <?php print $environment->name ?> <?php print t('environment'); ?>
+                  <small>Git Information</small>
+                </h4>
+              </div>
+              <div class="modal-body">
+
+                <div class="well">
+                  <div class="pull-right">
+                    <?php if ($project->git_provider == 'github'): ?>
+                      <a href="https://github.com/<?php print $project->github_owner ?>/<?php print $project->github_repo ?>/commit/<?php print $environment->git_sha ?>" class="btn btn-link">
+                        <i class="fa fa-github"></i>
+                        <?php print t('View Commit on GitHub'); ?>
+                      </a>
+                    <?php endif; ?>
+                    <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
+                      <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
+                    </a>
+                  </div>
+                  <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
+                </div>
+
+                <?php print theme('devshop_ascii', $environment->git_commit); ?>
+                <?php print theme('devshop_ascii', $environment->git_status); ?>
+                <?php print theme('devshop_ascii', $environment->git_diff); ?>
+
+                <p>
+                  <?php print $note; ?>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
+    <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
+        <?php if ($page): ?>
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
+          <label class="sr-only"><?php print t('Last Task') ?></label>
         <div class="environment-tasks-alert alert-<?php print $environment->last_task_node->status_class ?>">
-
-
-                <label>Tasks</label>
             <div class="btn-group btn-logs pull-right" role="group">
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-list-alt"></i>
@@ -637,12 +783,12 @@
                     <?php print $environment->task_logs; ?>
                 </div>
             </div>
-            <div class="btn-group text">
+            <div class="btn-group btn-last-task text">
                 <a href="<?php print $environment->last_task_node->url; ?>" class="alert-link">
                     <i class="fa fa-<?php print $environment->last_task_node->icon ?>"></i>
                     <span class="type-name"><?php print $environment->last_task_node->type_name ?></span>
                     <span class="status-name small"><?php if ($environment->last_task_node->task_status != HOSTING_TASK_QUEUED && $environment->last_task_node->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task_node->status_name ?></span>
-                      &nbsp;
+                   &nbsp;
                     <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task_node->task_status == HOSTING_TASK_QUEUED || $environment->last_task_node->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task_node->ago ?></span></em>
                 </a>
             </div>
