@@ -375,12 +375,17 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 
       // If we have been cloned from another environment, run a deploy task.
       if (!empty($platform->environment->settings->site_to_clone)) {
-        hosting_add_task($site->nid, 'devshop-deploy', $platform->project->settings->deploy['default_hooks']);
-      } else {
-        // I'm not sure this is needed anymore. Doesn't clone/import handle all "verification"?
-//        hosting_add_task($site->nid, 'verify');
-      }
 
+        // Trigger a verify of the site, so the alias has project information.
+        hosting_add_task($site->nid, 'verify');
+
+        // Trigger a deploy using the project's default hooks.
+        hosting_add_task($site->nid, 'devshop-deploy', $platform->project->settings->deploy['default_hooks']);
+
+      } else {
+        // Trigger a verify of the site, so the alias has project information.
+        hosting_add_task($site->nid, 'verify');
+      }
     }
   }
 }
