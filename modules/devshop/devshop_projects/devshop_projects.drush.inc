@@ -340,7 +340,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  * Ensures that cloned sites that are on project platforms inherit the project.
  */
 function devshop_projects_post_hosting_clone_task($task, $data) {
-  devshop_projects_post_hosting_import_task($task, $data);
+//  devshop_projects_post_hosting_import_task($task, $data);
 }
 
 /**
