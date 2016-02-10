@@ -238,7 +238,7 @@
 
     <?php
       // SITUATION: Environment has platform but no site, verify succeeded, and there is NOT a clone task...
-      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && empty($environment->tasks['clone']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING):
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && empty($environment->tasks['clone']) && (current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING)):
 
         $verify_task = current($environment->tasks['verify']);
         ?>
@@ -645,7 +645,7 @@
     <?php endif; ?>
     <?php endif; ?>
 
-  <?php if ($environment->git_status): ?>
+  <?php if ($environment->git_sha): ?>
 
     <?php
     // Figure out status
@@ -737,9 +737,11 @@ sites/all/drush/drushrc.php
                         <?php print t('View Commit on GitHub'); ?>
                       </a>
                     <?php endif; ?>
+                    <?php if (!empty($environment->git_status)): ?>
                     <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
                       <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
                     </a>
+                    <?php endif; ?>
                   </div>
                   <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
                 </div>
