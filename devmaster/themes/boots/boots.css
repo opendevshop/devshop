@@ -341,6 +341,11 @@ input.form-control.webhook-url {
 .environment-tests {
     padding: 0px;
 }
+
+.environment-deploy.list-group-item {
+    white-space: nowrap;
+}
+
 .dropdown-menu li label,
 .environment label,
 .well label,
