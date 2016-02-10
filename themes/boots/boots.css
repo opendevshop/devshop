@@ -341,6 +341,11 @@ input.form-control.webhook-url {
 .environment-tests {
     padding: 0px;
 }
+
+.environment-deploy.list-group-item {
+    white-space: nowrap;
+}
+
 .dropdown-menu li label,
 .environment label,
 .well label,
@@ -536,16 +541,20 @@ ul.dropdown-menu li.text {
 }
 
 .environment.pull-request .environment-header a.pull-request i.fa-github {
-  position: absolute;
-  left: 11px;
-  top: 51px;
-  font-size: 3em;
+    font-size: 1.5em;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .environment > .list-group-item {
   padding: 0px;
-  white-space: nowrap;
 }
+
+.environment > .list-group-item pre {
+  white-space: pre;
+}
+
 .environment > .environment-header.list-group-item {
   white-space: normal;
 }
@@ -581,6 +590,22 @@ ul.dropdown-menu li.text {
 
 }
 
+.environment > .list-group-item  .btn-group > button.btn-danger {
+    color: #a94442;
+}
+.environment > .list-group-item  .btn-group > button.btn-warning {
+    color: #f0ad4e;
+}
+.environment > .list-group-item  .btn-group > button.btn-info {
+    color: #428bca;
+}
+.environment > .list-group-item  .btn-group > button.btn-success {
+    color: #40a823;
+}
+
+.environment > .list-group-item-git > .dropdown-menu {
+    max-width: 350px;
+}
 .environment > .list-group-item  .btn-group > a.alert-link {
   color: inherit;
   font-size: inherit;
@@ -657,7 +682,7 @@ html.js fieldset.collapsed {
 
 .btn-logs .list-group-item {
     white-space: nowrap;
-    min-width: 19em;
+    min-width: 22em;
 }
 
 .environment-task-logs > .alert-default {
@@ -798,4 +823,36 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 
 .ansi_color_bg_black {
     background: #262626;
+}
+
+.btn-last-task {
+    padding: 5px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80%;
+}
+
+#hosting-task-confirm-form .form-checkboxes .form-item span {
+    width: 6em;
+    display: inline-block;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    text-align: right;
+    padding-right: 1em;
+}
+
+#hosting-task-confirm-form .form-checkboxes .form-item code {
+    background: transparent;
+}
+
+.panel-ansii {
+    background: #262626;
+
+}
+
+.errors-table td > div {
+    color: rgb(51, 51, 51);
+    display: block;
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-size: 13px;
 }
