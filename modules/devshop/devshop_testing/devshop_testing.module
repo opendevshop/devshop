@@ -11,6 +11,7 @@
  */
 function devshop_testing_menu_alter(&$items) {
   $items['node/%node']['access callback'] = 'devshop_testing_node_access_alter';
+  $items['node/%node/revisions/%/view']['access callback'] = 'devshop_testing_node_revision_access_alter';
 }
 
 /**
@@ -29,6 +30,25 @@ function devshop_testing_node_access_alter($op, $node, $account = NULL) {
   }
   else {
     return node_access($op, $node, $account);
+  }
+}
+
+/**
+ * Replacement access check for node/%/revision/%/view pages.
+ *
+ * We do this so we can check a secondary permission for Task nodes of type
+ * "test"
+ *
+ * @param $op
+ * @param $node
+ * @param null $account
+ */
+function devshop_testing_node_revision_access_alter($node, $op = 'view') {
+  if ($node->type == 'task' && $node->task_type == 'test' && user_access('access test results')) {
+    return TRUE;
+  }
+  else {
+    return _node_revision_access($node, $op);
   }
 }
 
