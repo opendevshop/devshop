@@ -211,6 +211,7 @@ function devshop_projects_load($node) {
     }
 
     // Git information.
+    $environment->git_ref_stored = $environment->git_ref;
     $path = $project->code_path . '/' . $environment->name;
     if (file_exists($path)) {
 
