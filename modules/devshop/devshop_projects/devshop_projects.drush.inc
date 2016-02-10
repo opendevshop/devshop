@@ -16,6 +16,8 @@ function devshop_projects_hosting_task_update_status($task, $status) {
   if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
     $site->environment->last_task = $task->nid;
 
+    // @TODO: Look for environment_target on clone task, so we can update that environment's last task as well.
+
     // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
     // If last task is a successful verify or reset password, load the task before that as the "last task".
     if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
@@ -308,6 +310,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
         // Use the default database server for the project.
         $args['new_db_server'] = $site->db_server;
+        $args['environment_target'] = $platform->environment->name;
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
 
         // Queue the Cloning of the site.
