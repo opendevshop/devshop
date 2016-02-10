@@ -238,7 +238,7 @@
 
     <?php
       // SITUATION: Environment has platform but no site, verify succeeded, and there is NOT a clone task...
-      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && empty($environment->tasks['clone']) && current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING):
+      elseif (empty($environment->site) && !empty($environment->platform) && !empty($environment->tasks['verify']) && empty($environment->tasks['clone']) && (current($environment->tasks['verify'])->task_status == HOSTING_TASK_SUCCESS || current($environment->tasks['verify'])->task_status == HOSTING_TASK_WARNING)):
 
         $verify_task = current($environment->tasks['verify']);
         ?>
