@@ -167,9 +167,6 @@ function devshop_projects_load($node) {
       $environment->created['status'] = '';
     }
 
-    // Get the current git ref type.
-    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
-
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
       $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
@@ -213,20 +210,40 @@ function devshop_projects_load($node) {
       }
     }
 
-    // Last commit
+    // Git information.
+    $environment->git_ref_stored = $environment->git_ref;
     $path = $project->code_path . '/' . $environment->name;
     if (file_exists($path)) {
-      $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
-  ");
-      $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
 
+      // Timestamp of last commit.
+      $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
+
+      // The last commit.
+      $environment->git_commit = shell_exec("cd $path; git -c color.ui=always log --max-count=1");
+
+      // Get the exact SHA
       $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+
+      // Get the actual tag or branch
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd $path; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+
+      // Get git status.
+      $environment->git_status = trim(shell_exec("cd $path; git -c color.ui=always  status"));
+
+      // Get git diff.
+      $environment->git_diff = trim(shell_exec("cd $path; git -c color.ui=always diff"));
+
     }
     else {
-      $environment->git_ref_id = '';
       $environment->git_last = '';
+      $environment->git_commit = '';
       $environment->git_sha = '';
+      $environment->git_status = '';
+      $environment->git_diff = '';
     }
+
+    // Get the current git ref type.
+    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
     // Repo root
     $environment->repo_root = empty($project->drupal_path)? $environment->root: str_replace($project->drupal_path, '', $environment->root);
@@ -307,7 +324,7 @@ function devshop_projects_insert($node) {
   if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
-  
+
   $info = new stdClass();
   $info->nid = $node->nid;
   $info->git_url = $node->project->git_url;
@@ -493,7 +510,7 @@ function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
     return $additions;
   }
 
-    // Load environment info into tasks.
+  // Load environment info into tasks.
   if ($op == 'load' && $node->type == 'task') {
     $additions = array();
     $result = db_fetch_object(db_query("SELECT nid, title AS name, name AS environment FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = %d OR platform = %d", $node->rid, $node->rid));

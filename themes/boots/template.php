@@ -1,4 +1,10 @@
 <?php
+
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+
 /**
  * Implements hook_theme()
  */
