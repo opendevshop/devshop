@@ -162,8 +162,21 @@ function drush_devshop_platform_verify(){
     // Clone the repo.
     devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
+    // If there is "site_to_clone", checkout that site's git ref.
+    // This is done for Pull Request Environments. When a PR comes in, we want
+    // to clone the site to an identical platform first. This will always succeed.
+    // Then, we trigger a deployment to the new branch.
+    //
+    // This ensures that initial pull request environments run the same "deploy"
+    // hooks. It means we don't have to hack into the "clone" task to run deploy
+    // hooks anymore.
+    if ($platform->environment->settings->site_to_clone) {
+      $site = node_load($platform->environment->settings->site_to_clone);
+      $git_ref = $site->environment->git_ref;
+    }
+
     // If there is a git ref, check it out.
-    // We don't do this on clone, because it could be a tag.
+    // We don't do this on git clone, because it could be a tag.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
       devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
