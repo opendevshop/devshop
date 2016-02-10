@@ -56,7 +56,7 @@ Daniel submitted a small patch fixing a warning in old versions of Vagrant.
 
 Welcome!
 
-# 0.7.4 (January 15, 2016)
+## 0.7.4 (January 15, 2016)
 
 1 commits to DevShop: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
 15 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
@@ -68,7 +68,7 @@ Welcome!
 - Major improvements to Environment status user interface. It now clearly states to the user what an environment is doing: "Creating environment", "Cloning Environment", "Deleting Environment", "Disabling Environment", "Clone failed", "Delete Failed", Etc.  Added separate "Site Destroy" and "Platform destroy" indicators.
 - Major improvements to GitHub pull request environment interface. Now clearly shows PR number and environment name. Shows Pull request title as well.
 
-# 0.7.3 (December 30, 2015)
+## 0.7.3 (December 30, 2015)
 
 22 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.2...0.7.3
 
@@ -87,19 +87,19 @@ Welcome!
 - Added "Project Messages" so we can inform the user of project wide problems (such as no deploy hooks configured.)
 - Added a "release-prep.sh" and "release.sh" script to help make releases easier.
 
-# 0.7.2 (December 23, 2015)
+## 0.7.2 (December 23, 2015)
 
 3 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.1...0.7.2
 
 - Fixing a slew of PHP notices.
 - Removing Hosting Task Jenkins from the default build. It requires composer install, and we can't run that inside of hostmaster-migrate at the moment.
 
-# 0.7.1 (December 23, 2015)
+## 0.7.1 (December 23, 2015)
 
 1 commit to DevShop.
 Fixed a bug in the Install command when specifying a version.
 
-# 0.7.0 (December 23, 2015)
+## 0.7.0 (December 23, 2015)
 
 71 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.6.0...0.7.0
 20 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.6.0...0.7.0
@@ -131,7 +131,7 @@ Fixed a bug in the Install command when specifying a version.
 - After installing this release (once you have the self-update command), always run `devshop self-update` before `devshop upgrade`.  We will soon add code to enforce this by checking to see if devshop CLI is out of date before an upgrade.
 - We do not remove the old .devshop-version file for you automatically, but the `devshop status` command will warn you if it still exists.  Please remove `/var/aegir/.devshop-version` manually.
 
-# 0.6.0 (December 14, 2015)
+## 0.6.0 (December 14, 2015)
 
 19 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.5.4...0.6.0
 137 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.5.4...0.6.0
