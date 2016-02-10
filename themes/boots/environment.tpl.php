@@ -56,13 +56,13 @@
         <!-- Pull Request -->
 
 
-        <h6>
+        <div class="environment-pull-request">
           <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
             <i class="fa fa-github"></i>
             <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>:
             <?php print $environment->github_pull_request->pull_request_object->title;?>
           </a>
-        </h6>
+        </div>
 
       <?php endif; ?>
 
