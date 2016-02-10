@@ -347,7 +347,9 @@
         </div>
 
         <div class="list-group-item">
+          <label><?php print t('Browse'); ?></label>
           <div class="btn-group" role="group">
+
             <!-- Browse Logs -->
             <a href="<?php print url("node/$environment->site/errors"); ?>" class="btn btn-text text-muted small" title="<?php print t('Error logs for this environment.'); ?>">
               <i class="fa fa-tasks"></i>
