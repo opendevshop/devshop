@@ -284,7 +284,7 @@ function devshop_testing_hosting_slack_message_alter(&$message_options) {
   
   if ($message_options->task->task_type == 'test') {
 
-    $url = url('devshop_tests/' . $message_options->task->nid . '/' . $message_options->task->vid, array('absolute' => TRUE));
+    $url = url('node/' . $message_options->task->nid . '/revisions/' . $message_options->task->vid, array('absolute' => TRUE) . '/view');
     
     $attachment = new stdClass();
     $attachment->fallback = t('Results: ') . $url;

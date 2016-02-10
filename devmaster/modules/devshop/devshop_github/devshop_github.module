@@ -281,7 +281,7 @@ function devshop_github_nodeapi_task_update($node) {
 
     if ($node->task_type != 'test') {
       $params->target_url = url(
-        "devshop_tests/{$node->nid}/{$node->vid}",
+        "node/{$node->nid}/revisions/{$node->vid}/view",
         array('absolute' => true)
       );
       $params->description = t('DevShop: Run Tests');
@@ -402,7 +402,7 @@ function devshop_github_comment($task, $status) {
   $output[] = '> Project: ' . url("node/{$task->ref->project->nid}", array('absolute' => TRUE));
 
   if ($task->task_type == 'test') {
-    $output[] = 'Results: ' . url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
+    $output[] = 'Results: ' . url("node/{$task->nid}/revisions/{$task->vid}/view", array('absolute' => TRUE));
   }
 
   if ($task->task_type == 'import') {
