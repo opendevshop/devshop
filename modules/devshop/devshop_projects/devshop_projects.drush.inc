@@ -385,6 +385,12 @@ function devshop_projects_post_hosting_import_task($task, $data) {
         // Trigger a deploy using the project's default hooks.
         $args = $platform->project->settings->deploy['default_hooks'];
         $args['git_ref'] = $platform->environment->git_ref;
+
+        // Handle a Pull Request. If there is one, we want to deploy to the PR branch.
+        if (!empty($platform->environment->github_pull_request->pull_request_object->head->ref)) {
+          $args['git_ref'] = $platform->environment->github_pull_request->pull_request_object->head->ref;
+        }
+
         hosting_add_task($site->nid, 'devshop-deploy', $args);
 
       } else {
