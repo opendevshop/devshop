@@ -192,6 +192,11 @@ function drush_devshop_platform_verify() {
     // Push the branch
     devshop_drush_process("git push -u origin {$platform->environment->git_ref}", dt('Pushing new branch.'));
   }
+
+  // Detect composer.json and run composer install.
+  if (file_exists($root . '/composer.json')) {
+    devshop_drush_process("composer install", $root, dt('composer.json detected, running composer install.'));
+  }
 }
 
 /**
