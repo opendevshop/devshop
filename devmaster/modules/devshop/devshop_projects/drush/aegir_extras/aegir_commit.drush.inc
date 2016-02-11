@@ -34,7 +34,7 @@ function drush_aegir_commit_provision_commit() {
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
-    $environment = $project->environments[d()->environment];
+    $environment = (object) $project->environments[d()->environment];
 
     $git_url = $project->git_url;
 

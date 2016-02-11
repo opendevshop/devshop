@@ -121,7 +121,7 @@ function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) 
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->environment];
 
   return <<<PHP
 
@@ -169,7 +169,7 @@ function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->environment];
 
   if (empty($environment) || empty($project)) {
     return;
@@ -200,7 +200,7 @@ function devshop_provision_provision_nginx_vhost_config($data) {
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->environment];
 
   if (empty($environment) || empty($project)) {
     return;

@@ -31,7 +31,7 @@ function drush_aegir_features_provision_features_update() {
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
-    $environment = $project->environments[d()->environment];
+    $environment = (object) $project->environments[d()->environment];
 
     $features = trim(drush_get_option('features', ''));
     $revert = drush_get_option('revert', FALSE);
