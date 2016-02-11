@@ -38,7 +38,7 @@ function devshop_projects_theme() {
       'template' => 'project-add',
     ),
     'devshop_ascii' => array(
-      'arguments' => array(
+      'variables' => array(
         'output' => '',
       ),
     ),
@@ -309,7 +309,7 @@ function devshop_task_get_messages($task_node) {
     }
 
     // Convert ASCII to HTML
-    $output = theme('devshop_ascii', $data['output']);
+    $output = theme('devshop_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
       $body = "<div class='panel-body panel-ansii'>$output</div>";
@@ -430,8 +430,8 @@ function template_preprocess_devshop_project_nav(&$vars) {
  * Usage:
  *   theme('devshop_ascii', $string);
  */
-function theme_devshop_ascii($string) {
-
+function theme_devshop_ascii($vars) {
+  $string = $vars['output'];
   if (empty($string)) {
     return $string;
   }

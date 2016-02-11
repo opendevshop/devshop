@@ -753,9 +753,9 @@ sites/all/drush/drushrc.php
                   <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
                 </div>
 
-                <?php print theme('devshop_ascii', $environment->git_commit); ?>
-                <?php print theme('devshop_ascii', $environment->git_status); ?>
-                <?php print theme('devshop_ascii', $environment->git_diff); ?>
+                <?php print theme('devshop_ascii', array('output' => $environment->git_commit)); ?>
+                <?php print theme('devshop_ascii', array('output' => $environment->git_status)); ?>
+                <?php print theme('devshop_ascii', array('output' => $environment->git_diff)); ?>
 
                 <p>
                   <?php print $note; ?>
