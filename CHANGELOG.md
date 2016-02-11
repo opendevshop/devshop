@@ -1,6 +1,6 @@
 # Change Log
 
-##  0.8.0 (February 10, 2016, pending)
+##  0.8.0 (February 10, 2016)
 
 307 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.7.4...0.x
 149 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.4...0.x
