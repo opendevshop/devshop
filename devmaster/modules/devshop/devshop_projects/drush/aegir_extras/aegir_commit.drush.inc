@@ -32,9 +32,11 @@ function drush_aegir_commit_provision_commit() {
 
   if (d()->type == 'site') {
 
-    $environment = (object) d()->environment;
-    $project = (object) d('project_' . $environment->project_name);
-    $git_url = $project->project['git_url'];
+    $project_name = d()->project;
+    $project = (object) d("@project_{$project_name}")->project;
+    $environment = $project->environments[d()->environment];
+
+    $git_url = $project->git_url;
 
     $message = trim(drush_get_option('message', ''));
     $files = json_decode(drush_get_option('files', '[]'));
