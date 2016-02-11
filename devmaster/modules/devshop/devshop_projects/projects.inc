@@ -56,7 +56,9 @@ SELECT
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
             $entity->project = $project_node->project;
-            $entity->environment = $project_node->project->environments[$result->name];
+            if (isset($project_node->project->environments[$result->name])) {
+              $entity->environment = $project_node->project->environments[$result->name];
+            }
           }
         }
       }
