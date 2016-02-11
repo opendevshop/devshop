@@ -28,7 +28,7 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
   }
 
   $project_alias = '@project_' . d()->project;
-  $project = d($project_alias);
+  $project = (object) d($project_alias)->project;
 
   if (!isset($project->settings['git']['refs'][$git_ref])) {
     $drush_command = "drush $project_alias provision-verify";
