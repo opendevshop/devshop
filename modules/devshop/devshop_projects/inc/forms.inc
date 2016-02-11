@@ -338,14 +338,14 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     unset($form['revision_information']);
     unset($form['author']);
     unset($form['options']);
-    unset($form['buttons']['delete']);
-    unset($form['buttons']['preview']);
+    unset($form['actions']['delete']);
+    unset($form['actions']['preview']);
     if (isset($form['retry']['#value'])) {
-      $form['buttons']['submit']['#value'] = t('Save and Retry');
+      $form['actions']['submit']['#value'] = t('Save and Retry');
     }
 
     //Add button for delete project
-    $form['buttons']['delete'] = array(
+    $form['actions']['delete'] = array(
       '#type' => 'markup',
       '#value' => l(t('Delete this project'), 'node/' . $project->nid . '/project_delete', array('query' => array('token' => drupal_get_token($user->uid)))),
       '#weight' => 10,
