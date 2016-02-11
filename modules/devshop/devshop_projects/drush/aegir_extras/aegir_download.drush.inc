@@ -99,6 +99,10 @@ function drush_aegir_download_provision_download() {
  */
 function aegir_download_drush_pm_post_download($drupal_project, $release) {
 
+  $project_name = d()->project;
+  $project = (object) d("@project_{$project_name}")->project;
+  $environment = $project->environments[d()->environment];
+
   if (d()->environment && drush_get_option('commit', FALSE)) {
     drush_log(dt('[DEVSHOP] Committing new module...'), 'ok');
 
@@ -108,9 +112,9 @@ function aegir_download_drush_pm_post_download($drupal_project, $release) {
     $wrapper->streamOutput();
 
     try {
-      $git = $wrapper->workingCopy(d()->environment['repo_root']);
+      $git = $wrapper->workingCopy($environment->repo_root);
 
-      $download_path = d()->environment['root'] .'/' . $drupal_project['full_project_path'];
+      $download_path = $environment->root .'/' . $drupal_project['full_project_path'];
       $git
         ->add($download_path)
         ->commit($message)

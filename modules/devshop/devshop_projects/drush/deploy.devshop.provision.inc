@@ -41,9 +41,9 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
  */
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
-  $environment = (object) d()->environment;
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
+  $environment = $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
   try {
@@ -121,8 +121,10 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
 
-  $environment = (object) d()->environment;
   $project_name = d()->project;
+  $project = (object) d("@project_{$project_name}")->project;
+  $environment = $project->environments[d()->environment];
+  $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
   $commands = array();
 
