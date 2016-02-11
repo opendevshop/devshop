@@ -30,7 +30,7 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
   $project_alias = '@project_' . d()->project;
   $project = d($project_alias);
 
-  if (!isset($project->project['settings']['git']['refs'][$git_ref])) {
+  if (!isset($project->settings['git']['refs'][$git_ref])) {
     $drush_command = "drush $project_alias provision-verify";
     return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', "Branch or tag '$git_ref' not found. Try running '$drush_command' to fetch new remote branches or tags.");
   }
@@ -45,6 +45,8 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   $project = (object) d("@project_{$project_name}")->project;
   $environment = $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
+
+  drush_log(print_r($environment, 1), 'debug');
 
   try {
 
