@@ -406,6 +406,9 @@ function template_preprocess_devshop_project_nav(&$vars){
   if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
     $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
   }
+
+  // Scrub git urls
+  $vars['safe_git_url'] = scrub_repo_url($project->git_url);
 }
 
 /**
@@ -433,4 +436,27 @@ function theme_devshop_ascii($string) {
   <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
 HTML;
 
+}
+
+/**
+ * Replaces a http git URL with an embedded password the *****
+ *
+ * @param $project_git_url
+ * @return string
+ */
+function scrub_repo_url($project_git_url){
+  $clean_project_url_input = $project_git_url;
+  $clean_project_url_output = $project_git_url;
+  $clean_project_url_haspassword = strchr($clean_project_url_input,':',7) && strrchr($clean_project_url_input,'@');
+  if($clean_project_url_haspassword){
+    /**
+     *  In this case the password will be in a syntactically static place:
+     *     protocol://username:password@fqdn-url
+     *   Since password can contain : or @ we have to look from left and from right for the delimiters.
+     **/
+    $clean_project_url_stopleft = strpos($clean_project_url_input,':',7)+1;
+    $clean_project_url_stopright = strrpos($clean_project_url_input,'@');
+    $clean_project_url_output = substr($clean_project_url_input,0,$clean_project_url_stopleft) . '****' . substr($clean_project_url_input,$clean_project_url_stopright);
+  }
+  return $clean_project_url_output;
 }
