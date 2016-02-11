@@ -17,7 +17,7 @@ function drush_acquia_post_provision_devshop_deploy($branch) {
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
-    $environment = $project->environments[d()->environment];
+    $environment = (object) $project->environments[d()->environment];
 
     // Respect environment settings.
     if ($environment->settings['deploy']['acquia_hooks'] != 1) {

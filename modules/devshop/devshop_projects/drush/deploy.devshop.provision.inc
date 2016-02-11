@@ -43,7 +43,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
   drush_log(print_r($environment, 1), 'debug');
@@ -125,7 +125,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
   $commands = array();
