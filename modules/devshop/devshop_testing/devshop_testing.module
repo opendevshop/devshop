@@ -222,35 +222,37 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
 
   // Look for behat feature files.
   // @TODO: Extract this to a hook to make tests types extensible.
-  $tests = array();
 
-  // Final check for repo root.
-  if (empty($environment->repo_root)){
-    $tests[] = 'Something is wrong. Environment not found.';
-  }
-  else {
-    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
-
-    $files = file_scan_directory($directory, '.feature', '/(\.\.?)$/');
-
-    $tests = array();
-    foreach ($files as $file) {
-      $value = str_replace($directory, '', $file->filename);
-      $tests[$value] = $file->basename;
-    }
-  }
-
-  $testing_form['tests_to_run'] = array(
-    '#type' => 'checkboxes',
-    '#options' => $tests,
-    '#title' => t('Tests to Run'),
-    '#default_value' => $settings->testing['tests_to_run'],
-    '#description' => t('Select the tests you wish to run.  Leave all unchecked to run all of them.'),
-  );
-
-  if (empty($environment_name)) {
-    $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
-  }
+  // @TODO: Figure out a better way to handle lists of tests per environment.
+//  $tests = array();
+//
+//  // Final check for repo root.
+//  if (empty($environment->repo_root)){
+//    $tests[] = 'Something is wrong. Environment not found.';
+//  }
+//  else {
+//    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
+//
+//    $files = file_scan_directory($directory, '.feature', array('.', '..'));
+//
+//    $tests = array();
+//    foreach ($files as $file) {
+//      $value = str_replace($directory, '', $file->filename);
+//      $tests[$value] = $file->basename;
+//    }
+//  }
+//
+//  $testing_form['tests_to_run'] = array(
+//    '#type' => 'checkboxes',
+//    '#options' => $tests,
+//    '#title' => t('Tests to Run'),
+//    '#default_value' => $settings->testing['tests_to_run'],
+//    '#description' => t('Select the tests you wish to run.  Leave all unchecked to run all of them.'),
+//  );
+//
+//  if (empty($environment_name)) {
+//    $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
+//  }
 
   $testing_form['behat_folder_path'] = array(
     '#type' => 'textfield',
