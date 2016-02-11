@@ -277,7 +277,7 @@ function devshop_task_get_messages($task_node) {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
 
       // @TODO: Here, we can check for obscure aegir errors and write our own.
       // devshop_check_errors($outputs[$command]['output']);
