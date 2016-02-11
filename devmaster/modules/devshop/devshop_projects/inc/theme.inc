@@ -428,7 +428,7 @@ function theme_devshop_ascii($string) {
   $styles = $theme->asCss();
   $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
 
-  drupal_set_html_head("<style>$styles</style>");
+  drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
   $output = $converter->convert($string);
 
