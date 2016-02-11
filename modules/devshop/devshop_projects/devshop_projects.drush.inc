@@ -257,19 +257,17 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 
   $git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$task->ref->environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));;
 
-  $return = db_update('hosting_devshop_project_environment')
-    ->fields(array(
-      'git_ref' => $git_ref,
-    ))
-    ->condition('project_nid', $task->ref->environment->project_nid)
-    ->condition('name', $task->ref->environment->name)
-    ->execute();
+  $args = array(
+    ':git' => $git_ref,
+    ':project' => $task->ref->environment->project_nid,
+    ':name' => $task->ref->environment->project_nid,
+  );
 
-  if ($return) {
+  if (db_query('UPDATE {hosting_devshop_project_environment} SET git_ref = :git WHERE project_nid = :project AND name = :name', $args)) {
     drush_log("[DEVSHOP] Git reference {$git_ref} saved to {$task->ref->environment->name} environment record.");
   }
   else {
-    return drush_set_error('[DEVSHOP] Environment update failed!');
+    return drush_set_error('[DEVSHOP] Environment update failed! Unable to save git ref to hosting_devshop_project_environment table.');
   }
 
   // Queue up a verification of the platform.
