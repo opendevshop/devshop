@@ -22,7 +22,7 @@ function drush_devshop_provision_provision_test() {
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->environment];
 
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
   // Get tests to run
