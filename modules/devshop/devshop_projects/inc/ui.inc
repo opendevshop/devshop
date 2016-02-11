@@ -59,7 +59,7 @@ HTML;
     }
 
     // Git URL
-    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
+    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => scrub_repo_url($project->git_url)));
 
     // Links to all environments
     $items = '';
