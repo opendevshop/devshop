@@ -58,9 +58,10 @@ function devshop_projects_node_load($nodes, $types) {
         $node->duration = format_interval(time() - $node->executed, 1);
       }
       elseif ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->duration = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+        $node->duration = t('Queued for %time',
+          array('%time' => format_interval(time() - $node->changed)));
       }
-      else  {
+      else {
         $node->duration = format_interval($node->delta, 1);
       }
 
@@ -70,9 +71,11 @@ function devshop_projects_node_load($nodes, $types) {
       $node->status_name = _hosting_parse_error_code($node->task_status);
 
       // Override "ago" text.
-      $node->ago = format_interval(time() - $node->executed, 1) .' '. t('ago');
+      $node->ago = format_interval(time() - $node->executed,
+          1) . ' ' . t('ago');
       if ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->ago = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+        $node->ago = t('Queued for %time',
+          array('%time' => format_interval(time() - $node->changed)));
       }
       elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
         $node->ago = format_interval(time() - $node->changed);
@@ -92,9 +95,6 @@ function devshop_projects_node_load($nodes, $types) {
       // Get desired URL
       $node->url = url("node/{$node->nid}");
 
-    // The URL that the branch or tag links to.
-    if ($project->git_provider == 'github') {
-      $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
     }
     // Projects
     elseif ($node->type == 'project') {
