@@ -619,10 +619,19 @@
                                 <li><label><?php print t('File-based Hooks'); ?></label></li>
                                 <li class="text"><p class="text-info">
                                         <i class="fa fa-question-circle"></i>
-                                        <?php print t("When code is deployed, the 'deploy' section of a .hooks or .hooks.yml file in your project. This is your %filename file.", array('%filename' => isset($environment->dothooks_file_name) ? $environment->dothooks_file_name : '')); ?></p></li>
+                                        <?php print t("When code is deployed, the scripts in the 'deploy' section of a .hooks or .hooks.yml file in your project is run."); ?></p></li>
+
+                              <?php if (!empty($environment->dothooks_file_name)): ?>
+                              <li class="text"><p class=\"text-info\">
+                                        <i class=\"fa fa-question-circle\"></i>
+                                        <?php print t("This is your &filename:", array(
+                                          '&filename' => $environment->dothooks_file_name
+                                        )); ?></p></li>
                                 <li>
                                     <pre><?php if (isset($environment->dothooks_file_path)) { print file_get_contents($environment->dothooks_file_path); } ?></pre>
                                 </li>
+
+                                <?php endif; ?>
                             <?php elseif ($hook_type == 'acquia_hooks'): ?>
                                 <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
                                 <li class="text"><p class="text-info">
