@@ -151,7 +151,12 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Clear the whole cache, unless option is false
   if ($cache) {
-    $commands[] = "drush {$environment->drush_alias} cache-clear all";
+    if (drush_drupal_major_version(d()->root) == 8) {
+      $commands[] = "drush {$environment->drush_alias} cache-rebuild";
+    }
+    else {
+      $commands[] = "drush {$environment->drush_alias} cache-clear all";
+    }
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
