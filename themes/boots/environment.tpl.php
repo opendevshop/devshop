@@ -392,11 +392,13 @@
           <label><?php print t('Browse'); ?></label>
           <div class="btn-group" role="group">
 
+            <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
             <!-- Browse Logs -->
             <a href="<?php print url("node/$environment->site/errors"); ?>" class="btn btn-text text-muted small" title="<?php print t('Error logs for this environment.'); ?>">
               <i class="fa fa-tasks"></i>
               <?php print t('Logs'); ?>
             </a>
+            <?php endif; ?>
 
             <!-- Browse Files -->
             <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
