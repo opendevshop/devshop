@@ -56,6 +56,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       devmaster.vm.provision "shell",
         path: 'vagrant-prepare-guest.sh'
+
+      # Make sure settings.php is readable by all users
+      devmaster.vm.provision "shell",
+        inline: "chmod +r /var/aegir/devmaster-" + settings["devshop_version"] + "/sites/" + settings["server_hostname"] + "/settings.php"
+
     end
   end
 
