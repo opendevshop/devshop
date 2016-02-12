@@ -22,10 +22,6 @@ function devshop_project_create_step_environments($form, &$form_state) {
     return $form;
   }
 
-  // this JS handles the form element hiding/showing
-  $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
-  drupal_add_js($path);
-
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project->nid,

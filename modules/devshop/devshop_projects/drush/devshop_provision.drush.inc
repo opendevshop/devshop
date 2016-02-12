@@ -119,9 +119,8 @@ function devshop_provision_pre_flight($platform_name = NULL){
  */
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
 
-  $project_name = d()->project;
-  $project = (object) d("@project_{$project_name}")->project;
-  $environment = (object) $project->environments[d()->environment];
+  $environment = d()->environment;
+  $project = d()->project;
 
   return <<<PHP
 
@@ -167,9 +166,8 @@ function devshop_provision_provision_services() {
  */
 function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
-  $project_name = d()->project;
-  $project = (object) d("@project_{$project_name}")->project;
-  $environment = (object) $project->environments[d()->environment];
+  $environment = d()->environment;
+  $project = d()->project;
 
   if (empty($environment) || empty($project)) {
     return;
@@ -198,9 +196,8 @@ PHP;
  */
 function devshop_provision_provision_nginx_vhost_config($data) {
 
-  $project_name = d()->project;
-  $project = (object) d("@project_{$project_name}")->project;
-  $environment = (object) $project->environments[d()->environment];
+  $environment = d()->environment;
+  $project = d()->project;
 
   if (empty($environment) || empty($project)) {
     return;
