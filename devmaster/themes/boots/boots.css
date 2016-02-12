@@ -15,8 +15,8 @@ body.admin-menu .navbar-static-top {
 .btn-env-buttons {
   min-width: 92px;
 }
-#navbar .task-list.btn-groupbutton {
-  padding: 1em;
+#navbar .task-list.btn-group {
+  padding: .5em;
 }
 #navbar .active-task {
   color: #ffffaa;
