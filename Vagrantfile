@@ -61,6 +61,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       devmaster.vm.provision "shell",
         inline: "chmod +r /var/aegir/devmaster-" + settings["devshop_version"] + "/sites/" + settings["server_hostname"] + "/settings.php"
 
+      # Enable some development modules
+      devmaster.vm.provision "shell",
+        inline: "sudo su - aegir -c 'drush @hostmaster en devel admin_devel -y'"
+
     end
   end
 
