@@ -123,6 +123,11 @@ function devshop_hosting_menu_alter(&$items) {
 //    'type' => MENU_DEFAULT_LOCAL_TASK,
 //  );
 
+
+  $items['hosting/sites']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/platforms']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/clients']['type'] = MENU_LOCAL_TASK;
+
   $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
 
 }
