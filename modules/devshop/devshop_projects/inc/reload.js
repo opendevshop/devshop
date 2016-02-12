@@ -1,16 +1,13 @@
 (function ($) {
     Drupal.behaviors.devshopReload = {
         attach: function (context, settings) {
-            setTimeout("checkProject()", Drupal.settings.devshopReload.delay);
-
-            var checkProject =  function() {
-                console.log('Checking...');
-                jQuery.get('/projects/add/status/' + Drupal.settings.devshopReload.type, null, reloadPage, 'json');
-            }
-
-            var reloadPage =  function(data){
-                // Populate versions and install profiles
-                jQuery.each(data.tasks, function(i, platform) {
+            setTimeout('Drupal.behaviors.devshopReload.checkProject()', Drupal.settings.devshopReload.delay);
+        },
+        checkProject: function() {
+            console.log('Checking...');
+            var url = '/projects/add/status/' + Drupal.settings.devshopReload.type;
+            $.getJSON(url, function (data) {
+                $.each(data, function (i, platform) {
                     if (platform.version) {
                         jQuery('#version-' + i).html(platform.version);
                     }
@@ -27,10 +24,9 @@
                 if (data.tasks_complete){
                     document.location.reload();
                 } else {
-                    setTimeout("checkProject()", Drupal.settings.devshopReload.delay);
-
+                    setTimeout("Drupal.behaviors.devshopReload.checkProject()", Drupal.settings.devshopReload.delay);
                 }
-            }
+            });
         }
     };
 }(jQuery));
