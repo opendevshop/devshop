@@ -107,7 +107,7 @@ $environment_name:
 
 YML;
 
-    $behat_yml_file = $full_behat_folder_path . "/behat.$environment.yml";
+    $behat_yml_file = $full_behat_folder_path . "/behat.$environment_name.yml";
     file_put_contents($behat_yml_file, $behat_yml);
 
     // Run behat tests for each feature.
@@ -134,7 +134,7 @@ YML;
       // The extra profile is used so we can dynamically set the URL and drush alias of the behat.yml.
       // the "colors" option is to force it to output ANSI colors. "format-settings" "expand: true" is so
       // Behat will output all of the steps when using "Scenario Outlines".
-      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}'";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment_name --colors --format-settings='{\"expand\": true}'";
 
       // Run behat command
       devshop_drush_process($cmd, $full_behat_folder_path, 'DevShop Testing');
