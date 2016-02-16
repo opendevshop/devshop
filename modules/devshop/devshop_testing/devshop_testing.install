@@ -5,6 +5,13 @@
  */
 
 /**
+ * Implements hook_enable()
+ */
+function devshop_testing_enable() {
+  drupal_set_message('The DevShop testing system has been enabled. Visit your projects settings pages to enable testing.');
+}
+
+/**
  * Implementation of hook_schema().
  */
 function devshop_testing_schema() {
