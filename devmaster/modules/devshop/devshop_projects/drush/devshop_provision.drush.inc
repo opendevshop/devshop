@@ -51,49 +51,6 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('deploy'),
   );
-  $items['provision-devshop-pull'] = array(
-    'description' => 'Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'update' => 'Run update.php after code pull.',
-      'revert' => 'Revert all features after code pull.',
-      'cache' => 'Clear all caches after code pull.',
-      'reset' => 'Runs "git reset --hard" before pulling.',
-      'force' => 'Runs always update,revert and cache options',
-    ),
-    'arguments' => array(
-      'environments' => 'A list of environment names to Pull Code to.',
-    ),
-    'examples' => array(
-      'drush @project_mysite provision-devshop-pull dev test --cache' => 'Triggers a git pull and a clear cache command on @project_mysite\'s dev and test environments.',
-    ),
-    'aliases' => array('pdp'),
-  );
-  $items['provision-devshop-commit'] = array(
-    'description' => 'Export the site\'s Features and commit the result.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'message' => 'Add a commit message',
-      'revert' => 'Force revert all features after exporting and committing.',
-    ),
-    'arguments' => array(
-      'environment' => 'The name of the environment to commit from.',
-    ),
-    'examples' => array(
-      'drush @project_mysite provision-devshop-commit dev --message="changed some settings"' => 'Recreates and Commits all features from the dev environment of @project_mysite with an additional commit message.',
-    ),
-    'aliases' => array('pdc'),
-  );
-  /* @TODO: Make devshop dl an addon module.
-  $items['provision-devshop-dl'] = array(
-    'description' => 'Download modules.  This is just a wrapper for dl, it is here for hostmaster.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'options' => array(
-      'modules' => 'The list of modules to DL.',
-    ),
-    'aliases' => array('pdl'),
-  );
-  */
   $items['provision-test'] = array(
     'description' => 'Run a set of tests.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -162,14 +119,14 @@ function devshop_provision_pre_flight($platform_name = NULL){
  */
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
 
-  $environment = d()->environment['name'];
-  $project = d()->environment['project_name'];
+  $environment = d()->environment;
+  $project = d()->project;
 
   return <<<PHP
 
   # This site's devshop project name and environment name.
-  \$_SERVER['DEVSHOP_ENVIRONMENT'] = '$environment';
-  \$_SERVER['DEVSHOP_PROJECT'] = '$project';
+  \$_SERVER['DEVSHOP_ENVIRONMENT'] = '{$environment->name}';
+  \$_SERVER['DEVSHOP_PROJECT'] = '{$project->name}';
 
   # Include devshop environment configuration settings, if there is any.
   if (file_exists(__DIR__ . '/../all/settings.devshop.php')) {
@@ -209,8 +166,8 @@ function devshop_provision_provision_services() {
  */
 function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
-  $environment = d()->environment['name'];
-  $project = d()->environment['project_name'];
+  $environment = d()->environment;
+  $project = d()->project;
 
   if (empty($environment) || empty($project)) {
     return;
@@ -218,8 +175,8 @@ function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
   return <<<PHP
   # Saving project and environment server variables
-  SetEnv DEVSHOP_PROJECT $project
-  SetEnv DEVSHOP_ENVIRONMENT $environment
+  SetEnv DEVSHOP_PROJECT {$project->name}
+  SetEnv DEVSHOP_ENVIRONMENT {$environment->name}
 
 PHP;
 }
@@ -239,8 +196,8 @@ PHP;
  */
 function devshop_provision_provision_nginx_vhost_config($data) {
 
-  $environment = d()->environment['name'];
-  $project = d()->environment['project_name'];
+  $environment = d()->environment;
+  $project = d()->project;
 
   if (empty($environment) || empty($project)) {
     return;
@@ -248,8 +205,8 @@ function devshop_provision_provision_nginx_vhost_config($data) {
 
   return <<<PHP
   # Saving project and environment server variables
-  fastcgi_param DEVSHOP_PROJECT $project;
-  fastcgi_param DEVSHOP_ENVIRONMENT $environment;
+  fastcgi_param DEVSHOP_PROJECT {$project->name};
+  fastcgi_param DEVSHOP_ENVIRONMENT {$environment->name};
 
 PHP;
 }
@@ -299,9 +256,21 @@ function drush_devshop_provision_pre_updatedb() {
 /**
  * Run a Symfony Process saving to drush logs.
  */
-function devshop_drush_process($command, $cwd = null, $label = 'Process') {
+function devshop_drush_process($command, $cwd = null, $label = 'Process', $env = array()) {
   drush_log("[$label] $command", 'devshop_command');
-  $process = new Process($command, $cwd);
+
+  // Merge in env vars, inheriting the CLI's
+  if (is_array($env)) {
+    $env = array_merge($_SERVER, $env);
+  }
+  else {
+    $env = $_SERVER;
+  }
+
+  // Make sure colors always come through
+  $env['TERM'] = 'xterm';
+
+  $process = new Process($command, $cwd, $env);
   $process->setTimeout(NULL);
   $exit_code = $process->run(function ($type, $buffer) {
     if (Process::ERR === $type) {
