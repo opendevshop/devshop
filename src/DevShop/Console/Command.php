@@ -263,7 +263,6 @@ abstract class Command extends BaseCommand
 
     // Detect GitHub limit issues and just pass.
     if (strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
-      $this->output->writeln();
       return TRUE;
     }
 
