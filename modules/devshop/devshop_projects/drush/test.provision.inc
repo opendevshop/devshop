@@ -52,9 +52,50 @@ function drush_devshop_provision_provision_test() {
       return drush_set_error('DEVSHOP_MISSING_FILE', dt('repo_root does not exist.'));
     }
     // If no file at behat bin path, error.
+    $tests_folder = $repo_path  . '/' .$behat_folder_path;
     $yml_path = $repo_path  . '/' .$behat_folder_path . '/behat.yml';
     if (!file_exists($yml_path)){
-      return drush_set_error('DEVSHOP_MISSING_FILE', dt('Please add a file at %file', array('%file' => $yml_path)));
+
+      $message = <<<TXT
+Your project is not yet ready to run Behat tests. Please follow the following steps:
+
+  1. Go to (or create) the '!path' in your repo.  This path is editable in your project settings.
+  2. Create a composer.json and behat.yml files according to the instructions at http://behat-drupal-extension.readthedocs.org/en/3.1/localinstall.html
+
+    NOTE: You do not have to edit the "base_url" or "drush alias" properties in behat.yml. DevShop will automatically set those for each environment at runtime.
+
+    However, if you want to run behat test manually from the CLI using bin/behat, you will have to tweak your behat.yml or just use the one that gets generated: behat.ENVIRONMENT_NAME.yml using the --config flag.
+
+  3. Run `bin/behat --init` to create the files needed to run tests. You will see:
+
+    +d features - place your *.feature files here
+    +d features/bootstrap - place your context classes here
+    +f features/bootstrap/FeatureContext.php - place your definitions, transformations and hooks here
+
+  4. Run `bin/behat` to try to run all your tests.  You should see:
+
+    No scenarios
+    No steps
+    0m0.00s (9.24Mb)
+
+  5. Create a new test in the "features" folder named "homepage.feature" with the following:
+
+    Feature: Homepage.
+      Scenario: Visit homepage.
+        Given I am on the homepage
+        Then I should see "No front page content has been created yet."
+
+  6. To test the test, edit `behat.yml` and set `base_url` to your site's URL, then run `bin/behat`.
+  7. Add the required files and folders to git: composer.json composer.lock behat.yml features
+  8. Add a .gitignore file that ignores the `vendor` and `bin` folders.
+
+DevShop will automatically run `composer install` in the test folder before running the tests, so you shouldn't commit the bin/behat file, or the vendor folder.
+
+TXT;
+
+
+      drush_log(dt($message, array('!path' => $behat_folder_path)), 'error');
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('Your project is not yet ready to run Behat tests. Please follow the instructions and try again.'));
     }
 
     // Prepare path and command
