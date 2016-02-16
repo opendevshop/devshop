@@ -81,6 +81,7 @@ function devshop_testing_hosting_tasks() {
     'dialog' => TRUE,
     'task_permitted' => TRUE,
     'access callback' => 'devshop_hosting_task_menu_access',
+    'icon' => 'pencil-square-o',
   );
 
   return $tasks;
