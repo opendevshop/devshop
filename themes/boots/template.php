@@ -1,4 +1,10 @@
 <?php
+
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+
 /**
  * Implements hook_theme()
  */
@@ -151,6 +157,12 @@ function boots_preprocess_environment(&$vars) {
         '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
       )),
       'type' => 'warning',
+    );
+  }
+  foreach ($environment->warnings as $warning) {
+    $vars['warnings'][] = array(
+      'text' => $warning['text'],
+      'type' => $warning['type'],
     );
   }
 

@@ -19,15 +19,20 @@ function drush_devshop_provision_pre_provision_test(){
  * Implements the provision-devshop-test command.
  */
 function drush_devshop_provision_provision_test() {
+
+  $project_name = d()->project;
+  $project = (object) d("@project_{$project_name}")->project;
+  $environment = (object) $project->environments[d()->environment];
+
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
   // Get tests to run
-  $type = drush_get_option('test-type', d()->environment['settings']['testing']['test_type']);
+  $type = drush_get_option('test-type', $environment->settings['testing']['test_type']);
 
-  if (d()->environment['settings']['testing']['tests_to_run'] === NULL) {
+  if ($environment->settings['testing']['tests_to_run'] === NULL) {
     $tests = array();
   }
   else {
-    $tests = array_filter(d()->environment['settings']['testing']['tests_to_run']);
+    $tests = array_filter($environment->settings['testing']['tests_to_run']);
   }
   $tests_to_run = drush_get_option('tests-to-run', $tests);
 
@@ -39,10 +44,7 @@ function drush_devshop_provision_provision_test() {
   }
   elseif ($type == 'behat') {
     // Get paths from options or site context.
-    $repo_path = d()->environment['repo_root'];
-
-    $project_context = "project_" . d()->project;
-    $project = (object) d($project_context)->project;
+    $repo_path = $environment->repo_root;
     $behat_folder_path = drush_get_option('behat-folder-path', $project->settings['testing']['behat_folder_path']);
 
     // If no repo at that path, error.
@@ -74,8 +76,8 @@ function drush_devshop_provision_provision_test() {
     devshop_drush_process('composer install', $full_behat_folder_path, 'DevShop Testing');
 
     // Write custom behat.yml to temporary folder.
-    $environment = d()->environment['name'];
-    $url = d()->environment['url'];
+    $environment_name = $environment->name;
+    $url = $environment->url;
     $alias = d()->name;
     $root = d()->root;
 
@@ -84,7 +86,7 @@ function drush_devshop_provision_provision_test() {
     $uri = d()->uri;
 
     if (!empty($username)) {
-      $url = d()->environment['ssl_enabled']?
+      $url = $environment->ssl_enabled?
         "https://$username:$password@$uri":
         "http://$username:$password@$uri";
     }
@@ -92,7 +94,7 @@ function drush_devshop_provision_provision_test() {
     $behat_yml .= <<<YML
 
 # DevShop Environment Profile
-$environment:
+$environment_name:
   extensions:
     Behat\MinkExtension:
       base_url: $url
@@ -105,7 +107,7 @@ $environment:
 
 YML;
 
-    $behat_yml_file = $full_behat_folder_path . "/behat.$environment.yml";
+    $behat_yml_file = $full_behat_folder_path . "/behat.$environment_name.yml";
     file_put_contents($behat_yml_file, $behat_yml);
 
     // Run behat tests for each feature.
@@ -132,7 +134,7 @@ YML;
       // The extra profile is used so we can dynamically set the URL and drush alias of the behat.yml.
       // the "colors" option is to force it to output ANSI colors. "format-settings" "expand: true" is so
       // Behat will output all of the steps when using "Scenario Outlines".
-      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment --colors --format-settings='{\"expand\": true}'";
+      $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment_name --colors --format-settings='{\"expand\": true}'";
 
       // Run behat command
       devshop_drush_process($cmd, $full_behat_folder_path, 'DevShop Testing');

@@ -28,9 +28,9 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
   }
 
   $project_alias = '@project_' . d()->project;
-  $project = d($project_alias);
+  $project = (object) d($project_alias)->project;
 
-  if (!isset($project->project['settings']['git']['refs'][$git_ref])) {
+  if (!isset($project->settings['git']['refs'][$git_ref])) {
     $drush_command = "drush $project_alias provision-verify";
     return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', "Branch or tag '$git_ref' not found. Try running '$drush_command' to fetch new remote branches or tags.");
   }
@@ -41,10 +41,12 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
  */
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
-  $environment = (object) d()->environment;
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
+  $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
+
+  drush_log(print_r($environment, 1), 'debug');
 
   try {
 
@@ -121,8 +123,10 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
 
-  $environment = (object) d()->environment;
   $project_name = d()->project;
+  $project = (object) d("@project_{$project_name}")->project;
+  $environment = (object) $project->environments[d()->environment];
+  $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
   $commands = array();
 
@@ -147,7 +151,12 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Clear the whole cache, unless option is false
   if ($cache) {
-    $commands[] = "drush {$environment->drush_alias} cache-clear all";
+    if (drush_drupal_major_version(d()->root) == 8) {
+      $commands[] = "drush {$environment->drush_alias} cache-rebuild";
+    }
+    else {
+      $commands[] = "drush {$environment->drush_alias} cache-clear all";
+    }
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');

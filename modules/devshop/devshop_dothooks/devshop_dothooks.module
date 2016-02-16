@@ -20,6 +20,10 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
   $yaml = new Parser();
   $hooks_path = '';
 
+  if (!isset($environment->settings->deploy['dothooks']) || empty($environment->settings->deploy['dothooks'])){
+    return;
+  }
+
   if (file_exists($environment->repo_root . '/.hooks.yaml')) {
     $hooks_file = '.hooks.yaml';
     $hooks_path = $environment->repo_root . '/.hooks.yaml';
@@ -33,20 +37,28 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
     $hooks_path = $environment->repo_root . '/.hooks';
   }
   else {
+    $environment->warnings[] = array(
+      'text' => t('Unable to find a file named .hooks, .hooks.yml, or .hooks.yaml. Add one or disable "Run deploy commands in the .hooks file" in project or environment settings.'),
+      'type' => 'warning',
+    );
     return;
   }
+
+  $environment->dothooks_file_name = $hooks_file;
+  $environment->dothooks_file_path = $hooks_path;
 
   // Attempt to parse
   try {
     $environment->dothooks = $yaml->parse(file_get_contents($hooks_path));
-    $environment->dothooks_file_name = $hooks_file;
-    $environment->dothooks_file_path = $hooks_path;
   }
   catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
-    drupal_set_message(t('Invalid YAML in !file: !message', array(
-     '!file' => $hooks_path,
-     '!message' => $e->getMessage(),
-    )));
+    $environment->warnings[] = array(
+      'text' => t('Invalid YAML in !file: !message', array(
+        '!file' => $hooks_path,
+        '!message' => $e->getMessage(),
+      )),
+      'type' => 'error',
+    );
   }
 }
 
