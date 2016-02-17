@@ -8,7 +8,7 @@ function aegir_features_hosting_tasks() {
         'title' => t('Recreate Features'),
         'access callback' => 'devshop_hosting_task_menu_access',
         'dialog' => TRUE,
-        'icon' => 'refresh'
+        'icon' => 'refresh',
     );
     return $tasks;
 }
