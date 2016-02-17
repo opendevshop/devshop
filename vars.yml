@@ -1,6 +1,6 @@
 
 # The version to install.
-devshop_version:              0.x
+devshop_version:              0.8.1
 
 # The version of drush to install.
 # This is passed directly to the `composer global require` command:
