@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.8.1 (February 17, 2016)
+
+HotFix release.
+
+7 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.8.0...0.8.1
+5 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.8.0...0.8.1
+
+- Fixed install.sh bug that prevented supervisor jobs from being setup.
+- Added more screenshots to the documentation.
+- If Git URLs have passwords, scrub them before showing in the web browser.  (Thanks @llwp!)
+- A small typo fix in the README.md (Thanks, @RealLukeMartin!)
+
 ## 0.8.0 (February 10, 2016)
 
 313 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.7.4...0.8.0
