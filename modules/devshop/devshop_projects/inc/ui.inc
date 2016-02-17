@@ -244,6 +244,29 @@ function devshop_environment_links($environment) {
     }
   }
 
+  // Load test task, if it exists
+  if ($tasks['test']) {
+    $href = "hosting_confirm/{$environment->site}/site_test";
+    $url = url($href, array(
+      'query' => array(
+        'token' => drupal_get_token($user->uid),
+      )
+    ));
+    $title = $tasks['test']['title'];
+    if (isset($tasks['test']['icon'])) {
+      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
+    }
+    else {
+      $icon = '';
+    }
+    $items[] = <<<HTML
+      <a href="$url">
+            $icon $title
+      </a>
+HTML;
+    $items[] = '<div class="divider"></div>';
+  }
+
   // Add aegir items to items
   if (!empty($aegir_items)) {
     $items = array_merge($items, $aegir_items);
