@@ -5,6 +5,10 @@ DevShop is installed with a standalone <a href="https://raw.githubusercontent.co
 
 The script is designed to work on any Debian or RedHat/CentOS server. Please file issues if you have any problems with it.
 
+Our git tags are our releases.  0.x the current branch.  
+
+If you wish to try a tagged release, see https://github.com/opendevshop/devshop/releases for the latest.
+
 Setup
 -----
 
