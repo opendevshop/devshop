@@ -700,7 +700,13 @@ sites/all/drush/drushrc.php
 
     if (strpos($environment->git_status, 'deleted:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {
       $icon = 'warning';
-      $label = t('deleted Files');
+      $label = t('Deleted Files');
+      $item_class = 'danger';
+    }
+
+    if (strpos($environment->git_status, 'have diverged') !== FALSE) {
+      $icon = 'exchange fa-rotate-90';
+      $label = t('Diverged');
       $item_class = 'danger';
     }
 
