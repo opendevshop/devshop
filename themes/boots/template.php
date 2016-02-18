@@ -152,7 +152,7 @@ function boots_preprocess_environment(&$vars)
   $vars['token'] = drupal_get_token($user->uid);
 
   // Git information
-  $path = $environment->repo_root . '/.git';
+  $path = $environment->repo_root;
   if (file_exists($path)) {
 
     // Timestamp of last commit.
