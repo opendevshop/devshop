@@ -106,6 +106,10 @@ function devshop_projects_devshop_environment_actions($environment) {
       } elseif (!$environment->settings->locked) {
         $items[] = 'disable';
       }
+      else {
+        $items[] = 'disable';
+        $items[] = 'delete';
+      }
     }
 
     $items[] = '<div class="divider"></div>';
