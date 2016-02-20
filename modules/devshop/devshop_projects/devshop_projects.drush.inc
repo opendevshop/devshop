@@ -16,12 +16,14 @@ function devshop_projects_hosting_task_update_status($task, $status) {
   if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
     $site->environment->last_task = $task->nid;
 
+    // @TODO: Look for environment_target on clone task, so we can update that environment's last task as well.
+
     // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
     // If last task is a successful verify or reset password, load the task before that as the "last task".
     if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
 
       // If this object is a platform, lookup the latest tasks from the site node.
-      $tasks_list = hosting_get_tasks('rid', $site->type == 'site'? $site->nid: $site->site);
+      $tasks_list = hosting_get_tasks('rid', $site->nid);
 
       // The first item in $tasks should be this task.
       // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
@@ -61,10 +63,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
 function drush_devshop_projects_pre_hosting_task()
 {
 
-  drush_log(dt("[DEVSHOP] Hello. Pre-Task check..."));
-
   $task =& drush_get_context('HOSTING_TASK');
-
 
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
   if ($task->task_type == 'download') {
@@ -134,12 +133,18 @@ function drush_devshop_projects_pre_hosting_task()
  */
 function drush_devshop_platform_verify(){
 
-  drush_log(dt("[DEVSHOP] Hello. Verifying Platform..."));
+  drush_log(dt("[DEVSHOP] Hello. Preparing aegir platform codebase..."));
 
   // Verify Platform
   $task =& drush_get_context('HOSTING_TASK');
 
   $platform = $task->ref;
+
+  // If for some reason we still do not have an environment... bail.
+  if (empty($platform->environment)) {
+    return drush_set_error('DEVSHOP_ERROR', dt('Unable to determine environment. Please contact your administrator.'));
+  }
+
   $root = $platform->publish_path;
   $git_ref = $platform->environment->git_ref;
 
@@ -147,9 +152,6 @@ function drush_devshop_platform_verify(){
   $drupal_path = $platform->project->drupal_path;
 
   $create_branch = FALSE;
-
-  $output = '';
-  $commands = array();
 
   //Remove drupal_path to clone.
   if ($drupal_path) {
@@ -164,44 +166,38 @@ function drush_devshop_platform_verify(){
 
   // Check if the platform code exists. If it doesn't, clone it.
   if (!is_dir($root)) {
-    drush_log(dt("[DEVSHOP] No Repo found at !root.  Cloning from !git", array('!git' => $git_remote, '!root' => $root)));
 
-    // Build the clone command string
-    $commands[] = "git clone --recursive $git_remote $root";
+    // Clone the repo.
+    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
-    // If a branch is selected, add --branch to the command.
+    // If there is "site_to_clone", checkout that site's git ref.
+    // This is done for Pull Request Environments. When a PR comes in, we want
+    // to clone the site to an identical platform first. This will always succeed.
+    // Then, we trigger a deployment to the new branch.
+    //
+    // This ensures that initial pull request environments run the same "deploy"
+    // hooks. It means we don't have to hack into the "clone" task to run deploy
+    // hooks anymore.
+    if ($platform->environment->settings->site_to_clone) {
+      $site = node_load($platform->environment->settings->site_to_clone);
+      $git_ref = $site->environment->git_ref;
+    }
+
+    // If there is a git ref, check it out.
+    // We don't do this on git clone, because it could be a tag.
     // @TODO: Won't the platform ALWAYS have a git_branch?
     if ($git_ref) {
-      $commands[] = "git checkout $git_ref";
+      devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
     }
   }
-  // @TODO: Remove.  This is handled by the "deploy" task, right?
-//  // If the platform has been verified and has a branch and git url
-//  else {
-//    drush_log(dt("[DEVSHOP] Existing Repo found at !root.  Checking out branch !branch", array('!branch' => $git_ref, '!root' => $root)));
-//
-//    // Run git fetch to ensure we have all branches and tags
-//    $output .= _devshop_projects_git_execute('git fetch', $root);
-//
-//    // Build the command string
-//    $commands[] = "git checkout $git_ref";
-//  }
-
-  // Execute clone or checkout.
-  $output .=  _devshop_projects_git_execute($commands, $root);
 
   // If branch needs to be created (for "fork environment")
   if ($create_branch) {
-    $commands = array();
-    // Checkout the new branch.
-    $commands[] = "git checkout -b {$platform->environment->git_ref}";
+    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", dt('Creating a new branch.'));
 
     // Push the branch
-    $commands[] = "git push -u origin {$platform->environment->git_ref}";
-    $output .=  _devshop_projects_git_execute($commands, $root);
+    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", dt('Pushing new branch.'));
   }
-
-  return $output;
 }
 
 /**
@@ -287,10 +283,17 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
-    drush_log('[DEVSHOP] Platform Verification complete.', 'notice');
-    
+    drush_log('[DevShop] Codebase Clone Complete... Preparing next steps.', 'devshop_log');
+
     // If this platform isn't in a project, bail.
     $platform = $task->ref;
+    $project = $task->ref->project;
+
+    // @TODO: On first verify, "environment" can be missing. Not sure why, yet.
+    if (empty($platform->environment) && isset($project->environments[$task->project->environment])) {
+      $platform->environment = $project->environments[$task->project->environment];
+    }
+
     if (empty($platform->project)){
       drush_log('[DEVSHOP] No project found for this platform.', 'notice');
       return;
@@ -303,16 +306,15 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     }
 
     // If the platform has a site already, trigger verification, then bail.
-    if ($platform->environment->site){
+    if (!empty($platform->environment->site)){
       drush_log('[DEVSHOP] Platform already has a site.', 'notice');
       // hosting_add_task($platform->environment->site, 'verify');
       return;
     }
     else {
-      drush_log('[DEVSHOP] No site found for this environment. Creating...', 'notice');
 
       // Check for site to clone
-      if ($platform->environment->settings->site_to_clone) {
+      if (!empty($platform->environment->settings->site_to_clone)) {
         $site = node_load($platform->environment->settings->site_to_clone);
         $args['target_platform'] = $platform->nid;
 
@@ -321,11 +323,21 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
         // Use the default database server for the project.
         $args['new_db_server'] = $site->db_server;
+        $args['environment_target'] = $platform->environment->name;
         drush_log('[DEVSHOP] Cloning environment: ' . $platform->environment->name);
 
         // Queue the Cloning of the site.
         // @see devshop_projects_post_hosting_import_task().
-        hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
+
+        // If, for some reason, we are still missing names, abort.
+        if (empty($site->environment->name) || empty($platform->environment->name)) {
+          return drush_set_error('DEVSHOP_ERROR', 'Source or target environment not found. Contact your systems administrator.');
+        }
+
+        $task = hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
+
+        $link = l(t('View Logs'), "node/{$task->nid}");
+        drush_log("[DevShop] Environment '{$site->environment->name}' is scheduled to be cloned to '{$platform->environment->name}'. $link", 'devshop_log');
       }
       else {
 
@@ -336,8 +348,14 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         else {
           $db_server = $platform->project->settings->default_environment['db_server'];
         }
-        devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
-        drush_log('[DEVSHOP] Site Created! Please wait for it to be installed. ');
+
+        if (empty($platform->environment->name)) {
+          return drush_set_error('DEVSHOP_ERROR', 'Missing environment name. Unable to create new site.');
+        }
+        else {
+          $new_site = devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
+          drush_log("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. Please wait...", 'devshop_log');
+        }
       }
     }
   }
@@ -349,7 +367,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
  * Ensures that cloned sites that are on project platforms inherit the project.
  */
 function devshop_projects_post_hosting_clone_task($task, $data) {
-  devshop_projects_post_hosting_import_task($task, $data);
+//  devshop_projects_post_hosting_import_task($task, $data);
 }
 
 /**
@@ -361,29 +379,48 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'site') {
-    drush_log('[DEVSHOP] Existing site has been imported!');
-
     $site = $task->ref;
     $platform = node_load($site->platform);
 
     if ($platform->environment->name) {
 
       // Save environment record.
-      drush_log('[DEVSHOP] Project & Environment found:' . $platform->project->name . '.' . $platform->environment->name);
+      drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
       $return = db_query('UPDATE {hosting_devshop_project_environment} SET site = %d WHERE project_nid = %d AND name = "%s"', $site->nid, $platform->project->nid, $platform->environment->name);
-      drush_log('[DEVSHOP] Site saved to environment.');
+      drush_log("Saved {$platform->environment->name} in project {$platform->project->name}.", 'devshop_ok');
 
       // Save aliases if needed.
       if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
         $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
 
         $site->aliases[] = $domain;
-        drush_log('[DEVSHOP] Saving domain to the environment:' . $domain);
+        drush_log('[DevShop Environment] Saving environment data', 'devshop_command');
+        $site->no_verify = TRUE;
         node_save($site);
+
       }
 
-      // Queue a verify task.
-      hosting_add_task($site->nid, 'verify');
+      // If we have been cloned from another environment, run a deploy task.
+      if (!empty($platform->environment->settings->site_to_clone)) {
+
+        // Trigger a verify of the site, so the alias has project information.
+        hosting_add_task($site->nid, 'verify');
+
+        // Trigger a deploy using the project's default hooks.
+        $args = $platform->project->settings->deploy['default_hooks'];
+        $args['git_ref'] = $platform->environment->git_ref;
+
+        // Handle a Pull Request. If there is one, we want to deploy to the PR branch.
+        if (!empty($platform->environment->github_pull_request->pull_request_object->head->ref)) {
+          $args['git_ref'] = $platform->environment->github_pull_request->pull_request_object->head->ref;
+        }
+
+        hosting_add_task($site->nid, 'devshop-deploy', $args);
+
+      } else {
+        // Trigger a verify of the site, so the alias has project information.
+        hosting_add_task($site->nid, 'verify');
+      }
     }
   }
 }
