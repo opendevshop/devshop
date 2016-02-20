@@ -82,6 +82,25 @@ class Application extends BaseApplication
 \____/| .__/ \___|_| |_| |____/ \___| \_/  |____/|_| |_|\___/| .__/
       |_|             http://getdevshop.com                  |_|  </>';
 
+
+  /**
+   * Initializes all the composer commands
+   */
+  protected function getDefaultCommands()
+  {
+    $commands = parent::getDefaultCommands();
+    $commands[] = new Command\Status();
+    $commands[] = new Command\Login();
+    $commands[] = new Command\Install();
+    $commands[] = new Command\InstallDevmaster();
+    $commands[] = new Command\DevmasterTest();
+    $commands[] = new Command\Upgrade();
+    $commands[] = new Command\RemoteInstall();
+    $commands[] = new Command\SelfUpdate();
+
+    return $commands;
+  }
+
   public function __construct($version, $release_date)
   {
 
@@ -390,23 +409,6 @@ class Application extends BaseApplication
     return self::$logo;
   }
 
-  /**
-   * Initializes all the composer commands
-   */
-  protected function getDefaultCommands()
-  {
-    $commands = parent::getDefaultCommands();
-    $commands[] = new Command\Status();
-    $commands[] = new Command\Login();
-    $commands[] = new Command\Install();
-    $commands[] = new Command\InstallDevmaster();
-    $commands[] = new Command\DevmasterTest();
-    $commands[] = new Command\Upgrade();
-    $commands[] = new Command\RemoteInstall();
-    $commands[] = new Command\SelfUpdate();
-
-    return $commands;
-  }
 }
 //
 //    $commands[] = new Command\AboutCommand();
