@@ -434,7 +434,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     $return['acquia_hooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run Acquia Cloud Hooks'),
-      '#description' => '<p>' . t('Acquia Cloud Hooks were detected in your project.  Check this box to run all acquia cloud hooks.') . '</p><p>' . t('Available cloud hooks are: "post-code-update" when deploying code via git, "post-code-deploy" when deploying code manually, "post-db-copy" when running a sync task with a database, and "post-files-copy" when running a sync task with files.') . '</p>',
+      '#description' => '<p>' . t('Acquia Cloud Hooks were detected in your project.  Check this box to run all acquia cloud hooks.') . '</p><p>' . t('Available cloud hooks are: "post-code-update" when deploying code via git push, "post-code-deploy" when deploying code manually, "post-db-copy" when running a sync task with a database, and "post-files-copy" when running a sync task with files.') . '</p>',
       '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['acquia_hooks']: $environment->settings->deploy['acquia_hooks'],
     );
   }

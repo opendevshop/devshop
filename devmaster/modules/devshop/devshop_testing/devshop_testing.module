@@ -9,28 +9,48 @@
 /**
  * Implements hook_menu()
  */
-function devshop_testing_menu() {
-  $items['devshop_tests/%'] = array(
-    'title' => 'Test Results',
-    'page callback' => 'devshop_testing_results_page',
-    'page arguments' => array(1),
-    'file' => 'pages.inc',
-    'access arguments' => array('access test results'),
-  );
-  $items['devshop_tests/%/%/status'] = array(
-    'title' => 'Test Status',
-    'page callback' => 'devshop_testing_results_status',
-    'page arguments' => array(1, 2),
-    'file' => 'pages.inc',
-    'access arguments' => array('access test results'),
-  );
-  $items['devshop_tests/ansi-to-html'] = array(
-    'page callback' => 'devshop_testing_results_page_raw',
-    'page arguments' => array(2),
-    'file' => 'pages.inc',
-    'access arguments' => array('access test results'),
-  );
-  return $items;
+function devshop_testing_menu_alter(&$items) {
+  $items['node/%node']['access callback'] = 'devshop_testing_node_access_alter';
+  $items['node/%node/revisions/%/view']['access callback'] = 'devshop_testing_node_revision_access_alter';
+  $items['devshop/tasks']['access arguments'] = array('access test results');
+}
+
+/**
+ * Replacement access check for node/% pages.
+ *
+ * We do this so we can check a secondary permission for Task nodes of type
+ * "test"
+ *
+ * @param $op
+ * @param $node
+ * @param null $account
+ */
+function devshop_testing_node_access_alter($op, $node, $account = NULL) {
+  if ($node->type == 'task' && $node->task_type == 'test' && user_access('access test results')) {
+    return TRUE;
+  }
+  else {
+    return node_access($op, $node, $account);
+  }
+}
+
+/**
+ * Replacement access check for node/%/revision/%/view pages.
+ *
+ * We do this so we can check a secondary permission for Task nodes of type
+ * "test"
+ *
+ * @param $op
+ * @param $node
+ * @param null $account
+ */
+function devshop_testing_node_revision_access_alter($node, $op = 'view') {
+  if ($node->type == 'task' && $node->task_type == 'test' && user_access('access test results')) {
+    return TRUE;
+  }
+  else {
+    return _node_revision_access($node, $op);
+  }
 }
 
 /**
@@ -176,6 +196,8 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $settings->testing = array(
       'test_type' => 0,
       'tests_to_run' => '',
+      'behat_folder_path' => '',
+      'behat_bin' => 'bin/behat',
     );
   }
   
@@ -201,7 +223,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $tests[] = 'Something is wrong. Environment not found.';
   }
   else {
-    $directory = $environment->repo_root . '/' . $project->settings->testing['behat_folder_path'] . '/features';
+    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
 
     $files = file_scan_directory($directory, '.feature', array('.', '..'));
 
@@ -224,10 +246,18 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
     $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
   }
 
+  $testing_form['behat_folder_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Behat folder path'),
+    '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
+    '#default_value' => $settings->testing['behat_folder_path'],
+  );
+  
   // Lock fields in environment settings.
   if ($environment_name) {
     $locked = array(
       'test_type',
+      'behat_folder_path',
     );
     foreach ($locked as $field){
       $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
@@ -255,7 +285,7 @@ function devshop_testing_hosting_slack_message_alter(&$message_options) {
   
   if ($message_options->task->task_type == 'test') {
 
-    $url = url('devshop_tests/' . $message_options->task->nid . '/' . $message_options->task->vid, array('absolute' => TRUE));
+    $url = url('node/' . $message_options->task->nid . '/revisions/' . $message_options->task->vid, array('absolute' => TRUE) . '/view');
     
     $attachment = new stdClass();
     $attachment->fallback = t('Results: ') . $url;

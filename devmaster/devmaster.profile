@@ -33,7 +33,6 @@ function devmaster_profile_modules() {
     /* DEVSHOP */
     'devshop_hosting',
     'devshop_projects',
-    'devshop_log',
     'devshop_pull',
     'devshop_github',
     'devshop_dothooks',
