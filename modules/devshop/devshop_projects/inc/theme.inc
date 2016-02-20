@@ -36,6 +36,11 @@ function devshop_projects_theme(){
       ),
       'template' => 'project-add',
     ),
+    'devshop_ascii' => array(
+      'arguments' => array(
+        'output' => '',
+      ),
+    ),
   );
 }
 
@@ -203,12 +208,6 @@ function devshop_projects_preprocess_node(&$vars){
 function devshop_task_get_messages($task_node) {
   $messages = array();
   $outputs = array();
-  $theme = new SolarizedXTermTheme();
-  $styles = $theme->asCss();
-  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
-
-  drupal_set_html_head("<style>$styles</style>");
-  $converter = new AnsiToHtmlConverter($theme);
 
   $query = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = %d AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", $task_node->vid);
   while ($results = db_fetch_object($query)) {
@@ -251,6 +250,9 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] .= $results->message;
+
+      // @TODO: Here, we can check for obscure aegir errors and write our own.
+      // devshop_check_errors($outputs[$command]['output']);
       $outputs[$command]['command'] = 'error';
     } elseif ($results->type == 'devshop_log') {
       $command = 'notice_' . count($outputs);
@@ -279,11 +281,10 @@ function devshop_task_get_messages($task_node) {
     }
 
     // Convert ASCII to HTML
-    $output = $converter->convert($data['output']);
+    $output = theme('devshop_ascii', $data['output']);
 
     if (!empty($output)) {
-      $body = "<div class='panel-body ansi_color_bg_black'>
-<pre class=\"ansi_color_bg_black ansi_color_fg_white ansi_box\">$output</pre></div>";
+      $body = "<div class='panel-body panel-ansii'>$output</div>";
     }
     else {
       $body = '';
@@ -405,4 +406,57 @@ function template_preprocess_devshop_project_nav(&$vars){
   if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
     $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
   }
+
+  // Scrub git urls
+  $vars['safe_git_url'] = scrub_repo_url($project->git_url);
+}
+
+/**
+ * Output pretty console themed ASCII.
+ *
+ * Usage:
+ *   theme('devshop_ascii', $string);
+ */
+function theme_devshop_ascii($string) {
+
+  if (empty($string)) {
+    return $string;
+  }
+
+  // Prepare ASCII Converter
+  $theme = new SolarizedXTermTheme();
+  $styles = $theme->asCss();
+  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
+
+  drupal_set_html_head("<style>$styles</style>");
+  $converter = new AnsiToHtmlConverter($theme);
+  $output = $converter->convert($string);
+
+  return <<<HTML
+  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
+HTML;
+
+}
+
+/**
+ * Replaces a http git URL with an embedded password the *****
+ *
+ * @param $project_git_url
+ * @return string
+ */
+function scrub_repo_url($project_git_url){
+  $clean_project_url_input = $project_git_url;
+  $clean_project_url_output = $project_git_url;
+  $clean_project_url_haspassword = strchr($clean_project_url_input,':',7) && strrchr($clean_project_url_input,'@');
+  if($clean_project_url_haspassword){
+    /**
+     *  In this case the password will be in a syntactically static place:
+     *     protocol://username:password@fqdn-url
+     *   Since password can contain : or @ we have to look from left and from right for the delimiters.
+     **/
+    $clean_project_url_stopleft = strpos($clean_project_url_input,':',7)+1;
+    $clean_project_url_stopright = strrpos($clean_project_url_input,'@');
+    $clean_project_url_output = substr($clean_project_url_input,0,$clean_project_url_stopleft) . '****' . substr($clean_project_url_input,$clean_project_url_stopright);
+  }
+  return $clean_project_url_output;
 }

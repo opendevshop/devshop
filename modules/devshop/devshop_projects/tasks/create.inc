@@ -300,6 +300,12 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     // Copy settings from source environment.
     $environment->settings = $source_environment->settings;
 
+    // We assume since this is a clone, it does not need to be locked, and it should be auto-pulling.
+    // Unlock the environment... @TODO: Should this be a project setting?
+    // Make sure pull_disabled isn't on.
+    $environment->settings->locked = 0;
+    $environment->settings->pull_disabled = 0;
+
     // Save Clone/fork specific data to the environment
     $environment->settings->site_to_clone = $source_environment->site;
 

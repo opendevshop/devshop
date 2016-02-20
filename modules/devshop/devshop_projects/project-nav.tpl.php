@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
     <!-- First Links -->
@@ -60,16 +59,16 @@
 
         <!-- Link to github or an icon -->
         <?php if ($project->git_provider == 'github'): ?>
-          <a class="input-group-addon github-button" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github"></i></a>
+          <a class="input-group-addon github-button" href="<?php print $safe_git_url; ?>" title="<?php print t('View on GitHub'); ?>" target="_blank"><i class="fa fa-github"></i></a>
         <?php elseif ($project->git_repo_url): ?>
-          <a class="input-group-addon large" href="<?php print $project->git_repo_url; ?>" title="<?php print t('View Git Repo'); ?>" target="_blank"><i class="fa fa-git"></i></a>
+          <a class="input-group-addon large" href="<?php print $safe_git_url; ?>" title="<?php print t('View Git Repo'); ?>" target="_blank"><i class="fa fa-git"></i></a>
         <?php else: ?>
           <div class="input-group-addon"><i class="fa fa-git"></i></div>
         <?php endif; ?>
 
 
         <!-- Git URL -->
-        <input type="text" class="form-control" size="26" value="<?php print $node->project->git_url; ?>" onclick="this.select()">
+        <input type="text" class="form-control" size="26" value="<?php print $safe_git_url; ?>" onclick="this.select()">
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">
