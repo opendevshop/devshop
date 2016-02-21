@@ -40,10 +40,6 @@
       with_items: apache_packages
 
     # REDHAT
-    - name: Setup | REDHAT | Install common packages.
-      action: yum name={{ item }} state=present
-      when: ansible_os_family == "RedHat"
-      with_items: packages
 
     # Setup PHP 5.5 on RHEL and CentOS requires some extra commands
     # See https://www.softwarecollections.org/en/scls/rhscl/php55/
@@ -54,6 +50,11 @@
     - name: Setup | REDHAT | Install SCL in RHEL
       command: yum-config-manager --enable rhel-server-rhscl-7-rpms
       when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: Setup | REDHAT | Install common packages.
+      action: yum name={{ item }} state=present
+      when: ansible_os_family == "RedHat"
+      with_items: packages
 
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
