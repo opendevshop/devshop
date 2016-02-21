@@ -45,6 +45,10 @@
       when: ansible_os_family == "RedHat"
       with_items: packages
 
+    - name: Setup | REDHAT | Install EPEL
+      action: yum name=epel-release state=present
+      when: ansible_os_family == "RedHat"
+
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat" and server_webserver == "nginx"
