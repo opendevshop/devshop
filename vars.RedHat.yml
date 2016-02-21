@@ -30,6 +30,7 @@ motd_path: /etc/motd
 bashrc_path: /etc/bashrc
 
 packages:
+  - php55w-common
   - php-mysql
   - php-cli
   - php-gd
