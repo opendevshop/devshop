@@ -240,7 +240,7 @@ abstract class Command extends BaseCommand
    */
   public function checkVersion($version) {
     if (empty($version)) {
-      throw new \Exception('Version not specified.');
+      return FALSE;
     }
 
     $client = new \Github\Client();
