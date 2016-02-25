@@ -270,5 +270,8 @@ abstract class Command extends BaseCommand
     if (!$branch_found && !$tag_found) {
       throw new \Exception("An exception was thrown when trying to find a branch or tag named {$version}:" . $e->getCode() . ' ' . $e->getMessage());
     }
+
+    // If no exceptions were thrown, return TRUE.
+    return TRUE;
   }
 }
