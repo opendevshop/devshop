@@ -13,11 +13,12 @@ includes[devshop] = "drupal-org.make"
 
 projects[hostmaster][type] = "profile"
 projects[hostmaster][subdir] = ""
+projects[hostmaster][version] = "3.4"
 
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.2"
+projects[hosting][version] = "3.4"
 projects[hosting][subdir] = "aegir"
 projects[hosting][patch][687750] = "https://www.drupal.org/files/issues/2610122-circular-dependencies.patch"
 
