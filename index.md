@@ -137,7 +137,7 @@ Support
 Installation
 ------------
 
-See INSTALL.md for installation instructions.
+See [the installation instructions](install.md) for detailed information on installing DevShop.
 
 Usage
 -----
