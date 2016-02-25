@@ -106,6 +106,11 @@
         state=link
         force=yes
 
+    - name: DevShop CLI | composer install
+      command: "composer install"
+      args:
+        chdir: "{{ playbook_path }}"
+
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
       command: a2enmod rewrite
@@ -244,7 +249,7 @@
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
     - name: Supervisor | Set up queue runner script
-      when: supervisor_running == true
+      when: supervisor_running == "true"
       template:
         src=templates/hosting-queue-runner.j2
         dest=/usr/bin/hosting-queue-runner
@@ -253,7 +258,7 @@
         group=aegir
 
     - name: Supervisor | Set up supervisor job
-      when: supervisor_running == true
+      when: supervisor_running == "true"
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
         dest={{ supervisor_hosting_queued_conf_path }}
@@ -262,7 +267,7 @@
         - restart supervisor
 
     - name: Service | Ensure Supervisor is restarted
-      when: supervisor_running == true
+      when: supervisor_running == "true"
       service:
         name={{ supervisor_daemon }}
         state=restarted

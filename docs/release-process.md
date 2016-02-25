@@ -13,7 +13,6 @@ Follow this guide.
 3. Update `opendevshop/devmaster/devmaster.make` with the latest releases of contrib modules.
 4. Update `opendevshop/devshop/vars.yml` with the latest versions of drush modules.
 5. Using the commit log as your guide, add a list of new features to the CHANGELOG.org in the devshop repo.  Use the "x commits since this release" feature on github's releases page.  Include changes in both devshop and devmaster repos in the changelog.
-7. Update `opendevshop/devshop/README.md` "Versions" section to match the latest.
 7. Update `opendevshop/devshop/docs/install.md` with the latest version in the example install script.
 2. Create a new release branches for devmaster, devshop, and devshop_provision repos using the `release-prep.sh` script. This script takes a version for an argument and creates release branches in the three repos.
 6. In your release branch, edit the version in the files:

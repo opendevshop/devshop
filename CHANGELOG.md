@@ -1,6 +1,74 @@
 # Change Log
 
-# 0.7.4 (January 15, 2016)
+## 0.8.1 (February 17, 2016)
+
+HotFix release.
+
+7 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.8.0...0.8.1
+5 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.8.0...0.8.1
+
+- Fixed install.sh bug that prevented supervisor jobs from being setup.
+- Added more screenshots to the documentation.
+- If Git URLs have passwords, scrub them before showing in the web browser.  (Thanks @llwp!)
+- A small typo fix in the README.md (Thanks, @RealLukeMartin!)
+
+## 0.8.0 (February 10, 2016)
+
+313 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.7.4...0.8.0
+159 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.4...0.8.0
+
+### Newly Redesigned Tasks
+
+- *Recreate Features* button allows you to update some or all of your Features modules in one click. Yes, this is an old feature, but it needed some dusting off. We've decoupled the "recreate" process from the "commit" process, making it much easier to avoid mistakes.
+- *Download Modules* button allows you download and commit modules to git with the press of a button, or you can save your commit for the...
+- *Commit* button, in the *Git Information* panel.  This task allows you to easily fill in a commit message and commit some or all of your changes. The name and user in DevMaster is automatically passed to git, so keep your devshop users accurate and you will have accurate git history.
+
+These new features are not enabled by default, yet.  To check them out, please enable `aegir_features`, `aegir_download`, and `aegir_commit`.
+
+### UI Improvements
+
+- *Git Information* tells you when you have untracked, modified, added or deleted files. It will indicate if the repo is ahead or behind. Click for a modal window showing you the current git status, last commit, and full git diff for every environment.
+- Git reference displayed on environments is now loaded in *realtime*. 
+- *Situational Indicators* now tell you more about what is happening with your environments, especially when something failed.
+- Situational buttons now appear on failed tasks or disabled environments giving you easy access to your options, such as 'View Logs & Retry', or 'Destroy Environment'.
+- Improve `devshop status` command, it now fully bootstraps the devmaster site to ensure it is working and properly exits with a non-zero exit code if something fails.
+- Output devmaster drupal version and site URL in `devshop status` command.
+- Use `devshop status` and `devshop login` at end of install script, making it much more friendly.
+- Moved all commands to use devshop_drush_process() and our new logging system, making all task logs beautiful.
+- Added a `theme('devshop_ascii', $string)` function for easy beautiful ascii color in browser.
+- Fixed the problem of GitHub Pull Request Environments often causing the "Clone" task to fail, which would prevent the environment from being created. In addition, "Deploy" task would not run on Cloned sites.  Now, new PR environments are exact clones of live, on the same git ref. After that, a new "Deploy" task is created that runs all appropriate deploy hooks.
+- Clones of locked environments are automatically unlocked, since they are assumed to be destructible. Be sure to check your environment settings if you need to lock environments.
+- Removing our special devshop_tests drupal page, and altering the menu to allow access to test tasks to users with the permission "access test logs". Now github links to the correct place to view tests in action!
+- Fixed the funky "Logs" page for environments, and removed devshop_logs.module altogether!
+- Added a [Tour](http://docs.devshop.support/en/latest/#tour) section to the documentation with screenshots.
+
+
+### System & DevShop Development Features
+
+- NGINX! You can now install NGINX + PHP-FPM on the devmaster server using the install script option `--server-webserver=nginx`.
+- Full test suite running on Travis-ci.org, on both repositories, for both NGINX and Apache, Ubuntu 14.04 and CentOS7!.  See https://travis-ci.org/opendevshop/devmaster and https://travis-ci.org/opendevshop/devshop for more info.
+- Refactored travis tests and install scripts to allow testing of Pull Requests on devmaster repo.
+- DevShop Behat tests now run through entire project creation, even testing the environment was installed properly.
+- Created `docker-development-environment.sh` to launch a DevShop development environment in docker!  See `docker-destroy-devshop.sh` to remove the containers.
+- Adding a 'devshop devmaster:test` command to the CLI for easy Behat testing of the front-end.
+- Added command line options to `install.sh` script: 
+  - `--server-webserver` can be `apache` or `nginx`.  
+  - `--hostname` will pass a desired hostname to ansible, which will change the hostname on the system.
+  - `--makefile` passes a different "build-devmaster.make" file, allowing for pull request testing.
+  - `--aegir_user_uid` will pass to ansible variables, setting the aegir user to use the desired UID.
+
+
+### New Contributors!
+
+We're so excited to welcome Andrew Rosborough (@arosboro) from DropForgeLabs.com, and Daniel Hesoyam (@Hesoyam) to OpenDevShop as our newest contributors!
+
+Andrew did immense work on tests, NGINX, and our 1.x branch upgrading devmaster to Drupal 7.
+
+Daniel submitted a small patch fixing a warning in old versions of Vagrant.
+
+Welcome!
+
+## 0.7.4 (January 15, 2016)
 
 1 commits to DevShop: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
 15 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.3...0.7.4
@@ -12,7 +80,7 @@
 - Major improvements to Environment status user interface. It now clearly states to the user what an environment is doing: "Creating environment", "Cloning Environment", "Deleting Environment", "Disabling Environment", "Clone failed", "Delete Failed", Etc.  Added separate "Site Destroy" and "Platform destroy" indicators.
 - Major improvements to GitHub pull request environment interface. Now clearly shows PR number and environment name. Shows Pull request title as well.
 
-# 0.7.3 (December 30, 2015)
+## 0.7.3 (December 30, 2015)
 
 22 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.2...0.7.3
 
@@ -31,19 +99,19 @@
 - Added "Project Messages" so we can inform the user of project wide problems (such as no deploy hooks configured.)
 - Added a "release-prep.sh" and "release.sh" script to help make releases easier.
 
-# 0.7.2 (December 23, 2015)
+## 0.7.2 (December 23, 2015)
 
 3 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.7.1...0.7.2
 
 - Fixing a slew of PHP notices.
 - Removing Hosting Task Jenkins from the default build. It requires composer install, and we can't run that inside of hostmaster-migrate at the moment.
 
-# 0.7.1 (December 23, 2015)
+## 0.7.1 (December 23, 2015)
 
 1 commit to DevShop.
 Fixed a bug in the Install command when specifying a version.
 
-# 0.7.0 (December 23, 2015)
+## 0.7.0 (December 23, 2015)
 
 71 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.6.0...0.7.0
 20 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.6.0...0.7.0
@@ -75,7 +143,7 @@ Fixed a bug in the Install command when specifying a version.
 - After installing this release (once you have the self-update command), always run `devshop self-update` before `devshop upgrade`.  We will soon add code to enforce this by checking to see if devshop CLI is out of date before an upgrade.
 - We do not remove the old .devshop-version file for you automatically, but the `devshop status` command will warn you if it still exists.  Please remove `/var/aegir/.devshop-version` manually.
 
-# 0.6.0 (December 14, 2015)
+## 0.6.0 (December 14, 2015)
 
 19 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.5.4...0.6.0
 137 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/0.5.4...0.6.0
@@ -324,8 +392,62 @@ Radim fixed a typo in our documentation.  Thanks, Radim!
 * TravisCI integration.
 * Numerous other improvements
 
-## Previous
+## Legacy
 
 The changelog began with version 0.1.0 so any changes prior to that can be seen by checking the tagged releases and reading git commit messages.
 
 Before 0.1.0, devshop releases were tagged as if it were a module: 6.x-1.x.
+
+There was a long history of addon modules for aegir before devshop. 
+
+### Hosting & Provision Logs (December 20, 2012)
+
+https://www.drupal.org/project/hosting_logs
+https://www.drupal.org/project/provision_logs
+
+Improved error log handling by setting Apache logs to an aegir-readable location, and making
+them accessible to users through the devshop UI and a URL on the site.
+
+### Hosting & Provision Solr (September 12, 2012)
+
+https://www.drupal.org/project/hosting_solr
+https://www.drupal.org/project/provision_solr
+
+This module allows Solr servers to be added to Aegir. Once you have a server, you can give an Aegir Site a Solr database as easily as choosing it's DB Server.
+
+### DevMaster (September 9, 2012)
+
+https://www.drupal.org/project/devmaster
+
+It wasn't until September of 2012 that we decided we needed a dedicated install profile, 
+separate from Aegir's Hostmaster.
+
+### DevShop Hosting (March 1, 2012)
+
+https://www.drupal.org/project/devshop_hosting
+
+Provided the front-end interface for DevShop before it was merged into the DevMaster install profile project.
+
+### DevShop Provision (March 1, 2012)
+
+https://www.drupal.org/project/devshop_provision
+
+Provision drush commands for devshop. Still in use until 1.x release!
+
+### Hosting Features (February 25, 2012)
+
+https://www.drupal.org/project/hosting_features
+
+Allows Hostmaster users with the right permission to trigger a "Update & Commit Features" task. This re-creates all of a site's features (as in features.module features) and commits (and pushes) them
+
+### Provision Git Features (February 25, 2012) 
+
+https://www.drupal.org/project/provision_git_features
+
+The backend commands that Hosting Features needs to work.
+
+### Provision Git (February 21, 2012)
+
+https://www.drupal.org/project/provision_git
+
+Provides Provision with simple git commands.
