@@ -10,9 +10,7 @@ Version | Status | Aegir | Hosts | DevMaster | Install & CLI
 0.x     | Stable |   2.x   |  D6, D7     | [![DevMaster 0.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=0.x)](https://travis-ci.org/opendevshop/devmaster) | [![DevShop 0.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop) 
 1.x     | In Development |3.x | D6,D7,D8 |  [![DevMaster 1.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=1.x)](https://travis-ci.org/opendevshop/devmaster) |  [![DevShop 1.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=1.x)](https://travis-ci.org/opendevshop/devshop) 
 
-
-
-DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It a provides front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devshop_provision)).
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devshop_provision)).
 
 DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
@@ -150,16 +148,6 @@ Visit http://devshop.local or your chosen domain in the browser to view the fron
 SSH into your server as the `aegir` user to access the back-end.
 
 Use drush to access any of your sites.  Use `drush sa` to see the list of available aliases.
-
-Versions
---------
-
-We have two active branches as we try to reach for Drupal 8 hosting in time for release.  1.x has just started, and isn't functional yet.  Please use the 0.x branch of DevShop.
-
-DevShop version | Branch | DevMaster Versions | Hosted Drupal Versions | Aegir |Status
-----------------|--------|--------------------|------------------------|-------|-------
-0.7.3 *CURRENT* | 0.x |  6.x           | 6, 7                   | 2.x | Stable
-1.0.0 | 1.x |  7.x       | 6, 7, 8                | 3.x | non-functional
 
 Vagrant
 -------
