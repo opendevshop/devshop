@@ -64,13 +64,14 @@ function devshop_github_settings_form($form, &$form_state) {
     else {
         $form['github_public_keys']['#markup'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
 
-        $form['github_public_keys']['#markup'] .= l(t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
-                'attributes' => array(
-                  'class' => 'btn btn-success'
-                ),
-            )) . '</div>';
+        $form['github_public_keys']['#markup'] .= '</div>';
         $form['github_public_keys']['#prefix'] = '<div class="alert alert-danger">';
-        $form['github_public_keys']['#suffix'] = '</div>';
+        $form['github_public_keys']['#suffix'] = l('<i class="fa fa-github"></i> ' . t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+            'attributes' => array(
+              'class' => 'btn btn-primary btn-large'
+            ),
+            'html' => TRUE,
+          )) . '</div>';
     }
   }
 
