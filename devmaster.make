@@ -28,6 +28,8 @@ projects[eldir][type] = theme
 projects[hosting_git][subdir] = aegir
 projects[hosting_remote_import][subdir] = aegir
 projects[hosting_site_backup_manager][subdir] = aegir
+projects[hosting_site_backup_manager][patch][2619074] = https://www.drupal.org/files/issues/2619074-remove-varget_2.patch
+
 projects[hosting_tasks_extra][subdir] = aegir
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
