@@ -33,13 +33,6 @@ function devshop_hosting_hosting_feature() {
     'module' => 'devshop_testing',
     'group' => 'devshop',
   );
-  $features['devshop_log'] = array(
-    'title' => t('DevShop Logs'),
-    'description' => t('Provides error and commit logs to DevShop.'),
-    'status' => HOSTING_FEATURE_DISABLED,
-    'module' => 'devshop_log',
-    'group' => 'devshop',
-  );
   $features['devshop_dothooks'] = array(
     'title' => t('DevShop .Hooks'),
     'description' => t('Allows projects to define their deploy hooks in a .hooks.yml file.'),
