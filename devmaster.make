@@ -2,7 +2,7 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "7.41"
+projects[drupal][version] = "7.43"
 
 defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
