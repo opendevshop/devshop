@@ -16,15 +16,22 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu dropdown-settings" role="menu">
+
             <?php if (node_access('update', $node)): ?>
-            <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
-                <li class="divider"></li>
+            <li>
+              <a href="<?php print url("node/{$project->nid}/edit"); ?>" class="btn-sm">
+                <i class="fa fa-th"></i>
+                <?php print t('Project Settings'); ?>
+              </a>
+             </li>
             <?php endif; ?>
 
-            <li><label><?php print t('Environment Settings'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
             <li>
-              <?php print l($environment->name, "node/{$project->nid}/edit/env/{$environment->name}"); ?>
+              <a href="<?php print url("node/{$project->nid}/edit"); ?>" class="btn-sm">
+                <i class="fa fa-sliders fa-fw"></i>
+                <?php print $environment->name; ?>
+              </a>
             </li>
             <?php endforeach; ?>
           </ul>
