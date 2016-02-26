@@ -49,7 +49,6 @@
 ?>
 
 <!-- STATUS/INFO -->
-<div class="container">
 <div id="project-info">
   <ul class="list-inline">
     <?php if ($project->settings->live['live_domain']): ?>
@@ -176,5 +175,4 @@
       <?php print t('Create New Environment'); ?></a>
   </div>
   <?php endif; ?>
-</div>
 </div>
