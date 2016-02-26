@@ -863,3 +863,7 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     display:inline;
 
 }
+
+#devshop-project-create-step-git #edit-cancel {
+    float: right;
+}
