@@ -504,6 +504,16 @@ function boots_preprocess_page(&$vars){
     $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
+
+  if (arg(0) == 'hosting_confirm') {
+    $project_node = node_load(arg(1));
+    $vars['title'] = $project_node->title;
+    $vars['title_url'] = "node/{$project_node->nid}";
+    $vars['subtitle'] = t('Project');
+    $vars['title'] = l($vars['title'], $vars['title_url']);
+    $vars['title2'] = t('Create new Environment');
+  }
+
   if (variable_get('devshop_support_widget_enable', TRUE)) {
     drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
   }
