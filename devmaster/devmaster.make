@@ -2,7 +2,7 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "7.41"
+projects[drupal][version] = "7.43"
 
 defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
@@ -12,6 +12,7 @@ defaults[projects][type] = "module"
 includes[devshop] = "drupal-org.make"
 
 projects[hostmaster][type] = "profile"
+projects[hostmaster][version] = "3.4"
 projects[hostmaster][subdir] = ""
 projects[hostmaster][version] = "3.4"
 
