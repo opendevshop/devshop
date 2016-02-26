@@ -856,3 +856,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
     font-size: 13px;
 }
+
+#project-settings-table .form-control {
+    width: auto;
+    display:inline;
+
+}
