@@ -401,7 +401,7 @@ function boots_preprocess_page(&$vars){
 //    $vars['content_column_class'] = ' class="col-sm-12"';
 //  }
 
-  if (!empty($vars['tabs']) || $vars['node']->type == 'project') {
+  if (!empty($vars['tabs']) && $vars['node']->type != 'project') {
     $vars['content_column_class'] = ' class="col-sm-9"';
   }
 
