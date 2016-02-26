@@ -254,6 +254,9 @@ function devmaster_task_finalize() {
   // Disable Aegir's "Welcome" page
   variable_set('hosting_welcome_page', 0);
 
+  // Disable menu settings for projects
+  variable_set('menu_options_project', NULL);
+
   // Make sure blocks are setup properly.
 //  _block_rehash();
 
