@@ -151,7 +151,7 @@
 
   <div class="row">
 
-    <?php if (!empty($page['sidebar_first']) || !empty($tabs)): ?>
+    <?php if (!empty($page['sidebar_first']) && !empty($tabs)): ?>
       <aside class="col-sm-3" role="complementary">
         <?php print render($tabs); ?>
         <?php print render($page['sidebar_first']); ?>
