@@ -491,6 +491,16 @@ function boots_preprocess_page(&$vars){
 
     }
 
+    // On environment settings page...
+    if (arg(0) == 'node' && arg(3) == 'env') {
+      $project_node = node_load(arg(1));
+      $environment = $project_node->project->environments[arg(4)];
+
+      $vars['title2_url'] = 'node/' . $environment->site;
+      $vars['title2'] = l($environment->name, $vars['title2_url']);
+      $vars['subtitle2'] = t('Environment');
+    }
+
     $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
