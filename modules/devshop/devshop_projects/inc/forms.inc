@@ -80,6 +80,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   }
 
+  // Prevent editing code path unless allowed.
+  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
+    $form['project']['code_path']['#type'] = 'value';
+    $form['project']['code_path']['#value'] = $form['project']['code_path']['#default_value'];
+  }
+
   // Project Settings
   $form['project']['settings'] = array(
     '#weight' => -10,
