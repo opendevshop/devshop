@@ -517,6 +517,10 @@ function boots_preprocess_page(&$vars){
   if (variable_get('devshop_support_widget_enable', TRUE)) {
     drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
   }
+
+  // Render stuff
+  $vars['tabs_rendered'] = render($vars['tabs']);
+  $vars['sidebar_first_rendered'] = render($vars['page']['sidebar_first']);
 }
 
 
