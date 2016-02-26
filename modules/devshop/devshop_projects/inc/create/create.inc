@@ -194,7 +194,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $project_node = node_load($project->nid);
 
   // Save the extra options to the project node.
-  $project_node->project->install_profile = $project->install_profile;
+  $project_node->project->install_profile = $form_state['values']['install_profile'];
 
   // Create the site nodes, saving to the environment.
   // @TODO: Can we speed things up here by only running install for the first,

@@ -190,14 +190,3 @@ function devshop_project_create_step_sites_validate(&$from, &$form_state) {
     form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
   }
 }
-
-/**
- * STEP 4: Submit
- *
- * Save install profile to the project object (project and site node creation
- * happens on wizard finish.)
- */
-function devshop_project_create_step_sites_submit(&$from, &$form_state) {
-  $project = &$form_state['project'];
-  $project->install_profile = $form_state['values']['install_profile'];
-}
