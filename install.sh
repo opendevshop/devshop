@@ -34,6 +34,11 @@ echo " Welcome to the DevShop Standalone Installer "
 echo "                   v $DEVSHOP_VERSION        "
 echo "============================================="
 
+# Fail if not running as root (sudo)
+if [ $EUID -ne 0 ]; then
+    echo " This script must be run as root.  Try 'sudo bash install.sh'." 1>&2
+    exit 1
+fi
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
@@ -132,12 +137,6 @@ if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
 elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
   echo " An existing Aegir Apache installation was found. Using 'apache' for variable 'server_webserver'"
   echo $LINE
-fi
-
-# Fail if not running as root (sudo)
-if [ $EUID -ne 0 ]; then
-    echo " This script must be run as root.  Try 'sudo bash install.sh'." 1>&2
-    exit 1
 fi
 
 # Fail if server_webserver is not apache or nginx
