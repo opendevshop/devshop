@@ -28,7 +28,6 @@ function devshop_testing_schema() {
         'type' => 'text',
         'not null' => TRUE,
         'size' => 'big',
-        'default' => '',
         'description' => 'A list of tests to run',
       ),
     ),
