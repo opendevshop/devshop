@@ -506,12 +506,42 @@ function boots_preprocess_page(&$vars){
   }
 
   if (arg(0) == 'hosting_confirm') {
-    $project_node = node_load(arg(1));
-    $vars['title'] = $project_node->title;
-    $vars['title_url'] = "node/{$project_node->nid}";
-    $vars['subtitle'] = t('Project');
-    $vars['title'] = l($vars['title'], $vars['title_url']);
-    $vars['title2'] = t('Create new Environment');
+    $node = node_load(arg(1));
+
+    if (isset($node->project)) {
+      if ($node->type == 'project') {
+        $project_node = $node;
+
+        // On "fork" or "clone", look for source arg.
+        if (arg(2) == 'project_devshop-create' && is_numeric(arg(4))) {
+          $environment_node = node_load(arg(4));
+          $title2text = $environment_node->environment->name;
+          $title2url = 'node/' . $environment_node->environment->site;
+        }
+        else {
+          $title2text = '';
+          $title2url = '';
+        }
+      }
+      else {
+        $project_node = node_load($node->project->nid);
+        $title2text = $node->environment->name;
+        $title2url = 'node/' . $node->environment->site;
+      }
+      $vars['title'] = $project_node->title;
+      $vars['title_url'] = "node/{$project_node->nid}";
+      $vars['subtitle'] = t('Project');
+      $vars['title'] = l($vars['title'], $vars['title_url']);
+
+      $vars['title2'] = l($title2text, $title2url);
+      $vars['subtitle2'] = t('Environment');
+
+      $vars['title_prefix']['title3'] = array(
+        '#markup' => drupal_get_title(),
+        '#prefix' => '<h4>',
+        '#suffix' => '</h4>',
+      );
+    }
   }
 
   if (variable_get('devshop_support_widget_enable', TRUE)) {
