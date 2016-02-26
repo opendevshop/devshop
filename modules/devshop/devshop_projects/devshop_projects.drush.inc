@@ -370,7 +370,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
     $site = $task->ref;
     $platform = node_load($site->platform);
 
-    if ($platform->environment->name) {
+    if (isset($platform->environment) && !empty($platform->environment->name)) {
 
       // Save environment record.
       drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
