@@ -383,22 +383,26 @@ HTML;
  * @param $vars
  */
 function boots_preprocess_page(&$vars){
+//
+//  // Add information about the number of sidebars.
+//  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
+//  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
+//    if ($vars['node']->type == 'project') {
+//      $vars['content_column_class'] = ' class="col-sm-12';
+//    }
+//    else {
+//      $vars['content_column_class'] = ' class="col-sm-9"';
+//    }
+//  }
+//  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+//    $vars['content_column_class'] = ' class="col-sm-9"';
+//  }
+//  else {
+//    $vars['content_column_class'] = ' class="col-sm-12"';
+//  }
 
-  // Add information about the number of sidebars.
-  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
-  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
-    if ($vars['node']->type == 'project') {
-      $vars['content_column_class'] = ' class="col-sm-12';
-    }
-    else {
-      $vars['content_column_class'] = ' class="col-sm-9"';
-    }
-  }
-  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+  if (!empty($vars['tabs']) || $vars['node']->type == 'project') {
     $vars['content_column_class'] = ' class="col-sm-9"';
-  }
-  else {
-    $vars['content_column_class'] = ' class="col-sm-12"';
   }
 
   if (user_access('access task logs')){
