@@ -518,9 +518,9 @@ function boots_preprocess_page(&$vars){
           $title2text = $environment_node->environment->name;
           $title2url = 'node/' . $environment_node->environment->site;
         }
-        else {
-          $title2text = '';
-          $title2url = '';
+        elseif (arg(2) == 'project_devshop-create') {
+          $title2text = t('New');
+          $title2url = current_path();
         }
       }
       else {
