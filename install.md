@@ -1,13 +1,13 @@
 Installing DevShop
 ==================
 
-DevShop is installed with a standalone <a href="https://github.com/opendevshop/devshop/blob/0.x/install.sh">install.sh bash</a> script, which kicks off an ansible playbook.
+DevShop is installed with a standalone <a href="https://github.com/opendevshop/devshop/blob/1.x/install.sh">install.sh bash</a> script, which kicks off an ansible playbook.
 
 We test this script continuously on Ubuntu 14.04 and CentOS 7.  See https://travis-ci.org/opendevshop/devshop for the test results.
 
 Do not try to install devshop on a server that is already in use. If you do you will likely have to take manual steps to get it fully functional. It's just easier to start with a fresh server.
 
-[0.x](https://github.com/opendevshop/devshop) the current stable branch, but will be deprecated soon for  [1.x](https://github.com/opendevshop/devshop/tree/1.x).
+[1.x](https://github.com/opendevshop/devshop) is now the current stable branch. `0.x` branch is now deprecated! Drupal 6 is End of Life.
 
 DevShop 1.x is based on Drupal 7 and runs Drupal 8 sites.
 
@@ -30,14 +30,14 @@ Setup
             devshop.mydomain.com. 1800 IN A 1.2.3.4
             *.devshop.mydomain.com. 1800 IN A 1.2.3.4
 
-- Login to your server, and retrieve and run the install script. Remember, check the [Releases Page](https://github.com/opendevshop/devshop/releases) on GitHub to be sure you have the latest release.  If you wish to run HEAD (which is normally stable) you can pull the [0.x branch](https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh) branch version of the install.sh script.
+- Login to your server, and retrieve and run the install script. Remember, check the [Releases Page](https://github.com/opendevshop/devshop/releases) on GitHub to be sure you have the latest release.  If you wish to run HEAD (which is normally stable) you can pull the [1.x branch](https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh) branch version of the install.sh script.
 
-        root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
+        root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
         root@devshop:~# bash install.sh
 
 - If you don't have root but have a sudo user:
 
-        ubuntu@devshop:~$ wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
+        ubuntu@devshop:~$ wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
         ubuntu@devshop:~$ sudo bash install.sh
 
 - If you need to change the hostname, use the `--hostname` option:
@@ -69,7 +69,7 @@ The most important commands to remember are `devshop status` and `devshop login`
 Install Script
 --------------
 
-The install script ([install.sh](https://github.com/opendevshop/devshop/blob/0.x/install.sh)) will setup everything that is needed to get devshop running from scratch.
+The install script ([install.sh](https://github.com/opendevshop/devshop/blob/1.x/install.sh)) will setup everything that is needed to get devshop running from scratch.
 
 No other preparation is needed.
 
@@ -87,7 +87,7 @@ In summary, the script does the following:
 
 ### Ansible Playbook Overview
 
-The Ansible playbook is located in the devshop repo at [playbook.yml](https://github.com/opendevshop/devshop/blob/0.x/playbook.yml).
+The Ansible playbook is located in the devshop repo at [playbook.yml](https://github.com/opendevshop/devshop/blob/1.x/playbook.yml).
 
 Ansible is human readable, so if you are interested in what happens there, just open that file and read it.
 
