@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.0-alpha2 (February 27, 2016)
+
+- Adding devshop_stats to devmaster.make. It was somehow missed in the last release.
+
 ## 1.0.0-alpha1 (February 26, 2016)
 
 First Alpha for 1.0.0!
