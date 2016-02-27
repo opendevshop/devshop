@@ -68,6 +68,8 @@ Feature: Create a project
     And I should see "master"
     And I wait "10" seconds
     And I reload the page
+#    When I click "Process Failed"
+#    Then print last response
     Then I should see "8.0.2"
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"

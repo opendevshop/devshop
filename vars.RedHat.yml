@@ -30,6 +30,7 @@ motd_path: /etc/motd
 bashrc_path: /etc/bashrc
 
 packages:
+  - php55
   - php-mysql
   - php-cli
   - php-gd
@@ -49,7 +50,8 @@ packages:
   - mariadb
   - mariadb-server
   - MySQL-python
-  - epel-release
+# I think this needs to be installed before these packages.
+#  - epel-release
   - supervisor
   - openssl
   - mod_ssl
