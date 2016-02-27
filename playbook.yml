@@ -27,28 +27,28 @@
     - name: Setup | DEBIAN | Install common packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian"
-      with_items: packages
+      with_items: '{{packages}}'
 
     - name: Setup | DEBIAN | Install NGINX server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian" and server_webserver == "nginx"
-      with_items: nginx_packages
+      with_items: '{{nginx_packages}}'
 
     - name: Setup | DEBIAN | Install Apache server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian" and server_webserver == "apache"
-      with_items: apache_packages
+      with_items: '{{apache_packages}}'
 
     # REDHAT
     - name: Setup | REDHAT | Install common packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat"
-      with_items: packages
+      with_items: '{{packages}}'
 
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat" and server_webserver == "nginx"
-      with_items: nginx_packages
+      with_items: '{{nginx_packages}}'
 
     - name: Setup | REDHAT | Comment conflicting configuration (Nginx)
       template: src={{ playbook_path }}/templates/nginx.conf.Redhat.j2 dest=/etc/nginx/nginx.conf force=yes
