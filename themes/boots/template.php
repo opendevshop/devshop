@@ -142,11 +142,10 @@ function boots_preprocess_environment(&$vars) {
   // Branch or tag no longer exists in the project.
   if (!isset($project->settings->git['refs'][$environment->git_ref])) {
     $vars['warnings'][] = array(
-      'text' =>  t('The git reference %ref is no longer available.', array(
+      'text' =>  t('The git ref %ref is no longer present in the remote repository.', array(
         '%ref' => $environment->git_ref,
-        '@type' => $environment->git_ref_type,
       )),
-      'type' => 'error',
+      'type' => 'warning',
     );
   }
 
@@ -172,6 +171,39 @@ function boots_preprocess_environment(&$vars) {
 
   // Get token for task links
   $vars['token'] = drupal_get_token($user->uid);
+
+  // Git information
+  $path = $environment->repo_root;
+  if (file_exists($path)) {
+
+    // Timestamp of last commit.
+    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
+
+    // The last commit.
+    $environment->git_commit = shell_exec("cd $path; git -c color.ui=always log --max-count=1");
+
+    // Get the exact SHA
+    $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+
+    // Get the actual tag or branch
+    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd $path; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+
+    // Get git status.
+    $environment->git_status = trim(shell_exec("cd $path; git -c color.ui=always  status"));
+
+    // Get git diff.
+    $environment->git_diff = trim(shell_exec("cd $path; git -c color.ui=always diff"));
+
+  }
+  else {
+    $environment->git_last = '';
+    $environment->git_commit = '';
+    $environment->git_sha = '';
+    $environment->git_status = '';
+    $environment->git_diff = '';
+  }
+
+  $vars['environment'] = $environment;
 }
 
 /**
@@ -351,22 +383,26 @@ HTML;
  * @param $vars
  */
 function boots_preprocess_page(&$vars){
+//
+//  // Add information about the number of sidebars.
+//  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
+//  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
+//    if ($vars['node']->type == 'project') {
+//      $vars['content_column_class'] = ' class="col-sm-12';
+//    }
+//    else {
+//      $vars['content_column_class'] = ' class="col-sm-9"';
+//    }
+//  }
+//  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+//    $vars['content_column_class'] = ' class="col-sm-9"';
+//  }
+//  else {
+//    $vars['content_column_class'] = ' class="col-sm-12"';
+//  }
 
-  // Add information about the number of sidebars.
-  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
-  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
-    if ($vars['node']->type == 'project') {
-      $vars['content_column_class'] = ' class="col-sm-12';
-    }
-    else {
-      $vars['content_column_class'] = ' class="col-sm-9"';
-    }
-  }
-  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+  if (!empty($vars['tabs']) && $vars['node']->type != 'project') {
     $vars['content_column_class'] = ' class="col-sm-9"';
-  }
-  else {
-    $vars['content_column_class'] = ' class="col-sm-12"';
   }
 
   if (user_access('access task logs')){
@@ -455,12 +491,66 @@ function boots_preprocess_page(&$vars){
 
     }
 
+    // On environment settings page...
+    if (arg(0) == 'node' && arg(3) == 'env') {
+      $project_node = node_load(arg(1));
+      $environment = $project_node->project->environments[arg(4)];
+
+      $vars['title2_url'] = 'node/' . $environment->site;
+      $vars['title2'] = l($environment->name, $vars['title2_url']);
+      $vars['subtitle2'] = t('Environment');
+    }
+
     $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
+
+  if (arg(0) == 'hosting_confirm') {
+    $node = node_load(arg(1));
+
+    if (isset($node->project)) {
+      if ($node->type == 'project') {
+        $project_node = $node;
+
+        // On "fork" or "clone", look for source arg.
+        if (arg(2) == 'project_devshop-create' && is_numeric(arg(4))) {
+          $environment_node = node_load(arg(4));
+          $title2text = $environment_node->environment->name;
+          $title2url = 'node/' . $environment_node->environment->site;
+        }
+        elseif (arg(2) == 'project_devshop-create') {
+          $title2text = t('New');
+          $title2url = current_path();
+        }
+      }
+      else {
+        $project_node = node_load($node->project->nid);
+        $title2text = $node->environment->name;
+        $title2url = 'node/' . $node->environment->site;
+      }
+      $vars['title'] = $project_node->title;
+      $vars['title_url'] = "node/{$project_node->nid}";
+      $vars['subtitle'] = t('Project');
+      $vars['title'] = l($vars['title'], $vars['title_url']);
+
+      $vars['title2'] = l($title2text, $title2url);
+      $vars['subtitle2'] = t('Environment');
+
+      $vars['title_prefix']['title3'] = array(
+        '#markup' => drupal_get_title(),
+        '#prefix' => '<h4>',
+        '#suffix' => '</h4>',
+      );
+    }
+  }
+
   if (variable_get('devshop_support_widget_enable', TRUE)) {
     drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
   }
+
+  // Render stuff
+  $vars['tabs_rendered'] = render($vars['tabs']);
+  $vars['sidebar_first_rendered'] = render($vars['page']['sidebar_first']);
 }
 
 

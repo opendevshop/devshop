@@ -139,6 +139,12 @@ function drush_devshop_platform_verify() {
   $task = &drush_get_context('HOSTING_TASK');
 
   $platform = $task->ref;
+
+  // If for some reason we still do not have an environment... bail.
+  if (empty($platform->environment)) {
+    return drush_set_error('DEVSHOP_ERROR', dt('Unable to determine environment. Please contact your administrator.'));
+  }
+
   $root = $platform->publish_path;
   $git_ref = $platform->environment->git_ref;
 
@@ -289,11 +295,18 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'platform') {
-    drush_log('[DevShop] Platform Verification Complete', 'devshop_log');
+    drush_log('[DevShop] Codebase Clone Complete... Preparing next steps.', 'devshop_log');
 
     // If this platform isn't in a project, bail.
     $platform = $task->ref;
     if (empty($platform->project)) {
+      $project = $task->ref->project;
+
+      // @TODO: On first verify, "environment" can be missing. Not sure why, yet.
+      if (empty($platform->environment) && isset($project->environments[$task->project->environment])) {
+        $platform->environment = $project->environments[$task->project->environment];
+      }
+
       drush_log('[DEVSHOP] No project found for this platform.', 'notice');
       return;
     }
@@ -327,6 +340,12 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
         // Queue the Cloning of the site.
         // @see devshop_projects_post_hosting_import_task().
+
+        // If, for some reason, we are still missing names, abort.
+        if (empty($site->environment->name) || empty($platform->environment->name)) {
+          return drush_set_error('DEVSHOP_ERROR', 'Source or target environment not found. Contact your systems administrator.');
+        }
+
         $task = hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
 
         $link = l(t('View Logs'), "node/{$task->nid}");
@@ -342,8 +361,13 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
           $db_server = $platform->project->settings->default_environment['db_server'];
         }
 
-        $new_site = devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
-        drush_log(t("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. See the !link for status.", array('!link' => l(t('Environment Dashboard'), "node/{$new_site->nid}"))), 'devshop_log');
+        if (empty($platform->environment->name)) {
+          return drush_set_error('DEVSHOP_ERROR', 'Missing environment name. Unable to create new site.');
+        }
+        else {
+          $new_site = devshop_projects_create_site($platform->project, $platform, $platform->environment->name, $db_server);
+          drush_log("[DevShop] Environment '{$platform->environment->name}' is scheduled to be installed. Please wait...", 'devshop_log');
+        }
       }
     }
   }
@@ -370,7 +394,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
     $site = $task->ref;
     $platform = node_load($site->platform);
 
-    if ($platform->environment->name) {
+    if (isset($platform->environment) && !empty($platform->environment->name)) {
 
       // Save environment record.
       drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
@@ -403,6 +427,12 @@ function devshop_projects_post_hosting_import_task($task, $data) {
         // Trigger a deploy using the project's default hooks.
         $args = $platform->project->settings->deploy['default_hooks'];
         $args['git_ref'] = $platform->environment->git_ref;
+
+        // Handle a Pull Request. If there is one, we want to deploy to the PR branch.
+        if (!empty($platform->environment->github_pull_request->pull_request_object->head->ref)) {
+          $args['git_ref'] = $platform->environment->github_pull_request->pull_request_object->head->ref;
+        }
+
         hosting_add_task($site->nid, 'devshop-deploy', $args);
 
       } else {

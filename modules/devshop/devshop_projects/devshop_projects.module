@@ -127,6 +127,7 @@ function devshop_projects_devshop_environment_actions($environment) {
 
     // Add disable or delete task based on hosting variable.
     if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
+      $items[] = 'disable';
       $items[] = 'delete';
     } else {
 

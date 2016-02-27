@@ -37,7 +37,7 @@ function devshop_github_menu() {
 /**
  * Implements hook_form_FORM_ID_alter() for project_node_form().
  */
-function devshop_github_form_node_form_alter(&$form, &$form_state, $form_id) {
+function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
 
   if ($node->project->git_provider != 'github') {

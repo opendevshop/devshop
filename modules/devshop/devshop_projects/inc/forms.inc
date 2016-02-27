@@ -80,6 +80,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   }
 
+  // Prevent editing code path unless allowed.
+  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
+    $form['project']['code_path']['#type'] = 'value';
+    $form['project']['code_path']['#value'] = $form['project']['code_path']['#default_value'];
+  }
+
   // Project Settings
   $form['project']['settings'] = array(
     '#weight' => -10,
@@ -732,16 +738,31 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       '#title' => t('Deployment Hooks'),
   );
 
-  $environment_update = isset($environment->settings->deploy) ? $environment->settings->deploy['update'] : FALSE;
-  $environment_cache = isset($environment->settings->deploy) ? $environment->settings->deploy['cache'] : FALSE;
-  $environment_revert = isset($environment->settings->deploy) ? $environment->settings->deploy['revert'] : FALSE;
-  $environment_dothooks = isset($environment->settings->deploy) ? $environment->settings->deploy['dothooks'] : FALSE;
-  $environment_acquia_hooks = isset($environment->settings->deploy) ? $environment->settings->deploy['acquia_hooks'] : FALSE;
-  $project_update = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['update'] : FALSE;
-  $project_cache = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['cache'] : FALSE;
-  $project_revert = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['revert'] : FALSE;
-  $project_dothooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['dothooks'] : FALSE;
-  $project_acquia_hooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['acquia_hooks'] : FALSE;
+  // If we are on the project creation wizard, set some sane defaults
+  if (current_path() == 'projects/add/settings') {
+    $environment_update = FALSE;
+    $environment_cache = FALSE;
+    $environment_revert = FALSE;
+    $environment_dothooks = FALSE;
+    $environment_acquia_hooks  = FALSE;
+    $project_update = TRUE;
+    $project_cache  = TRUE;
+    $project_revert = FALSE;
+    $project_dothooks = FALSE;
+    $project_acquia_hooks = FALSE;
+  }
+  else {
+    $environment_update = isset($environment->settings->deploy) ? $environment->settings->deploy['update'] : FALSE;
+    $environment_cache = isset($environment->settings->deploy) ? $environment->settings->deploy['cache'] : FALSE;
+    $environment_revert = isset($environment->settings->deploy) ? $environment->settings->deploy['revert'] : FALSE;
+    $environment_dothooks = isset($environment->settings->deploy) ? $environment->settings->deploy['dothooks'] : FALSE;
+    $environment_acquia_hooks = isset($environment->settings->deploy) ? $environment->settings->deploy['acquia_hooks'] : FALSE;
+    $project_update = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['update'] : FALSE;
+    $project_cache = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['cache'] : FALSE;
+    $project_revert = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['revert'] : FALSE;
+    $project_dothooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['dothooks'] : FALSE;
+    $project_acquia_hooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['acquia_hooks'] : FALSE;
+  }
 
   $return['update'] = array(
       '#type' => 'checkbox',
