@@ -21,10 +21,6 @@ echo "Creating release branch $RELEASE_BRANCH in devmaster..."
 cd source/devmaster-0.x/profiles/devmaster
 git checkout -b $RELEASE_BRANCH
 
-echo "Creating release branch $RELEASE_BRANCH in devshop_provision..."
-cd ../../../drush/devshop_provision
-git checkout -b $RELEASE_BRANCH
-
 echo "Release Branches created.  Bump your versions in the following files, commit the changes, then run bash release.sh:"
 
 echo "build-devmaster.make"
