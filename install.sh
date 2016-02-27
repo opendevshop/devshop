@@ -3,23 +3,24 @@
 #  DevShop Standalone Install Script
 #  =================================
 #
-#  Install DevShop with Ansible.
+#  This script will install a full devshop server from scratch. 
+#  
+#  Please read the full "Installing DevShop" instructions at https://devshop.readthedocs.org/en/latest/install/
 #
-#  To clone devshop playbook from source:
+#  Before you start, please visit https://github.com/opendevshop/devshop/releases to be sure you have the latest version of this script,
+#  Or you may try the 0.x script with the URL https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
+# 
+#  Must run with root or sudo privileges:
+#  
+#    ubuntu@devshop:~$ wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
+#    ubuntu@devshop:~$ bash install.sh
 #
-#    $ sudo ./install.sh
-#
-#  To use a local playbook: (use the directory path, do not include playbook.yml)
-#
-#    $ sudo ./install.sh /path/to/playbook
-#
-#  For example, if using vagrant:
-#
-#    $ sudo ./install.sh /vagrant/installers/ansible
-#
-#  If using a playbook path option, the makefile used to build devmaster is defined
-#  in the vars.yml file: devshop_makefile.
-#
+#  Options:
+#    --hostname           The desired fully qualified domain name to set as this machine's hostname
+#    --server_webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
+#    --makefile           The makefile to use to build the front-end site.
+#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#    --aegir_user_uid     The UID to set for the aegir user. Useful if you need a fixed UID for mounts.
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
@@ -33,6 +34,11 @@ echo " Welcome to the DevShop Standalone Installer "
 echo "                   v $DEVSHOP_VERSION        "
 echo "============================================="
 
+# Fail if not running as root (sudo)
+if [ $EUID -ne 0 ]; then
+    echo " This script must be run as root.  Try 'sudo bash install.sh'." 1>&2
+    exit 1
+fi
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
 DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
@@ -131,12 +137,6 @@ if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
 elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
   echo " An existing Aegir Apache installation was found. Using 'apache' for variable 'server_webserver'"
   echo $LINE
-fi
-
-# Fail if not running as root (sudo)
-if [ $EUID -ne 0 ]; then
-    echo " This script must be run as root.  Try 'sudo ./install.sh'." 1>&2
-    exit 1
 fi
 
 # Fail if server_webserver is not apache or nginx
