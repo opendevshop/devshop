@@ -151,10 +151,10 @@
 
   <div class="row">
 
-    <?php if (!empty($page['sidebar_first']) || !empty($tabs)): ?>
+    <?php if (!empty($sidebar_first_rendered) || !empty($tabs_rendered)): ?>
       <aside class="col-sm-3" role="complementary">
-        <?php print render($tabs); ?>
-        <?php print render($page['sidebar_first']); ?>
+        <?php print $tabs_rendered; ?>
+        <?php print $sidebar_first_rendered; ?>
       </aside>  <!-- /#sidebar-first -->
     <?php endif; ?>
 

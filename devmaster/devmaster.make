@@ -2,7 +2,10 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "7.41"
+projects[drupal][version] = "7.43"
+
+# Update this with each new release of devshop
+projects[devshop_stats][version] = "1.0-alpha1"
 
 defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
@@ -12,6 +15,7 @@ defaults[projects][type] = "module"
 includes[devshop] = "drupal-org.make"
 
 projects[hostmaster][type] = "profile"
+projects[hostmaster][version] = "3.4"
 projects[hostmaster][subdir] = ""
 projects[hostmaster][version] = "3.4"
 
@@ -27,6 +31,8 @@ projects[eldir][type] = theme
 projects[hosting_git][subdir] = aegir
 projects[hosting_remote_import][subdir] = aegir
 projects[hosting_site_backup_manager][subdir] = aegir
+projects[hosting_site_backup_manager][patch][2619074] = https://www.drupal.org/files/issues/2619074-remove-varget_2.patch
+
 projects[hosting_tasks_extra][subdir] = aegir
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
@@ -51,6 +57,7 @@ projects[views][version] = "3.13"
 projects[views_bulk_operations][version] = "3.3"
 projects[ctools][version] = "1.9"
 projects[features][version] = "2.7"
+projects[distro_update][version] = "1"
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
