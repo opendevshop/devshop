@@ -421,7 +421,7 @@ function devshop_default_web_group() {
     $info['name']);
 
   foreach ($common_groups as $group) {
-    if (provision_posix_groupname($group)) {
+    if (devshop_posix_groupname($group)) {
       return $group;
       break;
     }
