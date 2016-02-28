@@ -1,4 +1,4 @@
-document_root: docroot
+document_root: devshop-2.x
 hooks:
   build: |
     drush make build-devshop.make devshop-2.x --prepare-install -y
