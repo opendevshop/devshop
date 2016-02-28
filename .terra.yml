@@ -8,7 +8,7 @@ hooks:
       'username' => 'drupal',
       'password' => 'drupal',
       'host' => 'database',
-    );" >> www/sites/default/settings.php
+    );" >> devshop-2.x/sites/default/settings.php
 
   # On environment:deploy
   deploy: |
