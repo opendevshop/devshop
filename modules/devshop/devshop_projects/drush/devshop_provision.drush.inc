@@ -68,7 +68,7 @@ function devshop_provision_drush_command() {
     'description' => dt('Install and verify the DevShop frontend.'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'arguments' => array(
-      'example.com' => dt('The URL of the site to install, optional (default: %host).', array('%host' => get_fqdn())),
+      'example.com' => dt('The URL of the site to install, optional (default: %host).', array('%host' => devshop_fqdn())),
     ),
     'options' => array(
      'http_service_type' => dt('Webserver type to configure (default: %webserver)', array('%webserver' => 'apache')),
@@ -78,10 +78,10 @@ function devshop_provision_drush_command() {
      'aegir_db_pass' => dt('Database password to use'),
      'client_email' => dt('Email of the first client to create in the frontend'),
      'client_name' => dt('Name of the first client to create in the frontend (default: %user)', array('%user' => 'admin')),
-     'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => get_fqdn())),
+     'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => devshop_fqdn())),
      'script_user' => dt('User to run the backend as (default: %user)', array('%user' => devshop_current_user())),
      'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => _provision_default_web_group())),
-     'version' => dt('The version of this released. (default: %version)', array('%version' => provision_version())),
+     'version' => dt('The version of this released. (default: %version)', array('%version' => '1.x')),
      'aegir_root' => dt('Install aegir in this home directory (default: %home). Do not change unless you know what you are doing.', array('%home' => drush_server_home())),
      'makefile' => dt('The Drupal makefile to use to build the front end.'),
      'profile' => dt('The Drupal installation profile to use for installing the front-end (default: hostmaster)'),
@@ -292,23 +292,56 @@ function devshop_drush_process($command, $cwd = null, $label = 'Process', $env =
 }
 
 /**
- * Get the current fully qualified domain of the running server.
- * 
- * A copy of provision_fqdn()
- */
-function get_fqdn($host = NULL) {
-  if (is_null($host)) {
-    $host = php_uname('n');
-  }
-  return strtolower(gethostbyaddr(gethostbyname($host)));
-}
-/**
- * Get the current fully qualified domain of the running server.
+ * Find the username of the current running procses
  *
- * A copy of devshop_current_user()
+ * This will return the username of the current running user (as seen
+ * from posix_geteuid()) and should be used instead of
+ * get_current_user() (which looks at the file owner instead).
+ *
+ * @see get_current_user()
+ * @see posix_geteuid()
+ *
+ * @return
+ *   String. The username.
  */
 function devshop_current_user() {
-  $user = posix_geteuid();
+  return devshop_posix_username(posix_geteuid());
+}
+
+/**
+ * Check whether a user is a member of a group.
+ *
+ * @param user
+ *   username or user id of user.
+ * @param group
+ *   groupname or group id of group.
+ *
+ * @return
+ *   Boolean. True if user does belong to group,
+ *   and FALSE if the user does not belong to the group, or either the user or group do not exist.
+ */
+function devshop_user_in_group($user, $group) {
+  // TODO: make these singletons with static variables for caching.
+  $user = devshop_posix_username($user);
+  $group = devshop_posix_groupname($group);
+  if ($user && $group) {
+    $info = posix_getgrnam($group);
+    if (in_array($user, $info['members'])) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Return the valid system username for $user.
+ *
+ * @return
+ *   Returns the username if found, otherwise returns FALSE
+ */
+function devshop_posix_username($user) {
+  // TODO: make these singletons with static variables for caching.
+  // we do this both ways, so that the function returns NULL if no such user was found.
   if (is_numeric($user)) {
     $info = posix_getpwuid($user);
     $user = $info['name'];
@@ -318,4 +351,92 @@ function devshop_current_user() {
     $user = $info['name'];
   }
   return $user;
+}
+
+/**
+ * Return the valid system groupname for $group.
+ *
+ * @return
+ *   Returns the groupname if found, otherwise returns FALSE
+ */
+function devshop_posix_groupname($group) {
+  // TODO: make these singletons with static variables for caching.
+  // we do this both ways, so that the function returns NULL if no such user was found.
+  if (is_numeric($group)) {
+    $info = posix_getgrgid($group);
+    $group = $info['name'];
+  }
+  else {
+    $info = posix_getgrnam($group);
+    $group = $info['name'];
+  }
+  return $group;
+}
+
+/**
+ * Generate a random alphanumeric password.
+ *
+ * This is a copy of Drupal core's user_password() function. We keep it
+ * here in case we need this and don't have a bootstrapped Drupal
+ * around.
+ *
+ * @see user_password()
+ */
+function devshop_password($length = 10) {
+  // This variable contains the list of allowable characters for the
+  // password. Note that the number 0 and the letter 'O' have been
+  // removed to avoid confusion between the two. The same is true
+  // of 'I', 1, and 'l'.
+  $allowable_characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+  // Zero-based count of characters in the allowable list:
+  $len = strlen($allowable_characters) - 1;
+
+  // Declare the password as a blank string.
+  $pass = '';
+
+  // Loop the number of times specified by $length.
+  for ($i = 0; $i < $length; $i++) {
+
+    // Each iteration, pick a random character from the
+    // allowable string and append it to the password:
+    $pass .= $allowable_characters[mt_rand(0, $len)];
+  }
+
+  return $pass;
+}
+
+function devshop_default_web_group() {
+  $info = posix_getgrgid(posix_getgid());
+  $common_groups = array(
+    'www-data',
+    'apache',
+    'nginx',
+    'www',
+    '_www',
+    'webservd',
+    'httpd',
+    'nogroup',
+    'nobody',
+    $info['name']);
+
+  foreach ($common_groups as $group) {
+    if (provision_posix_groupname($group)) {
+      return $group;
+      break;
+    }
+  }
+  return NULL;
+}
+
+/**
+ * return the FQDN of the machine or provided host
+ *
+ * this replicates hostname -f, which is not portable
+ */
+function devshop_fqdn($host = NULL) {
+  if (is_null($host)) {
+    $host = php_uname('n');
+  }
+  return strtolower(gethostbyaddr(gethostbyname($host)));
 }
