@@ -14,11 +14,12 @@ hooks:
   deploy: |
     drush {{alias}} updb -y
     drush {{alias}} cc all
-
-docker_compose:
-  app_services:
-    image: rabbitmq:3-management
-      hostname: terra-rabbit
-      ports:
-        - '8080:15672'
-        - '5672:5672'
+#
+#docker_compose:
+#  app_services:
+#      image: jenkins
+#          hostname: jenkins
+#          ports:
+#              - '*:8080'
+#          volumes:
+#              - '.:/var/jenkins_home'
