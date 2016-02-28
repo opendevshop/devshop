@@ -1,0 +1,24 @@
+document_root: docroot
+hooks:
+  build: |
+    drush make build-devshop.make devshop-2.x --prepare-install -y
+    echo "\$databases['default']['default'] = array(
+      'driver' => 'mysql',
+      'database' => 'drupal',
+      'username' => 'drupal',
+      'password' => 'drupal',
+      'host' => 'database',
+    );" >> www/sites/default/settings.php
+
+  # On environment:deploy
+  deploy: |
+    drush {{alias}} updb -y
+    drush {{alias}} cc all
+
+docker_compose:
+  app_services:
+    image: rabbitmq:3-management
+      hostname: terra-rabbit
+      ports:
+        - '8080:15672'
+        - '5672:5672'
