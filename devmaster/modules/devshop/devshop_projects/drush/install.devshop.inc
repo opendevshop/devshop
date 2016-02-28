@@ -77,11 +77,11 @@ Don't worry: you will get to review those settings after the final install");
   }
   // now we prompt the user for settings if not provided or not sane
   if (!$site) {
-    $site = drush_prompt(dt("Aegir frontend URL"), provision_fqdn());
+    $site = drush_prompt(dt("Aegir frontend URL"), get_fqdn());
   }
   drush_set_option('site', $site);
 
-  drush_set_default('aegir_host', provision_fqdn());
+  drush_set_default('aegir_host', get_fqdn());
   drush_set_default('aegir_db_host', 'localhost');
 
   if (is_null(drush_get_option('aegir_db_pass', NULL))) {
@@ -163,7 +163,7 @@ The following settings will be used:
  */
 function drush_provision_devshop_install($site = NULL) {
   $version = drush_get_option('version');
-  $site = drush_get_option('site', provision_fqdn());
+  $site = drush_get_option('site', get_fqdn());
   $aegir_root = drush_get_option('aegir_root');
   $platform = drush_get_option(array('r', 'root'));
 
