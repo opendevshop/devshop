@@ -11,12 +11,20 @@ SUPERVISOR_STOP='service supervisor stop'
 HOST_PORT=8000
 TRAVIS=true
 
+# Do NOT let this script run as root.
+if [[ ! $EUID -ne 0 ]]; then
+   echo "This script must NOT be run as root. Run it as the same user you edit your files with."
+   echo "This user must also be able to run the 'docker' command."
+   echo "If it cannot, try adding it to the docker group: "
+   echo "  $ sudo usermod -aG docker yourusername  "
+   exit 1
+fi
+
 echo "Running 'vagrant-prepare-host.sh' to get source code..."
 bash vagrant-prepare-host.sh $PWD $DEVSHOP_VERSION
 
 # Changing UID:GID of source code to Aegir's UID so it can write to these folders.
 # We can change it back to the user later so they can edit the files.
-sudo chown 12345:12345 source -R
 cd tests
 
 composer install
@@ -44,3 +52,6 @@ echo " Then to get into the front end, run:"
 echo "    $ devshop login "
 echo " You will get a URL like http://devshop.docker/user/login/13abc.  you will have to add the port $HOST_PORT."
 echo " Good luck! We hope to improve on this soon.  Please post issues at https://github.com/opendevshop/devshop/issues "
+echo " "
+echo " NOTE: To run tests, we have disabled supervisor.  To run the task queue runner, run: "
+echo " docker exec -ti devshop_server su - aegir -c 'drush @hostmaster en hosting_queued -y && drush @hostmaster hosting-queued' "

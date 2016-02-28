@@ -1,13 +1,16 @@
-Open DevShop
+OpenDevShop
 ============
 
-<img src="https://www.drupal.org/files/devshop.png" width="100%">
+![OpenDevShop Project Dashboard](images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
 
 [![Join the chat at https://gitter.im/opendevshop/devshop](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/opendevshop/devshop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop)
+Version | Status | Aegir | Hosts | DevMaster | Install & CLI 
+--------|--------|-------|-------|----|-----
+0.x     | Stable |   2.x   |  D6, D7     | [![DevMaster 0.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=0.x)](https://travis-ci.org/opendevshop/devmaster) | [![DevShop 0.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=0.x)](https://travis-ci.org/opendevshop/devshop) 
+1.x     | In Development |3.x | D6,D7,D8 |  [![DevMaster 1.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=1.x)](https://travis-ci.org/opendevshop/devmaster) |  [![DevShop 1.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=1.x)](https://travis-ci.org/opendevshop/devshop) 
 
-DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It a provides front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devshop_provision)).
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devshop_provision)).
 
 DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
@@ -20,6 +23,69 @@ Resources
 * [Project Homepage](https://www.drupal.org/project/devshop) drupal.org/project/devshop
 * [Issue Queue](https://www.drupal.org/project/issues/devshop) drupal.org/project/issues/devshop
 * [Development Information](https://devshop.readthedocs.org/en/latest/help/DEVELOPMENT/)  Developer documentation will walk you through contributing to DevShop.
+
+Tour
+----
+
+### DevShop Homepage
+
+![OpenDevShop Homepage: Projects List](images/devshop-projects.png "A screenshot of the OpenDevShop Homeage: a clear list of all of your projects and all of your environments.")
+
+The OpenDevShop Homepage shows you a birds evey view of all of your projects.  The name, install profile, git URL, Drupal Version, and a list of all the environments are visible at a glance.
+
+Each environment indicator is updated in realtime. You can see the status of the latest task for every site in your system.
+
+### DevShop Project Dashboard
+
+![OpenDevShop Project Dashboard](images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
+
+The project dashboard shows you all the information you need about your website.  Git URL, list of branches and tags,
+links to GitHub, links to the live environment, Drush aliases, and most importantly: your project's environments.
+
+Each block is a running copy of your website.  Name them whatever you want. Each one shows you the drupal version, the 
+current git branch or tag, the URLs that are available, the last commit time, a files browser, and a backup system.
+
+### Environments Dashboard 
+
+![OpenDevShop Environment](images/environment-settings.png "A screenshot of an OpenDevShop Environment UI.")
+
+Under the "Environment Settings" button is a list of possible tasks:
+
+  - **Download Modules** allows you to add drupal modules and themes to your project, automatically committing them to git.
+  - **Clone Environment** creates an exact copy of your environment with a new name.
+  - **Fork Environment** runs a clone, then creates a new branch with a name of your choice!
+  - **Disable & Destroy Environment**. A setting prevents environments from being destroyed in two clicks, use at your discretion. 
+  - **Flush all caches**, **Rebuild Registry**, **Run Cron**,etc.  *These tasks are not really needed if you use Deploy hooks! Cron is always enabled, and caches can be cleared on every code deployment.
+  - **Backup / Restore**, as you would expect.
+  - **Run Tests** allows you to manually trigger test runs.
+  
+### Deploy
+
+![Environment Code Deploy](images/deploy-code.png "A screenshot of the Deploy Code widget.")
+
+ - The **Deploy Code** control allow you to easily change what branch or tag an environment is tracking. 
+ - **Deploy Data** allows you to deliver new database and files to your environment. 
+ - **Deploy Stack** allows you to move your environment's services (like database and files) from one server to another.
+
+### Tasks
+
+![Environment Task Logs](images/environment-task-logs.png "A screenshot of the Environment Task Logs.")
+
+At the bottom of each environment block is a status indicator for the last task that was run on the environment.
+
+You can click any task to view the detailed logs of any task.
+
+### DevShop Logs
+
+DevShop is designed for developers. We want to give them exactly the information they need.  No more, no less.
+
+Out of this came the design of our task logs. We strive to make DevShop's activities as clear and transparent as possible.
+
+![Deploy Code Logs](images/logs-deploy-pull.png "A screenshot of Deploy Code logs.")
+
+![Deploy Hooks Logs](images/logs-deploy-pull.png "A screenshot of Deploy Code logs running drush updb.")
+
+After the code is deployed with git, any number of *Deploy Hooks* can be run.
 
 Roadmap
 -------
@@ -70,7 +136,7 @@ Support
 Installation
 ------------
 
-See INSTALL.md for installation instructions.
+See [the installation instructions](install.md) for detailed information on installing DevShop.
 
 Usage
 -----
@@ -82,16 +148,6 @@ Visit http://devshop.local or your chosen domain in the browser to view the fron
 SSH into your server as the `aegir` user to access the back-end.
 
 Use drush to access any of your sites.  Use `drush sa` to see the list of available aliases.
-
-Versions
---------
-
-We have two active branches as we try to reach for Drupal 8 hosting in time for release.  1.x has just started, and isn't functional yet.  Please use the 0.x branch of DevShop.
-
-DevShop version | Branch | DevMaster Versions | Hosted Drupal Versions | Aegir |Status
-----------------|--------|--------------------|------------------------|-------|-------
-0.7.3 *CURRENT* | 0.x |  6.x           | 6, 7                   | 2.x | Stable
-1.0.0 | 1.x |  7.x       | 6, 7, 8                | 3.x | non-functional
 
 Vagrant
 -------

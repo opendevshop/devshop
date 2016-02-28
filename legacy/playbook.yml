@@ -27,28 +27,39 @@
     - name: Setup | DEBIAN | Install common packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian"
-      with_items: packages
+      with_items: '{{packages}}'
 
     - name: Setup | DEBIAN | Install NGINX server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian" and server_webserver == "nginx"
-      with_items: nginx_packages
+      with_items: '{{nginx_packages}}'
 
     - name: Setup | DEBIAN | Install Apache server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian" and server_webserver == "apache"
-      with_items: apache_packages
+      with_items: '{{apache_packages}}'
 
     # REDHAT
+
+    # Setup PHP 5.5 on RHEL and CentOS requires some extra commands
+    # See https://www.softwarecollections.org/en/scls/rhscl/php55/
+    - name: Setup | REDHAT | Install SCL in CentOS
+      action: yum name=centos-release-scl state=present
+      when: ansible_distribution == 'CentOS'
+
+    - name: Setup | REDHAT | Install SCL in RHEL
+      command: yum-config-manager --enable rhel-server-rhscl-7-rpms
+      when: ansible_distribution == 'Red Hat Enterprise Linux'
+
     - name: Setup | REDHAT | Install common packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat"
-      with_items: packages
+      with_items: '{{packages}}'
 
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat" and server_webserver == "nginx"
-      with_items: nginx_packages
+      with_items: '{{nginx_packages}}'
 
     - name: Setup | REDHAT | Comment conflicting configuration (Nginx)
       template: src={{ playbook_path }}/templates/nginx.conf.Redhat.j2 dest=/etc/nginx/nginx.conf force=yes
@@ -105,6 +116,11 @@
         dest={{ devshop_cli_path }}
         state=link
         force=yes
+
+    - name: DevShop CLI | composer install
+      command: "composer install"
+      args:
+        chdir: "{{ playbook_path }}"
 
     # DEBIAN only.  RedHat has rewrite enabled by default.
     - name: Enable mod rewrite
@@ -244,7 +260,7 @@
         creates: /var/aegir/.drush/hostmaster.alias.drushrc.php
 
     - name: Supervisor | Set up queue runner script
-      when: supervisor_running == true
+      when: supervisor_running == "true"
       template:
         src=templates/hosting-queue-runner.j2
         dest=/usr/bin/hosting-queue-runner
@@ -253,7 +269,7 @@
         group=aegir
 
     - name: Supervisor | Set up supervisor job
-      when: supervisor_running == true
+      when: supervisor_running == "true"
       template:
         src=templates/supervisor-hosting-queue-runner.conf.j2
         dest={{ supervisor_hosting_queued_conf_path }}
@@ -262,7 +278,7 @@
         - restart supervisor
 
     - name: Service | Ensure Supervisor is restarted
-      when: supervisor_running == true
+      when: supervisor_running == "true"
       service:
         name={{ supervisor_daemon }}
         state=restarted

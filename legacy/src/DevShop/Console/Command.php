@@ -240,7 +240,7 @@ abstract class Command extends BaseCommand
    */
   public function checkVersion($version) {
     if (empty($version)) {
-      throw new \Exception('Version not specified.');
+      return FALSE;
     }
 
     $client = new \Github\Client();
@@ -261,8 +261,17 @@ abstract class Command extends BaseCommand
       $tag_found = FALSE;
     }
 
-    if (!$branch_found && !$tag_found) {
-      throw new \Exception('No branch or tag found named ' . $version);
+    // Detect GitHub limit issues and just pass.
+    if (strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
+      return TRUE;
     }
+
+    // If we don't find a branch or tag, throw an exception
+    if (!$branch_found && !$tag_found) {
+      throw new \Exception("An exception was thrown when trying to find a branch or tag named {$version}:" . $e->getCode() . ' ' . $e->getMessage());
+    }
+
+    // If no exceptions were thrown, return TRUE.
+    return TRUE;
   }
 }
