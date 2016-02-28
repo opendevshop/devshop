@@ -23,7 +23,9 @@ function devshop_provision_register_autoload() {
   static $loaded = FALSE;
   if (!$loaded) {
     $loaded = TRUE;
-    provision_autoload_register_prefix('Provision_', dirname(__FILE__));
+    if (function_exists('provision_autoload_register_prefix')) {
+      provision_autoload_register_prefix('Provision_', dirname(__FILE__));
+    }
   }
 }
 
