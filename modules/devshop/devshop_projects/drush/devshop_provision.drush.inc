@@ -68,7 +68,7 @@ function devshop_provision_drush_command() {
     'description' => dt('Install and verify the DevShop frontend.'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'arguments' => array(
-      'example.com' => dt('The URL of the site to install, optional (default: %host).', array('%host' => provision_fqdn())),
+      'example.com' => dt('The URL of the site to install, optional (default: %host).', array('%host' => get_fqdn())),
     ),
     'options' => array(
      'http_service_type' => dt('Webserver type to configure (default: %webserver)', array('%webserver' => 'apache')),
@@ -78,7 +78,7 @@ function devshop_provision_drush_command() {
      'aegir_db_pass' => dt('Database password to use'),
      'client_email' => dt('Email of the first client to create in the frontend'),
      'client_name' => dt('Name of the first client to create in the frontend (default: %user)', array('%user' => 'admin')),
-     'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => provision_fqdn())),
+     'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => get_fqdn())),
      'script_user' => dt('User to run the backend as (default: %user)', array('%user' => provision_current_user())),
      'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => _provision_default_web_group())),
      'version' => dt('The version of this released. (default: %version)', array('%version' => provision_version())),
