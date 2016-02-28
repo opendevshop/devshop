@@ -489,7 +489,6 @@ if (!function_exists('provision_autoload_register_prefix')) {
     static $instance = NULL;
 
     if (is_null($instance)) {
-      require_once dirname(__FILE__) . '/Symfony/Component/ClassLoader/UniversalClassLoader.php';
       $instance = new UniversalClassLoader();
       // Activate the autoloader.
       $instance->register();
