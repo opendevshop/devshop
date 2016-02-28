@@ -5,7 +5,6 @@
  */
 
 require_once('vendor/autoload.php');
-require_once('ymfony/Component/ClassLoader/UniversalClassLoader.php');
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\ClassLoader\ClassLoader;
