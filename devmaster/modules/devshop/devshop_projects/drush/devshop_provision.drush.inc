@@ -477,7 +477,7 @@ if (!function_exists('provision_autoload_register_prefix')) {
     }
 
     // Set the prefixes.
-    provision_autoload()->registerPrefix($prefix, $dirs);
+    provision_autoload()->addPrefix($prefix, $dirs);
   }
 
   /**
