@@ -80,7 +80,7 @@ function devshop_provision_drush_command() {
      'client_name' => dt('Name of the first client to create in the frontend (default: %user)', array('%user' => 'admin')),
      'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => devshop_fqdn())),
      'script_user' => dt('User to run the backend as (default: %user)', array('%user' => devshop_current_user())),
-     'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => _provision_default_web_group())),
+     'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => devshop_web_group())),
      'version' => dt('The version of this released. (default: %version)', array('%version' => '1.x')),
      'aegir_root' => dt('Install aegir in this home directory (default: %home). Do not change unless you know what you are doing.', array('%home' => drush_server_home())),
      'makefile' => dt('The Drupal makefile to use to build the front end.'),
