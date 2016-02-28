@@ -290,3 +290,16 @@ function devshop_drush_process($command, $cwd = null, $label = 'Process', $env =
     return drush_set_error('DEVSHOP_DRUSH_PROCESS_ERROR', 'Process Failed');
   }
 }
+
+/**
+ * Get the current fully qualified domain of the running server.
+ * 
+ * A copy of provision_fqdn()
+ */
+function get_fqdn($host = NULL) {
+  if (is_null($host)) {
+    $host = php_uname('n');
+  }
+  return strtolower(gethostbyaddr(gethostbyname($host)));
+}
+
