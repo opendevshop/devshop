@@ -79,7 +79,7 @@ function devshop_provision_drush_command() {
      'client_email' => dt('Email of the first client to create in the frontend'),
      'client_name' => dt('Name of the first client to create in the frontend (default: %user)', array('%user' => 'admin')),
      'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => get_fqdn())),
-     'script_user' => dt('User to run the backend as (default: %user)', array('%user' => provision_current_user())),
+     'script_user' => dt('User to run the backend as (default: %user)', array('%user' => devshop_current_user())),
      'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => _provision_default_web_group())),
      'version' => dt('The version of this released. (default: %version)', array('%version' => provision_version())),
      'aegir_root' => dt('Install aegir in this home directory (default: %home). Do not change unless you know what you are doing.', array('%home' => drush_server_home())),
@@ -302,4 +302,20 @@ function get_fqdn($host = NULL) {
   }
   return strtolower(gethostbyaddr(gethostbyname($host)));
 }
-
+/**
+ * Get the current fully qualified domain of the running server.
+ *
+ * A copy of devshop_current_user()
+ */
+function devshop_current_user() {
+  $user = posix_geteuid();
+  if (is_numeric($user)) {
+    $info = posix_getpwuid($user);
+    $user = $info['name'];
+  }
+  else {
+    $info = posix_getpwnam($user);
+    $user = $info['name'];
+  }
+  return $user;
+}
