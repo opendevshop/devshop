@@ -9,6 +9,9 @@ hooks:
       'password' => 'drupal',
       'host' => 'database',
     );" >> devshop-2.x/sites/default/settings.php
+    
+  enable_first: |
+    drush {{alias}} site-install devmaster --account-mail=jon@opendevshop.com --site-name='OpenDevShop' -y
 
   # On environment:deploy
   deploy: |
