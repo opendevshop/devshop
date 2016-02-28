@@ -40,7 +40,7 @@ function drush_provision_devshop_install_validate($site = NULL) {
 
   drush_set_default('root', $aegir_root . '/' . $profile . '-' . $version);
   drush_set_default('r', drush_get_option('root'));
-  drush_set_default('script_user', provision_current_user());
+  drush_set_default('script_user', devshop_current_user());
   drush_set_default('web_group', _provision_default_web_group());
   drush_set_default('http_service_type', 'apache');
   drush_set_default('http_port', '80');
