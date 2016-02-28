@@ -5,9 +5,10 @@
  */
 
 require_once('vendor/autoload.php');
+require_once('ymfony/Component/ClassLoader/UniversalClassLoader.php');
 
 use Symfony\Component\Process\Process;
-use Symfony\Component\ClassLoader\UniversalClassLoader;
+use Symfony\Component\ClassLoader\ClassLoader;
 
 /**
  * Implements hook_drush_init()
@@ -489,7 +490,7 @@ if (!function_exists('provision_autoload_register_prefix')) {
     static $instance = NULL;
 
     if (is_null($instance)) {
-      $instance = new UniversalClassLoader();
+      $instance = new ClassLoader();
       // Activate the autoloader.
       $instance->register();
     }
