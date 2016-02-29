@@ -1,7 +1,7 @@
 document_root: devshop-2.x
 hooks:
   build: |
-    drush make build-devshop.make devshop-2.x --prepare-install -y
+    drush make build-devshop.make devshop-2.x --prepare-install --working-copy -y
     echo "\$databases['default']['default'] = array(
       'driver' => 'mysql',
       'database' => 'drupal',
@@ -13,10 +13,20 @@ hooks:
   enable_first: |
     drush {{alias}} site-install devmaster --account-mail=jon@opendevshop.com --site-name='OpenDevShop' -y
 
+    # Generate SSH key in the drush container
+    # Pass that ssh key to the remote container authorized_keys
+    docker exec {{app}}_{{environment}}_remote_1 echo '' > /root/.ssh/authorized_keys
+
   # On environment:deploy
   deploy: |
     drush {{alias}} updb -y
     drush {{alias}} cc all
+
+docker_compose:
+  app_services:
+    remote:
+      image: ubuntu:14.04
+
 #
 #docker_compose:
 #  app_services:
