@@ -28,7 +28,7 @@ docker_compose:
       image: ubuntu:14.04
       entrypoint: /sbin/init
       ports:
-        - '*:22'
+        - ':22'
 
 #
 #docker_compose:
