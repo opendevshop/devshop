@@ -26,6 +26,7 @@ docker_compose:
   app_services:
     remote:
       image: ubuntu:14.04
+      entrypoint: /sbin/init
 
 #
 #docker_compose:
