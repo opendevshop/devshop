@@ -20,8 +20,13 @@ function aegir_commit_hosting_tasks() {
  * Implements hook_perm()
  * @return array
  */
-function aegir_commit_perm() {
-    return array('create commit task');
+function aegir_commit_permission() {
+    return array(
+        'create commit task' => array(
+            'title' => t('create commit task'),
+            'description' => t('Create "commit code" task.'),
+        ),
+    );
 }
 
 /**

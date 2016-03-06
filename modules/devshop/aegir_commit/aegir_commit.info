@@ -1,4 +1,4 @@
 name = Aegir Commit
 description = Task for committing changes to a site.
-core = 6.x
+core = 7.x
 dependencies[] = hosting_site
