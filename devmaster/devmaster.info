@@ -61,5 +61,5 @@ dependencies[] = devshop_pull
 dependencies[] = devshop_github
 dependencies[] = aegir_ssh
 dependencies[] = devshop_stats
-;dependencies[] = aegir_download
+dependencies[] = aegir_download
 
