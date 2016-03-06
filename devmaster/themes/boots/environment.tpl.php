@@ -765,7 +765,7 @@ sites/all/drush/drushrc.php
                       </a>
                     <?php endif; ?>
                     <?php if (!empty($environment->git_status)): ?>
-                    <a href="<?php print url("node/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
+                    <a href="<?php print url("hosting_confirm/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
                       <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
                     </a>
                     <?php endif; ?>
