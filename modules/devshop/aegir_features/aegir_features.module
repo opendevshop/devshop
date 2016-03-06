@@ -17,8 +17,13 @@ function aegir_features_hosting_tasks() {
  * Implements hook_perm()
  * @return array
  */
-function aegir_features_perm() {
-    return array('create features_update task');
+function aegir_commit_permission() {
+    return array(
+        'create features_update task' => array(
+            'title' => t('create features_update task'),
+            'description' => t('Create "features_update" task.'),
+        ),
+    );
 }
 
 /**
