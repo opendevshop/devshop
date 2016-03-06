@@ -70,8 +70,7 @@ function hosting_task_commit_form($node) {
     drupal_goto("node/{$environment->project_nid}");
   }
   $form['title'] = array(
-    '#type' => 'markup',
-    '#value' => '<h3>' . t('Commit Changes') . '</h3>',
+    '#markup' => '<h3>' . t('Commit Changes') . '</h3>',
   );
   $form['git_info'] = array(
     '#type' => 'fieldset',
@@ -84,11 +83,11 @@ function hosting_task_commit_form($node) {
   );
   $form['git_info']['status'] = array(
     '#type' => 'markup',
-    '#value' => theme('devshop_ascii', array($environment->git_status)),
+    '#markup' => theme('devshop_ascii', array($environment->git_status)),
   );
   $form['git_info']['diff'] = array(
     '#type' => 'markup',
-    '#value' => theme('devshop_ascii', array('output' => $environment->git_diff)),
+    '#markup' => theme('devshop_ascii', array('output' => $environment->git_diff)),
   );
   $form['files'] = array(
     '#description' => t('Check the boxes next to the files you wish to commit.  If you leave all boxes unchecked, all new and changed files will be committed.'),
