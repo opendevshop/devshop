@@ -694,6 +694,7 @@
 # Aegir files
 sites/sites.php
 sites/*/drushrc.php
+sites/*/local.settings.php
 sites/all/drush/drushrc.php
 </pre>';
 
