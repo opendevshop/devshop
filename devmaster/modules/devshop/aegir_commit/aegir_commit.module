@@ -9,7 +9,7 @@ use GitWrapper\GitException;
 function aegir_commit_hosting_tasks() {
     $tasks['site']['commit'] = array(
         'title' => t('Commit Code'),
-        'access callback' => 'devshop_hosting_task_menu_access',
+        'description' => t('Commit all or some of the changed files to the git repository.'),
         'dialog' => TRUE,
         'icon' => 'save'
     );

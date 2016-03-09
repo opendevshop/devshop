@@ -6,7 +6,7 @@
 function aegir_features_hosting_tasks() {
     $tasks['site']['features_update'] = array(
         'title' => t('Recreate Features'),
-        'access callback' => 'devshop_hosting_task_menu_access',
+        'description' => t('Run "features-update" or "features-update-all" on your site.'),
         'dialog' => TRUE,
         'icon' => 'refresh',
     );

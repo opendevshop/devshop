@@ -6,7 +6,7 @@
 function aegir_download_hosting_tasks() {
     $tasks['site']['download'] = array(
         'title' => t('Download Modules'),
-        'access callback' => 'devshop_hosting_task_menu_access',
+        'description' => t('Add modules or themes to your git repository.'),
         'dialog' => TRUE,
         'icon' => 'download'
     );
