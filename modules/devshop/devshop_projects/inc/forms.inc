@@ -268,6 +268,31 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#description' => t('These settings will be used when creating new environments.'),
   );
 
+  // Install Profile
+  $available_profiles = array();
+  foreach ($project->environments as $name => $environment) {
+    $profiles_shortnames = hosting_get_profiles($environment->platform, 'short_name');
+    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+      $profiles[$name] = array_combine($profiles_shortnames, (array)hosting_get_profiles($environment->platform));
+    } else {
+      $profiles[$name] = array();
+    }
+    if (empty($available_profiles)) {
+      $available_profiles = $profiles[$name];
+    } else {
+      $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+    }
+  }
+
+  $form['project']['settings']['default_environment']['install_profile'] = array(
+    '#type' => 'radios',
+    '#options' => $available_profiles,
+    '#title' => t('Default Install Profile'),
+    '#required' => 1,
+    '#description' => t('New environments will be created using this install profile. Existing environments will not be affected.'),
+    '#default_value' => $node->project->install_profile,
+  );
+
   // HTTP Server select.
   $http_servers = hosting_get_servers('http');
   if (count($http_servers)) {
