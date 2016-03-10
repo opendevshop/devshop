@@ -78,13 +78,14 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     t('Install Drupal') => array(
         'devshop__github__install' => empty($node->project->install_profile)? t('Default install profile.'): $node->project->install_profile,
     ),
+    t('Clone another environment') => array(),
   );
 
   if (empty($environments)) {
-    $options['clone'] = array('' => t('No environments available.'));
+    $options[t('Clone another environment')][] = t('No environments available.');
   }
   else {
-    $options = array_merge($options, array_combine($environments, $environments));
+    $options[t('Clone another environment')] = array_combine($environments, $environments);
   }
   $form['project']['settings']['github']['pull_request_environments_method'] = array(
       '#type' => 'select',
