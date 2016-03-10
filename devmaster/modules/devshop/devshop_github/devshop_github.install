@@ -58,3 +58,16 @@ function devshop_github_install() {
     '!link' => l(t('the settings page'), 'admin/devshop/github'),
   )));
 }
+
+/**
+ * Set a weight higher than devshop_project so our form doesn't get obliterated by
+ * devshop_projects_form_project_node_form_alter()
+ */
+function devshop_github_update_7000() {
+  db_update('system')
+      ->fields(array(
+          'weight' => 1
+      ))
+      ->condition('name', 'devshop_github')
+      ->execute();
+}
