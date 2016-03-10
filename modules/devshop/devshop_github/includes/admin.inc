@@ -57,7 +57,6 @@ function devshop_github_settings_form($form, &$form_state) {
         $found_key = TRUE;
       }
     }
-    dsm($keys, $devshop_key);
 
     if ($found_key) {
         $form['github_public_keys']['#markup'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your GitHub account.') . '</div>';
