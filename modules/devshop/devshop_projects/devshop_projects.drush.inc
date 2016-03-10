@@ -313,22 +313,8 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
     // If the project doesn't have an install profile chosen yet, bail.
     if (empty($platform->project->install_profile)) {
-      drush_log('[DEVSHOP] No install profile found for this platform\'s project. Using default profile.', 'notice');
-
-      // If project is drupal 8, install profile is
-      if (strpos($platform->release->version, '8') === 0) {
-        $platform->project->install_profile = 'standard';
-      }
-      elseif (strpos($platform->release->version, '7') === 0) {
-        $platform->project->install_profile = 'standard';
-      }
-      elseif (strpos($platform->release->version, '6') === 0) {
-        $platform->project->install_profile = 'default';
-      }
-
-      if (empty($platform->project->install_profile)) {
-        drush_log('[DEVSHOP] Unable to determine drupal version. Cannot guess at install profile.', 'warning');
-      }
+      drush_log('[DEVSHOP] No install profile found for this project. Not doing anything.', 'ok');
+      return;
     }
 
     // If the platform has a site already, trigger verification, then bail.
