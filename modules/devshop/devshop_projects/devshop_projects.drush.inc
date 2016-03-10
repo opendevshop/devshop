@@ -327,8 +327,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       }
 
       if (empty($platform->project->install_profile)) {
-        drush_log('[DEVSHOP] Unable to determine drupal version. Cannot guess at install profile.', 'error');
-        return;
+        drush_log('[DEVSHOP] Unable to determine drupal version. Cannot guess at install profile.', 'warning');
       }
     }
 
