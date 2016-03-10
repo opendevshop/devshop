@@ -2,7 +2,17 @@
 
 ## 1.0.0-alpha2 (February 27, 2016)
 
+5 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha1...1.x
+37 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-alpha1...1.x
+
 - Adding devshop_stats to devmaster.make. It was somehow missed in the last release.
+- Changed hostname of VM to local.devshop.site
+- Moving code around to make devmaster able to install without provision.
+- Fixing bad password obfuscation for SSH URLs
+- Bumping Aegir Commit and Aegir Features to 7.x
+- Make "default install profile" configurable in project settings.
+- Fix bug causing loss of "install profile" in project settings.
+
 
 ## 1.0.0-alpha1 (February 26, 2016)
 
