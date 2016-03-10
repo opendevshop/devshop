@@ -515,14 +515,19 @@ function devshop_github_webhook($project_node) {
             }
             else {
               // If method is "install"...
-              if ($project->settings->github['pull_request_environments_method'] == 'install') {
+              if ($project->settings->github['pull_request_environments_method'] == 'devshop__github__install') {
                 hosting_create_environment($project, $environment_name, $branch);
+                $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
               }
               // Otherwise, it is a clone from live.
-              else {
-                hosting_create_environment($project, $environment_name, $branch, $project->settings->live['live_environment']);
+              elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']] )) {
+                $source_env = $project->settings->github['pull_request_environments_method'];
+                hosting_create_environment($project, $environment_name, $branch, $source_env);
+                $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
               }
-              $message .= "Environment $environment_name created for $project_node->title \n";
+              else {
+                $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
+              }
             }
 
             $owner = $project->github_owner;
