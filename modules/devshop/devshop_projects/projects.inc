@@ -269,8 +269,8 @@ function devshop_project_load($node) {
 
     // Git information.
     $environment->git_ref_stored = $environment->git_ref;
-    $path = $project->code_path . '/' . $environment->name;
-    if (file_exists($path)) {
+    $path = $environment->repo_root;
+    if (file_exists($path . '/.git')) {
 
       // Timestamp of last commit.
       $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
