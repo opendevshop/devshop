@@ -291,6 +291,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#required' => 1,
     '#description' => t('New environments will be created using this install profile. Existing environments will not be affected.'),
     '#default_value' => $node->project->install_profile,
+    '#access' => count($available_profiles),
   );
 
   // HTTP Server select.
