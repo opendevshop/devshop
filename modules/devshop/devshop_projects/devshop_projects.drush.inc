@@ -317,13 +317,13 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
       // If project is drupal 8, install profile is
       if (strpos($platform->release->version, '8') === 0) {
-        $platform->project->install_profile == 'standard';
+        $platform->project->install_profile = 'standard';
       }
       elseif (strpos($platform->release->version, '7') === 0) {
-        $platform->project->install_profile == 'standard';
+        $platform->project->install_profile = 'standard';
       }
       elseif (strpos($platform->release->version, '6') === 0) {
-        $platform->project->install_profile == 'default';
+        $platform->project->install_profile = 'default';
       }
 
       if (empty($platform->project->install_profile)) {
