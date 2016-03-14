@@ -36,8 +36,7 @@ function hosting_task_features_update_form($node) {
     }
 
     $form['note'] = array(
-      '#value' => t('This task will run <code>drush features-update</code> or <code>drush features-update-all</code>.'),
-      '#type' => 'markup',
+      '#markup' => t('This task will run <code>drush features-update</code> or <code>drush features-update-all</code>.'),
       '#prefix' => '<div class="alert alert-info">',
       '#suffix' => '</div>',
     );
