@@ -686,6 +686,9 @@ function devshop_projects_git_ref_options($project, $current_ref = '') {
  * Check if a site has features diff enabled.
  */
 function _devshop_projects_site_has_module($nid, $module) {
+  if (is_object($nid) && isset($nid->nid)) {
+    $nid = $nid->nid;
+  }
   $param = array(
     'rid' => $nid,
     'p.short_name' => $module,
