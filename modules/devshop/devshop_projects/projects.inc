@@ -269,26 +269,25 @@ function devshop_project_load($node) {
 
     // Git information.
     $environment->git_ref_stored = $environment->git_ref;
-    $path = $environment->repo_root;
-    if (file_exists($path . '/.git')) {
+    if (isset($environment->repo_root) && file_exists($environment->repo_root . '/.git')) {
 
       // Timestamp of last commit.
-      $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
+      $environment->git_last = shell_exec("cd {$environment->repo_root}; git log --pretty=format:'%ar' --max-count=1");
 
       // The last commit.
-      $environment->git_commit = shell_exec("cd $path; git -c color.ui=always log --max-count=1");
+      $environment->git_commit = shell_exec("cd {$environment->repo_root}; git -c color.ui=always log --max-count=1");
 
       // Get the exact SHA
-      $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD"));
 
       // Get the actual tag or branch
-      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd $path; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
 
       // Get git status.
-      $environment->git_status = trim(shell_exec("cd $path; git -c color.ui=always  status"));
+      $environment->git_status = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always  status"));
 
       // Get git diff.
-      $environment->git_diff = trim(shell_exec("cd $path; git -c color.ui=always diff"));
+      $environment->git_diff = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always diff"));
 
     }
     else {
