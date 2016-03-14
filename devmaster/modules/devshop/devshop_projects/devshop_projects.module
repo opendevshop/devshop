@@ -694,7 +694,9 @@ function _devshop_projects_site_has_module($nid, $module) {
     'p.short_name' => $module,
   );
   $package = hosting_package_instance_load($param);
-  return $package->status;
+  if (isset($package->status)) {
+    return $package->status;
+  }
 }
 
 /**
