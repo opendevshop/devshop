@@ -110,20 +110,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     return;
   }
 
-  $client = new \Github\Client();
-  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-
-  $keys = $client->currentUser()->keys()->all();
-  $devshop_key = variable_get('devshop_public_key', '');
-
-  $found_key = FALSE;
-  foreach ($keys as $key) {
-    if (strpos($devshop_key, $key['key']) !== FALSE) {
-      $found_key = TRUE;
-    }
-  }
-
-  if ($found_key) {
+  if (devshop_github_check_key()) {
     $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your GitHub account.') . '</div>';
   }
   else {
@@ -782,4 +769,31 @@ function devshop_github_webhook($project_node) {
     $message = 'GitHub Request Received, but not in JSON. Please make sure to configure the webhook to use Payload version: application/vnd.github.v3+json';
   }
   return $message;
+}
+
+/**
+ * Check the GitHub account for an SSH key.
+ *
+ * @return bool
+ */
+function devshop_github_check_key() {
+  $devshop_key = variable_get('devshop_public_key', '');
+  $token = variable_get('devshop_github_token', '');
+
+  $client = new \Github\Client();
+  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+  try {
+    $keys = $client->currentUser()->keys()->all();
+  }
+    // Happens when user has no public keys.
+  catch (\GitHub\Exception\RuntimeException $e) {
+    return FALSE;
+  }
+
+  foreach ($keys as $key) {
+    if (strpos($devshop_key, $key['key']) === 0) {
+      return TRUE;
+    }
+  }
 }

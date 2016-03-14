@@ -33,32 +33,12 @@ function devshop_github_settings_form($form, &$form_state) {
 
   // Test for public key access.
   if (!empty($token)) {
-    try {
-
-      $client = new \Github\Client();
-      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-      $keys = $client->currentUser()->keys()->all();
-    }
-    // Happens when user has no public keys.
-    catch (\GitHub\Exception\RuntimeException $e) {
-      drupal_set_message(t('Something went wrong trying to request http://api.github.com/user/keys.  Make sure your personal token is authorized for repo, repo:status, repo:deployment, public_repo, write:public_key, & write:repo_hook.'), 'error');
-      return system_settings_form($form);
-    }
 
     $form['github_public_keys'] = array(
         '#markup' => '',
     );
 
-    $devshop_key = variable_get('devshop_public_key', '');
-
-    $found_key = FALSE;
-    foreach ($keys as $key) {
-      if (strpos($devshop_key, $key['key']) !== FALSE) {
-        $found_key = TRUE;
-      }
-    }
-
-    if ($found_key) {
+    if (devshop_github_check_key()) {
         $form['github_public_keys']['#markup'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your GitHub account.') . '</div>';
     }
     else {
