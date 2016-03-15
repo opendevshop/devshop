@@ -82,6 +82,25 @@ class Application extends BaseApplication
 \____/| .__/ \___|_| |_| |____/ \___| \_/  |____/|_| |_|\___/| .__/
       |_|             http://getdevshop.com                  |_|  </>';
 
+
+  /**
+   * Initializes all the composer commands
+   */
+  protected function getDefaultCommands()
+  {
+    $commands = parent::getDefaultCommands();
+    $commands[] = new Command\Status();
+    $commands[] = new Command\Login();
+    $commands[] = new Command\Install();
+    $commands[] = new Command\InstallDevmaster();
+    $commands[] = new Command\DevmasterTest();
+    $commands[] = new Command\Upgrade();
+    $commands[] = new Command\RemoteInstall();
+    $commands[] = new Command\SelfUpdate();
+
+    return $commands;
+  }
+
   public function __construct($version, $release_date)
   {
 
@@ -102,17 +121,19 @@ class Application extends BaseApplication
     // Load DevMaster info, including root, URI and version.
     if (file_exists('/var/aegir/.drush/hostmaster.alias.drushrc.php')) {
       require('/var/aegir/.drush/hostmaster.alias.drushrc.php');
-      $devmaster_root = $aliases['hostmaster']['root'];
-      $path_to_version = "{$devmaster_root}/profiles/devmaster/VERSION.txt";
-      if (file_exists($path_to_version)) {
-        $this->devmaster_version = file_get_contents($path_to_version);
-      }
-      else {
-        $this->devmaster_version = '0.5 or earlier';
-      }
+      if (isset($aliases['hostmaster']['root'])) {
+        $devmaster_root = $aliases['hostmaster']['root'];
+        $path_to_version = "{$devmaster_root}/profiles/devmaster/VERSION.txt";
+        if (file_exists($path_to_version)) {
+          $this->devmaster_version = file_get_contents($path_to_version);
+        }
+        else {
+          $this->devmaster_version = '0.5 or earlier';
+        }
 
-      $this->devmaster_root = $aliases['hostmaster']['root'];
-      $this->devmaster_uri = $aliases['hostmaster']['uri'];
+        $this->devmaster_root = $aliases['hostmaster']['root'];
+        $this->devmaster_uri = $aliases['hostmaster']['uri'];
+      }
     }
   }
 
@@ -388,22 +409,6 @@ class Application extends BaseApplication
     return self::$logo;
   }
 
-  /**
-   * Initializes all the composer commands
-   */
-  protected function getDefaultCommands()
-  {
-    $commands = parent::getDefaultCommands();
-    $commands[] = new Command\Status();
-    $commands[] = new Command\Login();
-    $commands[] = new Command\Install();
-    $commands[] = new Command\DevmasterTest();
-    $commands[] = new Command\Upgrade();
-    $commands[] = new Command\RemoteInstall();
-    $commands[] = new Command\SelfUpdate();
-
-    return $commands;
-  }
 }
 //
 //    $commands[] = new Command\AboutCommand();

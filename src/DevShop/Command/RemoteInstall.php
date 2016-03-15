@@ -280,8 +280,9 @@ class RemoteInstall extends Command
 
             } catch (ProcessFailedException $e) {
               $errorMessages = array_filter(explode("\n", $e->getMessage()));
-              $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
-              $output->writeln($formattedBlock);
+  //              $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+//              $output->writeln($formattedBlock);
+              $output->writeln($errorMessages);
               $something_failed = TRUE;
             }
           }
@@ -304,8 +305,10 @@ class RemoteInstall extends Command
 
             } catch (ProcessFailedException $e) {
                 $errorMessages = array_filter(explode("\n", $e->getMessage()));
-                $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
-                $output->writeln($formattedBlock);
+//                $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+//                $output->writeln($formattedBlock);
+                $output->writeln($errorMessages);
+
                 $something_failed = TRUE;
             }
         }

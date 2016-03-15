@@ -1,5 +1,35 @@
 # Change Log
 
+## 1.0.0-alpha2 (March 10, 2016)
+
+5 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha1...1.x
+37 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-alpha1...1.x
+
+- Adding devshop_stats to devmaster.make. It was somehow missed in the last release.
+- Changed hostname of VM to local.devshop.site
+- Moving code around to make devmaster able to install without provision.
+- Fixing bad password obfuscation for SSH URLs
+- Bumping Aegir Commit and Aegir Features to 7.x
+- Make "default install profile" configurable in project settings.
+- Fix bug causing loss of "install profile" in project settings.
+
+
+## 1.0.0-alpha1 (February 26, 2016)
+
+First Alpha for 1.0.0!
+ 
+257 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.8.1...1.x
+725 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.8.1...1.x
+ 
+### Hosting Drupal 8!
+
+- Upgraded devshop to use Aegir 3.x: Drupal 7 front-end, Drush 8, able to host Drupal 8.
+- There in an immense amount of work that went into this release.  We will be putting together a master list for the 
+  first beta.
+- Mostly, this was a direct port. Most improvements done in this branch were already ported to 0.x branch and were released in the 0.x family.
+
+More coming soon... 
+
 ## 0.8.1 (February 17, 2016)
 
 HotFix release.
