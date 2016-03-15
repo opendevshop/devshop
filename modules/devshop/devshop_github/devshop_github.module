@@ -241,11 +241,13 @@ function devshop_github_node_load($nodes, $types) {
     foreach ($nodes as $nid => $node) {
 
       // Look for a pull request object.
-      $pull_request = (object) db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid))->fetchAssoc();
-      if (!empty($pull_request->pull_request_object)) {
-        $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-        if (isset($node->project->environments[$pull_request->environment_name])) {
-          $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+      $pull_requests = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid));
+      foreach ($pull_requests as $pull_request) {
+        if (!empty($pull_request->pull_request_object)) {
+          $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
+          if (isset($node->project->environments[$pull_request->environment_name])) {
+            $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+          }
         }
       }
 
