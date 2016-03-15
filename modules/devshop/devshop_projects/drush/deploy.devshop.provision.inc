@@ -46,8 +46,6 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
-  drush_log(print_r($environment, 1), 'debug');
-
   try {
 
     $wrapper = new GitWrapper();
