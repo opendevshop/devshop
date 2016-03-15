@@ -37,7 +37,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 
     // Check headers for GitHub Integration
     $headers = getallheaders();
-    if (isset($headers['X-GitHub-Event']) && function_exists('devshop_github_webhook')) {
+    if ((isset($headers['X-GitHub-Event']) || isset($headers['X-Github-Event'])) && function_exists('devshop_github_webhook')) {
       $message = devshop_github_webhook($project_node);
     }
     else {
