@@ -126,6 +126,11 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
+  // Ensure drush_alias exists. Not sure why it was missing for me.
+  if (empty($environment->drush_alias)) {
+    $environment->drush_alias = d()->name;
+  }
+
   $commands = array();
 
   drush_log("[{$project_name}] {$environment->name}: " . dt('Running deploy hooks.'), 'notice');
