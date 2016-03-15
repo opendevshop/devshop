@@ -59,7 +59,7 @@ projects[ctools][version] = "1.9"
 projects[features][version] = "2.7"
 projects[distro_update][version] = "1"
 projects[devshop_stats][version] = "1"
-projects[module_filter][version] = "1"
+projects[module_filter][version] = "2"
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
