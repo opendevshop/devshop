@@ -53,7 +53,7 @@ function drush_aegir_features_provision_features_update() {
         devshop_drush_process("drush {$environment->drush_alias} fr {$features} --force -y", NULL, dt('Revert Features'));
       }
       else {
-        devshop_drush_process("drush {$environment->drush_alias} fra --force -y", NULL, t('Revert Features'));
+        devshop_drush_process("drush {$environment->drush_alias} fra --force -y", NULL, dt('Revert Features'));
       }
     }
   }
