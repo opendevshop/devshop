@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.9.0 (March 15, 2016)
+
+12 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.8.1...0.x
+x commits to DevMaster: https://github.com/opendevshop/devmaster/compare/0.8.1...0.x
+
+- Upgrade to Drupal 6.38!  Drupal 6.x has reached End of Life but we will support it until the 1.0.0 release of DevShop.
+- Last minor version in the 0.x branch.  
+- Backported improvements from 1.0.0-alpha3.
+
 ## 1.0.0-alpha2 (March 10, 2016)
 
 5 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha1...1.x
