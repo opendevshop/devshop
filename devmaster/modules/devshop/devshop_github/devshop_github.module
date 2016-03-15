@@ -439,13 +439,23 @@ function devshop_github_webhook($project_node) {
   require_once 'vendor/autoload.php';
 
   // @TODO: Handle form content from github as well.
-  if ($headers['content-type'] == 'application/json') {
+  if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
 
     $args = array();
     $args['cache'] = 1;
 
-    switch ($headers['X-GitHub-Event']) {
+    if (isset($headers['X-Github-Event'])) {
+      $github_event = $headers['X-Github-Event'];
+    }
+    elseif (isset($headers['X-GitHub-Event'])) {
+      $github_event = $headers['X-GitHub-Event'];
+    }
+    else {
+      $github_event = '';
+    }
+
+    switch ($github_event) {
       case 'ping':
         $message = 'Pong!';
         break;
