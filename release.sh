@@ -28,12 +28,4 @@ echo "Pushing release tag and branch $RELEASE_TAG in devmaster..."
 git push origin $RELEASE_BRANCH
 git push origin $RELEASE_TAG
 
-echo "Creating release tag $RELEASE_TAG in devshop_provision..."
-cd ../../../drush/devshop_provision
-git tag $RELEASE_TAG
-
-echo "Pushing release tag and branch $RELEASE_TAG in devshop_provision..."
-git push origin $RELEASE_BRANCH
-git push origin $RELEASE_TAG
-
 echo "Release tags created and pushed.  Please visit GitHub to edit the Tag to create a release."
