@@ -21,7 +21,7 @@ git push origin $RELEASE_BRANCH
 git push origin $RELEASE_TAG
 
 echo "Creating release tag $RELEASE_TAG in devmaster..."
-cd source/devmaster-0.x/profiles/devmaster
+cd source/devmaster-1.x/profiles/devmaster
 git tag $RELEASE_TAG
 
 echo "Pushing release tag and branch $RELEASE_TAG in devmaster..."
