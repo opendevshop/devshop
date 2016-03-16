@@ -18,7 +18,7 @@ echo "Creating release branch $RELEASE_BRANCH in devshop..."
 git checkout -b $RELEASE_BRANCH
 
 echo "Creating release branch $RELEASE_BRANCH in devmaster..."
-cd source/devmaster-0.x/profiles/devmaster
+cd source/devmaster-1.x/profiles/devmaster
 git checkout -b $RELEASE_BRANCH
 
 echo "Creating release branch $RELEASE_BRANCH in devshop_provision..."
