@@ -31,14 +31,14 @@ bashrc_path: /etc/bashrc
 
 packages:
   - php55
-  - php-mysql
-  - php-cli
-  - php-gd
-  - php-process
-  - php-pear
-  - php-xml
-  - php-mcrypt
-  - php-mbstring
+  - php55-mysql
+  - php55-cli
+  - php55-gd
+  - php55-process
+  - php55-pear
+  - php55-xml
+  - php55-mcrypt
+  - php55-mbstring
   - postfix
   - sudo
   - rsync
@@ -58,7 +58,7 @@ packages:
 
 apache_packages:
   - httpd
-  - php55
+  - php
 
 nginx_packages:
   - nginx
