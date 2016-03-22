@@ -4,6 +4,16 @@
     name: "epel-release"
     state: installed
 
+# Setup PHP 5.5 on RHEL and CentOS requires some extra commands
+# See https://www.softwarecollections.org/en/scls/rhscl/php55/
+- name: Install SCL in CentOS
+  action: yum name=centos-release-scl state=present
+  when: ansible_distribution == 'CentOS'
+
+- name: Install SCL in RHEL
+  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
+  when: ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: Ensure mysql packages are installed.
   yum:
     name: "{{ item }}"
