@@ -62,4 +62,4 @@ apache_packages:
 
 nginx_packages:
   - nginx
-  - php-fpm
+  - php55-php-fpm
