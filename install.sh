@@ -19,7 +19,8 @@
 #    --hostname           The desired fully qualified domain name to set as this machine's hostname
 #    --server_webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
 #    --makefile           The makefile to use to build the front-end site.
-#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#    --playbook_path      The path to Ansible playbook.yml file.
+#    --playbook_file      The filename of an Ansible playbook.yml file to use other than the included playbook.yml.
 #    --aegir_user_uid     The UID to set for the aegir user. Useful if you need a fixed UID for mounts.
 
 # Version used for cloning devshop playbooks
@@ -76,8 +77,11 @@ LINE=---------------------------------------------
 # Detect playbook path option
 while [ $# -gt 0 ]; do
   case "$1" in
-    --playbook=*)
+    --playbook_path=*)
       PLAYBOOK_PATH="${1#*=}"
+      ;;
+    --playbook_file=*)
+      PLAYBOOK_FILE="${1#*=}"
       ;;
     --makefile=*)
       MAKEFILE_PATH="${1#*=}"
@@ -123,7 +127,7 @@ echo " Web Server: $SERVER_WEBSERVER"
 if [ $PLAYBOOK_PATH ]; then
     :
 # Detect playbook next to the install script
-elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
+elif [ -f "$DEVSHOP_SCRIPT_PATH/$PLAYBOOK_FILE" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
 else
     PLAYBOOK_PATH=/usr/share/devshop
@@ -210,7 +214,7 @@ echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 
 # Clone the installer code if a playbook path was not set.
-if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
+if [ ! -f "$PLAYBOOK_PATH/$PLAYBOOK_FILE" ]; then
   if [ ! -d "$PLAYBOOK_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
     cd $PLAYBOOK_PATH
@@ -230,7 +234,7 @@ if [ ! -f "$MAKEFILE_PATH" ]; then
   echo $LINE
 fi
 
-echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
+echo " Playbook: $PLAYBOOK_PATH/$PLAYBOOK_FILE "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
@@ -241,8 +245,8 @@ cd $PLAYBOOK_PATH
 echo $HOSTNAME_FQDN > inventory
 
 # If ansible playbook fails syntax check, report it and exit.
-if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
-    echo " Ansible syntax check failed! Check installers/ansible/playbook.yml and try again."
+if [[ ! `ansible-playbook -i inventory --syntax-check $PLAYBOOK_FILE` ]]; then
+    echo " Ansible syntax check failed! Check installers/ansible/$PLAYBOOK_FILE and try again."
     exit 1
 fi
 
@@ -271,7 +275,7 @@ if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
-ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
+ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
 # @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli
