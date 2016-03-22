@@ -12,6 +12,7 @@ apache_packages:
   - epel-release
   - httpd
   - php55
+  - php55-php
   - php55-php-mysqlnd
   - php55-php-cli
   - php55-php-gd
