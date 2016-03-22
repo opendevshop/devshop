@@ -86,6 +86,30 @@
         state=link
         force=yes
 
+    - name: Setup | REDHAT | Add Apache Mods
+      when: ansible_os_family == "RedHat"
+      file:
+        src=/opt/rh/httpd24/root/etc/httpd/conf.d/php55-php.conf
+        dest=/etc/httpd/conf.d/php55-php.conf
+        state=link
+        force=yes
+
+    - name: Setup | REDHAT | Add Apache Mods
+      when: ansible_os_family == "RedHat"
+      file:
+        src=/opt/rh/httpd24/root/etc/httpd/conf.modules.d/10-php55-php.conf
+        dest=/etc/httpd/conf.modules.d/php55-php.conf
+        state=link
+        force=yes
+
+    - name: Setup | REDHAT | Add Apache Mods
+      when: ansible_os_family == "RedHat"
+      file:
+        src=/opt/rh/httpd24/root/etc/httpd/modules/libphp55-php5.so
+        dest=/etc/httpd/modules/libphp55-php5.so
+        state=link
+        force=yes
+
     - name: Add aegir to apache group.
       when: server_webserver == "apache"
       user:
