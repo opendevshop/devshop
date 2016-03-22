@@ -43,6 +43,7 @@
 
     # Setup PHP 5.5 on RHEL and CentOS requires some extra commands
     # See https://www.softwarecollections.org/en/scls/rhscl/php55/
+    # and https://doc.owncloud.org/server/8.2/admin_manual/installation/php_55_installation.html#rhel-7-upgrade-to-php-5-5
     - name: Setup | REDHAT | Install SCL in CentOS
       action: yum name=centos-release-scl state=present
       when: ansible_distribution == 'CentOS'
