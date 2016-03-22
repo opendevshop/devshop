@@ -58,7 +58,7 @@ packages:
 
 apache_packages:
   - httpd
-  - php
+  - php55
 
 nginx_packages:
   - nginx
