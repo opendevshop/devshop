@@ -92,6 +92,7 @@ class Application extends BaseApplication
     $commands[] = new Command\Status();
     $commands[] = new Command\Login();
     $commands[] = new Command\Install();
+    $commands[] = new Command\InstallDevmaster();
     $commands[] = new Command\DevmasterTest();
     $commands[] = new Command\Upgrade();
     $commands[] = new Command\RemoteInstall();

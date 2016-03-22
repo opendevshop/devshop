@@ -14,8 +14,7 @@
     - vars.{{ ansible_os_family }}.yml
 
   vars:
-    devmaster_install_command: "{{ drush_path }} devshop-install {{ server_hostname }} --version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile=devmaster --aegir_host={{ server_hostname }} --http_service_type={{ server_webserver }} {{ devshop_working_copy }} -y"
-
+    devmaster_install_command: "{{ devshop_cli_path }} devmaster:install --site={{ server_hostname }} --devshop_version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile={{ devshop_install_profile }} --aegir_host={{ server_hostname }} --http_service_type={{ server_webserver }} --root=/var/aegir/devmaster-{{ devshop_version }} {{ devshop_working_copy }} -n"
 
   tasks:
 
@@ -28,33 +27,64 @@
     - name: Setup | DEBIAN | Install common packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian"
-      with_items: packages
+      with_items: '{{packages}}'
 
     - name: Setup | DEBIAN | Install NGINX server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian" and server_webserver == "nginx"
-      with_items: nginx_packages
+      with_items: '{{nginx_packages}}'
 
     - name: Setup | DEBIAN | Install Apache server packages.
       action: apt pkg={{ item }} state=installed update_cache=yes
       when: ansible_os_family == "Debian" and server_webserver == "apache"
-      with_items: apache_packages
+      with_items: '{{apache_packages}}'
 
     # REDHAT
+
+    # Setup PHP 5.5 on RHEL and CentOS requires some extra commands
+    # See https://www.softwarecollections.org/en/scls/rhscl/php55/
+    - name: Setup | REDHAT | Install SCL in CentOS
+      action: yum name=centos-release-scl state=present
+      when: ansible_distribution == 'CentOS'
+
+    - name: Setup | REDHAT | Install SCL in RHEL
+      command: yum-config-manager --enable rhel-server-rhscl-7-rpms
+      when: ansible_distribution == 'Red Hat Enterprise Linux'
+
     - name: Setup | REDHAT | Install common packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat"
-      with_items: packages
+      with_items: '{{packages}}'
 
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat" and server_webserver == "nginx"
-      with_items: nginx_packages
+      with_items: '{{nginx_packages}}'
+
+    - name: Setup | REDHAT | Comment conflicting configuration (Nginx)
+      template: src={{ playbook_path }}/templates/nginx.conf.Redhat.j2 dest=/etc/nginx/nginx.conf force=yes
+      when: ansible_os_family == "RedHat" and server_webserver == "nginx"
 
     - name: Setup | REDHAT | Install web server packages.
       action: yum name={{ item }} state=present
       when: ansible_os_family == "RedHat" and server_webserver == "apache"
       with_items: apache_packages
+
+    - name: Setup | REDHAT | Symbolic link to add PHP to PATH.
+      when: ansible_os_family == "RedHat"
+      file:
+        src=/opt/rh/php55/enable
+        dest=/etc/profile.d/php.sh
+        state=link
+        force=yes
+
+    - name: Setup | REDHAT | Symboc link to php executable.
+      when: ansible_os_family == "RedHat"
+      file:
+        src=/opt/rh/php55/root/usr/bin/php
+        dest=/usr/bin/php
+        state=link
+        force=yes
 
     - name: Add aegir to apache group.
       when: server_webserver == "apache"
@@ -71,7 +101,7 @@
         append=yes
 
     - name: Setup | Install Composer
-      shell: "curl -sS https://getcomposer.org/installer | php;  mv composer.phar {{ local_bin_path }}/composer"
+      shell: "curl -sS https://getcomposer.org/installer | /usr/bin/php;  mv composer.phar {{ local_bin_path }}/composer"
       args:
         creates: "{{ local_bin_path }}/composer"
 
@@ -93,7 +123,10 @@
         state=link
         force=yes
 
-    - name: Make devshop CLI available globally.
+    - name: DevShop CLI | composer install
+      command: "{{ local_bin_path }}/composer install"
+
+    - name: DevShop CLI | Make devshop CLI available globally.
       file:
         src={{ playbook_path }}/bin/devshop
         dest={{ devshop_cli_path }}
@@ -101,7 +134,7 @@
         force=yes
 
     - name: DevShop CLI | composer install
-      command: "composer install"
+      command: "{{ local_bin_path }}/composer install"
       args:
         chdir: "{{ playbook_path }}"
 
@@ -210,32 +243,27 @@
         owner=aegir group=aegir mode=0744
         state=directory
 
-    - name: Create /var/aegir/.drush/commands
-      file:
-        path=/var/aegir/.drush/commands
-        owner=aegir group=aegir mode=0744
-        state=directory
-
-    - name: Install devshop_provision from github.
-      git:
-        repo: "{{ devshop_provision_repo }}"
-        dest: /var/aegir/.drush/commands/devshop_provision
-        version: "{{ devshop_version }}"
-        force: yes
-        update: yes
-      become: yes
-      become_user: aegir
-
-    - name: Make sure devshop_provision is owned by aegir
-      file:
-        path: /var/aegir/.drush/commands/devshop_provision
-        owner: aegir
-        group: aegir
-        recurse: yes
 
     - name: Install required drush packages.
       command: "{{ drush_path }} dl {{ item.key }}-{{ item.value }} --destination=/var/aegir/.drush/commands --package-handler={{ drush_dl_method }} -y"
       with_dict: "{{ devshop_drush_packages }}"
+
+    - name: Clear the drush cache.
+      command: "{{ drush_path }} cc drush"
+      become: yes
+      become_user: aegir
+
+    - name: TRAVIS | Change to the branch we are testing in build-devmaster.make.
+      when: travis == "true" and travis_repo_slug == "opendevshop/devmaster"
+      lineinfile:
+        dest={{ devshop_makefile }}
+        line='projects[devmaster][download][branch] = "{{ travis_branch }}"'
+
+    - name: TRAVIS | Change to the commit we are testing in build-devmaster.make.
+      when: travis == "true" and travis_repo_slug == "opendevshop/devmaster"
+      lineinfile:
+        dest={{ devshop_makefile }}
+        line='projects[devmaster][download][revision] = "{{ travis_commit }}"'
 
     # Runs the drush devshop-install command with all of our options:
     - debug: msg="{{ devmaster_install_command }}"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-DEVSHOP_VERSION='0.x'
+DEVSHOP_VERSION='1.x'
 DISTRIBUTION='ubuntu'
 DISTRIBUTION_VERSION='14.04'
 INIT='/sbin/init'

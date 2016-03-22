@@ -30,14 +30,15 @@ motd_path: /etc/motd
 bashrc_path: /etc/bashrc
 
 packages:
-  - php-mysql
-  - php-cli
-  - php-gd
-  - php-process
-  - php-pear
-  - php-xml
-  - php-mcrypt
-  - php-mbstring
+  - php55
+  - php55-php-mysqlnd
+  - php55-php-cli
+  - php55-php-gd
+  - php55-php-process
+  - php55-php-pear
+  - php55-php-xml
+#  - php-mcrypt
+  - php55-php-mbstring
   - postfix
   - sudo
   - rsync
@@ -49,14 +50,15 @@ packages:
   - mariadb
   - mariadb-server
   - MySQL-python
-  - epel-release
+# I think this needs to be installed before these packages.
+#  - epel-release
   - supervisor
   - openssl
   - mod_ssl
 
 apache_packages:
   - httpd
-  - php
+  - php55-php
 
 nginx_packages:
   - nginx

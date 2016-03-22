@@ -24,7 +24,7 @@
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=0.x
+DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=12345
@@ -73,10 +73,6 @@ fi
 
 LINE=---------------------------------------------
 
-echo " OS: $OS"
-echo " Version: $VERSION"
-echo " Hostname: $HOSTNAME_FQDN"
-
 # Detect playbook path option
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -103,6 +99,11 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# Output some info.
+echo " OS: $OS"
+echo " Version: $VERSION"
+echo " Hostname: $HOSTNAME_FQDN"
 
 # If /var/aegir/config/server_master/nginx.conf is found, use NGINX to install.
 # If /var/aegir/config/server_master/apache.conf is found, use apache to install.

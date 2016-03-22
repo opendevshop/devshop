@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Uncomment to test with other types of boxes.
   # config.vm.box = "hashicorp/precise64"
   # config.vm.box = "bento/centos-6.5"
-  # config.vm.box = "centos/7"
+  # config.vm.box = "bento/centos-7.1"
 
   config.vm.provider "virtualbox" do |v|
     v.memory = settings['vagrant_virtualbox_memory']

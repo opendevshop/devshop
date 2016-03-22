@@ -1,5 +1,25 @@
 # Change Log
 
+# 1.0.0-alpha3 (March 15, 2016)
+
+9 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha2...1.x
+89 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-alpha2...1.x
+
+- Improved installation documentation.
+- Display "diverged" for environments with diverged git repos.
+- Added "devshop_stats" module to allow us to track usage using drupal.org.
+- Fixing the over-obfuscated git url.
+- Changing Vagrantfile to use hostname "local.devshop.site"
+- Removing dependencies on Provision so devmaster can be installed as a standalone site.
+- Added "Module Filter" module.
+- Updating Aegir Commit, Aegir Download, and Aegir Features modules to 7.x.
+- Many 7.x upgrade theming fixes.
+- Adding "Default Install Profile" field to project settings form: you can now change the install profile that will be used for new environments.
+- Fixed GitHub Integration settings in Project Settings form.
+- Improved Pull Request settings dropdown: Now you can select "install" or a specific environment to clone (not forced to use the "live" environment.)
+- Fixed bugs preventing Pull Request environments from loading data.
+- Added "Commit Code" link to environment settings dropdown.
+
 ## 0.9.0 (March 15, 2016)
 
 12 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.8.1...0.x
