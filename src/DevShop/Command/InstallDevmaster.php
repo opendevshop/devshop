@@ -502,7 +502,7 @@ class InstallDevmaster extends Command
       'context_type'      => 'server',
       'remote_host'       => $this->input->getOption('aegir_host'),
       'aegir_root'        => $this->input->getOption('aegir_root'),
-      'script_user'       => $this->input->getOption('aegir_root'),
+      'script_user'       => $this->input->getOption('script_user'),
       'http_service_type' => $this->input->getOption('http_service_type'),
       'http_port'         => $this->input->getOption('http_port'),
       'web_group'         => $this->input->getOption('web_group'),
