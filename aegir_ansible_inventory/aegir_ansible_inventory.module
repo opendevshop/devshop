@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ * Drupal module file for Aegir Ansible Inventory.
+ */
+
+/**
+ * Implements hook_menu();
+ * @return mixed
+ */
+function aegir_ansible_inventory_menu(){
+    $items['inventory'] = array(
+        'page callback' => 'devshop_servers_inventory',
+        'access callback' => TRUE,
+        'file' => 'inventory-endpoint.php',
+    );
+    $items['keys/%'] = array(
+        'page callback' => 'devshop_servers_user_keys',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+    );
+    return $items;
+}
