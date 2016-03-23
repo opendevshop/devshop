@@ -64,7 +64,9 @@ The `aegir_user_authorized_keys` should be set as the aegir@server_master user's
 
 # Next Steps
 
-Now that we have have an inventory and groups, we should be able to associate ansible roles with aegir services.
+Now that we have have an inventory and groups and a playbook associating the groups with ansible roles, we have the
+framework we need to add the final layer: aegir.apache, aegir.nginx, and aegir.mysql roles that setup the last bits
+of configuration to make the servers usable as aegir remotes.
 
 This is the first step toward having "node/add/server" in Aegir actually fully bootstrap the servers.
 
