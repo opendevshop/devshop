@@ -1,4 +1,4 @@
-Aegir: User
+Ansible Role: Aegir User
 ===========
 
 Installs the "aegir" user and prepares for use as a remote server.
