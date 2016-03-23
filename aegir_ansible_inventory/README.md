@@ -31,3 +31,29 @@ See the "Patterns" section in the ansible documentation on more wansiays to targ
 
 For now, the inventory is locked in to use the 'aegir' user. Once we have a field
 on servers we will be able to change this.
+
+## Using Ansible Playbook
+
+We've added a playbook.yml file to this repo in an attempt to allow core aegir servers and services to be configured automatically.
+
+Use the `ansible-playbook` command:
+
+    $ ansible-playbook playbook.yml -i ansible-inventory.php  -u root
+
+
+### Roles
+
+Install the required galaxy roles using the `install-roles.yml` file:
+
+    $ ansible-galaxy install -r install_roles.yml
+
+## Aegir User Role & SSH Key
+
+Aegir remote servers need to have SSH access and an aegir user, so we've created a role for "aegir-user".
+
+This role includes setting up the `authorized_keys` file for the remote aegir user, but you must pass it on the command
+line in the `--extra-vars` option.
+
+    $ ansible-playbook playbook.yml -l devshop.remote -i ansible-inventory.php  -u root --extra-vars "aegir_user_authorized_keys='ssh-rsa AAAAaaaa aegir@server_master'"
+
+The `aegir_user_authorized_keys` should be set as the aegir@server_master user's public SSH key.
