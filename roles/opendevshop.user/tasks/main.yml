@@ -42,3 +42,11 @@
       group: "{{ aegir_user_name }}"
       state: directory
       mode: 0755
+
+  - name: Create aegir's authorized keys file
+    copy:
+      dest: "{{ aegir_user_home }}/.ssh/authorized_keys"
+      owner: "{{ aegir_user_name }}"
+      group: "{{ aegir_user_name }}"
+      content: "{{ aegir_user_authorized_keys }}"
+      mode: 0644
