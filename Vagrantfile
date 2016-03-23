@@ -65,6 +65,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       devmaster.vm.provision "shell",
         inline: "sudo su - aegir -c 'drush @hostmaster en devel admin_devel -y'"
 
+      # Add remote hostnames to /etc/hosts
+      devmaster.vm.provision "shell",
+        inline: "echo '10.10.10.11  devshop.remote' >> /etc/hosts"
+
+      devmaster.vm.provision "shell",
+        inline: "echo '10.10.10.12  devshop.remote2' >> /etc/hosts"
+
     end
   end
 
