@@ -1,0 +1,38 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Command line script for Ansible Dynamic inventory.
+ *
+ * This script does not have to be in the Aegir Ansible module folder.
+ * Copy it to the same folder you are running the "ansible" command for convenience.
+ *
+ * Pass the path to this script to the `ansible` command using the `-i` option:
+ *
+ *     $ ansible -i /path/to/aegir_ansible/aegir_ansible_inventory/ansible-inventory.php
+ *
+ * An environment variable determines what Aegir Hostmaster to use as the inventory.
+ *
+ *     $ export AEGIR_HOSTMASTER_HOSTNAME=aegir.myserver.com
+ *     $ ansible -i /path/to/aegir_ansible/aegir_ansible_inventory/ansible-inventory.php
+ *
+ * If the environment variable is not set, it will attempt to use localhost.
+ *
+ */
+
+// Get hostname from environment variable.
+if (getenv('AEGIR_HOSTMASTER_HOSTNAME')) {
+  $hostname = getenv('AEGIR_HOSTMASTER_HOSTNAME');
+}
+else {
+  $hostname = 'localhost';
+}
+
+// Get JSON from an Aegir server.
+$contents = file_get_contents("http://{$hostname}/inventory");
+if ($contents) {
+  print $contents;
+  exit(0);
+}
+else {
+  exit(1);
+}
