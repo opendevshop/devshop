@@ -10,7 +10,7 @@
  */
 function aegir_ansible_inventory_menu(){
     $items['inventory'] = array(
-        'page callback' => 'devshop_servers_inventory',
+        'page callback' => 'aegir_ansible_inventory_endpoint',
         'access callback' => TRUE,
         'file' => 'inventory-endpoint.php',
     );

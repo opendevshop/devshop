@@ -3,7 +3,7 @@
 /**
  * Returns our server inventory.
  */
-function devshop_servers_inventory() {
+function aegir_ansible_inventory_endpoint() {
     // Build attributes object
     $inventory = new stdClass;
     $inventory->aegir_servers->hosts = array();
