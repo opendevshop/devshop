@@ -1,0 +1,52 @@
+---
+  - name: Create Aegir Group (so we can set the GID)
+    group:
+      name=={{ aegir_user_name }}
+      state=present
+      gid={{ aegir_user_uid }}
+
+  - name: Create Aegir user
+    user:
+      name={{ aegir_user_name }}
+      shell=/bin/bash
+      group={{ aegir_user_name }}
+      system=yes
+      home={{ aegir_user_home }}
+      generate_ssh_key=yes
+      uid={{ aegir_user_uid }}
+
+  - name: Ensure /var/aegir is owned by aegir user.
+    file:
+      state=directory
+      path={{ aegir_user_home }}
+      group=aegir
+      owner=aegir
+
+  # Aegir's CentOS installation requires this.
+  - name: Set appropriate permissions for Aegir's home folder.
+    command: chmod -R 755 {{ aegir_user_home }}
+    when: ansible_os_family == "RedHat"
+
+  - name: Create aegir's config folder
+    file:
+      path: "{{ aegir_user_home }}/config"
+      owner: {{ aegir_user_name }}
+      group: {{ aegir_user_name }}
+      state: directory
+      mode: 0755
+
+  - name: Create aegir's logs folder
+    file:
+      path: "{{ aegir_user_home }}/logs"
+      owner: {{ aegir_user_name }}
+      group: {{ aegir_user_name }}
+      state: directory
+      mode: 0755
+
+  - name: Setup SSH config for aegir user.
+    template:
+      src=templates/ssh-config.j2
+      dest="{{ aegir_user_home }}/.ssh/config"
+      mode=0600
+      owner={{ aegir_user_name }}
+      group={{ aegir_user_name }}
