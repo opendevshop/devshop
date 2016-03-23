@@ -19,6 +19,8 @@ The `ansible-inventory.php` script is for use in the `ansible` or `ansible-playb
     $ ansible db -i ansible-inventory.php -m command -a 'pwd'
     $ ansible http -i ansible-inventory.php -m command -a 'drush status'
 
+See the "Patterns" section in the ansible documentation on more wansiays to target servers: http://docs.ansible.com/ansible/intro_patterns.html
+
 1. Use "all" to run on all servers
 2. Use "db" to run on all "db" servers.
 3. Use "mysql" to run on all servers using the "mysql" service.
