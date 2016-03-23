@@ -155,14 +155,14 @@ HTML;
  *
  * Project Page Display
  */
-function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
+function devshop_projects_node_view($node, $view_mode, $langcode) {
   global $user;
   $project = &$node->project;
 
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
   $project_wizard_cache = ctools_object_cache_get('project', 'devshop_project');
-  if ($page && isset($project_wizard_cache->nid) && $node->nid == $project_wizard_cache->nid) {
+  if (current_path() == "node/{$node->nid}" && isset($project_wizard_cache->nid) && $node->nid == $project_wizard_cache->nid) {
     drupal_goto('projects/add/' . $project_wizard_cache->step);
   }
 
