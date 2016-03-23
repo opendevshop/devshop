@@ -19,10 +19,15 @@ function aegir_ansible_inventory_endpoint() {
         // Add host to inventory.
         $inventory->aegir_servers->hosts[] = $server_node->title;
 
-        // Add a "group" for each individual server.
+        // Server Variables
+        // These variables are applied just to that host.
         $inventory->{$server_node->title}->hosts[] = $server_node->title;
-//        $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
         $inventory->{$server_node->title}->vars['aegir_node'] = $server_node;
+
+        // The variable 'ansible_user' maybe used to force ansible to connect via this user.
+        // This is disabled so that our ansible runner can connect as root via the command line.
+        // If this variable is set, the `-u root` command line option is ignored.
+        // $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
 
         // Add a "group" for each service type.
         foreach ($server_node->services as $service => $service_data) {
