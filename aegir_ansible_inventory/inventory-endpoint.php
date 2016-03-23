@@ -22,7 +22,17 @@ function devshop_servers_inventory() {
         // Add a "group" for each individual server.
         $inventory->{$server_node->title}->hosts[] = $server_node->title;
         $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
+        $inventory->{$server_node->title}->vars['aegir_node'] = $server_node;
 
+        // Add a "group" for each service type.
+        foreach ($server_node->services as $service => $service_data) {
+
+          // Add to "service" group ("http", "db")
+          $inventory->{$service}->hosts[] = $server_node->title;
+
+          // Add to "service type" group ("apache", "nginx", "mysql")
+          $inventory->{$service_data->type}->hosts[] = $server_node->title;
+        }
     }
 
     print json_encode($inventory, JSON_UNESCAPED_SLASHES);
