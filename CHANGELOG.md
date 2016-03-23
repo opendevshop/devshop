@@ -1,5 +1,14 @@
 # Change Log
 
+# 1.0.0-alpha4 (March 23, 2016)
+
+23 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha3...1.x
+1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-alpha3...1.x
+
+- Fixed a missing redirect from a newly created project node to the create project wizard.
+- Fixed broken PHP 5.5 installation on RedHat family.
+- Improved devshop login and devshop status commands: they will now attempt to switch to aegir user.
+
 # 1.0.0-alpha3 (March 15, 2016)
 
 9 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha2...1.x
