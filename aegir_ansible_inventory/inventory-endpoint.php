@@ -21,7 +21,7 @@ function aegir_ansible_inventory_endpoint() {
 
         // Add a "group" for each individual server.
         $inventory->{$server_node->title}->hosts[] = $server_node->title;
-        $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
+//        $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
         $inventory->{$server_node->title}->vars['aegir_node'] = $server_node;
 
         // Add a "group" for each service type.
