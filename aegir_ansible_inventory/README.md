@@ -15,6 +15,13 @@ The `ansible-inventory.php` script is for use in the `ansible` or `ansible-playb
 2. Copy the "ansible-inventory.php" file to the folder you will call "ansible" from and make sure it is executable.
 3. Use ansible to talk to your aegir servers:
 
-    ansible all -i ansible-inventory.php -m command -a 'ls -la'
+    $ ansible all -i ansible-inventory.php -m command -a 'whoami'
+    $ ansible db -i ansible-inventory.php -m command -a 'pwd'
+    $ ansible http -i ansible-inventory.php -m command -a 'drush status'
 
+1. Use "all" to run on all servers
+2. Use "db" to run on all "db" servers.
+3. Use "mysql" to run on all servers using the "mysql" service.
 
+For now, the inventory is locked in to use the 'aegir' user. Once we have a field
+on servers we will be able to change this.
