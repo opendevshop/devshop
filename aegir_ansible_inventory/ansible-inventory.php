@@ -27,7 +27,7 @@ if (getenv('AEGIR_HOSTMASTER_HOSTNAME')) {
   $hostname = getenv('AEGIR_HOSTMASTER_HOSTNAME');
 }
 else {
-  $hostname = 'localhost';
+  $hostname =  strtolower(gethostbyaddr(gethostbyname(php_uname('n'))));
 }
 
 // Get JSON from an Aegir server.
