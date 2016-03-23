@@ -1,0 +1,10 @@
+---
+- hosts: mysql
+  roles:
+  - geerlingguy.mysql
+- hosts: apache
+  roles:
+  - geerlingguy.apache
+- hosts: nginx
+  roles:
+  - geerlingguy.nginx
