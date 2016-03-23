@@ -18,6 +18,11 @@ function devshop_servers_inventory() {
     foreach ($server_nodes as $server_node) {
         // Add host to inventory.
         $inventory->aegir_servers->hosts[] = $server_node->title;
+
+        // Add a "group" for each individual server.
+        $inventory->{$server_node->title}->hosts[] = $server_node->title;
+        $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
+
     }
 
     print json_encode($inventory, JSON_UNESCAPED_SLASHES);
