@@ -8,7 +8,10 @@
  *
  * Pass the path to this script to the `ansible` command using the `-i` option:
  *
- *     $ ansible -i /path/to/aegir_ansible/aegir_ansible_inventory/ansible-inventory.php
+ *     $ ansible aegir_servers -m ping -u aegir -i /path/to/aegir_ansible/aegir_ansible_inventory/ansible-inventory.php
+ *
+ * This command will attempt to SSH into all of the "aegir_servers" as the "aegir" user,
+ * and run ansible's "ping" module.
  *
  * An environment variable determines what Aegir Hostmaster to use as the inventory.
  *
