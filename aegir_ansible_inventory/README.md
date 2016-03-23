@@ -13,6 +13,10 @@ The `ansible-inventory.php` script is for use in the `ansible` or `ansible-playb
 
 1. Install this module in an Aegir Hostmaster or DevShop site.
 2. Copy the "ansible-inventory.php" file to the folder you will call "ansible" from and make sure it is executable.
+2. Set the `AEGIR_HOSTMASTER_HOSTNAME` environment variable to your hostmaster server:
+
+    $ export AEGIR_HOSTMASTER_HOSTNAME=aegir.myhostname.com
+
 3. Use ansible to talk to your aegir servers:
 
     $ ansible all -i ansible-inventory.php -m command -a 'whoami'
