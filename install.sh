@@ -28,7 +28,6 @@ DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=12345
-PLAYBOOK_FILE=playbook.yml
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
