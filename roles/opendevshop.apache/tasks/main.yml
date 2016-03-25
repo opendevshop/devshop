@@ -4,7 +4,7 @@
 - name: Symbolic link to Aegir's Apache Config
   when: ansible_os_family == "Debian"
   file:
-    src: /var/aegir/config/apache.conf
+    src: "{{ aegir_user_home }}/config/apache.conf"
     # For Debian, apache_conf_path == '/etc/apache2'
     dest: "{{ apache_conf_path }}/conf-enabled/aegir.conf"
     state: link
@@ -13,7 +13,7 @@
 - name: Symbolic link to Aegir's Apache Config
   when: ansible_os_family == "RedHat"
   file:
-    src: /var/aegir/config/apache.conf
+    src: "{{ aegir_user_home }}/config/apache.conf"
     # For RedHat, apache_conf_path == '/etc/httpd/conf.d'
     dest: "{{ apache_conf_path }}/aegir.conf"
     state: link

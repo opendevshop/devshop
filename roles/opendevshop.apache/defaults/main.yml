@@ -1,3 +1,4 @@
 ---
 
 sudoers_file_path: /etc/sudoers
+aegir_user_home: /var/aegir
