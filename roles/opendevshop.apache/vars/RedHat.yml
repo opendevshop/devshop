@@ -1,0 +1,3 @@
+---
+# vars file for aegir.apache on Debian
+apache_control: /usr/sbin/apachectl
