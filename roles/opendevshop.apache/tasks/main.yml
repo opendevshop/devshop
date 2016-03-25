@@ -21,7 +21,7 @@
 
 - name: Add aegir user to sudoers to reload apache
   lineinfile:
-    dest: /etc/sudoers
+    dest: '{{ sudoers_file_path }}'
     regexp: '^{{ item }}'
     line: '{{ item }} ALL=NOPASSWD: {{ apache_control }}'
     state: present
