@@ -26,5 +26,6 @@
     line: '{{ item }} ALL=NOPASSWD: {{ apache_control }}'
     state: present
     validate: 'visudo -cf %s'
+    create: yes
   with_items:
     - aegir
