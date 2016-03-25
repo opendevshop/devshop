@@ -1,25 +1,22 @@
 # from galaxy
 - src: geerlingguy.apache
-  path: roles/geerlingguy.apache
 
 - src: geerlingguy.nginx
-  path: roles/geerlingguy.nginx
 
 - src: geerlingguy.mysql
-  path: roles/geerlingguy.mysql
 
 - src: geerlingguy.composer
-  path: roles/geerlingguy.composer
 
 - src: geerlingguy.drush
-  path: roles/geerlingguy.drush
 
 - src: geerlingguy.php
-  path: roles/geerlingguy.php
 
 - src: geerlingguy.php-mysql
-  path: roles/geerlingguy.php-mysql
 
 - src: https://github.com/opendevshop/ansible-role-aegir-user
-  path: roles
-  name: aegir.user
+  name: aegir.user 
+  scm: git
+
+- src: https://github.com/opendevshop/ansible-role-aegir-apache
+  name: aegir.apache
+  scm: git
