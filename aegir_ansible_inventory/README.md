@@ -13,28 +13,32 @@ The `ansible-inventory.php` script is for use in the `ansible` or `ansible-playb
 
 1. Install this module in an Aegir Hostmaster or DevShop site.
 2. Copy the "ansible-inventory.php" file to the folder you will call "ansible" from and make sure it is executable.
-<<<<<<< HEAD
-2. Set the `AEGIR_HOSTMASTER_HOSTNAME` environment variable to your hostmaster server:
+3. Set the `AEGIR_HOSTMASTER_HOSTNAME` environment variable to your hostmaster server:
 
     $ export AEGIR_HOSTMASTER_HOSTNAME=aegir.myhostname.com
 
-=======
-3. Ensure that your acting user can SSH into the servers as the "aegir" user. 
->>>>>>> 38a3304c023aa069a47fa98d203c7468b30f0f2d
-3. Use ansible to talk to your aegir servers:
+4. Ensure that your acting user can SSH into the servers as the "aegir" user.
+5. Use ansible to talk to your aegir servers:
 
     $ ansible all -i ansible-inventory.php -m command -a 'whoami'
     $ ansible db -i ansible-inventory.php -m command -a 'pwd'
-    $ ansible http -i ansible-inventory.php -m command -a 'drush status'
+    $ ansible mysql -i ansible-inventory.php -m command -a 'pwd' -u root
+    $ ansible http -i ansible-inventory.php -m command -a 'drush '
+    $ ansible apache -i ansible-inventory.php -m command -a 'service apache2 restart' -u root
+    $ ansible aegir.serverhostname.com -i ansible-inventory.php -m command -a 'drush @hostmaster uli' -u aegir
 
-See the "Patterns" section in the ansible documentation on more wansiays to target servers: http://docs.ansible.com/ansible/intro_patterns.html
+  The first argument is required for ansible, it's called a "pattern". You can specify "all" to run on all
+  servers, or you can specify a service type (db, http) or a service name (mysql, apache, nginx)
+  or a hostname (localhost, aegir.servermaster.com).
 
-1. Use "all" to run on all servers
-2. Use "db" to run on all "db" servers.
-3. Use "mysql" to run on all servers using the "mysql" service.
+  See the "Patterns" section in the ansible documentation on more ways to target servers: http://docs.ansible.com/ansible/intro_patterns.html
 
-For now, the inventory is locked in to use the 'aegir' user. Once we have a field
-on servers we will be able to change this.
+  The "-i ansible-inventory.php" tells ansible to use our little php script here to return the inventory data.
+  The `ansible-inventory.php` file in turn loads the JSON from the http://hostmaster.aegir.server/inventory endpoint.
+
+  The "-u" option determines what user ansible tries to login as.  If you need to perform operations that require
+  root privileges, specify "-u root".  Otherwise, ansible will default the name you are currently using (the same
+  behavior for the 'ssh' command.)
 
 ## Using Ansible Playbook
 
@@ -44,6 +48,9 @@ Use the `ansible-playbook` command:
 
     $ ansible-playbook playbook.yml -i ansible-inventory.php  -u root
 
+You can run the plays on a subset of servers in your inventory by using the "-l" option and a _pattern_.
+
+    $ ansible-playbook playbook.yml -i ansible-inventory.php -u root --list-hosts -l aegir.remote
 
 ### Roles
 
