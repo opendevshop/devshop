@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3cb4c06b5f49cb58569f9a9e786de33c",
+    "hash": "ce6b7b553e98c2243ef4df0df48b5a06",
+    "content-hash": "429869c3c6da4186bce5b59b2a98c5f8",
     "packages": [
+        {
+            "name": "asm/php-ansible",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maschmann/php-ansible.git",
+                "reference": "c3eaf84fcce3d60e5c1a4ee1cbc53192c5c981b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maschmann/php-ansible/zipball/c3eaf84fcce3d60e5c1a4ee1cbc53192c5c981b5",
+                "reference": "c3eaf84fcce3d60e5c1a4ee1cbc53192c5c981b5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "symfony/process": "~2.6"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "~1.0",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Asm\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marc Aschmann",
+                    "email": "maschmann@gmail.com"
+                }
+            ],
+            "description": "php wrapper for ansible commands",
+            "homepage": "https://github.com/maschmann/php-ansible",
+            "time": "2015-10-26 11:43:02"
+        },
         {
             "name": "cpliakas/git-wrapper",
             "version": "1.6.1",
