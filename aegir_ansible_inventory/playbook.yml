@@ -5,11 +5,7 @@
   - aegir.user
 - hosts: apache
   roles:
-  - geerlingguy.apache
-  - aegir.user
   - aegir.apache
 - hosts: nginx
   roles:
-  - geerlingguy.nginx
-  - aegir.user
   - aegir.nginx
