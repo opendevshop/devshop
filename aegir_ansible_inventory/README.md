@@ -62,12 +62,11 @@ Install the required galaxy roles using the `install-roles.yml` file:
 
 Aegir remote servers need to have SSH access and an aegir user, so we've created a role for "aegir-user".
 
-This role includes setting up the `authorized_keys` file for the remote aegir user, but you must pass it on the command
-line in the `--extra-vars` option.
+This role includes setting up the `authorized_keys` file for the remote aegir user. This module loads the Devmaster variable "devshop_public_key" into the inventory as long as it is set.  See *Admin > DevShop Settings* to ensure the devshop public key is set.
+
+You can also pass the variable using the `--extra-vars` option on the command line.
 
     $ ansible-playbook playbook.yml -l devshop.remote -i ansible-inventory.php  -u root --extra-vars "aegir_user_authorized_keys='ssh-rsa AAAAaaaa aegir@server_master'"
-
-The `aegir_user_authorized_keys` should be set as the aegir@server_master user's public SSH key.
 
 # Next Steps
 
