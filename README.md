@@ -6,18 +6,24 @@ This toolset provides an Aegir Hostmaster site with an
 The aegir_ansible_inventory.module provides a URL route at /inventory that
 outputs an Ansible inventory in JSON form.
 
-The `ansible-inventory.php` script is for use in the `ansible` or `ansible-playbook` commands.
+The `inventory` script is for use in the `ansible` or `ansible-playbook` commands.
 
 
 ## Setup & Usage
 
-1. Install this module in an Aegir Hostmaster or DevShop site.
-2. Copy the "ansible-inventory.php" file to the folder you will call "ansible" from and make sure it is executable.
+1. Install this module in an Aegir Hostmaster or DevShop site. Install it in the `sites/HOSTNAME/modules` path so the module remains on upgrade.
+2. `cd` to this folder, or (recommended) make a symlink to it for easy access:
+
+    $ ln -s devmaster-1.0.0-alpha4/sites/aegir.myhostname.com/modules/aegir_ansible ansible
+    $ cd ansible
+
 3. Set the `AEGIR_HOSTMASTER_HOSTNAME` environment variable to your hostmaster server:
 
     $ export AEGIR_HOSTMASTER_HOSTNAME=aegir.myhostname.com
 
-4. Ensure that your acting user can SSH into the servers as the "aegir" user.
+4. Ensure that your acting user can SSH into the servers.  You can either access as root or as another user that can sudo.
+Type `ansible` and look for the `-u and --become options for more info about how ansible connects.
+
 5. Use ansible to talk to your aegir servers:
 
     $ ansible all -i ansible-inventory.php -m command -a 'whoami'
