@@ -1,0 +1,7 @@
+name = Aegir Ansible Variables
+description = Stores extra ansible variables for servers.
+package = Aegir Ansible
+dependencies[] = hosting_server
+
+core = 7.x
+

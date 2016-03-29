@@ -1,0 +1,37 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the ansible_variables module.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function ansible_variables_schema() {
+  $schema['ansible_variables'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'ansible_variables' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'vid' => array('vid'),
+    ),
+  );
+
+  return $schema;
+}
