@@ -23,7 +23,7 @@ function ansible_variables_hosting_server_context_options(&$task) {
 function ansible_variables_drush_context_import($context, &$node) {
   if ($context->type == 'server') {
     if (isset($context->ansible_variables) && !empty($context->ansible_variables)) {
-      $node->ansible_variables = $context->ansible_variables;
+      $node->ansible_variable_overrides = $context->ansible_variables;
     }
   }
 

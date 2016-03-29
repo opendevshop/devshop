@@ -23,9 +23,9 @@ function ansible_variables_schema() {
         'default' => 0,
       ),
       'ansible_variables' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
+        'description' => 'Ansible variables to pass to the inventory, stored as YML.',
+        'type' => 'text',
+        'size' => 'medium',
       ),
     ),
     'indexes' => array(
