@@ -28,10 +28,6 @@ function aegir_ansible_inventory_data() {
     $server_nids = db_query($sql)->fetchCol();
     $server_nodes = node_load_multiple($server_nids);
 
-    // Load server_master. We need to know it's IP.
-    $server_master_node = hosting_context_load('server_master');
-    $server_master_ip = current($server_master_node->ip_addresses);
-
     foreach ($server_nodes as $server_node) {
         // Add host to inventory.
         $inventory->aegir_servers->hosts[] = $server_node->title;
@@ -39,28 +35,7 @@ function aegir_ansible_inventory_data() {
         // Server Variables
         // These variables are applied just to that host.
         $inventory->{$server_node->title}->hosts[] = $server_node->title;
-        $inventory->{$server_node->title}->vars['aegir_node'] = $server_node;
-
-        // Database Servers
-        // If the server has mysql, load the user/password as variables
-        if (isset($server_node->services['db'])) {
-
-            // If there is a server master, we are assuming that it wants database access.
-            // This is how aegir database service works.
-            $user = new stdClass();
-            $user->name = $server_node->services['db']->db_user;
-            $user->password = $server_node->services['db']->db_passwd;
-            $user->host = $server_master_ip;
-            $user->priv = '*.*:ALL,GRANT';
-
-            $inventory->{$server_node->title}->vars['mysql_users'][] = $user;
-            $inventory->{$server_node->title}->vars['port'] = $server_node->services['db']->port;
-        }
-
-        // Web Servers
-        if (isset($server_node->services['http'])) {
-            $inventory->{$server_node->title}->vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key');
-        }
+        $inventory->{$server_node->title}->vars = $server_node->ansible_vars;
 
             // The variable 'ansible_user' maybe used to force ansible to connect via this user.
         // This is disabled so that our ansible runner can connect as root via the command line.

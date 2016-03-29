@@ -21,3 +21,45 @@ function aegir_ansible_inventory_menu(){
     );
     return $items;
 }
+
+/**
+ * Implements hook_node_load().
+ */
+function aegir_ansible_inventory_node_load($nodes, $types)
+{
+    if (!in_array('server', $types)) {
+      return;
+    }
+
+    // Load server_master. We need to know it's IP.
+    $name = 'server_master';
+    $server_master_ip = db_query("SELECT ip_address FROM {hosting_ip_addresses} ip LEFT JOIN {hosting_context} h ON ip.nid = h.nid WHERE name = :name", array(':name' => $name))
+        ->fetchField();
+
+    // Load host vars here.
+    foreach ($nodes as $nid => &$node) {
+
+        // Database Servers
+        // If the server has mysql, load the user/password as variables
+        if (isset($node->services['db'])) {
+
+            // If there is a server master, we are assuming that it wants database access.
+            // This is how aegir database service works.
+            $user = new stdClass();
+            $user->name = $node->services['db']->db_user;
+            $user->password = $node->services['db']->db_passwd;
+            $user->host = $server_master_ip;
+            $user->priv = '*.*:ALL,GRANT';
+
+            $node->ansible_vars['mysql_users'][] = $user;
+            $node->ansible_vars['port'] = $node->services['db']->port;
+        }
+
+        // Web Servers
+        // If the server has a web server, we need SSH access to deliver code and verify files.
+        if (isset($node->services['http'])) {
+            $node->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
+        }
+    }
+}
+
