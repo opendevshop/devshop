@@ -30,8 +30,8 @@ class VerifySystem extends Command
                 'playbook',
                 'p',
                 InputOption::VALUE_REQUIRED,
-                'The path to playbook.yml.  Defaults to ANSIBLE_PLAYBOOK environment variable.',
-                'playbook.yml'
+                'The path to playbook.yml.',
+                __DIR__ . '/playbook.yml'
             )
             ->addOption(
                 'inventory-file',
