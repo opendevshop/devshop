@@ -1,9 +1,22 @@
 <?php
 
 /**
- * Returns our server inventory.
+ * Prints the inventory object out as json.
+ *
+ * @TODO: Access control!
  */
 function aegir_ansible_inventory_endpoint() {
+
+    $inventory = aegir_ansible_inventory_data();
+    print json_encode($inventory, JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+/**
+ * Returns an "inventory" object from our hostmaster.
+ * @return stdClass
+ */
+function aegir_ansible_inventory_data() {
     // Build attributes object
     $inventory = new stdClass;
     $inventory->aegir_servers->hosts = array();
@@ -65,6 +78,5 @@ function aegir_ansible_inventory_endpoint() {
         }
     }
 
-    print json_encode($inventory, JSON_UNESCAPED_SLASHES);
-    exit;
+    return $inventory;
 }
