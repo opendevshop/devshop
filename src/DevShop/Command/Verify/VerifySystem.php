@@ -26,6 +26,13 @@ class VerifySystem extends Command
                 InputArgument::OPTIONAL,
                 'A pattern to limit the ansible playbook run. Use server hostname, service, or service type.'
             )
+            ->addOption(
+                'playbook_path',
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'The path to playbook.yml.  Defaults to the playbook.yml file in the Aegir Ansible module in devmaster.',
+                $this->findPlaybookPath()
+            )
         ;
     }
 
