@@ -27,25 +27,58 @@ class VerifySystem extends Command
                 'A pattern to limit the ansible playbook run. Use server hostname, service, or service type.'
             )
             ->addOption(
-                'playbook_path',
+                'playbook',
                 'p',
+                InputOption::VALUE_REQUIRED,
+                'The path to playbook.yml.  Defaults to ANSIBLE_PLAYBOOK environment variable.',
+                getenv('ANSIBLE_PLAYBOOK')
+            )
+            ->addOption(
+                'inventory-file',
+                'i',
                 InputOption::VALUE_OPTIONAL,
-                'The path to playbook.yml.  Defaults to the playbook.yml file in the Aegir Ansible module in devmaster.',
-                $this->findPlaybookPath()
+                'The path to an ansible inventory file or comma separated host list. Defaults to ansible configuration.'
+            )
+            ->addOption(
+                'user',
+                'u',
+                InputOption::VALUE_OPTIONAL,
+                'Remote user: connect as this user. Defaults to currently acting user.'
             )
         ;
     }
 
+    /**
+     * @var Ansible;
+     */
     private $ansible;
 
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
-        if (!file_exists($this->getApplication()->getDevmasterRoot() . '/profiles/devmaster/modules/aegir/aegir_ansible')) {
-            throw new \Exception('The "Aegir Ansible Inventory" module is not installed in DevMaster');
+        // If inventory-file option was not specified, try to derive it from ansible.cfg
+        if (empty($input->getOption('inventory-file'))) {
+            $input->setOption('inventory-file', $this->getAnsibleInventoryFromConfig());
+
+            // If inventory file is still empty, look for the default.
+            if (empty($input->getOption('inventory-file'))) {
+
+                if (file_exists('/etc/ansible/hosts')) {
+                    $input->setOption('inventory-file', '/etc/ansible/hosts');
+                }
+                else {
+                    throw new \Exception('No inventory-file option found. Pass `-i` or `--inventory-file` option or set an ansible.cfg file with the `inventory` option.');
+                }
+            }
         }
 
+        // Last check: does the inventory file exist?
+        if (!file_exists($input->getOption('inventory-file'))) {
+            throw new \Exception('No file was found at the path specified by the "inventory-file" option: ' . $input->getOption('inventory-file'));
+        }
+
+        // Prepare the Ansible object.
         $this->ansible = new Ansible(
-            $this->getApplication()->getDevmasterRoot() . '/profiles/devmaster/modules/aegir/aegir_ansible/aegir_ansible_inventory',
+            getcwd(),
             '/usr/bin/ansible-playbook',
             '/usr/bin/ansible-galaxy'
         );
@@ -53,16 +86,66 @@ class VerifySystem extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $limit = $input->getArgument('limit');
-        $this->ansible
-            ->playbook()
-            ->play('playbook.yml')
-            ->user('root')
-            ->limit($limit)
-            ->inventoryFile('ansible-inventory.php')
-            ->execute(function ($type, $buffer) {
-                print $buffer;
-            });
+        $ansible = $this->ansible->playbook();
 
+        $ansible->play($input->getOption('playbook'));
+
+        if ($input->getOption('user')) {
+            $ansible->user($input->getOption('user'));
+        }
+        if ($input->getArgument('limit')) {
+            $ansible->limit($input->getArgument('limit'));
+        }
+
+        if ($input->getOption('inventory-file')) {
+            $ansible->inventoryFile($input->getOption('inventory-file'));
+        }
+
+        $ansible->execute(function ($type, $buffer) {
+            print $buffer;
+        });
+
+    }
+
+    /**
+     * Return the inventory file from ansible configuration.
+     *
+     * @return string
+     */
+    protected function getAnsibleInventoryFromConfig() {
+
+        $config = $this->getAnsibleConfig();
+
+        if (isset($config['inventory']) && file_exists($config['inventory'])) {
+            return $config['inventory'];
+        }
+        else {
+            return '';
+        }
+    }
+
+    /**
+     * Loads ansible configuration from the default ansible.cfg files.
+     *
+     * @see http://docs.ansible.com/ansible/intro_configuration.html
+     *
+     * @return array
+     */
+    protected function getAnsibleConfig() {
+        $ansible_cfg[] = getenv('ANSIBLE_CONFIG');
+        $ansible_cfg[] = 'ansible.cfg';
+        $ansible_cfg[] = '.ansible.cfg';
+        $ansible_cfg[] = '/etc/ansible/ansible.cfg';
+
+        foreach ($ansible_cfg as $path) {
+            if (file_exists($path)) {
+                $file = @parse_ini_file($path);
+
+                if (is_array($file)) {
+                    return $file;
+                }
+            }
+        }
+        return array();
     }
 }
