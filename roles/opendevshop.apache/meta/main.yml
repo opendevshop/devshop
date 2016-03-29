@@ -11,7 +11,3 @@ dependencies:
   - aegir.user
   - geerlingguy.git
   - geerlingguy.apache
-  - geerlingguy.php
-  - geerlingguy.php-mysql
-  - geerlingguy.composer
-  - geerlingguy.drush

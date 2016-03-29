@@ -1,3 +1,28 @@
 ---
 # vars file for aegir.apache on Debian
 apache_control: /usr/sbin/apachectl
+php_packages:
+  - php55
+  - php55-php
+  - php55-php-mysqlnd
+  - php55-php-cli
+  - php55-php-gd
+  - php55-php-process
+  - php55-php-pear
+  - php55-php-xml
+#  - php-mcrypt
+  - php55-php-mbstring
+
+#  - php-common
+#  - php-devel
+#  - php-fpm
+#  - php-gd
+#  - php-imap
+#  - php-ldap
+#  - php-mbstring
+#  - php-opcache
+#  - php-pdo
+#  - php-pear
+#  - php-pecl-apc
+#  - php-xml
+#  - php-xmlrpc
