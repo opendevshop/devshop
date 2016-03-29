@@ -45,14 +45,14 @@ function aegir_ansible_inventory_node_load($nodes, $types)
 
             // If there is a server master, we are assuming that it wants database access.
             // This is how aegir database service works.
-            $user = new stdClass();
-            $user->name = $node->services['db']->db_user;
-            $user->password = $node->services['db']->db_passwd;
-            $user->host = $server_master_ip;
-            $user->priv = '*.*:ALL,GRANT';
+            $user = array();
+            $user['name'] = $node->services['db']->db_user;
+            $user['password'] = $node->services['db']->db_passwd;
+            $user['host'] = $server_master_ip;
+            $user['priv']  = '*.*:ALL,GRANT';
 
             $node->ansible_vars['mysql_users'][] = $user;
-            $node->ansible_vars['port'] = $node->services['db']->port;
+            $node->ansible_vars['mysql_port'] = $node->services['db']->port;
         }
 
         // Web Servers
