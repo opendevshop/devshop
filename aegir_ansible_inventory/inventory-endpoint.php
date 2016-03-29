@@ -35,7 +35,10 @@ function aegir_ansible_inventory_data() {
         // Server Variables
         // These variables are applied just to that host.
         $inventory->{$server_node->title}->hosts[] = $server_node->title;
-        $inventory->{$server_node->title}->vars = $server_node->ansible_vars;
+
+        if (!empty($server_node->ansible_vars)) {
+            $inventory->{$server_node->title}->vars = $server_node->ansible_vars;
+        }
 
             // The variable 'ansible_user' maybe used to force ansible to connect via this user.
         // This is disabled so that our ansible runner can connect as root via the command line.

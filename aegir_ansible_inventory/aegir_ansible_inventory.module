@@ -38,6 +38,7 @@ function aegir_ansible_inventory_node_load($nodes, $types)
 
     // Load host vars here.
     foreach ($nodes as $nid => &$node) {
+        $node->ansible_vars = array();
 
         // Database Servers
         // If the server has mysql, load the user/password as variables
