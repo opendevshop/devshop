@@ -1,0 +1,53 @@
+[
+    {
+        "name": "symfony/yaml",
+        "version": "v3.0.3",
+        "version_normalized": "3.0.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/yaml.git",
+            "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/yaml/zipball/b5ba64cd67ecd6887f63868fa781ca094bd1377c",
+            "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5.9"
+        },
+        "time": "2016-02-23 15:16:06",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Yaml\\": ""
+            },
+            "exclude-from-classmap": [
+                "/Tests/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Yaml Component",
+        "homepage": "https://symfony.com"
+    }
+]
