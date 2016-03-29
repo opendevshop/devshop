@@ -77,6 +77,11 @@ class VerifySystem extends Command
             throw new \Exception('No file was found at the path specified by the "inventory-file" option: ' . $input->getOption('inventory-file'));
         }
 
+        // Last check: does the playbook file exist?
+        if (!file_exists($input->getOption('playbook'))) {
+            throw new \Exception('No file was found at the path specified by the "playbook" option: ' . $input->getOption('playbook'));
+        }
+
         // Prepare the Ansible object.
         $this->ansible = new Ansible(
             getcwd(),
