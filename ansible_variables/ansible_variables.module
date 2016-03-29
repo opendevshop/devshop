@@ -4,6 +4,10 @@
  * The hosting server data example.
  */
 
+require_once(__DIR__ . '/vendor/autoload.php');
+
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Implements hook_form_alter().
  */
@@ -16,10 +20,10 @@ function ansible_variables_form_alter(&$form, $form_state, $form_id) {
       '#description' => t('Example implementation of saving data into the server context.'),
     );
 
-    $form['ansible_variables']['ansible_variables'] = array(
-      '#type' => 'textfield',
+    $form['ansible_variables']['ansible_variables_raw'] = array(
+      '#type' => 'textarea',
       '#title' => t('Server data'),
-      '#default_value' => isset($form['#node']->ansible_variable_overrides) ? $form['#node']->ansible_variable_overrides : '',
+      '#default_value' => isset($form['#node']->ansible_variables_raw) ? $form['#node']->ansible_variables_raw : '',
       '#weight' => 0,
     );
     return $form;
@@ -30,11 +34,11 @@ function ansible_variables_form_alter(&$form, $form_state, $form_id) {
  * Implements hook_node_insert().
  */
 function ansible_variables_node_insert($node) {
-  if ($node->type == 'server' && !empty($node->ansible_variable_overrides)) {
+  if ($node->type == 'server' && !empty($node->ansible_variables_raw)) {
     $id = db_insert('ansible_variables')->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
-      'ansible_variables' => $node->ansible_variable_overrides,
+      'ansible_variables' => $node->ansible_variables_raw,
     ))
     ->execute();
   }
@@ -50,7 +54,7 @@ function ansible_variables_node_update($node) {
   else {
     db_update('ansible_variables')
       ->fields(array(
-        'ansible_variables' => $node->ansible_variable_overrides,
+        'ansible_variables' => $node->ansible_variables_raw,
       ))
       ->condition('vid', $node->vid)
       ->execute();
@@ -63,8 +67,24 @@ function ansible_variables_node_update($node) {
 function ansible_variables_node_load($nodes, $types) {
   foreach ($nodes as $nid => &$node) {
     if ($node->type == 'server') {
-      // array instead
-      $nodes[$nid]->ansible_variable_overrides = db_query("SELECT ansible_variables FROM {ansible_variables} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField();;
+
+      // Load raw YAML
+      $nodes[$nid]->ansible_variables_raw = db_query("SELECT ansible_variables FROM {ansible_variables} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField();
+
+      // Parse YML
+      $parser = new Symfony\Component\Yaml\Parser();
+      $nodes[$nid]->ansible_variable_overrides = $parser->parse($nodes[$nid]->ansible_variables_raw);
+
+      // If empty, make it an empty array.
+      if (empty($nodes[$nid]->ansible_variable_overrides)) {
+        $nodes[$nid]->ansible_variable_overrides = array();
+      }
+
+      // If ansible_vars exist, override them with these.
+      if (isset($nodes[$nid]->ansible_vars)) {
+        $nodes[$nid]->ansible_variable_originals = $nodes[$nid]->ansible_vars;
+        $nodes[$nid]->ansible_vars = array_merge($nodes[$nid]->ansible_vars, $nodes[$nid]->ansible_variable_overrides);
+      }
     }
   }
 }
