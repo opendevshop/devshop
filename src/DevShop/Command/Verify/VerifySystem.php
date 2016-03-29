@@ -53,23 +53,18 @@ class VerifySystem extends Command
      * @var Ansible;
      */
     private $ansible;
+    private $inventory;
+    private $config_file;
+    private $config;
 
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
-        // If inventory-file option was not specified, try to derive it from ansible.cfg
-        if (empty($input->getOption('inventory-file'))) {
-            $input->setOption('inventory-file', $this->getAnsibleInventoryFromConfig());
+        // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
+        if ($this->getAnsibleInventory()) {
 
-            // If inventory file is still empty, look for the default.
-            if (empty($input->getOption('inventory-file'))) {
+            $output->writeln('<info>Ansible Config Loaded</info> from ' . $this->config_file);
 
-                if (file_exists('/etc/ansible/hosts')) {
-                    $input->setOption('inventory-file', '/etc/ansible/hosts');
-                }
-                else {
-                    throw new \Exception('No inventory-file option found. Pass `-i` or `--inventory-file` option or set an ansible.cfg file with the `inventory` option.');
-                }
-            }
+            $input->setOption('inventory-file', $this->getAnsibleInventory());
         }
 
         // Last check: does the inventory file exist?
@@ -118,16 +113,14 @@ class VerifySystem extends Command
      *
      * @return string
      */
-    protected function getAnsibleInventoryFromConfig() {
-
-        $config = $this->getAnsibleConfig();
-
-        if (isset($config['inventory']) && file_exists($config['inventory'])) {
-            return $config['inventory'];
+    protected function getAnsibleInventory() {
+        if (!$this->inventory) {
+            $this->config = $this->getAnsibleConfig();
+            if (isset($this->config['inventory'])) {
+                $this->inventory = $this->config['inventory'];
+            }
         }
-        else {
-            return '';
-        }
+        return $this->inventory;
     }
 
     /**
@@ -139,15 +132,15 @@ class VerifySystem extends Command
      */
     protected function getAnsibleConfig() {
         $ansible_cfg[] = getenv('ANSIBLE_CONFIG');
-        $ansible_cfg[] = 'ansible.cfg';
-        $ansible_cfg[] = '.ansible.cfg';
+        $ansible_cfg[] = getcwd() . '/ansible.cfg';
+        $ansible_cfg[] = getenv('HOME') . '/.ansible.cfg';
         $ansible_cfg[] = '/etc/ansible/ansible.cfg';
 
         foreach ($ansible_cfg as $path) {
             if (file_exists($path)) {
                 $file = @parse_ini_file($path);
-
                 if (is_array($file)) {
+                    $this->config_file = $path;
                     return $file;
                 }
             }
