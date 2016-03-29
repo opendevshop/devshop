@@ -25,9 +25,30 @@ function ansible_variables_form_alter(&$form, $form_state, $form_id) {
       '#title' => t('Server data'),
       '#default_value' => isset($form['#node']->ansible_variables_raw) ? $form['#node']->ansible_variables_raw : '',
       '#weight' => 0,
+      '#element_validate' => array(
+        'ansible_variables_form_validate'
+      ),
     );
     return $form;
   }
+}
+
+/**
+ * Form element validator for Ansible Variables.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function ansible_variables_form_validate($element, &$form_state, $form) {
+    $parser = new Symfony\Component\Yaml\Parser();
+
+    try {
+      $parser->parse($element['#value']);
+    }
+    catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+      form_set_error('ansible_variables_raw', t('YAML did not validate. Please try again: ') . $e->getMessage());
+    }
 }
 
 /**
@@ -73,16 +94,16 @@ function ansible_variables_node_load($nodes, $types) {
 
       // Parse YML
       $parser = new Symfony\Component\Yaml\Parser();
-      $nodes[$nid]->ansible_variable_overrides = $parser->parse($nodes[$nid]->ansible_variables_raw);
-
-      // If empty, make it an empty array.
-      if (empty($nodes[$nid]->ansible_variable_overrides)) {
+      try {
+        $nodes[$nid]->ansible_variable_overrides = $parser->parse($nodes[$nid]->ansible_variables_raw);
+      }
+      catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
         $nodes[$nid]->ansible_variable_overrides = array();
       }
 
       // If ansible_vars exist, override them with these.
       if (isset($nodes[$nid]->ansible_vars)) {
-        $nodes[$nid]->ansible_variable_originals = $nodes[$nid]->ansible_vars;
+        $nodes[$nid]->ansible_vars_original = $nodes[$nid]->ansible_vars;
         $nodes[$nid]->ansible_vars = array_merge($nodes[$nid]->ansible_vars, $nodes[$nid]->ansible_variable_overrides);
       }
     }
