@@ -92,7 +92,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Grant the aegir@local.devshop.site user access to root@devshop.remote
     remote.vm.provision "shell",
-      inline: "cat /vagrant/devmaster_id_rsa.pub >> /root/.ssh/authorized_keys"
+      inline: "mkdir /root/.ssh; cat /vagrant/devmaster_id_rsa.pub >> /root/.ssh/authorized_keys"
 
   end
   config.vm.define "remote2", autostart: false do |remote|
