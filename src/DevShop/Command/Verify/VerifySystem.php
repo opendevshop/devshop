@@ -31,13 +31,14 @@ class VerifySystem extends Command
                 'p',
                 InputOption::VALUE_REQUIRED,
                 'The path to playbook.yml.  Defaults to ANSIBLE_PLAYBOOK environment variable.',
-                getenv('ANSIBLE_PLAYBOOK')
+                'playbook.yml'
             )
             ->addOption(
                 'inventory-file',
                 'i',
-                InputOption::VALUE_OPTIONAL,
-                'The path to an ansible inventory file or comma separated host list. Defaults to ansible configuration.'
+                InputOption::VALUE_REQUIRED,
+                'The path to an ansible inventory file or comma separated host list. Defaults to ansible configuration.',
+                '/etc/ansible/hosts'
             )
             ->addOption(
                 'user',
