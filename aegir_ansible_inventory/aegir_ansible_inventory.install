@@ -1,0 +1,14 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the aegir_ansible_inventory module.
+ */
+
+/**
+ * Implements hook_install()
+ */
+function aegir_ansible_inventory_install() {
+    db_query('UPDATE {system} SET weight = 1 WHERE name = :module', array(
+        ':module' => 'aegir_ansible_inventory'
+    ));
+}
