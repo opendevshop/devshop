@@ -1,37 +1,96 @@
 # Ansible Dynamic Inventory for Aegir Servers
 
-This toolset provides an Aegir Hostmaster site with an
-"ansible dynamic inventory" compatible endpoint.
+This toolset allows for tight integration between Ansible & Aegir.
 
-The aegir_ansible_inventory.module provides a URL route at /inventory that
-outputs an Ansible inventory in JSON form.
+It involves a few components:
 
-The `inventory` script is for use in the `ansible` or `ansible-playbook` commands.
+- **Aegir Ansible Inventory module** is a simple Drupal module that provides a URL at http://hostmaster/inventory with JSON data in an Ansible Dynamic Inventory format.
+- **Aegir Ansible Roles** provide the final layer of configuration for servers, so that can be used with Aegir.
+
+  Our roles simply add on to existing Ansible Galaxy Roles to provide standardized Apache, MySQL, NGINX, and PHP configuration.
+
+  We have 3 roles so far:
+
+  - `aegir.user` role prepares the aegir user and SSH access.
+  - `aegir.apache` role applies the needed configuration to apache, and sets the sudo permissions needed to restart it.
+  - `aegir.nginx` role does the same for nginx.
+
+- **Ansible `inventory` script** is used to replace a static ansible inventory file.
+
+  Both `ansible` and `ansible-playbook` commands have the `-i` or `--inventory-file` option. This is the path to your system's "inventory file".  An ansible inventory file is similar to a `/etc/hosts` file: it lists servers, but it is much more powerful.
+
+  If your inventory file is executable, `ansible` and `ansible-playbook` commands will run the inventory as a script.  This script must return JSON data compatible with Ansible's *Dynamic Inventory* feature.
+
+  What our `inventory` script does is reach out to http://hostmaster/inventory and return the results.
+
+  This file should replace your default ansible hosts file at `/etc/ansible/hosts` and be made executable.
+
+  Further Reading on Ansible Dynamic Inventory:
+
+  - http://docs.ansible.com/ansible/intro_dynamic_inventory.html
+  - http://docs.ansible.com/ansible/developing_inventory.html
+  - http://www.jeffgeerling.com/blog/creating-custom-dynamic-inventories-ansible
 
 
 ## Setup & Usage
+1. Install this module in an Aegir Hostmaster or DevShop site. Install it in the `sites/HOSTNAME/modules` path so the module remains on upgrade.  (as `aegir`, for easy install.)
 
-1. Install this module in an Aegir Hostmaster or DevShop site. Install it in the `sites/HOSTNAME/modules` path so the module remains on upgrade.
-2. `cd` to this folder, or (recommended) make a symlink to it for easy access:
+        aegir@hostmaster:~$ git clone http://github.com/opendevshop/aegir_ansible /var/aegir/hostmaster-7.x-3.x/sites/HOSTNAME/modules
+        aegir@hostmaster:~$ drush @hostmaster en aegir_ansible_inventory
 
-    $ ln -s devmaster-1.0.0-alpha4/sites/aegir.myhostname.com/modules/aegir_ansible ansible
-    $ cd ansible
+   *Everything else can be done on any server that can access the http://hostmaster/inventory URL, and has SSH access to the servers you wish to configure.*
 
-3. Set the `AEGIR_HOSTMASTER_HOSTNAME` environment variable to your hostmaster server:
+   You can even install ansible, the inventory and playbook files on the new remote server itself.  Instead of installing over SSH access, you can run `ansible-playbook` as root, and use the `--connection local` option to simply run the playbooks in place.
 
-    $ export AEGIR_HOSTMASTER_HOSTNAME=aegir.myhostname.com
+2. Copy the `inventory` file to `/etc/ansible/hosts` and make it executable (as `root`, or use sudo. Note `aegir` user cannot sudo.):
 
-4. Ensure that your acting user can SSH into the servers.  You can either access as root or as another user that can sudo.
+        root@local:~# cp /var/aegir/hostmaster-7.x-3.x/sites/HOSTNAME/modules/aegir_ansible/inventory /etc/ansible/hosts
+        root@local:~# chmod +x /etc/ansible/hosts
+
+   When using our dynamic inventory file, it assumes your hostname is available as a FQDN.  If your server's hostname is `aegir.mysite.com`, then it will load `http://aegir.mysite.com/inventory` by default.
+
+   If your hostname does not match your available FQDN, you can set the `AEGIR_HOSTMASTER_HOSTNAME` environment variable or you can just directly edit `/etc/ansible/hosts` if you can remember to edit it again if there are upgrades.
+
+    To set an environment variable, either type this out or put it in `/etc/bashrc` or `/etc/bash.bashrc`
+
+        export AEGIR_HOSTMASTER_HOSTNAME=aegir.myhostname.com
+
+5. Install Galaxy Roles
+
+  There is a `roles.yml` file that includes the needed galaxy roles.  Use the `ansible-galaxy` command to install them:
+
+        root@local:~# cd /var/aegir/hostmaster-7.x-3.x/sites/HOSTNAME/modules/aegir_ansible
+        root@local:~# ansible-galaxy install -r roles.yml
+
+   If this fails you can install the roles "manually" (as root, so they are installed globally)
+
+        ansible-galaxy install geerlingguy.apache
+        ansible-galaxy install geerlingguy.composer
+        ansible-galaxy install geerlingguy.drush
+        ansible-galaxy install geerlingguy.git
+        ansible-galaxy install geerlingguy.mysql
+        ansible-galaxy install geerlingguy.nginx
+        ansible-galaxy install geerlingguy.php
+        ansible-galaxy install geerlingguy.php-mysql
+
+   And install our "custom" roles.  (Once we publish the roles to ansible galaxy, this won't be needed).
+
+        git clone http://github.com/opendevshop/ansible-role-aegir-user /etc/ansible/roles/aegir.user
+        git clone http://github.com/opendevshop/ansible-role-aegir-apache /etc/ansible/roles/aegir.apache
+        git clone http://github.com/opendevshop/ansible-role-aegir-nginx /etc/ansible/roles/aegir.nginx
+
+4. Ensure SSH access.
+Ensure that your acting user can SSH into the servers.  You can either access as root or as another user that can sudo.
 Type `ansible` and look for the `-u and --become options for more info about how ansible connects.
 
 5. Use ansible to talk to your aegir servers:
 
-    $ ansible all -i ansible-inventory.php -m command -a 'whoami'
-    $ ansible db -i ansible-inventory.php -m command -a 'pwd'
-    $ ansible mysql -i ansible-inventory.php -m command -a 'pwd' -u root
-    $ ansible http -i ansible-inventory.php -m command -a 'drush '
-    $ ansible apache -i ansible-inventory.php -m command -a 'service apache2 restart' -u root
-    $ ansible aegir.serverhostname.com -i ansible-inventory.php -m command -a 'drush @hostmaster uli' -u aegir
+        $ ansible all -i ansible-inventory.php -m command -a 'whoami'
+        $ ansible db -i ansible-inventory.php -m command -a 'pwd'
+        $ ansible mysql -i ansible-inventory.php -m command -a 'pwd' -u root
+        $ ansible http -i ansible-inventory.php -m command -a 'drush '
+        $ ansible apache -i ansible-inventory.php -m command -a 'service apache2 restart' -u root
+        $ ansible aegir.serverhostname.com -i ansible-inventory.php -m command -a 'drush @hostmaster uli' -u aegir
 
   The first argument is required for ansible, it's called a "pattern". You can specify "all" to run on all
   servers, or you can specify a service type (db, http) or a service name (mysql, apache, nginx)
