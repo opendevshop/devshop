@@ -92,21 +92,18 @@ Type `ansible` and look for the `-u and --become options for more info about how
 
   Some example commands:
 
-        $ ansible all -i ansible-inventory.php -m command -a 'whoami'
-        $ ansible db -i ansible-inventory.php -m command -a 'pwd'
-        $ ansible mysql -i ansible-inventory.php -m command -a 'pwd' -u root
-        $ ansible http -i ansible-inventory.php -m command -a 'drush '
-        $ ansible apache -i ansible-inventory.php -m command -a 'service apache2 restart' -u root
-        $ ansible aegir.serverhostname.com -i ansible-inventory.php -m command -a 'drush @hostmaster uli' -u aegir
+        $ ansible all -m command -a 'whoami'
+        $ ansible db -m command -a 'pwd'
+        $ ansible mysql -m command -a 'pwd' -u root
+        $ ansible http -m command -a 'drush '
+        $ ansible apache -m command -a 'service apache2 restart' -u root
+        $ ansible aegir.serverhostname.com -m command -a 'drush @hostmaster uli' -u aegir
 
-  The first argument is required for ansible, it's called a "pattern". You can specify "all" to run on all
+  The first and only argument is required for ansible, it's called a "pattern". You can specify "all" to run on all
   servers, or you can specify a service type (db, http) or a service name (mysql, apache, nginx)
   or a hostname (localhost, aegir.servermaster.com).
 
   See the "Patterns" section in the ansible documentation on more ways to target servers: http://docs.ansible.com/ansible/intro_patterns.html
-
-  The "-i ansible-inventory.php" tells ansible to use our little php script here to return the inventory data.
-  The `ansible-inventory.php` file in turn loads the JSON from the http://hostmaster.aegir.server/inventory endpoint.
 
   The "-u" option determines what user ansible tries to login as.  If you need to perform operations that require
   root privileges, specify "-u root".  Otherwise, ansible will default the name you are currently using (the same
@@ -118,11 +115,11 @@ We've added a playbook.yml file to this repo in an attempt to allow core aegir s
 
 Use the `ansible-playbook` command:
 
-    $ ansible-playbook playbook.yml -i ansible-inventory.php  -u root
+    $ ansible-playbook playbook.yml -u root
 
 You can run the plays on a subset of servers in your inventory by using the "-l" option and a _pattern_.
 
-    $ ansible-playbook playbook.yml -i ansible-inventory.php -u root --list-hosts -l aegir.remote
+    $ ansible-playbook playbook.yml -u root --list-hosts -l aegir.remote
 
 ### Roles
 
@@ -134,10 +131,13 @@ Install the required galaxy roles using the `install-roles.yml` file:
 
 Aegir remote servers need to have SSH access and an aegir user, so we've created a role for "aegir-user".
 
-This role includes setting up the `authorized_keys` file for the remote aegir user, but you must pass it on the command
-line in the `--extra-vars` option.
+This role includes setting up the `authorized_keys` file for the remote aegir user.
 
-    $ ansible-playbook playbook.yml -l devshop.remote -i ansible-inventory.php  -u root --extra-vars "aegir_user_authorized_keys='ssh-rsa AAAAaaaa aegir@server_master'"
+The `aegir_ansible_inventory.module` includes the hostmaster's public key in the server variables automatically, as long as the variable `devshop_public_key` is set. (This happens automatically in devshop. You will have to set it manually in Aegir).
+
+ You may also pass the public key in via the command line instead of relying on the inventory, using the `--extra-vars` option.
+
+    $ ansible-playbook playbook.yml -l devshop.remote -u root --extra-vars "aegir_user_authorized_keys='ssh-rsa AAAAaaaa aegir@server_master'"
 
 The `aegir_user_authorized_keys` should be set as the aegir@server_master user's public SSH key.
 
