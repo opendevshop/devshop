@@ -83,7 +83,14 @@ It involves a few components:
 Ensure that your acting user can SSH into the servers.  You can either access as root or as another user that can sudo.
 Type `ansible` and look for the `-u and --become options for more info about how ansible connects.
 
-5. Use ansible to talk to your aegir servers:
+5. Use ansible to talk to your aegir servers.  You can refer to a single server or a group of servers using the following "patterns":
+
+  - Service Type: http, db
+  - Service: apache, nginx, mysql
+  - Hostname: localhost, aegir.myserver.com
+  - "Hosting Context": server_master
+
+  Some example commands:
 
         $ ansible all -i ansible-inventory.php -m command -a 'whoami'
         $ ansible db -i ansible-inventory.php -m command -a 'pwd'
