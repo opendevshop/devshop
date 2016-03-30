@@ -16,6 +16,8 @@
   - aegir.apache
   - geerlingguy.php
   - geerlingguy.php-mysql
+  - geerlingguy.composer
+  - geerlingguy.drush
 - hosts: nginx
   roles:
   - aegir.nginx
