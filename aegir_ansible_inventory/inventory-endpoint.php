@@ -45,6 +45,9 @@ function aegir_ansible_inventory_data() {
         // If this variable is set, the `-u root` command line option is ignored.
         // $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
 
+        // Load another group based on the server's hosting_name (hosting context).
+        $inventory->{$server_node->hosting_name} = $inventory->{$server_node->title};
+
         // Add a "group" for each service type.
         foreach ($server_node->services as $service => $service_data) {
 
