@@ -6,4 +6,4 @@ dependencies[] = hosting_server
 core = 7.x
 
 files[] = src/hostingService_db_ansible_db.php
-files[] = src/hostingService_http_ansible_http.php
+files[] = src/hostingService_http_ansible_apache.php
