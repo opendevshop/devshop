@@ -1,0 +1,12 @@
+<?php
+
+
+/**
+ * Implements hook_hosting_service().
+ */
+function ansible_roles_hosting_service() {
+    return array(
+        'ansible_db' => 'db',
+        'ansible_http' => 'http',
+    );
+}

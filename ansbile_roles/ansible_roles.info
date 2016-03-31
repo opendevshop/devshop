@@ -1,0 +1,9 @@
+name = Aegir Ansible Roles
+description = Manage your servers with Ansible Roles
+package = Aegir Ansible
+dependencies[] = hosting_server
+
+core = 7.x
+
+files[] = src/hostingService_db_ansible_db.php
+files[] = src/hostingService_http_ansible_http.php
