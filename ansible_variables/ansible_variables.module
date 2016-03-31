@@ -16,8 +16,8 @@ function ansible_variables_form_alter(&$form, $form_state, $form_id) {
 
     $form['ansible_variables'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Server data example'),
-      '#description' => t('Example implementation of saving data into the server context.'),
+      '#title' => t('Server Configuration'),
+      '#description' => t('Override configuration options for this server using Ansible variables.'),
     );
 
     $form['ansible_variables']['ansible_variables_raw'] = array(
