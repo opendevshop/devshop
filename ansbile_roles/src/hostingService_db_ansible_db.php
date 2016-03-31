@@ -17,26 +17,18 @@ class hostingService_db_ansible_db extends hostingService_db {
 
     function form(&$form) {
         parent::form($form);
-        $form['db_user'] = array(
-            '#type' => 'textfield',
-            '#required' => !empty($this->available),
-            '#title' => t('Username'),
-            '#description' => t('The user that will be used to create new mysql users and databases for new sites.'),
-            '#size' => 40,
-            '#default_value' => isset($this->db_user) ? $this->db_user : NULL,
-            '#maxlength' => 64,
-            '#weight' => 5,
+        $form['note'] = array(
+            '#markup' => t('Your MySQL server will be configured automatically.'),
+            '#prefix' => '<p>',
+            '#suffix' => '</p>',
         );
-        $passwd_description = '';
-        if (isset($this->db_passwd)) {
-            $passwd_description = t('<strong>You have already set a password for this database server.</strong><br />');
-        }
+        $form['db_user'] = array(
+            '#type' => 'value',
+            '#value' => isset($this->db_user)? isset($this->db_user): 'server_master_root',
+        );
         $form['db_passwd'] = array(
-            '#type' => 'password_confirm',
-            '#required' => FALSE,
-            '#description' => $passwd_description . t('The password for the user that will be used to create new mysql users and databases for new sites'),
-            '#size' => 30,
-            '#weight' => 10,
+            '#type' => 'value',
+            '#value' => isset($this->db_passwd)? isset($this->db_passwd): user_password(16),
         );
     }
 
