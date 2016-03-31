@@ -6,7 +6,7 @@
  */
 function ansible_roles_hosting_service() {
     return array(
-        'ansible_db' => 'db',
+        'ansible_mysql' => 'db',
         'ansible_apache' => 'http',
     );
 }
