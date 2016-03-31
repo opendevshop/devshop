@@ -6,10 +6,15 @@
 
 
 
-class hostingService_http_ansible_apache extends hostingService_http_public {
+class hostingService_http_ansible_apache extends hostingService_http_apache {
     public $type = 'ansible_apache';
 
     protected $has_restart_cmd = TRUE;
+
+    function default_restart_cmd()
+    {
+        return parent::default_restart_cmd();
+    }
 
     function form(&$form) {
         parent::form($form);
