@@ -6,7 +6,7 @@
 
 
 
-class hostingService_http_ansible_apache extends hostingService_http_apache {
+class hostingService_http_ansible_apache extends hostingService_http {
     public $type = 'ansible_apache';
 
     protected $has_restart_cmd = FALSE;
