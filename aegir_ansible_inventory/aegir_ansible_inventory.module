@@ -61,6 +61,24 @@ function aegir_ansible_inventory_node_load($nodes, $types)
         if (isset($node->services['http'])) {
             $node->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
         }
+
+        // Get a list of all sites on this server
+        $sites_results = db_query('
+          SELECT s.nid, n.title, p.*
+            FROM hosting_site s 
+            LEFT JOIN hosting_platform p ON s.platform = p.nid 
+            LEFT JOIN node n ON s.nid = n.nid 
+            WHERE db_server = :dbserver OR web_server = :webserver 
+            
+         ', array(
+            ':dbserver' => $node->nid,
+            ':webserver' => $node->nid,
+        ))->fetchAssoc();
+
+        foreach ($sites_results as $data) {
+            $node->ansible_vars['sites'][] = $data;
+        }
+
     }
 }
 
