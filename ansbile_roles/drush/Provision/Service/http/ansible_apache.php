@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../../../../vendor/autoload.php');
 
 use Asm\Ansible\Ansible;
 
+
 /**
  * @file
  * Provides the Ansible Apache service driver.
@@ -21,7 +22,7 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
     private $config;
 
     /**
-     * Override sync() method because we don't need to sync.
+     * Used to sync config to remote server.
      */
     function sync($path = NULL, $additional_options = array()) {
         parent::sync($path, $additional_options);
