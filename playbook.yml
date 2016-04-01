@@ -1,5 +1,5 @@
 ---
-- hosts: mysql
+- hosts: ansible_apache
   roles:
   - geerlingguy.mysql
 #   RedHat uses MariaDB
@@ -11,7 +11,7 @@
       - mariadb
       - mariadb-server
     when: ansible_os_family == "RedHat"
-- hosts: apache
+- hosts: ansible_apache
   roles:
   - aegir.apache
   - geerlingguy.php
