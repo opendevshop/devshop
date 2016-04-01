@@ -19,8 +19,8 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
     private $ansible_user = '';
     private $inventory;
     private $playbook;
-    private $config_file;
-    private $config;
+    private $ansible_config_file;
+    private $ansible_config;
 
     /**
      * This is kicked off by a drush hook, since there is no good method to override in Provision_Service_http or Provision_Service.
@@ -32,7 +32,7 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
 
         // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
         if ($this->getAnsibleInventory()) {
-            drush_log('Ansible Config Loaded from ' . $this->config_file, 'status');
+            drush_log('Ansible Config Loaded from ' . $this->ansible_config_file, 'status');
             $this->inventory = $this->getAnsibleInventory();
         }
 
@@ -110,13 +110,6 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
 
     }
 
-    /**
-     * Used to sync config to remote server.
-     */
-    function sync($path = NULL, $additional_options = array()) {
-        parent::sync($path, $additional_options);
-    }
-
     function verify_server_cmd() {
 
 
@@ -140,9 +133,9 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
      */
     protected function getAnsibleInventory() {
         if (!$this->inventory) {
-            $this->config = $this->getAnsibleConfig();
-            if (isset($this->config['inventory'])) {
-                $this->inventory = $this->config['inventory'];
+            $this->ansible_config = $this->getAnsibleConfig();
+            if (isset($this->ansible_config['inventory'])) {
+                $this->inventory = $this->ansible_config['inventory'];
             }
             else {
                 $this->inventory = '/etc/ansible/hosts';
@@ -166,8 +159,8 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
 
         foreach ($ansible_cfg as $path) {
             if (file_exists($path)) {
-                $this->config_file = $path;
-                $config = @parse_ini_file($this->config_file);
+                $this->ansible_config_file = $path;
+                $config = @parse_ini_file($this->ansible_config_file);
                 if (is_array($config)) {
                     return $config;
                 }
