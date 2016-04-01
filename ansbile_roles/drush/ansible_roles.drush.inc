@@ -16,3 +16,14 @@ function ansible_roles_drush_init()
   require_once('Provision/Service/db/ansible_mysql.php');
   require_once('Provision/Service/http/ansible_apache.php');
 }
+
+/**
+ * Implements drush_hook_pre_COMMAND()
+ *
+ * This kicks off for provision-verify
+ */
+function drush_ansible_roles_pre_provision_verify () {
+  if (d()->type == 'server') {
+    d()->service('http')->runPlaybook();
+  }
+}

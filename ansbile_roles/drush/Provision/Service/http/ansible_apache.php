@@ -22,7 +22,12 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
     private $config_file;
     private $config;
 
-    function init_server() {
+    /**
+     * This is kicked off by a drush hook, since there is no good method to override in Provision_Service_http or Provision_Service.
+     * @return mixed
+     */
+    public function runPlaybook() {
+
         drush_log('Provision_Service_http_ansible_apache::init_server', 'status');
 
         // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
