@@ -21,7 +21,7 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
         );
         $form['db_user'] = array(
             '#type' => 'value',
-            '#value' => isset($this->db_user)? $this->db_user: 'server_master_root',
+            '#value' => isset($this->db_user)? $this->db_user: 'aegir_root',
         );
         $form['db_passwd'] = array(
             '#type' => 'value',
