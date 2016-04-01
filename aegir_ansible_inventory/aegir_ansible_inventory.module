@@ -76,7 +76,7 @@ function aegir_ansible_inventory_node_load($nodes, $types)
          ', array(
             ':dbserver' => $node->nid,
             ':webserver' => $node->nid,
-        ))->fetchAssoc();
+        ))->fetchAllAssoc('nid');
 
         foreach ($sites_results as $data) {
             $node->ansible_vars['sites'][] = $data;
