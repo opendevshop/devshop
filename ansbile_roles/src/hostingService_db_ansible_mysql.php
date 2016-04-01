@@ -20,11 +20,11 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
         );
         $form['db_user'] = array(
             '#type' => 'value',
-            '#value' => isset($this->db_user)? isset($this->db_user): 'server_master_root',
+            '#value' => isset($this->db_user)? $this->db_user: 'server_master_root',
         );
         $form['db_passwd'] = array(
             '#type' => 'value',
-            '#value' => isset($this->db_passwd)? isset($this->db_passwd): user_password(16),
+            '#value' => isset($this->db_passwd)? $this->db_passwd: user_password(32),
         );
     }
 
