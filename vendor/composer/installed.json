@@ -52,27 +52,27 @@
     },
     {
         "name": "symfony/process",
-        "version": "v2.8.4",
-        "version_normalized": "2.8.4.0",
+        "version": "v3.0.4",
+        "version_normalized": "3.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/process.git",
-            "reference": "fb467471952ef5cf8497c029980e556b47545333"
+            "reference": "e6f1f98bbd355d209a992bfff45e7edfbd4a0776"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/process/zipball/fb467471952ef5cf8497c029980e556b47545333",
-            "reference": "fb467471952ef5cf8497c029980e556b47545333",
+            "url": "https://api.github.com/repos/symfony/process/zipball/e6f1f98bbd355d209a992bfff45e7edfbd4a0776",
+            "reference": "e6f1f98bbd355d209a992bfff45e7edfbd4a0776",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.9"
+            "php": ">=5.5.9"
         },
-        "time": "2016-03-23 13:11:46",
+        "time": "2016-03-30 10:41:14",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.8-dev"
+                "dev-master": "3.0-dev"
             }
         },
         "installation-source": "dist",
@@ -103,36 +103,35 @@
     },
     {
         "name": "asm/php-ansible",
-        "version": "v1.0.1",
-        "version_normalized": "1.0.1.0",
+        "version": "dev-patch-1",
+        "version_normalized": "dev-patch-1",
         "source": {
             "type": "git",
-            "url": "https://github.com/maschmann/php-ansible.git",
-            "reference": "c3eaf84fcce3d60e5c1a4ee1cbc53192c5c981b5"
+            "url": "https://github.com/jonpugh/php-ansible.git",
+            "reference": "44500e7600e2d923bfe4f943a13769363d6acec1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/maschmann/php-ansible/zipball/c3eaf84fcce3d60e5c1a4ee1cbc53192c5c981b5",
-            "reference": "c3eaf84fcce3d60e5c1a4ee1cbc53192c5c981b5",
+            "url": "https://api.github.com/repos/jonpugh/php-ansible/zipball/44500e7600e2d923bfe4f943a13769363d6acec1",
+            "reference": "44500e7600e2d923bfe4f943a13769363d6acec1",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0",
-            "symfony/process": "~2.6"
+            "symfony/process": "~2.6|~3.0"
         },
         "require-dev": {
             "mikey179/vfsstream": "~1.0",
             "phpunit/phpunit": "~4.0"
         },
-        "time": "2015-10-26 11:43:02",
+        "time": "2016-03-26 21:10:23",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "Asm\\": ""
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
         "license": [
             "MIT"
         ],
@@ -143,6 +142,9 @@
             }
         ],
         "description": "php wrapper for ansible commands",
-        "homepage": "https://github.com/maschmann/php-ansible"
+        "homepage": "https://github.com/maschmann/php-ansible",
+        "support": {
+            "source": "https://github.com/jonpugh/php-ansible/tree/patch-1"
+        }
     }
 ]
