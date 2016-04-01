@@ -52,17 +52,20 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
         $user = array();
         $user['name'] = $this->db_user;
         $user['password'] = $this->db_passwd;
-        $user['host'] = $server_master_ip;
+        $user['host'] = $server_master_ip? $server_master_ip: 'localhost';
         $user['priv']  = '*.*:ALL,GRANT';
 
         $this->ansible_vars['mysql_users'][] = $user;
         $this->ansible_vars['mysql_port'] = $this->port;
 
-        // Generate a random root user password.
-        // This doesn't need to be stored since aegir stores the username and password for a separate user.
-        // If we pass the "mysql_root_password_update" variable, it will reset the server's mysql root password
-        $this->ansible_vars['mysql_root_password'] = user_password(64);
+        // Load or create this server's MySQL Root password and pass to ansible.
+        $mysql_root_password_variable_name = "server_root_mysql_passwd_{$this->server->title}";
+        $this->ansible_vars['mysql_root_password'] = variable_get($mysql_root_password_variable_name, user_password(64));
 
+        // Save password for later retrieval
+        variable_set($mysql_root_password_variable_name, $this->ansible_vars['mysql_root_password']);
+
+        // If we pass the "mysql_root_password_update" variable, it will reset the server's mysql root password
 
     }
 }
