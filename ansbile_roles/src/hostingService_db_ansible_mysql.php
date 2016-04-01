@@ -9,7 +9,7 @@
  */
 class hostingService_db_ansible_mysql extends hostingService_db_mysql {
     public $type = 'ansible_mysql';
-    public $has_port = FALSE;
+    public $has_port = TRUE;
 
     function form(&$form) {
         parent::form($form);
