@@ -77,13 +77,13 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
             $ansible->inventoryFile($this->inventory);
         }
 
-        $is_devshop = drush_get_option('is_devshop', FALSE);
+        $is_devshop = drush_get_option('is-devshop', FALSE);
 
         drush_log("Running \"ansible-playbook\"...", $is_devshop? 'devshop_command': 'status');
 
         $exit = $ansible->execute(function ($type, $buffer) {
-            if (drush_get_option('is_devshop', FALSE)) {
-                drush_log($buffer, 'devshop_log');
+            if (drush_get_option('is-devshop', FALSE)) {
+                drush_log($buffer, 'devshop_info');
             }
             else {
                 print $buffer;
@@ -92,6 +92,10 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
 
         if ($exit != 0) {
             drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
+            drush_log(dt('Ansible playbook failed to complete.'), 'devshop_error');
+        }
+        else {
+            drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
         }
 
     }
