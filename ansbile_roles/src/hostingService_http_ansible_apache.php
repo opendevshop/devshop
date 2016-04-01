@@ -6,11 +6,9 @@
 
 
 
-class hostingService_http_ansible_apache extends hostingService_http
+class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
 {
     public $type = 'ansible_apache';
-
-    protected $has_restart_cmd = FALSE;
 
     function form(&$form)
     {
@@ -19,6 +17,10 @@ class hostingService_http_ansible_apache extends hostingService_http
             '#markup' => t('Your web server will be configured automatically.'),
             '#prefix' => '<p>',
             '#suffix' => '</p>',
+        );
+        $form['restart_cmd'] = array(
+            '#type' => 'value',
+            '#value' => isset($this->restart_cmd)? $this->restart_cmd: '',
         );
     }
 
