@@ -16,6 +16,7 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
      * @var Ansible;
      */
     private $ansible;
+    private $ansible_user = '';
     private $inventory;
     private $playbook;
     private $config_file;
@@ -46,8 +47,6 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
         }
         drush_log('Ansible Playbook Loaded from ' . $this->playbook, 'status');
 
-        drush_log('Running "ansible-playbook"...', 'status');
-
         // Prepare the Ansible object.
         $this->ansible = new Ansible(
             getcwd(),
@@ -59,16 +58,21 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
 
         $ansible->play($this->playbook);
 
-        if ($this->ansible_user) {
+        if ($this->ansible_user = drush_get_option('playbook', 'root')) {
+            drush_log('Connecting as user ' . $this->ansible_user, 'status');
             $ansible->user($this->ansible_user);
         }
-        if ($this->server->title) {
-            $ansible->limit($this->server->title);
+
+        if ($this->getHostname()) {
+            drush_log('Limiting playbook run to ' . $this->getHostname(), 'status');
+            $ansible->limit($this->getHostname());
         }
 
         if ($this->inventory) {
             $ansible->inventoryFile($this->inventory);
         }
+
+        drush_log('Running "ansible-playbook"...', 'status');
 
         $exit = $ansible->execute(function ($type, $buffer) {
             print $buffer;
@@ -157,5 +161,9 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
             }
         }
         return array();
+    }
+
+    function getHostname() {
+        return $this->server->remote_host;
     }
 }
