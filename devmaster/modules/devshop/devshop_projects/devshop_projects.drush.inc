@@ -123,6 +123,11 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
     $task->options['test-type'] = $task->task_args['test_type'];
   }
+
+  // Verify Server
+  if ($task->ref->type == 'server' && $task->task_type == 'verify') {
+    $task->options['is-devshop'] = TRUE;
+  }
 }
 
 /**
