@@ -21,33 +21,32 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
     private $config_file;
     private $config;
 
-    /**
-     * Used to sync config to remote server.
-     */
-    function sync($path = NULL, $additional_options = array()) {
-        parent::sync($path, $additional_options);
-    }
-
-    function verify_server_cmd() {
+    function init_server() {
+        drush_log('Provision_Service_http_ansible_apache::init_server', 'status');
 
         // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
         if ($this->getAnsibleInventory()) {
-            drush_log('Ansible Config Loaded from ' . $this->config_file, 'ok');
+            drush_log('Ansible Config Loaded from ' . $this->config_file, 'status');
             $this->inventory = $this->getAnsibleInventory();
         }
 
         // Last check: does the inventory file exist?
         if (!file_exists($this->inventory)) {
-            throw new \Exception('No file was found at the path specified by the "inventory-file" option: ' . $this->inventory);
+            return drush_set_error('DRUSH_ERROR', 'No file was found at the path specified by the "inventory-file" option: ' . $this->inventory);
         }
+        drush_log('Ansible Inventory Loaded from ' . $this->inventory, 'status');
+
 
         // Look for playbook
-        $this->playbook = drush_get_option('playbook', realpath('../../../../../playbook.yml'));
+        $this->playbook = drush_get_option('playbook', realpath(__DIR__ . '/../../../../../playbook.yml'));
 
         // Last check: does the playbook file exist?
         if (!file_exists($this->playbook)) {
-            throw new \Exception('No file was found at the path specified by the "playbook" option: ' . $this->playbook);
+            return drush_set_error('DRUSH_ERROR', 'No file was found at the path specified by the "playbook" option: ' . $this->playbook);
         }
+        drush_log('Ansible Playbook Loaded from ' . $this->inventory, 'status');
+
+        drush_log('Running "ansible-playbook"', 'status');
 
         // Prepare the Ansible object.
         $this->ansible = new Ansible(
@@ -71,9 +70,36 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
             $ansible->inventoryFile($this->inventory);
         }
 
-        $ansible->execute(function ($type, $buffer) {
+        $exit = $ansible->execute(function ($type, $buffer) {
             print $buffer;
         });
+
+        if ($exit != 0) {
+            drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
+        }
+
+    }
+
+    function init_platform() {
+        drush_log('Provision_Service_http_ansible_apache::init_platform', 'status');
+
+    }
+
+    function init_site() {
+        drush_log('Provision_Service_http_ansible_apache::init_site', 'status');
+
+    }
+
+    /**
+     * Used to sync config to remote server.
+     */
+    function sync($path = NULL, $additional_options = array()) {
+        parent::sync($path, $additional_options);
+    }
+
+    function verify_server_cmd() {
+
+
     }
 
     function verify_platform_cmd() {
@@ -98,6 +124,9 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
             if (isset($this->config['inventory'])) {
                 $this->inventory = $this->config['inventory'];
             }
+            else {
+                $this->inventory = '/etc/ansible/hosts';
+            }
         }
         return $this->inventory;
     }
@@ -117,10 +146,13 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
 
         foreach ($ansible_cfg as $path) {
             if (file_exists($path)) {
-                $file = @parse_ini_file($path);
-                if (is_array($file)) {
-                    $this->config_file = $path;
-                    return $file;
+                $this->config_file = $path;
+                $config = @parse_ini_file($this->config_file);
+                if (is_array($config)) {
+                    return $config;
+                }
+                else {
+                    return array();
                 }
             }
         }
