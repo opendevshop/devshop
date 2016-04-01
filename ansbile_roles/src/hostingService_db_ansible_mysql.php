@@ -10,6 +10,7 @@
 class hostingService_db_ansible_mysql extends hostingService_db_mysql {
     public $type = 'ansible_mysql';
     public $has_port = TRUE;
+    public $ansible_vars = array();
 
     function form(&$form) {
         parent::form($form);
@@ -56,6 +57,11 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
 
         $this->ansible_vars['mysql_users'][] = $user;
         $this->ansible_vars['mysql_port'] = $this->port;
+
+        // Generate a random root user password.
+        // This doesn't need to be stored since aegir stores the username and password for a separate user.
+        // If we pass the "mysql_root_password_update" variable, it will reset the server's mysql root password
+        $this->ansible_vars['mysql_root_password'] = user_password(64);
 
 
     }
