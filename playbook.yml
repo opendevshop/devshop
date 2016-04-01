@@ -1,5 +1,5 @@
 ---
-- hosts: ansible_apache
+- hosts: ansible_mysql
   roles:
   - aegir.user
   - geerlingguy.mysql
