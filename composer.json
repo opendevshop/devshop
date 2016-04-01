@@ -1,5 +1,6 @@
 {
     "require": {
-        "symfony/yaml": "^3.0"
+        "symfony/yaml": "^3.0",
+        "asm/php-ansible": "^1.0"
     }
 }

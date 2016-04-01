@@ -1,0 +1,31 @@
+sudo: false
+
+language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+env:
+  global:
+    - deps=""
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: hhvm
+  include:
+    - php: 5.4
+    - php: 5.5
+    - php: 5.6
+      env: PROCESS_VERSION="2.6.x"
+    - php: 5.6
+      env: PROCESS_VERSION="2.7.x"
+    - php: 5.6
+      env: PROCESS_VERSION="2.8.x@dev"
+    - php: 7.0
+    - php: hhvm
+
+before_script:
+  - if [ "$PROCESS_VERSION" != "" ]; then composer require symfony/process:${PROCESS_VERSION} --dev --no-update; fi
+  - if [ "$deps" = "" ]; then composer install; fi
