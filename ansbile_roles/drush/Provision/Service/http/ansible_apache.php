@@ -44,9 +44,9 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
         if (!file_exists($this->playbook)) {
             return drush_set_error('DRUSH_ERROR', 'No file was found at the path specified by the "playbook" option: ' . $this->playbook);
         }
-        drush_log('Ansible Playbook Loaded from ' . $this->inventory, 'status');
+        drush_log('Ansible Playbook Loaded from ' . $this->playbook, 'status');
 
-        drush_log('Running "ansible-playbook"', 'status');
+        drush_log('Running "ansible-playbook"...', 'status');
 
         // Prepare the Ansible object.
         $this->ansible = new Ansible(
