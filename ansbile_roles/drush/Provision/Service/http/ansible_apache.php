@@ -72,10 +72,17 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http {
             $ansible->inventoryFile($this->inventory);
         }
 
-        drush_log('Running "ansible-playbook"...', 'status');
+        $is_devshop = drush_get_option('is_devshop', FALSE);
+
+        drush_log("Running \"ansible-playbook\"...", $is_devshop? 'devshop_command': 'status');
 
         $exit = $ansible->execute(function ($type, $buffer) {
-            print $buffer;
+            if (drush_get_option('is_devshop', FALSE)) {
+                drush_log($buffer, 'devshop_log');
+            }
+            else {
+                print $buffer;
+            }
         });
 
         if ($exit != 0) {
