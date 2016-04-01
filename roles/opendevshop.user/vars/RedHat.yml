@@ -1,0 +1,8 @@
+
+# MySQL Variables for RedHat
+mysql_daemon: mariadb
+mysql_log_error: /var/log/mariadb/error.log
+mysql_pid_file: /var/run/mariadb/mariadb.pid
+mysql_packages:
+  - mariadb
+  - mariadb-server
