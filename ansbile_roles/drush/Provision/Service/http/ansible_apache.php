@@ -24,6 +24,9 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
 
     /**
      * This is kicked off by a drush hook, since there is no good method to override in Provision_Service_http or Provision_Service.
+     *
+     * @TODO: Make this a server service, separate.
+     *
      * @return mixed
      */
     public function runPlaybook() {
@@ -62,24 +65,28 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
         $ansible = $this->ansible->playbook();
 
         $ansible->play($this->playbook);
+        $command = "ansible-playbook {$this->playbook} ";
 
         if ($this->ansible_user = drush_get_option('playbook', 'root')) {
             drush_log('Connecting as user ' . $this->ansible_user, 'status');
             $ansible->user($this->ansible_user);
+            $command .= "-u {$this->ansible_user}";
         }
 
         if ($this->getHostname()) {
             drush_log('Limiting playbook run to ' . $this->getHostname(), 'status');
             $ansible->limit($this->getHostname());
+            $command .= "-l {$this->getHostname()}";
         }
 
         if ($this->inventory) {
             $ansible->inventoryFile($this->inventory);
+            $command .= "-i {$this->inventory}";
         }
 
         $is_devshop = drush_get_option('is-devshop', FALSE);
 
-        drush_log("Running \"ansible-playbook\"...", $is_devshop? 'devshop_command': 'status');
+        drush_log("Running '$command'", $is_devshop? 'devshop_command': 'status');
 
         $exit = $ansible->execute(function ($type, $buffer) {
             if (drush_get_option('is-devshop', FALSE)) {
