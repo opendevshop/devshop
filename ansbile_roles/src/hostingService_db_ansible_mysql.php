@@ -68,4 +68,16 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
         // If we pass the "mysql_root_password_update" variable, it will reset the server's mysql root password
 
     }
+
+    /**
+     * The list of ansible roles that this service depends on.
+     *
+     * @return array
+     */
+    function roles() {
+        return array(
+            'aegir.user',
+            'geerlingguy.mysql',
+        );
+    }
 }
