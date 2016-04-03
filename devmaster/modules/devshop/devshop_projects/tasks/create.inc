@@ -103,6 +103,9 @@ function hosting_task_devshop_create_form($node) {
     '#size' => 10,
     '#maxlength' => 64,
     '#weight' => -100,
+    '#attributes' => array(
+      'data-placement' => 'top',
+    ),
   );
 
   if ($project->settings->live['environment_aliases'] && !empty($node->project->settings->live['live_domain'])) {
