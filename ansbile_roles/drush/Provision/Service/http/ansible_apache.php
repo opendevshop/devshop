@@ -67,21 +67,21 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
         $ansible->play($this->playbook);
         $command = "ansible-playbook {$this->playbook} ";
 
-        if ($this->ansible_user = drush_get_option('playbook', 'root')) {
+        if ($this->ansible_user = drush_get_option('ansible_user', 'root')) {
             drush_log('Connecting as user ' . $this->ansible_user, 'status');
             $ansible->user($this->ansible_user);
-            $command .= "-u {$this->ansible_user}";
+            $command .= "-u {$this->ansible_user} ";
         }
 
         if ($this->getHostname()) {
             drush_log('Limiting playbook run to ' . $this->getHostname(), 'status');
             $ansible->limit($this->getHostname());
-            $command .= "-l {$this->getHostname()}";
+            $command .= "-l {$this->getHostname()} ";
         }
 
         if ($this->inventory) {
             $ansible->inventoryFile($this->inventory);
-            $command .= "-i {$this->inventory}";
+            $command .= "-i {$this->inventory} ";
         }
 
         $is_devshop = drush_get_option('is-devshop', FALSE);
