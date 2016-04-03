@@ -98,8 +98,8 @@ class Provision_Service_http_ansible_apache extends Provision_Service_http_apach
         });
 
         if ($exit != 0) {
-            drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
             drush_log(dt('Ansible playbook failed to complete.'), 'devshop_error');
+            drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
         }
         else {
             drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
