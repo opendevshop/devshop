@@ -867,3 +867,21 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 #devshop-project-create-step-git #edit-cancel {
     float: right;
 }
+
+.project-add-environment-button {
+    margin: 0px auto;
+    text-align: center;
+}
+#edit-add-environment {
+    background: #999;
+}
+p.wait {
+    text-align: center;
+    padding: 32px 0px 52px;
+    background: bottom center no-repeat url(images/loading.gif);
+}
+
+p.error {
+    text-align: center;
+    padding: 32px 0px 52px;
+}
