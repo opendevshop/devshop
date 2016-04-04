@@ -294,11 +294,18 @@ HTML;
       }
 
       $href = "hosting_confirm/{$environment->site}/site_{$action}";
-      $url = url($href, array(
+      $options = array(
           'query' => array(
               'token' => drupal_get_token($user->uid),
           )
-      ));
+      );
+
+      // If on the site node page, set destination to be the site node.
+      if (arg(0) == 'node' && arg(1) == $environment->site) {
+        $options['query']['destination'] = current_path();
+      }
+
+      $url = url($href, $options);
       $title = $tasks[$action]['title'];
       if (isset($tasks[$action]['icon'])) {
         $icon = '<i class="fa fa-' . $tasks[$action]['icon'] . '""></i>';
