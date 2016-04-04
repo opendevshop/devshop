@@ -42,6 +42,12 @@ function devshop_projects_theme() {
         'output' => '',
       ),
     ),
+    'devshop_task' => array(
+      'variables' => array(
+          'task' => NULL,
+      ),
+      'template' => 'task',
+    ),
   );
 }
 
