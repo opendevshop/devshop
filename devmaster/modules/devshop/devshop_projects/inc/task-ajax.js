@@ -12,9 +12,8 @@
           $.getJSON(url, function (data) {
 
               var lastTaskStatus = null;
-              $.each(data, function (key, value) {
-                  var task = value.last_task_node;
-                  var environment_id = '#' + value.project + '-' + value.name;
+              $.each(data, function (key, task) {
+                  var environment_id = '#' + task.project_name + '-' + task.environment;
                   var task_id = '#task-display-' + task.nid;
                   var new_class = 'environment-tasks-alert alert-' + task.status_class;
 
@@ -128,7 +127,7 @@
                   // Projects List Page.
                   // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
                   else {
-                      var id = '#badge-' + value.project + '-' + value.name;
+                      var id = '#badge-' + task.project_name + '-' + task.environment;
 
                       // Set class of badge
                       $(id).attr('class', 'btn btn-small alert-' + task.status_class);
@@ -142,7 +141,7 @@
                   }
 
                   // Update global tasks list.
-                  var task_id = '#task-' + value.project + '-' + value.name;
+                  var task_id = '#task-' + task.project_name + '-' + task.environment;
 
                   // Set class of badge
                   $(task_id).attr('class', 'list-group-item list-group-item-' + task.status_class);
