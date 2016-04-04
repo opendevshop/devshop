@@ -103,7 +103,7 @@
                           $('.follow-logs-checkbox').remove();
                           $('.edit-update-status').remove();
                           $('.running-indicator').remove();
-                          Drupal.settings.lastTaskStopped = TRUE;
+                          Drupal.settings.lastTaskStopped = true;
                       }
                       else {
                           // Scroll down if follow checkbox is checked.
