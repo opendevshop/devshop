@@ -47,7 +47,12 @@
 
                       // If queued or processing, make label empty.
                       if (task.status_class == 'queued' || task.status_class == 'processing') {
-                          $('.alert-link > .status-name', $alert_div).html('');
+                          if (task.status_class == 'queued') {
+                              $('.alert-link > .status-name', $alert_div).html('');
+                          }
+                          else {
+                              $('.alert-link > .status-name', $alert_div).html(task.status_name);
+                          }
                           $('.alert-link .ago-icon', $alert_div).removeClass('fa-calendar');
                           $('.alert-link .ago-icon', $alert_div).addClass('fa-clock-o');
                       }
