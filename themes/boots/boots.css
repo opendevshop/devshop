@@ -657,7 +657,9 @@ html.js fieldset.collapsed {
     text-transform: uppercase;
     font-size: .8em;
 }
-
+.environment-tasks-alert {
+    position:relative;
+}
 .environment-tasks-alert > .text {
     z-index: 2;
 }
