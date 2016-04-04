@@ -327,7 +327,7 @@ HTML;
  *    in the array is another array, keyed by VID.
  *
  */
-function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
+function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20) {
 
   // Load tasks from hosting_task table for both site and platform.
   $args = array();
@@ -364,6 +364,10 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
     }
   }
 
+  // Ensure limit is safe.
+  if (!is_int($limit) || $limit <= 0) {
+    $limit = 20;
+  }
   $results = db_query("
     SELECT t.nid, t.task_type
       FROM {node} tn
@@ -371,6 +375,7 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
       WHERE
         $where
       ORDER BY nid DESC
+      LIMIT $limit
   ",
     $args
   );
