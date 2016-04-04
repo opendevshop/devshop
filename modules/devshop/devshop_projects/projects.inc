@@ -35,7 +35,8 @@ function devshop_projects_entity_load($entities, $type) {
 
         $query = db_query("
 SELECT
-  project_nid, name FROM {hosting_devshop_project_environment}
+  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e 
+  LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
     OR platform = :platform
     OR project_nid = :project
@@ -50,6 +51,7 @@ SELECT
         // Only load the project node if there is no task
         if ($entity->type == 'task') {
           $entity->project = $result->project_nid;
+          $entity->project_name = $result->project_name;
           $entity->environment = $result->name;
         }
         else if (isset($result->project_nid)) {
