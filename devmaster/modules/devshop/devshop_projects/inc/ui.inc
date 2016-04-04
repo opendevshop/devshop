@@ -157,6 +157,11 @@ HTML;
  */
 function devshop_projects_node_view($node, $view_mode, $langcode) {
   global $user;
+
+  if ($node->type != 'project') {
+    return;
+  }
+
   $project = &$node->project;
 
   // Check to see if this project is still in the wizard
