@@ -130,8 +130,8 @@ function boots_preprocess_environment(&$vars) {
             'class' => "list-group-item list-group-item-{$task->status_class}",
         ),
     ));
-    $environment->task_logs = implode("\n", $items);
   }
+  $environment->task_logs = implode("\n", $items);
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
