@@ -14,10 +14,11 @@
               var lastTaskStatus = null;
               $.each(data, function (key, value) {
                   var task = value.last_task_node;
-                  var id = '#' + value.project + '-' + value.name;
+                  var environment_id = '#' + value.project + '-' + value.name;
+                  var task_id = '#task-display-' + task.nid;
                   var new_class = 'environment-tasks-alert alert-' + task.status_class;
 
-                  var $alert_div = $('.environment-tasks-alert', id);
+                  var $alert_div = $(task_id + '.environment-tasks-alert');
 
                   // Project Node Page
                   if (Drupal.settings.devshopProject) {
@@ -27,19 +28,19 @@
 
                       // Set or remove active class from environment div.
                       if (task.status_class == 'queued' || task.status_class == 'processing') {
-                          $(id).addClass('active');
+                          $(environment_id).addClass('active');
                       }
                       else {
-                          $(id).removeClass('active');
+                          $(environment_id).removeClass('active');
                       }
 
                       // Remove any status classes and add current status
-                      $(id).removeClass('task-queued');
-                      $(id).removeClass('task-processing');
-                      $(id).removeClass('task-success');
-                      $(id).removeClass('task-error');
-                      $(id).removeClass('task-warning');
-                      $(id).addClass('task-' + task.status_class);
+                      $(environment_id).removeClass('task-queued');
+                      $(environment_id).removeClass('task-processing');
+                      $(environment_id).removeClass('task-success');
+                      $(environment_id).removeClass('task-error');
+                      $(environment_id).removeClass('task-warning');
+                      $(environment_id).addClass('task-' + task.status_class);
 
                       // Set value of label span
                       $('.alert-link > .type-name', $alert_div).html(task.type_name);
