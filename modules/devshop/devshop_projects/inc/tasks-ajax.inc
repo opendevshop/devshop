@@ -57,9 +57,6 @@ function devshop_projects_tasks_status_json($project_nid = '') {
             }
         }
 
-        // To test out constantly changing tasks, uncomment this line.
-        //$result->last_task->status = rand(-1, 3);
-
         $output[] = $result;
   }
 
