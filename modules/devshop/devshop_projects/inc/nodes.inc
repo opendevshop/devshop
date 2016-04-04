@@ -52,6 +52,10 @@ function devshop_projects_node_load($nodes, $types) {
       $task_types = hosting_available_tasks();
       $task_types = array_merge($task_types['site'], $task_types['platform']);
 
+      // Randomize status for design debugging.
+      // To test out constantly changing tasks, uncomment this line.
+      // $node->task_status = rand(-1, 3);
+
       // In Aegir, "executed" and "delta" does not get updated properly.
       // Handle "delta" being not computed yet
       if ($node->task_status == HOSTING_TASK_PROCESSING) {
@@ -59,7 +63,7 @@ function devshop_projects_node_load($nodes, $types) {
       }
       elseif ($node->task_status == HOSTING_TASK_QUEUED) {
         $node->duration = t('Queued for %time',
-          array('%time' => format_interval(time() - $node->changed)));
+          array('%time' => format_interval(time() - $node->changed), 1));
       }
       else {
         $node->duration = format_interval($node->delta, 1);
