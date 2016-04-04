@@ -21,7 +21,7 @@
                   var $alert_div = $(task_id + '.environment-tasks-alert');
 
                   // Project Node Page
-                  if (Drupal.settings.devshopProject) {
+                  if (Drupal.settings.devshopTask == null) {
 
                       // Set class of wrapper div
                       $alert_div.attr('class', new_class);
