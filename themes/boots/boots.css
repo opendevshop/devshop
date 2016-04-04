@@ -242,7 +242,7 @@ body.admin-menu .navbar-static-top {
     width: 100%;
 }
 
-.environment.task-processing .progress {
+.environment-tasks-alert.alert-processing .progress {
   display: block;
   width: 100%;
 }
@@ -658,6 +658,14 @@ html.js fieldset.collapsed {
     font-size: .8em;
 }
 
+.environment-tasks-alert > .text {
+    z-index: 2;
+}
+
+.environment-task-logs .btn-logs {
+    z-index: 3;
+}
+
 .btn-logs > button {
     color: grey;
     padding: 3px 8px;
@@ -733,10 +741,10 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .processing {
     z-index: 1;
 }
-.environment-task-logs > div {
-    position: relative;
-    z-index: 2;
-}
+/*.environment-task-logs > div {*/
+    /*position: relative;*/
+    /*z-index: 2;*/
+/*}*/
 
 .project-environments a.alert-queued,
 .devshop-tasks a.list-group-item-queued {
