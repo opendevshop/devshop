@@ -127,6 +127,11 @@ function devshop_projects_node_insert($node) {
       $site->environment->last_task = $node->nid;
       devshop_environment_save_last_task($site->environment);
     }
+
+    // When a task is created or updated that has a project, redirect to the project.
+    if (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+      drupal_goto("node/{$site->project->nid}");
+    }
   }
 
   if ($node->type != 'project') {
@@ -199,6 +204,17 @@ function devshop_projects_node_insert($node) {
  *
  */
 function devshop_projects_node_update($node) {
+
+
+  // On task insert, save last task.
+  if ($node->type == 'task') {
+    $site = node_load($node->rid);
+
+    // When a task is created or updated that has a project, redirect to the project.
+    if (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+      drupal_goto("node/{$site->project->nid}");
+    }
+  }
 
   if ($node->type != 'project') {
     return;
