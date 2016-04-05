@@ -3,6 +3,12 @@
 - name: Include OS-specific variables.
   include_vars: "vars.{{ ansible_os_family }}.yml"
 
+- name: Install Drush
+  get_url:
+    url: "https://github.com/drush-ops/drush/releases/download/{{ drush_release_version }}/drush.phar"
+    dest: "{{ local_bin_path }}/drush"
+    mode: 0755
+
 - name: Install devshop CLI
   git:
     repo: "{{ devshop_cli_repo }}"
@@ -28,3 +34,6 @@
   command: "{{ devmaster_install_command }}"
   args:
     creates: "{{ aegir_user_home }}/.drush/hostmaster.alias.drushrc.php"
+
+- name: Setup Supervisor
+  include: "supervisor.yml"
