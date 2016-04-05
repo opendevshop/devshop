@@ -38,9 +38,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     devmaster.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
 
     # Set SH as our provisioner
-    devmaster.vm.provision "shell",
-      path: settings["vagrant_install_script"],
-      args: settings["vagrant_install_script_args"]
+    #devmaster.vm.provision "shell",
+    #  path: settings["vagrant_install_script"],
+    #  args: settings["vagrant_install_script_args"]
+
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+      ansible.raw_arguments  = [
+        '--become'
+      ]
+    end
 
    # Put the generated public key in /vagrant folder so the remotes can access it.
    devmaster.vm.provision "shell",
