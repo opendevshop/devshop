@@ -8,3 +8,8 @@
 - name: Setup | REDHAT | Install SCL in RHEL
   command: yum-config-manager --enable rhel-server-rhscl-7-rpms
   when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Add EPEL
+  yum:
+    name: epel-release
+    state: present
