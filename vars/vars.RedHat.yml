@@ -2,6 +2,9 @@
 local_bin_path: /usr/local/sbin
 apache_user: apache
 
+supervisor_daemon: supervisord
+supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
+
 php_packages:
   - php55
 #  - php55-php-mysqlnd
