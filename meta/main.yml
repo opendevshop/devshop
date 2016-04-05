@@ -1,0 +1,10 @@
+galaxy_info:
+  author: Jon Pugh
+  description: Installs DevShop Devmaster
+  company: OpenDevShop Inc
+  min_ansible_version: 1.2
+
+dependencies:
+  - aegir.user
+  - aegir.apache
+  - geerlingguy.mysql
