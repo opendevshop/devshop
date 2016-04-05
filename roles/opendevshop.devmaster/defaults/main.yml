@@ -1,3 +1,6 @@
 ---
 # defaults file for aegir.devmaster
 server_hostname: local.devshop.site
+
+# Must coincide with a drush release: https://github.com/drush-ops/drush/releases
+drush_release_version: 8.0.5
