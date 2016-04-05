@@ -5,8 +5,8 @@
 
 - name: Add aegir to apache group.
   user:
-    name: {{ aegir_user_name }}
-    groups: {{ apache_user }}
+    name: "{{ aegir_user_name }}"
+    groups: "{{ apache_user }}"
     append: yes
 
 - name: Install extra packages
