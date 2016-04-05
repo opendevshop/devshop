@@ -11,7 +11,7 @@
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
-#    - aegir.devmaster
+    - aegir.devmaster
 
   vars_files:
     - vars.yml
