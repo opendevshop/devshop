@@ -7,3 +7,21 @@
 [submodule "roles/aegir.nginx"]
 	path = roles/aegir.nginx
 	url = https://github.com/opendevshop/ansible-role-aegir-nginx.git
+[submodule "geerlingguy.php"]
+	path = roles/geerlingguy.php
+	url = https://github.com/geerlingguy/ansible-role-php.git
+[submodule "geerlingguy.apache"]
+	path = roles/geerlingguy.apache
+	url = https://github.com/geerlingguy/ansible-role-apache.git
+[submodule "geerlingguy.php-mysql"]
+	path = roles/geerlingguy.php-mysql
+	url = https://github.com/geerlingguy/ansible-role-php-mysql.git
+[submodule "geerlingguy.mysql"]
+	path = roles/geerlingguy.mysql
+	url = https://github.com/geerlingguy/ansible-role-mysql.git
+[submodule "geerlingguy.composer"]
+	path = roles/geerlingguy.composer
+	url = https://github.com/geerlingguy/ansible-role-composer.git
+[submodule "geerlingguy.git"]
+	path = roles/geerlingguy.git
+	url = https://github.com/geerlingguy/ansible-role-git.git
