@@ -45,9 +45,13 @@
   become: yes
   become_user: "{{ aegir_user_name }}"
 
+- name: Devmaster Install Command
+  debug:
+    msg: "{{ devmaster_install_command }}"
+
 - name: Install Devmaster
   become: yes
-  become_user: aegir
+  become_user: "{{ aegir_user_name }}"
   command: "{{ devmaster_install_command }}"
   args:
     creates: "{{ aegir_user_home }}/.drush/hostmaster.alias.drushrc.php"
