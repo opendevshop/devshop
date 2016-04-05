@@ -207,7 +207,7 @@ class InstallDevmaster extends Command
       )
       // path_to_drush
       ->addOption(
-        'drush-path', NULL, InputOption::VALUE_NONE,
+        'drush-path', NULL, InputOption::VALUE_OPTIONAL,
         'Path to drush executable',
         '/usr/local/bin/drush'
       )
