@@ -1,0 +1,30 @@
+---
+
+- name: Include OS-specific variables.
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+
+- name: Install devshop CLI
+  git:
+    repo: "{{ devshop_cli_repo }}"
+    version: "{{ devshop_cli_version }}"
+    update: "{{ devshop_cli_update }}"
+    dest: "{{ devshop_cli_path }}"
+
+- name: Setup devshop CLI
+  command: composer install
+  args:
+    chdir: "{{ devshop_cli_path }}"
+
+- name: Setup devshop CLI executable
+  file:
+    src: "{{ devshop_cli_path }}/bin/devshop"
+    dest: "{{ local_bin_path }}/devshop"
+    state: link
+    force: yes
+
+- name: Install Devmaster
+  become: yes
+  become_user: aegir
+  command: "{{ devmaster_install_command }}"
+  args:
+    creates: "{{ aegir_user_home }}/.drush/hostmaster.alias.drushrc.php"
