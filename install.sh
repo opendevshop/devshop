@@ -240,6 +240,10 @@ cd $PLAYBOOK_PATH
 # Create inventory file
 echo $HOSTNAME_FQDN > inventory
 
+echo " Installing ansible roles..."
+ansible-galaxy install -r roles.yml -p roles
+echo $LINE
+
 # If ansible playbook fails syntax check, report it and exit.
 if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
     echo " Ansible syntax check failed! Check installers/ansible/playbook.yml and try again."
@@ -271,7 +275,6 @@ if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
-ansible-galaxy install -r roles.yml -p roles
 ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
 # @TODO: Remove. We should do this in the playbook, right?
