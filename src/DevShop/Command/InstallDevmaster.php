@@ -589,6 +589,9 @@ PHP;
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$name} provision-install --client_email={$client_email}</comment> ...");
       $process = $this->getProcess("drush @{$name} provision-install --client_email={$client_email} -v");
+      $process->setEnv(array(
+          'TERM' => 'xterm',
+      ));
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
@@ -610,6 +613,9 @@ PHP;
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
     $process = $this->getProcess("{$drush_path} @{$name} provision-verify");
+    $process->setEnv(array(
+        'TERM' => 'xterm',
+    ));
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {
