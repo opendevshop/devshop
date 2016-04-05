@@ -1,7 +1,7 @@
 ---
 local_bin_path: /usr/local/sbin
 
-php_packages:
+extra_packages:
   - php55
 #  - php55-php-mysqlnd
   - php55-php-cli

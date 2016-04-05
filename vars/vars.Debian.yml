@@ -1,7 +1,7 @@
 ---
 local_bin_path: /usr/local/bin
 
-php_packages:
+extra_packages:
   - php5
   - php5-mcrypt
   - php5-cli
