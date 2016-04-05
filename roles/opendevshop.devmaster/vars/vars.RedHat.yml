@@ -1,7 +1,8 @@
 ---
 local_bin_path: /usr/local/sbin
+apache_user: apache
 
-extra_packages:
+php_packages:
   - php55
 #  - php55-php-mysqlnd
   - php55-php-cli
@@ -37,3 +38,31 @@ extra_packages:
 #    - php-pecl-apc
 #    - php-xml
 #    - php-xmlrpc
+
+extra_packages:
+  - php55
+#  - php55-php-mysqlnd
+  - php55-php-cli
+  - php55-php-gd
+  - php55-php-process
+  - php55-php-pear
+  - php55-php-xml
+  - php55-php-xmlrpc
+#  - php-mcrypt
+  - php55-php-mbstring
+  - postfix
+  - sudo
+  - rsync
+  - git-core
+  - unzip
+  - vim
+  - git
+  - cronie
+#  - mariadb
+#  - mariadb-server
+#  - MySQL-python
+# I think this needs to be installed before these packages.
+#  - epel-release
+  - supervisor
+  - openssl
+  - mod_ssl
