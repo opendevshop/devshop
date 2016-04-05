@@ -7,12 +7,12 @@
 - name: Include OS-specific tasks.
   include: "{{ ansible_os_family }}.yml"
 
-- name: Create stub apache.conf file
-  file:
-    path: "{{ aegir_user_home }}/config/apache.conf"
-    state: touch
-    owner: "{{ aegir_user_name }}"
-    group: "{{ aegir_user_name }}"
+#- name: Create stub apache.conf file
+#  file:
+#    path: "{{ aegir_user_home }}/config/apache.conf"
+#    state: touch
+#    owner: "{{ aegir_user_name }}"
+#    group: "{{ aegir_user_name }}"
 
 - name: Add aegir user to sudoers to reload apache
   lineinfile:
