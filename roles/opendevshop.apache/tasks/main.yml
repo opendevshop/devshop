@@ -18,7 +18,10 @@
   with_items:
     - aegir
 
-# RedHat Post-package install config.
-- name: Configure PHP 5.5 on RedHat Family
+- name: Post Install on RedHat
   include: "RedHat-post.yml"
   when: ansible_os_family == "RedHat"
+
+- name: Post Install on Debian
+  include: "Debian-post.yml"
+  when: ansible_os_family == "Debian"
