@@ -17,7 +17,7 @@
     dest: "{{ devshop_cli_path }}"
 
 - name: Setup devshop CLI
-  command: composer install
+  command: "{{ composer_path }} install"
   args:
     chdir: "{{ devshop_cli_path }}"
 
