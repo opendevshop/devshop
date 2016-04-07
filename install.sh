@@ -173,29 +173,14 @@ if [ ! `which ansible` ]; then
         apt-get install ansible -y -qq
 
     elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
-        # ready
-        yum install git -y
-        yum -q list installed git &>/dev/null && TEST_INSTALLED_GIT=true || TEST_INSTALLED_GIT=false
-        if [ $TEST_INSTALLED_GIT != true ]; then
-          echo "Package not installed." # possibly DO something 
-        fi
-        # aim
+        # Build ansible from source to ensure the latest version.
         yum install epel-release -y
-        yum -q list installed epel-release &>/dev/null && TEST_INSTALLED=true || TEST_INSTALLED=false
-        if [ $TEST_INSTALLED != true ]; then
-          echo "Package not installed." # possibly DO something 
-        fi
-        # fire
-        
-        yum install ansible -y
-        yum -q list installed ansible &>/dev/null && TEST_INSTALLED=true || TEST_INSTALLED=false
-        if [ \($TEST_INSTALLED_GIT != true\) &&  \($TEST_INSTALLED != true\) ]; then
-          echo "Package not installed, run make."
-          git clone git://github.com/ansible/ansible.git --recursive
-          cd ./ansible
-          make rpm
-          rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
-        fi
+        yum install -y git rpm-build make asciidoc python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
+
+        git clone git://github.com/ansible/ansible.git --branch stable-2.0.0.1 --recursive
+        cd ./ansible
+        make rpm  > /dev/null 2>&1
+        rpm -Uvh ./rpm-build/ansible-*.noarch.rpm  > /dev/null 2>&1
     fi
 
     echo $LINE
