@@ -11,14 +11,17 @@ mysql_conf_path: /etc/my.cnf
 apache_packages:
   - epel-release
   - httpd
-  - php
-  - php-mysql
-  - php-cli
-  - php-gd
-  - php-process
-  - php-pear
-  - php-xml
-  - php-mcrypt
+  - php55
+  - php55-php
+  - php55-php-mysqlnd
+  - php55-php-cli
+  - php55-php-gd
+  - php55-php-process
+  - php55-php-pear
+  - php55-php-xml
+#  - php-mcrypt
+  - php55-php-mbstring
+
   # Not a package on RHEL 7? Unable to install.
   # - php-mbstring
   - postfix
@@ -32,7 +35,7 @@ apache_packages:
   - mod_ssl
   - openssh
   - openssl
-  - mariadb-client
+#  - mariadb-client
 
 mysql_packages:
   - mariadb

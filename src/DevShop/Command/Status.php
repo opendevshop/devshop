@@ -58,7 +58,13 @@ class Status extends Command
     // Check for provision
     $output->write("<comment>Checking for Provision...  </comment>");
 
-    $process = new Process('drush help provision-save');
+    if ($_SERVER['USER'] == 'aegir') {
+      $process = new Process('drush help provision-save');
+    }
+    else {
+      $process = new Process('sudo su - aegir -c "drush help provision-save"');
+    }
+
     $process->run();
     if (!$process->isSuccessful()) {
       $output->writeln("<error>Provision not detected.</error>");
@@ -71,8 +77,13 @@ class Status extends Command
 
     // Check for devmaster
     $output->write("<comment>Checking for DevMaster...  </comment>");
+    if ($_SERVER['USER'] == 'aegir') {
+      $process = new Process('drush @hostmaster vget install_profile');
+    }
+    else {
+      $process = new Process('sudo su - aegir -c "drush @hostmaster vget install_profile"');
+    }
 
-    $process = new Process('drush @hostmaster vget install_profile');
     $process->run();
     $profile = trim($process->getOutput());
     if (empty($profile)) {

@@ -4,6 +4,16 @@
     name: "epel-release"
     state: installed
 
+# Setup PHP 5.5 on RHEL and CentOS requires some extra commands
+# See https://www.softwarecollections.org/en/scls/rhscl/php55/
+- name: Install SCL in CentOS
+  action: yum name=centos-release-scl state=present
+  when: ansible_distribution == 'CentOS'
+
+- name: Install SCL in RHEL
+  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
+  when: ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: Ensure mysql packages are installed.
   yum:
     name: "{{ item }}"
@@ -17,3 +27,43 @@
     state: installed
   with_items: apache_packages
   when: install_apache
+
+- name: Setup | REDHAT | Symbolic link to add PHP to PATH.
+  when: ansible_os_family == "RedHat"
+  file:
+    src=/opt/rh/php55/enable
+    dest=/etc/profile.d/php.sh
+    state=link
+    force=yes
+
+- name: Setup | REDHAT | Symboc link to php executable.
+  when: ansible_os_family == "RedHat"
+  file:
+    src=/opt/rh/php55/root/usr/bin/php
+    dest=/usr/bin/php
+    state=link
+    force=yes
+
+- name: Setup | REDHAT | Add Apache Mods
+  when: ansible_os_family == "RedHat"
+  file:
+    src=/opt/rh/httpd24/root/etc/httpd/conf.d/php55-php.conf
+    dest=/etc/httpd/conf.d/php55-php.conf
+    state=link
+    force=yes
+
+- name: Setup | REDHAT | Add Apache Mods
+  when: ansible_os_family == "RedHat"
+  file:
+    src=/opt/rh/httpd24/root/etc/httpd/conf.modules.d/10-php55-php.conf
+    dest=/etc/httpd/conf.modules.d/php55-php.conf
+    state=link
+    force=yes
+
+- name: Setup | REDHAT | Add Apache Mods
+  when: ansible_os_family == "RedHat"
+  file:
+    src=/opt/rh/httpd24/root/etc/httpd/modules/libphp55-php5.so
+    dest=/etc/httpd/modules/libphp55-php5.so
+    state=link
+    force=yes

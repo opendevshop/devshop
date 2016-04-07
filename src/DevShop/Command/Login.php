@@ -31,25 +31,26 @@ class Login extends Command
     $this->announce('Login');
 
     $output->writeln('');
+    $output->writeln("<comment>Getting a login URL...  </comment>");
 
-
+    // If current user is not "aegir" try to switch.
     if ($_SERVER['USER'] != 'aegir') {
-      $output->writeln('<error>ERROR: Not running as "aegir" user.  Use "sudo su - aegir" to switch to aegir user, then try again.</error>');
-      return;
+      $output->writeln('Not running as "aegir" user. Switching to aegir user...');
+      $process = $this->getProcess('sudo su - aegir -c "drush @hostmaster uli"');
+      $process->run();
+    }
+    else {
+      $process = $this->getProcess('drush @hostmaster uli');
+      $process->run();
     }
 
-    // Check for Drush
-    $output->write("<comment>Getting a login URL...  </comment>");
-
-    $process = new Process('drush @hostmaster uli');
-    $process->run();
     if (!$process->isSuccessful()) {
       $output->writeln("<error>Something Failed:</error>");
       $output->writeln($process->getErrorOutput());
     }
     else {
-      $output->write("<info>Success: </info>");
-      $output->write($process->getOutput());
+      $output->writeln("<info>Success: </info>");
+      $output->writeln($process->getOutput());
     }
   }
 }
