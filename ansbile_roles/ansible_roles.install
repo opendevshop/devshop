@@ -30,9 +30,6 @@ function ansible_roles_schema() {
       ),
     ),
     'primary key' => array('vid', 'role'),
-//    'unique keys' => array(
-//      'nid_vid_role' => array('nid', 'vid', 'role'),
-//    ),
   );
 
   return $schema;
