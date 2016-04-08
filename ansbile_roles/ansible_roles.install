@@ -24,12 +24,38 @@ function ansible_roles_schema() {
       ),
       'role' => array(
         'type' => 'varchar',
-        'length' => 32,
+        'length' => 64,
         'not null' => TRUE,
         'default' => '',
       ),
     ),
     'primary key' => array('vid', 'role'),
+  );
+
+  $schema['hosting_ansible_roles_available'] = array(
+    'fields' => array(
+      'rid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique role ID.',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Unique role name.',
+      ),
+      'src' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => 'Git source URL for this role, if there is one.',
+      ),
+    ),
+    'primary key' => array('rid'),
   );
 
   return $schema;

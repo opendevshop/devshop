@@ -27,6 +27,39 @@ function ansible_roles_hosting_service_type()
 }
 
 /**
+ * Implements hook_menu().
+ */
+function ansible_roles_menu()
+{
+    $items['admin/hosting/roles'] = array(
+      'title' => 'Ansible Roles',
+      'description' => 'Manage available ansible roles.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ansible_roles_settings'),
+      'access arguments' => array('administer ansible roles'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'ansible_roles.admin.inc',
+    );
+    $items['admin/hosting/roles/add'] = array(
+      'title' => 'Add role',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ansible_roles_settings_add'),
+      'access arguments' => array('administer ansible roles'),
+      'type' => MENU_LOCAL_ACTION,
+      'file' => 'ansible_roles.admin.inc',
+    );
+    $items['admin/hosting/roles/delete'] = array(
+      'title' => 'Delete role',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ansible_roles_settings_delete', 4),
+      'access arguments' => array('administer ansible roles'),
+      'type' => MENU_CALLBACK,
+      'file' => 'ansible_roles.admin.inc',
+    );
+    return $items;
+}
+
+/**
  * Implements hook_node_load().
  */
 function ansible_roles_node_load($nodes, $types)
