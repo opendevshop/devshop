@@ -53,6 +53,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    devmaster.vm.provision "shell",
       inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
 
+   # Put the generated public key in /vagrant folder so the remotes can access it.
+   devmaster.vm.provision "shell",
+      inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
+
     # Prepare development environment
     if (development_mode)
 
@@ -90,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Does not start automatically on vagrant up.
   # Use `vagrant up remote` to launch.
   config.vm.define "remote", autostart: false do |remote|
-    remote.vm.box = "bento/centos-7.1"
+    # remote.vm.box = "bento/centos-7.1"
     remote.vm.hostname = settings["remote_server_hostname"]
     remote.vm.network "private_network", ip: settings["remote_vagrant_private_network_ip"]
     remote.vm.provider "virtualbox" do |v|
