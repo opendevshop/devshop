@@ -30,13 +30,15 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
   {
       parent::insert();
       foreach ($this->roles as $role) {
-        db_insert('hosting_ansible_roles')
-          ->fields(array(
-            'vid' => $this->server->vid,
-            'nid' => $this->server->nid,
-            'role' => $role,
-          ))
-          ->execute();
+        if ($role) {
+          db_insert('hosting_ansible_roles')
+            ->fields(array(
+              'vid' => $this->server->vid,
+              'nid' => $this->server->nid,
+              'role' => $role,
+            ))
+            ->execute();
+        }
       }
   }
 
@@ -75,13 +77,7 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
 
   public function view(&$render)
   {
-    if (!empty($this->roles)) {
-      $render['title'] = array(
-        '#title' => t('Server Roles'),
-        '#type' => 'item',
-        '#markup' => theme('item_list', array('items' => $this->roles)),
-      );
-    }
+    $render['title'] = '';
   }
 
   /**
