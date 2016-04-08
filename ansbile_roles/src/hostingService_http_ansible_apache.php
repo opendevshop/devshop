@@ -32,6 +32,7 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
     {
         parent::load();
         $this->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
+        $this->roles = $this->getRoles();
     }
 
     /**
@@ -39,7 +40,7 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
      *
      * @return array
      */
-    function roles() {
+    function getRoles() {
         return array(
             'aegir.apache',
             'geerlingguy.php',

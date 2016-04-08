@@ -56,8 +56,8 @@ function drush_ansible_roles_pre_hosting_task()
     // Load all roles to generate a playbook.
     $roles = array();
     foreach ($task->ref->services as $service) {
-      if (method_exists($service, 'roles')) {
-        $roles = array_merge($roles, $service->roles());
+      if (isset($service->roles)) {
+        $roles = array_merge($roles, $service->roles);
       }
     }
 

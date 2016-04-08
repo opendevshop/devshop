@@ -31,6 +31,7 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
 
     function load() {
         parent::load();
+        $this->roles = $this->getRoles();
 
         // Get server_master's IP address.
         $name = 'server_master';
@@ -74,7 +75,7 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
      *
      * @return array
      */
-    function roles() {
+    function getRoles() {
         return array(
             'aegir.user',
             'geerlingguy.mysql',
