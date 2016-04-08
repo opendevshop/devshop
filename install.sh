@@ -166,7 +166,6 @@ if [ ! `which ansible` ]; then
         fi
 
         apt-get update -qq
-        apt-get install git -y -qq
         apt-get install $PACKAGE -y -qq
         apt-add-repository ppa:ansible/ansible -y
         apt-get update -qq
@@ -174,7 +173,6 @@ if [ ! `which ansible` ]; then
 
     elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
-        yum install git -y
         yum install epel-release -y
         yum install ansible -y
     fi
@@ -186,6 +184,14 @@ else
     echo $LINE
 fi
 
+# Install git.
+if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
+  apt-get install git -y -qq
+        
+elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
+    yum install epel-release -y
+    yum install git -y
+fi
 
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
