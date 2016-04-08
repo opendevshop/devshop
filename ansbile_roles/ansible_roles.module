@@ -5,11 +5,13 @@
  * Implements hook_hosting_service().
  */
 function ansible_roles_hosting_service() {
-    return array(
-        'ansible_mysql' => 'db',
-        'ansible_apache' => 'http',
-        'ansible_roles' => 'ansible'
-    );
+
+    $services['ansible_roles'] = 'ansible';
+    if (module_exists('hosting_site')) {
+        $services['ansible_mysql'] = 'db';
+        $services['ansible_apache'] = 'http';
+    }
+    return $services;
 }
 
 /**
