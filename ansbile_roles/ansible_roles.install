@@ -23,16 +23,16 @@ function ansible_roles_schema() {
         'default' => 0,
       ),
       'role' => array(
-        'type' => 'text',
-        'size' => 'small',
+        'type' => 'varchar',
+        'length' => 32,
         'not null' => TRUE,
+        'default' => '',
       ),
     ),
-    'primary key' => array(
-      'vid',
-      'nid',
-      'role'
-    ),
+    'primary key' => array('vid', 'role'),
+//    'unique keys' => array(
+//      'nid_vid_role' => array('nid', 'vid', 'role'),
+//    ),
   );
 
   return $schema;
