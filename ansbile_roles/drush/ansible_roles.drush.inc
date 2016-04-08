@@ -52,17 +52,8 @@ function drush_ansible_roles_pre_hosting_task()
   $task =& drush_get_context('HOSTING_TASK');
   if ($task->ref->type == 'server' && $task->task_type == 'verify') {
 
-
     // Load all roles to generate a playbook.
-    $roles = array();
-    foreach ($task->ref->services as $service) {
-      if (isset($service->roles)) {
-        $roles = array_merge($roles, $service->roles);
-      }
-    }
-
-    // Bail if there are no roles.
-    if (empty($roles)) {
+    if (empty($task->ref->roles)) {
       return;
     }
 
@@ -70,7 +61,7 @@ function drush_ansible_roles_pre_hosting_task()
     $playbook = array();
     $playbook[] = array(
         'hosts' =>$task->ref->title,
-        'roles' => $roles,
+        'roles' => $task->ref->roles,
     );
 
     // Save the object to YML

@@ -25,3 +25,71 @@ function ansible_roles_hosting_service_type()
         ),
     );
 }
+
+/**
+ * Implements hook_node_load().
+ */
+function ansible_roles_node_load($nodes, $types)
+{
+    foreach ($nodes as $node) {
+
+        // Only act on server nodes with services.
+        if (empty($node->services)) {
+            continue;
+        }
+
+        // Load all roles to generate a playbook.
+        // Pull out ansible roles to load last.
+        $services = $node->services;
+        $roles = array();
+
+        foreach ($services as $type => $service) {
+            // Load custom roles last.
+            if ($type == 'ansible') {
+                continue;
+            }
+            if (isset($service->roles)) {
+                $roles = array_merge($roles, $service->roles);
+            }
+        }
+
+        if (isset($services['ansible'])) {
+            $roles = array_merge($roles, $node->services['ansible']->roles);
+        }
+
+        $node->roles = $roles;
+    }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function ansible_roles_node_view($node, $view_mode, $langcode)
+{
+
+    // Load all roles to generate a playbook.
+    // Pull out ansible roles to load last.
+    $services = $node->services;
+    $roles = array();
+
+    foreach ($services as $type => $service) {
+        // Load custom roles last.
+        if ($type == 'ansible') {
+            continue;
+        }
+        if (isset($service->roles)) {
+            $roles = array_merge($roles, $service->roles);
+        }
+    }
+
+    if (isset($services['ansible'])) {
+        $roles = array_merge($roles, $node->services['ansible']->roles);
+    }
+
+    $node->content['content'] = array(
+      '#title' => t('Server Roles'),
+      '#type' => 'item',
+      '#markup' => theme('item_list', array('items' => $roles)),
+    );
+
+}
