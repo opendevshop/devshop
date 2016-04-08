@@ -50,7 +50,7 @@ function drush_ansible_roles_pre_provision_verify () {
 function drush_ansible_roles_pre_hosting_task()
 {
   $task =& drush_get_context('HOSTING_TASK');
-  if ($task->ref->type == 'server' && $task->task_type == 'verify') {
+  if ($task->ref->type == 'server' && $task->task_type == 'verify' && ) {
 
 
     // Load all roles to generate a playbook.
@@ -59,6 +59,11 @@ function drush_ansible_roles_pre_hosting_task()
       if (isset($service->roles)) {
         $roles = array_merge($roles, $service->roles);
       }
+    }
+
+    // Bail if there are no roles.
+    if (empty($roles)) {
+      return;
     }
 
     // Prepare an object to represent our playbook.
