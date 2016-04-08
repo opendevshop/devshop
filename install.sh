@@ -147,7 +147,7 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
 fi
 
 # If ansible command is not available, install it.
-if [ ! `which ansible` ]; then
+if [ ! `which ansible > /dev/null 2>&1` ]; then
     echo " Installing Ansible..."
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
@@ -174,15 +174,19 @@ if [ ! `which ansible` ]; then
     elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
         # Build ansible from source to ensure the latest version.
-        yum install epel-release -y
-        yum install -y git rpm-build make asciidoc python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
+        yum install -y epel-release > /dev/null 1>&1
+        yum install -y git rpm-build make asciidoc python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass > /dev/null 1>&1
 
-        git clone git://github.com/ansible/ansible.git --branch stable-2.0.0.1 --recursive
+        git clone git://github.com/ansible/ansible.git --branch stable-2.0.0.1 --recursive  > /dev/null 1>&1
         cd ./ansible
-        make rpm  > /dev/null 2>&1
+        make rpm  > /dev/null 1>&1
         rpm -Uvh ./rpm-build/ansible-*.noarch.rpm  > /dev/null 2>&1
 
-        echo " Ansible Version: "
+        if [ ! `which ansible > /dev/null 2>&1` ]; then
+          echo "Ansible install failed."
+          exit 1
+        fi
+
         ansible --version
     fi
 
