@@ -181,6 +181,9 @@ if [ ! `which ansible` ]; then
         cd ./ansible
         make rpm  > /dev/null 2>&1
         rpm -Uvh ./rpm-build/ansible-*.noarch.rpm  > /dev/null 2>&1
+
+        echo " Ansible Version: "
+        ansible --version
     fi
 
     echo $LINE
