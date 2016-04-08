@@ -73,6 +73,17 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
     ;
   }
 
+  public function view(&$render)
+  {
+    if (!empty($this->roles)) {
+      $render['title'] = array(
+        '#title' => t('Server Roles'),
+        '#type' => 'item',
+        '#markup' => theme('item_list', array('items' => $this->roles)),
+      );
+    }
+  }
+
   /**
    * The list of ansible roles that this service depends on.
    *
