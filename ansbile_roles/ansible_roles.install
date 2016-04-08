@@ -1,0 +1,39 @@
+<?php
+/**
+ * @file
+ * Define the database schema and update functions for the database server module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function ansible_roles_schema() {
+  $schema['hosting_ansible_roles'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'role' => array(
+        'type' => 'text',
+        'size' => 'small',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array(
+      'vid',
+      'nid',
+      'role'
+    ),
+  );
+
+  return $schema;
+}

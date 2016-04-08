@@ -8,5 +8,18 @@ function ansible_roles_hosting_service() {
     return array(
         'ansible_mysql' => 'db',
         'ansible_apache' => 'http',
+        'ansible_roles' => 'ansible'
+    );
+}
+
+/**
+ * Implements hook_hosting_service_type().
+ */
+function ansible_roles_hosting_service_type()
+{
+    return array(
+        'ansible' => array(
+            'title' => t('Server Roles'),
+        ),
     );
 }
