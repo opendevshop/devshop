@@ -39,40 +39,39 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
           ->execute();
       }
   }
-//
-//  function update() {
-//      parent::update();
-//
-//      // Delete the listed roles and insert again.
-//      $this->delete();
-//      $this->insert();
-//  }
-//
-//  function delete_revision() {
-//    parent::delete_revision();
-//    db_delete('hosting_ansible_roles')
-//      ->condition('vid', $this->server->vid)
-//      ->execute();
-//  }
-//
-//  function delete() {
-//    parent::delete();
-//    db_delete('hosting_ansible_roles')
-//      ->condition('nid', $this->server->nid)
-//      ->execute();
-//  }
-//
-//
-//  function load() {
-//    parent::load();
-//    $this->roles = db_select('hosting_ansible_roles', 'a')
-//      ->fields('a', array('role'))
-//      ->condition('nid', $this->server->nid)
-//      ->condition('vid', $this->server->vid)
-//      ->execute()
-//      ->fetchAllAssoc(0);
-//    ;
-//  }
+
+  function update() {
+      parent::update();
+
+      // Delete the listed roles and insert again.
+      $this->delete();
+      $this->insert();
+  }
+
+  function delete_revision() {
+    parent::delete_revision();
+    db_delete('hosting_ansible_roles')
+      ->condition('vid', $this->server->vid)
+      ->execute();
+  }
+
+  function delete() {
+    parent::delete();
+    db_delete('hosting_ansible_roles')
+      ->condition('nid', $this->server->nid)
+      ->execute();
+  }
+
+  function load() {
+    parent::load();
+    $this->roles = db_select('hosting_ansible_roles', 'a')
+      ->fields('a', array('role'))
+      ->condition('nid', $this->server->nid)
+      ->condition('vid', $this->server->vid)
+      ->execute()
+      ->fetchCol()
+    ;
+  }
 
   /**
    * The list of ansible roles that this service depends on.
@@ -81,8 +80,8 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
    */
   function getAvailableRoles() {
     return array(
-      'geerlingguy.security',
-      'aegir.devmaster',
+      'geerlingguy.security' => 'geerlingguy.security',
+      'aegir.devmaster' => 'aegir.devmaster',
     );
   }
 }
