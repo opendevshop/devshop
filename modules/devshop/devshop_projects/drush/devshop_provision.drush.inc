@@ -285,13 +285,13 @@ function devshop_drush_process($command, $cwd = null, $label = 'Process', $env =
 
   // check exit code
   if ($exit_code === 0) {
-    drush_log('Successful', 'devshop_ok');
-    return TRUE;
+    drush_log('', 'devshop_ok');
   }
   else {
-    drush_log('Process Failed', 'devshop_error');
-    return drush_set_error('DEVSHOP_DRUSH_PROCESS_ERROR', 'Process Failed');
+    drush_log('', 'devshop_error');
+    drush_set_error('DEVSHOP_PROCESS_ERROR', dt('Process Failed'));
   }
+  return $process->getOutput();
 }
 
 /**
