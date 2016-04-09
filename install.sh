@@ -177,6 +177,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         yum install -y git > /dev/null 1>&1
         git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
         cd /usr/share/ansible
+        source /usr/share/ansible/hacking/env-setup
         echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
 
         if [ ! `which ansible > /dev/null 2>&1` ]; then
