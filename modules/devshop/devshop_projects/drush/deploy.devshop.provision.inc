@@ -46,12 +46,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
-  try {
-
-    $wrapper = new GitWrapper();
-    $wrapper->streamOutput();
-    $git = $wrapper->workingCopy($environment->repo_root);
-    drush_log('[Current Working Directory]' . $git->getDirectory(), 'devshop_log');
+    drush_log('[Current Working Directory]' . $environment->repo_root, 'devshop_log');
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
@@ -80,13 +75,6 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     }
 
     devshop_drush_process("git status", $environment->repo_root, dt('DevShop Deploy'));
-
-  } catch (GitException $e) {
-    drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
-    drush_log($e->getMessage(), 'devshop_error');
-    drush_log($e->getMessage(), 'error');
-    return FALSE;
-  }
 }
 
 /**
@@ -95,7 +83,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   if (drush_get_context('devshop_block_deploy_hooks')){
-    drush_log(dt('Skipping deploy hooks. No changes detected.'), 'devshop_info');
+    drush_log(dt('Skipping deploy hooks. No changes detected.'), 'devshop_log');
     return;
   }
 
