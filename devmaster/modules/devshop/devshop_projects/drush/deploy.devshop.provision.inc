@@ -79,7 +79,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
       drush_set_context('devshop_block_deploy_hooks', TRUE);
     }
 
-    devshop_drush_process("git smattus", $environment->repo_root, dt('DevShop Deploy'));
+    devshop_drush_process("git status", $environment->repo_root, dt('DevShop Deploy'));
 
   } catch (GitException $e) {
     drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
