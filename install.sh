@@ -174,13 +174,10 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
     elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
         # Build ansible from source to ensure the latest version.
-        yum install -y epel-release > /dev/null 1>&1
-        yum install -y git rpm-build make asciidoc python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass > /dev/null 1>&1
-
-        git clone git://github.com/ansible/ansible.git --branch stable-2.0.0.1 --recursive
-        cd ./ansible
-        make rpm  > /dev/null 1>&1
-        rpm -Uvh ./rpm-build/ansible-*.noarch.rpm  > /dev/null 2>&1
+        yum install -y git > /dev/null 1>&1
+        git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
+        cd /usr/share/ansible
+        echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
 
         if [ ! `which ansible > /dev/null 2>&1` ]; then
           echo "Ansible install failed."
@@ -196,6 +193,8 @@ else
     echo " Ansible already installed. Skipping installation."
     echo $LINE
 fi
+
+exit
 
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
