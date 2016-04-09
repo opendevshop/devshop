@@ -62,7 +62,7 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     if ($desired_ref_type == 'branch') {
 
       $git_pull_output = devshop_drush_process("git pull", $environment->repo_root, dt('DevShop Deploy'));
-      devshop_drush_process("git submodule update --recursive ", $environment->repo_root, dt('DevShop Deploy'));
+      devshop_drush_process("git submodule update --init --recursive ", $environment->repo_root, dt('DevShop Deploy'));
 
       // If on a branch and there are no changes it says "Already up-to-date."
       if (strpos($git_pull_output, 'Already up-to-date.') !== FALSE) {
