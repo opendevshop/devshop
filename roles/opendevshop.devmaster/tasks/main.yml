@@ -60,6 +60,8 @@
 - name: Install required drush packages.
   command: "{{ local_bin_path }}/drush dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
   with_dict: "{{ devshop_drush_packages }}"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
 
 - name: Clear the drush cache.
   command: "{{ local_bin_path }}/drush cc drush"
