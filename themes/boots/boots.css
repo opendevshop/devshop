@@ -803,7 +803,6 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
 }
 .panel.devshop-command pre {
-  padding: 0;
   margin: 0;
   border: none;
   border-radius: 0;
@@ -864,9 +863,13 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     background: transparent;
 }
 
-.panel-ansii {
+.panel-ansii.panel-body {
     background: #262626;
+    padding: 0;
+}
 
+.panel-ansii.panel-body pre {
+    padding: 1.25em;
 }
 
 .errors-table td > div {
