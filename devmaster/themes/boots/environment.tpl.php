@@ -167,7 +167,7 @@
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (empty($environment->site) && $environment->platform): ?>
-                    <a href="<?php print url("node/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                    <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                         <i class="fa fa-trash"></i> <?php print t('Destroy Environment'); ?>
                     </a>
                 <?php endif; ?>
