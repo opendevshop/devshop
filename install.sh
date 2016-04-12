@@ -178,6 +178,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         # git clone using git/ssh protocol could be blocked.  lets try http as well...
         if ! git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
         then git clone https://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
+        fi
         # dir may not exist, or it may exist as a symlink.  lets handle all of it gracefully.
         $LINK_OR_DIR = "/usr/share/ansible"
         if [ -d "$LINK_OR_DIR" ]; then 
