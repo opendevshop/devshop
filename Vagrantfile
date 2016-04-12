@@ -57,6 +57,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    devmaster.vm.provision "shell",
       inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
 
+   # Enable some development modules
+   devmaster.vm.provision "shell",
+    inline: "devshop login"
+
     # Prepare development environment
     if (development_mode)
 
