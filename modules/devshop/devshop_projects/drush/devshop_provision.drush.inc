@@ -499,3 +499,15 @@ function devshop_fqdn($host = NULL) {
 //    return $instance;
 //  }
 //}
+
+/**
+ * implementation of provision_verify
+ */
+function drush_devshop_provision_pre_provision_verify() {
+  if (d()->type === 'project') {
+    $drush_aliases = new Provision_Config_ProjectAliases(d()->name, d()->project['environments']);
+    $drush_aliases->write();
+
+    drush_log(dt('Project Drush aliases written.'), 'devshop_log');
+  }
+}
