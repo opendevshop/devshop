@@ -26,6 +26,6 @@ class Provision_Config_ProjectAliases extends Provision_Config_Drushrc {
   }
 
   function filename() {
-    return drush_server_home() . '/.drush/projects/' . $this->data['name'] . '.aliases.drushrc.php';
+    return drush_server_home() . '/.drush/project_aliases/' . $this->data['name'] . '.aliases.drushrc.php';
   }
 }
