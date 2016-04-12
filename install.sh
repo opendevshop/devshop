@@ -175,12 +175,10 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
 
         # Build ansible from source to ensure the latest version.
         yum install -y git > /dev/null 1>&1
-        git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
-
-        # git clone using git/ssh protocol could be blocked.  lets handle it gracefully.
-        # @TODO add options, catch error and use http alternate
-        
-        #dir may not exist, or it may exist as a symlink.  lets handle all of it gracefully.
+        # git clone using git/ssh protocol could be blocked.  lets try http as well...
+        if ! git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
+        then git clone https://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
+        # dir may not exist, or it may exist as a symlink.  lets handle all of it gracefully.
         $LINK_OR_DIR = "/usr/share/ansible"
         if [ -d "$LINK_OR_DIR" ]; then 
           if [ -L "$LINK_OR_DIR" ]; then
