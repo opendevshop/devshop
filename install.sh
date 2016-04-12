@@ -188,7 +188,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         ansible --version
         
     else
-        echo "OS not known ($OS) or action not understood."
+        echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
         exit 1
     fi
 
