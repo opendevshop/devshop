@@ -171,7 +171,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         apt-get update -qq
         apt-get install ansible -y -qq
 
-    elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
+    elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
         # Build ansible from source to ensure the latest version.
         yum install -y git > /dev/null 1>&1
@@ -186,6 +186,10 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         fi
 
         ansible --version
+        
+    else
+        echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
+        exit 1
     fi
 
     echo $LINE
