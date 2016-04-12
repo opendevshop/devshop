@@ -186,6 +186,8 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         else
           source /usr/share/ansible/hacking/env-setup
           echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
+          easy_install pip
+          pip install paramiko PyYAML Jinja2 httplib2 six
         fi
 
         if [ ! `which ansible > /dev/null 2>&1` ]; then
