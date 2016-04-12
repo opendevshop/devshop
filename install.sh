@@ -184,9 +184,9 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         $LINK_OR_DIR = "/usr/share/ansible"
         if [ -d "$LINK_OR_DIR" ]; then 
           if [ -L "$LINK_OR_DIR" ]; then
-            echo "This is a symlink, which is not expected.  If install fails, review directory structure. ($LINK_OR_DIR)"
+            echo "This location ($LINK_OR_DIR) is a symlink, which is not expected."
           else
-            # It's a directory, all is good.
+            echo "This directory ($LINK_OR_DIR) will be used for ansible installation."
           fi
         else
           mkdir "$LINK_OR_DIR"
