@@ -190,11 +190,15 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
           pip install paramiko PyYAML Jinja2 httplib2 six
         fi
 
-        if [ ! `which ansible > /dev/null 2>&1` ]; then
-          echo "Ansible install failed."
+        if [ ! `command -v ansible >/dev/null 2>&1`]; then
+          echo >&2 "We require ansible but it's not installed.  The installation has failed.  Aborting.";
           exit 1
+#        'which' is a common but inconsistent across OS way to detect an installation so the above is under development.
+#        if [ ! `which ansible > /dev/null 2>&1` ]; then
+#          echo "Ansible install failed."
+#          exit 1
         fi
-
+        
         ansible --version
         
     else
