@@ -176,7 +176,23 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         # Build ansible from source to ensure the latest version.
         yum install -y git > /dev/null 1>&1
         git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
-        cd /usr/share/ansible
+
+        # git clone using git/ssh protocol could be blocked.  lets handle it gracefully.
+        # @TODO add options, catch error and use http alternate
+        
+        #dir may not exist, or it may exist as a symlink.  lets handle all of it gracefully.
+        $LINK_OR_DIR = "/usr/share/ansible"
+        if [ -d "$LINK_OR_DIR" ]; then 
+          if [ -L "$LINK_OR_DIR" ]; then
+            echo "This location ($LINK_OR_DIR) is a symlink, which is not expected."
+          else
+            echo "This directory ($LINK_OR_DIR) will be used for ansible installation."
+          fi
+        else
+          mkdir "$LINK_OR_DIR"
+        fi
+        cd $LINK_OR_DIR
+
         source /usr/share/ansible/hacking/env-setup
         echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
 
