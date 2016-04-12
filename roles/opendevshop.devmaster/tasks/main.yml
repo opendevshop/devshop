@@ -63,6 +63,11 @@
   become: yes
   become_user: "{{ aegir_user_name }}"
 
+- name: Setup Drush Bash Enhancements
+  command: "{{ local_bin_path }}/drush init --yes"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+
 - name: Clear the drush cache.
   command: "{{ local_bin_path }}/drush cc drush"
   become: yes
