@@ -6,6 +6,10 @@
 print "<?php // Automatically written by devshop when a project is verified. Do Not Edit. \n";
 
 foreach ($environments as $name => $environment) {
+
+  if ($environment['site_status'] != 1) {
+    continue;
+  }
   $alias = array(
     'root' => $environment['root'],
     'uri' => $environment['uri'],
