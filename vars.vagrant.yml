@@ -1,6 +1,9 @@
 # VAGRANT variables.  These variables are used to configure your vagrant VM.
 # They do not need to be changed.
 
+# The version of devshop to install.
+devshop_version:              1.x
+
 # The hostname of the server.  Must resolve to the IP address.
 # local.devshop.site resolves to 10.10.10.10
 server_hostname: local.devshop.site
