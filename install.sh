@@ -179,21 +179,14 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         if ! git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
         then git clone https://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
         fi
-        # dir may not exist, or it may exist as a symlink.  lets handle all of it gracefully.
-        $LINK_OR_DIR = "/usr/share/ansible"
-        if [ -d "$LINK_OR_DIR" ]; then 
-          if [ -L "$LINK_OR_DIR" ]; then
-            echo "This location ($LINK_OR_DIR) is a symlink, which is not expected."
-          else
-            echo "This directory ($LINK_OR_DIR) will be used for ansible installation."
-          fi
+        # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
+        if ! [ -d "/usr/share/ansible" ]; then
+          echo "The directory (/usr/share/ansible) does not exist which means git clone failed.  This could be a permission or link issue.  Check the referenced directory."
+          # which ansible should also fail in a few lines...
         else
-          mkdir "$LINK_OR_DIR"
+          source /usr/share/ansible/hacking/env-setup
+          echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
         fi
-        cd $LINK_OR_DIR
-
-        source /usr/share/ansible/hacking/env-setup
-        echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
 
         if [ ! `which ansible > /dev/null 2>&1` ]; then
           echo "Ansible install failed."
