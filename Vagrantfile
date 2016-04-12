@@ -9,8 +9,8 @@ Vagrant.require_version ">= 1.5"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-# Load Variables  
-  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
+  # Load Variables
+  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.vagrant.yml")
   development_mode = settings["vagrant_development"] || File.exist?(File.dirname(__FILE__) + '/.development_mode')
 
   # Base Box & Config
