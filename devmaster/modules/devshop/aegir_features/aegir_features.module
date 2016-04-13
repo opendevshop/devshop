@@ -30,7 +30,7 @@ function aegir_features_permission() {
  * @return mixed
  */
 function hosting_task_features_update_form($node) {
-    if (_devshop_projects_site_has_module($node, 'features')) {
+    if (!_devshop_projects_site_has_module($node, 'features')) {
         drupal_set_message(t('The site must have the "features" module enabled to use this task.'));
         drupal_goto("node/{$node->nid}");
     }
