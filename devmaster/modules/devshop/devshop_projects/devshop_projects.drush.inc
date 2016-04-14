@@ -205,8 +205,8 @@ function drush_devshop_platform_verify() {
   }
 
   // Detect a bad path_to_drupal
-  if (!file_exists($task->ref->root . '/index.php')) {
-    return drush_set_error('DEVSHOP_ERROR', dt($task->ref->root . '/index.php file not found. Check your Path to Drupal.'));
+  if (!file_exists($platform->environment->root . '/index.php')) {
+    return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check your Path to Drupal.'));
   }
 
   // Detect composer.json and run composer install.
