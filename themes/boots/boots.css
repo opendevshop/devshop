@@ -594,11 +594,10 @@ ul.dropdown-menu li.text {
 }
 
 form > div > fieldset {
-    padding: 20px 0px;
+    /*padding: 20px 0px;*/
 }
 form > div > fieldset > legend {
-
-    padding: 20px 0px 0px;
+    /*padding: 20px 0px 0px;*/
 
 }
 
