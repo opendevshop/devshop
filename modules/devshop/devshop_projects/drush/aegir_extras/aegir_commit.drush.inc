@@ -78,6 +78,8 @@ Committed by OpenDevShop via http://$hostmaster_uri");
         devshop_drush_process("git commit -m {$message}", $environment->repo_root, 'Committing changes to local repository...', array(
           'GIT_AUTHOR_NAME' => $name,
           'GIT_AUTHOR_EMAIL' => $mail,
+          'GIT_COMMITTER_NAME' => $name,
+          'GIT_COMMITTER_EMAIL' => $mail,
         ));
 
         devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
