@@ -16,11 +16,11 @@
  */
 function ansible_variables_hosting_feature() {
   $features['ansible_variables'] = array(
-    'title' => t('Server data example'),
-    'description' => t('Example implementation of saving data into a server context.'),
+    'title' => t('Ansible Variables'),
+    'description' => t("Allows editing of a server's ansible variables."),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'ansible_variables',
-    'group' => 'experimental',
+    'group' => 'advanced',
   );
   return $features;
 }
