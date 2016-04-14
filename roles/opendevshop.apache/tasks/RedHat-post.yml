@@ -5,7 +5,7 @@
   file:
     src: "{{ aegir_user_home }}/config/apache.conf"
     # For RedHat, apache_conf_path == '/etc/httpd/conf.d'
-    dest: "{{ apache_conf_path }}/aegir.conf"
+    dest: "{{ apache_conf_path }}/{{ aegir_user_name }}.conf"
     state: link
     force: yes
 
