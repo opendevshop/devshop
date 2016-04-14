@@ -24,8 +24,8 @@
     file:
       state: directory
       path: "{{ aegir_user_home }}"
-      group: aegir
-      owner: aegir
+      group: "{{ aegir_user_name }}"
+      owner: "{{ aegir_user_name }}"
 
   # Aegir's CentOS installation requires this.
   - name: Set appropriate permissions for Aegir's home folder.
