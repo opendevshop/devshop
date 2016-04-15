@@ -88,9 +88,6 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
-    --aegir_user_uid=*)
-      AEGIR_USER_UID="${1#*=}"
-      ;;
     *)
       echo $LINE
       echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
@@ -273,7 +270,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
