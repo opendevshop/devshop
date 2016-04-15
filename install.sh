@@ -210,8 +210,6 @@ else
     echo $LINE
 fi
 
-exit
-
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get install git -y -qq
