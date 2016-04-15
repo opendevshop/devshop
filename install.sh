@@ -254,7 +254,12 @@ echo $LINE
 cd $PLAYBOOK_PATH
 
 # Create inventory file
-echo $HOSTNAME_FQDN > inventory
+if [ ! -f "inventory" ]; then
+  echo $HOSTNAME_FQDN > inventory
+  echo "Created inventory file."
+else
+  echo "Inventory file found."
+fi
 
 echo " Installing ansible roles..."
 ansible-galaxy install -r roles.yml -p roles
