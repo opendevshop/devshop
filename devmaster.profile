@@ -150,6 +150,9 @@ function devmaster_bootstrap() {
   node_save($node);
   $profile_id = $node->nid;
 
+  // Save the hostmaster site nid.
+  variable_set('aegir_hostmaster_site_nid', $node->nid);
+
   $instance = new stdClass();
   $instance->rid = $node->nid;
   $instance->version = VERSION;
