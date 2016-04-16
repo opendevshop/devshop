@@ -379,12 +379,25 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 }
 
 /**
- * Implements hook_post_hosting_TASK_TYPE_task() for `clone` task().
- *
- * Ensures that cloned sites that are on project platforms inherit the project.
+ * Implements hook_post_hosting_TASK_TYPE_task().
+ */
+function devshop_projects_post_hosting_install_task($task, $data) {
+
+  // Now that environment data is stored in project data we need to verify projects a lot.
+  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+    hosting_add_task($task->ref->project->nid, 'verfiy');
+  }
+}
+
+/**
+ * Implements hook_post_hosting_TASK_TYPE_task().
  */
 function devshop_projects_post_hosting_clone_task($task, $data) {
-//  devshop_projects_post_hosting_import_task($task, $data);
+
+  // Now that environment data is stored in project data we need to verify projects a lot.
+  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+    hosting_add_task($task->ref->project->nid, 'verfiy');
+  }
 }
 
 /**
@@ -393,6 +406,11 @@ function devshop_projects_post_hosting_clone_task($task, $data) {
  * Ensures that cloned sites that are on project platforms inherit the project.
  */
 function devshop_projects_post_hosting_import_task($task, $data) {
+
+  // Now that environment data is stored in project data we need to verify projects a lot.
+  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+    hosting_add_task($task->ref->project->nid, 'verfiy');
+  }
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'site') {
