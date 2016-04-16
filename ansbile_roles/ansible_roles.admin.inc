@@ -33,6 +33,7 @@ function ansible_roles_settings_add() {
   $form['name'] = array(
     '#title' => t('Role Name'),
     '#type' => 'textfield',
+    '#required' => TRUE,
     '#description' => t('Enter the name of the Ansible role you would like to install. May be an !link role.', array(
       l(t('Ansible Galaxy'), 'http://galaxy.ansible.com', array(
         'attributes' => array(
@@ -40,6 +41,16 @@ function ansible_roles_settings_add() {
         )
       ))
     )),
+  );
+  $form['src'] = array(
+    '#title' => t('Role Source'),
+    '#type' => 'textfield',
+    '#description' => t('If you wish to provide a custom role, enter the git source URL here.')
+  );
+  $form['version'] = array(
+    '#title' => t('Role Version'),
+    '#type' => 'textfield',
+    '#description' => t("If you are using a git source, you may specify the version here.  Defaults to the repository's default branch.")
   );
 
   $form['submit'] = array(
