@@ -82,39 +82,15 @@ function getBranchesAndTags($git_url = NULL) {
     $git_url = drush_get_option('git_url');
   }
   $command = "git ls-remote {$git_url}";
-  drush_log('[DEVSHOP] running ' . $command, 'ok');
-
-  drush_shell_exec($command);
-  $exec_output = drush_shell_exec_output();
-  if ($exec_output) {
-    drush_log("[DEVSHOP] git ls-remote {$git_url} " . implode('\n', $exec_output), 'ok');
-  }
-  else {
-    $exec_output = drush_shell_exec_output();
-    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] No output from git ls-remote.') . implode(" ", $exec_output), 'error');
-    return;
-  }
-
-
-  // Check for Permission Denied
-  // @TODO: Provide link to the Public key for the server.
-  if ('Permission denied' == substr($exec_output[0], 0, 17)) {
-    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] Error:') . implode("\n", $exec_output), 'error');
-    return;
-  }
-
-  // If remote list is empty, something else went wrong.
-  if (count($exec_output) == 1 && empty($exec_output[0])) {
-    drush_set_error(DRUSH_FRAMEWORK_ERROR, dt('[DEVSHOP] Error:') . implode("\n", $exec_output), 'error');
-    return;
-  }
+  $output = devshop_drush_process($command);
+  $lines = explode("\n", $output);
 
   // Build tag and branch list
   $branches = array();
   $tags = array();
   $refs = array();
 
-  foreach ($exec_output as $line_string) {
+  foreach ($lines as $line_string) {
 
     // @TODO: Would love some regex love here
     // Example remote line:
