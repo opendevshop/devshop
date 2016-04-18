@@ -16,11 +16,8 @@
 ## New Features
 
 - Git Submodules! Deploy tasks now run `git submodule update --init --recursive`, so if you want to keep certain modules in different git repos, devshop now makes that easy.
-- Grouped Drush aliases! Each project now writes it's own drush aliases file:
-
-
-    drush @project.environment uli
-
+- Config Export and Import! DevShop & Aegir now give you a button to press to export your Drupal 8 config to files.  When you combine this with the Aegir Commit modules, you can Site Build, Export to disk, and commit to git without ever leaving your browser.
+- Grouped Drush aliases! Each project now writes it's own drush aliases file, making it much easier to target an environment: 'drush @project.environment uli`
 
 
 # 1.0.0-alpha4 (March 23, 2016)
