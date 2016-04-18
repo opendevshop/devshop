@@ -7,7 +7,7 @@ function devshop_projects_hosting_queues() {
   $items['deploy'] = array(
     'type' => 'batch',
     'name' => t('Deploy Queue'),
-    'description' => t('Runs git pull and deploy hooks on projects configured to do so.'),
+    'description' => t('Deploy Queue: Runs a Deploy task on projects configured to use "Manual Deployment" for environments that are not set to "Disable Deploy on Commit".'),
     'total_items' => count(devshop_projects_get_deploy_queue_environments()),
     'frequency' => strtotime("5 minutes", 0),
     'singular' => t('environment'),
