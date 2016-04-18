@@ -122,7 +122,10 @@ function ansible_variables_node_load($nodes, $types) {
       // If ansible_vars exist, override them with these.
       if (isset($nodes[$nid]->ansible_vars)) {
         $nodes[$nid]->ansible_vars_original = $nodes[$nid]->ansible_vars;
-        $nodes[$nid]->ansible_vars = array_merge($nodes[$nid]->ansible_vars, $nodes[$nid]->ansible_variable_overrides);
+
+        if (is_array($nodes[$nid]->ansible_variable_overrides)) {
+          $nodes[$nid]->ansible_vars = array_merge($nodes[$nid]->ansible_vars, $nodes[$nid]->ansible_variable_overrides);
+        }
       }
     }
   }

@@ -59,5 +59,8 @@ function aegir_ansible_inventory_data() {
         }
     }
 
+    // Allow modules to alter inventory.
+    drupal_alter('ansible_inventory', $inventory);
+
     return $inventory;
 }
