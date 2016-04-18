@@ -18,7 +18,10 @@ rm -f /lib/systemd/system/anaconda.target.wants/*;
 # RUN yum clean all
 
 # Disable requiretty
-RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
+
+## This has been failing in travis, I don't know how the centos:7 docker image could be missing /etc/sudoers, but it is.  I've confirmed this by manually launching and inspecting a centos 7 image.
+# I don't know if removing this line will work or not.
+# RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
 # Install Ansible inventory file
 RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
