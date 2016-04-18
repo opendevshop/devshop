@@ -40,6 +40,8 @@ projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = 3.x
 projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 0.3
+projects[aegir_config][subdir] = aegir
+projects[aegir_config][version] = 1.x
 
 ; Not working yet.
 ;projects[hosting_solr][version] = "1"
