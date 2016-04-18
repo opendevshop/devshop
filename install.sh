@@ -173,21 +173,20 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         # Build ansible from source to ensure the latest version.
         yum install -y git > /dev/null 1>&1
         # git clone using git/ssh protocol could be blocked.  lets try http as well...
-        if ! git clone git://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
-        then git clone https://github.com/ansible/ansible.git /usr/share/ansible --recursive --branch stable-2.0.0.1
-        fi
+        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.0
+
         # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
-        if ! [ -d "/usr/share/ansible" ]; then
-          echo "The directory (/usr/share/ansible) does not exist which means git clone failed.  This could be a permission or link issue.  Check the referenced directory."
-          # which ansible should also fail in a few lines...
+        if ! [ -d "ansible" ]; then
+          echo "The directory ansible does not exist which means git clone failed.  This could be a permission or link issue.  Check the referenced directory."
         else
-          source /usr/share/ansible/hacking/env-setup
-          echo 'source /usr/share/ansible/hacking/env-setup' >> /etc/bashrc
-          easy_install pip
-          pip install paramiko PyYAML Jinja2 httplib2 six
+          yum install -y rpm-build make asciidoc git python-setuptools python2-devel
+          cd ansible
+          git checkout v2.0.1.0-1
+          make rpm > /dev/null 2>&1
+          rpm -Uvh ./rpm-build/ansible-*.noarch.rpm > /dev/null 2>&1
         fi
 
-        if [ ! `command -v ansible >/dev/null 2>&1`]; then
+        if [ ! `command -v ansible >/dev/null 2>&1` ]; then
           echo >&2 "We require ansible but it's not installed.  The installation has failed.  Aborting.";
           exit 1
 #        'which' is a common but inconsistent across OS way to detect an installation so the above is under development.
