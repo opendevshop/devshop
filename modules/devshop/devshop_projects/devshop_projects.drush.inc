@@ -204,6 +204,11 @@ function drush_devshop_platform_verify() {
     devshop_drush_process("git push -u origin {$platform->environment->git_ref}", dt('Pushing new branch.'));
   }
 
+  // Detect a bad path_to_drupal
+  if (!file_exists($platform->environment->root . '/index.php')) {
+    return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check your Path to Drupal.'));
+  }
+
   // Detect composer.json and run composer install.
   if (file_exists($root . '/composer.json')) {
     devshop_drush_process("composer install", $root, dt('composer.json detected, running composer install.'));
