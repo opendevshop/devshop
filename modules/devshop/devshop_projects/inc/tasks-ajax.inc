@@ -59,7 +59,7 @@ function devshop_projects_tasks_status_json() {
   foreach ($nids as $nid) {
     $task_node = node_load($nid);
 
-        if ($task_node->site) {
+        if (isset($task_node->site)) {
           $task_node->site_node = node_load($task_node->site);
 
           if ($task_node->site_node->site_status == HOSTING_SITE_DELETED) {
