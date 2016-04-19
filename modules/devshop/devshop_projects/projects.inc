@@ -49,7 +49,7 @@ SELECT
         $result = $query->fetch();
 
         // Only load the project node if there is no task
-        if ($entity->type == 'task') {
+        if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
           $entity->project_name = $result->project_name;
           $entity->environment = $result->name;
