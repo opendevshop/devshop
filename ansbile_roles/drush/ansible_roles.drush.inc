@@ -13,8 +13,10 @@
  */
 function ansible_roles_drush_init()
 {
-  require_once('Provision/Service/db/ansible_mysql.php');
-  require_once('Provision/Service/http/ansible_apache.php');
+  if (class_exists('Provision_Service')) {
+    require_once('Provision/Service/db/ansible_mysql.php');
+    require_once('Provision/Service/http/ansible_apache.php');
+  }
 }
 
 /**
