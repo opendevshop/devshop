@@ -70,8 +70,9 @@
     </div>
 </div>
 
-<!-- Output the rest of the node content -->
-<?php
+<div class="drupal-content">
+    <?php
   print render($content);
 ?>
+</div>
 
