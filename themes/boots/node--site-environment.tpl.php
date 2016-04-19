@@ -69,3 +69,9 @@
         )); ?>
     </div>
 </div>
+
+<!-- Output the rest of the node content -->
+<?php
+  print render($content);
+?>
+
