@@ -179,7 +179,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
         if ! [ -d "ansible" ]; then
           echo "The directory ansible does not exist which means git clone failed.  This could be a permission or link issue.  Check the referenced directory."
         else
-          yum install -y which rpm-build make asciidoc git python-setuptools python2-devel
+          yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
           cd ansible
           git checkout v2.0.1.0-1
           make rpm
