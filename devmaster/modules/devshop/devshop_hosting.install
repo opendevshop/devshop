@@ -89,3 +89,10 @@ function devshop_hosting_update_7005() {
                     WHERE pkg.short_name = \'devmaster\'')->fetchField();
   variable_set('aegir_hostmaster_site_nid', $nid);
 }
+
+/**
+ * Enable devshop_dothooks module.
+ */
+function devshop_hosting_update_7006() {
+  module_enable(array('devshop_stats'));
+}
