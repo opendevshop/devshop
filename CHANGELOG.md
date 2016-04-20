@@ -1,6 +1,6 @@
 # Change Log
 
-# 1.0.0-alpha5 (Pending)
+# 1.0.0-beta1 (Pending)
 
 54 Commits to DevMaster: https://github.com/opendevshop/devmaster/compare/release-1.0.0-alpha4...1.x
 
@@ -17,6 +17,7 @@
 
 - Git Submodules! Deploy tasks now run `git submodule update --init --recursive`, so if you want to keep certain modules in different git repos, devshop now makes that easy.
 - Config Export and Import! DevShop & Aegir now give you a button to press to export your Drupal 8 config to files.  When you combine this with the Aegir Commit modules, you can Site Build, Export to disk, and commit to git without ever leaving your browser.
+- Upgrade Drupal! Click the "Upgrade Drupal" button to run "drush pm-update" to get your core and contrib in line.
 - Grouped Drush aliases! Each project now writes it's own drush aliases file, making it much easier to target an environment: 'drush @project.environment uli`
 
 
