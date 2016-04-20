@@ -182,7 +182,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
           yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
           cd ansible
           git checkout v2.0.1.0-1
-          make rpm
+          make rpm > /dev/null 2>&1
           rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
 
           ansible --version
