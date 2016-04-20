@@ -182,8 +182,11 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
           yum install -y rpm-build make asciidoc git python-setuptools python2-devel
           cd ansible
           git checkout v2.0.1.0-1
-          make rpm > /dev/null 2>&1
-          rpm -Uvh ./rpm-build/ansible-*.noarch.rpm > /dev/null 2>&1
+          make rpm
+          rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
+
+          ansible --version
+
         fi
 
         if [ ! `command -v ansible >/dev/null 2>&1` ]; then
