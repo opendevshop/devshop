@@ -9,8 +9,8 @@ Vagrant.require_version ">= 1.5"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-# Load Variables  
-  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
+  # Load Variables
+  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.vagrant.yml")
   development_mode = settings["vagrant_development"] || File.exist?(File.dirname(__FILE__) + '/.development_mode')
 
   # Base Box & Config
@@ -38,13 +38,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     devmaster.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
 
     # Set SH as our provisioner
-    devmaster.vm.provision "shell",
-      path: settings["vagrant_install_script"],
-      args: settings["vagrant_install_script_args"]
+    #devmaster.vm.provision "shell",
+    #  path: settings["vagrant_install_script"],
+    #  args: settings["vagrant_install_script_args"]
+
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+      ansible.raw_arguments  = [
+        '--become'
+      ]
+    end
 
    # Put the generated public key in /vagrant folder so the remotes can access it.
    devmaster.vm.provision "shell",
       inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
+
+   # Put the generated public key in /vagrant folder so the remotes can access it.
+   devmaster.vm.provision "shell",
+      inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
+
+   # Enable some development modules
+   devmaster.vm.provision "shell",
+    inline: "devshop login"
 
     # Prepare development environment
     if (development_mode)
@@ -83,7 +98,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Does not start automatically on vagrant up.
   # Use `vagrant up remote` to launch.
   config.vm.define "remote", autostart: false do |remote|
-    # remote.vm.box = "bento/centos-7.1"
+    remote.vm.box = "ubuntu/trusty64"
     remote.vm.hostname = settings["remote_server_hostname"]
     remote.vm.network "private_network", ip: settings["remote_vagrant_private_network_ip"]
     remote.vm.provider "virtualbox" do |v|
@@ -96,6 +111,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   end
   config.vm.define "remote2", autostart: false do |remote|
+    remote.vm.box = "bento/centos-7.1"
     remote.vm.hostname = settings["remote2_server_hostname"]
     remote.vm.network "private_network", ip: settings["remote2_vagrant_private_network_ip"]
     remote.vm.provider "virtualbox" do |v|
@@ -104,13 +120,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Grant the aegir@local.devshop.site user access to root@devshop.remote
     remote.vm.provision "shell",
-      inline: "cat /vagrant/devmaster_id_rsa.pub >> /root/.ssh/authorized_keys"
+      inline: "mkdir /root/.ssh; cat /vagrant/devmaster_id_rsa.pub >> /root/.ssh/authorized_keys"
 
   end
 end
 
 if (ARGV[0] == 'destroy')
-  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.yml")
+  settings = YAML.load_file(File.dirname(__FILE__) + "/vars.vagrant.yml")
   print "DEVSHOP: Vagrant Destroy detected. \n"
   print "DEVSHOP: You must delete the 'source/devmaster-" + settings["devshop_version"] + "/sites/devshop.site' folder before you 'vagrant up' again. \n"
 end

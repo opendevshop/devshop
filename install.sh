@@ -24,7 +24,7 @@
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=1.x
+DEVSHOP_VERSION=1.x-ansible
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=12345
@@ -88,9 +88,6 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
-    --aegir_user_uid=*)
-      AEGIR_USER_UID="${1#*=}"
-      ;;
     *)
       echo $LINE
       echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
@@ -147,7 +144,7 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
 fi
 
 # If ansible command is not available, install it.
-if [ ! `which ansible` ]; then
+if [ ! `which ansible > /dev/null 2>&1` ]; then
     echo " Installing Ansible..."
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
@@ -171,10 +168,36 @@ if [ ! `which ansible` ]; then
         apt-get update -qq
         apt-get install ansible -y -qq
 
-    elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
+    elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
-        yum install epel-release -y
-        yum install ansible -y
+        # Build ansible from source to ensure the latest version.
+        yum install -y git epel-release > /dev/null 1>&1
+        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.0
+
+        # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
+        if ! [ -d "ansible" ]; then
+          echo "The directory ansible does not exist which means git clone failed.  This could be a permission or link issue.  Check the referenced directory."
+          exit 1
+        else
+
+          # Build ansible RPM from source code.
+          yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
+          cd ansible
+          git checkout v2.0.1.0-1
+          make rpm > /dev/null 2>&1
+          rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
+
+          ansible --version
+        fi
+
+        if [ ! `ansible --version` ]; then
+          echo >&2 "We require ansible but it's not installed.  The installation has failed.  Aborting.";
+          exit 1
+        fi
+
+    else
+        echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
+        exit 1
     fi
 
     echo $LINE
@@ -244,7 +267,16 @@ echo $LINE
 cd $PLAYBOOK_PATH
 
 # Create inventory file
-echo $HOSTNAME_FQDN > inventory
+if [ ! -f "inventory" ]; then
+  echo $HOSTNAME_FQDN > inventory
+  echo "Created inventory file."
+else
+  echo "Inventory file found."
+fi
+
+echo " Installing ansible roles..."
+ansible-galaxy install -r roles.yml -p roles
+echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
 if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
@@ -256,7 +288,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"

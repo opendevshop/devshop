@@ -13,14 +13,15 @@ rm -f /lib/systemd/system/basic.target.wants/*; \
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 
 # Install Ansible
-RUN yum -y install epel-release
-RUN yum -y install curl git ansible sudo
+# RUN yum -y install epel-release
+RUN yum -y install sudo
 RUN yum clean all
 
 # Disable requiretty
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
 # Install Ansible inventory file
+RUN mkdir /etc/ansible
 RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
 
 VOLUME [ "/sys/fs/cgroup" ]
