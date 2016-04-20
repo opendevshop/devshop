@@ -150,9 +150,6 @@ function devmaster_bootstrap() {
   node_save($node);
   $profile_id = $node->nid;
 
-  // Save the hostmaster site nid.
-  variable_set('aegir_hostmaster_site_nid', $node->nid);
-
   $instance = new stdClass();
   $instance->rid = $node->nid;
   $instance->version = VERSION;
@@ -181,6 +178,9 @@ function devmaster_bootstrap() {
   $node->verified = 1;
   $node->status = 1;
   node_save($node);
+
+  // Save the hostmaster site nid.
+  variable_set('aegir_hostmaster_site_nid', $node->nid);
 
   // Enable the hosting features of modules that we enable by default.
   // The module will already be enabled,
