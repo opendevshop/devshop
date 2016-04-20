@@ -37,6 +37,7 @@ Feature: Create a project
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
+    And I reload the page
 
     Then print last response
     Then I should see "Create as many new environments as you would like."
