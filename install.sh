@@ -275,7 +275,7 @@ else
 fi
 
 echo " Installing ansible roles..."
-ansible-galaxy install -r roles.yml -p roles
+ansible-galaxy install -r '$PLAYBOOK_PATH/roles.yml'
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
