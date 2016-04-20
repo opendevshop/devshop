@@ -188,13 +188,11 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
           ansible --version
         fi
 
-        if [ ! `which ansible > /dev/null 2>&1` ]; then
+        if [ ! `ansible --version` ]; then
           echo >&2 "We require ansible but it's not installed.  The installation has failed.  Aborting.";
           exit 1
         fi
-        
-        ansible --version
-        
+
     else
         echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
         exit 1
