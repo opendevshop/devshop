@@ -37,8 +37,9 @@ Feature: Create a project
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
+    And I reload the page
 
-#    Then save last response
+    Then print last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
