@@ -32,12 +32,12 @@
     dest: "{{ local_bin_path }}/drush"
     mode: 0755
 
-- name: Install devshop CLI
-  git:
-    repo: "{{ devshop_cli_repo }}"
-    version: "{{ devshop_cli_version }}"
-    update: "{{ devshop_cli_update }}"
-    dest: "{{ devshop_cli_path }}"
+#- name: Install devshop CLI
+#  git:
+#    repo: "{{ devshop_cli_repo }}"
+#    version: "{{ devshop_cli_version }}"
+#    update: "{{ devshop_cli_update }}"
+#    dest: "{{ devshop_cli_path }}"
 
 - name: Setup devshop CLI
   command: "{{ composer_path }} install"
