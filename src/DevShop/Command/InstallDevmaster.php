@@ -571,6 +571,7 @@ class InstallDevmaster extends Command
 PHP;
 
     // Determine home path and path to alias file.
+    $drush_path = $this->input->getOption('drush-path');
     $home = $this->input->getOption('aegir_root');
     $path_to_alias_file = "{$home}/.drush/{$name}.alias.drushrc.php";
 
@@ -587,8 +588,8 @@ PHP;
     if ($install) {
       $client_email = $this->input->getOption('client_email');
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush @{$name} provision-install --client_email={$client_email}</comment> ...");
-      $process = $this->getProcess("drush @{$name} provision-install --client_email={$client_email} -v");
+      $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email}</comment> ...");
+      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} -v");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
