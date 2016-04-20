@@ -1,6 +1,6 @@
 # Change Log
 
-# 1.0.0-beta1 (Pending)
+# 1.0.0-beta1 (April 20, 2016)
 
 104 Commits to DevShop: https://github.com/opendevshop/devshop/compare/release-1.0.0-alpha4...1.x
 67 Commits to DevMaster: https://github.com/opendevshop/devmaster/compare/release-1.0.0-alpha4...1.x
