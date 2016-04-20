@@ -170,41 +170,6 @@ function devshop_projects_node_view($node, $view_mode, $langcode) {
   if (current_path() == "node/{$node->nid}" && isset($project_wizard_cache->nid) && $node->nid == $project_wizard_cache->nid) {
     drupal_goto('projects/add/' . $project_wizard_cache->step);
   }
-
-  // Display basic project information.
-  $node->content['project'] = array(
-    '#type' => 'item',
-    '#title' => t('Project Name'),
-    '#markup' => $project->name,
-  );
-  $node->content['git_url'] = array(
-    '#type' => 'item',
-    '#title' => t('Git URL'),
-    '#markup' => $project->git_url,
-  );
-  $node->content['install_profile'] = array(
-    '#type' => 'item',
-    '#title' => t('Install Profile'),
-    '#markup' => $project->install_profile,
-  );
-
-  foreach ($project->environments as $environment) {
-    $node->content['environments'][$environment->name] = array(
-      '#type' => 'fieldset',
-      '#title' => l($environment->name, "node/{$environment->site}"),
-    );
-    $node->content['environments'][$environment->name]['url'] = array(
-      '#type' => 'item',
-      '#title' => t('URL'),
-      '#markup' => l($environment->url, $environment->url),
-    );
-    $node->content['environments'][$environment->name]['git_ref'] = array(
-      '#type' => 'item',
-      '#title' => t('Branch/Tag'),
-      '#markup' => $environment->git_ref,
-    );
-  }
-  return $node;
 }
 
 /**
