@@ -32,8 +32,10 @@ AEGIR_USER_UID=12345
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "                   v $DEVSHOP_VERSION        "
-echo "        *** Star us on GitHub ***            "
-echo "   https://github.com/opendevshop/devshop    "
+echo " "
+echo " Issues: https://github.com/opendevshop/devshop/issues"
+echo " Chat: https://gitter.im/opendevshop/devshop "
+echo " Code: https://github.com/opendevshop/devshop"
 echo "============================================="
 
 # Fail if not running as root (sudo)
