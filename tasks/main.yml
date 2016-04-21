@@ -5,12 +5,6 @@
 - name: Include OS-specific variables.
   include_vars: "vars.{{ ansible_os_family }}.yml"
 
-- name: Add aegir to apache group.
-  user:
-    name: "{{ aegir_user_name }}"
-    groups: "{{ apache_user }}"
-    append: yes
-
 - name: Install extra packages
   apt:
     pkg: "{{ item }}"
