@@ -42,32 +42,16 @@ function devshop_pull_schema() {
 }
 
 /**
- * Implementation of hook_install().
- */
-function devshop_pull_install() {
-  // Create tables.
-  drupal_install_schema('devshop_pull');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function devshop_pull_uninstall() {
-  // Create tables.
-  drupal_uninstall_schema('devshop_pull');
-}
-
-/**
  * no-op: code fixed in devshop_pull_update_6201()
  */
-function devshop_pull_update_6000(){
+function devshop_pull_update_6000() {
   $ret = array();
   return $ret;
 }
 /**
  * Add last_pull_ip column to our hosting_devshop_pull_projects table.
  */
-function devshop_pull_update_6001(){
+function devshop_pull_update_6001() {
   $ret = array();
   db_add_field($ret, 'hosting_devshop_pull_projects', 'last_pull_ip', array('type' => 'varchar', 'not null' => TRUE, 'default' => '', 'length' => 15));
   return $ret;
@@ -76,7 +60,7 @@ function devshop_pull_update_6001(){
 /**
  * Remove legacy `hosting_devshop_pull_platforms` table.
  */
-function devshop_pull_update_6002(){
+function devshop_pull_update_6002() {
   $ret = array();
   db_drop_table($ret, 'hosting_devshop_pull_platforms');
   return $ret;

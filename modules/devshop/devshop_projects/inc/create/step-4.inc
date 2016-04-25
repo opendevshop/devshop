@@ -8,16 +8,15 @@
 /**
  * STEP 4: Form
  */
-function devshop_project_create_step_sites(&$form, &$form_state) {
-  $project_node = node_load($form_state['project']->project_nid);
-  $project = $project_node->project;
+function devshop_project_create_step_sites($form, &$form_state) {
+  $project = $form_state['project'];
   $profiles = array();
   $available_profiles = array();
   $completed = TRUE;
 
   $form['nid'] = array(
     '#type' => 'value',
-    '#value' => $project_node->nid,
+    '#value' => $project->nid,
   );
 
   // Display the platforms
@@ -36,7 +35,19 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
-    $task = hosting_get_most_recent_task($platform_nid, 'verify');
+    $tasks = devshop_get_tasks($environment, 'verify', 'type');
+    $task = current($tasks);
+
+    if (empty($task)) {
+      $row = array(
+        $environment->name,
+        $environment->git_ref,
+        t('Error: Platform node was not saved. Unable to continue.'),
+        '', '',
+      );
+      $rows[] = $row;
+      continue;
+    }
 
     // Build a table.
     $row = array();
@@ -84,7 +95,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $error = l(db_result(db_query("SELECT message FROM {hosting_task_log} WHERE nid = %d AND type = '%s' ORDER BY vid, lid", $task->nid, 'error')), "node/{$task->nid}");
+      $error = l(db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'error'))->fetchField(), "node/{$task->nid}");
 
       $row['version'] = array(
         'data' => t('Platform verification failed: !error', array('!error' => $error)),
@@ -119,18 +130,16 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
 
   // Output our table.
   $form['platforms'] = array(
-    '#type' => 'markup',
-    '#value' => theme('table', $header, $rows, array('class' => 'table')),
+    '#markup' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('table')))),
   );
 
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
-    $project->no_finish = TRUE;
+    $form['#no_finish'] = TRUE;
     $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
 
     $form['help'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
+      '#markup' => $note,
     );
 
     // Add code to reload the page when complete.
@@ -143,11 +152,9 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
     $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects/add/environments'))) . '</p>';
 
     $form['error'] = array(
-      '#type' => 'markup',
-      '#value' => $note,
+      '#markup' => $note,
     );
     $form['#no_finish'] = TRUE;
-    return $form;
   }
   else {
     $project->no_finish = FALSE;
@@ -172,6 +179,7 @@ function devshop_project_create_step_sites(&$form, &$form_state) {
       '#default_value' => $default_profile,
     );
   }
+  return $form;
 }
 
 /**
@@ -181,15 +189,4 @@ function devshop_project_create_step_sites_validate(&$from, &$form_state) {
   if (empty($form_state['values']['install_profile'])) {
     form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
   }
-}
-
-/**
- * STEP 4: Submit
- *
- * Save install profile to the project object (project and site node creation
- * happens on wizard finish.)
- */
-function devshop_project_create_step_sites_submit(&$from, &$form_state) {
-  $project = &$form_state['project'];
-  $project->install_profile = $form_state['values']['install_profile'];
 }

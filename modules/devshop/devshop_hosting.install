@@ -1,19 +1,30 @@
 <?php
+/**
+ * @file
+ * Install, update and uninstall functions for the devshop_hosting module.
+ *
+ */
+
 
 /**
- * Implements hook_install()
+ * Implements hook_install().
  *
  * Sets a new frontpage.
  */
-function devshop_hosting_install(){
+function devshop_hosting_install() {
   variable_set('site_frontpage', 'devshop');
   drupal_set_message(t('Site frontpage set to <em>devshop</em>.'));
 
-  db_query('UPDATE {system} SET weight = 11 WHERE name = "devshop_hosting"');
+  db_update('system')
+  ->fields(array(
+    'weight' => 11,
+  ))
+  ->condition('name', "devshop_hosting")
+  ->execute();
 }
 
 /**
- * Implements hook_requirements()
+ * Implements hook_requirements().
  * @param $phase
  * @return array
  */
@@ -63,4 +74,25 @@ function devshop_hosting_update_7003() {
  */
 function devshop_hosting_update_7004() {
   module_enable(array('devshop_dothooks'));
+}
+
+/**
+ * Save 'aegir_hostmaster_site_nid' variable for devshop.
+ */
+function devshop_hosting_update_7005() {
+  $nid = db_query('SELECT site.nid
+                     FROM hosting_site site
+                     JOIN hosting_package_instance pkgi
+                       ON pkgi.rid = site.nid
+                     JOIN hosting_package pkg
+                       ON pkg.nid = pkgi.package_id
+                    WHERE pkg.short_name = \'devmaster\'')->fetchField();
+  variable_set('aegir_hostmaster_site_nid', $nid);
+}
+
+/**
+ * Enable devshop_dothooks module.
+ */
+function devshop_hosting_update_7006() {
+  module_enable(array('devshop_stats'));
 }

@@ -1,4 +1,4 @@
 name = Aegir Download
 description = Adds the ability to download packages to aegir hosted sites.
-core = 6.x
+core = 7.x
 dependencies[] = hosting_site

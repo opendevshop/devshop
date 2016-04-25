@@ -7,8 +7,6 @@
  * projects. It displays a nice tabulated list of projects
  * and cool things you can do with them.
  *
- * @TODO: Should we make this a list of teasers?  Hard to cram everything in
- * a table.
  */
 function devshop_projects_projects_page() {
   drupal_set_title(t('Projects'));
@@ -21,12 +19,17 @@ function devshop_projects_projects_page() {
 
   $tasks = hosting_available_tasks('site');
 
-  $query = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = 1 ORDER BY n.changed");
+  $results = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :status ORDER BY n.changed DESC", array(':status' => 1));
   $rows = array();
 
-  while ($result = db_fetch_object($query)) {
+  foreach ($results as $result) {
     $project_node = node_load($result->nid);
     $project = $project_node->project;
+
+    // Make sure user can view the project node.
+    if (!node_access('view', $project_node)) {
+      continue;
+    }
 
     // Load an environment for extra info like version.
     // @TODO: load the chosen live environment.
@@ -61,42 +64,43 @@ HTML;
     }
 
     // Git URL
-    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => $project->git_url));
+    $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => scrub_repo_url($project->git_url)));
 
     // Links to all environments
     $items = '';
-    foreach ($project->environments as $env => $environment){
+    foreach ($project->environments as $env => $environment) {
       if (empty($environment->last_task)) {
         $icon = 'cube';
         $class = 'status';
-      } else {
-        if ($environment->last_task->task_status == HOSTING_TASK_SUCCESS) {
+      }
+      else {
+        if ($environment->last_task_node->task_status == HOSTING_TASK_SUCCESS) {
           $icon = 'check';
           $class = 'success';
         }
-        elseif ($environment->last_task->task_status == HOSTING_TASK_QUEUED) {
+        elseif ($environment->last_task_node->task_status == HOSTING_TASK_QUEUED) {
           $icon = 'gear';
           $class = 'status';
         }
-        elseif ($environment->last_task->task_status == HOSTING_TASK_PROCESSING) {
+        elseif ($environment->last_task_node->task_status == HOSTING_TASK_PROCESSING) {
           $icon = 'gear fa-spin';
           $class = 'status active';
         }
-        elseif ($environment->last_task->task_status == HOSTING_TASK_WARNING) {
+        elseif ($environment->last_task_node->task_status == HOSTING_TASK_WARNING) {
           $icon = 'exclamation-triangle';
           $class = 'warning';
         }
-        elseif ($environment->last_task->task_status == HOSTING_TASK_ERROR) {
+        elseif ($environment->last_task_node->task_status == HOSTING_TASK_ERROR) {
           $icon = 'exclamation-circle';
           $class = 'danger';
         }
       }
 
-      $nid = $environment->site? $environment->site: $environment->platform;
+      $nid = $environment->site ? $environment->site : $environment->platform;
       $items .= l("<i class='fa fa-{$icon}'></i> " . $environment->name, "node/{$nid}", array(
         'attributes' => array(
-            'class' => 'btn btn-sm alert-' . $class,
-            'title' => $tasks[$environment->last_task->task_type]['title'] . ': ' . _hosting_parse_error_code($environment->last_task->task_status),
+            'class' => array('btn btn-sm alert-' . $class),
+            'title' => $tasks[$environment->last_task_node->task_type]['title'] . ': ' . _hosting_parse_error_code($environment->last_task_node->task_status),
             'id' => 'badge-' . $environment->project_name . '-' . $environment->name,
         ),
         'html' => TRUE,
@@ -121,7 +125,7 @@ HTML;
   }
 
   // No Projects
-  if (empty($rows)){
+  if (empty($rows)) {
     $button = l(t('Create your first Project'), 'projects/add');
     $output = <<<HTML
 <div class="empty">
@@ -129,18 +133,19 @@ HTML;
     <div class="empty-button">$button</div>
 </div>
 HTML;
-  } else {
+  }
+  else {
     //Call hooks for alter informacion
     $data = module_invoke_all('devshop_projects_page', $rows, $header);
-    
+
     // @TODO: Better hook...
-    if (empty($data['rows'])){
+    if (empty($data['rows'])) {
       $data['rows'] = $rows;
     }
-    if (empty($data['header'])){
+    if (empty($data['header'])) {
       $data['header'] = $header;
     }
-    $output = theme('table', $data['header'], $data['rows'], array('class' => 'table'));
+    $output = theme('table', array('header' => $data['header'], 'rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
   }
   return $output;
 }
@@ -150,18 +155,21 @@ HTML;
  *
  * Project Page Display
  */
-function devshop_projects_view($node, $teaser = FALSE, $page = FALSE) {
+function devshop_projects_node_view($node, $view_mode, $langcode) {
   global $user;
+
+  if ($node->type != 'project') {
+    return;
+  }
+
   $project = &$node->project;
 
   // Check to see if this project is still in the wizard
   ctools_include('object-cache');
-  $project_wizard_cache = ctools_object_cache_get('project', NULL);
-  if ($page && isset($project_wizard_cache->project_nid) && $node->nid == $project_wizard_cache->project_nid){
+  $project_wizard_cache = ctools_object_cache_get('project', 'devshop_project');
+  if (current_path() == "node/{$node->nid}" && isset($project_wizard_cache->nid) && $node->nid == $project_wizard_cache->nid) {
     drupal_goto('projects/add/' . $project_wizard_cache->step);
   }
-
-  return $node;
 }
 
 /**
@@ -185,7 +193,7 @@ function devshop_environment_links($environment) {
     $site = node_load($environment->site);
     if (node_access('update', $site)) {
       $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
-        "node/{$environment->project_nid}/edit/{$environment->name}",
+        "node/{$environment->project_nid}/edit/env/{$environment->name}",
         array(
           'html' => TRUE,
         ));
@@ -211,6 +219,29 @@ function devshop_environment_links($environment) {
     }
   }
 
+  // Load test task, if it exists
+  if ($tasks['test']) {
+    $href = "hosting_confirm/{$environment->site}/site_test";
+    $url = url($href, array(
+      'query' => array(
+        'token' => drupal_get_token($user->uid),
+      )
+    ));
+    $title = $tasks['test']['title'];
+    if (isset($tasks['test']['icon'])) {
+      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
+    }
+    else {
+      $icon = '';
+    }
+    $items[] = <<<HTML
+      <a href="$url">
+            $icon $title
+      </a>
+HTML;
+    $items[] = '<div class="divider"></div>';
+  }
+
   // Add aegir items to items
   if (!empty($aegir_items)) {
     $items = array_merge($items, $aegir_items);
@@ -232,14 +263,21 @@ function devshop_environment_links($environment) {
         $tasks[$action]['title'] = '<i class="fa fa-trash-o"></i> ' . t('Destroy Environment');
       }
 
-      $href = "node/{$environment->site}/site_{$action}";
-      $url = url($href, array(
+      $href = "hosting_confirm/{$environment->site}/site_{$action}";
+      $options = array(
           'query' => array(
               'token' => drupal_get_token($user->uid),
           )
-      ));
+      );
+
+      // If on the site node page, set destination to be the site node.
+      if (arg(0) == 'node' && arg(1) == $environment->site) {
+        $options['query']['destination'] = current_path();
+      }
+
+      $url = url($href, $options);
       $title = $tasks[$action]['title'];
-      if ($tasks[$action]['icon'])  {
+      if (isset($tasks[$action]['icon'])) {
         $icon = '<i class="fa fa-' . $tasks[$action]['icon'] . '""></i>';
       }
       else {
@@ -262,27 +300,27 @@ HTML;
  * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
  */
 function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
-  if (!empty($node->project)){
+  if (!empty($node->project)) {
     // Display Project, Environment and Branch.
     $node->content['info']['project'] = array(
       '#type' => 'item',
       '#title' => t('Project'),
-      '#value' => l($node->project->name, "node/{$node->project->nid}"),
+      '#markup' => l($node->project->name, "node/{$node->project->nid}"),
       '#weight' => -12,
     );
     $node->content['info']['env'] = array(
       '#type' => 'item',
       '#title' => t('Environment'),
-      '#value' => $node->environment->name,
+      '#markup' => $node->environment->name,
       '#weight' => -11,
     );
     $node->content['info']['branch'] = array(
       '#type' => 'item',
       '#title' => t('Branch/Tag'),
-      '#value' => $node->environment->git_ref,
+      '#markup' => $node->environment->git_ref,
       '#weight' => -11,
     );
-    
+
     // Add Breadcrumbs
     $crumbs = array();
     $crumbs[] = l(t('Home'), '<front>');
@@ -297,6 +335,41 @@ function devshop_projects_nodeapi_site_view(&$node, $a3, $a4) {
  */
 function devshop_projects_nodeapi_platform_view(&$node, $a3, $a4) {
   devshop_projects_nodeapi_site_view($node, $a3, $a4);
+}
+
+
+/**
+ * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
+ */
+function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
+
+  $rows = array();
+  if (!isset($node->task_args)) {
+    $node->task_args = array();
+  }
+  foreach ($node->task_args as $key => $value) {
+    $rows[] = array(
+      '<strong>' . $key . '</strong>',
+      '<small>' . $value . '</small>',
+    );
+  }
+
+  $task_host = node_load($node->rid);
+
+  $node->content['info']['project'] = array(
+    '#type' => 'item',
+    '#title' => t('Project'),
+    '#markup' => l($task_host->project->name, "node/{$task_host->project->nid}"),
+    '#weight' => -12,
+  );
+  $node->content['info']['parameters'] = array(
+    '#type' => 'item',
+    '#title' => t('Task Parameters'),
+    '#markup' => theme('table', array('header' => array(), 'rows' =>   $rows)),
+    '#weight' => -11,
+    '#access' => count($rows),
+  );
+
 }
 
 /**
@@ -320,7 +393,7 @@ function devshop_hosting_site_goto_link($node) {
 
   // Get the link from cache.
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
-  if (!is_null($cache) && (time() < $cache->data['expire'])) {
+  if (!is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
     $title = t("Log in: !url", array('!url' => $url));
   }
   else {

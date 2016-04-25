@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_command().
  * Provides the "platform-delete" command.  This command triggers a delete task on a platform specified by it's path.
  *
  * This allows taking the final step in an upgrade: deleting the old devmaster.
@@ -28,7 +28,9 @@ function drush_devshop_hosting_platform_delete($platform_path = NULL) {
     }
     drush_log('[DEVSHOP] Looking up platform at ' . $platform_path, 'ok');
 
-    $nid = db_result(db_query('SELECT nid FROM {hosting_platform} WHERE publish_path ="%s"', $platform_path));
+    $nid = db_query('SELECT nid FROM {hosting_platform} WHERE publish_path = :publish_path', array(
+      ':publish_path' => $platform_path
+    ))->fetchField();
 
     if (empty($nid)) {
         return drush_set_error(DRUSH_APPLICATION_ERROR, 'No platform with that path was found.');
@@ -37,7 +39,10 @@ function drush_devshop_hosting_platform_delete($platform_path = NULL) {
         drush_log('[DEVSHOP] Found platform ' . $nid, 'ok');
 
         // Look for existing enabled sites.
-        $site_nid = db_result(db_query('SELECT nid FROM {hosting_site} WHERE platform = %d AND status = %d', $nid, HOSTING_SITE_ENABLED));
+        $site_nid = db_query('SELECT nid FROM {hosting_site} WHERE platform = :platform AND status = :status', array(
+            ':platform' => $nid,
+            ':status' => HOSTING_SITE_ENABLED
+        ));
         if (!empty($site_nid)) {
             return drush_set_error(DRUSH_APPLICATION_ERROR, "The platform at path $platform_path still has sites present. Please delete them first.");
         }
