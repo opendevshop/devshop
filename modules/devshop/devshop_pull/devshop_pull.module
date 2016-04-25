@@ -19,7 +19,7 @@ define('DEVSHOP_PULL_STATUS_INVALID_CODE', 3);
 
 // These are github's Webhook callback IPs.
 // This list grows occaisonally, update it as needed.
-define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS',"
+define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS', "
 204.232.175.64/27
 192.30.252.0/22
 ");
@@ -28,16 +28,19 @@ define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS',"
 define('DEVSHOP_PULL_CALLBACK_URL', 'webhook');
 
 /**
- * Implements hook_perm()
+ * Implements hook_permission().
  */
-function devshop_pull_perm() {
+function devshop_pull_permission() {
   return array(
-    'configure devshop pull',
+    'configure devshop pull' => array(
+      'title' => t('configure devshop pull'),
+      'description' => t('Configure DevShop Pull module.'),
+    ),
   );
 }
 
 /**
- * Implements hook_menu()
+ * Implements hook_menu().
  */
 function devshop_pull_menu() {
   $items['admin/devshop/pull'] = array(

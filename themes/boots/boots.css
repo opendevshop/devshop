@@ -15,10 +15,10 @@ body.admin-menu .navbar-static-top {
 .btn-env-buttons {
   min-width: 92px;
 }
-#navbar-main .task-list-button {
-  padding: 1em;
+#navbar .task-list.btn-group {
+  padding: .5em;
 }
-#navbar-main .active-task {
+#navbar .active-task {
   color: #ffffaa;
 }
 
@@ -216,36 +216,6 @@ body.admin-menu .navbar-static-top {
 /*.environment.live-environment .tasks-button.open > a {*/
   /*text-decoration: underline;*/
 /*}*/
-
-.environment .progress {
-  border-radius: 0px;
-  border: none;
-  margin: 0;
-  padding: 0px;
-  background: transparent;
-  box-shadow: none;
-  clear: both;
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-  left: 0px;
-  z-index: 1;
-  height: 1.7em;
-  border-bottom-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-    display: none;
-}
-
-.environment .progress-bar {
-  float: none;
-  background-color: #bbb;;
-    width: 100%;
-}
-
-.environment.task-processing .progress {
-  display: block;
-  width: 100%;
-}
 
 .environment > .list-group-item.btn-group {
     padding: 0px;
@@ -461,8 +431,8 @@ input.form-control.webhook-url {
   color: #777;
 }
 
-#navbar-main .task-list.btn-group.open button,
-#navbar-main .task-list.btn-group.open button .active-task {
+#navbar .task-list.btn-group.open button,
+#navbar .task-list.btn-group.open button .active-task {
   color: #777;
 }
 
@@ -624,11 +594,10 @@ ul.dropdown-menu li.text {
 }
 
 form > div > fieldset {
-    padding: 20px 0px;
+    /*padding: 20px 0px;*/
 }
 form > div > fieldset > legend {
-
-    padding: 20px 0px 0px;
+    /*padding: 20px 0px 0px;*/
 
 }
 
@@ -656,6 +625,62 @@ html.js fieldset.collapsed {
 .environment-task-logs .text {
     text-transform: uppercase;
     font-size: .8em;
+}
+.environment-tasks-alert {
+    position:relative;
+}
+.environment-tasks-alert > .text {
+    z-index: 2;
+}
+.environment-tasks-alert .alert-link {
+  display: block;
+}
+.node-type-site .environment-tasks-alert .time,
+.dropdown-menu .environment-tasks-alert .time {
+    float:right;
+}
+.environment-task-logs .btn-logs {
+    z-index: 3;
+}
+
+.environment .progress {
+    border-radius: 0px;
+    border: none;
+    margin: 0;
+    padding: 0px;
+    background: transparent;
+    box-shadow: none;
+    clear: both;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    left: 0px;
+    z-index: 1;
+    height: 1.8em;
+    display: none;
+}
+
+.task-text {
+    padding: 0;
+    text-transform: uppercase;
+    font-size: .8em;
+    z-index: 2;
+    position: relative;
+    white-space: nowrap;
+}
+
+.task-text a {
+    padding: 5px 10px;
+}
+
+.environment .progress-bar {
+    float: none;
+    background-color: #bbb;;
+    width: 100%;
+}
+.environment-tasks-alert.alert-processing .progress {
+    display: block;
+    width: 100%;
 }
 
 .btn-logs > button {
@@ -733,10 +758,10 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .processing {
     z-index: 1;
 }
-.environment-task-logs > div {
-    position: relative;
-    z-index: 2;
-}
+/*.environment-task-logs > div {*/
+    /*position: relative;*/
+    /*z-index: 2;*/
+/*}*/
 
 .project-environments a.alert-queued,
 .devshop-tasks a.list-group-item-queued {
@@ -777,7 +802,6 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
 }
 .panel.devshop-command pre {
-  padding: 0;
   margin: 0;
   border: none;
   border-radius: 0;
@@ -808,7 +832,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .running-indicator.active {
     display: block;
 }
-
+.task-badge {
+    margin-right: 5px;
+}
 .task-arg {
   padding-right: 2em;
   white-space: nowrap;
@@ -819,11 +845,8 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 
 }
 
-.btn-last-task {
-    padding: 5px 10px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 80%;
+.ansi_color_bg_black {
+    background: #262626;
 }
 
 #hosting-task-confirm-form .form-checkboxes .form-item span {
@@ -839,9 +862,13 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     background: transparent;
 }
 
-.panel-ansii {
+.panel-ansii.panel-body {
     background: #262626;
+    padding: 0;
+}
 
+.panel-ansii.panel-body pre {
+    padding: 1.25em;
 }
 
 .errors-table td > div {
@@ -849,4 +876,33 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     display: block;
     font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
     font-size: 13px;
+}
+
+#project-settings-table .form-control,
+#hosting-task-confirm-form .form-control#edit-parameters-environment-name {
+    width: auto;
+    display:inline;
+
+}
+
+#devshop-project-create-step-git #edit-cancel {
+    float: right;
+}
+
+.project-add-environment-button {
+    margin: 0px auto;
+    text-align: center;
+}
+#edit-add-environment {
+    background: #999;
+}
+p.wait {
+    text-align: center;
+    padding: 32px 0px 52px;
+    background: bottom center no-repeat url(images/loading.gif);
+}
+
+p.error {
+    text-align: center;
+    padding: 32px 0px 52px;
 }

@@ -18,7 +18,7 @@ function hosting_task_devshop_deploy_form($node) {
   $project = $node->project;
   $environment = $node->environment;
 
-  $current_ref_type_class = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
+  $current_ref_type_class = $environment->git_ref_type == 'tag' ? 'tag' : 'code-fork';
 
   $form['environment'] = array(
     '#type' => 'item',
@@ -31,7 +31,7 @@ function hosting_task_devshop_deploy_form($node) {
   if (!empty($_GET['git_ref'])) {
 
     $ref_type = $project->settings->git['refs'][$_GET['git_ref']];
-    $ref_type_class = $ref_type == 'tag'? 'tag': 'code-fork';
+    $ref_type_class = $ref_type == 'tag' ? 'tag' : 'code-fork';
 
     $form['git_ref'] = array(
       '#type' => 'value',
@@ -46,7 +46,7 @@ function hosting_task_devshop_deploy_form($node) {
   }
   else {
     $branch_options = devshop_projects_git_ref_options($project, $environment->git_ref);
-    $default_value = !empty($_GET['git_ref'])? $_GET['git_ref']: $environment->git_ref;
+    $default_value = !empty($_GET['git_ref']) ? $_GET['git_ref'] : $environment->git_ref;
 
     $form['git_ref'] = array(
       '#title' => t('Git Branch or Tag'),

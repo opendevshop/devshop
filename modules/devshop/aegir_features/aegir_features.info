@@ -1,4 +1,0 @@
-name = Aegir Features
-description = Tools for managing the Drupal Features.module.
-core = 6.x
-dependencies[] = hosting_site

@@ -17,14 +17,14 @@ function hosting_task_devshop_pull_form($node) {
   devshop_projects_tasks_add_environment_to_form($form, $node, t('Choose the environments to pull code to. NOTE: Environments that are tracking a tag or have pull disabled are not listed.'), 'environments', 'Environments', 'checkboxes');
 
   // Remove any environments where pull is disabled or is tracking a tag.
-  foreach ($node->project->environments as $name => $environment){
-    if (isset($form['environments']['#options'][$name]) && ($environment->settings->pull_disabled || in_array($environment->git_ref, $node->project->settings->git['tags']))){
+  foreach ($node->project->environments as $name => $environment) {
+    if (isset($form['environments']['#options'][$name]) && ($environment->settings->pull_disabled || in_array($environment->git_ref, $node->project->settings->git['tags']))) {
       unset($form['environments']['#options'][$name]);
     }
   }
 
   // If empty, send them to project page.
-  if (empty($form['environments']['#options'])){
+  if (empty($form['environments']['#options'])) {
     drupal_set_message(t('You do not have any environments with Pull Code enabled, or they are all tracking tags. !link to be able to pull code.', array('!link' => l(t('Edit the project settings'), "node/$node->nid/edit"))));
     // @TODO: Close modal window instead?
     return $form;
@@ -36,7 +36,7 @@ function hosting_task_devshop_pull_form($node) {
     '#default_value' => 1,
   );
 
-  if (_devshop_projects_project_has_module($node, 'features')){
+  if (_devshop_projects_project_has_module($node, 'features')) {
     $form['revert'] = array(
       '#title' => t('Revert all features after code pull?'),
       '#type' => 'checkbox',

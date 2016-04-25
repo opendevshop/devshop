@@ -1,3 +1,4 @@
 ; Ignore modules from make file.
 modules/contrib
-modules/hosting
+modules/aegir
+themes/contrib
