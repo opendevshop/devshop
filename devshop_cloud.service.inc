@@ -30,23 +30,24 @@ class hostingService_provider extends hostingService {
   function insert() {
     parent::insert();
 
-    // Prevent duplicate insert... Not sure why this happens.
-    if (!db_result(db_query('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid))) {
-      db_query("INSERT INTO {hosting_devshop_cloud_provider} (nid, provider_options)
-      VALUES (%d, '%s')",
-        $this->server->nid, serialize($this->provider_options));
-    }
-
+    db_insert('hosting_devshop_cloud_provider')
+      ->fields(array('nid', 'provider_data', 'provider_options', 'provider_server_identifier'), array(
+        $this->server->nid,
+        serialize($this->provider_data),
+        serialize($this->provider_options),
+        $this->provider_server_identifier
+      ))
+      ->execute();
   }
 
   function delete() {
     parent::delete();
-    db_query('DELETE FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid);
+    db_query('DELETE FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid));
   }
 
   function load() {
     parent::load();
-    $this->mergeData('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = %d', $this->server->nid);
+    $this->mergeData('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid));
     $this->provider_options = unserialize($this->provider_options);
     $this->provider_data = unserialize($this->provider_data);
   }
