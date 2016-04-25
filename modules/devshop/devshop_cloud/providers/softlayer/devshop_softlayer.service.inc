@@ -61,11 +61,8 @@ class hostingService_provider_softlayer extends hostingService_provider {
    */
   function insert() {
     try {
-      $api = $this->softlayer_client('SoftLayer_Account');
-      $account = $api->getObject();
-      drupal_set_message('Softlayer API connection was successful.');
 
-      // Create the server in validation so we can stop if something goes wrong.
+      // Create the Softlayer "Virtual Guest"
       $api = $this->softlayer_client('SoftLayer_Virtual_Guest');
       $this->provider_data = $api->createObject($this->prepare_server_options());
       $this->provider_server_identifier = $this->provider_data->id;
@@ -79,6 +76,10 @@ class hostingService_provider_softlayer extends hostingService_provider {
 
   /**
    * Prepares this server's options.
+   *
+   * Use the "SoftLayer_Virtual_Guest" datatype reference:
+   * http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest
+   *
    * @return \stdClass
    */
   function prepare_server_options() {
