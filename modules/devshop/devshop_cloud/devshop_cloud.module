@@ -127,3 +127,10 @@ function devshop_cloud_node_view($node, $view_mode, $langcode) {
       }
   }
 }
+
+/**
+ * Implements hook_hosting_tasks_alter().
+ */
+function devshop_cloud_hosting_tasks_alter(&$tasks) {
+  $tasks['server']['delete']['dialog'] = TRUE;
+}
