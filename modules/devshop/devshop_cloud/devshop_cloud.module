@@ -3,6 +3,20 @@
 include_once('devshop_cloud.drush.inc');
 
 /**
+ * Implements hook_hosting_feature().
+ */
+function devshop_cloud_hosting_feature() {
+  $features['devshop_cloud'] = array(
+    'title' => t('DevShop Cloud'),
+    'description' => t('Create servers via cloud hosting providers.'),
+    'status' => HOSTING_FEATURE_DISABLED,
+    'module' => 'devshop_cloud',
+    'group' => 'advanced',
+  );
+  return $features;
+}
+
+/**
  * Implements hook_menu()
  */
 function devshop_cloud_menu(){
