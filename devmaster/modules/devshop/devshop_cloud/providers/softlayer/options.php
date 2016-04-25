@@ -37,6 +37,26 @@ function devshop_softlayer_options_form() {
     ))),
     );
 
+    // Get fingerprint of ssh key for comparison.
+    $key_vars['key'] = (object) sshkey_parse(variable_get('devshop_cloud_public_key', ''));
+    $fingerprint = theme_sshkey_fingerprint($key_vars);
+    foreach ($keys as $key) {
+      if ($fingerprint == $key->fingerprint) {
+        $key_found = TRUE;
+        drupal_set_message(t('!link key was found in your !link2. Ready to Provision.', array(
+          '!link' => l(t('DevShop Cloud public key'), 'admin/devshop/cloud'),
+          '!link2' => l(t('SoftLayer Account'), 'https://control.softlayer.com/devices/sshkeys'),
+        )));
+      }
+    }
+
+    if (!$key_found) {
+      drupal_set_message(t('!link1 was not found in your SoftLayer Account.  !link2', array(
+        '!link1' => l(t('DevShop Cloud public key'), 'admin/devshop/cloud'),
+        '!link2' => l(t('Add your public key to Softlayer'), 'https://control.softlayer.com/devices/sshkeys'),
+      )), 'error');
+    }
+
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Refresh SoftLayer Options'),
@@ -63,14 +83,10 @@ function devshop_softlayer_options_form_submit() {
     variable_set('devshop_cloud_softlayer_options', $options['options']);
 
     $ssh_key_client  = SoftLayer_SoapClient::getClient('SoftLayer_Account', null, $apiUsername, $apiKey);
-
     $ssh_keys = $ssh_key_client->getSshKeys();
-    foreach ($ssh_keys as $key) {
-      $key_options[$key->id] = $key->label;
-    }
-    dsm($key_options);
-    variable_set('devshop_cloud_softlayer_ssh_keys', $key_options);
-    drupal_set_message(t('SoftLayer options have been saved.'));
+
+    variable_set('devshop_cloud_softlayer_ssh_keys', $ssh_keys);
+    drupal_set_message(t('SoftLayer options and SSH keys have been retrieved.'));
 
   } catch (Exception $e) {
     drupal_set_message($e->getMessage(), 'error');
