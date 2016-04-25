@@ -86,6 +86,21 @@ function devshop_softlayer_options_form_submit() {
     $ssh_keys = $ssh_key_client->getSshKeys();
 
     variable_set('devshop_cloud_softlayer_ssh_keys', $ssh_keys);
+
+    // Save a variable with an array ready to go for form options.
+    $key_vars['key'] = (object) sshkey_parse(variable_get('devshop_cloud_public_key', ''));
+    $fingerprint = theme_sshkey_fingerprint($key_vars);
+    foreach ($ssh_keys as $key) {
+      $ssh_key_options[$key->id] = $key->label;
+
+      // Save the softlayer key ID for this devshop_cloud_public_key.
+      if ($fingerprint == $key->fingerprint) {
+        variable_set('devshop_cloud_public_key_softlayer_id', $key->id);
+      }
+    }
+
+    variable_set('devshop_cloud_softlayer_ssh_keys_options', $ssh_key_options);
+
     drupal_set_message(t('SoftLayer options and SSH keys have been retrieved.'));
 
   } catch (Exception $e) {
