@@ -37,12 +37,6 @@ function devshop_softlayer_options_form() {
     ))),
     );
 
-    $form['note'] = array(
-      '#prefix' => '<div>',
-      '#suffix' => '</div>',
-      '#value' => t('Use the button below to retrieve available options from SoftLayer.'),
-    );
-
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Refresh SoftLayer Options'),
