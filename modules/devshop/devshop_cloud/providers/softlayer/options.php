@@ -27,6 +27,16 @@ function devshop_softlayer_options_form() {
       '#markup' => empty($options)? t('No options available. Click "Refresh SoftLayer Options".'): 'SoftLayer options are saved.',
     );
 
+    $keys = variable_get('devshop_cloud_softlayer_ssh_keys', array());
+    $key_count = count($keys);
+    $form['keys'] = array(
+      '#type' => 'item',
+      '#title' => t('SoftLayer SSH Keys'),
+      '#markup' => format_plural($key_count, t('One key available'), t('!num keys available', array(
+      '!num' => $key_count
+    ))),
+    );
+
     $form['note'] = array(
       '#prefix' => '<div>',
       '#suffix' => '</div>',
@@ -57,6 +67,15 @@ function devshop_softlayer_options_form_submit() {
     $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', null, $apiUsername, $apiKey);
     $options['options'] = $client->getCreateObjectOptions();
     variable_set('devshop_cloud_softlayer_options', $options['options']);
+
+    $ssh_key_client  = SoftLayer_SoapClient::getClient('SoftLayer_Account', null, $apiUsername, $apiKey);
+
+    $ssh_keys = $ssh_key_client->getSshKeys();
+    foreach ($ssh_keys as $key) {
+      $key_options[$key->id] = $key->label;
+    }
+    dsm($key_options);
+    variable_set('devshop_cloud_softlayer_ssh_keys', $key_options);
     drupal_set_message(t('SoftLayer options have been saved.'));
 
   } catch (Exception $e) {
