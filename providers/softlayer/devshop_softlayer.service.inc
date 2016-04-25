@@ -53,12 +53,31 @@ class hostingService_provider_softlayer extends hostingService_provider {
    * @param $node
    * @param $form
    */
-  public function validate(&$node, &$form) {
+  public function validate(&$node, &$form, &$form_state) {
+
     try {
       $api = $this->softlayer_client('SoftLayer_Account');
       $account = $api->getObject();
-      drupal_set_message('Softlayer API connection was successful.');
       $this->node = $node;
+
+      // Detect form errors.
+      // If there are errors, do not attempt to create server.
+      $errors = form_get_errors();
+      if ($errors) {
+        drupal_set_message(t('Validation errors must be fixed before we can create the server.'), 'error');
+      }
+      // If there are no errors, create the server.
+      // We do this in the validation phase so that we can cause form errors if something goes wrong.
+      else {
+
+        // Create the Softlayer "Virtual Guest"
+        $api = $this->softlayer_client('SoftLayer_Virtual_Guest');
+        $provider_data = $api->createObject($this->prepare_server_options());
+
+        form_set_value($form['services']['provider']['softlayer']['provider_data'], $provider_data, $form_state);
+        form_set_value($form['services']['provider']['softlayer']['provider_server_identifier'], $provider_data->id, $form_state);
+      }
+
     } catch (Exception $e) {
       form_set_error('provider_options', $e->getMessage());
     }
@@ -68,17 +87,6 @@ class hostingService_provider_softlayer extends hostingService_provider {
    * Server Node Insert.
    */
   function insert() {
-    try {
-
-      // Create the Softlayer "Virtual Guest"
-      $api = $this->softlayer_client('SoftLayer_Virtual_Guest');
-      $this->provider_data = $api->createObject($this->prepare_server_options());
-      $this->provider_server_identifier = $this->provider_data->id;
-
-    } catch (Exception $e) {
-      form_set_error('provider_options', $e->getMessage());
-    }
-
     parent::insert();
   }
 
@@ -94,7 +102,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
 
     // Break up title into hostname (subdomain) and domain.
     $provider_options = new stdClass();
-    $domain = explode('.', $this->server->title);
+    $domain = explode('.', $this->node->title);
     $provider_options->hostname = $domain[0];
     $provider_options->domain = implode('.', array_slice($domain, 1));
     $provider_options->startCpus = $this->provider_options['processors'];
@@ -106,6 +114,12 @@ class hostingService_provider_softlayer extends hostingService_provider {
 
     $provider_options->datacenter = new stdClass();
     $provider_options->datacenter->name = $this->provider_options['datacenter'];
+
+    foreach (array_filter($this->provider_options['ssh_keys']) as $key_id) {
+      $key = new stdClass();
+      $key->id = $key_id;
+      $provider_options->sshKeys[] = $key;
+    }
 
     return $provider_options;
   }

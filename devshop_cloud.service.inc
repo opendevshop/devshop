@@ -24,12 +24,20 @@ class hostingService_provider extends hostingService {
    */
   public $provider_server_identifier = '';
 
+  function form(&$form) {
+    $form['provider_data'] = array(
+      '#type' => 'value',
+      '#value'=> array(),
+    );
+    $form['provider_server_identifier'] = array(
+      '#type' => 'value',
+      '#value'=> array(),
+    );
+  }
   /**
    * On server insert, we only have the provider_options.
    */
   function insert() {
-    parent::insert();
-
     db_insert('hosting_devshop_cloud_provider')
       ->fields(array('nid', 'provider_data', 'provider_options', 'provider_server_identifier'), array(
         $this->server->nid,
@@ -38,6 +46,7 @@ class hostingService_provider extends hostingService {
         $this->provider_server_identifier
       ))
       ->execute();
+    parent::insert();
   }
 
   function delete() {
