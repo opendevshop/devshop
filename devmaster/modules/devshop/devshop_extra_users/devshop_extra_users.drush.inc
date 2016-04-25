@@ -2,7 +2,7 @@
 
 
 /**
- * Implements hook_post_hosting_TASKTYPE_task()
+ * Implements hook_post_hosting_TASKTYPE_task().
  *
  * After an install, runs user-create.
  */
