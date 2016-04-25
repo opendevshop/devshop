@@ -198,10 +198,10 @@ function drush_devshop_platform_verify() {
 
   // If branch needs to be created (for "fork environment")
   if ($create_branch) {
-    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", dt('Creating a new branch.'));
+    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $root, dt('Creating a new branch.'));
 
     // Push the branch
-    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", dt('Pushing new branch.'));
+    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", $root, dt('Pushing new branch.'));
   }
 
   // Detect a bad path_to_drupal
