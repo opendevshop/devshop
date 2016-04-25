@@ -5,14 +5,6 @@
  */
 
 /**
- * Implementation of hook_install().
- */
-function devshop_cloud_install() {
-  // Create tables.
-  drupal_install_schema('devshop_cloud');
-}
-
-/**
  * Implementation of hook_schema().
  */
 function devshop_cloud_schema() {

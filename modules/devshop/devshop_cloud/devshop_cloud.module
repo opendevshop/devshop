@@ -23,9 +23,12 @@ function devshop_cloud_menu(){
 /**
  * Implements hook_perm()
  */
-function devshop_cloud_perm() {
+function devshop_cloud_permission() {
   return array(
-    'administer devshop cloud'
+    'administer devshop cloud' => array(
+      'title' => t('Administer DevShop Cloud'),
+      'description' => t('Configure how DevShop Cloud.'),
+    ),
   );
 }
 
@@ -65,63 +68,48 @@ function devshop_cloud_hosting_service_type() {
 /**
  * Implementation of hook_nodeapi()
  */
-function devshop_cloud_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+function devshop_cloud_node_view($node, $view_mode, $langcode) {
   if ($node->type == 'server') {
-    switch ($op) {
-      case 'view':
-        if ($node->services['provider']) {
-          $node->content['info']['provider'] = array(
-            '#type' => 'item',
-            '#title' => t('Cloud Provider'),
-            '#value' => $node->services['provider']->type,
-            '#weight' => 0,
-          );
+      if ($node->services['provider']) {
+        $node->content['info']['provider'] = array(
+          '#type' => 'item',
+          '#title' => t('Cloud Provider'),
+          '#value' => $node->services['provider']->type,
+          '#weight' => 0,
+        );
 
-          // Options
-          $rows = array();
-          foreach ($node->services['provider']->provider_options as $key => $value) {
-            $rows[] = array($key, $value);
-          }
-          $node->content['info']['provider_options'] = array(
-            '#type' => 'item',
-            '#title' => t('Options'),
-            '#value' => theme('table', array(), $rows),
-            '#weight' => 22,
-          );
-
-          // Data
-          $rows = array();
-          foreach ($node->services['provider']->provider_data as $key => $value) {
-            $rows[] = array($key, $value);
-          }
-          $node->content['info']['provider_data'] = array(
-            '#type' => 'item',
-            '#title' => t('Data'),
-            '#value' => theme('table', array(), $rows),
-            '#weight' => 23,
-          );
-
-          if ($node->services['provider']->provider_server_identifier) {
-            $node->content['info']['provider_server_identifier'] = array(
-              '#type' => 'item',
-              '#title' => t('Server Identifier'),
-              '#value' => $node->services['provider']->provider_server_identifier,
-              '#weight' => 24,
-            );
-          }
+        // Options
+        $rows = array();
+        foreach ($node->services['provider']->provider_options as $key => $value) {
+          $rows[] = array($key, $value);
         }
-        break;
-      case 'insert':
-      case 'update':
-        break;
-      case 'delete' :
-        break;
-      case 'delete revision':
-        break;
-      case 'validate' :
-        break;
-      case 'load':
-        break;
-    }
+        $node->content['info']['provider_options'] = array(
+          '#type' => 'item',
+          '#title' => t('Options'),
+          '#value' => theme('table', array(), $rows),
+          '#weight' => 22,
+        );
+
+        // Data
+        $rows = array();
+        foreach ($node->services['provider']->provider_data as $key => $value) {
+          $rows[] = array($key, $value);
+        }
+        $node->content['info']['provider_data'] = array(
+          '#type' => 'item',
+          '#title' => t('Data'),
+          '#value' => theme('table', array(), $rows),
+          '#weight' => 23,
+        );
+
+        if ($node->services['provider']->provider_server_identifier) {
+          $node->content['info']['provider_server_identifier'] = array(
+            '#type' => 'item',
+            '#title' => t('Server Identifier'),
+            '#value' => $node->services['provider']->provider_server_identifier,
+            '#weight' => 24,
+          );
+        }
+      }
   }
 }
