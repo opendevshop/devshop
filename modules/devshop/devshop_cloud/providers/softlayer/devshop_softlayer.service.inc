@@ -179,4 +179,23 @@ class hostingService_provider_softlayer extends hostingService_provider {
     $task->context_options['softlayer_api_username'] = variable_get('devshop_cloud_softlayer_api_username','YOURUSERNAME');
     $task->context_options['softlayer_api_key'] = variable_get('devshop_cloud_softlayer_api_key','YOURKEY');
   }
+
+  /**
+   * Absolutely destroy this server using the SoftLayer API.
+   */
+  public function destroy() {
+    try {
+      $vm_client = $this->softlayer_client('SoftLayer_Virtual_Guest', $this->provider_server_identifier);
+      $result = $vm_client->getBillingItem();
+
+      $bill_client = $this->softlayer_client('SoftLayer_Billing_Item', $result->id);
+      $bill_client->cancelService();
+
+      drupal_set_message(t('SoftLayer server was destroyed.'));
+
+    } catch(Exception $e) {
+      form_set_error('provider', $e->getMessage());
+      watchdog('devshop_cloud', 'CODE: ' . $e->getCode() . '|' . $e->getMessage());
+    }
+  }
 }
