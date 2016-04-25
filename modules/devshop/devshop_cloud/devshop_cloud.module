@@ -134,3 +134,48 @@ function devshop_cloud_node_view($node, $view_mode, $langcode) {
 function devshop_cloud_hosting_tasks_alter(&$tasks) {
   $tasks['server']['delete']['dialog'] = TRUE;
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_cloud_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'hosting_task_confirm_form') {
+
+    $node = $form_state['build_info']['args'][0];
+    $task_type = $form_state['build_info']['args'][1];
+    if ($node->type == 'server' && $task_type =='delete') {
+
+      if (!empty($node->services['provider'])) {
+        $id = $node->services['provider']->provider_server_identifier;
+
+        $form['provider'] = array(
+          '#type' => 'item',
+          '#title' => t('Server Provider'),
+          '#markup' => $node->services['provider']->type,
+        );
+        $form['provider_server_identifier'] = array(
+          '#type' => 'item',
+          '#title' => t('Server ID'),
+          '#markup' => l($id, "https://control.softlayer.com/devices/details/{$id}/virtualGuest"),
+          '#description' => t('This server will be completely destroyed, along with all of the sites, files, and databases on it. Are you sure you want to do this?'),
+        );
+
+        // Add a submit handler to trigger the server provider delete.
+        $form['#validate'][] = 'devshop_cloud_delete_task_form_validate';
+      }
+    }
+  }
+}
+
+/**
+ * Load up the service class and run the "destroy" method.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function devshop_cloud_delete_task_form_validate($form, &$form_state) {
+  $service = $form_state['build_info']['args'][0]->services['provider'];
+  if (method_exists($service, 'destroy')) {
+    $service->destroy();
+  }
+}
