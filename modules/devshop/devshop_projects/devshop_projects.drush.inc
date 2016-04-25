@@ -190,7 +190,6 @@ function drush_devshop_platform_verify() {
 
   // If this is the first verification, and branch needs to be created (for "fork environment")
   if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
-  ) {
     devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $root, dt('Creating a new branch.'));
 
     // Push the branch
