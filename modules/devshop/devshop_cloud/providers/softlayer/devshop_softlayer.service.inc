@@ -37,6 +37,14 @@ class hostingService_provider_softlayer extends hostingService_provider {
         '#title' => t('Processors'),
         '#options' => $options['processors'],
       );
+      $form['provider_options']['ssh_keys'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('SSH Keys'),
+        '#options' => variable_get('devshop_cloud_softlayer_ssh_keys_options', array()),
+        '#default_value' => array(
+          variable_get('devshop_cloud_public_key_softlayer_id', ''),
+        ),
+      );
     }
   }
 
