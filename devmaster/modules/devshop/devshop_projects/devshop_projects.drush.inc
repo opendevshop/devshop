@@ -156,17 +156,9 @@ function drush_devshop_platform_verify() {
   $git_remote = $platform->project->git_url;
   $drupal_path = $platform->project->drupal_path;
 
-  $create_branch = FALSE;
-
   //Remove drupal_path to clone.
   if ($drupal_path) {
     $root = str_replace($drupal_path, '', $root);
-  }
-
-  // If there is a branch to fork, set the branch_to_fork as git_ref
-  if (!empty($platform->environment->settings->branch_to_fork)) {
-    $git_ref = $platform->environment->settings->branch_to_fork;
-    $create_branch = TRUE;
   }
 
   // Check if the platform code exists. If it doesn't, clone it.
@@ -196,8 +188,9 @@ function drush_devshop_platform_verify() {
     }
   }
 
-  // If branch needs to be created (for "fork environment")
-  if ($create_branch) {
+  // If this is the first verification, and branch needs to be created (for "fork environment")
+  if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
+  ) {
     devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $root, dt('Creating a new branch.'));
 
     // Push the branch
