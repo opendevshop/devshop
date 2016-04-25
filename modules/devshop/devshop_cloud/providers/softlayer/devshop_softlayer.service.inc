@@ -68,9 +68,6 @@ class hostingService_provider_softlayer extends hostingService_provider {
       // Create the server in validation so we can stop if something goes wrong.
       $api = $this->softlayer_client('SoftLayer_Virtual_Guest');
       $this->provider_data = $api->createObject($this->prepare_server_options());
-
-      dsm($this->provider_data, 'provider_data');
-
       $this->provider_server_identifier = $this->provider_data->id;
 
     } catch (Exception $e) {
