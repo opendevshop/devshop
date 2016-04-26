@@ -73,10 +73,6 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
    */
   function getDigitalOceanOptions() {
     $options = variable_get('devshop_cloud_digital_ocean_options', array());
-    if (empty($options)) {
-      drupal_set_message(t('You must !link before you can create a server there.', array('!link' => l(t('retrieve Digital Ocean options'), 'admin/hosting/devshop/digital_ocean'))), 'error');
-      return;
-    }
     return $options;
   }
 
