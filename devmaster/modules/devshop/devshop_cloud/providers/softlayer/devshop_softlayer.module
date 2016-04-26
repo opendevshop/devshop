@@ -20,9 +20,15 @@ function devshop_softlayer_menu(){
  * Implements hook_hosting_service()
  */
 function devshop_softlayer_hosting_service() {
-  return array(
-    'softlayer' => 'provider',
-  );
+  $options = variable_get('devshop_cloud_softlayer_options', array());
+  if (!empty($options)) {
+    return array(
+      'softlayer' => 'provider',
+    );
+  }
+  else {
+    return array();
+  }
 }
 
 /**
