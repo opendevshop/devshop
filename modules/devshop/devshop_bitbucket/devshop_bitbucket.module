@@ -4,33 +4,33 @@
  * @file devshop_bitbucket.module
  */
 
-require_once 'vendor/autoload.php';
+//require_once 'vendor/autoload.php';
 
 /**
  * Implements hook_menu().
  */
 function devshop_bitbucket_menu() {
   $items = array();
-
-  $items['admin/devshop/bitbucket'] = array(
-    'title' => 'BitBucket',
-    'description' => 'DevShop BitBucket Integration Settings',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_bitbucket_settings_form'),
-    'access arguments' => array('administer projects'),
-    'file' => 'admin.inc',
-    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
-    'type' => MENU_LOCAL_TASK,
-  );
-  $items['admin/devshop/bitbucket/add-key'] = array(
-    'title' => 'Add public key to bitbucket Account',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_bitbucket_add_key_to_account'),
-    'access arguments' => array('administer projects'),
-    'file' => 'add-key.inc',
-    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
-    'type' => MENU_CALLBACK,
-  );
+//
+//  $items['admin/devshop/bitbucket'] = array(
+//    'title' => 'BitBucket',
+//    'description' => 'DevShop BitBucket Integration Settings',
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('devshop_bitbucket_settings_form'),
+//    'access arguments' => array('administer projects'),
+//    'file' => 'admin.inc',
+//    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
+//    'type' => MENU_LOCAL_TASK,
+//  );
+//  $items['admin/devshop/bitbucket/add-key'] = array(
+//    'title' => 'Add public key to bitbucket Account',
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('devshop_bitbucket_add_key_to_account'),
+//    'access arguments' => array('administer projects'),
+//    'file' => 'add-key.inc',
+//    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
+//    'type' => MENU_CALLBACK,
+//  );
   return $items;
 }
 
@@ -103,30 +103,30 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
 function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
   // Look for Token
-  $token = variable_get('devshop_bitbucket_token', '');
-
-  if (empty($token)) {
-    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('bitbucket API Token was not found.') . ' ' . l(t('Configure DevShop bitbucket Settings'), 'admin/devshop/bitbucket') . '</div>';
-    return;
-  }
-
-  if (devshop_bitbucket_check_key()) {
-    $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
-  }
-  else {
-    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
-
-    $form['connect']['#description'] .= l(t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
-            'query' => array(
-              'destination' => $_GET['q'],
-            ),
-            'attributes' => array(
-                'class' => 'btn btn-success'
-            ),
-        )) . '</div>';
-    $form['connect']['#prefix'] = '<div class="alert alert-danger">';
-    $form['connect']['#suffix'] = '</div>';
-  }
+//  $token = variable_get('devshop_bitbucket_token', '');
+//
+//  if (empty($token)) {
+//    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('bitbucket API Token was not found.') . ' ' . l(t('Configure DevShop bitbucket Settings'), 'admin/devshop/bitbucket') . '</div>';
+//    return;
+//  }
+//
+//  if (devshop_bitbucket_check_key()) {
+//    $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
+//  }
+//  else {
+//    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
+//
+//    $form['connect']['#description'] .= l(t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
+//            'query' => array(
+//              'destination' => $_GET['q'],
+//            ),
+//            'attributes' => array(
+//                'class' => 'btn btn-success'
+//            ),
+//        )) . '</div>';
+//    $form['connect']['#prefix'] = '<div class="alert alert-danger">';
+//    $form['connect']['#suffix'] = '</div>';
+//  }
 }
 
 
@@ -134,103 +134,103 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
  * Implements hook_form_FORM_ID_alter() for project_node_form().
  */
 function devshop_bitbucket_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
-
-  // Return if project isn't ready.
-  if (empty($form['install_profile'])) {
-    return;
-  }
-
-  // Return if there is no bitbucket token
-  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
-  if (empty($bitbucket_token)) {
-    return;
-  }
-
-  // Load project and bitbucket
-  $project_node = node_load($form['nid']['#value']);
-  $project = $project_node->project;
-
-  // Return if provider is not bitbucket.
-  if ($project->git_provider != 'bitbucket') {
-    return;
-  }
-
-  // Return if deploy method is not webhook.
-  if ($project->settings->deploy['method'] != 'webhook') {
-    return;
-  }
-
-  $repo = $project->bitbucket_owner . '/' . $project->bitbucket_repo;
-  $repo_url = "http://bitbucket.com/" . $repo;
-
-  $form['bitbucket_webhook'] = array(
-    '#title' => t('Setup bitbucket Webhook'),
-    '#description' => t('Leave this box checked to automatically add a webhook to your bitbucket Repository !link.', array(
-      '!link' => l($repo, $repo_url, array(
-          'attributes' => array(
-            'target' => '_blank',
-          ),
-      ))
-    )),
-    '#type' => 'checkbox',
-    '#default_value' => 1,
-  );
-
-  $form['#validate'][] = 'devshop_bitbucket_project_create_webhook';
-  $form['#submit'][] = 'devshop_bitbucket_project_create_webhook';
+//
+//  // Return if project isn't ready.
+//  if (empty($form['install_profile'])) {
+//    return;
+//  }
+//
+//  // Return if there is no bitbucket token
+//  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
+//  if (empty($bitbucket_token)) {
+//    return;
+//  }
+//
+//  // Load project and bitbucket
+//  $project_node = node_load($form['nid']['#value']);
+//  $project = $project_node->project;
+//
+//  // Return if provider is not bitbucket.
+//  if ($project->git_provider != 'bitbucket') {
+//    return;
+//  }
+//
+//  // Return if deploy method is not webhook.
+//  if ($project->settings->deploy['method'] != 'webhook') {
+//    return;
+//  }
+//
+//  $repo = $project->bitbucket_owner . '/' . $project->bitbucket_repo;
+//  $repo_url = "http://bitbucket.com/" . $repo;
+//
+//  $form['bitbucket_webhook'] = array(
+//    '#title' => t('Setup bitbucket Webhook'),
+//    '#description' => t('Leave this box checked to automatically add a webhook to your bitbucket Repository !link.', array(
+//      '!link' => l($repo, $repo_url, array(
+//          'attributes' => array(
+//            'target' => '_blank',
+//          ),
+//      ))
+//    )),
+//    '#type' => 'checkbox',
+//    '#default_value' => 1,
+//  );
+//
+//  $form['#validate'][] = 'devshop_bitbucket_project_create_webhook';
+//  $form['#submit'][] = 'devshop_bitbucket_project_create_webhook';
 }
 
 /**
  * Extra submit hook for last step of project create form.
  */
 function devshop_bitbucket_project_create_webhook($form, $form_state) {
-
-  // Return if box is not checked.
-  if (empty($form_state['values']['bitbucket_webhook'])) {
-    return;
-  }
-
-  // Get Project
-  $project_node = node_load($form['nid']['#value']);
-  $project = $project_node->project;
-
-  // Get bitbucket client
-  $client = new bitbucket\Client();
-  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
-  $client->authenticate($bitbucket_token, bitbucket\Client::AUTH_HTTP_TOKEN);
-
-  // Create the webhook.
-  try {
-    $hook = $client->repo()->hooks()->create($project->bitbucket_owner, $project->bitbucket_repo, array(
-        'name' => 'web',
-        'active' => true,
-        'events' => array(
-            'push',
-            'pull_request',
-            'delete',
-            'release',
-        ),
-        'config' => array(
-            'url' => $project->webhook_url,
-            'content_type' => 'json',
-            'insecure_ssl' => '1',
-        ),
-    ));
-  }
-  catch (bitbucket\Exception\ValidationFailedException $e) {
-    // For some reason, bitbucket always returns an exception here when there is already webhooks on the project.
-    if ($e->getMessage() == 'Validation Failed: Hook already exists on this repository') {
-      drupal_set_message(t("bitbucket webhook added, but there is already an existing webhook. Please check your repository's !link.", array(
-          '!link' => l(t('Webhook Settings'), $project->git_repo_url . '/settings/hooks'),
-      )), 'warning');
-    }
-    else {
-      drupal_set_message(t('bitbucket Validation Exception: !exception', array('!exception' => $e->getMessage())), 'error');
-    }
-  }
-  catch (bitbucket\Exception\RuntimeException $e) {
-    drupal_set_message(t('bitbucket Runtime Exception: !exception', array('!exception' => $e->getMessage())), 'error');
-  }
+//
+//  // Return if box is not checked.
+//  if (empty($form_state['values']['bitbucket_webhook'])) {
+//    return;
+//  }
+//
+//  // Get Project
+//  $project_node = node_load($form['nid']['#value']);
+//  $project = $project_node->project;
+//
+//  // Get bitbucket client
+//  $client = new bitbucket\Client();
+//  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
+//  $client->authenticate($bitbucket_token, bitbucket\Client::AUTH_HTTP_TOKEN);
+//
+//  // Create the webhook.
+//  try {
+//    $hook = $client->repo()->hooks()->create($project->bitbucket_owner, $project->bitbucket_repo, array(
+//        'name' => 'web',
+//        'active' => true,
+//        'events' => array(
+//            'push',
+//            'pull_request',
+//            'delete',
+//            'release',
+//        ),
+//        'config' => array(
+//            'url' => $project->webhook_url,
+//            'content_type' => 'json',
+//            'insecure_ssl' => '1',
+//        ),
+//    ));
+//  }
+//  catch (bitbucket\Exception\ValidationFailedException $e) {
+//    // For some reason, bitbucket always returns an exception here when there is already webhooks on the project.
+//    if ($e->getMessage() == 'Validation Failed: Hook already exists on this repository') {
+//      drupal_set_message(t("bitbucket webhook added, but there is already an existing webhook. Please check your repository's !link.", array(
+//          '!link' => l(t('Webhook Settings'), $project->git_repo_url . '/settings/hooks'),
+//      )), 'warning');
+//    }
+//    else {
+//      drupal_set_message(t('bitbucket Validation Exception: !exception', array('!exception' => $e->getMessage())), 'error');
+//    }
+//  }
+//  catch (bitbucket\Exception\RuntimeException $e) {
+//    drupal_set_message(t('bitbucket Runtime Exception: !exception', array('!exception' => $e->getMessage())), 'error');
+//  }
 }
 
 /**
@@ -269,142 +269,55 @@ function devshop_bitbucket_node_load($nodes, $types) {
  * If task is a test run, send a "pending" commit status.
  */
 function devshop_bitbucket_node_update($node) {
-
-  // Only act on test triggers.
-  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'deploy')) {
-    return;
-  }
-
-  // Load the site and check for environment.
-  $site = node_load($node->rid);
-  if (empty($site->environment) || empty($site->environment->bitbucket_pull_request) || empty($site->environment->settings->deploy['test'])) {
-    return;
-  }
-
-  try {
-    $token = variable_get('devshop_bitbucket_token', '');
-    $client = new \bitbucket\Client();
-    $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
-
-    // Create a deployment status
-    $project = $site->project;
-    $owner = $project->bitbucket_owner;
-    $repo = $project->bitbucket_repo;
-    $sha = $site->environment->bitbucket_pull_request->pull_request_object->head->sha;
-
-    $params = new stdClass();
-    $params->state = 'pending';
-
-    if ($node->task_type != 'test') {
-      $params->target_url = url(
-        "node/{$node->nid}",
-        array('absolute' => true)
-      );
-      $params->description = t('DevShop: Run Tests');
-      $params->context = 'devshop/tests';
-    }
-    elseif ($node->task_type != 'deploy') {
-      $params->target_url = $site->environment->url;
-      $params->description = t('DevShop: Deploy');
-      $params->context = 'devshop/deploy';
-    }
-
-    // Post status to bitbucket
-    $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-
-    watchdog('devshop_bitbucket','Test run initiated. bitbucket has been notified.');
-  } catch (bitbucket\Exception\RuntimeException $e) {
-    watchdog('devshop_bitbucket', 'bitbucket Runtime Error in devshop_bitbucket_node_update(): ' . $e->getMessage());
-  }
+//
+//  // Only act on test triggers.
+//  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'deploy')) {
+//    return;
+//  }
+//
+//  // Load the site and check for environment.
+//  $site = node_load($node->rid);
+//  if (empty($site->environment) || empty($site->environment->bitbucket_pull_request) || empty($site->environment->settings->deploy['test'])) {
+//    return;
+//  }
+//
+//  try {
+//    $token = variable_get('devshop_bitbucket_token', '');
+//    $client = new \bitbucket\Client();
+//    $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
+//
+//    // Create a deployment status
+//    $project = $site->project;
+//    $owner = $project->bitbucket_owner;
+//    $repo = $project->bitbucket_repo;
+//    $sha = $site->environment->bitbucket_pull_request->pull_request_object->head->sha;
+//
+//    $params = new stdClass();
+//    $params->state = 'pending';
+//
+//    if ($node->task_type != 'test') {
+//      $params->target_url = url(
+//        "node/{$node->nid}",
+//        array('absolute' => true)
+//      );
+//      $params->description = t('DevShop: Run Tests');
+//      $params->context = 'devshop/tests';
+//    }
+//    elseif ($node->task_type != 'deploy') {
+//      $params->target_url = $site->environment->url;
+//      $params->description = t('DevShop: Deploy');
+//      $params->context = 'devshop/deploy';
+//    }
+//
+//    // Post status to bitbucket
+//    $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+//
+//    watchdog('devshop_bitbucket','Test run initiated. bitbucket has been notified.');
+//  } catch (bitbucket\Exception\RuntimeException $e) {
+//    watchdog('devshop_bitbucket', 'bitbucket Runtime Error in devshop_bitbucket_node_update(): ' . $e->getMessage());
+//  }
 }
 
-
-/**
-* Implements hook_hosting_task_update_status()
-*/
-// function devshop_bitbucket_hosting_task_update_status($task, $status) {
-//
-//  $task_types = array(
-//    'test',
-//    'import',
-//    'devshop-deploy',
-//  );
-//
-//  if (in_array($task->task_type, $task_types) && $task->ref->type == 'site' && isset($task->ref->environment->bitbucket_pull_request)) {
-//
-//    // If autoloader is not available, return.
-//    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-//      return;
-//    }
-//
-//    // If project is not from bitbucket, return.
-//    if ($task->ref->project->git_provider != 'bitbucket') {
-//      return;
-//    }
-//
-//    // Include vendors
-//    require_once 'vendor/autoload.php';
-//
-//    drush_log('===========================================', 'ok');
-//    drush_log('Notifying bitbucket...', 'ok');
-//
-//    // Extract username and repo
-//    list($s, $owner, $repo) = explode('/', parse_url($task->ref->project->git_repo_url, PHP_URL_PATH));
-//
-//    try {
-//      $token = variable_get('devshop_bitbucket_token', '');
-//      $client = new \bitbucket\Client();
-//      $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
-//
-//      // Create a status
-//      $sha = $task->ref->environment->bitbucket_pull_request->pull_request_object->head->sha;
-//
-//      if ($task->task_type == 'devshop-deploy'){
-//        $description = t('Deployed to Environment: ') . _hosting_parse_error_code($status);
-//        $url = $task->ref->environment->url;
-//      }
-//      elseif ($task->task_type == 'test') {
-//        $description = t('Tests: ') . _hosting_parse_error_code($status);
-//        $url = url("devshop_tests/{$task->nid}/{$task->vid}", array('absolute' => TRUE));
-//      }
-//      else {
-//        $description = 'Something happened...';
-//        $url = $task->ref->environment->url;
-//      }
-//
-//      if ($status == HOSTING_TASK_ERROR) {
-//        $state = 'error';
-//      }
-//      elseif ($status == HOSTING_TASK_PROCESSING) {
-//        $state = 'pending';
-//      }
-//      elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
-//        $state = 'success';
-//      }
-//      else {
-//        $state = 'error';
-//      }
-//
-//      $params = new stdClass();
-//      $params->state = $state;
-//      $params->target_url = $url;
-//      $params->description = $description;
-//      $params->context = 'devshop/' . $task->task_type;
-//
-//      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-//
-//      drush_log('Status posted! ', 'ok');
-//    } catch (bitbucket\Exception\RuntimeException $e) {
-//      drush_log('bitbucket API Error: ' . $e->getMessage(), 'error');
-//      drush_log(l(t('Configure bitbucket API'), 'admin/devshop/bitbucket'), 'error');
-//    } catch (bitbucket\Exception\ValidationFailedException $e) {
-//      drush_log('bitbucket API Error: ' . $e->getMessage(), 'error');
-//    }
-//
-//    drush_log('done trying... ', 'ok');
-//
-//  }
-// }
 
 /**
  *
@@ -796,23 +709,23 @@ function devshop_bitbucket_webhook($project_node) {
  * @return bool
  */
 function devshop_bitbucket_check_key() {
-  $devshop_key = variable_get('devshop_public_key', '');
-  $token = variable_get('devshop_bitbucket_token', '');
-
-  $client = new \bitbucket\Client();
-  $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
-
-  try {
-    $keys = $client->currentUser()->keys()->all();
-  }
-    // Happens when user has no public keys.
-  catch (\bitbucket\Exception\RuntimeException $e) {
-    return FALSE;
-  }
-
-  foreach ($keys as $key) {
-    if (strpos($devshop_key, $key['key']) === 0) {
-      return TRUE;
-    }
-  }
+//  $devshop_key = variable_get('devshop_public_key', '');
+//  $token = variable_get('devshop_bitbucket_token', '');
+//
+//  $client = new \bitbucket\Client();
+//  $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
+//
+//  try {
+//    $keys = $client->currentUser()->keys()->all();
+//  }
+//    // Happens when user has no public keys.
+//  catch (\bitbucket\Exception\RuntimeException $e) {
+//    return FALSE;
+//  }
+//
+//  foreach ($keys as $key) {
+//    if (strpos($devshop_key, $key['key']) === 0) {
+//      return TRUE;
+//    }
+//  }
 }
