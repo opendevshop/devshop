@@ -92,8 +92,9 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
 
   // Project Settings Vertical Tabs
-  $form['project']['project_settings'] = array(
+  $form['project_settings'] = array(
     '#type' => 'vertical_tabs',
+    '#weight' => -11,
   );
 
   // Save git branches and tags
@@ -155,7 +156,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
-    '#title' => t('Deploy Settings'),
+    '#title' => t('Deployment Automation'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
     '#weight' => -10,
     '#group' => 'project_settings',
@@ -777,7 +778,9 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
   $return = array(
       '#type' => 'fieldset',
+      '#group' => 'project_settings',
       '#title' => t('Deployment Hooks'),
+      '#weight' => -9,
   );
 
   // If we are on the project creation wizard, set some sane defaults
