@@ -416,7 +416,7 @@ function devshop_bitbucket_webhook($project_node) {
           $message = 'Pull Request Received.';
 
           // @TODO: Handle forks?
-          $branch = $data->pull_request->head->ref;
+          $branch = $data->pullrequest->source->branch->name;
 
           // Determine environment branch.
           // @TODO: Make Configurable, allow branch names to be env name
