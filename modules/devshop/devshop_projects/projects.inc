@@ -112,6 +112,15 @@ function devshop_project_load($node) {
       '.git' => '',
     ));
   }
+  elseif (strpos($project->git_url, 'bitbucket.com') !== FALSE) {
+    $project->git_provider = 'bitbucket';
+    $project->git_repo_url = strtr($project->git_url, array(
+      'git@bitbucket.com:' => 'http://bitbucket.com/',
+      'git://' => 'http://',
+      '.git' => '',
+    ));
+
+  }
   else {
     $project->git_provider = 'git';
     $project->git_repo_url = '';
