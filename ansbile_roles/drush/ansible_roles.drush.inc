@@ -14,8 +14,7 @@
 function ansible_roles_drush_init()
 {
   if (class_exists('Provision_Service')) {
-    require_once('Provision/Service/db/ansible_mysql.php');
-    require_once('Provision/Service/http/ansible_apache.php');
+    require_once('Provision/Service/server/ansible_roles_available.php');
   }
 }
 
