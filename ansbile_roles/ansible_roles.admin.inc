@@ -64,8 +64,8 @@ function ansible_roles_settings_add() {
 function ansible_roles_settings_add_submit(&$form, &$form_state) {
 
   $id = db_insert('hosting_ansible_roles_available')
-    ->fields(array('name'))
-    ->values(array($form_state['values']['name']))
+    ->fields(array('name', 'src', 'version'))
+    ->values(array($form_state['values']['name'], $form_state['values']['src'], $form_state['values']['version']))
     ->execute();
 
   if (!$id) {
