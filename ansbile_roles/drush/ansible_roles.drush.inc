@@ -25,6 +25,7 @@ function ansible_roles_drush_init()
  *   An array with the service type the key, and the default implementation the value.
  */
 function ansible_roles_provision_services() {
+  ansible_roles_drush_init();
   return array('ansible_roles_available' => NULL);
 }
 
