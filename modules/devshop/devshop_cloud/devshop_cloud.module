@@ -75,6 +75,7 @@ function devshop_cloud_hosting_service_type() {
     'provider' => array(
       'title' => 'Cloud Provider',
       'weight' => -1,
+      'required' => TRUE,
     ),
   );
 }
