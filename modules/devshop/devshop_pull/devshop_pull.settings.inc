@@ -21,7 +21,8 @@ function devshop_pull_settings_form($form) {
   // we have a few bullet points
   $items = array();
   $items[] =  t('Enter the IP addresses that are allowed to trigger a "Deploy" tasks. You may specify address ranges using CIDR notation (e.g. 192.168.1.0/24).');
-  $items[] = t('GitHub post-receive callback servers are: %github_ips.', array('%github_ips' => DEVSHOP_PULL_DEFAULT_ALLOWED_IPS));
+  $items[] = t('GitHub post-receive callback servers are: %github_ips.', array('%github_ips' => "204.232.175.64/27 and 192.30.252.0/22"));
+  $items[] = t('BitBucket post-receive callback servers are: %bitbucket_ips.', array('%bitbucket_ips' => '104.192.143.192/28 and 104.192.143.208/28'));
   $items[] = t('Your local computer\'s IP address is %ip.  ', array('%ip' => $_SERVER['REMOTE_ADDR']));
 
   // If there was a last ip logged, display it here so its easy to add to the list.
