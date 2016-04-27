@@ -5,6 +5,15 @@
  */
 
 /**
+ * Implements hook_install()
+ */
+function ansible_roles_install() {
+    db_query('UPDATE {system} SET weight = 1 WHERE name = :module', array(
+        ':module' => 'ansible_roles'
+    ));
+}
+
+/**
  * Implements hook_schema().
  */
 function ansible_roles_schema() {

@@ -78,6 +78,25 @@ function ansible_roles_node_load($nodes, $types)
 {
     foreach ($nodes as $node) {
 
+        // If node is server master, load all available roles.
+        if ($node->hosting_name == 'server_master') {
+
+            // Load all available roles
+            $node->ansible_roles_available = array();
+            $results = db_select('hosting_ansible_roles_available', 'h')
+                ->fields('h')
+                ->execute()
+                ->fetchAllAssoc('name');
+
+            foreach ($results as $result) {
+                $node->ansible_roles_available[$result->name] = array(
+                    'name' => $result->name,
+                    'src' => $result->src,
+                    'version' => $result->version,
+                );
+            }
+        }
+
         // Only act on server nodes with services.
         if (empty($node->services)) {
             continue;
