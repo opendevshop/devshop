@@ -27,6 +27,18 @@ function ansible_roles_hosting_service_type()
 }
 
 /**
+ * Implements hook_permission()
+ */
+function ansible_roles_permission() {
+    return array(
+        'administer ansible roles' => array(
+            'name' => t('Administer ansible roles'),
+            'description' => t('Install and configure ansible roles.'),
+        ),
+    );
+}
+
+/**
  * Implements hook_menu().
  */
 function ansible_roles_menu()
