@@ -6,18 +6,18 @@
  * Runs on verify task. Passes data to the drush alias.
  * Save environment name, project name, and git ref to site aliases.
  */
-function devshop_cloud_hosting_server_context_options(&$task) {
+//function devshop_cloud_hosting_server_context_options(&$task) {
 //  if (isset($task->ref->services['provider'])) {
 //    $task->context_options['provider'] = $task->ref->services['provider']->type;
 //    $task->context_options['provider_options'] = $task->ref->services['provider']->provider_options;
 //    $task->context_options['provider_server_identifier'] = $task->ref->services['provider']->provider_server_identifier;
 //  }
-}
+//}
 
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task() for verified tasks.
  */
-function devshop_cloud_post_hosting_verify_task($task, $data) {
+//function devshop_cloud_post_hosting_verify_task($task, $data) {
 ////   When a project is verified...
 //  if ($task->ref->type == 'server') {
 //    if (empty($data['context']['provider_server_identifier'])) {
@@ -43,4 +43,4 @@ function devshop_cloud_post_hosting_verify_task($task, $data) {
 //      $task->ref->ip_addresses = $data['context']['ip_addresses'];
 //    }
 //  }
-}
+//}
