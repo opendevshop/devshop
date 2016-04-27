@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * Implements hook_hosting_service().
+ */
+function ansible_services_hosting_service() {
+    $services = array();
+    if (module_exists('hosting_site')) {
+        $services['ansible_mysql'] = 'db';
+        $services['ansible_apache'] = 'http';
+    }
+    return $services;
+}
