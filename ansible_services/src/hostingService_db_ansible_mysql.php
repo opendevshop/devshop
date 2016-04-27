@@ -9,6 +9,8 @@
  */
 class hostingService_db_ansible_mysql extends hostingService_db_mysql {
     public $type = 'ansible_mysql';
+    public $name = 'Ansible: MySQL';
+    
     public $has_port = TRUE;
     public $ansible_vars = array();
 
