@@ -357,8 +357,8 @@ function devshop_bitbucket_webhook($project_node) {
   if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
 
-    watchdog('debug', $GLOBALS['HTTP_RAW_POST_DATA']);
-    watchdog('debug', print_r($data, 1));
+//    watchdog('debug', $GLOBALS['HTTP_RAW_POST_DATA']);
+//    watchdog('debug', print_r($data, 1));
 
     $args = array();
     $args['cache'] = 1;
@@ -370,24 +370,20 @@ function devshop_bitbucket_webhook($project_node) {
       $bitbucket_event = '';
     }
 
-    watchdog('debug', 'Caught bitbucket event!' . $bitbucket_event);
-    return;
-
-
     switch ($bitbucket_event) {
       case 'ping':
         $message = 'Pong!';
         break;
-      case 'push':
+      case 'repo:push':
 
         // If push is for a deleted branch, don't do anything.
-        if ($data->deleted && $data->after == "0000000000000000000000000000000000000000") {
-          $message = 'Deleted ref detected.';
-          break;
-        }
+//        if ($data->deleted && $data->after == "0000000000000000000000000000000000000000") {
+//          $message = 'Deleted ref detected.';
+//          break;
+//        }
 
         // Limit "Deploy" tasks to only run for the branches we have new code for..
-        $git_ref = strtr($data->ref, array('refs/tags/' => '', 'refs/heads/' => ''));
+        $git_ref = $data->push->changes[0]->new->name;
 
         // Check for environments set to pull
         $environments_to_pull = array();
@@ -411,7 +407,7 @@ function devshop_bitbucket_webhook($project_node) {
         $message = "Push Received for git ref $git_ref. Deploying code to environments: " . implode(', ', $environments_to_pull);
         break;
 
-      case 'pull_request':
+      case 'pullrequest:created':
         // If pull request environments is enabled...
         if ($project->settings->bitbucket['pull_request_environments']) {
           $message = 'Pull Request Received.';
@@ -426,7 +422,8 @@ function devshop_bitbucket_webhook($project_node) {
           $already_have_pr_info = FALSE;
 
           // When PR is opened... create new environment.
-          if ($data->action == 'opened' || $data->action == 'reopened') {
+//          if ($data->action == 'opened' || $data->action == 'reopened') {
+          if ($data->pullrequest->state == 'OPEN') {
             $message = "Detected Pull Request creation for $branch \n";
             if (isset($project->environments[$environment_name])) {
               $message = "Environment $environment_name already exists! Not creating one... \n";
@@ -453,100 +450,100 @@ function devshop_bitbucket_webhook($project_node) {
                 $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
               }
             }
-
-            $owner = $project->bitbucket_owner;
-            $repo = $project->bitbucket_repo;
-            $message .= "About to try to create a deployment for $owner/$repo...  \n";
-
-            // Send a "deployment" to bitbucket.
-            try {
-              $token = variable_get('devshop_bitbucket_token', '');
-              $client = new \bitbucket\Client();
-              $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
-
-              $sha = $data->pull_request->head->sha;
-              $environment_name_url = str_replace('_', '-', $environment_name);
-              $url = "http://{$environment_name_url}.{$project->base_url}";
-
-              $params = new stdClass();
-              $params->ref = $sha;
-              $params->environment = $url;
-              $params->required_contexts = array();
-              $post_url = "/repos/$owner/$repo/deployments";
-              $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
-
-              // Save deployment to pull request data for later access.
-              $data->pull_request->deployment = $deployment;
-
-              $message .= " Deployment Created! \n";
-
-              // Create deployment status
-              $params = new stdClass();
-              $params->state = 'pending';
-              $params->target_url = $url;
-              $params->description = t('New environment is being created.  Please stand by.');
-              $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/deployments/{$deployment->id}/statuses", json_encode($params));
-
-              $message .= " Deployment Status Created! \n";
-
-              // Set a commit status for this REF for devshop/deploy context
-              $sha = $data->pull_request->head->sha;
-
-              $params = new stdClass();
-              $params->state = 'pending';
-              $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
-              $params->description = t('DevShop: Deploy');
-              $params->context = 'devshop/deploy';
-
-              // Post status to bitbucket
-              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-              $message .= " Commit Status Created! \n";
-
-              // Determine if we are going to run tests.
-              // For now it is using the "live environment" setting.
-              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
-
-              // If live environment is set to run tests on deploy...
-              $live_environment = $project->settings->live['live_environment'];
-              if ($project->environments[$live_environment]->settings->deploy['test']) {
-                $params = new stdClass();
-                $params->state = 'pending';
-                $params->target_url = url(
-                  "node/$project->nid",
-                  array('absolute' => true)
-                );
-                $params->description = t('DevShop: Run Tests');
-                $params->context = 'devshop/tests';
-
-                // Post status to bitbucket
-                $status = $client->getHttpClient()->post(
-                  "/repos/$owner/$repo/statuses/$sha",
-                  json_encode($params)
-                );
-                $message .= " Commit Status for pending test run Created! \n";
-              }
-
-            } catch (bitbucket\Exception\RuntimeException $e) {
-              watchdog('devshop_bitbucket', 'bitbucket Runtime Error: ' . $e->getMessage());
-              $message .= 'bitbucket RunTimeException during PR Create: ' . $e->getMessage() . $e->getCode();
-              if ($e->getCode() == '409') {
-                $message .= "\n Branch is out of date! alert the developer!";
-
-                // Send a failed commit status to alert to developer
-                $params = new stdClass();
-                $params->state = 'failure';
-                $params->target_url = $project->git_repo_url;
-                $params->description = t('Branch is out of date! Merge from default branch.');
-                $params->context = 'devshop/merge';
-
-                // Post status to bitbucket
-                $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-              }
-
-            } catch (bitbucket\Exception\ValidationFailedException $e) {
-              watchdog('devshop_bitbucket', 'bitbucket Validation Failed Error: ' . $e->getMessage());
-              $message .= 'bitbucket ValidationFailedException Error: ' . $e->getMessage();
-            }
+//
+//            $owner = $project->bitbucket_owner;
+//            $repo = $project->bitbucket_repo;
+//            $message .= "About to try to create a deployment for $owner/$repo...  \n";
+//
+//            // Send a "deployment" to bitbucket.
+//            try {
+//              $token = variable_get('devshop_bitbucket_token', '');
+//              $client = new \bitbucket\Client();
+//              $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
+//
+//              $sha = $data->pull_request->head->sha;
+//              $environment_name_url = str_replace('_', '-', $environment_name);
+//              $url = "http://{$environment_name_url}.{$project->base_url}";
+//
+//              $params = new stdClass();
+//              $params->ref = $sha;
+//              $params->environment = $url;
+//              $params->required_contexts = array();
+//              $post_url = "/repos/$owner/$repo/deployments";
+//              $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
+//
+//              // Save deployment to pull request data for later access.
+//              $data->pull_request->deployment = $deployment;
+//
+//              $message .= " Deployment Created! \n";
+//
+//              // Create deployment status
+//              $params = new stdClass();
+//              $params->state = 'pending';
+//              $params->target_url = $url;
+//              $params->description = t('New environment is being created.  Please stand by.');
+//              $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/deployments/{$deployment->id}/statuses", json_encode($params));
+//
+//              $message .= " Deployment Status Created! \n";
+//
+//              // Set a commit status for this REF for devshop/deploy context
+//              $sha = $data->pull_request->head->sha;
+//
+//              $params = new stdClass();
+//              $params->state = 'pending';
+//              $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
+//              $params->description = t('DevShop: Deploy');
+//              $params->context = 'devshop/deploy';
+//
+//              // Post status to bitbucket
+//              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+//              $message .= " Commit Status Created! \n";
+//
+//              // Determine if we are going to run tests.
+//              // For now it is using the "live environment" setting.
+//              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
+//
+//              // If live environment is set to run tests on deploy...
+//              $live_environment = $project->settings->live['live_environment'];
+//              if ($project->environments[$live_environment]->settings->deploy['test']) {
+//                $params = new stdClass();
+//                $params->state = 'pending';
+//                $params->target_url = url(
+//                  "node/$project->nid",
+//                  array('absolute' => true)
+//                );
+//                $params->description = t('DevShop: Run Tests');
+//                $params->context = 'devshop/tests';
+//
+//                // Post status to bitbucket
+//                $status = $client->getHttpClient()->post(
+//                  "/repos/$owner/$repo/statuses/$sha",
+//                  json_encode($params)
+//                );
+//                $message .= " Commit Status for pending test run Created! \n";
+//              }
+//
+//            } catch (bitbucket\Exception\RuntimeException $e) {
+//              watchdog('devshop_bitbucket', 'bitbucket Runtime Error: ' . $e->getMessage());
+//              $message .= 'bitbucket RunTimeException during PR Create: ' . $e->getMessage() . $e->getCode();
+//              if ($e->getCode() == '409') {
+//                $message .= "\n Branch is out of date! alert the developer!";
+//
+//                // Send a failed commit status to alert to developer
+//                $params = new stdClass();
+//                $params->state = 'failure';
+//                $params->target_url = $project->git_repo_url;
+//                $params->description = t('Branch is out of date! Merge from default branch.');
+//                $params->context = 'devshop/merge';
+//
+//                // Post status to bitbucket
+//                $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+//              }
+//
+//            } catch (bitbucket\Exception\ValidationFailedException $e) {
+//              watchdog('devshop_bitbucket', 'bitbucket Validation Failed Error: ' . $e->getMessage());
+//              $message .= 'bitbucket ValidationFailedException Error: ' . $e->getMessage();
+//            }
 
             // Insert PR record
             if (!$already_have_pr_info) {
