@@ -89,6 +89,11 @@ function ansible_roles_settings_delete($form, $form_state, $rid) {
     ->execute()
     ->fetchAssoc();
 
+  if (empty($data)) {
+    drupal_set_message(t('Role with RID &rid not found.', array('&rid' => $rid)), 'warning');
+    drupal_goto('admin/hosting/roles');
+  }
+
   $form['rid'] = array(
     '#type' => 'value',
     '#value' => $rid,
@@ -121,4 +126,5 @@ function ansible_roles_settings_delete_submit(&$form, &$form_state) {
   else {
     drupal_set_message(t('Unable to delete Ansible role.'), 'error');
   }
+  $form_state['redirect'] = 'admin/hosting/roles';
 }
