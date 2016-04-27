@@ -421,7 +421,10 @@ function devshop_bitbucket_webhook($project_node) {
           // Determine environment branch.
           // @TODO: Make Configurable, allow branch names to be env name
           //   $environment_name = "pr" . $data->pull_request->number;
-          $environment_name = 'branch_' . str_replace('-', '_', $branch);
+          $environment_name = 'branch_' . strtr($branch, array(
+             '-' => '_',
+             '/' => '_',
+            ));
           $already_have_pr_info = FALSE;
 
           // When PR is opened... create new environment.
