@@ -24,6 +24,18 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
       '#options' => $this->getAvailableRoles(),
       '#default_value' => isset($this->roles)? $this->roles: array(),
     );
+
+    if (empty($form['roles']['#options'])) {
+      $form['roles'] = array(
+        '#markup' => t('No roles available.')
+      );
+
+      if (user_access('administer ansible roles')) {
+        $form['link'] = array(
+            '#markup' => l(t('Add roles'), 'admin/hosting/roles'),
+        );
+      }
+    }
   }
 
   function insert()
@@ -86,9 +98,17 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
    * @return array
    */
   function getAvailableRoles() {
-    return array(
-      'geerlingguy.security' => 'geerlingguy.security',
-      'aegir.devmaster' => 'aegir.devmaster',
-    );
+
+    // Load all available roles
+    $results = db_select('hosting_ansible_roles_available', 'h')
+        ->fields('h')
+        ->execute()
+        ->fetchAllAssoc('name');
+
+    foreach ($results as $result) {
+      $options[$result->name] = $result->name;
+    }
+
+    return $options;
   }
 }
