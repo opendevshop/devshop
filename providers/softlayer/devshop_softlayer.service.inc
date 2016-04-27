@@ -10,6 +10,13 @@ require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient
 class hostingService_provider_softlayer extends hostingService_provider {
   public $type = 'softlayer';
 
+  /**
+   * The human readable name of this service.
+   *
+   * @var string
+   */
+  public $name = 'IBM SoftLayer';
+
   function form(&$form) {
     parent::form($form);
 
