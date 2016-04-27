@@ -351,24 +351,28 @@ function devshop_bitbucket_webhook($project_node) {
   $project = $project_node->project;
 
   // Create a bitbucket deployment
-  require_once 'vendor/autoload.php';
+//  require_once 'vendor/autoload.php';
 
   // @TODO: Handle form content from bitbucket as well.
   if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
     $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
 
+    watchdog('debug', $GLOBALS['HTTP_RAW_POST_DATA']);
+    watchdog('debug', print_r($data, 1));
+
     $args = array();
     $args['cache'] = 1;
 
-    if (isset($headers['X-bitbucket-Event'])) {
-      $bitbucket_event = $headers['X-bitbucket-Event'];
-    }
-    elseif (isset($headers['X-bitbucket-Event'])) {
-      $bitbucket_event = $headers['X-bitbucket-Event'];
+    if (isset($headers['X-Event-Key'])) {
+      $bitbucket_event = $headers['X-Event-Key'];
     }
     else {
       $bitbucket_event = '';
     }
+
+    watchdog('debug', 'Caught bitbucket event!' . $bitbucket_event);
+    return;
+
 
     switch ($bitbucket_event) {
       case 'ping':
