@@ -410,6 +410,8 @@ function devshop_bitbucket_webhook($project_node) {
 
       case 'pullrequest:created':
       case 'pullrequest:updated':
+      case 'pullrequest:declined':
+      case 'pullrequest:merged':
 
         // If pull request environments is enabled...
         if ($project->settings->bitbucket['pull_request_environments']) {
