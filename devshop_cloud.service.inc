@@ -38,14 +38,23 @@ class hostingService_provider extends hostingService {
    * On server insert, we only have the provider_options.
    */
   function insert() {
-    db_insert('hosting_devshop_cloud_provider')
-      ->fields(array('nid', 'provider_data', 'provider_options', 'provider_server_identifier'), array(
-        $this->server->nid,
-        serialize($this->provider_data),
-        serialize($this->provider_options),
-        $this->provider_server_identifier
-      ))
-      ->execute();
+
+    // Prevent duplicate insert... Not sure why this happens.
+    if (!db_result(db_query('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid)))) {
+      db_insert('hosting_devshop_cloud_provider')
+        ->fields(array(
+          'nid',
+          'provider_data',
+          'provider_options',
+          'provider_server_identifier'
+        ), array(
+          $this->server->nid,
+          serialize($this->provider_data),
+          serialize($this->provider_options),
+          $this->provider_server_identifier
+        ))
+        ->execute();
+    }
     parent::insert();
   }
 
