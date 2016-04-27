@@ -3,7 +3,7 @@
 /**
  * The server_data service class.
  */
-class Provision_Service_server_ansible_roles_available extends Provision_Service {
+class Provision_Service_ansible_roles_available extends Provision_Service {
   public $service = 'ansible_roles_available';
 
   /**
