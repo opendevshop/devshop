@@ -7,6 +7,7 @@ module_load_include('service.inc', 'devshop_cloud');
  */
 class hostingService_provider_digital_ocean extends hostingService_provider {
   public $type = 'digital_ocean';
+  public $name = 'DigitalOcean';
 
   function form(&$form) {
     parent::form($form);
