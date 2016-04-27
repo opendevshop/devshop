@@ -47,9 +47,10 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
   //All settings git pull in project page
   $form['project']['settings']['bitbucket'] = array(
       '#type' => 'fieldset',
+      '#group' => 'project_settings',
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
-      '#title' => t('bitbucket Integration'),
+      '#title' => t('BitBucket Integration'),
   );
 
   // Pull Requests create environments?
@@ -409,7 +410,7 @@ function devshop_bitbucket_webhook($project_node) {
 
       case 'pullrequest:created':
       case 'pullrequest:updated':
-        
+
         // If pull request environments is enabled...
         if ($project->settings->bitbucket['pull_request_environments']) {
           $message = 'Pull Request Received.';
