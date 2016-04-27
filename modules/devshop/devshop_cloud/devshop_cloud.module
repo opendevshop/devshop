@@ -140,6 +140,11 @@ function devshop_cloud_hosting_tasks_alter(&$tasks) {
  * Implements hook_form_alter().
  */
 function devshop_cloud_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'server_node_form' && !isset($form_state['node']->nid)) {
+    $form['actions']['submit']['#value'] = t('Create Server');
+    $form['actions']['submit']['#icon'] = '<i class="fa fa-plus"></i>';
+  }
+
   if ($form_id == 'hosting_task_confirm_form') {
 
     $node = $form_state['build_info']['args'][0];
