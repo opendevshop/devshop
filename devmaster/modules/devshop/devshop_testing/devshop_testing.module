@@ -119,6 +119,9 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'project_node_form') {
     $form['project']['settings']['testing'] = array_merge(array(
       '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#group' => 'project_settings',
       '#title' => t('Testing'),
       '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
     ), devshop_testing_form_elements($form['#node']->project)
