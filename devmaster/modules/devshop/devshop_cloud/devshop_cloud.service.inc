@@ -40,7 +40,7 @@ class hostingService_provider extends hostingService {
   function insert() {
 
     // Prevent duplicate insert... Not sure why this happens.
-    if (!db_result(db_query('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid)))) {
+    if (!db_query('SELECT nid FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid))->fetchField()) {
       db_insert('hosting_devshop_cloud_provider')
         ->fields(array(
           'nid',
