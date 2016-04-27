@@ -46,7 +46,9 @@ function aegir_ansible_inventory_data() {
         // $inventory->{$server_node->title}->vars['ansible_user'] = 'aegir';
 
         // Load another group based on the server's hosting_name (hosting context).
-        $inventory->{$server_node->hosting_name} = $inventory->{$server_node->title};
+        if (isset($server_node->hosting_name) && isset($server_node->title) && isset($inventory->{$server_node->title})) {
+            $inventory->{$server_node->hosting_name} = $inventory->{$server_node->title};
+        }
 
         // Add a "group" for each service type.
         foreach ($server_node->services as $service => $service_data) {
