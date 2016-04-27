@@ -9,6 +9,18 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 use Symfony\Component\Yaml\Yaml;
 
 /**
+ * Implements hook_permission()
+ */
+function ansible_variables_permission() {
+  return array(
+    'configure server ansible variables' => array(
+      'name' => t('Configure server ansible variables'),
+      'description' => t('Allows customizing a servers ansible variables. Use with Caution'),
+    ),
+  );
+}
+
+/**
  * Implements hook_form_alter().
  */
 function ansible_variables_form_alter(&$form, $form_state, $form_id) {
@@ -18,7 +30,8 @@ function ansible_variables_form_alter(&$form, $form_state, $form_id) {
       '#type' => 'fieldset',
       '#title' => t('Server Configuration'),
       '#description' => t('Override configuration options for this server using Ansible variables.'),
-        '#weight' => 10,
+      '#weight' => 10,
+      '#access' => user_access('configure server ansible variables'),
     );
 
     $form['ansible_variables']['ansible_variables_raw'] = array(
