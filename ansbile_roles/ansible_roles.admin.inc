@@ -82,15 +82,19 @@ function ansible_roles_settings_add_submit(&$form, &$form_state) {
 function ansible_roles_settings_delete($form, $form_state, $rid) {
 
 
-  // Load all available roles
+  // Load this ansible role.
   $data = db_select('hosting_ansible_roles_available', 'h')
     ->fields('h')
     ->condition('rid', $rid)
     ->execute()
     ->fetchAssoc();
 
+  $form['rid'] = array(
+    '#type' => 'value',
+    '#value' => $rid,
+  );
 
-  $form['note'] = array(
+  $form['name'] = array(
     '#title' => t('Role'),
     '#type' => 'item',
     '#markup' => $data['name'],
@@ -104,5 +108,17 @@ function ansible_roles_settings_delete($form, $form_state, $rid) {
     );
   }
 
-  return confirm_form($form, t('Are you sure you want to delete this role?'), 'admin/hosting/roles');
+  return confirm_form($form, t('Are you sure you want to delete this role?'), 'admin/hosting/roles', t('The role will not be removed from the system but it will not be available to users.  Use the command <code>ansible-galaxy delete @name</code> to remove it from your system.', array('@name' => $data['name'])));
+}
+
+function ansible_roles_settings_delete_submit(&$form, &$form_state) {
+
+  if (db_delete('hosting_ansible_roles_available')
+    ->condition('rid', $form_state['values']['rid'])
+    ->execute()) {
+    drupal_set_message(t('Ansible role deleted.'));
+  }
+  else {
+    drupal_set_message(t('Unable to delete Ansible role.'), 'error');
+  }
 }
