@@ -5,7 +5,9 @@ This toolset allows for tight integration between Ansible & Aegir.
 It involves a few components:
 
 - **Aegir Ansible Inventory module** is a simple Drupal module that provides a URL at http://hostmaster/inventory with JSON data in an Ansible Dynamic Inventory format.
-- **Aegir Ansible Roles** provide the final layer of configuration for servers, so that can be used with Aegir.
+- **Aegir Ansible Services** provide Aegir compatible MySQL and Apache Services, configured with Ansible.
+- **Aegir Ansible Roles** allows aegir users to select from a configurable list of roles for each server.
+- **Aegir Ansible Variables** allows aegir users to configure custom Ansible variables per server.
 
   Our roles simply add on to existing Ansible Galaxy Roles to provide standardized Apache, MySQL, NGINX, and PHP configuration.
 
