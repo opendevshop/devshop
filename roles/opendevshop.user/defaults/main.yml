@@ -7,4 +7,4 @@ aegir_user_authorized_keys: ReplaceAtRuntime
 aegir_logs_path: /var/log/aegir
 
 # Set to "no" to prevent playbook from creating a local user.
-aegir_create_user: yes
+aegir_create_user: 'yes'

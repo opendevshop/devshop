@@ -11,7 +11,7 @@
       gid: "{{ aegir_user_uid }}"
 
   - name: Create Aegir user
-    when: aegir_create_user == "yes"
+    when: aegir_create_user == 'yes'
     user:
       name: "{{ aegir_user_name }}"
       shell: /bin/bash
