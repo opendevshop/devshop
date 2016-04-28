@@ -4,7 +4,6 @@
 
 - src: https://github.com/opendevshop/ansible-role-aegir-user
   name: aegir.user
-  version: 1.0.0-beta2
 
 - src: https://github.com/opendevshop/ansible-role-aegir-apache
   name: aegir.apache
