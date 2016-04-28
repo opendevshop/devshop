@@ -24,6 +24,13 @@
     validate: 'visudo -cf %s'
     create: yes
 
+- name: Add aegir to apache group.
+  when: aegir_user_in_web_group == 'yes'
+  user:
+    name: "{{ aegir_user_name }}"
+    groups: "{{ apache_user }}"
+    append: yes
+
 - name: Post Install on RedHat
   include: "RedHat-post.yml"
   when: ansible_os_family == "RedHat"

@@ -1,6 +1,8 @@
 ---
 # vars file for aegir.apache on Debian
 apache_control: /usr/sbin/apachectl
+apache_user: apache
+
 php_packages:
   - php55
   - php55-php

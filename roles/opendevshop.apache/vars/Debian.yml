@@ -1,3 +1,4 @@
 ---
 # vars file for aegir.apache on Debian
 apache_control: /usr/sbin/apache2ctl
+apache_user: www-data
