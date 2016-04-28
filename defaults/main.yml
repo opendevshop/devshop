@@ -4,3 +4,6 @@ server_hostname: local.devshop.site
 
 # Must coincide with a drush release: https://github.com/drush-ops/drush/releases
 drush_release_version: 8.0.5
+
+# If your system does not allow root user in "sudo" group, change this to "su"
+ansible_become_method_aegir: 'sudo'
