@@ -7,10 +7,10 @@ galaxy_info:
   
   min_ansible_version: 1.2
 
-galaxy_tags:
-  - aegir
-  - opendevshop
-  - hosting
+  galaxy_tags:
+    - aegir
+    - opendevshop
+    - hosting
 
 dependencies:
   - aegir.user
