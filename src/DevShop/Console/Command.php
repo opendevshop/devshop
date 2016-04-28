@@ -132,7 +132,7 @@ abstract class Command extends BaseCommand
    * @param $title
    * @param int $width
    */
-  public function announce($title, $width = 66)
+  public function announce($title, $width = 45)
   {
     $output = $this->output;
     $title_characters = strlen($title);
