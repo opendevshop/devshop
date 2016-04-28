@@ -11,10 +11,10 @@ galaxy_info:
   - name: Debian
     versions:
     - all
-
-galaxy_tags:
-  - aegir
-  - hosting
-  drupal
+  
+  galaxy_tags:
+    - aegir
+    - hosting
+    - drupal
 
 dependencies: []
