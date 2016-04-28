@@ -8,3 +8,6 @@ aegir_logs_path: /var/log/aegir
 
 # Set to "no" to prevent playbook from creating a local user.
 aegir_create_user: 'yes'
+
+# Set to "no" to prevent playbook from trying to add aegir to web server group.
+aegir_user_in_web_group: 'yes'
