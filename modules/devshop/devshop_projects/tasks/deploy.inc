@@ -23,7 +23,7 @@ function hosting_task_devshop_deploy_form($node) {
   $form['environment'] = array(
     '#type' => 'item',
     '#title' => t('Environment'),
-    '#value' => l($environment->default_domain, 'http://' . $environment->default_domain, array('attributes' => array('target' => '_blank'))) . " &nbsp; <i class='fa fa-{$current_ref_type_class}'></i> " . $environment->git_ref,
+    '#markup' => l($environment->default_domain, 'http://' . $environment->default_domain, array('attributes' => array('target' => '_blank'))) . " &nbsp; <i class='fa fa-{$current_ref_type_class}'></i> " . $environment->git_ref,
     '#description' => t('The environment URL and current git reference.'),
   );
 
@@ -40,7 +40,7 @@ function hosting_task_devshop_deploy_form($node) {
     $form['git_ref_label'] = array(
       '#type' => 'item',
       '#title' => t('Git @ref', array('@ref' => $ref_type)),
-      '#value' => "<i class='fa fa-{$ref_type_class}'></i> " . $_GET['git_ref'],
+      '#markup' => "<i class='fa fa-{$ref_type_class}'></i> " . $_GET['git_ref'],
       '#description' => t("This git reference will be checked out in this environment."),
     );
   }
