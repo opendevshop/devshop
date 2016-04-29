@@ -242,8 +242,8 @@ function devshop_task_get_messages($task_node) {
     ':devshop' => 'devshop_%',
     ':error' => 'error',
     ':warning' => 'warning',
-    ':success' => 'success',
-    ':ok' => 'ok',
+//    ':success' => 'success',
+//    ':ok' => 'ok',
   ));
 
   foreach ($result as $record) {
