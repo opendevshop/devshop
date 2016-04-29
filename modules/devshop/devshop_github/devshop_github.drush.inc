@@ -52,7 +52,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
 
         $params = new stdClass();
         $params->state = $state;
-        $params->target_url = url("node/{$task->nid}/revisions/{$task->vid}/view",array('absolute' => TRUE));
+        $params->target_url = url("node/{$task->nid}/view", array('absolute' => TRUE));
 
         if ($status == HOSTING_TASK_WARNING) {
           $params->description = t('DevShop: Tests passed with warnings');
