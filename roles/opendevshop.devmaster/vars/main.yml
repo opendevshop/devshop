@@ -1,6 +1,5 @@
 ---
 # vars file for aegir.devmaster
-devshop_version: 1.0.0-beta1
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_version: 1.x

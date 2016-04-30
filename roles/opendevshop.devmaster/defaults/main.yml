@@ -1,6 +1,12 @@
 ---
-# defaults file for aegir.devmaster
+
+# Server hostname will default to this unless overridden in your inventory or extra_vars.
+# It is overridden in devshop's install.sh file to match the server's current hostname.
 server_hostname: local.devshop.site
+
+# The version of devshop & devmaster to install.
+# Overridden by install.sh
+devshop_version: 1.x
 
 # Must coincide with a drush release: https://github.com/drush-ops/drush/releases
 drush_release_version: 8.0.5
