@@ -13,6 +13,11 @@ galaxy_info:
       versions:
       - trusty
       
+  galaxy_tags:
+    - aegir
+    - hosting
+    - drupal
+
 dependencies:
   - opendevshop.aegir-user
   - opendevshop.apache
