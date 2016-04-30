@@ -7,10 +7,10 @@ galaxy_info:
   platforms:
   - name: Ubuntu
     versions:
-    - all
-  - name: Debian
+    - trusty
+  - name: EL
     versions:
-    - all
+    - 7
   
   galaxy_tags:
     - aegir
