@@ -9,5 +9,5 @@
 - name: opendevshop.aegir-nginx
   version: 1.0.0
 
-- name: opendevshop.aegir-devmaster
+- name: opendevshop.devmaster
   version: 1.0.0
