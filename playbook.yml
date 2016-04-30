@@ -7,9 +7,9 @@
   user: root
   roles:
     - opendevshop.aegir-user
-    - { role: opendevshop.aegir-apache, when: "server_webserver == 'apache'" }
-    - { role: opendevshop.aegir-nginx, when: "server_webserver == 'nginx'" }
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
+    - { role: opendevshop.aegir-apache, when: "server_webserver == 'apache'" }
+    - { role: opendevshop.aegir-nginx, when: "server_webserver == 'nginx'" }
     - opendevshop.devmaster
