@@ -21,6 +21,6 @@ galaxy_info:
       - trusty
       
 dependencies:
-  - aegir.user
+  - opendevshop.aegir-user
   - geerlingguy.git
   - geerlingguy.apache
