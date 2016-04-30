@@ -20,7 +20,7 @@ galaxy_info:
 
 dependencies:
   - opendevshop.aegir-user
-  - opendevshop.apache
+  - opendevshop.aegir-apache
   - geerlingguy.mysql
   
   
