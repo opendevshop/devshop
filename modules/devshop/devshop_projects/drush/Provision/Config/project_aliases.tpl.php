@@ -13,12 +13,16 @@ foreach ($project['environments'] as $name => $environment) {
   $alias = array(
     'root' => $environment['root'],
     'uri' => $environment['uri'],
-    'remote-host' => d('web_server')->remote_host,
-    'remote-user' => d('web_server')->script_user,
     'path-aliases' => array(
       '%files' =>  "sites/{$environment['uri']}/files"
     ),
   );
+
+  // If web server is not server master, add "remote host and user.
+  if (d($environment['drush_alias'])->platform->web_server->name != '@server_master') {
+    $alias['remote-host'] = d($environment['drush_alias'])->platform->web_server->remote_host;
+    $alias['remote-user'] = d($environment['drush_alias'])->platform->web_server->script_user;
+  }
 
   $export = var_export($alias, TRUE);
   ?>
