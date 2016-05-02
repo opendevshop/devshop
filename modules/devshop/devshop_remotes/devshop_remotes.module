@@ -1,0 +1,201 @@
+<?php
+/**
+ * @file
+ * devshop_remotes.module
+ *
+ * For now I am starting with the "Add remote alias" feature. We can add more
+ * "remote management" stuff later.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function devshop_remotes_menu() {
+  $items['project/%/add-alias'] = array(
+    'title' => 'Add remote alias',
+    'description' => 'Add a remote alias to a project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_remotes_alias_add_form', 1),
+    'access arguments' => array('add remote aliases to projects'),
+  ) ;
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function devshop_remotes_permission() {
+  return array(
+    'add remote aliases to projects' => array(
+      'title' => t('add remote aliases to projects'),
+      'description' => t('Allow the user to add remote aliases to the project.'),
+    ),
+  );
+}
+
+/**
+ * @param $project_name
+ */
+function devshop_remotes_alias_add_form($form, &$form_state, $project_name) {
+
+  $node = devshop_load_project_by_name($project_name);
+  $form['project_nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+  $form['name'] = array(
+    '#title' => t('Alias Name'),
+    '#description' => t('Add the machine name for the alias. letters, numbers, and underscores only.  This must not match a devshop environment name.'),
+    '#type' => 'textfield',
+  );
+  $form['note'] = array(
+    '#markup' => t('Enter the following items exactly as they appear in your drush alias.'),
+  );
+  $form['uri'] = array(
+    '#title' => t('URI'),
+    '#type' => 'textfield',
+  );
+  $form['root'] = array(
+    '#title' => t('Root'),
+    '#type' => 'textfield',
+  );
+  $form['remote_host'] = array(
+    '#title' => t('Remote Host'),
+    '#type' => 'textfield',
+  );
+  $form['remote_user'] = array(
+    '#title' => t('Remote User'),
+    '#type' => 'textfield',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save Alias'),
+  );
+  return $form;
+}
+
+/**
+ * Form validate for "add remote alias".
+ * @param $form
+ * @param $form_state
+ */
+function devshop_remotes_alias_add_form_validate(&$form, $form_state) {
+
+  $project_node = node_load($form_state['values']['project_nid']);
+  $project = $project_node->project;
+
+  // Lowercase the name.
+  form_set_value($form['name'], strtolower($form_state['values']['name']), $form_state);
+
+  // Check for environment.
+  if (isset($project_node->project->environments[$form_state['values']['name']])) {
+    form_set_error('name', t('An environment named %name already exists in this project. Please choose a different name.', array(
+      '%name' => $form_state['values']['name'],
+    )));
+  }
+
+  // Check for existing alias.
+  if (isset($project->settings->aliases[$form_state['values']['name']])) {
+    form_set_error('name', t('An alias named %name already exists in this project. Please choose a different name.', array(
+      '%name' => $form_state['values']['name'],
+    )));
+  }
+}
+
+/**
+ * Form validate for "add remote alias".
+ * @param $form
+ * @param $form_state
+ */
+function devshop_remotes_alias_add_form_submit(&$form, &$form_state) {
+
+  // Load project node.
+  $project_node = node_load($form_state['values']['project_nid']);
+  $project = &$project_node->project;
+
+  // Save alias to "settings" data.
+  $project->settings->aliases[$form_state['values']['name']] = array(
+    'uri' => $form_state['values']['uri'],
+    'root' => $form_state['values']['root'],
+    'remote-user' => $form_state['values']['remote_user'],
+    'remote-host' => $form_state['values']['remote_host'],
+  );
+
+  node_save($project_node);
+
+  // Redirect to project
+  $form_state['redirect'] = "node/{$project_node->nid}";
+
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function devshop_remotes_preprocess_node(&$variables) {
+
+  $node = $variables['node'];
+  if ($node->type != 'project') {
+    return;
+  }
+
+  $count = count($variables['node']->project->settings->aliases);
+  $label = t('Remote Aliases');
+  $delete_label = t('Delete Alias');
+  $delete_url = url("project/{$node->title}/delete-alias");
+
+  $aliases = '';
+
+  foreach ($variables['node']->project->settings->aliases as $name => $alias) {
+    $alias_rendered = var_export($alias, 1);
+    $uri = $alias['uri'];
+    $aliases.= <<<HTML
+<div>
+  <a href="http://{$uri}" target="_blank"> 
+    $name  
+  </a>
+  <div class="pull-right">
+    <a href="$delete_url" class="btn btn-link"><i class="fa fa-trash"></i> $delete_label</a>
+  </div>
+  <div>
+    <pre class="panel-body clear">$alias_rendered
+    </pre>
+  </div>
+</div>
+HTML;
+  }
+
+  $aliases_url = url("project/{$node->title}/add-alias");
+  $add_link_title = t('Add Remote Alias');
+
+  $variables['project_extra_items'][] = <<<HTML
+
+      <button type="button" class="btn btn-xs btn-link text-muted" data-toggle="modal" data-target="#remote-aliases-modal" title="Remote Aliases">
+        <i class="fa fa-console"></i>
+        {$label}: $count
+       </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="remote-aliases-modal" tabindex="-1" role="dialog" aria-labelledby="remote-aliases-modal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              
+              <a href="$aliases_url" class="btn btn-success pull-right">
+                <i class="fa fa-plus"></i> $add_link_title
+              </a>
+              
+              <h4 class="modal-title" id="drush-alias-modal">Remote Aliases</h4>
+            </div>
+            <div class="modal-body">
+              $aliases
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+HTML;
+
+}
