@@ -310,13 +310,17 @@ function devshop_remotes_form_hosting_task_confirm_form_alter(&$form, &$form_sta
   $site = $form_state['build_info']['args'][0];
 
   if (isset($_GET['source']) && isset($site->project->settings->aliases[$_GET['source']])) {
+    $alias_name = $_GET['source'];
+    $alias_record = $site->project->settings->aliases[$alias_name];
+    $actual_alias = "@{$site->project->name}.{$alias_name}";
+
     $form['parameters']['source']['#type'] = 'value';
-    $form['parameters']['source']['#value'] = '@' . $_GET['source'];
+    $form['parameters']['source']['#value'] = $actual_alias;
 
     $form['source_display'] = array(
       '#type' => 'item',
       '#title' => t('Source'),
-      '#markup' => l($site->project->settings->aliases[$_GET['source']]['uri'], 'http://' . $site->project->settings->aliases[$_GET['source']]['uri'], array(
+      '#markup' => l($alias_record['uri'], 'http://' . $alias_record['uri'], array(
         'attributes' => array(
           'target' => '_blank',
         ),
