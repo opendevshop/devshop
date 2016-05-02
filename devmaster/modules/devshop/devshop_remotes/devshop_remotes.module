@@ -199,3 +199,19 @@ HTML;
 HTML;
 
 }
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ *
+ * The Project Node Form.
+ */
+function devshop_remotes_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+  $node = $form['#node'];
+  $project = $node->project;
+
+  // Make sure alias settings data gets saved in project node form.
+  $form['project']['settings']['aliases'] = array(
+    '#value' => $project->settings->aliases,
+    '#type' => 'value',
+  );
+}
