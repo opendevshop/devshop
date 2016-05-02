@@ -1,5 +1,5 @@
 ##
-# DevShop: DevMaster Server with Apache
+# DevShop: DevMaster Server with NGINX
 #
 
 ---
@@ -7,7 +7,7 @@
   user: root
   roles:
     - opendevshop.aegir-user
-    - opendevshop.aegir-apache
+    - opendevshop.aegir-nginx
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
