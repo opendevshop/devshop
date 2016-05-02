@@ -297,6 +297,36 @@ function devshop_remotes_form_project_node_form_alter(&$form, &$form_state, $for
 }
 
 /**
+ * Implementation of hook_form_FORM_ID_alter().
+ *
+ * The Project Node Form.
+ */
+function devshop_remotes_form_hosting_task_confirm_form_alter(&$form, &$form_state, $form_id) {
+
+  if (arg(2) != 'site_sync') {
+    return;
+  }
+
+  $site = $form_state['build_info']['args'][0];
+
+  if (isset($_GET['source']) && isset($site->project->settings->aliases[$_GET['source']])) {
+    $form['parameters']['source']['#type'] = 'value';
+    $form['parameters']['source']['#value'] = '@' . $_GET['source'];
+
+    $form['source_display'] = array(
+      '#type' => 'item',
+      '#title' => t('Source'),
+      '#markup' => l($site->project->settings->aliases[$_GET['source']]['uri'], 'http://' . $site->project->settings->aliases[$_GET['source']]['uri'], array(
+        'attributes' => array(
+          'target' => '_blank',
+        ),
+      )),
+      '#weight' => -10,
+    );
+  }
+}
+
+/**
  * Implements hook_preprocess_environment().
  * @TODO: This is not working! Get to work then remove from boots/template.php
  */
