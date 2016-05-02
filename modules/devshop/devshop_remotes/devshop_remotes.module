@@ -18,6 +18,13 @@ function devshop_remotes_menu() {
     'page arguments' => array('devshop_remotes_alias_add_form', 1),
     'access arguments' => array('add remote aliases to projects'),
   ) ;
+  $items['project/%/delete-alias/%'] = array(
+    'title' => 'Remove remote alias',
+    'description' => 'Remove a remote alias from a project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_remotes_alias_remove_form', 1, 3),
+    'access arguments' => array('remove remote aliases from projects'),
+  ) ;
   return $items;
 }
 
@@ -29,6 +36,10 @@ function devshop_remotes_permission() {
     'add remote aliases to projects' => array(
       'title' => t('add remote aliases to projects'),
       'description' => t('Allow the user to add remote aliases to the project.'),
+    ),
+    'remove remote aliases from projects' => array(
+      'title' => t('remove remote aliases from projects'),
+      'description' => t('Allow the user to remove remote aliases from projects.'),
     ),
   );
 }
@@ -128,6 +139,62 @@ function devshop_remotes_alias_add_form_submit(&$form, &$form_state) {
 
 }
 
+
+/**
+ * @param $project_name
+ */
+function devshop_remotes_alias_remove_form($form, &$form_state, $project_name, $alias_name) {
+  // Load project node.
+  $node = devshop_load_project_by_name($project_name);
+  $project = &$node->project;
+
+  $alias = $project->settings->aliases[$alias_name];
+
+  $form['project_nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $alias_name,
+  );
+
+  $form['project'] = array(
+    '#title' => t('Project'),
+    '#type' => 'item',
+    '#markup' => $project_name,
+  );
+  $form['alias'] = array(
+    '#title' => t('Alias') . ': ' . $alias_name,
+    '#type' => 'item',
+    '#field_prefix' => '<pre>',
+    '#field_suffix' => '</pre>',
+    '#markup' => var_export($alias, 1),
+  );
+
+  return confirm_form($form, t('Are you sure you want to remove this alias?'), "node/{$node->nid}", '', t('Delete Alias'));
+
+}
+
+/**
+ * Form validate for "add remote alias".
+ * @param $form
+ * @param $form_state
+ */
+function devshop_remotes_alias_remove_form_submit(&$form, &$form_state) {
+
+  // Load project node.
+  $project_node = node_load($form_state['values']['project_nid']);
+  $project = &$project_node->project;
+
+  // Save alias to "settings" data.
+  unset($project->settings->aliases[$form_state['values']['name']]);
+  node_save($project_node);
+
+  // Redirect to project
+  $form_state['redirect'] = "node/{$project_node->nid}";
+}
+
 /**
  * Implements hook_preprocess().
  */
@@ -141,11 +208,11 @@ function devshop_remotes_preprocess_node(&$variables) {
   $count = count($variables['node']->project->settings->aliases);
   $label = t('Remote Aliases');
   $delete_label = t('Delete Alias');
-  $delete_url = url("project/{$node->title}/delete-alias");
 
   $aliases = '';
 
   foreach ($variables['node']->project->settings->aliases as $name => $alias) {
+    $delete_url = url("project/{$node->title}/delete-alias/{$name}");
     $alias_rendered = var_export($alias, 1);
     $uri = $alias['uri'];
     $aliases.= <<<HTML
