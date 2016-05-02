@@ -464,7 +464,7 @@
                                     <li><label><?php print t('Deploy data from'); ?></label></li>
                                     <?php foreach ($source_environments as $source): ?>
                                         <?php if ($source->name == $environment->name) continue; ?>
-                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>&dest=<?php print $source->name ?>">
+                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>">
                                                 <?php if ($project->settings->live['live_environment'] == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
                                                 <?php elseif (isset($source->settings->locked) && $source->settings->locked): ?>
