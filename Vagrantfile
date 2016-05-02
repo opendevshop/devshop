@@ -57,6 +57,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.raw_arguments  = [
           '--become'
         ]
+      end
 
       devmaster.vm.synced_folder "source/devmaster-" + settings["devshop_version"], "/var/aegir/devmaster-" + settings["devshop_version"],
           mount_options: ["uid=12345,gid=12345"]
