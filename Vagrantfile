@@ -37,18 +37,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     devmaster.vm.hostname = settings["server_hostname"]
     devmaster.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
 
-   # Put the generated public key in /vagrant folder so the remotes can access it.
-   devmaster.vm.provision "shell",
-      inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
-
-   # Put the generated public key in /vagrant folder so the remotes can access it.
-   devmaster.vm.provision "shell",
-      inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
-
-   # Enable some development modules
-   devmaster.vm.provision "shell",
-    inline: "devshop login"
-
     # Prepare development environment
     if (development_mode)
 
@@ -95,6 +83,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         args: settings["vagrant_install_script_args"]
 
     end
+
+    # Put the generated public key in /vagrant folder so the remotes can access it.
+    devmaster.vm.provision "shell",
+      inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
+
+    # Put the generated public key in /vagrant folder so the remotes can access it.
+    devmaster.vm.provision "shell",
+      inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
+
+    # Enable some development modules
+    devmaster.vm.provision "shell",
+      inline: "devshop login"
+
   end
 
   # DevShop Remote
