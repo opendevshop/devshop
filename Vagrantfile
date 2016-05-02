@@ -37,18 +37,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     devmaster.vm.hostname = settings["server_hostname"]
     devmaster.vm.network "private_network", ip: settings["vagrant_private_network_ip"]
 
-    # Set SH as our provisioner
-    #devmaster.vm.provision "shell",
-    #  path: settings["vagrant_install_script"],
-    #  args: settings["vagrant_install_script_args"]
-
-    config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "playbook.yml"
-      ansible.raw_arguments  = [
-        '--become'
-      ]
-    end
-
    # Put the generated public key in /vagrant folder so the remotes can access it.
    devmaster.vm.provision "shell",
       inline: "cp /var/aegir/.ssh/id_rsa.pub /vagrant/devmaster_id_rsa.pub"
@@ -63,6 +51,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Prepare development environment
     if (development_mode)
+
+      config.vm.provision "ansible" do |ansible|
+        ansible.playbook = "playbook.yml"
+        ansible.raw_arguments  = [
+          '--become'
+        ]
 
       devmaster.vm.synced_folder "source/devmaster-" + settings["devshop_version"], "/var/aegir/devmaster-" + settings["devshop_version"],
           mount_options: ["uid=12345,gid=12345"]
@@ -90,6 +84,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       devmaster.vm.provision "shell",
         inline: "echo '10.10.10.12  devshop.remote2' >> /etc/hosts"
+
+    # If not in development mode...
+    else 
+    
+      # Set SH as our provisioner
+      devmaster.vm.provision "shell",
+        path: settings["vagrant_install_script"],
+        args: settings["vagrant_install_script_args"]
 
     end
   end
