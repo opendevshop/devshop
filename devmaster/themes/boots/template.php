@@ -770,6 +770,10 @@ HTML;
       'type' => 'warning',
     );
   }
+
+  if (!isset($vars['project_extra_items']) || !is_array($vars['project_extra_items'])) {
+    $vars['project_extra_items'] = array();
+  }
 }
 
 /**
