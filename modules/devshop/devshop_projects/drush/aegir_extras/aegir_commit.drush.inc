@@ -57,17 +57,40 @@ function drush_aegir_commit_provision_commit() {
       }
       else {
         devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
+        $cmds = array();
 
         // If files option was detected
         if ($files) {
-          $files_list = implode(' ', $files);
-          $cmd = "git add {$files_list}";
+          $files_list = '';
+          $files_to_remove_list = '';
+
+          foreach ($files as $file) {
+            if (file_exists($file)) {
+              $files_list .= ' ' . $file;
+            }
+            else {
+              $files_to_remove_list .= ' ' . $file;
+            }
+          }
+
+          // If files lists is not empty, add "git add" command to queue.
+          if (!empty($files_list)) {
+            $cmds[] = "git add {$files_list}";
+          }
+
+          // If files_to_remove list is not empty, add git rm to queue.
+          if (!empty($files_to_remove_list)) {
+            $cmds[] = "git rm {$files_to_remove_list}";
+          }
         }
         else {
-          $cmd = 'git add -A';
+          $cmds[] = 'git add -A';
         }
 
-        devshop_drush_process($cmd, $environment->repo_root, 'Adding files to local repository...');
+        foreach ($cmds as $cmd) {
+          devshop_drush_process($cmd, $environment->repo_root, 'Adding files to local repository...');
+        }
+
         devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
 
         $hostmaster_uri = d('hostmaster')->uri;
