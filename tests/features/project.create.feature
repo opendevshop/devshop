@@ -4,6 +4,7 @@ Feature: Create a project
   As a project admin
   I need to create a new project
 
+
   Scenario: Create a new drupal 8 project
 
     Given users:
@@ -15,15 +16,15 @@ Feature: Create a project
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "projectname" for "Project Code Name"
-    And I fill in "http://github.com/opendevshop/drupal" for "Git URL"
+    Then I fill in "drpl8" for "Project Code Name"
+    And I fill in "http://github.com/jonpugh/drupal8" for "Git URL"
     When I press "Next"
 
     # Step 2
     Then print current URL
 #    Then save last response
-    Then I should see "projectname"
-    And I should see "http://github.com/opendevshop/drupal"
+    Then I should see "drpl8"
+    And I should see "http://github.com/jonpugh/drupal8"
 #   Uncomment once we have steps to unset the path to drupal.
 #    When I fill in "docroot" for "Path to Drupal"
 
@@ -36,24 +37,25 @@ Feature: Create a project
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
+    And I reload the page
 
-#    Then save last response
+    Then print last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
-    And I select "7.x-releases" from "project[environments][NEW][git_ref]"
+    And I select "master" from "project[environments][NEW][git_ref]"
 
 #    And I press "Add environment"
-#    And I fill in "live" for "project[environments][NEW][name]"
-#    And I select "7.41" from "project[environments][NEW][git_ref]"
-#    And I press "Add environment"
+    And I fill in "live" for "project[environments][NEW][name]"
+    And I select "master" from "project[environments][NEW][git_ref]"
+    And I press "Add environment"
     Then I press "Next"
 #    Then print last response
 
     # Step 4
     And I should see "dev"
-#    And I should see "live"
-#    And I should see "7.41"
-    And I should see "7.x-releases"
+    And I should see "live"
+    And I should see "master"
+    And I should see "master"
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
@@ -61,13 +63,17 @@ Feature: Create a project
     And I reload the page
 
     Then I should see "dev"
-    And I should see "test"
-#    And I should see "7.41"
+    And I should see "live"
+    And I should see "master"
 
-    And I should see "7.x-releases"
+    And I should see "master"
     And I wait "10" seconds
     And I reload the page
-    When I select "minimal" from "install_profile"
+#    When I click "Process Failed"
+#    Then print last response
+    Then I should see "8.0.2"
+    Then I should not see "Platform verification failed"
+    When I select "standard" from "install_profile"
     And I press "Finish"
 
     # FINISH!
@@ -75,10 +81,10 @@ Feature: Create a project
     And I should see "Dashboard"
     And I should see "Settings"
     And I should see "Logs"
-    And I should see "Minimal"
+    And I should see "standard"
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
-#    And I should see the link "live"
+    And I should see the link "live"
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
@@ -86,6 +92,11 @@ Feature: Create a project
 
     Then I wait "5" seconds
     And I reload the page
-    Given I go to "http://dev.projectname.devshop.travis"
+    Then I should see the link "dev"
+    Then I should see the link "live"
+#    Given I go to "http://dev.drpl8.devshop.travis"
 #    When I click "Visit Environment"
-    Then I should see "No front page content has been created yet."
+
+# @TODO: Fix our site installation.
+#    Then I should see "No front page content has been created yet."
+

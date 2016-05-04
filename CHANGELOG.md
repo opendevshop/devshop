@@ -1,5 +1,75 @@
 # Change Log
 
+# 1.0.0-beta2 (Pending)
+
+- Fixes bugs in Ansible roles.
+- Added beta of DevShop BitBucket integration, allowing webhooks and pull request environments for BitBucket repos.
+- Added devshop Cloud...
+
+More notes to come.
+
+# 1.0.0-beta1 (April 20, 2016)
+
+104 Commits to DevShop: https://github.com/opendevshop/devshop/compare/release-1.0.0-alpha4...1.x
+67 Commits to DevMaster: https://github.com/opendevshop/devmaster/compare/release-1.0.0-alpha4...1.x
+
+## Ansible Playbooks
+
+- Rewrote ansible installer using @geerlingguy's Ansible Playbooks.
+- Created aegir.user, aegir.apache, aegir.nginx, and aegir.devmaster roles to finalize DevMaster installation.
+  - https://github.com/opendevshop/ansible-role-aegir-user
+  - https://github.com/opendevshop/ansible-role-aegir-apache
+  - https://github.com/opendevshop/ansible-role-aegir-nginx
+  - https://github.com/opendevshop/ansible-role-devmaster
+- Improved install.sh script to work better on RedHat Enterprise Linux.
+- Developed "Aegir Ansible" project, to be included in next release.  Allows Aegir to act as an Ansible Inventory, making setting up remote servers and adding additional playbooks and roles a breeze.
+
+## New Features
+
+- Git Submodules! Deploy tasks now run `git submodule update --init --recursive`, so if you want to keep certain modules in different git repos, devshop now makes that easy.
+- Config Export and Import! DevShop & Aegir now give you a button to press to export your Drupal 8 config to files.  When you combine this with the Aegir Commit modules, you can Site Build, Export to disk, and commit to git without ever leaving your browser.
+- Upgrade Drupal! Click the "Upgrade Drupal" button to run "drush pm-update" to get your core and contrib in line.
+- Grouped Drush aliases! Each project now writes it's own drush aliases file, making it much easier to target an environment: 'drush @project.environment uli`
+
+## D6 -> D7 Upgrade Fixes
+
+- Fixed user redirection when running tasks. If fired from project dashboard, user is returned to project dashboard. If fired from environment dashboard, user is returned to environment dashboard.
+- Fixed dynamic task status loading. Just sit back and watch tasks start and stop.
+- Cleaned up styles for tasks widget, especially on the environments dashboard.
+- A few missing links to the new hostmaster URL 'hosting_confirm/1' instead of node/1'
+- Removed old unneeded CSS and JS.
+- Fixed the deploy queue: DevShop can once again continuously update your environments that are tracking git branches without a webhook.
+
+
+# 1.0.0-alpha4 (March 23, 2016)
+
+23 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha3...1.x
+1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-alpha3...1.x
+
+- Fixed a missing redirect from a newly created project node to the create project wizard.
+- Fixed broken PHP 5.5 installation on RedHat family.
+- Improved devshop login and devshop status commands: they will now attempt to switch to aegir user.
+
+# 1.0.0-alpha3 (March 15, 2016)
+
+9 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-alpha2...1.x
+89 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-alpha2...1.x
+
+- Improved installation documentation.
+- Display "diverged" for environments with diverged git repos.
+- Added "devshop_stats" module to allow us to track usage using drupal.org.
+- Fixing the over-obfuscated git url.
+- Changing Vagrantfile to use hostname "local.devshop.site"
+- Removing dependencies on Provision so devmaster can be installed as a standalone site.
+- Added "Module Filter" module.
+- Updating Aegir Commit, Aegir Download, and Aegir Features modules to 7.x.
+- Many 7.x upgrade theming fixes.
+- Adding "Default Install Profile" field to project settings form: you can now change the install profile that will be used for new environments.
+- Fixed GitHub Integration settings in Project Settings form.
+- Improved Pull Request settings dropdown: Now you can select "install" or a specific environment to clone (not forced to use the "live" environment.)
+- Fixed bugs preventing Pull Request environments from loading data.
+- Added "Commit Code" link to environment settings dropdown.
+
 ## 0.9.0 (March 15, 2016)
 
 12 commits to DevShop: https://github.com/opendevshop/devshop/compare/0.8.1...0.x

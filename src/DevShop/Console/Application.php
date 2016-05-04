@@ -75,12 +75,12 @@ class Application extends BaseApplication
   protected $release_date;
 
   private static $logo = '<fg=cyan>
- ____                     ____              ____  _
-/  _ \ _ __   ___ _ __   |  _ \  _____   __/ ___|| |__   ___  _ __
-| | | | \'_ \ / _ \ \'_ \  | | | |/ _ \ \ / /\___ \| \'_ \ / _ \| \'_ \
-| |_| | |_) |  __/ | | | | |_| |  __/\ V /  ___) | | | | (_) | |_) |
-\____/| .__/ \___|_| |_| |____/ \___| \_/  |____/|_| |_|\___/| .__/
-      |_|             http://getdevshop.com                  |_|  </>';
+   ____              ____  _
+  |  _ \  _____   __/ ___|| |__   ___  _ __
+  | | | |/ _ \ \ / /\___ \| \'_ \ / _ \| \'_ \
+  | |_| |  __/\ V /  ___) | | | | (_) | |_) |
+  |____/ \___| \_/  |____/|_| |_|\___/| .__/
+           http://getdevshop.com      |_|  </>';
 
 
   /**
@@ -92,10 +92,12 @@ class Application extends BaseApplication
     $commands[] = new Command\Status();
     $commands[] = new Command\Login();
     $commands[] = new Command\Install();
+    $commands[] = new Command\InstallDevmaster();
     $commands[] = new Command\DevmasterTest();
     $commands[] = new Command\Upgrade();
     $commands[] = new Command\RemoteInstall();
     $commands[] = new Command\SelfUpdate();
+    $commands[] = new Command\Verify\VerifySystem();
 
     return $commands;
   }

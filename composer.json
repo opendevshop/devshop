@@ -7,7 +7,8 @@
         "knplabs/github-api": "^1.4",
         "symfony/filesystem": "^2.7",
         "herrera-io/phar-update": "1.*",
-        "cpliakas/git-wrapper": "1.*"
+        "cpliakas/git-wrapper": "1.*",
+        "asm/php-ansible": "^1.0"
     },
     "authors": [
         {
