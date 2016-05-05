@@ -142,7 +142,7 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
 fi
 
 # If ansible command is not available, install it.
-if [ ! -d "/etc/ansible" ]; then
+if [ ! -f "/usr/bin/ansible" ]; then
     echo " Installing Ansible..."
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
