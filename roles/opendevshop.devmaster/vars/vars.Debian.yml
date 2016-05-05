@@ -21,4 +21,3 @@ extra_packages:
   - vim
   - supervisor
   - openssl
-  - libapache2-mod-php5
