@@ -143,7 +143,7 @@ fi
 
 # If ansible command is not available, install it.
 # Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
-if [ ! `hash ansible 2>/dev/null` ]; then
+if [ ! hash ansible 2>/dev/null ]; then
     echo " Installing Ansible..."
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
