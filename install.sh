@@ -171,7 +171,7 @@ if [ ! `which ansible > /dev/null 2>&1` ]; then
     elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
         # Build ansible from source to ensure the latest version.
-        yum install -y git epel-release > /dev/null 1>&1
+        yum install -y git epel-release redhat-lsb-core > /dev/null 1>&1
         git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.0
 
         # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
