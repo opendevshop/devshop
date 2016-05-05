@@ -32,13 +32,6 @@ AEGIR_USER_UID=12345
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "                   v $DEVSHOP_VERSION        "
-echo "        *** Star us on GitHub ***            "
-echo "   https://github.com/opendevshop/devshop    "
-echo "          ***    ***   ***   ***             "
-echo " "
-echo " Issues: https://github.com/opendevshop/devshop/issues"
-echo " Chat: https://gitter.im/opendevshop/devshop "
-echo " Code: https://github.com/opendevshop/devshop"
 echo "============================================="
 
 # Fail if not running as root (sudo)
@@ -331,8 +324,15 @@ if [ ${PIPESTATUS[0]} == 0 ]; then
   echo "Welcome to OpenDevShop! Use the link above to login."
   echo "Please visit http://getdevshop.com for help and information."
   echo ""
+  echo "Join the development community at https://github.com/opendevshop/devshop"
+  echo ""
   echo "Thanks!"
   echo "--The OpenDevShop Team"
+  echo ""
+
+  echo "  Issues: https://github.com/opendevshop/devshop/issues"
+  echo "  Chat: https://gitter.im/opendevshop/devshop "
+  echo "  Code: https://github.com/opendevshop/devshop"
   echo ""
   exit 0
 else
