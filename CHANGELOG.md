@@ -1,5 +1,13 @@
 # Change Log
 
+# 1.0.0-beta2 (Pending)
+
+- Fixes bugs in Ansible roles.
+- Added beta of DevShop BitBucket integration, allowing webhooks and pull request environments for BitBucket repos.
+- Added devshop Cloud...
+
+More notes to come.
+
 # 1.0.0-beta1 (April 20, 2016)
 
 104 Commits to DevShop: https://github.com/opendevshop/devshop/compare/release-1.0.0-alpha4...1.x
