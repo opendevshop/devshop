@@ -20,14 +20,12 @@
 #    --server_webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
 #    --makefile           The makefile to use to build the front-end site.
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
-#    --aegir_user_uid     The UID to set for the aegir user. Useful if you need a fixed UID for mounts.
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
-AEGIR_USER_UID=12345
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
