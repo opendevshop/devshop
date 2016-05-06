@@ -31,12 +31,13 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-  - test: Ubuntu 14.04 Nginx
-    distribution: ubuntu
-    version: 14.04
-    init: /sbin/init
-    run_opts: ""
-    script_opts: "--server-webserver=nginx"
+# TODO: Get NGINX support to work.
+#  - test: Ubuntu 14.04 Nginx
+#    distribution: ubuntu
+#    version: 14.04
+#    init: /sbin/init
+#    run_opts: ""
+#    script_opts: "--server-webserver=nginx"
 
 addons:
   hosts:
