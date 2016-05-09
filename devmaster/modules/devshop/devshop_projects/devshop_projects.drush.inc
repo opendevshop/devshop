@@ -156,17 +156,9 @@ function drush_devshop_platform_verify() {
   $git_remote = $platform->project->git_url;
   $drupal_path = $platform->project->drupal_path;
 
-  $create_branch = FALSE;
-
   //Remove drupal_path to clone.
   if ($drupal_path) {
     $root = str_replace($drupal_path, '', $root);
-  }
-
-  // If there is a branch to fork, set the branch_to_fork as git_ref
-  if (!empty($platform->environment->settings->branch_to_fork)) {
-    $git_ref = $platform->environment->settings->branch_to_fork;
-    $create_branch = TRUE;
   }
 
   // Check if the platform code exists. If it doesn't, clone it.
@@ -196,12 +188,17 @@ function drush_devshop_platform_verify() {
     }
   }
 
-  // If branch needs to be created (for "fork environment")
-  if ($create_branch) {
-    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", dt('Creating a new branch.'));
+  // If this is the first verification, and branch needs to be created (for "fork environment")
+  if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
+    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $root, dt('Creating a new branch.'));
 
     // Push the branch
-    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", dt('Pushing new branch.'));
+    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", $root, dt('Pushing new branch.'));
+  }
+
+  // Detect a bad path_to_drupal
+  if (!file_exists($platform->environment->root . '/index.php')) {
+    return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check your Path to Drupal.'));
   }
 
   // Detect composer.json and run composer install.
@@ -379,12 +376,25 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 }
 
 /**
- * Implements hook_post_hosting_TASK_TYPE_task() for `clone` task().
- *
- * Ensures that cloned sites that are on project platforms inherit the project.
+ * Implements hook_post_hosting_TASK_TYPE_task().
+ */
+function devshop_projects_post_hosting_install_task($task, $data) {
+
+  // Now that environment data is stored in project data we need to verify projects a lot.
+  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+    hosting_add_task($task->ref->project->nid, 'verfiy');
+  }
+}
+
+/**
+ * Implements hook_post_hosting_TASK_TYPE_task().
  */
 function devshop_projects_post_hosting_clone_task($task, $data) {
-//  devshop_projects_post_hosting_import_task($task, $data);
+
+  // Now that environment data is stored in project data we need to verify projects a lot.
+  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+    hosting_add_task($task->ref->project->nid, 'verfiy');
+  }
 }
 
 /**
@@ -393,6 +403,11 @@ function devshop_projects_post_hosting_clone_task($task, $data) {
  * Ensures that cloned sites that are on project platforms inherit the project.
  */
 function devshop_projects_post_hosting_import_task($task, $data) {
+
+  // Now that environment data is stored in project data we need to verify projects a lot.
+  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+    hosting_add_task($task->ref->project->nid, 'verfiy');
+  }
 
   // If this is a new platform created by a project, we will create a site here.
   if ($task->ref->type == 'site') {

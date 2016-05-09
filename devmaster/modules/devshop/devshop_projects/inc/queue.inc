@@ -7,7 +7,7 @@ function devshop_projects_hosting_queues() {
   $items['deploy'] = array(
     'type' => 'batch',
     'name' => t('Deploy Queue'),
-    'description' => t('Runs git pull and deploy hooks on projects configured to do so.'),
+    'description' => t('Deploy Queue: Runs a Deploy task on projects configured to use "Manual Deployment" for environments that are not set to "Disable Deploy on Commit".'),
     'total_items' => count(devshop_projects_get_deploy_queue_environments()),
     'frequency' => strtotime("5 minutes", 0),
     'singular' => t('environment'),
@@ -27,21 +27,20 @@ function devshop_projects_hosting_queues() {
  */
 function devshop_projects_get_deploy_queue_environments() {
 
-  $results = db_query("SELECT nid FROM {hosting_devshop_project}");
+  $results = db_query("SELECT nid FROM {hosting_devshop_project}")->fetchCol();
   $environments = array();
-  foreach ($results as $result) {
-    $node = node_load($result->nid);
+  foreach ($results as $nid) {
+    $node = node_load($nid);
     if (!isset($node->project)) {
       continue;
     }
     $project = $node->project;
     if (isset($project->settings->deploy) && $project->settings->deploy['method'] == 'queue'){
       foreach ($project->environments as $environment) {
-        if ($environment->git_ref_type == 'branch' && $environment->settings->pull_disabled == 0) {
+        if ($project->settings->git['refs'][$environment->git_ref] == 'branch' && $environment->settings->pull_disabled == 0) {
           $environments[] = $environment;
         }
       }
-
     }
   }
   return $environments;

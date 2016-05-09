@@ -46,61 +46,35 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
-  try {
-
-    $wrapper = new GitWrapper();
-    $wrapper->streamOutput();
-    $git = $wrapper->workingCopy($environment->repo_root);
-    chdir($git->getDirectory());
-    drush_log('[Current Working Directory]' . $git->getDirectory(), 'devshop_log');
+    drush_log('[Current Working Directory]' . $environment->repo_root, 'devshop_log');
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
 
     // Fetch
-    drush_log('[DevShop Deploy] git fetch --all', 'devshop_command');
-    $git->fetchAll();
-    drush_log($git->getOutput(), 'devshop_ok');
+    devshop_drush_process("git fetch --all", $environment->repo_root, dt('DevShop Deploy'));
 
     // Checkout the chosen ref
-    drush_log("[DevShop Deploy] git checkout {$git_ref}", 'devshop_command');
-    $git->checkout($git_ref);
-    $git_checkout_output = $git->getOutput();
-    drush_log($git_checkout_output, 'devshop_ok');
-
+    $git_checkout_output = devshop_drush_process("git checkout {$git_ref}", $environment->repo_root, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
-    drush_log($git_checkout_output, 'devshop_ok');
 
     // Run Git Pull
     if ($desired_ref_type == 'branch') {
 
-      drush_log("[DevShop Deploy] git pull", 'devshop_command');
-      $git->pull();
-      $git_pull_output = $git->getOutput();
-      drush_log($git_pull_output, 'devshop_ok');
+      $git_pull_output = devshop_drush_process("git pull", $environment->repo_root, dt('DevShop Deploy'));
+      devshop_drush_process("git submodule update --init --recursive ", $environment->repo_root, dt('DevShop Deploy'));
 
       // If on a branch and there are no changes it says "Already up-to-date."
-      if ($git_pull_output == trim('Already up-to-date.')) {
+      if (strpos($git_pull_output, 'Already up-to-date.') !== FALSE) {
         drush_set_context('devshop_block_deploy_hooks', TRUE);
-        return;
       }
     }
     // If on a tag, and there are no changes, it outputs one line with the current ref.
     elseif ($desired_ref_type == 'tag' && count($git_checkout_output_lines) == 1) {
       drush_set_context('devshop_block_deploy_hooks', TRUE);
-      return;
     }
 
-    drush_log('[DevShop Deploy] git status', 'devshop_command');
-    $git->status();
-    drush_log($git->getOutput(), 'devshop_ok');
-
-  } catch (GitException $e) {
-    drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
-    drush_log($e->getMessage(), 'devshop_error');
-    drush_log($e->getMessage(), 'error');
-    return FALSE;
-  }
+    devshop_drush_process("git status", $environment->repo_root, dt('DevShop Deploy'));
 }
 
 /**
@@ -109,11 +83,8 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   if (drush_get_context('devshop_block_deploy_hooks')){
-    drush_log(dt('[DEVSHOP] Skipping deploy hooks. No changes detected.'), 'ok');
+    drush_log(dt('Skipping deploy hooks. No changes detected.'), 'devshop_log');
     return;
-  }
-  else {
-    drush_log(dt('[DEVSHOP] Preparing to run deploy hooks...'), 'ok');
   }
 
   // Get post deploy options
