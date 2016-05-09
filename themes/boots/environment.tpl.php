@@ -167,7 +167,7 @@
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (empty($environment->site) && $environment->platform): ?>
-                    <a href="<?php print url("node/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                    <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                         <i class="fa fa-trash"></i> <?php print t('Destroy Environment'); ?>
                     </a>
                 <?php endif; ?>
@@ -794,7 +794,7 @@ sites/all/drush/drushrc.php
        <?php else: ?>
         <!-- Tasks -->
           <label class="sr-only"><?php print t('Last Task') ?></label>
-        <div class="environment-tasks-alert alert-<?php print $environment->last_task_node->status_class ?>">
+
             <div class="btn-group btn-logs pull-right" role="group">
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-list-alt"></i>
@@ -803,22 +803,8 @@ sites/all/drush/drushrc.php
                     <?php print $environment->task_logs; ?>
                 </div>
             </div>
-            <div class="btn-group btn-last-task text">
-                <a href="<?php print $environment->last_task_node->url; ?>" class="alert-link">
-                    <i class="fa fa-<?php print $environment->last_task_node->icon ?>"></i>
-                    <span class="type-name"><?php print $environment->last_task_node->type_name ?></span>
-                    <span class="status-name small"><?php if ($environment->last_task_node->task_status != HOSTING_TASK_QUEUED && $environment->last_task_node->task_status != HOSTING_TASK_PROCESSING) print $environment->last_task_node->status_name ?></span>
-                   &nbsp;
-                    <em class="small"><i class="ago-icon fa fa-<?php if ($environment->last_task_node->task_status == HOSTING_TASK_QUEUED || $environment->last_task_node->task_status == HOSTING_TASK_PROCESSING) print 'clock-o'; else print 'calendar' ?>"></i> <span class="ago"><?php print $environment->last_task_node->ago ?></span></em>
-                </a>
-            </div>
-        </div>
-        <?php endif; ?>
 
-        <span class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                <span class="sr-only"></span>
-            </div>
-        </span>
+          <?php print theme('devshop_task', array('task' => $environment->last_task_node)); ?>
+        <?php endif; ?>
     </div>
 </div>

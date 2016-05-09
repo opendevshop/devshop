@@ -69,3 +69,10 @@
         )); ?>
     </div>
 </div>
+
+<div class="drupal-content">
+    <?php
+  print render($content);
+?>
+</div>
+

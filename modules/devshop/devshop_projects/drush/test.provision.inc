@@ -25,8 +25,12 @@ function drush_devshop_provision_provision_test() {
   $environment = (object) $project->environments[d()->environment];
 
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
+
   // Get tests to run
-  $type = drush_get_option('test-type', $environment->settings['testing']['test_type']);
+  if (!isset($environment->settings['testing']['test_type'])) {
+    $default_type = 'behat';
+  }
+  $type = drush_get_option('test-type', $default_type);
 
   if ($environment->settings['testing']['tests_to_run'] === NULL) {
     $tests = array();
