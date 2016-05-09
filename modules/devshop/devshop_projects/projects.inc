@@ -35,7 +35,8 @@ function devshop_projects_entity_load($entities, $type) {
 
         $query = db_query("
 SELECT
-  project_nid, name FROM {hosting_devshop_project_environment}
+  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e 
+  LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
     OR platform = :platform
     OR project_nid = :project
@@ -48,8 +49,9 @@ SELECT
         $result = $query->fetch();
 
         // Only load the project node if there is no task
-        if ($entity->type == 'task') {
+        if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
+          $entity->project_name = $result->project_name;
           $entity->environment = $result->name;
         }
         else if (isset($result->project_nid)) {
@@ -106,6 +108,14 @@ function devshop_project_load($node) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@github.com:' => 'http://github.com/',
+      'git://' => 'http://',
+      '.git' => '',
+    ));
+  }
+  elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+    $project->git_provider = 'bitbucket';
+    $project->git_repo_url = strtr($project->git_url, array(
+      'git@bitbucket.com:' => 'http://bitbucket',
       'git://' => 'http://',
       '.git' => '',
     ));

@@ -25,6 +25,7 @@ projects[hostmaster][version] = "3.4"
 projects[hosting][version] = "3.4"
 projects[hosting][subdir] = "aegir"
 projects[hosting][patch][687750] = "https://www.drupal.org/files/issues/2610122-circular-dependencies.patch"
+projects[hosting][patch][2707157] = "https://www.drupal.org/files/issues/2707157-hosting-site-nid-variable.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
@@ -34,11 +35,14 @@ projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_site_backup_manager][patch][2619074] = https://www.drupal.org/files/issues/2619074-remove-varget_2.patch
 
 projects[hosting_tasks_extra][subdir] = aegir
+projects[hosting_tasks_extra][patch][2707129] = https://www.drupal.org/files/issues/2707129-upgrade-drupal_0.patch
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = 3.x
 projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 0.3
+projects[aegir_config][subdir] = aegir
+projects[aegir_config][version] = 1.x
 
 ; Not working yet.
 ;projects[hosting_solr][version] = "1"

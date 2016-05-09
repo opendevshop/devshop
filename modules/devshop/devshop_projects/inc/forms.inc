@@ -91,6 +91,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#weight' => -10,
   );
 
+  // Project Settings Vertical Tabs
+  $form['project_settings'] = array(
+    '#type' => 'vertical_tabs',
+    '#weight' => -11,
+  );
+
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
@@ -107,6 +113,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Domain Name Settings'),
+    '#group' => 'project_settings',
   );
 
   // Live Environment
@@ -149,9 +156,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
-    '#title' => t('Deploy Settings'),
+    '#title' => t('Deployment Automation'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
     '#weight' => -10,
+    '#group' => 'project_settings',
   );
 
   $form['project']['settings']['deploy']['method'] = array(
@@ -266,6 +274,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Default Environment Settings'),
     '#description' => t('These settings will be used when creating new environments.'),
+    '#group' => 'project_settings',
   );
 
   // Install Profile
@@ -326,6 +335,14 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#default_value' => $project->settings->default_environment['solr_server'],
     );
   }
+  
+  // Force the servers for this project's environments
+  $form['project']['settings']['default_environment']['force_default_servers'] = array(
+    '#title' => t('Force new environments to use these servers.'),
+    '#description' => t('When new environments are created, they will use the servers selected above.'),
+    '#type' => 'checkbox',
+    '#default_value' => $project->settings->default_environment['force_default_servers'],
+  );
   return $form;
 }
 
@@ -761,7 +778,9 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
   $return = array(
       '#type' => 'fieldset',
+      '#group' => 'project_settings',
       '#title' => t('Deployment Hooks'),
+      '#weight' => -9,
   );
 
   // If we are on the project creation wizard, set some sane defaults

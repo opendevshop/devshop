@@ -12,41 +12,46 @@
           $.getJSON(url, function (data) {
 
               var lastTaskStatus = null;
-              $.each(data, function (key, value) {
-                  var task = value.last_task_node;
-                  var id = '#' + value.project + '-' + value.name;
-                  var new_class = 'environment-task-alert alert-' + task.status_class;
+              $.each(data, function (key, task) {
+                  var environment_id = '#' + task.project_name + '-' + task.environment;
+                  var task_id = '#task-display-' + task.nid;
+                  var new_class = 'environment-tasks-alert alert-' + task.status_class;
 
-                  var $alert_div = $('.environment-task-alert', id);
+                  var $alert_div = $(task_id + '.environment-tasks-alert');
 
                   // Project Node Page
-                  if (Drupal.settings.devshopProject) {
+                  if (Drupal.settings.devshopTask == null) {
 
                       // Set class of wrapper div
                       $alert_div.attr('class', new_class);
 
                       // Set or remove active class from environment div.
                       if (task.status_class == 'queued' || task.status_class == 'processing') {
-                          $(id).addClass('active');
+                          $(environment_id).addClass('active');
                       }
                       else {
-                          $(id).removeClass('active');
+                          $(environment_id).removeClass('active');
                       }
 
                       // Remove any status classes and add current status
-                      $(id).removeClass('task-queued');
-                      $(id).removeClass('task-processing');
-                      $(id).removeClass('task-success');
-                      $(id).removeClass('task-error');
-                      $(id).removeClass('task-warning');
-                      $(id).addClass('task-' + task.status_class);
+                      $(environment_id).removeClass('task-queued');
+                      $(environment_id).removeClass('task-processing');
+                      $(environment_id).removeClass('task-success');
+                      $(environment_id).removeClass('task-error');
+                      $(environment_id).removeClass('task-warning');
+                      $(environment_id).addClass('task-' + task.status_class);
 
                       // Set value of label span
                       $('.alert-link > .type-name', $alert_div).html(task.type_name);
 
                       // If queued or processing, make label empty.
                       if (task.status_class == 'queued' || task.status_class == 'processing') {
-                          $('.alert-link > .status-name', $alert_div).html('');
+                          if (task.status_class == 'queued') {
+                              $('.alert-link > .status-name', $alert_div).html('');
+                          }
+                          else {
+                              $('.alert-link > .status-name', $alert_div).html(task.status_name);
+                          }
                           $('.alert-link .ago-icon', $alert_div).removeClass('fa-calendar');
                           $('.alert-link .ago-icon', $alert_div).addClass('fa-clock-o');
                       }
@@ -98,7 +103,7 @@
                           $('.follow-logs-checkbox').remove();
                           $('.edit-update-status').remove();
                           $('.running-indicator').remove();
-                          Drupal.settings.lastTaskStopped = TRUE;
+                          Drupal.settings.lastTaskStopped = true;
                       }
                       else {
                           // Scroll down if follow checkbox is checked.
@@ -122,7 +127,7 @@
                   // Projects List Page.
                   // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
                   else {
-                      var id = '#badge-' + value.project + '-' + value.name;
+                      var id = '#badge-' + task.project_name + '-' + task.environment;
 
                       // Set class of badge
                       $(id).attr('class', 'btn btn-small alert-' + task.status_class);
@@ -136,7 +141,7 @@
                   }
 
                   // Update global tasks list.
-                  var task_id = '#task-' + value.project + '-' + value.name;
+                  var task_id = '#task-' + task.project_name + '-' + task.environment;
 
                   // Set class of badge
                   $(task_id).attr('class', 'list-group-item list-group-item-' + task.status_class);

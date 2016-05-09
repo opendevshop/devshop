@@ -122,16 +122,10 @@ function boots_preprocess_environment(&$vars) {
       }
     }
 
-    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
-
-    $items[] = l($text, "node/{$task->nid}", array(
-        'html' => TRUE,
-        'attributes' => array(
-            'class' => "list-group-item list-group-item-{$task->status_class}",
-        ),
-    ));
-    $environment->task_logs = implode("\n", $items);
+//    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
+    $items[] = theme('devshop_task', array('task' => $task));
   }
+  $environment->task_logs = implode("\n", $items);
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
@@ -426,8 +420,11 @@ function boots_preprocess_page(&$vars){
 
     // Set subtitle
     $vars['title'] = $vars['node']->title;
-    $vars['subtitle'] = ucfirst($vars['node']->type);
     $vars['title_url'] = "node/" . $vars['node']->nid;
+
+    if (in_array($vars['node']->type, array('site', 'platform', 'project', 'task', 'server', 'client'))){
+      $vars['subtitle'] = ucfirst($vars['node']->type);
+    }
 
     // Set title2 if on a node/%/* sub page.
     if (!is_null(arg(2)) && $vars['title'] != $vars['node']->title) {
@@ -444,7 +441,7 @@ function boots_preprocess_page(&$vars){
     }
 
     // Set header and subtitle 2 for nodes that have a project.
-    elseif (isset($vars['node']->project)) {
+    elseif (!empty($vars['node']->project)) {
 
       $vars['title2'] = $vars['title'];
 

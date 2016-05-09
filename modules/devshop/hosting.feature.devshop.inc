@@ -6,32 +6,32 @@
  */
 function devshop_hosting_hosting_feature() {
   $features['devshop_projects'] = array(
-    'title' => t('DevShop Projects'),
-    'description' => t('Enables the project-centric DevShop UI.'),
-    'status' => HOSTING_FEATURE_DISABLED,
+    'title' => t('DevShop'),
+    'description' => t('DevShop Hosting Platform'),
+    'status' => HOSTING_FEATURE_REQUIRED,
     'module' => 'devshop_projects',
-    'group' => 'devshop',
+    'group' => 'advanced',
   );
   $features['devshop_testing'] = array(
     'title' => t('DevShop Testing'),
     'description' => t('Allows running of tests on sites.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'devshop_testing',
-    'group' => 'devshop',
+    'group' => 'advanced',
   );
   $features['devshop_dothooks'] = array(
     'title' => t('DevShop .Hooks'),
     'description' => t('Allows projects to define their deploy hooks in a .hooks.yml file.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'devshop_dothooks',
-    'group' => 'devshop',
+    'group' => 'advanced',
   );
   $features['devshop_acquia'] = array(
     'title' => t('DevShop Acquia'),
     'description' => t('Allows environments to use Acquia Cloud Hooks for Deployment Hooks.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'devshop_dothooks',
-    'group' => 'devshop',
+    'group' => 'advanced',
   );
   return $features;
 }

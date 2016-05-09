@@ -128,7 +128,7 @@ function devshop_hosting_menu_alter(&$items) {
   $items['hosting/platforms']['type'] = MENU_LOCAL_TASK;
   $items['hosting/clients']['type'] = MENU_LOCAL_TASK;
 
-  $items['node/%hosting_site_node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
+  $items['node/%node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
 
 }
 
@@ -327,7 +327,7 @@ HTML;
  *    in the array is another array, keyed by VID.
  *
  */
-function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
+function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20) {
 
   // Load tasks from hosting_task table for both site and platform.
   $args = array();
@@ -364,13 +364,18 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL) {
     }
   }
 
+  // Ensure limit is safe.
+  if (!is_int($limit) || $limit <= 0) {
+    $limit = 20;
+  }
   $results = db_query("
     SELECT t.nid, t.task_type
       FROM {node} tn
       INNER JOIN {hosting_task} t ON tn.nid = t.nid
       WHERE
         $where
-      LIMIT 5
+      ORDER BY nid DESC
+      LIMIT $limit
   ",
     $args
   );

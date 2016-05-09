@@ -140,6 +140,13 @@ function devshop_projects_devshop_environment_actions($environment) {
 
     $items[] = '<div class="divider"></div>';
 
+    // Add export and import config buttons.
+    if (module_exists('aegir_config')) {
+      $items[] = 'config_export';
+      $items[] = 'config_import';
+      $items[] = '<div class="divider"></div>';
+    }
+
     $items[] = 'verify';
     $items[] = 'flush_cache';
     $items[] = 'rebuild_registry';
@@ -688,14 +695,16 @@ function _devshop_projects_site_has_module($nid, $module) {
   if (is_object($nid) && isset($nid->nid)) {
     $nid = $nid->nid;
   }
-  $param = array(
-    'rid' => $nid,
-    'p.short_name' => $module,
-  );
-  $package = hosting_package_instance_load($param);
-  if (isset($package->status)) {
-    return $package->status;
-  }
+
+  $query = db_select('hosting_package_instance', 'i')
+    ->fields('i', array('status'));
+  $query->leftJoin('hosting_package', 'p', 'i.package_id = p.nid');
+
+  $query->condition('p.short_name', $module);
+  $query->condition('rid', $nid);
+
+  $result = $query->execute()->fetchField();
+  return $result;
 }
 
 /**
