@@ -1,12 +1,16 @@
 # Change Log
 
-# 1.0.0-beta2 (Pending)
+# 1.0.0-beta2 (May 9, 2016)
 
-- Fixes bugs in Ansible roles.
+Released at DrupalCon New Orleans!
+
+64 Commits to DevShop: https://github.com/opendevshop/devshop/compare/release-1.0.0-beta1...1.x
+25 Commits to DevMaster: https://github.com/opendevshop/devmaster/compare/release-1.0.0-beta1...1.x
+
+- Release of official Ansible Galaxy Roles: http://galaxy.ansible.com/opendevshop 
 - Added beta of DevShop BitBucket integration, allowing webhooks and pull request environments for BitBucket repos.
-- Added devshop Cloud...
-
-More notes to come.
+- UI Improvements: Vertical Tabs in project settings!
+- New Contributor: @tommycox.  Thanks for cleaning up images in the Documentation!
 
 # 1.0.0-beta1 (April 20, 2016)
 
