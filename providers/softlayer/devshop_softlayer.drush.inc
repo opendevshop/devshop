@@ -4,9 +4,9 @@ module_load_include('service.inc', 'devshop_cloud');
 require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
 
 /**
- * Implementation of hook_post_hosting_TASK_TYPE_task() for verified tasks.
+ * Implementation of hook_pre_hosting_TASK_TYPE_task() for verified tasks.
  */
-function devshop_softlayer_post_hosting_verify_task($task, $data) {
+function devshop_softlayer_pre_hosting_verify_task($task, $data) {
 
     if ($task->ref->type == 'server') {
 
