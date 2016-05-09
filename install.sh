@@ -171,7 +171,7 @@ if [ ! `command -v ansible` ]; then
     elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
         # Build ansible from source to ensure the latest version.
-        yum install -y git epel-release > /dev/null 1>&1
+        yum install -y git epel-release redhat-lsb-core > /dev/null 1>&1
         git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.0
 
         # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
@@ -288,7 +288,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
@@ -309,7 +309,13 @@ if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
-ansible-playbook -i inventory playbook.yml --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
+if [ $SERVER_WEBSERVER == 'apache' ]; then
+  PLAYBOOK_FILE="playbook.yml"
+elif [ $SERVER_WEBSERVER == 'nginx' ]; then
+  PLAYBOOK_FILE="playbook-nginx.yml"
+fi
+
+ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
 
 # @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli
