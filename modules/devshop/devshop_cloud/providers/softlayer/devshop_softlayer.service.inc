@@ -205,4 +205,15 @@ class hostingService_provider_softlayer extends hostingService_provider {
       watchdog('devshop_cloud', 'CODE: ' . $e->getCode() . '|' . $e->getMessage());
     }
   }
+
+  /**
+   * Public method for getting a softlayer client.
+   *
+   * @param $service
+   * @param $id
+   * @return Softlayer_SoapClient
+   */
+  public function getClient($service, $id){
+    return $this->softlayer_client($service, $id);
+  }
 }
