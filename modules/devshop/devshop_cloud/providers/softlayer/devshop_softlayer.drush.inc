@@ -4,11 +4,14 @@ module_load_include('service.inc', 'devshop_cloud');
 require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
 
 /**
- * Implementation of hook_pre_hosting_TASK_TYPE_task() for verified tasks.
+ * Implements drush_HOOK_pre_COMMAND()
  */
-function devshop_softlayer_pre_hosting_verify_task($task, $data) {
+function drush_devshop_softlayer_pre_hosting_task() {
+
+    $task =& drush_get_context('HOSTING_TASK');
 
     if ($task->ref->type == 'server') {
+        drush_log('HELLLOOOO DEVSHOP', 'devshop_log');
 
         // Lookup and save IP addresses.
         try {
@@ -16,10 +19,17 @@ function devshop_softlayer_pre_hosting_verify_task($task, $data) {
 
             // Create the Softlayer "Virtual Guest"
             $id = $service->provider_server_identifier;
-            $api = $service->softlayer_client('SoftLayer_Virtual_Guest', $id);
+            $api = $service->getClient('SoftLayer_Virtual_Guest', $id);
             $server = $api->getObject();
+            $task->ref->ip_addresses = array(
+                $server->primaryIpAddress,
+                $server->primaryBackendIpAddress,
+            );
 
-            drush_log(print_r($server, 1), 'devshop_log');
+            $task->ref->no_verify = TRUE;
+            node_save($task->ref);
+
+            drush_log('IP address info acquired.', 'devshop_info');
 
         } catch (Exception $e) {
             drush_set_error('DEVSHOP_CLOUD_ERROR', $e->getMessage());
