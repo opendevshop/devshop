@@ -50,7 +50,7 @@ projects[aegir_config][version] = 1.x
 ; Contrib Modules
 projects[sshkey][version] = "2"
 projects[betterlogin][version] = 1.4
-projects[entity][version] = 1.6
+projects[entity][version] = 1.7
 projects[openidadmin][version] = 1.0
 projects[overlay_paths][version] = 1.3
 projects[r4032login][version] = 1.8
@@ -60,12 +60,12 @@ projects[jquery_update][version] = "3.0-alpha3"
 projects[views][version] = "3.13"
 projects[views_bulk_operations][version] = "3.3"
 projects[ctools][version] = "1.9"
-projects[features][version] = "2.7"
+projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
-projects[devshop_stats][version] = "1"
 projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
+projects[devshop_stats][version] = "1.0-beta2"
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.4
+projects[bootstrap][version] = 3.5
