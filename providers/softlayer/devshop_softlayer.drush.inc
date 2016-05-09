@@ -11,7 +11,6 @@ function drush_devshop_softlayer_pre_hosting_task() {
     $task =& drush_get_context('HOSTING_TASK');
 
     if ($task->ref->type == 'server') {
-        drush_log('HELLLOOOO DEVSHOP', 'devshop_log');
 
         // Lookup and save IP addresses.
         try {
