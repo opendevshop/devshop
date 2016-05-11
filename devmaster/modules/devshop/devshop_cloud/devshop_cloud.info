@@ -1,6 +1,0 @@
-name = DevShop Cloud
-description = Connects to cloud hosting providers to provision servers.
-core = 7.x
-package = DevShop
-
-dependencies[] = hosting_server
