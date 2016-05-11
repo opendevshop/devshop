@@ -1,6 +1,6 @@
-name = DevShop Cloud: SoftLayer
+name = Aegir Cloud: SoftLayer
 description = Launches servers in softlayer.
 core = 7.x
-package = DevShop
+package = Aegir
 
-dependencies[] = devshop_cloud
+dependencies[] = aegir_cloud

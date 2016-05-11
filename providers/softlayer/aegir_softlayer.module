@@ -3,14 +3,14 @@
 /**
  * Implements hook_menu()
  */
-function devshop_softlayer_menu(){
+function aegir_softlayer_menu(){
   $items = array();
-  $items['admin/devshop/cloud_softlayer'] = array(
+  $items['admin/aegir/cloud_softlayer'] = array(
     'title' => 'SoftLayer',
     'description' => 'Retrieve options from softlayer.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_softlayer_options_form'),
-    'access arguments' => array('administer devshop cloud'),
+    'page arguments' => array('aegir_softlayer_options_form'),
+    'access arguments' => array('administer aegir cloud'),
     'file' => 'options.php',
     'type' => MENU_LOCAL_TASK,
   );
@@ -19,8 +19,8 @@ function devshop_softlayer_menu(){
 /**
  * Implements hook_hosting_service()
  */
-function devshop_softlayer_hosting_service() {
-  $options = variable_get('devshop_cloud_softlayer_options', array());
+function aegir_softlayer_hosting_service() {
+  $options = variable_get('aegir_cloud_softlayer_options', array());
   if (!empty($options)) {
     return array(
       'softlayer' => 'provider',
@@ -34,9 +34,9 @@ function devshop_softlayer_hosting_service() {
 /**
  * Implements hook_form_FORM_ID_alter()
  *
- * Alters devshop cloud settings form to add softlayer api keys.
+ * Alters aegir cloud settings form to add softlayer api keys.
  */
-function devshop_softlayer_form_devshop_cloud_settings_form_alter(&$form, &$form_state) {
+function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_state) {
 
   $form['softlayer'] = array(
     '#type' => 'fieldset',
@@ -44,21 +44,21 @@ function devshop_softlayer_form_devshop_cloud_settings_form_alter(&$form, &$form
     '#weight' => -100,
   );
 
-  $form['softlayer']['devshop_cloud_softlayer_api_username'] = array(
+  $form['softlayer']['aegir_cloud_softlayer_api_username'] = array(
     '#type' => 'textfield',
     '#title' => t('API Username'),
     '#description' => t('Enter your softlayer username here.'),
-    '#default_value' => variable_get('devshop_cloud_softlayer_api_username', ''),
+    '#default_value' => variable_get('aegir_cloud_softlayer_api_username', ''),
   );
 
   $url = 'https://control.softlayer.com/account/users';
-  $form['softlayer']['devshop_cloud_softlayer_api_key'] = array(
+  $form['softlayer']['aegir_cloud_softlayer_api_key'] = array(
     '#type' => 'textfield',
     '#title' => t('API Key'),
     '#description' => t('Enter your SoftLayer API key here.  Get your API key at !link', array(
       '!link' => l($url, $url),
     )),
-    '#default_value' => variable_get('devshop_cloud_softlayer_api_key', ''),
+    '#default_value' => variable_get('aegir_cloud_softlayer_api_key', ''),
   );
 
 

@@ -4,7 +4,7 @@
 /**
  * Implements drush_HOOK_pre_COMMAND()
  */
-function drush_devshop_softlayer_pre_hosting_task() {
+function drush_aegir_softlayer_pre_hosting_task() {
 
     $task =& drush_get_context('HOSTING_TASK');
 
@@ -20,7 +20,7 @@ function drush_devshop_softlayer_pre_hosting_task() {
 
             // Loop until we have an IP address.
             while (empty($task->ref->ip_addresses)) {
-                drush_log('Waiting for IP addresses...', 'devshop_log');
+                drush_log('Waiting for IP addresses...', 'aegir_log');
                 sleep(3);
                 $server = $api->getObject();
 
@@ -36,19 +36,19 @@ function drush_devshop_softlayer_pre_hosting_task() {
 
                     $task->ref->no_verify = TRUE;
                     if (node_save($task->ref)) {
-                        drush_log('Node saved', 'devshop_log');
+                        drush_log('Node saved', 'success');
                     }
                     else {
-                        drush_log('Node not saved', 'devshop_log');
+                        drush_log('Node not saved', 'error');
                     }
 
 //                    $node = node_load($task->ref->nid);
-                    drush_log('IP address info acquired and saved: ' . implode(', ', $ips), 'devshop_log');
+                    drush_log('IP address info acquired and saved: ' . implode(', ', $ips), 'success');
                 }
             }
 
         } catch (Exception $e) {
-            drush_set_error('DEVSHOP_CLOUD_ERROR', $e->getMessage());
+            drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
         }
 
 

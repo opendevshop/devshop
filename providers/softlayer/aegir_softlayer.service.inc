@@ -1,6 +1,6 @@
 <?php
 
-module_load_include('service.inc', 'devshop_cloud');
+module_load_include('service.inc', 'aegir_cloud');
 
 require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
 
@@ -47,9 +47,9 @@ class hostingService_provider_softlayer extends hostingService_provider {
       $form['provider_options']['ssh_keys'] = array(
         '#type' => 'checkboxes',
         '#title' => t('SSH Keys'),
-        '#options' => variable_get('devshop_cloud_softlayer_ssh_keys_options', array()),
+        '#options' => variable_get('aegir_cloud_softlayer_ssh_keys_options', array()),
         '#default_value' => array(
-          variable_get('devshop_cloud_public_key_softlayer_id', ''),
+          variable_get('aegir_cloud_public_key_softlayer_id', ''),
         ),
       );
     }
@@ -136,10 +136,10 @@ class hostingService_provider_softlayer extends hostingService_provider {
    */
   function getSoftlayerOptions() {
     $options = array();
-    $raw_options = variable_get('devshop_cloud_softlayer_options', array());
+    $raw_options = variable_get('aegir_cloud_softlayer_options', array());
 
     if (empty($raw_options)) {
-      drupal_set_message(t('You must !link before you can create a server there.', array('!link' => l(t('retrieve SoftLayer options'), 'admin/hosting/devshop/softlayer'))), 'error');
+      drupal_set_message(t('You must !link before you can create a server there.', array('!link' => l(t('retrieve SoftLayer options'), 'admin/hosting/aegir/softlayer'))), 'error');
       return;
     }
 
@@ -173,8 +173,8 @@ class hostingService_provider_softlayer extends hostingService_provider {
    * @return \Softlayer_SoapClient
    */
   private function softlayer_client($service, $id = null) {
-    $api_key = variable_get('devshop_cloud_softlayer_api_key');
-    $username = variable_get('devshop_cloud_softlayer_api_username');
+    $api_key = variable_get('aegir_cloud_softlayer_api_key');
+    $username = variable_get('aegir_cloud_softlayer_api_username');
 
     // Initialize an API client for the SoftLayer_Account service.
     $client = SoftLayer_SoapClient::getClient($service, $id, $username, $api_key);
@@ -183,8 +183,8 @@ class hostingService_provider_softlayer extends hostingService_provider {
 
   public function context_options($task_type, $ref_type, &$task) {
     parent::context_options($task_type, $ref_type, $task);
-    $task->context_options['softlayer_api_username'] = variable_get('devshop_cloud_softlayer_api_username','YOURUSERNAME');
-    $task->context_options['softlayer_api_key'] = variable_get('devshop_cloud_softlayer_api_key','YOURKEY');
+    $task->context_options['softlayer_api_username'] = variable_get('aegir_cloud_softlayer_api_username','YOURUSERNAME');
+    $task->context_options['softlayer_api_key'] = variable_get('aegir_cloud_softlayer_api_key','YOURKEY');
   }
 
   /**
@@ -202,7 +202,7 @@ class hostingService_provider_softlayer extends hostingService_provider {
 
     } catch(Exception $e) {
       form_set_error('provider', $e->getMessage());
-      watchdog('devshop_cloud', 'CODE: ' . $e->getCode() . '|' . $e->getMessage());
+      watchdog('aegir_cloud', 'CODE: ' . $e->getCode() . '|' . $e->getMessage());
     }
   }
 
