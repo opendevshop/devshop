@@ -1,16 +1,16 @@
 <?php
 
-include_once('devshop_cloud.drush.inc');
+include_once('aegir_cloud.drush.inc');
 
 /**
  * Implements hook_hosting_feature().
  */
-function devshop_cloud_hosting_feature() {
-  $features['devshop_cloud'] = array(
-    'title' => t('DevShop Cloud'),
+function aegir_cloud_hosting_feature() {
+  $features['aegir_cloud'] = array(
+    'title' => t('Aegir Cloud'),
     'description' => t('Create servers via cloud hosting providers.'),
     'status' => HOSTING_FEATURE_DISABLED,
-    'module' => 'devshop_cloud',
+    'module' => 'aegir_cloud',
     'group' => 'advanced',
   );
   return $features;
@@ -19,16 +19,16 @@ function devshop_cloud_hosting_feature() {
 /**
  * Implements hook_menu()
  */
-function devshop_cloud_menu(){
+function aegir_cloud_menu(){
   $items = array();
-  $items['admin/devshop/cloud'] = array(
+  $items['admin/aegir/cloud'] = array(
     'title' => 'Cloud',
     'description' => 'Configure cloud providers.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_cloud_settings_form'),
-    'access arguments' => array('administer devshop cloud'),
+    'page arguments' => array('aegir_cloud_settings_form'),
+    'access arguments' => array('administer aegir cloud'),
     'file' => 'settings.php',
-    'file path' => drupal_get_path('module', 'devshop_cloud') . '/includes',
+    'file path' => drupal_get_path('module', 'aegir_cloud') . '/includes',
     'type' => MENU_LOCAL_TASK,
   );
   return $items;
@@ -37,11 +37,11 @@ function devshop_cloud_menu(){
 /**
  * Implements hook_perm()
  */
-function devshop_cloud_permission() {
+function aegir_cloud_permission() {
   return array(
-    'administer devshop cloud' => array(
-      'title' => t('Administer DevShop Cloud'),
-      'description' => t('Configure how DevShop Cloud.'),
+    'administer aegir cloud' => array(
+      'title' => t('Administer Aegir Cloud'),
+      'description' => t('Configure how Aegir Cloud.'),
     ),
   );
 }
@@ -70,7 +70,7 @@ function devshop_cloud_permission() {
  *    At present only the 'title' property is required for display
  *    of the server node form.
  */
-function devshop_cloud_hosting_service_type() {
+function aegir_cloud_hosting_service_type() {
   return array(
     'provider' => array(
       'title' => 'Cloud Provider',
@@ -82,7 +82,7 @@ function devshop_cloud_hosting_service_type() {
 /**
  * Implementation of hook_nodeapi()
  */
-function devshop_cloud_node_view($node, $view_mode, $langcode) {
+function aegir_cloud_node_view($node, $view_mode, $langcode) {
   if ($node->type == 'server') {
       if ($node->services['provider']) {
         $node->content['info']['provider'] = array(
@@ -131,14 +131,14 @@ function devshop_cloud_node_view($node, $view_mode, $langcode) {
 /**
  * Implements hook_hosting_tasks_alter().
  */
-function devshop_cloud_hosting_tasks_alter(&$tasks) {
+function aegir_cloud_hosting_tasks_alter(&$tasks) {
   $tasks['server']['delete']['dialog'] = TRUE;
 }
 
 /**
  * Implements hook_form_alter().
  */
-function devshop_cloud_form_alter(&$form, &$form_state, $form_id) {
+function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'server_node_form' && !isset($form_state['node']->nid)) {
     $form['actions']['submit']['#value'] = t('Create Server');
     $form['actions']['submit']['#icon'] = '<i class="fa fa-plus"></i>';
@@ -166,7 +166,7 @@ function devshop_cloud_form_alter(&$form, &$form_state, $form_id) {
         );
 
         // Add a submit handler to trigger the server provider delete.
-        $form['#validate'][] = 'devshop_cloud_delete_task_form_validate';
+        $form['#validate'][] = 'aegir_cloud_delete_task_form_validate';
       }
     }
   }
@@ -178,7 +178,7 @@ function devshop_cloud_form_alter(&$form, &$form_state, $form_id) {
  * @param $form
  * @param $form_state
  */
-function devshop_cloud_delete_task_form_validate($form, &$form_state) {
+function aegir_cloud_delete_task_form_validate($form, &$form_state) {
   $service = $form_state['build_info']['args'][0]->services['provider'];
   if (method_exists($service, 'destroy')) {
     $service->destroy();
