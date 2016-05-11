@@ -6,23 +6,23 @@
  * Form function for the digital_ocean options form.
  * @return array
  */
-function devshop_digital_ocean_options_form() {
+function aegir_digital_ocean_options_form() {
   $form = array();
-  devshop_digital_ocean_load_api();
+  aegir_digital_ocean_load_api();
   require_once dirname(__FILE__) . '/digital-ocean-master/vendor/autoload.php';
   require_once dirname(__FILE__) . '/digital-ocean-master/src/DigitalOceanV2.php';
-  $token = variable_get('devshop_cloud_digital_ocean_api_token', array());
+  $token = variable_get('aegir_cloud_digital_ocean_api_token', array());
 
   if (empty($token)) {
     $form['warning'] = array(
       '#prefix' => '<div class="alert alert-danger">',
       '#suffix' => '</div>',
-      '#value' => t('You must enter your Digital Ocean token before you can use this form.  See !link', array('!link' => l(t('Cloud Settings'), 'admin/hosting/devshop/cloud'))),
+      '#value' => t('You must enter your Digital Ocean token before you can use this form.  See !link', array('!link' => l(t('Cloud Settings'), 'admin/hosting/aegir/cloud'))),
       '#weight' => 10,
     );
   }
   else {
-    $options = variable_get('devshop_cloud_digital_ocean_options', array());
+    $options = variable_get('aegir_cloud_digital_ocean_options', array());
 
     $form['info'] = array(
       '#type' => 'item',
@@ -33,60 +33,60 @@ function devshop_digital_ocean_options_form() {
     if (!empty($options)) {
 
       $region_options = $options['regions'];
-      $default_options = variable_get('devshop_digital_ocean_default_options', array());
-      $form['devshop_digital_ocean_default_region'] = array(
+      $default_options = variable_get('aegir_digital_ocean_default_options', array());
+      $form['aegir_digital_ocean_default_region'] = array(
         '#type' => 'select',
         '#title' => t('Region'),
         '#options' => $region_options,
-        '#default_value' => $default_options['devshop_digital_ocean_default_region'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_region'],
       );
 
       $size_options = $options['sizes'];
-      $form['devshop_digital_ocean_default_size'] = array(
+      $form['aegir_digital_ocean_default_size'] = array(
         '#type' => 'select',
         '#title' => t('Size'),
         '#options' => $size_options,
-        '#default_value' => $default_options['devshop_digital_ocean_default_size'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_size'],
       );
 
       $image_options = $options['images'];
-      $form['devshop_digital_ocean_default_image'] = array(
+      $form['aegir_digital_ocean_default_image'] = array(
         '#type' => 'select',
         '#title' => t('Image'),
         '#options' => $image_options,
-        '#default_value' => $default_options['devshop_digital_ocean_default_image'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_image'],
       );
       $key_options = $options['keys'];
-      $form['devshop_digital_ocean_default_keys'] = array(
+      $form['aegir_digital_ocean_default_keys'] = array(
         '#type' => 'checkboxes',
         '#title' => t('SSH Keys'),
         '#options' => $key_options,
-        '#default_value' => $default_options['devshop_digital_ocean_default_keys'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_keys'],
       );
-      $form['devshop_digital_ocean_default_backups'] = array(
+      $form['aegir_digital_ocean_default_backups'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable Backups'),
-        '#default_value' => $default_options['devshop_digital_ocean_default_backups'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_backups'],
       );
-      $form['devshop_digital_ocean_default_ipv6'] = array(
+      $form['aegir_digital_ocean_default_ipv6'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable IPv6'),
-        '#default_value' => $default_options['devshop_digital_ocean_default_ipv6'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_ipv6'],
       );
-      $form['devshop_digital_ocean_default_private_networking'] = array(
+      $form['aegir_digital_ocean_default_private_networking'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable Private Networking'),
-        '#default_value' => $default_options['devshop_digital_ocean_default_private_networking'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_private_networking'],
       );
-      $form['devshop_digital_ocean_default_remote_server'] = array(
+      $form['aegir_digital_ocean_default_remote_server'] = array(
         '#type' => 'checkbox',
         '#title' => t('Setup as remote aegir server'),
-        '#default_value' => $default_options['devshop_digital_ocean_default_remote_server'],
+        '#default_value' => $default_options['aegir_digital_ocean_default_remote_server'],
       );
-      //$form['devshop_digital_ocean_default_cloud_config'] = array(
+      //$form['aegir_digital_ocean_default_cloud_config'] = array(
       //  '#type' => 'textarea',
       //  '#title' => t('Cloud Config'),
-      //  '#default_value' => $default_options['devshop_digital_ocean_default_cloud_config'],
+      //  '#default_value' => $default_options['aegir_digital_ocean_default_cloud_config'],
       //);
     }
 
@@ -115,19 +115,19 @@ function devshop_digital_ocean_options_form() {
 /**
  *
  */
-function devshop_digital_ocean_options_form_submit($form, $form_state) {
+function aegir_digital_ocean_options_form_submit($form, $form_state) {
 
   $button = $form_state['clicked_button']['#name'];
 
   if ($button == 'save') {
     $values = $form_state['values'];
-    variable_set('devshop_digital_ocean_default_options', $values);
+    variable_set('aegir_digital_ocean_default_options', $values);
   }
   else {
 
     $options = array();
 
-    $digitalocean = devshop_digital_ocean_load_api();
+    $digitalocean = aegir_digital_ocean_load_api();
 
     $image = $digitalocean->image();
     $images = $image->getAll();
@@ -161,6 +161,6 @@ function devshop_digital_ocean_options_form_submit($form, $form_state) {
     $options['sizes'] = $size_options;
 
 
-    variable_set('devshop_cloud_digital_ocean_options', $options);
+    variable_set('aegir_cloud_digital_ocean_options', $options);
   }
 }
