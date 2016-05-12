@@ -1,5 +1,11 @@
 # Aegir Roles
 
+- name: geerlingguy.php
+  version: 2.0.3
+
+- name: geerlingguy.php-mysql
+  version: 1.2.0
+  
 - name: opendevshop.aegir-user
   version: 1.0.0
 
