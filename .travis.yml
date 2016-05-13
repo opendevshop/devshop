@@ -71,5 +71,8 @@ script:
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
 
+  # Test Drupal Console
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drupal list"'
+
   # Stop container.
   - 'sudo docker stop devshop_container'
