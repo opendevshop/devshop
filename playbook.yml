@@ -13,3 +13,20 @@
     - geerlingguy.composer
     - geerlingguy.drupal-console
     - opendevshop.devmaster
+
+  vars:
+
+    drupal_console_path: /usr/local/bin/drupal
+    drupal_console_keep_updated: false
+    drupal_console_config: ~/.console
+    drupal_console_user: aegir
+
+  tasks:
+
+    # We are adding this to get drupal console init to work as aegir user.
+    - name: Run Drupal Console init.
+      shell: >
+        php {{ drupal_console_path }} init
+        creates={{ drupal_console_config }}
+      become: yes
+      become_user: "{{ drupal_console_user }}"
