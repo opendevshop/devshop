@@ -1,24 +1,37 @@
+language: generic
+
 sudo: required
 
 env:
+  # CentOS 6: Not supported yet.
+  #- distribution: centos
+  #  version: 6
+  #  init: /sbin/init
+  #  run_opts: ""
+  # Ubuntu 12.04: Not supported yet.
+  #- distribution: ubuntu
+  #  version: 12.04
+  #  init: /sbin/init
+  #  run_opts: ""
   - test: CentOS 7 Apache
     distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
-#  - test: CentOS 7 NGINX
-#    distribution: centos
-#    version: 7
-#    init: /usr/lib/systemd/systemd
-#    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-#    script_opts: "--server-webserver=nginx"
+  #- test: CentOS 7 NGINX
+  #  distribution: centos
+  #  version: 7
+  #  init: /usr/lib/systemd/systemd
+  #  run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #  script_opts: "--server-webserver=nginx"
   - test: Ubuntu 14.04 Apache
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
+# TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
 #    version: 14.04
@@ -31,7 +44,7 @@ addons:
     - devshop.travis
     - dev.projectname.devshop.travis
     - live.projectname.devshop.travis
-    - dev.drup.devshop.travis
+    - dev.drpl8.devshop.travis
 
 services:
   - docker
