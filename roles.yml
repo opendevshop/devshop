@@ -5,6 +5,9 @@
 
 - name: geerlingguy.php-mysql
   version: 1.2.0
+
+- name: geerlingguy.drupal-console
+  version: 1.0.7
   
 - name: opendevshop.aegir-user
   version: 1.0.0
