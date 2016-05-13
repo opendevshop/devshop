@@ -16,12 +16,12 @@ class Provision_Config_ProjectAliases extends Provision_Config_Drushrc {
    * @param $options
    *   Array of string option names to save.
    */
-  function __construct($context, $environments = array()) {
+  function __construct($context, $project = array()) {
 
-    parent::__construct($context, $environments);
+    parent::__construct($context, $project);
     $this->data = array(
       'name' => ltrim($context, '@project_'),
-      'environments' => $environments,
+      'project' => $project,
     );
   }
 

@@ -106,7 +106,7 @@ function devshop_projects_permission() {
  */
 function devshop_projects_devshop_environment_actions($environment) {
   $items = array();
-  
+
   // Site specific actions.
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {
@@ -759,4 +759,20 @@ function devshop_reset_last_tasks () {
     $site->environment->last_task = $nid;
     devshop_environment_save_last_task($site->environment);
   }
+}
+
+/**
+ * Helper to get a project node by name.
+ */
+function devshop_load_project_by_name($name) {
+  $nid = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('type', 'project')
+    ->condition('title', $name)
+    ->condition('status', 1)
+    ->execute()
+    ->fetchField()
+  ;
+  $node = node_load($nid);
+  return $node;
 }
