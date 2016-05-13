@@ -49,7 +49,7 @@
             <li><label><?php print t('Environment Logs'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
               <li>
-                <?php print l($environment->name, "node/{$project->nid}/logs/env/{$environment->name}"); ?>
+                <?php print l($environment->name, "node/{$environment->site}/tasks"); ?>
               </li>
             <?php endforeach; ?>
           </ul>
