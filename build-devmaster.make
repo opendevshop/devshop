@@ -14,7 +14,7 @@ projects[drupal][type] = "core"
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
-projects[devmaster][download][branch] = "1.x"
+projects[devmaster][download][branch] = "drupal-console"
 
 ; RELEASE
 ; When releasing, lock in the devmaster version.
