@@ -5,7 +5,7 @@
  */
 print "<?php // Automatically written by devshop when a project is verified. Do Not Edit. \n";
 
-foreach ($environments as $name => $environment) {
+foreach ($project['environments'] as $name => $environment) {
 
   if ($environment['site_status'] != 1) {
     continue;
@@ -13,14 +13,26 @@ foreach ($environments as $name => $environment) {
   $alias = array(
     'root' => $environment['root'],
     'uri' => $environment['uri'],
-    'remote_host' => d('web_server')->remote_host,
-    'remote_user' => d('web_server')->script_user,
     'path-aliases' => array(
       '%files' =>  "sites/{$environment['uri']}/files"
     ),
   );
 
+  // If web server is not server master, add "remote host and user.
+  if (d($environment['drush_alias'])->platform->web_server->name != '@server_master') {
+    $alias['remote-host'] = d($environment['drush_alias'])->platform->web_server->remote_host;
+    $alias['remote-user'] = d($environment['drush_alias'])->platform->web_server->script_user;
+  }
+
   $export = var_export($alias, TRUE);
+  ?>
+
+$aliases['<?php print $name; ?>'] = <?php print $export; ?>;
+
+  <?php
+}
+foreach ($project['settings']['aliases'] as $name => $remote_alias) {
+  $export = var_export($remote_alias, TRUE);
   ?>
 
 $aliases['<?php print $name; ?>'] = <?php print $export; ?>;
