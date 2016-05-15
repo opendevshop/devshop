@@ -142,7 +142,9 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
 fi
 
 # If ansible command is not available, install it.
-if [ ! -d "/etc/ansible" ]; then
+# Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
+# After testing this thoroughly on centOS and ubuntu, I think we should use command -v
+if [ ! `command -v ansible` ]; then
     echo " Installing Ansible..."
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
