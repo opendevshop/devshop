@@ -8,7 +8,7 @@ function drush_aegir_softlayer_pre_hosting_task() {
 
     $task =& drush_get_context('HOSTING_TASK');
 
-    if ($task->ref->type == 'server') {
+    if ($task->ref->type == 'server' && isset($task->ref->services['provider']) && $task->ref->services['provider']->type == 'softlayer') {
 
         // Lookup and save IP addresses.
         try {
