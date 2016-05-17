@@ -62,4 +62,71 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
   );
 
 
+
+  $username = variable_get('aegir_cloud_softlayer_api_username', array());
+  $key = variable_get('aegir_cloud_softlayer_api_key', array());
+
+  if (empty($username) || empty($key)) {
+    $form['softlayer']['warning'] = array(
+      '#prefix' => '<div class="alert alert-danger">',
+      '#suffix' => '</div>',
+      '#value' => t('You must enter your softlayer username and API key before you can use this form.  See !link', array('!link' => l(t('Cloud Settings'), 'admin/hosting/aegir/cloud'))),
+      '#weight' => 10,
+    );
+  }
+  else {
+    $options = variable_get('aegir_cloud_softlayer_options', array());
+
+    $form['softlayer']['info'] = array(
+      '#type' => 'item',
+      '#title' => t('SoftLayer Options'),
+      '#markup' => empty($options)? t('No options available. Click "Refresh SoftLayer Options".'): 'SoftLayer options are saved.',
+    );
+
+    $keys = variable_get('aegir_cloud_softlayer_ssh_keys', array());
+    $key_count = count($keys);
+    $form['softlayer']['keys'] = array(
+      '#type' => 'item',
+      '#title' => t('SoftLayer SSH Keys'),
+      '#markup' => format_plural($key_count, t('One key available'), t('!num keys available', array(
+        '!num' => $key_count
+      ))),
+    );
+
+    // Get fingerprint of ssh key for comparison.
+    try {
+      $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_cloud_public_key', ''));
+
+      $fingerprint = theme_sshkey_fingerprint($key_vars);
+      foreach ($keys as $key) {
+        if ($fingerprint == $key->fingerprint) {
+          $key_found = TRUE;
+          drupal_set_message(t('!link key was found in your !link2. Ready to Provision.', array(
+            '!link' => l(t('DevShop Cloud public key'), 'admin/aegir/cloud'),
+            '!link2' => l(t('SoftLayer Account'), 'https://control.softlayer.com/devices/sshkeys'),
+          )));
+        }
+      }
+    }
+    catch (SSHKeyParseException $e) {
+      $key_found = FALSE;
+    }
+
+    if (!$key_found) {
+      $form['softlayer']['key_warning'] = array(
+        '#prefix' => '<div class="alert alert-danger">',
+        '#suffix' => '</div>',
+        '#markup' => t('!link1 was not found in your SoftLayer Account.  !link2', array(
+          '!link1' => l(t('Hostmaster public key'), 'admin/aegir/cloud'),
+          '!link2' => l(t('Add your public key to Softlayer'), 'https://control.softlayer.com/devices/sshkeys'),
+        )),
+      );
+    }
+
+    $form['softlayer']['refresh'] = array(
+      '#type' => 'submit',
+      '#value' => t('Refresh SoftLayer Options'),
+    );
+  }
+
 }
