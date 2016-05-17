@@ -79,7 +79,7 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
      */
     function getRoles() {
         return array(
-            'aegir.user',
+            'opendevshop.aegir-user',
             'geerlingguy.mysql',
         );
     }
