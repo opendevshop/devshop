@@ -43,7 +43,7 @@ function aegir_ansible_inventory_node_load($nodes, $types)
         }
         $node->ansible_vars = array();
         foreach ($node->services as $type => $service) {
-            if (is_array($service->ansible_vars)) {
+            if (isset($service->ansible_vars) && is_array($service->ansible_vars)) {
                 $node->ansible_vars = array_merge($node->ansible_vars, $service->ansible_vars);
             }
         }
