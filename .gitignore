@@ -13,3 +13,6 @@ vendor
 
 # Ansible inventory file.
 inventory
+
+# PHPStorm files
+.idea
