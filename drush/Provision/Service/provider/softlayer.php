@@ -1,6 +1,5 @@
 <?php
 
-require_once dirname(__FILE__) . '/SoftLayer/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
 
 class Provision_Service_provider_softlayer extends Provision_Service_provider {
 
@@ -82,6 +81,7 @@ class Provision_Service_provider_softlayer extends Provision_Service_provider {
     $username = drush_get_option('softlayer_api_username');
 
     // Initialize an API client for the SoftLayer_Account service.
+    require_once dirname(__FILE__) . '/SoftLayer/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
     $client = SoftLayer_SoapClient::getClient($service, $id, $username, $api_key);
     return $client;
   }
