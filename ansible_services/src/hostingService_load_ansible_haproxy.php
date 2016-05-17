@@ -9,6 +9,7 @@
 class hostingService_load_ansible_haproxy extends hostingService_http_cluster
 {
     public $type = 'ansible_haproxy';
+    public $service = 'load';
     public $name = 'Load Balancer';
 
     function form(&$form)
@@ -16,14 +17,20 @@ class hostingService_load_ansible_haproxy extends hostingService_http_cluster
         parent::form($form);
     }
 
-
-    /**
-     * Load ansible variables.
-     */
     function load()
     {
         parent::load();
         $this->roles = $this->getRoles();
+
+        // Transform the chosen web servers into ansible variables.
+        // See https://github.com/geerlingguy/ansible-role-haproxy#role-variables
+        $web_servers = node_load_multiple($this->web_servers);
+        foreach ($web_servers as $server_node) {
+            $this->ansible_vars['haproxy_backend_servers'][] = array(
+              'name' => $server_node->title,
+              'address' => array_shift($server_node->ip_addresses),
+            );
+        }
     }
 
     function insert() {
