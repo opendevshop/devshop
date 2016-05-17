@@ -1,6 +1,6 @@
-name = DevShop Cloud
-description = Connects to cloud hosting providers to provision servers.
+name = Aegir Cloud
+description = Connects to cloud hosting providers to provision servers for use with Aegir.
 core = 7.x
-package = DevShop
+package = Aegir
 
 dependencies[] = hosting_server
