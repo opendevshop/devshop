@@ -79,14 +79,17 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
 
     // Get fingerprint of ssh key for comparison.
     try {
-      $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_cloud_public_key', ''));
+      $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_public_key', ''));
 
       $fingerprint = theme_sshkey_fingerprint($key_vars);
       foreach ($keys as $key) {
         if ($fingerprint == $key->fingerprint) {
           $key_found = TRUE;
-          drupal_set_message(t('!link key was found in your !link2. Ready to Provision.', array(
-            '!link' => l(t('DevShop Cloud public key'), 'admin/aegir/cloud'),
+          $form['softlayer']['key_ok'] = array(
+            '#prefix' => '<div class="alert alert-danger">',
+            '#suffix' => '</div>',
+            '#markup' => t('!link key was found in your !link2. Ready to Provision.', array(
+            '!link' => l(t('Hostmaster public key'), 'admin/aegir/cloud'),
             '!link2' => l(t('SoftLayer Account'), 'https://control.softlayer.com/devices/sshkeys'),
           )));
         }
@@ -140,7 +143,7 @@ function aegir_softlayer_refresh_options() {
     variable_set('aegir_cloud_softlayer_ssh_keys', $ssh_keys);
 
     // Save a variable with an array ready to go for form options.
-    $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_cloud_public_key', ''));
+    $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_public_key', ''));
     $fingerprint = theme_sshkey_fingerprint($key_vars);
     foreach ($ssh_keys as $key) {
       $ssh_key_options[$key->id] = $key->label;
