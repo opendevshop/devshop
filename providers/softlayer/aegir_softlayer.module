@@ -89,7 +89,7 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
             '#prefix' => '<div class="alert alert-danger">',
             '#suffix' => '</div>',
             '#markup' => t('!link key was found in your !link2. Ready to Provision.', array(
-            '!link' => l(t('Hostmaster public key'), 'admin/aegir/cloud'),
+            '!link' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
             '!link2' => l(t('SoftLayer Account'), 'https://control.softlayer.com/devices/sshkeys'),
           )));
         }
@@ -104,7 +104,7 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
         '#prefix' => '<div class="alert alert-danger">',
         '#suffix' => '</div>',
         '#markup' => t('!link1 was not found in your SoftLayer Account.  !link2', array(
-          '!link1' => l(t('Hostmaster public key'), 'admin/aegir/cloud'),
+          '!link1' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
           '!link2' => l(t('Add your public key to Softlayer'), 'https://control.softlayer.com/devices/sshkeys'),
         )),
       );
