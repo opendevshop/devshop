@@ -1,22 +1,6 @@
 <?php
 
 /**
- * Implements hook_menu()
- */
-function aegir_softlayer_menu(){
-  $items = array();
-  $items['admin/hosting/cloud_softlayer'] = array(
-    'title' => 'SoftLayer',
-    'description' => 'Retrieve options from softlayer.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('aegir_softlayer_options_form'),
-    'access arguments' => array('administer aegir cloud'),
-    'file' => 'options.php',
-    'type' => MENU_LOCAL_TASK,
-  );
-  return $items;
-}
-/**
  * Implements hook_hosting_service()
  */
 function aegir_softlayer_hosting_service() {
@@ -126,7 +110,52 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
     $form['softlayer']['refresh'] = array(
       '#type' => 'submit',
       '#value' => t('Refresh SoftLayer Options'),
+      '#submit' => array(
+        'aegir_softlayer_refresh_options'
+      ),
     );
   }
 
+}
+
+/**
+ * Refresh softlayer options.
+ */
+function aegir_softlayer_refresh_options() {
+
+  require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
+
+  $apiUsername = variable_get('aegir_cloud_softlayer_api_username', array());
+  $apiKey = variable_get('aegir_cloud_softlayer_api_key', array());
+
+  // Get Create options
+  try {
+    $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', null, $apiUsername, $apiKey);
+    $options['options'] = $client->getCreateObjectOptions();
+    variable_set('aegir_cloud_softlayer_options', $options['options']);
+
+    $ssh_key_client  = SoftLayer_SoapClient::getClient('SoftLayer_Account', null, $apiUsername, $apiKey);
+    $ssh_keys = $ssh_key_client->getSshKeys();
+
+    variable_set('aegir_cloud_softlayer_ssh_keys', $ssh_keys);
+
+    // Save a variable with an array ready to go for form options.
+    $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_cloud_public_key', ''));
+    $fingerprint = theme_sshkey_fingerprint($key_vars);
+    foreach ($ssh_keys as $key) {
+      $ssh_key_options[$key->id] = $key->label;
+
+      // Save the softlayer key ID for this aegir_cloud_public_key.
+      if ($fingerprint == $key->fingerprint) {
+        variable_set('aegir_cloud_public_key_softlayer_id', $key->id);
+      }
+    }
+
+    variable_set('aegir_cloud_softlayer_ssh_keys_options', $ssh_key_options);
+
+    drupal_set_message(t('SoftLayer options and SSH keys have been retrieved.'));
+
+  } catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+  }
 }
