@@ -39,3 +39,15 @@ function ansible_roles_hosting_server_context_options(&$task) {
     $task->context_options['ansible_roles_available'] = $task->ref->ansible_roles_available;
   }
 }
+
+/**
+ * Implements drush_hook_pre_hosting_task()
+ */
+function drush_ansible_roles_pre_hosting_task() {
+
+  $task =& drush_get_context('HOSTING_TASK');
+
+  if ($task->task_type == 'verify' && $task->ref->hosting_name == 'server_master' ) {
+    drush_log('hello server master', 'devshop_log');
+  }
+}
