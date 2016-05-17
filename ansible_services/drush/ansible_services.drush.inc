@@ -20,16 +20,6 @@ function ansible_services_drush_init()
 }
 
 /**
- * Expose a service to servers
- *
- * @return
- *   An array with the service type the key, and the default implementation the value.
- */
-function ansible_services_provision_services() {
-  return array('ansible_roles_available' => NULL);
-}
-
-/**
  * Implements drush_hook_pre_COMMAND()
  *
  * This kicks off for provision-verify

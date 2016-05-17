@@ -9,6 +9,7 @@
 class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
 {
     public $type = 'ansible_apache';
+    public $name = 'Ansible: Apache SSL';
 
     function form(&$form)
     {

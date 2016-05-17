@@ -13,6 +13,8 @@ class hostingService_ansible extends hostingService {
  */
 class hostingService_ansible_ansible_roles extends hostingService_ansible {
   public $type = 'ansible_roles';
+  public $name = 'Ansible Roles';
+
   public $has_port = FALSE;
   public $ansible_vars = array();
 
