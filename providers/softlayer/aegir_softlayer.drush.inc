@@ -30,6 +30,7 @@ function drush_aegir_softlayer_pre_hosting_task() {
                         $server->primaryIpAddress,
                         $server->primaryBackendIpAddress,
                     );
+                    drush_log('IP Addresses found: ' . implode(', ', $ips), 'success');
 
                     // Save IP Addresses.
 //                    drush_set_option('ip_addresses', $ips);
@@ -39,7 +40,7 @@ function drush_aegir_softlayer_pre_hosting_task() {
                         drush_log('Node saved', 'success');
                     }
                     else {
-                        drush_log('Node not saved', 'error');
+//                        drush_log('Node not saved', 'error');
                     }
 
                     $node = node_load($task->ref->nid);
