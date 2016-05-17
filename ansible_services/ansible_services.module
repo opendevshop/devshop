@@ -8,19 +8,20 @@ function ansible_services_hosting_service() {
     if (module_exists('hosting_site')) {
         $services['ansible_mysql'] = 'db';
         $services['ansible_apache'] = 'http';
-        $services['ansible_haproxy'] = 'load';
+        $services['ansible_haproxy'] = 'http';
     }
     return $services;
 }
 
+// For now we will keep our service in the "web" service category.
 /**
  * Implements hook_hosting_service_type().
  */
-function ansible_services_hosting_service_type()
-{
-    return array(
-      'load' => array(
-        'title' => t('Load Balancer'),
-      ),
-    );
-}
+//function ansible_services_hosting_service_type()
+//{
+//    return array(
+//      'load' => array(
+//        'title' => t('Load Balancer'),
+//      ),
+//    );
+//}

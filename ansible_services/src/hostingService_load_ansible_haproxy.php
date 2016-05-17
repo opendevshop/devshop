@@ -6,11 +6,11 @@
 
 
 
-class hostingService_load_ansible_haproxy extends hostingService_http_cluster
+class hostingService_http_ansible_haproxy extends hostingService_http_cluster
 {
     public $type = 'ansible_haproxy';
-    public $service = 'load';
-    public $name = 'Load Balancer';
+    public $service = 'http';
+    public $name = 'Ansible: HAProxy';
 
     function form(&$form)
     {
