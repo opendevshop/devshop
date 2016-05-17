@@ -33,7 +33,7 @@ function drush_aegir_softlayer_pre_hosting_task() {
 
                     // Save IP Addresses.
 //                    drush_set_option('ip_addresses', $ips);
-
+                    $task->ref->ip_addresses = $ips;
                     $task->ref->no_verify = TRUE;
                     if (node_save($task->ref)) {
                         drush_log('Node saved', 'success');
@@ -42,8 +42,8 @@ function drush_aegir_softlayer_pre_hosting_task() {
                         drush_log('Node not saved', 'error');
                     }
 
-//                    $node = node_load($task->ref->nid);
-                    drush_log('IP address info acquired and saved: ' . implode(', ', $ips), 'success');
+                    $node = node_load($task->ref->nid);
+                    drush_log('IP address info acquired and saved: ' . implode(', ', $node->ip_addresses), 'success');
                 }
             }
 
