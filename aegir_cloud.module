@@ -21,7 +21,7 @@ function aegir_cloud_hosting_feature() {
  */
 function aegir_cloud_menu(){
   $items = array();
-  $items['admin/aegir/cloud'] = array(
+  $items['admin/hosting/cloud'] = array(
     'title' => 'Cloud',
     'description' => 'Configure cloud providers.',
     'page callback' => 'drupal_get_form',
