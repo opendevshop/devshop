@@ -75,6 +75,11 @@ function ansible_roles_settings_add_submit(&$form, &$form_state) {
     drupal_set_message(t('Role &name has been added.', array(
       '&name' => $form_state['values']['name'],
     )));
+
+    // Queue a verify task for server master to install the roles.
+    $nid = hosting_context_nid('server_master');
+    hosting_add_task($nid, 'verify');
+
     drupal_goto('admin/hosting/roles');
   }
 }
