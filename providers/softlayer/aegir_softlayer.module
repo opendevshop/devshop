@@ -5,7 +5,7 @@
  */
 function aegir_softlayer_menu(){
   $items = array();
-  $items['admin/aegir/cloud_softlayer'] = array(
+  $items['admin/hosting/cloud_softlayer'] = array(
     'title' => 'SoftLayer',
     'description' => 'Retrieve options from softlayer.',
     'page callback' => 'drupal_get_form',
