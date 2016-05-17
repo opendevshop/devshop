@@ -61,6 +61,10 @@ class hostingService_provider_softlayer extends hostingService_provider {
    */
   public function validate(&$node, &$form, &$form_state) {
 
+    if (!empty($node->nid)) {
+      return;
+    }
+
     try {
       $api = $this->softlayer_client('SoftLayer_Account');
       $account = $api->getObject();
