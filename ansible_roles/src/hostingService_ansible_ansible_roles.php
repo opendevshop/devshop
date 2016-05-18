@@ -23,7 +23,7 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
     $form['roles'] = array(
       '#title' => t('Choose the roles for this server.'),
       '#type' => 'checkboxes',
-      '#options' => $this->getAvailableRoles(),
+      '#options' => $this->getRoles(),
       '#default_value' => isset($this->roles)? $this->roles: array(),
     );
 
@@ -99,7 +99,7 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
    *
    * @return array
    */
-  function getAvailableRoles() {
+  function getRoles() {
 
     // Load all available roles
     $results = db_select('hosting_ansible_roles_available', 'h')
@@ -108,7 +108,7 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
         ->fetchAllAssoc('name');
 
     foreach ($results as $result) {
-      $options[$result->name] = $result->name;
+      $options[$result->name] = $result;
     }
 
     return $options;

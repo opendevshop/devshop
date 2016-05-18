@@ -76,19 +76,25 @@ function ansible_roles_node_load($nodes, $types)
         // If node is server master, load all available roles.
         if (isset($node->hosting_name) && $node->hosting_name == 'server_master') {
 
-            // Load all available roles
+            // Load all available custom roles
             $node->ansible_roles_available = array();
-            $results = db_select('hosting_ansible_roles_available', 'h')
-                ->fields('h')
-                ->execute()
-                ->fetchAllAssoc('name');
 
-            foreach ($results as $result) {
-                $node->ansible_roles_available[$result->name] = array(
-                    'name' => $result->name,
-                    'src' => $result->src,
-                    'version' => $result->version,
-                );
+            // Load all ansible roles from all services that have them.
+            foreach (hosting_server_services() as $name => $service) {
+                foreach ($service['types'] as $type => $class) {
+                    $object = new $class($node);
+
+                    // @TODO: Probably a much classier way to do this...
+                    if (method_exists($object, 'getRoles')) {
+
+                        // This must match a valid ansible "role file".  See https://galaxy.ansible.com/intro#download-advanced
+                        $node->ansible_roles_available = array_merge($node->ansible_roles_available, $object->getRoles());
+
+                    }
+                }
+
+                $yml = new \Symfony\Component\Yaml\Dumper();
+                $node->ansible_role_file = $yml->dump($this->ref->ansible_roles_available, 10, 2);
             }
         }
 
