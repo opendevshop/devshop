@@ -50,12 +50,9 @@ function drush_ansible_roles_pre_hosting_task() {
   if ($task->task_type == 'verify' && $task->ref->hosting_name == 'server_master' ) {
 
     // First we must save a roles.yml file so we can install custom ones.
-    $yml = new \Symfony\Component\Yaml\Dumper();
-    $output = "---\n" . $yml->dump($this->ref->ansible_roles_available, 10, 2);
-
-    // Save the playbook to a file.
+    // @see ansible_roles_node_load()
     $filename = "private://server-master-roles-{$task->ref->vid}.yml";
-    $real_file_path = file_unmanaged_save_data($output, $filename);
+    $real_file_path = file_unmanaged_save_data($this->ref->ansible_role_file, $filename);
 
     if (file_exists($real_file_path)) {
       drush_log('Ansible roles file saved to ' . $real_file_path, 'devshop_log');
