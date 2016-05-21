@@ -20,7 +20,7 @@ class Provision_Service_Process_Process extends Provision_Service_Process {
       return devshop_drush_process($command, $cwd, $label, $env);
     }
     else {
-      return devshop_drush_process('ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' ' . $this->script_user . '@' . $this->remote_host . ' ' . $command, $cwd, $label, $env);
+      return devshop_drush_process('ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' ' . $this->server->script_user . '@' . $this->server->remote_host . ' ' . $command, $cwd, $label, $env);
     }
   }
 }
