@@ -51,7 +51,7 @@ function drush_ansible_services_pre_provision_verify () {
  * - Pass the path of the playbook as a drush option to Provision_Service_http_ansible_apache
  *
  */
-function drush_ansible_servies_pre_hosting_task()
+function drush_ansible_services_pre_hosting_task()
 {
   $task =& drush_get_context('HOSTING_TASK');
   if ($task->ref->type == 'server' && $task->task_type == 'verify') {
