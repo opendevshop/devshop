@@ -14,6 +14,7 @@
 function ansible_services_drush_init()
 {
   if (class_exists('Provision_Service')) {
+    require_once('Provision/Service/Ansible.php');
     require_once('Provision/Service/db/ansible_mysql.php');
     require_once('Provision/Service/http/ansible_apache.php');
   }
@@ -26,7 +27,8 @@ function ansible_services_drush_init()
  */
 function drush_ansible_services_pre_provision_verify () {
   if (d()->type == 'server') {
-    d()->service('http')->runPlaybook();
+    $ansible = new Provision_Service_Ansible(d());
+    $ansible->runPlaybook();
   }
 }
 
@@ -56,6 +58,7 @@ function drush_ansible_servies_pre_hosting_task()
 
     // Load all roles to generate a playbook.
     if (empty($task->ref->roles)) {
+      drush_log('No roles found');
       return;
     }
 
