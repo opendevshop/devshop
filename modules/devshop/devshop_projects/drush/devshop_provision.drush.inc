@@ -273,7 +273,7 @@ function devshop_drush_process($command, $cwd = null, $label = 'Process', $env =
   // Make sure colors always come through
   $env['TERM'] = 'xterm';
 
-  $process = new Process($command, $cwd, $env);
+  $process = new Process(escapeshellcmd($command), $cwd, $env);
   $process->setTimeout(NULL);
   $exit_code = $process->run(function ($type, $buffer) {
     if (Process::ERR === $type) {
