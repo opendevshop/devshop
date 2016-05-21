@@ -120,8 +120,8 @@
 
                       // If the last task was complete, and this task is complete, stop the autoloader.
                       if (Drupal.settings.lastTaskStopped && (task.task_status != -1 && task.task_status != 0)) {
-                          console.log('Task is not processing or queued. Stopping the autoloader.')
-                          return;
+                          console.log('Task is not processing or queued. Stopping the autoloader.');
+                          Drupal.settings.lastTaskStopped = true;
                       }
                   }
                   // Projects List Page.
@@ -173,7 +173,9 @@
               }
               $('.count', '.task-list-button').html(count);
 
-              setTimeout("Drupal.behaviors.devshopTasks.checkTasks()", 1000);
+              if (Drupal.settings.lastTaskStopped != true) {
+                  setTimeout("Drupal.behaviors.devshopTasks.checkTasks()", 1000);
+              }
           });
       }
   }
