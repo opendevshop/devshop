@@ -94,7 +94,7 @@ function ansible_roles_node_load($nodes, $types)
                 }
 
                 $yml = new \Symfony\Component\Yaml\Dumper();
-                $node->ansible_role_file = $yml->dump($this->ref->ansible_roles_available, 10, 2);
+                $node->ansible_role_file = $yml->dump($node->ansible_roles_available, 10, 2);
             }
         }
 
