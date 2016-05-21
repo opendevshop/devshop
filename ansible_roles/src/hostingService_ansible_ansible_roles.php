@@ -23,8 +23,8 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
     $form['roles'] = array(
       '#title' => t('Choose the roles for this server.'),
       '#type' => 'checkboxes',
-      '#options' => $this->getRoles(),
-      '#default_value' => isset($this->roles)? $this->roles: array(),
+      '#options' => $this->getRolesOptions(),
+      '#default_value' => isset($this->roles) ? $this->roles : array(),
     );
 
     if (empty($form['roles']['#options'])) {
@@ -118,6 +118,19 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
       $options[$result->name] = $result;
     }
 
+    return $options;
+  }
+
+  /**
+   * The list of available ad hoc roles, ready for a form array.
+   *
+   * @return array
+   */
+  function getRolesOptions() {
+    $roles = $this->getRoles();
+    foreach ($roles as $role) {
+      $options[$role->name] = $role->name;
+    }
     return $options;
   }
 }
