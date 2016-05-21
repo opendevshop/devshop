@@ -47,6 +47,10 @@ function aegir_ansible_inventory_node_load($nodes, $types)
                 $node->ansible_vars = array_merge($node->ansible_vars, $service->ansible_vars);
             }
         }
+
+        // Global ansible variables?  Not sure if this is the place.
+        // @TODO: Move this to a "users" service.
+        $node->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
     }
 }
 
