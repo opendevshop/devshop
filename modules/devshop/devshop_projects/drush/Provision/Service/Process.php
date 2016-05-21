@@ -14,14 +14,13 @@ class Provision_Service_Process extends Provision_Service {
 class Provision_Service_Process_Process extends Provision_Service_Process {
   public $service = 'Process';
 
-  function shell_exec($command) {
+  function process($command, $cwd = null, $label = 'Process', $env = array()) {
 
-    drush_log('PROCESS shell exec!', 'devshop_log');
     if (provision_is_local_host($this->server->remote_host)) {
-      return devshop_drush_process(escapeshellcmd($command));
+      return devshop_drush_process($command, $cwd, $label, $env);
     }
     else {
-      return devshop_drush_process('ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . $this->remote_host, escapeshellcmd($command));
+      return devshop_drush_process('ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' ' . $this->script_user . '@' . $this->remote_host . ' ' . $command, $cwd, $label, $env);
     }
   }
 }
