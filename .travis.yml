@@ -31,6 +31,12 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
+  - test: Ubuntu 16.04 Apache
+    distribution: ubuntu
+    version: 16.04
+    init: /sbin/init
+    run_opts: ""
+    script_opts: "--server-webserver=apache"
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
