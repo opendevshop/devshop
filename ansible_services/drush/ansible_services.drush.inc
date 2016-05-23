@@ -26,7 +26,11 @@ function ansible_services_drush_init()
  * This kicks off for provision-verify
  */
 function drush_ansible_services_pre_provision_verify () {
-  if (d()->type == 'server') {
+  if (d()->type == 'server' && (
+      d()->service('http')->type == 'ansible_apache' ||
+      d()->service('http')->type == 'ansible_nginx' ||
+      d()->service('db')->type == 'ansible_mysql'
+    )) {
     $ansible = new Provision_Service_Ansible(d());
     $ansible->runPlaybook();
   }
