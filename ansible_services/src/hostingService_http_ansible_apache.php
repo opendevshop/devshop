@@ -44,7 +44,7 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
     function getRoles() {
         return array(
             'opendevshop.aegir-apache',
-            'geerlingguy.php',
+            'geerlingguy.php,2.0.3',
             'geerlingguy.php-mysql',
             'geerlingguy.composer'
         );
