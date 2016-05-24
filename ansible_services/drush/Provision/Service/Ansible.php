@@ -51,6 +51,7 @@ class Provision_Service_Ansible extends Provision_Service {
     $ansible->roleFile($this->rolesFilePath);
     $ansible->rolesPath('~/roles');
     $ansible->install();
+    $ansible->force();
 
     $is_devshop = drush_get_option('is-devshop', FALSE);
     drush_log("Running 'ansible-galaxy install'", $is_devshop? 'devshop_command': 'status');
@@ -69,7 +70,7 @@ class Provision_Service_Ansible extends Provision_Service {
       drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
     }
     else {
-      drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
+      drush_log(dt('Ansible galaxy install complete!'), 'devshop_ok');
     }
   }
 
