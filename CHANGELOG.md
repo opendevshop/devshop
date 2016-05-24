@@ -9,6 +9,7 @@
 - Locked the devshop installer ansible roles to specific verions.
 - Created a new "Process" service for aegir servers for easier command running:
 - Fixed javascript reloading on completed tasks. You can now copy and paste out of logs!
+- Many commits in this release came from DevShop Cloud, now known as Aegir Cloud. We've removed the codebase from core devshop until a final release is ready. See http://drupal.org/project/aegir_cloud more info.
 
 # 1.0.0-beta2 (May 9, 2016)
 
