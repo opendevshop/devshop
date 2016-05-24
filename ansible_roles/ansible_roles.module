@@ -86,16 +86,33 @@ function ansible_roles_node_load($nodes, $types)
 
                     // @TODO: Probably a much classier way to do this...
                     if (method_exists($object, 'getRoles')) {
+                        $roles = $object->getRoles();
+                        foreach ($roles as $role) {
+                            if (is_string($role)) {
+                                $role_data = array(
+                                    'name' => $role,
+                                );
+                            }
+                            elseif (is_object($role)) {
 
-                        // This must match a valid ansible "role file".  See https://galaxy.ansible.com/intro#download-advanced
-                        $node->ansible_roles_available = array_merge($node->ansible_roles_available, $object->getRoles());
-
+                                $role_data = array(
+                                  'name' => $role->name,
+                                );
+                                if (!empty($role->src)) {
+                                    $role_data['src'] = $role->src;
+                                }
+                                if (!empty($role->version)) {
+                                    $role_data['version'] = $role->version;
+                                }
+                            }
+                            $node->ansible_roles_available[] = $role_data;
+                        }
                     }
                 }
 
-                $yml = new \Symfony\Component\Yaml\Dumper();
-                $node->ansible_role_file = $yml->dump($node->ansible_roles_available, 10, 2);
             }
+            $yml = new \Symfony\Component\Yaml\Dumper();
+            $node->ansible_role_file = $yml->dump($node->ansible_roles_available, 10);
         }
 
         // Only act on server nodes with services.
