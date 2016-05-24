@@ -93,8 +93,8 @@ function ansible_roles_node_load($nodes, $types)
                                     'name' => $role,
                                 );
                             }
-                            elseif (is_object($role)) {
-
+                            elseif (is_object($role) || is_array($role)) {
+                                $role = (object) $role;
                                 $role_data = array(
                                   'name' => $role->name,
                                 );
