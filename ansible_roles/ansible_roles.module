@@ -130,8 +130,8 @@ function ansible_roles_node_load($nodes, $types)
             if ($type == 'ansible') {
                 continue;
             }
-            if (isset($service->roles)) {
-                $roles = array_merge($roles, $service->roles);
+            if (method_exists($service, 'getRoleNames')) {
+                $roles = array_merge($roles, $service->getRoleNames());
             }
         }
 

@@ -52,4 +52,22 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
             'geerlingguy.composer'
         );
     }
+
+    /**
+     * The list of ansible roles that this service depends on.
+     *
+     * @return array
+     */
+    function getRoleNames() {
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if (isset($role['name'])) {
+                $names[] = $role['name'];
+            }
+            else {
+                $names[] = $role;
+            }
+        }
+        return $names;
+    }
 }

@@ -82,6 +82,7 @@ function drush_ansible_services_pre_hosting_task()
 
     if (file_exists($real_file_path)) {
       drush_log('Ansible playbook file saved to ' . $real_file_path, 'devshop_log');
+      drush_log($output, 'devshop_ok');
     }
     else {
       return drush_set_error('DRUSH_ERROR', dt('Unable to generate playbook.yml file. Run `drush @hostmaster provision-verify` to try and fix file permissions.'));
