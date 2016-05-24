@@ -1,5 +1,21 @@
 # Change Log
 
+# 1.0.0-beta3 (May 24, 2016)
+
+6 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta2...1.x
+234 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta2...1.x
+
+- Added "DevShop Remotes" module: Easily add remote drush aliases to use as database sources.
+- Progress on Aegir Cloud: https://www.drupal.org/project/aegir_cloud  Create servers from hosting providers that provide an API. In progress.  
+- Created Aegir Ansible module suite for total server management: https://www.drupal.org/project/aegir_ansible
+- Locked the devshop installer ansible roles to specific verions.
+- Created a new "Process" service for aegir servers for easier command running:
+
+
+
+
+
+
 # 1.0.0-beta2 (May 9, 2016)
 
 Released at DrupalCon New Orleans!
