@@ -22,6 +22,57 @@ class Provision_Service_Ansible extends Provision_Service {
   private $ansible_config_file;
   private $ansible_config;
 
+
+  /**
+   * Run ansible-galaxy install using the specified  roles yml file.
+   *
+   * @return mixed
+   */
+  public function runRolesInstall() {
+
+    // Look for playbook
+    $this->rolesFilePath = drush_get_option('roles_file_path', '');
+
+    // Last check: does the roles file exist?
+    if (!file_exists($this->rolesFilePath)) {
+      return drush_set_error('DRUSH_ERROR', 'No file was found at the path specified by the "roles_file_path" option: ' . $this->rolesFilePath);
+    }
+    drush_log('Ansible Roles file Loaded from ' . $this->rolesFilePath, 'status');
+
+    // Prepare the Ansible object.
+    $this->ansible = new Ansible(
+      getcwd(),
+      '/usr/bin/ansible-playbook',
+      '/usr/bin/ansible-galaxy'
+    );
+
+    $ansible = $this->ansible->galaxy();
+
+    $ansible->roleFile($this->rolesFilePath);
+    $ansible->rolesPath('~/roles');
+    $ansible->install();
+
+    $is_devshop = drush_get_option('is-devshop', FALSE);
+    drush_log("Running 'ansible-galaxy install'", $is_devshop? 'devshop_command': 'status');
+
+    $exit = $ansible->execute(function ($type, $buffer) {
+      if (drush_get_option('is-devshop', FALSE)) {
+        drush_log($buffer, 'devshop_info');
+      }
+      else {
+        print $buffer;
+      }
+    });
+
+    if ($exit != 0) {
+      drush_log(dt('Ansible galaxy command failed to complete.'), 'devshop_error');
+      drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
+    }
+    else {
+      drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
+    }
+  }
+
   /**
    * This is kicked off by a drush hook, since there is no good method to override in Provision_Service_http or Provision_Service.
    *
