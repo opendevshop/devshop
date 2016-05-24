@@ -22,20 +22,23 @@ projects[hostmaster][version] = "3.4"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.4"
+projects[hosting][version] = "3.5"
 projects[hosting][subdir] = "aegir"
-projects[hosting][patch][687750] = "https://www.drupal.org/files/issues/2610122-circular-dependencies.patch"
-projects[hosting][patch][2707157] = "https://www.drupal.org/files/issues/2707157-hosting-site-nid-variable.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
+
+projects[hosting_git][version] = "3.5"
 projects[hosting_git][subdir] = aegir
+
 projects[hosting_remote_import][subdir] = aegir
+
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][patch][2619074] = https://www.drupal.org/files/issues/2619074-remove-varget_2.patch
+projects[hosting_site_backup_manager][version] = "3.5"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][patch][2707129] = https://www.drupal.org/files/issues/2707129-upgrade-drupal_0.patch
+projects[hosting_tasks_extra][version] = "3.5"
+
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = 3.x
@@ -52,7 +55,7 @@ projects[aegir_cloud][version] = 1.x
 ;projects[hosting_solr][version] = "1"
 
 ; Contrib Modules
-projects[sshkey][version] = "2"
+projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.4
 projects[entity][version] = 1.7
 projects[openidadmin][version] = 1.0
