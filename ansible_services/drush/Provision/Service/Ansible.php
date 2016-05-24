@@ -47,7 +47,7 @@ class Provision_Service_Ansible extends Provision_Service {
 
 
     // Look for playbook
-    $this->playbook = drush_get_option('playbook', realpath(__DIR__ . '/../../../../../playbook.yml'));
+    $this->playbook = drush_get_option('playbook_path', realpath(__DIR__ . '/../../../../../playbook.yml'));
 
     // Last check: does the playbook file exist?
     if (!file_exists($this->playbook)) {
