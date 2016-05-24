@@ -5,7 +5,7 @@ projects[drupal][type] = "core"
 projects[drupal][version] = "7.43"
 
 # Update this with each new release of devshop
-projects[devshop_stats][version] = "1.0-alpha2"
+projects[devshop_stats][version] = "1.0-beta3"
 
 defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
