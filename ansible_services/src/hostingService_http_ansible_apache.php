@@ -48,7 +48,10 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
                 'name' => 'geerlingguy.php',
                 'version' => '2.0.3',
             ),
-            'geerlingguy.php-mysql',
+            'geerlingguy.php-mysql' => array(
+              'name' => 'geerlingguy.php-mysql',
+              'version' => '1.2.0',
+            ),
             'geerlingguy.composer'
         );
     }
