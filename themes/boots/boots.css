@@ -819,6 +819,7 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     position: fixed;
     bottom: 10px;
     left: 10px;
+    z-index: 10;
 }
 
 .task-details {
