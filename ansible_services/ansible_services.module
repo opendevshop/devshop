@@ -8,7 +8,11 @@ function ansible_services_hosting_service() {
     if (module_exists('hosting_site')) {
         $services['ansible_mysql'] = 'db';
         $services['ansible_apache'] = 'http';
-        $services['ansible_haproxy'] = 'http';
+
+        // HA Proxy depends on hosting_cluster module.
+        if (module_exists('hosting_cluster')) {
+            $services['ansible_haproxy'] = 'http';
+        }
     }
     return $services;
 }
