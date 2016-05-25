@@ -26,11 +26,7 @@ function ansible_services_drush_init()
  * This kicks off for provision-verify
  */
 function drush_ansible_services_pre_provision_verify () {
-  if (d()->type == 'server' && (
-      d()->service('http')->type == 'ansible_apache' ||
-      d()->service('http')->type == 'ansible_nginx' ||
-      d()->service('db')->type == 'ansible_mysql'
-    )) {
+  if (drush_get_option('playbook_path', NULL)) {
     $ansible = new Provision_Service_Ansible(d());
     $ansible->runPlaybook();
   }
@@ -86,11 +82,12 @@ function drush_ansible_services_pre_hosting_task()
 
     if (file_exists($real_file_path)) {
       drush_log('Ansible playbook file saved to ' . $real_file_path, 'devshop_log');
+      drush_log($output, 'devshop_ok');
     }
     else {
       return drush_set_error('DRUSH_ERROR', dt('Unable to generate playbook.yml file. Run `drush @hostmaster provision-verify` to try and fix file permissions.'));
     }
 
-    $task->options['playbook'] = drupal_realpath($real_file_path);
+    $task->options['playbook_path'] = drupal_realpath($real_file_path);
   }
 }

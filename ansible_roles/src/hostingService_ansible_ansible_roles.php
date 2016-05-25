@@ -133,4 +133,17 @@ class hostingService_ansible_ansible_roles extends hostingService_ansible {
     }
     return $options;
   }
+
+  /**
+   * The list of available role names, in a simple array.
+   *
+   * @return array
+   */
+  function getRoleNames() {
+    $roles = $this->getRoles();
+    foreach ($roles as $role) {
+      $names[] = $role->name;
+    }
+    return $names;
+  }
 }

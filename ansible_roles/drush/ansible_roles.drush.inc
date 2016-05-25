@@ -56,11 +56,24 @@ function drush_ansible_roles_pre_hosting_task() {
 
     if (file_exists($real_file_path)) {
       drush_log('Ansible roles file saved to ' . $real_file_path, 'devshop_log');
+      drush_log($task->ref->ansible_role_file, 'devshop_ok');
     }
     else {
       return drush_set_error('DRUSH_ERROR', dt('Unable to generate roles.yml file.'));
     }
 
-    $task->options['roles_file'] = drupal_realpath($real_file_path);
+    $task->options['roles_file_path'] = drupal_realpath($real_file_path);
+  }
+}
+
+/**
+ * Implements drush_hook_pre_COMMAND()
+ *
+ * This kicks off for provision-verify
+ */
+function drush_ansible_roles_pre_provision_verify () {
+  if (drush_get_option('roles_file_path', NULL)) {
+    $ansible = new Provision_Service_Ansible(d());
+    $ansible->runRolesInstall();
   }
 }

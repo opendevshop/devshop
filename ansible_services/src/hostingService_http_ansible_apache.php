@@ -44,9 +44,33 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
     function getRoles() {
         return array(
             'opendevshop.aegir-apache',
-            'geerlingguy.php',
-            'geerlingguy.php-mysql',
+            'geerlingguy.php' => array(
+                'name' => 'geerlingguy.php',
+                'version' => '2.0.3',
+            ),
+            'geerlingguy.php-mysql' => array(
+              'name' => 'geerlingguy.php-mysql',
+              'version' => '1.2.0',
+            ),
             'geerlingguy.composer'
         );
+    }
+
+    /**
+     * The list of ansible roles that this service depends on.
+     *
+     * @return array
+     */
+    function getRoleNames() {
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if (isset($role['name'])) {
+                $names[] = $role['name'];
+            }
+            else {
+                $names[] = $role;
+            }
+        }
+        return $names;
     }
 }

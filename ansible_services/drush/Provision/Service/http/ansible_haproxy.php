@@ -15,10 +15,7 @@ class Provision_Service_http_ansible_haproxy extends Provision_Service_http_apac
     /**
      * @var Ansible;
      */
-    private $ansible;
-    private $ansible_user = '';
     private $inventory;
-    private $playbook;
     private $ansible_config_file;
     private $ansible_config;
 
