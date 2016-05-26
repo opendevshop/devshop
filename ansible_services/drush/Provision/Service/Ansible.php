@@ -102,6 +102,17 @@ class Provision_Service_Ansible extends Provision_Service {
     }
     drush_log('Ansible Inventory Loaded from ' . $this->inventory, 'status');
 
+    // Check that inventory file is the dynamic one from aegir_ansible module by looking for the environment variable.
+    if (strpos(file_get_contents($this->inventory), 'AEGIR_HOSTMASTER_HOSTNAME') === FALSE) {
+      $inventory_path = realpath(__DIR__ . '/../../../../inventory');
+
+      drush_log("The Aegir dynamic inventory file is not present at the configured path {$this->inventory} Copy the file and make it executable: ", 'error');
+      drush_log("Run the following command to setup the dynamic inventory file, then retry this task:", 'devshop_log');
+      drush_log("cp -rf $inventory_path $this->inventory && chmod +x {$this->inventory}", 'devshop_log');
+
+      return drush_set_error('DRUSH_ERROR', "Dynamic inventory file not found.");
+    }
+
 
     // Look for playbook
     $this->playbook = drush_get_option('playbook_path', realpath(__DIR__ . '/../../../../../playbook.yml'));
