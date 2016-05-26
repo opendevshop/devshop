@@ -15,6 +15,7 @@ function ansible_roles_drush_init()
 {
   if (class_exists('Provision_Service')) {
     require_once('Provision/Service/server/ansible_roles_available.php');
+    require_once('Provision/Config/AnsibleConfig.php');
   }
 }
 
@@ -73,6 +74,12 @@ function drush_ansible_roles_pre_hosting_task() {
  */
 function drush_ansible_roles_pre_provision_verify () {
   if (drush_get_option('roles_file_path', NULL)) {
+
+    // Write ansible.cfg file.
+    $ansible_cfg = new Provision_Config_AnsibleConfig(d());
+    $ansible_cfg->write();
+    drush_log('Ansible.cfg written to ' . $ansible_cfg->filename(), 'devshop_log');
+
     $ansible = new Provision_Service_Ansible(d());
     $ansible->runRolesInstall();
   }
