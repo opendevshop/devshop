@@ -85,6 +85,11 @@ class Provision_Service_Ansible extends Provision_Service {
 
     drush_log('Provision_Service_http_ansible_apache::init_server', 'status');
 
+    // Check if ansible exists
+    if (!file_exists('/etc/ansible')) {
+      return drush_set_error('DRUSH_ERROR', '/etc/ansible not found. Please ensure ansible is installed. See http://docs.ansible.com/ansible/intro_installation.html for instructions.');
+    }
+
     // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
     if ($this->getAnsibleInventory()) {
       drush_log('Ansible Config Loaded from ' . $this->ansible_config_file, 'status');
