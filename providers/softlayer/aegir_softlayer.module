@@ -45,12 +45,6 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
   $key = variable_get('aegir_cloud_softlayer_api_key', array());
 
   if (empty($username) || empty($key)) {
-    $form['softlayer']['warning'] = array(
-      '#prefix' => '<div class="alert alert-danger">',
-      '#suffix' => '</div>',
-      '#value' => t('You must enter your softlayer username and API key before you can use this form.  See !link', array('!link' => l(t('Cloud Settings'), 'admin/hosting/aegir/cloud'))),
-      '#weight' => 10,
-    );
   }
   else {
     $options = variable_get('aegir_cloud_softlayer_options', array());
@@ -80,7 +74,7 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
         if ($fingerprint == $key->fingerprint) {
           $key_found = TRUE;
           $form['softlayer']['key_ok'] = array(
-            '#prefix' => '<div class="alert alert-danger">',
+            '#prefix' => '<div class="alert alert-success">',
             '#suffix' => '</div>',
             '#markup' => t('!link key was found in your !link2. Ready to Provision.', array(
             '!link' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
@@ -113,6 +107,30 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
     );
   }
 
+  // Validate the API key.
+  $form['#validate'][] = 'aegir_softlayer_validate_key';
+}
+
+/**
+ * Form validator to check the API key.
+ * @param $form
+ * @param $form_state
+ */
+function aegir_softlayer_validate_key($form, $form_state) {
+
+  require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
+
+  $apiUsername = $form_state['values']['aegir_cloud_softlayer_api_username'];
+  $apiKey = $form_state['values']['aegir_cloud_softlayer_api_key'];
+
+  // Get Create options
+  try {
+    $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', NULL, $apiUsername, $apiKey);
+    $options['options'] = $client->getCreateObjectOptions();
+  }
+  catch (Exception $e) {
+      form_set_error('aegir_cloud_softlayer_api_key', $e->getMessage());
+  }
 }
 
 /**
