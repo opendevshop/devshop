@@ -37,3 +37,10 @@ function aegir_cloud_schema() {
 
   return $schema;
 }
+
+/**
+ * Rename table to use the aegir_cloud name.
+ */
+function aegir_cloud_update_7000() {
+  db_rename_table('hosting_devshop_cloud_provider', 'hosting_aegir_cloud_provider');
+}
