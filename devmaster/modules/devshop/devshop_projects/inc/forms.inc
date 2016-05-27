@@ -772,6 +772,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       '#type' => 'fieldset',
       '#group' => 'project_settings',
       '#title' => t('Deployment Hooks'),
+      '#description' => t('Deployment hooks are run whenever your codebase changes. It is recommended to always enable database updates and cache clearing.'),
       '#weight' => -9,
   );
 
