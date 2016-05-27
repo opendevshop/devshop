@@ -149,6 +149,10 @@ function ansible_roles_node_load($nodes, $types)
 function ansible_roles_node_view($node, $view_mode, $langcode)
 {
 
+    if ($node->type != 'server' || !isset($node->services)) {
+        return;
+    }
+
     // Load all roles to generate a playbook.
     // Pull out ansible roles to load last.
     $services = $node->services;
