@@ -207,8 +207,10 @@ function devshop_project_create_step_sites($form, &$form_state) {
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
   if ($form_state['triggering_element']['#value'] == t('Retry')) {
     foreach ($form_state['project']->environments as $name => $environment) {
-      key($environment->tasks['verify']);
-      hosting_task_retry(key($environment->tasks['verify']));
+      $task = current($environment->tasks['verify']);
+      if (isset($task->nid)) {
+        hosting_task_retry($task->nid);
+      }
     }
   }
   elseif (empty($form_state['values']['install_profile'])) {
