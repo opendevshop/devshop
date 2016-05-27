@@ -82,30 +82,32 @@ function ansible_roles_node_load($nodes, $types)
             // Load all ansible roles from all services that have them.
             foreach (hosting_server_services() as $name => $service) {
                 foreach ($service['types'] as $type => $class) {
-                    $object = new $class($node);
+                    if (class_exists($class)){
+                        $object = new $class($node);
 
-                    // @TODO: Probably a much classier way to do this...
-                    if (method_exists($object, 'getRoles')) {
-                        $roles = $object->getRoles();
-                        foreach ($roles as $role) {
-                            if (is_string($role)) {
-                                $role_data = array(
-                                    'name' => $role,
-                                );
-                            }
-                            elseif (is_object($role) || is_array($role)) {
-                                $role = (object) $role;
-                                $role_data = array(
-                                  'name' => $role->name,
-                                );
-                                if (!empty($role->src)) {
-                                    $role_data['src'] = $role->src;
+                        // @TODO: Probably a much classier way to do this...
+                        if (method_exists($object, 'getRoles')) {
+                            $roles = $object->getRoles();
+                            foreach ($roles as $role) {
+                                if (is_string($role)) {
+                                    $role_data = array(
+                                      'name' => $role,
+                                    );
                                 }
-                                if (!empty($role->version)) {
-                                    $role_data['version'] = $role->version;
+                                elseif (is_object($role) || is_array($role)) {
+                                    $role = (object) $role;
+                                    $role_data = array(
+                                      'name' => $role->name,
+                                    );
+                                    if (!empty($role->src)) {
+                                        $role_data['src'] = $role->src;
+                                    }
+                                    if (!empty($role->version)) {
+                                        $role_data['version'] = $role->version;
+                                    }
                                 }
+                                $node->ansible_roles_available[] = $role_data;
                             }
-                            $node->ansible_roles_available[] = $role_data;
                         }
                     }
                 }
