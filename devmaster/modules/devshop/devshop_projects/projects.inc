@@ -252,10 +252,9 @@ function devshop_project_load($node) {
     // On project create, there is no site, so there is no db_server.
     if (empty($environment->db_server)) {
       $db_servers = hosting_get_servers('db');
-
       // Project wizard saves db_server to "settings". If that doesn't exist, just use the default db server.
       if (empty($environment->settings->db_server)) {
-        $environment->settings->db_server = $environment->db_server = key($db_servers);
+        $environment->settings->db_server = $environment->db_server_nid = key($db_servers);
       }
 
       $environment->db_server_nid = $environment->settings->db_server;
