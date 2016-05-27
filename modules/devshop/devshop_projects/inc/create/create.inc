@@ -201,7 +201,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   // then  "Cloning" to create the rest?
   foreach ($project_node->project->environments as $environment_name => &$environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $environment->db_server;
+    $db_server = $environment->db_server_nid;
     $site_node = devshop_projects_create_site($project_node->project, node_load($environment->platform), $environment_name, $db_server);
     $environment->site = $site_node->nid;
   }
