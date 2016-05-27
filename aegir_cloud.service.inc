@@ -40,8 +40,8 @@ class hostingService_provider extends hostingService {
   function insert() {
 
     // Prevent duplicate insert... Not sure why this happens.
-    if (!db_query('SELECT nid FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid))->fetchField()) {
-      db_insert('hosting_devshop_cloud_provider')
+    if (!db_query('SELECT nid FROM {hosting_aegir_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid))->fetchField()) {
+      db_insert('hosting_aegir_cloud_provider')
         ->fields(array(
           'nid',
           'provider_data',
@@ -60,12 +60,12 @@ class hostingService_provider extends hostingService {
 
   function delete() {
     parent::delete();
-    db_query('DELETE FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid));
+    db_query('DELETE FROM {hosting_aegir_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid));
   }
 
   function load() {
     parent::load();
-    $this->mergeData('SELECT * FROM {hosting_devshop_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid));
+    $this->mergeData('SELECT * FROM {hosting_aegir_cloud_provider} WHERE nid = :nid', array(':nid' => $this->server->nid));
     $this->provider_options = unserialize($this->provider_options);
     $this->provider_data = unserialize($this->provider_data);
   }

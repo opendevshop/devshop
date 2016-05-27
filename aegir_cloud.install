@@ -8,7 +8,7 @@
  * Implementation of hook_schema().
  */
 function aegir_cloud_schema() {
-  $schema['hosting_devshop_cloud_provider'] = array(
+  $schema['hosting_aegir_cloud_provider'] = array(
     'fields' => array(
       'nid' => array(
         'type' => 'int',
