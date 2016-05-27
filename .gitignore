@@ -1,9 +1,11 @@
 
 # devshop repos
 source
+roles
 
 # Local config
 .vagrant
+devmaster_id_rsa.pub
 
 # Symfony code
 vendor
