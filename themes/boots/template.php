@@ -578,6 +578,11 @@ function boots_preprocess_node(&$vars) {
       $vars['theme_hook_suggestions'][] =  'node__site_environment';
     }
   }
+
+  // I don't know why, but server nodes are missing their titles!
+  if (isset($vars['node']->nid) && empty($vars['node']->title)) {
+    $vars['node'] = node_load($vars['node']->nid);
+  }
 }
 
 /**
