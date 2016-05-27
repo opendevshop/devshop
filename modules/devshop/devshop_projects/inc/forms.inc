@@ -231,18 +231,29 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#weight' => -100,
   );
 
-  $form['project']['settings']['deploy']['allow_environment_deploy_config'] = array(
+  $form['project']['settings']['deploy']['default_hooks']['allow_environment_deploy_config'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow environment-specific deploy hook configuration.'),
     '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_environment_deploy_config'] : FALSE,
     '#description' => t('Each environment can be configured to have different deploy hooks. <em>Be sure to check your environments settings if you enable this.</em>' ),
+    '#parents' => array(
+      'project',
+      'settings',
+      'deploy',
+      'allow_environment_deploy_config',
+    ),
   );
-
-  $form['project']['settings']['deploy']['allow_environment_deploy_hooks_override'] = array(
+  $form['project']['settings']['deploy']['default_hooks']['allow_environment_deploy_hooks_override'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow users to override hooks when deploying manually.'),
     '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_environment_deploy_hooks_override'] : FALSE,
     '#description' => t('Check this box to allow users to override the hooks that are run on manual deployments. If left unchecked, all environments will run the deploy hooks configured above on every deployment.' ),
+    '#parents' => array(
+      'project',
+      'settings',
+      'deploy',
+      'allow_environment_deploy_hooks_override',
+    ),
   );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
