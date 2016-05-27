@@ -9,6 +9,11 @@ function ansible_services_hosting_service() {
         $services['ansible_mysql'] = 'db';
         $services['ansible_apache'] = 'http';
 
+        // NGINX only exists if the module is enabled.
+        if (module_exists('hosting_nginx_ssl')) {
+            $services['ansible_nginx'] = 'http';
+        }
+
         // HA Proxy depends on hosting_cluster module.
         if (module_exists('hosting_cluster')) {
             $services['ansible_haproxy'] = 'http';
