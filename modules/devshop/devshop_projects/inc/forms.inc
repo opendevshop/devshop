@@ -214,14 +214,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     );
   }
 
-  // Allow "Other"
-  $form['project']['settings']['deploy']['allow_deploy_data_from_alias'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow deploying data from drush aliases.'),
-    '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_deploy_data_from_alias'] : FALSE,
-    '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
-  );
-
   // Load deploy hooks form element.
   $form['project']['settings']['deploy']['default_hooks'] = devshop_environment_deploy_hooks_form($project);
 
