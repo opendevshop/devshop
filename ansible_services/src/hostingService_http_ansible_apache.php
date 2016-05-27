@@ -33,7 +33,7 @@ class hostingService_http_ansible_apache extends hostingService_http_apache_ssl
     {
         parent::load();
         $this->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
-        $this->roles = $this->getRoles();
+        $this->roles = $this->getRoleNames();
     }
 
     /**

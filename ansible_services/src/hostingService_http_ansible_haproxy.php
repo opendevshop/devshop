@@ -20,7 +20,7 @@ class hostingService_http_ansible_haproxy extends hostingService_http_cluster
     function load()
     {
         parent::load();
-        $this->roles = $this->getRoles();
+        $this->roles = $this->getRoleNames();
 
         // Transform the chosen web servers into ansible variables.
         // See https://github.com/geerlingguy/ansible-role-haproxy#role-variables
@@ -52,5 +52,23 @@ class hostingService_http_ansible_haproxy extends hostingService_http_cluster
         return array(
             'geerlingguy.haproxy'
         );
+    }
+
+    /**
+     * The list of ansible roles that this service depends on.
+     *
+     * @return array
+     */
+    function getRoleNames() {
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if (isset($role['name'])) {
+                $names[] = $role['name'];
+            }
+            else {
+                $names[] = $role;
+            }
+        }
+        return $names;
     }
 }
