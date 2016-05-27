@@ -33,7 +33,7 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
 
     function load() {
         parent::load();
-        $this->roles = $this->getRoles();
+        $this->roles = $this->getRoleNames();
 
         // Get server_master's IP address.
         $name = 'server_master';
@@ -82,5 +82,23 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
             'opendevshop.aegir-user',
             'geerlingguy.mysql',
         );
+    }
+
+    /**
+     * The list of ansible roles that this service depends on.
+     *
+     * @return array
+     */
+    function getRoleNames() {
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if (isset($role['name'])) {
+                $names[] = $role['name'];
+            }
+            else {
+                $names[] = $role;
+            }
+        }
+        return $names;
     }
 }
