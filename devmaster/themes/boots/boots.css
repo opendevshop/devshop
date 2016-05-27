@@ -907,3 +907,12 @@ p.error {
     text-align: center;
     padding: 32px 0px 52px;
 }
+
+#hosting-site-info, #hosting-task-list {
+    width: 100%;
+    float: none;
+    margin: 0;
+}
+.node-type-server .panel-body .form-item {
+    margin-right: 2em;
+}
