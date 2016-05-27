@@ -4,15 +4,9 @@
  * Implements hook_hosting_service()
  */
 function aegir_softlayer_hosting_service() {
-  $options = variable_get('aegir_cloud_softlayer_options', array());
-  if (!empty($options)) {
-    return array(
-      'softlayer' => 'provider',
-    );
-  }
-  else {
-    return array();
-  }
+  return array(
+    'softlayer' => 'provider',
+  );
 }
 
 /**

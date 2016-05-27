@@ -17,6 +17,18 @@ class hostingService_provider_softlayer extends hostingService_provider {
   public $name = 'IBM SoftLayer';
 
   function form(&$form) {
+
+    $options = variable_get('aegir_cloud_softlayer_options', array());
+    if (empty($options)) {
+
+      $form['warning'] = array(
+        '#markup' => t('You must first configure your !link to use this provider.', array(
+          '!link' => l(t('SoftLayer Credentials'), 'admin/hosting/cloud'))
+        ),
+      );
+      return;
+    }
+
     parent::form($form);
 
     // Don't allow editing.
@@ -142,7 +154,6 @@ class hostingService_provider_softlayer extends hostingService_provider {
     $raw_options = variable_get('aegir_cloud_softlayer_options', array());
 
     if (empty($raw_options)) {
-      drupal_set_message(t('You must !link before you can create a server there.', array('!link' => l(t('retrieve SoftLayer options'), 'admin/hosting/aegir/softlayer'))), 'error');
       return;
     }
 
