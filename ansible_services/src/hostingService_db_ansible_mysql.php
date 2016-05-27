@@ -83,4 +83,22 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
             'geerlingguy.mysql',
         );
     }
+    
+    /**
+     * The list of ansible roles that this service depends on.
+     *
+     * @return array
+     */
+    function getRoleNames() {
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if (isset($role['name'])) {
+                $names[] = $role['name'];
+            }
+            else {
+                $names[] = $role;
+            }
+        }
+        return $names;
+    }
 }
