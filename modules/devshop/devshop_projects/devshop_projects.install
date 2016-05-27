@@ -338,3 +338,7 @@ function devshop_projects_update_6010 () {
 function devshop_projects_update_6011 () {
   devshop_reset_last_tasks();
 }
+
+function devshop_projects_update_7000 () {
+  variable_set('menu_options_project', array());
+}
