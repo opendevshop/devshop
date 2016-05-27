@@ -13,6 +13,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
   $profiles = array();
   $available_profiles = array();
   $completed = TRUE;
+  $task_failed = FALSE;
 
   $form['nid'] = array(
     '#type' => 'value',
@@ -95,15 +96,12 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $error = l(db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'error'))->fetchField(), "node/{$task->nid}");
+      $error = db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'error'))->fetchField();
 
       $row['version'] = array(
-        'data' => t('Platform verification failed: !error', array('!error' => $error)),
+        'data' => '<div class="alert alert-danger small">' . $error . '</div> ',
         'colspan' => 2,
       );
-
-      // @TODO: Get task log error message
-
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
@@ -115,6 +113,11 @@ function devshop_project_create_step_sites($form, &$form_state) {
     // If a single task is not queued, $all_tasks_queued == FALSE
     if ($task->task_status != HOSTING_TASK_QUEUED) {
       $all_tasks_queued = FALSE;
+    }
+
+    // If a single task is not queued, $all_tasks_queued == FALSE
+    if ($task->task_status == HOSTING_TASK_ERROR) {
+      $task_failed = TRUE;
     }
 
     // Add hosting task status.
@@ -146,10 +149,26 @@ function devshop_project_create_step_sites($form, &$form_state) {
     devshop_form_reloader($form, 'platform');
     return $form;
   }
+  elseif ($task_failed) {
+    $project->no_finish = TRUE;
+    $form['error'] = array(
+      '#prefix' => '<p class="error">',
+      '#markup' => t('Something went wrong when trying to clone your codebase.'),
+      '#suffix' => '</p>',
+    );
+    $form['retry'] = array(
+      '#type' => 'submit',
+      '#value' => t('Retry'),
+      '#prefix' => '<div class="text-center">',
+      '#suffix' => '</div>',
+    );
+    $form['#no_finish'] = TRUE;
+  }
+
   // If no available profiles:
   elseif (count($available_profiles) == 0) {
     $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects/add/environments'))) . '</p>';
+    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects#/add/environments'))) . '</p>';
 
     $form['error'] = array(
       '#markup' => $note,
@@ -186,7 +205,13 @@ function devshop_project_create_step_sites($form, &$form_state) {
  * STEP 4: Validate
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
-  if (empty($form_state['values']['install_profile'])) {
+  if ($form_state['triggering_element']['#value'] == t('Retry')) {
+    foreach ($form_state['project']->environments as $name => $environment) {
+      key($environment->tasks['verify']);
+      hosting_task_retry(key($environment->tasks['verify']));
+    }
+  }
+  elseif (empty($form_state['values']['install_profile'])) {
     form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
   }
 }
