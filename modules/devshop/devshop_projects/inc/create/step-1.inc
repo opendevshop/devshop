@@ -32,7 +32,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'textfield',
       '#title' => t('Project Code Name'),
       '#required' => TRUE,
-      '#description' => t('Choose a unique name for your project.  For consistency, its a good idea to use the name of your git repository. <em>NOTE: You cannot change this, but you can delete and start over.Choose wisely.</em>'),
+      '#suffix' => '<p>' . t('Choose a unique name for your project.') . '</p>',
       '#size' => 40,
       '#maxlength' => 255,
     );
@@ -53,7 +53,7 @@ function devshop_project_create_step_git($form, $form_state) {
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git URL'),
-    '#description' => t('Enter the Git URL for your drupal project.  The root of the repo must contain Drupal\'s index.php.  A clone of !link is a good place to start.', array('!link' => l('http://git.drupal.org/project/drupal.git', 'http://git.drupal.org/project/drupal.git'))),
+    '#suffix' => '<p>' . t('Enter the Git URL for your project. You should use the "ssh" url when possible. An entire Drupal codebase must be present in the root, unless a composer.json file is present.') . '</p>',
     '#default_value' => $project->git_url,
   );
 //
