@@ -20,7 +20,8 @@ function drush_aegir_softlayer_pre_hosting_task() {
 
             // Loop until we have an IP address.
             while (empty($task->ref->ip_addresses)) {
-                drush_log('Waiting for IP addresses...', 'aegir_log');
+                drush_log('Server Created.', 'devshop_command');
+                drush_log('Waiting for IP addresses...', 'devshop_log');
                 sleep(3);
                 $server = $api->getObject();
 
@@ -30,21 +31,24 @@ function drush_aegir_softlayer_pre_hosting_task() {
                         $server->primaryIpAddress,
                         $server->primaryBackendIpAddress,
                     );
-                    drush_log('IP Addresses found: ' . implode(', ', $ips), 'success');
+                    drush_log('IP address loaded from API: ' . implode(', ', $ips), 'devshop_log');
 
                     // Save IP Addresses.
 //                    drush_set_option('ip_addresses', $ips);
+
                     $task->ref->ip_addresses = $ips;
                     $task->ref->no_verify = TRUE;
-                    if (node_save($task->ref)) {
-                        drush_log('Node saved', 'success');
+                    $node = node_save($task->ref);
+                    if ($node) {
+                        drush_log('Node saved', 'devshop_ok');
                     }
                     else {
-//                        drush_log('Node not saved', 'error');
+
+                        drush_log('Node not saved', 'devshop_error');
                     }
 
                     $node = node_load($task->ref->nid);
-                    drush_log('IP address info acquired and saved: ' . implode(', ', $node->ip_addresses), 'success');
+                    drush_log('IP address from node: ' . implode(', ', $node->ip_addresses), 'devshop_log');
                 }
             }
 
