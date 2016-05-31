@@ -34,20 +34,16 @@ function drush_aegir_softlayer_pre_hosting_task() {
                         $server->primaryBackendIpAddress
                     );
                     $need_save = TRUE;
-                    drush_log('IP address loaded from API: ' . implode(', ', $ips) . "\n", 'devshop_info');
+                    drush_log('IP address loaded from API: ' . implode(', ', $ips) . "\n", 'devshop_ok');
 
                     // Save IP addresses
                     $task->ref->new_ip_addresses = $ips;
                     $task->ref->no_verify = TRUE;
-
-                    _hosting_ip_save($task->ref, 'update');
-                    $node = node_load($task->ref->nid);
-                    if (empty($node->ip_addresses)) {
-//                        drush_log('Unable to save IP Addresses.', 'devshop_error');
+                    if (!node_save($task->ref)) {
                         return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved!');
                     }
                     else {
-                        drush_log('IP address from node: ' . implode(', ', $node->ip_addresses), 'devshop_ok');
+                        drush_log('IP address from node: ' . implode(', ', $task->ref->ip_addresses), 'devshop_ok');
                     }
                     return;
                 }
