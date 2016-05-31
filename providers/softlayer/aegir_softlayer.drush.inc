@@ -18,38 +18,40 @@ function drush_aegir_softlayer_pre_hosting_task() {
             $id = $service->provider_server_identifier;
             $api = $service->getClient('SoftLayer_Virtual_Guest', $id);
 
+            if (empty($task->ref->ip_addresses)) {
+
+            drush_log('Acquiring IP Addresses', 'devshop_command');
+            drush_log("Waiting for IP Address...\n", 'devshop_info');
+
             // Loop until we have an IP address.
             while (empty($task->ref->ip_addresses)) {
-                drush_log('Server Created.', 'devshop_command');
-                drush_log('Waiting for IP addresses...', 'devshop_log');
                 sleep(3);
                 $server = $api->getObject();
 
                 if (!empty($server->primaryIpAddress) && !empty($server->primaryBackendIpAddress)) {
-                    $need_save = TRUE;
                     $ips = array(
                         $server->primaryIpAddress,
-                        $server->primaryBackendIpAddress,
+                        $server->primaryBackendIpAddress
                     );
-                    drush_log('IP address loaded from API: ' . implode(', ', $ips), 'devshop_log');
+                    $need_save = TRUE;
+                    drush_log('IP address loaded from API: ' . implode(', ', $ips) . "\n", 'devshop_info');
 
-                    // Save IP Addresses.
-//                    drush_set_option('ip_addresses', $ips);
-
-                    $task->ref->ip_addresses = $ips;
+                    // Save IP addresses
+                    $task->ref->new_ip_addresses = $ips;
                     $task->ref->no_verify = TRUE;
-                    $node = node_save($task->ref);
-                    if ($node) {
-                        drush_log('Node saved', 'devshop_ok');
+
+                    _hosting_ip_save($task->ref, 'update');
+                    $node = node_load($task->ref->nid);
+                    if (empty($node->ip_addresses)) {
+//                        drush_log('Unable to save IP Addresses.', 'devshop_error');
+                        return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved!');
                     }
                     else {
-
-                        drush_log('Node not saved', 'devshop_error');
+                        drush_log('IP address from node: ' . implode(', ', $node->ip_addresses), 'devshop_ok');
                     }
-
-                    $node = node_load($task->ref->nid);
-                    drush_log('IP address from node: ' . implode(', ', $node->ip_addresses), 'devshop_log');
+                    return;
                 }
+            }
             }
 
         } catch (Exception $e) {
