@@ -5,62 +5,82 @@
  *
  * @param string $project_name
  */
-function devshop_projects_tasks_status_json($project_nid = '') {
+function devshop_projects_tasks_status_json() {
 
   $output = array();
 
   $sql = '
         SELECT
-            project_nid,
-            name,
-            last_task AS last_task_nid,
-            n.title as project,
-            site,
-            e.platform
+            last_task
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {node} n ON e.project_nid = n.nid
           WHERE n.status = 1
         ';
 
-  if (!empty($project_nid)) {
-    $sql .= ' WHERE project_nid = :project';
-  }
-  $results = db_query($sql, array(
-    ':project' => $project_nid,
-    ':status' => HOSTING_SITE_DELETED,
-  ));
+  $results = db_query($sql);
 
   $task_types = hosting_available_tasks();
+  $nids = array();
 
-  // Get all environments and their status.
+  // Ensure we always load our task
+  if (isset($_GET['task'])) {
+    $nids[] = $_GET['task'];
+  }
+
+    // Get all environments and their status.
   foreach ($results as $result) {
-    $result->last_task = node_load($result->last_task_nid);
 
-        if ($result->site) {
-          $result->site_node = node_load($result->site);
+    // Save NIDs for later
+    $nids[] = $result->last_task;
+  }
 
-          if ($result->site_node->site_status == HOSTING_SITE_DELETED) {
+  // Look up any remaining queued or processing tasks.
+  $query = db_select('node', 'n');
+  $query->join('hosting_task', 't', 'n.vid=t.vid');
+  $query
+    ->fields('n', array('nid'))
+    ->condition('type', 'task')
+    ->orderBy('n.vid', 'DESC')
+    ->addTag('node_access');
+
+  $or = db_or();
+  $or->condition('task_status', HOSTING_TASK_PROCESSING);
+  $or->condition('task_status', HOSTING_TASK_QUEUED);
+  $query->condition($or);
+
+  if (!empty($nids)) {
+    $query->condition('n.nid', $nids, 'NOT IN');
+  }
+  $extras = $query->execute();
+  foreach ($extras as $row) {
+    $nids[] = $row->nid;
+  }
+
+  foreach ($nids as $nid) {
+    $task_node = node_load($nid);
+
+        if (isset($task_node->site)) {
+          $task_node->site_node = node_load($task_node->site);
+
+          if ($task_node->site_node->site_status == HOSTING_SITE_DELETED) {
             continue;
           }
         }
 
         // If no last task node was found, skip.
-        if (empty($result->last_task)) {
+        if (empty($task_node)) {
             continue;
         }
 
         // If page is requesting this task's logs, load them.
-        if ($_GET['task'] == $result->last_task->nid) {
-            $messages = devshop_task_get_messages($result->last_task);
+        if (isset($_GET['task']) && $_GET['task'] == $task_node->nid) {
+            $messages = devshop_task_get_messages($task_node);
             if (count($messages)) {
-                $result->last_task->logs = implode("\n", $messages);
+              $task_node->logs = implode("\n", $messages);
             }
         }
 
-        // To test out constantly changing tasks, uncomment this line.
-        //$result->last_task->status = rand(-1, 3);
-
-        $output[] = $result;
+        $output[] = $task_node;
   }
 
   print json_encode($output);

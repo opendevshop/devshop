@@ -27,12 +27,6 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'dialog' => TRUE,
   );
-  $tasks['project']['devshop-pull'] = array(
-    'title' => t('Pull Code'),
-    'description' => t('Pull & verify platform code and (optionally) run update.php, clear cache, and revert features.'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-  );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
@@ -40,14 +34,12 @@ function devshop_projects_hosting_tasks() {
     'dialog' => TRUE,
     'hidden' => TRUE,
   );
-  // @TODO: This task was making menu cache clears FREAK OUT.
-  // We must figure out how to create a new "deploy" task.
-  // This task might as well be in hosting_git.module
-//  $tasks['site']['devshop-deploy'] = array(
-//    'title' => t('Deploy'),
-//    'access callback' => 'devshop_hosting_task_menu_access',
-//    'dialog' => TRUE,
-//  );
+  $tasks['site']['devshop-deploy'] = array(
+    'title' => t('Deploy'),
+    'description' => t('Checkout or Pull new code to this environment.'),
+    'access callback' => 'devshop_hosting_task_menu_access',
+    'dialog' => TRUE,
+  );
   return $tasks;
 }
 
@@ -59,11 +51,10 @@ function devshop_projects_tasks_add_environment_to_form(&$form, $node, $descript
   $options = array_combine($keys, $keys);
   $form[$key] = array(
     '#type' => $type,
-    '#title' => t($title),
+    '#title' => t('@title', array('@title' => $title)),
     '#options' => $options,
     '#default_value' => $type == 'radios' ? key($options) : array(key($options)),
     '#required' => $type == 'checkboxes',
-    '#description' => $description,
+    '#description' => t('@description', array('@description' => $description)),
   );
 }
-

@@ -47,16 +47,21 @@ dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
 dependencies[] = r4032login
 dependencies[] = jquery_update
+dependencies[] = distro_update
+dependencies[] = module_filter
 
 ; This breaks hosting.install.  Removing it for now.
 ;dependencies[] = adminrole
 
 ; DevShop
 dependencies[] = devshop_hosting
+dependencies[] = devshop_dothooks
 dependencies[] = devshop_projects
-;dependencies[] = devshop_log
 dependencies[] = devshop_pull
-;dependencies[] = devshop_github
-;dependencies[] = aegir_ssh
-;dependencies[] = aegir_download
+dependencies[] = devshop_github
+dependencies[] = aegir_ssh
+; dependencies[] = aegir_download
+; dependencies[] = aegir_commit
+; dependencies[] = aegir_features
+dependencies[] = devshop_stats
 

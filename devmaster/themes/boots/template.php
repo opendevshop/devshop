@@ -1,4 +1,10 @@
 <?php
+
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\Theme;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+
 /**
  * Implements hook_theme()
  */
@@ -18,10 +24,17 @@ function boots_theme() {
 /**
  * Preprocessor for environment template.
  */
-function boots_preprocess_environment(&$vars)
-{
+function boots_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
+
+  // Load last task node.
+  if (isset($environment->last_task_nid)) {
+    $environment->last_task_node = node_load($environment->last_task_nid);
+  }
+
+  // Available deploy data targets.
+  $vars['target_environments'] = $project->environments;
 
   // Load git refs and create links
   $vars['git_refs'] = array();
@@ -44,6 +57,16 @@ function boots_preprocess_environment(&$vars)
     if ($source_environment->site) {
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
+  }
+
+  // Look for remote aliases
+  // @TODO: Move to devshop_remotes.module. I could't get devshop_remotes_preprocess_environment() working.
+  foreach ($vars['project']->settings->aliases as $name => $alias) {
+    $alias = (object) $alias;
+    $alias->site = $name;
+    $alias->name = $name;
+    $alias->url = $alias->uri;
+    $vars['source_environments'][$name] = $alias;
   }
 
   // Show user Login Link
@@ -69,7 +92,7 @@ function boots_preprocess_environment(&$vars)
   }
 
   // Pull Request?
-  if ($environment->github_pull_request) {
+  if (isset($environment->github_pull_request) && $environment->github_pull_request) {
     $environment->class .= ' pull-request';
   }
 
@@ -109,16 +132,10 @@ function boots_preprocess_environment(&$vars)
       }
     }
 
-    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
-
-    $items[] = l($text, "node/{$task->nid}", array(
-        'html' => TRUE,
-        'attributes' => array(
-            'class' => "list-group-item list-group-item-{$task->status_class}",
-        ),
-    ));
-    $environment->task_logs = implode("\n", $items);
+//    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
+    $items[] = theme('devshop_task', array('task' => $task));
   }
+  $environment->task_logs = implode("\n", $items);
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
@@ -129,21 +146,26 @@ function boots_preprocess_environment(&$vars)
   // Branch or tag no longer exists in the project.
   if (!isset($project->settings->git['refs'][$environment->git_ref])) {
     $vars['warnings'][] = array(
-      'text' =>  t('The git reference %ref is no longer available.', array(
+      'text' =>  t('The git ref %ref is no longer present in the remote repository.', array(
         '%ref' => $environment->git_ref,
-        '@type' => $environment->git_ref_type,
       )),
-      'type' => 'error',
+      'type' => 'warning',
     );
   }
 
   // No hooks configured.
-  if ($project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
+  if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
       'text' => t('No deploy hooks are configured. Check your !link.', array(
         '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
       )),
       'type' => 'warning',
+    );
+  }
+  foreach ($environment->warnings as $warning) {
+    $vars['warnings'][] = array(
+      'text' => $warning['text'],
+      'type' => $warning['type'],
     );
   }
 
@@ -153,6 +175,39 @@ function boots_preprocess_environment(&$vars)
 
   // Get token for task links
   $vars['token'] = drupal_get_token($user->uid);
+
+  // Git information
+  $path = $environment->repo_root;
+  if (file_exists($path)) {
+
+    // Timestamp of last commit.
+    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
+
+    // The last commit.
+    $environment->git_commit = shell_exec("cd $path; git -c color.ui=always log --max-count=1");
+
+    // Get the exact SHA
+    $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+
+    // Get the actual tag or branch
+    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd $path; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+
+    // Get git status.
+    $environment->git_status = trim(shell_exec("cd $path; git -c color.ui=always  status"));
+
+    // Get git diff.
+    $environment->git_diff = trim(shell_exec("cd $path; git -c color.ui=always diff"));
+
+  }
+  else {
+    $environment->git_last = '';
+    $environment->git_commit = '';
+    $environment->git_sha = '';
+    $environment->git_status = '';
+    $environment->git_diff = '';
+  }
+
+  $vars['environment'] = $environment;
 }
 
 /**
@@ -182,6 +237,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
     }
   }
 
+  $task_class = '';
   if ($tasks_count > 0) {
     $task_class = 'active-task fa-spin';
   }
@@ -248,7 +304,7 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
 
       $text = '<i class="fa fa-' . $icon . '"></i> ';
       $text .= $task->title;
-      $text .= ' <small class="task-ago btn-block">' . format_interval(time() - $task->changed) .' '. t('ago') . '</small>';
+      $text .= ' <small class="task-ago btn-block">' . format_interval(REQUEST_TIME - $task->changed) .' '. t('ago') . '</small>';
 
       $id = isset($task_node->environment)? "task-{$task_node->environment->project_name}-{$task_node->environment->name}": "task-";
       $task_items[] = l($text, 'node/' . $task->nid, array(
@@ -331,17 +387,26 @@ HTML;
  * @param $vars
  */
 function boots_preprocess_page(&$vars){
+//
+//  // Add information about the number of sidebars.
+//  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
+//  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
+//    if ($vars['node']->type == 'project') {
+//      $vars['content_column_class'] = ' class="col-sm-12';
+//    }
+//    else {
+//      $vars['content_column_class'] = ' class="col-sm-9"';
+//    }
+//  }
+//  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+//    $vars['content_column_class'] = ' class="col-sm-9"';
+//  }
+//  else {
+//    $vars['content_column_class'] = ' class="col-sm-12"';
+//  }
 
-  // Add information about the number of sidebars.
-  $has_sidebar_first = !empty($vars['page']['sidebar_first']) || !empty($vars['tabs']);
-  if ($has_sidebar_first && !empty($vars['page']['sidebar_second'])) {
-    $vars['content_column_class'] = ' class="col-sm-6"';
-  }
-  elseif ($has_sidebar_first || !empty($vars['page']['sidebar_second'])) {
+  if (!empty($vars['tabs']) && (!isset($vars['node']) || $vars['node']->type != 'project')) {
     $vars['content_column_class'] = ' class="col-sm-9"';
-  }
-  else {
-    $vars['content_column_class'] = ' class="col-sm-12"';
   }
 
   if (user_access('access task logs')){
@@ -349,7 +414,7 @@ function boots_preprocess_page(&$vars){
   }
 
   // On any node/% page...
-  if ($vars['node'] || arg(0) == 'node' && is_numeric(arg(1))) {
+  if (isset($vars['node']) || arg(0) == 'node' && is_numeric(arg(1))) {
 
     // Task nodes only have project nid and environment name.
     if (is_numeric($vars['node']->project)) {
@@ -365,8 +430,11 @@ function boots_preprocess_page(&$vars){
 
     // Set subtitle
     $vars['title'] = $vars['node']->title;
-    $vars['subtitle'] = ucfirst($vars['node']->type);
     $vars['title_url'] = "node/" . $vars['node']->nid;
+
+    if (in_array($vars['node']->type, array('site', 'platform', 'project', 'task', 'server', 'client'))){
+      $vars['subtitle'] = ucfirst($vars['node']->type);
+    }
 
     // Set title2 if on a node/%/* sub page.
     if (!is_null(arg(2)) && $vars['title'] != $vars['node']->title) {
@@ -383,7 +451,7 @@ function boots_preprocess_page(&$vars){
     }
 
     // Set header and subtitle 2 for nodes that have a project.
-    elseif (isset($vars['node']->project)) {
+    elseif (!empty($vars['node']->project)) {
 
       $vars['title2'] = $vars['title'];
 
@@ -430,19 +498,66 @@ function boots_preprocess_page(&$vars){
 
     }
 
+    // On environment settings page...
+    if (arg(0) == 'node' && arg(3) == 'env') {
+      $project_node = node_load(arg(1));
+      $environment = $project_node->project->environments[arg(4)];
+
+      $vars['title2_url'] = 'node/' . $environment->site;
+      $vars['title2'] = l($environment->name, $vars['title2_url']);
+      $vars['subtitle2'] = t('Environment');
+    }
+
     $vars['title'] = l($vars['title'], $vars['title_url']);
 
   }
-  if (variable_get('devshop_support_widget_enable', TRUE)) {
-    $vars['closure'] .= <<<HTML
-<script>
-  window.intercomSettings = {
-    app_id: "ufeta82d"
-  };
-</script>
-<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ufeta82d';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
-HTML;
+
+  if (arg(0) == 'hosting_confirm') {
+    $node = node_load(arg(1));
+
+    if (isset($node->project)) {
+      if ($node->type == 'project') {
+        $project_node = $node;
+
+        // On "fork" or "clone", look for source arg.
+        if (arg(2) == 'project_devshop-create' && is_numeric(arg(4))) {
+          $environment_node = node_load(arg(4));
+          $title2text = $environment_node->environment->name;
+          $title2url = 'node/' . $environment_node->environment->site;
+        }
+        elseif (arg(2) == 'project_devshop-create') {
+          $title2text = t('New');
+          $title2url = current_path();
+        }
+      }
+      else {
+        $project_node = node_load($node->project->nid);
+        $title2text = $node->environment->name;
+        $title2url = 'node/' . $node->environment->site;
+      }
+      $vars['title'] = $project_node->title;
+      $vars['title_url'] = "node/{$project_node->nid}";
+      $vars['subtitle'] = t('Project');
+      $vars['title'] = l($vars['title'], $vars['title_url']);
+
+      $vars['title2'] = l($title2text, $title2url);
+      $vars['subtitle2'] = t('Environment');
+
+      $vars['title_prefix']['title3'] = array(
+        '#markup' => drupal_get_title(),
+        '#prefix' => '<h4>',
+        '#suffix' => '</h4>',
+      );
+    }
   }
+
+  if (variable_get('devshop_support_widget_enable', TRUE)) {
+    drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
+  }
+
+  // Render stuff
+  $vars['tabs_rendered'] = render($vars['tabs']);
+  $vars['sidebar_first_rendered'] = render($vars['page']['sidebar_first']);
 }
 
 
@@ -462,6 +577,11 @@ function boots_preprocess_node(&$vars) {
     if (!empty($vars['node']->environment)) {
       $vars['theme_hook_suggestions'][] =  'node__site_environment';
     }
+  }
+
+  // I don't know why, but server nodes are missing their titles!
+  if (isset($vars['node']->nid) && empty($vars['node']->title)) {
+    $vars['node'] = node_load($vars['node']->nid);
   }
 }
 
@@ -551,7 +671,7 @@ function boots_preprocess_node_project(&$vars){
 
   // Set webhook interval
   if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
-    $interval = format_interval(time() - $project->settings->deploy['last_webhook']);
+    $interval = format_interval(REQUEST_TIME - $project->settings->deploy['last_webhook']);
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
@@ -641,7 +761,7 @@ HTML;
   $vars['hosting_queue_admin_link'] = l(t('Configure Queues'), 'admin/hosting/queues');
 
   // Available deploy data targets.
-  $vars['target_environments'];
+  $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
   foreach ($vars['node']->project->environments as &$environment) {
@@ -664,6 +784,10 @@ HTML;
       'icon' => '<i class="fa fa-exclamation-triangle"></i>',
       'type' => 'warning',
     );
+  }
+
+  if (!isset($vars['project_extra_items']) || !is_array($vars['project_extra_items'])) {
+    $vars['project_extra_items'] = array();
   }
 }
 

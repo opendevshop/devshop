@@ -22,10 +22,6 @@ function devshop_project_create_step_environments($form, &$form_state) {
     return $form;
   }
 
-  // this JS handles the form element hiding/showing
-  $path = drupal_get_path('module', 'devshop_projects') . '/inc/environments.js';
-  drupal_add_js($path);
-
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $project->nid,
@@ -40,8 +36,8 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#suffix' => '</div>',
   );
 
-  // Ensure a blank row exists (happens when using 'Back' button)
-  if (!is_array($project->environments['NEW'])) {
+  // Ensure a blank row exists (happens when using 'Back' button).
+  if (!isset($project->environments['NEW']) || !is_array($project->environments['NEW'])) {
     $project->environments['NEW'] = array();
   }
   foreach ($project->environments as $name => $environment) {
@@ -73,23 +69,23 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
     $form['project']['environments'][$name]['site'] = array(
       '#type' => 'value',
-      '#value' => $environment->site,
+      '#value' => isset($environment->site) ? $environment->site : NULL,
     );
     $form['project']['environments'][$name]['platform'] = array(
       '#type' => 'value',
-      '#value' => $environment->platform,
+      '#value' => isset($environment->platform) ? $environment->platform : NULL,
     );
     $form['project']['environments'][$name]['git_ref'] = array(
       '#type' => 'select',
       '#options' => devshop_projects_git_ref_options($project),
-      '#default_value' => $environment->git_ref,
+      '#default_value' => isset($environment->git_ref) ? $environment->git_ref : 'HEAD',
     );
 
     // HTTP Server select.
     $http_servers = hosting_get_servers('http');
 
     // Determine default web server.
-    $default_web_server = $environment->settings->web_server ?
+    $default_web_server = isset($environment->settings, $environment->settings->web_server) ?
       $environment->settings->web_server :
       $project->settings->default_environment['web_server'];
 
@@ -117,7 +113,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     $db_servers = hosting_get_servers('db');
 
     // Determine default db server.
-    $default_db_server = $environment->settings->db_server ?
+    $default_db_server = isset($environment->settings, $environment->settings->db_server) ?
       $environment->settings->db_server :
       $project->settings->default_environment['db_server'];
 
@@ -163,26 +159,42 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
 
   $values = &$form_state['values'];
 
-  // Check environment titles
-  foreach ($values['project']['environments'] as $env => $env_settings) {
-    // Check for illegal chars
-    if ($env != 'NEW' && !empty($env_settings['name'])) {
-      if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
+  if (isset($values['project'])) {
+
+    // Check environment titles
+    foreach ($values['project']['environments'] as $env => $env_settings) {
+      // Check for illegal chars
+      if ($env != 'NEW' && !empty($env_settings['name'])) {
+        if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
+          $form_item = 'environments][' . $env . '][name';
+          form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+        }
+      }
+
+      // Check for unique names.
+      if ($env == 'NEW' && array_key_exists($env_settings['name'], $values['project']['environments'])) {
         $form_item = 'environments][' . $env . '][name';
-        form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+        form_set_error($form_item, t('The environment name must be unique.'));
+      }
+      if ($env != $env_settings['name'] && array_key_exists($env_settings['name'], $values['project']['environments'])) {
+        $form_item = 'environments][' . $env . '][name';
+        form_set_error($form_item, t('The environment name must be unique.'));
+      }
+
+    }
+
+    // Reject if empty
+    if (count($values['project']['environments']) < 1) {
+      if ($form_state['clicked_button']['#name'] == 'add_environment') {
+        form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
+      }
+      else {
+        form_set_error('project][environments][NEW][name', t('You must add at least one environment.'));
       }
     }
   }
 
-  // Reject if empty
-  if (count($values['project']['environments']) < 1) {
-    if ($form_state['clicked_button']['#name'] == 'add_environment') {
-      form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
-    }
-    else {
-      form_set_error('project][environments][NEW][name', t('You must add at least one environment.'));
-    }
-  }
+
 }
 
 ///**
@@ -246,6 +258,13 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     $environments[$new_environment_name] = $environments['NEW'];
   }
   unset($environments['NEW']);
+
+  foreach ($environments as $name => $environment) {
+    if ($name != $environment['name']) {
+      $environments[$environment['name']] = $environment;
+      unset($environments[$name]);
+    }
+  }
 
   // Delete all existing environments
   db_delete('hosting_devshop_project_environment')
@@ -322,20 +341,22 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   }
 
   // For all removed platforms, trigger a delete task
-  // @TODO: Get this working again.
-//  $removed_environments = array_diff_key($project->environments, $form_state['values']['project']['environments']);
-//
-//  foreach ($removed_environments as $environment_name => $settings) {
-//    // @TODO: Determine what to do here based on task status...
-//    // if verify task hasn't even run yet (and has never run) we can just delete
-//    // the platform node.
-//
-//    // Create 'delete' task for the removed platform
-//    $platform_nid = $settings['platform'];
-//    if ($platform_nid) {
-//      hosting_add_task($platform_nid, 'delete');
-//    }
-//  }
+  $removed_environments = array_diff_key($project->environments, $environments);
+  foreach ($removed_environments as $environment_name => $settings) {
+    $platform_nid = $settings->platform;
+    $platform_node = node_load($platform_nid);
+
+    // Determine what to do here based on task status...
+    // if verify task hasn't even run yet (and has never run) we can just delete
+    // the platform node.
+    if (empty($platform_node->verified)) {
+      node_delete($platform_node);
+    }
+    // Create 'delete' task for the removed platform
+    else if ($platform_nid) {
+      hosting_add_task($platform_nid, 'delete');
+    }
+  }
 
 
   // Remove default "task" messages.

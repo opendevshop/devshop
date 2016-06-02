@@ -103,6 +103,9 @@ function hosting_task_devshop_create_form($node) {
     '#size' => 10,
     '#maxlength' => 64,
     '#weight' => -100,
+    '#attributes' => array(
+      'data-placement' => 'top',
+    ),
   );
 
   if ($project->settings->live['environment_aliases'] && !empty($node->project->settings->live['live_domain'])) {
@@ -138,6 +141,18 @@ function hosting_task_devshop_create_form($node) {
       '#description' => t('The web server the sites will be hosted on.'),
       '#options' => $servers,
       '#default_value' => $project->settings->default_environment['web_server'],
+    );
+  }
+
+  // Force the new environment to use the "default" servers.
+  if ($project->settings->default_environment['force_default_servers']) {
+    $form['web_server']['#type'] = array(
+      '#type' => 'value',
+      '#value' => $project->settings->default_environment['web_server'],
+    );
+    $form['db_server']['#type'] = array(
+      '#type' => 'value',
+      '#value' => $project->settings->default_environment['db_server'],
     );
   }
 
@@ -263,6 +278,12 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $settings->db_server = key($servers);
   }
 
+  // If "force servers" is set for the project, force them.
+  if ($project->settings->default_environment['force_default_servers']) {
+    $settings->db_server = $project->settings->default_environment['db_server'];
+    $settings->web_server = $project->settings->default_environment['web_server'];
+  }
+
   // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
     $platform->publish_path = $project->code_path . '/' . $new_environment_name . '/' . $project->drupal_path;
@@ -299,6 +320,12 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     // Copy settings from source environment.
     $environment->settings = $source_environment->settings;
+
+    // We assume since this is a clone, it does not need to be locked, and it should be auto-pulling.
+    // Unlock the environment... @TODO: Should this be a project setting?
+    // Make sure pull_disabled isn't on.
+    $environment->settings->locked = 0;
+    $environment->settings->pull_disabled = 0;
 
     // Save Clone/fork specific data to the environment
     $environment->settings->site_to_clone = $source_environment->site;
