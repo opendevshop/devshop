@@ -80,19 +80,31 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   }
 
+  // Prevent editing code path unless allowed.
+  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
+    $form['project']['code_path']['#type'] = 'value';
+    $form['project']['code_path']['#value'] = $form['project']['code_path']['#default_value'];
+  }
+
   // Project Settings
   $form['project']['settings'] = array(
     '#weight' => -10,
   );
 
+  // Project Settings Vertical Tabs
+  $form['project_settings'] = array(
+    '#type' => 'vertical_tabs',
+    '#weight' => -11,
+  );
+
   // Save git branches and tags
   $form['project']['settings']['git']['branches'] = array(
     '#type' => 'value',
-    '#value' => $project->settings->git['branches'],
+    '#value' => isset($project->settings->git['branches']) ? $project->settings->git['branches'] : NULL,
   );
   $form['project']['settings']['git']['tags'] = array(
     '#type' => 'value',
-    '#value' => $project->settings->git['tags'],
+    '#value' => isset($project->settings->git['tags']) ? $project->settings->git['tags'] : NULL,
   );
 
   // Live Environment settings.
@@ -101,6 +113,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Domain Name Settings'),
+    '#group' => 'project_settings',
   );
 
   // Live Environment
@@ -118,7 +131,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Live environment'),
     '#description' => t('The environment for the live website.  This locks the live environment from overwrites and disabling, and allows syncing to other environments.'),
     '#options' => $environments_options,
-    '#default_value' => $project->settings->live['live_environment'],
+    '#default_value' => isset($project->settings->live) ? $project->settings->live['live_environment'] : '',
   );
 
   // Live Domain
@@ -127,7 +140,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Live Domain'),
     '#description' => t('The live domain for this project. Used only for links and when creating subdomain aliases for other environments. <em>You must still add the Domain to your live environment manually.</em>'),
     '#size' => 40,
-    '#default_value' => $node->project->settings->live['live_domain'],
+    '#default_value' => isset($project->settings->live) ? $node->project->settings->live['live_domain'] : '',
   );
 
   // Use aliases
@@ -135,7 +148,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'checkbox',
     '#title' => t('For new environments, create subdomains under Live Domain.'),
     '#description' => t('When new environments are created, automatically add a domain name such as http://ENVIRONMENT.LIVEDOMAIN.com. <em>Does not affect existing environments. Does not remove domains when disabled.</em>'),
-    '#default_value' => $project->settings->live['environment_aliases'],
+    '#default_value' => isset($project->settings->live) ? $project->settings->live['environment_aliases'] : FALSE,
   );
 
   // Pull Code Method
@@ -143,9 +156,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
-    '#title' => t('Deploy Settings'),
+    '#title' => t('Deployment Automation'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
     '#weight' => -10,
+    '#group' => 'project_settings',
   );
 
   $form['project']['settings']['deploy']['method'] = array(
@@ -200,14 +214,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     );
   }
 
-  // Allow "Other"
-  $form['project']['settings']['deploy']['allow_deploy_data_from_alias'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow deploying data from drush aliases.'),
-    '#default_value' => $node->project->settings->deploy['allow_deploy_data_from_alias'],
-    '#description' => t('Requires a patch to provision_tasks_extra: ') . l(t('Drupal.org issue'), 'https://www.drupal.org/node/2407309'),
-  );
-
   // Load deploy hooks form element.
   $form['project']['settings']['deploy']['default_hooks'] = devshop_environment_deploy_hooks_form($project);
 
@@ -225,32 +231,43 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#weight' => -100,
   );
 
-  $form['project']['settings']['deploy']['allow_environment_deploy_config'] = array(
+  $form['project']['settings']['deploy']['default_hooks']['allow_environment_deploy_config'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow environment-specific deploy hook configuration.'),
-    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_config'],
+    '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_environment_deploy_config'] : FALSE,
     '#description' => t('Each environment can be configured to have different deploy hooks. <em>Be sure to check your environments settings if you enable this.</em>' ),
+    '#parents' => array(
+      'project',
+      'settings',
+      'deploy',
+      'allow_environment_deploy_config',
+    ),
   );
-
-  $form['project']['settings']['deploy']['allow_environment_deploy_hooks_override'] = array(
+  $form['project']['settings']['deploy']['default_hooks']['allow_environment_deploy_hooks_override'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow users to override hooks when deploying manually.'),
-    '#default_value' => $node->project->settings->deploy['allow_environment_deploy_hooks_override'],
+    '#default_value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['allow_environment_deploy_hooks_override'] : FALSE,
     '#description' => t('Check this box to allow users to override the hooks that are run on manual deployments. If left unchecked, all environments will run the deploy hooks configured above on every deployment.' ),
+    '#parents' => array(
+      'project',
+      'settings',
+      'deploy',
+      'allow_environment_deploy_hooks_override',
+    ),
   );
 
   // @TODO: is there a better way to save certain values? We lose data without these.
   $form['project']['settings']['deploy']['last_webhook'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->deploy['last_webhook'],
+    '#value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['last_webhook'] : NULL,
   );
   $form['project']['settings']['deploy']['last_webhook_status'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->deploy['last_webhook_status'],
+    '#value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['last_webhook_status'] : NULL,
   );
   $form['project']['settings']['deploy']['last_webhook_ip'] = array(
     '#type' => 'value',
-    '#value' => $node->project->settings->deploy['last_webhook_ip'],
+    '#value' => isset($node->project->settings->deploy) ? $node->project->settings->deploy['last_webhook_ip'] : NULL,
   );
 
   //All settings git pull in project page
@@ -260,6 +277,33 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Default Environment Settings'),
     '#description' => t('These settings will be used when creating new environments.'),
+    '#group' => 'project_settings',
+  );
+
+  // Install Profile
+  $available_profiles = array();
+  foreach ($project->environments as $name => $environment) {
+    $profiles_shortnames = hosting_get_profiles($environment->platform, 'short_name');
+    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+      $profiles[$name] = array_combine($profiles_shortnames, (array)hosting_get_profiles($environment->platform));
+    } else {
+      $profiles[$name] = array();
+    }
+    if (empty($available_profiles)) {
+      $available_profiles = $profiles[$name];
+    } else {
+      $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+    }
+  }
+
+  $form['project']['settings']['default_environment']['install_profile'] = array(
+    '#type' => 'radios',
+    '#options' => $available_profiles,
+    '#title' => t('Default Install Profile'),
+    '#required' => 1,
+    '#description' => t('New environments will be created using this install profile. Existing environments will not be affected.'),
+    '#default_value' => $node->project->install_profile,
+    '#access' => count($available_profiles),
   );
 
   // HTTP Server select.
@@ -269,7 +313,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#title' => t('Web server'),
       '#type' => 'select',
       '#options' => $http_servers,
-      '#default_value' => $project->settings->default_environment['web_server'],
+      '#default_value' => isset($project->settings->default_environment) ? $project->settings->default_environment['web_server'] : current($http_servers),
     );
   }
 
@@ -280,7 +324,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#title' => t('Database server'),
       '#type' => 'select',
       '#options' => $db_servers,
-      '#default_value' => $project->settings->default_environment['db_server'],
+      '#default_value' => isset($project->settings->default_environment) ? $project->settings->default_environment['db_server'] : current($db_servers),
     );
   }
 
@@ -294,6 +338,14 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#default_value' => $project->settings->default_environment['solr_server'],
     );
   }
+  
+  // Force the servers for this project's environments
+  $form['project']['settings']['default_environment']['force_default_servers'] = array(
+    '#title' => t('Force new environments to use these servers.'),
+    '#description' => t('When new environments are created, they will use the servers selected above.'),
+    '#type' => 'checkbox',
+    '#default_value' => $project->settings->default_environment['force_default_servers'],
+  );
   return $form;
 }
 
@@ -338,16 +390,15 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     unset($form['revision_information']);
     unset($form['author']);
     unset($form['options']);
-    unset($form['buttons']['delete']);
-    unset($form['buttons']['preview']);
-    if ($form['retry']['#value']) {
-      $form['buttons']['submit']['#value'] = t('Save and Retry');
+    unset($form['actions']['delete']);
+    unset($form['actions']['preview']);
+    if (isset($form['retry']['#value'])) {
+      $form['actions']['submit']['#value'] = t('Save and Retry');
     }
 
     //Add button for delete project
-    $form['buttons']['delete'] = array(
-      '#type' => 'markup',
-      '#value' => l(t('Delete this project'), 'node/' . $project->nid . '/project_delete', array('query' => array('token' => drupal_get_token($user->uid)))),
+    $form['actions']['delete'] = array(
+      '#markup' => l(t('Delete this project'), 'node/' . $project->nid . '/project_delete', array('query' => array('token' => drupal_get_token($user->uid)))),
       '#weight' => 10,
     );
   }
@@ -359,10 +410,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     $form_id == 'devshop_project_create_step_settings' ||
     $form_id == 'devshop_project_create_step_environments'
   ){
-    if ($form['#no_finish']){
+    if (isset($form['#no_finish'])) {
       unset($form['buttons']['return']);
     }
-    if ($form['#no_next']) {
+    if (isset($form['#no_next'])) {
       unset($form['buttons']['next']);
     }
     $form['buttons']['next']['#attributes'] =
@@ -474,7 +525,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             '#suffix' => '</div>',
 
             'target' => array(
-              '#value' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
+              '#markup' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
               '#prefix' => '<p class="text-danger">',
               '#suffix' => '</p>',
             ),
@@ -487,13 +538,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
               '#title' => t('Drush Alias for Source'),
               '#description' => t('Enter a full drush alias to use as the source. Make sure to include the "@" character at the beginning.'),
             );
+            $form['parameters']['destination'] = array(
+              '#type' => 'value',
+              '#value' => $node->environment->drush_alias,
+            );
           }
           // If a source is specified, add help and set it as a value.
           else {
 
             $source_environment = $source->environment;
             $form['help']['source'] = array(
-              '#value' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
+              '#markup' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
               '#prefix' => '<p>',
               '#suffix' => '</p>',
             );
@@ -501,6 +556,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             $form['parameters']['source'] = array(
               '#type' => 'value',
               '#value' => $source->environment->drush_alias,
+            );
+            $form['parameters']['destination'] = array(
+              '#type' => 'value',
+              '#value' => $node->environment->drush_alias,
             );
           }
 
@@ -517,7 +576,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $form['actions']['submit']['#value'] = t('Deploy Data');
           $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
 
-          $form['warning']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+          $form['warning']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
         }
         break;
       case 'delete':
@@ -537,7 +596,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $environments = theme('item_list', array('items' => $items));
 
           // Display a scary warning message.
-          $form['help']['#value'] = '<div class="alert alert-spacing alert-danger">' . t('Are you sure you wish to destroy the project !project and all of these environments?', array(
+          $form['help']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Are you sure you wish to destroy the project !project and all of these environments?', array(
               '!project' => l($node->project->name, "node/{$node->nid}"),
             )) . $environments . '</div>';
 
@@ -567,7 +626,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     if ($_GET['web_server']) {
       $environment = $platform_node->environment;
       $form['help'] = array(
-        '#value' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
+        '#markup' => t("Are you sure you want to change this site's web server?  <strong>NOTE: You will have to change DNS as well!</strong>"),
         '#weight' => -10,
       );
 
@@ -586,7 +645,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
       $form['old'] = array(
         '#type' => 'item',
         '#title' => t('Current Web Server'),
-        '#value' => l($environment->servers['http']['name'], 'node/' . $environment->servers['http']['nid']) . '<br />' . implode($old_server->ip_addresses, '<br />'),
+        '#markup' => l($environment->servers['http']['name'], 'node/' . $environment->servers['http']['nid']) . '<br />' . implode($old_server->ip_addresses, '<br />'),
         '#weight' => '-1',
       );
 
@@ -594,7 +653,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
       $form['new'] = array(
         '#type' => 'item',
         '#title' => t('New Web Server'),
-        '#value' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
+        '#markup' => l($web_server, "node/$web_server_nid") . '<br />' . implode($new_server->ip_addresses, '<br />'),
         '#weight' => '0',
       );
     }
@@ -623,7 +682,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
   if (!empty($project) && arg(1) == $node->nid) {
-    drupal_goto("node/{$project->nid}/edit/{$node->environment->name}");
+    drupal_goto("node/{$project->nid}/edit/env/{$node->environment->name}");
     exit;
   }
 
@@ -635,7 +694,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // Help Text
   $form['note'] = array(
-      '#value' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
+      '#markup' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
     );
 
   $form['environment'] = array(
@@ -678,14 +737,14 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['locked'] = array(
       '#type' => 'checkbox',
       '#title' => t('Lock Database'),
-      '#default_value' => $environment->settings->locked,
+      '#default_value' => isset($environment->settings->locked) ? $environment->settings->locked : FALSE,
       '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
   );
 
   $form['environment']['settings']['pull_disabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Disable Deploy on Commit'),
-      '#default_value' => $environment->settings->pull_disabled,
+      '#default_value' => isset($environment->settings->pull_disabled) ? $environment->settings->pull_disabled : FALSE,
       '#description' => t('Do not pull code to the server on commit & push.'),
   );
 
@@ -722,31 +781,61 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
   $return = array(
       '#type' => 'fieldset',
+      '#group' => 'project_settings',
       '#title' => t('Deployment Hooks'),
+      '#description' => t('Deployment hooks are run whenever your codebase changes. It is recommended to always enable database updates and cache clearing.'),
+      '#weight' => -9,
   );
+
+  // If we are on the project creation wizard, set some sane defaults
+  if (current_path() == 'projects/add/settings') {
+    $environment_update = FALSE;
+    $environment_cache = FALSE;
+    $environment_revert = FALSE;
+    $environment_dothooks = FALSE;
+    $environment_acquia_hooks  = FALSE;
+    $project_update = TRUE;
+    $project_cache  = TRUE;
+    $project_revert = FALSE;
+    $project_dothooks = FALSE;
+    $project_acquia_hooks = FALSE;
+  }
+  else {
+    $environment_update = isset($environment->settings->deploy) ? $environment->settings->deploy['update'] : FALSE;
+    $environment_cache = isset($environment->settings->deploy) ? $environment->settings->deploy['cache'] : FALSE;
+    $environment_revert = isset($environment->settings->deploy) ? $environment->settings->deploy['revert'] : FALSE;
+    $environment_dothooks = isset($environment->settings->deploy) ? $environment->settings->deploy['dothooks'] : FALSE;
+    $environment_acquia_hooks = isset($environment->settings->deploy) ? $environment->settings->deploy['acquia_hooks'] : FALSE;
+    $project_update = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['update'] : FALSE;
+    $project_cache = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['cache'] : FALSE;
+    $project_revert = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['revert'] : FALSE;
+    $project_dothooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['dothooks'] : FALSE;
+    $project_acquia_hooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['acquia_hooks'] : FALSE;
+  }
+
   $return['update'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run database updates.'),
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['update']: $environment->settings->deploy['update'],
+      '#default_value' => empty($environment->settings->deploy) ? $project_update : $environment_update,
   );
   $return['cache'] = array(
       '#type' => 'checkbox',
       '#title' => t('Clear all caches.'),
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['cache']: $environment->settings->deploy['cache'],
+      '#default_value' => empty($environment->settings->deploy)? $project_cache : $environment_cache,
   );
   $return['revert'] = array(
     '#type' => 'checkbox',
     '#title' => t('Revert all features.'),
     '#description' => t('If features is enabled, revert all of them.'),
-    '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['revert']: $environment->settings->deploy['revert'],
+    '#default_value' => empty($environment->settings->deploy)? $project_revert : $environment_revert,
   );
 
   // Look for .hooks or .hooks.yml
-  if (!$is_environment_form || $project->settings->deploy['default_hooks']['dothooks']) {
+  if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['dothooks'])) {
     $return['dothooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run <code>deploy</code> commands in the <code>.hooks</code> file.'),
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['dothooks']: $environment->settings->deploy['dothooks'],
+      '#default_value' => empty($environment->settings->deploy) ? $project_dothooks : $environment_dothooks,
       '#description' => t('You can add your desired deploy hooks to a file in the root folder of your project. This is recommended as it gives your developers control over what happens when their code is deployed. See the !dothooks for more information. <em>If you use a <code>.hooks</code> file you probably want to uncheck the deploy hooks here.</em>', array(
         '!dothooks' => l(t('.hooks documentation'), 'admin/help/devshop_dothooks'),
       )),
@@ -754,12 +843,12 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
 
   // Look for acquia cloud hooks.
-  if (!$is_environment_form || $project->settings->deploy['default_hooks']['acquia_hooks']){
+  if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['acquia_hooks'])) {
     $return['acquia_hooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run Acquia Cloud Hooks'),
       '#description' => '<p>' . t('Acquia Cloud Hooks were detected in your project.  Check this box to run all acquia cloud hooks.') . '</p><p>' . t('Available cloud hooks are: "post-code-update" when deploying code via git, "post-code-deploy" when deploying code manually, "post-db-copy" when running a sync task with a database, and "post-files-copy" when running a sync task with files.') . '</p>',
-      '#default_value' => empty($environment->settings->deploy)? $project->settings->deploy['default_hooks']['acquia_hooks']: $environment->settings->deploy['acquia_hooks'],
+      '#default_value' => empty($environment->settings->deploy) ? $project_acquia_hooks : $environment_acquia_hooks,
     );
   }
 
@@ -832,7 +921,7 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
   $items[] = t('If you have already provisioned the server, add the key to the <code>aegir</code> user.');
 
   $form['note'] = array(
-    '#value' => theme('item_list', array('items' => $items)),
+    '#markup' => theme('item_list', array('items' => $items)),
     '#weight' => -100,
     '#prefix' => '<div class="alert alert-info">',
     '#suffix' => '</div>',
@@ -843,7 +932,7 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
     '#title' => t(' SSH Public Key for %aegir', array(
       '%aegir' => "aegir@" . $_SERVER['HTTP_HOST'],
     )),
-    '#value' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
+    '#markup' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
     '#weight' => -99,
   );
 }

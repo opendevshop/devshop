@@ -28,9 +28,9 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
   }
 
   $project_alias = '@project_' . d()->project;
-  $project = d($project_alias);
+  $project = (object) d($project_alias)->project;
 
-  if (!isset($project->project['settings']['git']['refs'][$git_ref])) {
+  if (!isset($project->settings['git']['refs'][$git_ref])) {
     $drush_command = "drush $project_alias provision-verify";
     return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', "Branch or tag '$git_ref' not found. Try running '$drush_command' to fetch new remote branches or tags.");
   }
@@ -41,66 +41,40 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
  */
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
-  $environment = (object) d()->environment;
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
+  $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
-  try {
-
-    $wrapper = new GitWrapper();
-
-    $git = $wrapper->workingCopy($environment->repo_root);
-    chdir($git->getDirectory());
-    drush_log('[Current Working Directory]' . $git->getDirectory(), 'devshop_log');
+    drush_log('[Current Working Directory]' . $environment->repo_root, 'devshop_log');
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
 
     // Fetch
-    drush_log('[DevShop Deploy] git fetch --all', 'devshop_command');
-    $git->fetchAll();
-    drush_log($git->getOutput(), 'devshop_ok');
+    devshop_drush_process("git fetch --all", $environment->repo_root, dt('DevShop Deploy'));
 
     // Checkout the chosen ref
-    drush_log("[DevShop Deploy] git checkout {$git_ref}", 'devshop_command');
-    $git->checkout($git_ref);
-    $git_checkout_output = $git->getOutput();
-    drush_log($git_checkout_output, 'devshop_ok');
-
+    $git_checkout_output = devshop_drush_process("git checkout {$git_ref}", $environment->repo_root, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
-    drush_log($git_checkout_output, 'devshop_ok');
 
     // Run Git Pull
     if ($desired_ref_type == 'branch') {
 
-      drush_log("[DevShop Deploy] git pull", 'devshop_command');
-      $git->pull();
-      $git_pull_output = $git->getOutput();
-      drush_log($git_pull_output, 'devshop_ok');
+      $git_pull_output = devshop_drush_process("git pull", $environment->repo_root, dt('DevShop Deploy'));
+      devshop_drush_process("git submodule update --init --recursive ", $environment->repo_root, dt('DevShop Deploy'));
 
       // If on a branch and there are no changes it says "Already up-to-date."
-      if ($git_pull_output == trim('Already up-to-date.')) {
+      if (strpos($git_pull_output, 'Already up-to-date.') !== FALSE) {
         drush_set_context('devshop_block_deploy_hooks', TRUE);
-        return;
       }
     }
     // If on a tag, and there are no changes, it outputs one line with the current ref.
     elseif ($desired_ref_type == 'tag' && count($git_checkout_output_lines) == 1) {
       drush_set_context('devshop_block_deploy_hooks', TRUE);
-      return;
     }
 
-    drush_log('[DevShop Deploy] git status', 'devshop_command');
-    $git->status();
-    drush_log($git->getOutput(), 'devshop_ok');
-
-  } catch (GitException $e) {
-    drush_log("[DevShop Deploy] Git Exception", 'devshop_command');
-    drush_log($git->getOutput(), 'devshop_ok');
-    drush_log($e->getMessage(), 'devshop_error');
-    return drush_set_error($e->getMessage());
-  }
+    devshop_drush_process("git status", $environment->repo_root, dt('DevShop Deploy'));
 }
 
 /**
@@ -110,11 +84,8 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
  // @TODO: Add the "force" option back.
   if (drush_get_context('devshop_block_deploy_hooks')){
-    drush_log(dt('[DevShop] Skipping all deploy hooks. No changes detected.'), 'devshop_log');
+    drush_log(dt('Skipping deploy hooks. No changes detected.'), 'devshop_log');
     return;
-  }
-  else {
-    drush_log(dt('[DEVSHOP] Preparing to run deploy hooks...'), 'ok');
   }
 
   // Get post deploy options
@@ -123,8 +94,15 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $cache = drush_get_option('cache');
   $composer = drush_get_option('composer', TRUE);
 
-  $environment = (object) d()->environment;
   $project_name = d()->project;
+  $project = (object) d("@project_{$project_name}")->project;
+  $environment = (object) $project->environments[d()->environment];
+  $desired_ref_type = $project->settings['git']['refs'][$git_ref];
+
+  // Ensure drush_alias exists. Not sure why it was missing for me.
+  if (empty($environment->drush_alias)) {
+    $environment->drush_alias = d()->name;
+  }
 
   $commands = array();
 
@@ -158,7 +136,12 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Clear the whole cache, unless option is false
   if ($cache) {
-    $commands[] = "drush {$environment->drush_alias} cache-clear all";
+    if (drush_drupal_major_version(d()->root) == 8) {
+      $commands[] = "drush {$environment->drush_alias} cache-rebuild";
+    }
+    else {
+      $commands[] = "drush {$environment->drush_alias} cache-clear all";
+    }
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');

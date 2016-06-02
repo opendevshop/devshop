@@ -1,175 +1,182 @@
+(function ($) {
+  Drupal.behaviors.devshopTasks = {
+      attach: function (context, settings) {
+          setTimeout("Drupal.behaviors.devshopTasks.checkTasks()", 1000);
+      },
+      checkTasks: function () {
+          var url = '/devshop/tasks';
+          if (Drupal.settings.devshopTask) {
+              url = '/devshop/tasks?task=' + Drupal.settings.devshopTask;
+          }
 
-Drupal.behaviors.devshopTasks = function() {
-    setTimeout("devshopCheckTasks()", 1000);
-}
+          $.getJSON(url, function (data) {
 
-var devshopCheckTasks = function(){
-    var url = '/devshop/tasks';
-    if (Drupal.settings.devshopTask) {
-        url = '/devshop/tasks?task=' + Drupal.settings.devshopTask;
-    }
+              var lastTaskStatus = null;
+              $.each(data, function (key, task) {
+                  var environment_id = '#' + task.project_name + '-' + task.environment;
+                  var task_id = '#task-display-' + task.nid;
+                  var new_class = 'environment-tasks-alert alert-' + task.status_class;
 
-    $.get(url, null, devshopTasksUpdate , 'json');
-}
+                  var $alert_div = $(task_id + '.environment-tasks-alert');
 
-var devshopTasksUpdate = function (data) {
+                  // Project Node Page
+                  if (Drupal.settings.devshopTask == null) {
 
-    var lastTaskStatus = null;
-    $.each(data, function(key, value){
-        var task = value.last_task;
-        var id = '#' + value.project + '-' + value.name;
-        var new_class = 'alert-' + task.status_class;
+                      // Set class of wrapper div
+                      $alert_div.attr('class', new_class);
 
-        var $alert_div = $('.environment-task-logs > div', id);
+                      // Set or remove active class from environment div.
+                      if (task.status_class == 'queued' || task.status_class == 'processing') {
+                          $(environment_id).addClass('active');
+                      }
+                      else {
+                          $(environment_id).removeClass('active');
+                      }
 
-        // Project Node Page
-        if (Drupal.settings.devshopProject) {
+                      // Remove any status classes and add current status
+                      $(environment_id).removeClass('task-queued');
+                      $(environment_id).removeClass('task-processing');
+                      $(environment_id).removeClass('task-success');
+                      $(environment_id).removeClass('task-error');
+                      $(environment_id).removeClass('task-warning');
+                      $(environment_id).addClass('task-' + task.status_class);
 
-            // Set class of wrapper div
-            $alert_div.attr('class', new_class);
+                      // Set value of label span
+                      $('.alert-link > .type-name', $alert_div).html(task.type_name);
 
-            // Set or remove active class from environment div.
-            if (task.status_class == 'queued' || task.status_class == 'processing') {
-                $(id).addClass('active');
-            }
-            else {
-                $(id).removeClass('active');
-            }
+                      // If queued or processing, make label empty.
+                      if (task.status_class == 'queued' || task.status_class == 'processing') {
+                          if (task.status_class == 'queued') {
+                              $('.alert-link > .status-name', $alert_div).html('');
+                          }
+                          else {
+                              $('.alert-link > .status-name', $alert_div).html(task.status_name);
+                          }
+                          $('.alert-link .ago-icon', $alert_div).removeClass('fa-calendar');
+                          $('.alert-link .ago-icon', $alert_div).addClass('fa-clock-o');
+                      }
+                      else {
+                          $('.alert-link > .status-name', $alert_div).html(task.status_name);
 
-            // Remove any status classes and add current status
-            $(id).removeClass('task-queued');
-            $(id).removeClass('task-processing');
-            $(id).removeClass('task-success');
-            $(id).removeClass('task-error');
-            $(id).removeClass('task-warning');
-            $(id).addClass('task-' + task.status_class);
+                          $('.alert-link .ago-icon', $alert_div).removeClass('fa-clock-o');
+                          $('.alert-link .ago-icon', $alert_div).addClass('fa-calendar');
+                      }
 
-            // Set value of label span
-            $('.alert-link > .type-name', $alert_div).html(task.type_name);
+                      // Set value of "ago"
+                      $('.alert-link .ago', $alert_div).html(task.ago);
 
-            // If queued or processing, make label empty.
-            if (task.status_class == 'queued' || task.status_class == 'processing') {
-                $('.alert-link > .status-name', $alert_div).html('');
-                $('.alert-link .ago-icon', $alert_div).removeClass('fa-calendar');
-                $('.alert-link .ago-icon', $alert_div).addClass('fa-clock-o');
-            }
-            else {
-                $('.alert-link > .status-name', $alert_div).html(task.status_name);
+                      // Change icon.
+                      $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + task.icon);
 
-                $('.alert-link .ago-icon', $alert_div).removeClass('fa-clock-o');
-                $('.alert-link .ago-icon', $alert_div).addClass('fa-calendar');
-            }
+                      // Change href
+                      $('.alert-link', $alert_div).attr('href', task.url);
 
-            // Set value of "ago"
-            $('.alert-link .ago', $alert_div).html(task.ago);
+                      // Change "processing" div
+                  }
+                  // Task Node Page
+                  else if (Drupal.settings.devshopTask == task.nid) {
 
-            // Change icon.
-            $('.alert-link > .fa', $alert_div).attr('class', 'fa fa-' + task.icon);
+                      $badge = $('.label.task-status', '#node-' + task.nid);
 
-            // Change href
-            $('.alert-link', $alert_div).attr('href', task.url);
+                      // Change Badge
+                      var html = '<i class="fa fa-' + task.icon + '"></i> ' + task.status_name;
+                      $badge.html(html);
 
-            // Change "processing" div
-        }
-        // Task Node Page
-        else if (Drupal.settings.devshopTask == task.nid) {
+                      // Change Class
+                      $badge.attr('class', 'label label-default task-status label-' + task.status_class);
 
-            $badge = $('.label.task-status', '#node-' + task.nid);
+                      // Reload Logs
+                      $logs = $('#task-logs', '#node-' + task.nid);
+                      $logs.html(task.logs);
 
-            // Change Badge
-            var html = '<i class="fa fa-' + task.icon + '"></i> ' + task.status_name;
-            $badge.html(html);
-
-            // Change Class
-            $badge.attr('class', 'label label-default task-status label-' + task.status_class);
-
-            // Reload Logs
-            $logs = $('#task-logs', '#node-' + task.nid);
-            $logs.html(task.logs);
-
-            // @TODO:
-            // Change Duration
-            $('.duration .duration-text', '#node-' + task.nid).html(task.duration);
+                      // @TODO:
+                      // Change Duration
+                      $('.duration .duration-text', '#node-' + task.nid).html(task.duration);
 
 
-            // If task is not processing or queued, hide follow link.
-            if (task.task_status != 0 && task.task_status != -1 ) {
-                // Scroll down one last time if checked.
-                if ($('#follow').prop('checked')) {
-                    window.scrollTo(0,document.body.scrollHeight);
-                }
-                $('.follow-logs-checkbox').remove();
-                $('.edit-update-status').remove();
-                $('.running-indicator').remove();
-                Drupal.settings.lastTaskStopped = TRUE;
-            }
-            else {
-                // Scroll down if follow checkbox is checked.
-                if ($('#follow').prop('checked')) {
-                    window.scrollTo(0,document.body.scrollHeight);
-                }
-            }
+                      // If task is not processing or queued, hide follow link.
+                      if (task.task_status != 0 && task.task_status != -1) {
+                          // Scroll down one last time if checked.
+                          if ($('#follow').prop('checked')) {
+                              window.scrollTo(0, document.body.scrollHeight);
+                          }
+                          $('.follow-logs-checkbox').remove();
+                          $('.edit-update-status').remove();
+                          $('.running-indicator').remove();
+                          Drupal.settings.lastTaskStopped = true;
+                      }
+                      else {
+                          // Scroll down if follow checkbox is checked.
+                          if ($('#follow').prop('checked')) {
+                              window.scrollTo(0, document.body.scrollHeight);
+                          }
+                      }
 
-            // If running, set text to indicate
-            if (task.task_status == -1) {
-                $('.running-indicator .running-label').text('Processing...');
-                $('.running-indicator .fa-gear').addClass('fa-spin');
-            }
+                      // If running, set text to indicate
+                      if (task.task_status == -1) {
+                          $('.running-indicator .running-label').text('Processing...');
+                          $('.running-indicator .fa-gear').addClass('fa-spin');
+                      }
 
-            // If the last task was complete, and this task is complete, stop the autoloader.
-            if (Drupal.settings.lastTaskStopped && (task.task_status != -1 && task.task_status != 0)) {
-                console.log('Task is not processing or queued. Stopping the autoloader.')
-                return;
-            }
-        }
-        // Projects List Page.
-        // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
-        else {
-            var id = '#badge-' + value.project + '-' + value.name;
+                      // If the last task was complete, and this task is complete, stop the autoloader.
+                      if (Drupal.settings.lastTaskStopped && (task.task_status != -1 && task.task_status != 0)) {
+                          console.log('Task is not processing or queued. Stopping the autoloader.');
+                          Drupal.settings.lastTaskStopped = true;
+                      }
+                  }
+                  // Projects List Page.
+                  // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
+                  else {
+                      var id = '#badge-' + task.project_name + '-' + task.environment;
 
-            // Set class of badge
-            $(id).attr('class', 'btn btn-small alert-' + task.status_class);
+                      // Set class of badge
+                      $(id).attr('class', 'btn btn-small alert-' + task.status_class);
 
-            // Set title
-            var title = task.type_name + ': ' + task.status_class;
-            $(id).attr('title', title);
+                      // Set title
+                      var title = task.type_name + ': ' + task.status_class;
+                      $(id).attr('title', title);
 
-            // Change icon.
-            $('.fa', id).attr('class', 'fa fa-' + task.icon);
-        }
+                      // Change icon.
+                      $('.fa', id).attr('class', 'fa fa-' + task.icon);
+                  }
 
-        // Update global tasks list.
-        var task_id = '#task-' + value.project + '-' + value.name;
+                  // Update global tasks list.
+                  var task_id = '#task-' + task.project_name + '-' + task.environment;
 
-        // Set class of badge
-        $(task_id).attr('class', 'list-group-item list-group-item-' + task.status_class);
+                  // Set class of badge
+                  $(task_id).attr('class', 'list-group-item list-group-item-' + task.status_class);
 
-        // Set value of "ago"
-        $('small.task-ago', task_id).html(task.ago);
+                  // Set value of "ago"
+                  $('small.task-ago', task_id).html(task.ago);
 
-        // Change icon.
-        $('.fa', task_id).attr('class', 'fa fa-' + task.icon);
+                  // Change icon.
+                  $('.fa', task_id).attr('class', 'fa fa-' + task.icon);
 
-    });
+              });
 
-    // Activate or de-activate global tasks icon.
-    var gear_class = 'fa fa-gear';
-    if ($('.list-group-item-queued', '.devshop-tasks').length) {
-        gear_class += ' active-task';
-    }
-    if ($('.list-group-item-processing', '.devshop-tasks').length) {
-        gear_class += '  active-task fa-spin';
-    }
+              // Activate or de-activate global tasks icon.
+              var gear_class = 'fa fa-gear';
+              if ($('.list-group-item-queued', '.devshop-tasks').length) {
+                  gear_class += ' active-task';
+              }
+              if ($('.list-group-item-processing', '.devshop-tasks').length) {
+                  gear_class += '  active-task fa-spin';
+              }
 
-    // Set class for global gear icon.
-    $('i.fa', '#navbar-main .task-list-button').attr('class', gear_class);
+              // Set class for global gear icon.
+              $('i.fa', '#navbar-main .task-list-button').attr('class', gear_class);
 
-    // Set count
-    var count = $('.list-group-item-queued', '.devshop-tasks').length + $('.list-group-item-processing', '.devshop-tasks').length;
-    if (count == 0) {
-      count = '';
-    }
-    $('.count', '.task-list-button').html(count);
+              // Set count
+              var count = $('.list-group-item-queued', '.devshop-tasks').length + $('.list-group-item-processing', '.devshop-tasks').length;
+              if (count == 0) {
+                  count = '';
+              }
+              $('.count', '.task-list-button').html(count);
 
-    setTimeout("devshopCheckTasks()", 1000);
-}
+              if (Drupal.settings.lastTaskStopped != true) {
+                  setTimeout("Drupal.behaviors.devshopTasks.checkTasks()", 1000);
+              }
+          });
+      }
+  }
+}(jQuery));

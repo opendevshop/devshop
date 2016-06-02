@@ -2,4 +2,6 @@ name = DevShop GitHub
 description = Integration with GitHub
 core = 7.x
 package = DevShop
+files[] = includes/add-key.inc
+files[] = includes/admin.inc
 dependencies[] = devshop_projects

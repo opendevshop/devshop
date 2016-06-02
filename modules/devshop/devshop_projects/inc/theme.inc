@@ -25,6 +25,9 @@ function devshop_projects_theme() {
     'devshop_project_nav' => array(
       'variables' => array(
         'node' => NULL,
+        'settings_active' => NULL,
+        'logs_active' => NULL,
+        'branches_class' => NULL,
       ),
       'template' => 'project-nav',
     ),
@@ -33,6 +36,17 @@ function devshop_projects_theme() {
         'project' => NULL,
       ),
       'template' => 'project-add',
+    ),
+    'devshop_ascii' => array(
+      'variables' => array(
+        'output' => '',
+      ),
+    ),
+    'devshop_task' => array(
+      'variables' => array(
+          'task' => NULL,
+      ),
+      'template' => 'task',
     ),
   );
 }
@@ -83,7 +97,7 @@ function theme_devshop_projects_create_settings_form($vars) {
 
     foreach (element_children($settings_element) as $setting) {
       if (!isset($header[$setting])) {
-        $header[$setting] = $form[$env_name]['settings'][$setting]['#title'];
+        $header[$setting] = isset($form[$env_name]['settings'][$setting]['#title']) ? $form[$env_name]['settings'][$setting]['#title'] : '';
       }
       $form[$env_name]['settings'][$setting]['#title'] = '';
 
@@ -110,6 +124,8 @@ function theme_devshop_projects_create_settings_form($vars) {
  */
 function devshop_projects_preprocess_node(&$vars) {
 
+  $node = $vars['node'];
+
   // On project node edit page
   if (isset($vars['node']) && $vars['node']->type == 'project') {
 
@@ -128,8 +144,7 @@ function devshop_projects_preprocess_node(&$vars) {
   }
 
   // On task node page
-  if (isset($vars['node']) && $vars['node']->type == 'task' && !empty($vars['node']->project) && $vars['page']){
-
+  if (isset($vars['node']) && $vars['node']->type == 'task' && ($vars['page'] || current_path() == "hosting/task/{$node->nid}")){
     // Prepare task icon, class, and label.
     $icon = devshop_task_status_icon($vars['node']->task_status);
     $vars['task_label'] = "<i class='fa fa-$icon'></i> " . _hosting_parse_error_code($vars['node']->task_status);
@@ -149,45 +164,44 @@ function devshop_projects_preprocess_node(&$vars) {
 
     // Show duration
     if ($vars['node']->task_status == HOSTING_TASK_QUEUED) {
-      $vars['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $vars['node']->changed)));
+      $vars['duration'] = t('Queued for %time', array('%time' => format_interval(REQUEST_TIME - $vars['node']->changed)));
       $vars['date'] = date('D M j Y', $vars['node']->changed);
       $vars['executed'] = '';
     }
     else {
 
       if ($vars['node']->task_status == HOSTING_TASK_PROCESSING) {
-        $vars['duration'] = format_interval(time() - $vars['node']->executed, 1);
+        $vars['duration'] = format_interval(REQUEST_TIME - $vars['node']->executed, 1);
         $vars['executed'] = '';
       }
       else {
         $vars['duration'] = format_interval($vars['node']->delta, 1);
-        $vars['executed'] = format_interval(time() - $vars['node']->executed) . ' ' . t('ago');
+        $vars['executed'] = format_interval(REQUEST_TIME - $vars['node']->executed) . ' ' . t('ago');
       }
       $vars['date'] = date('D M j Y', $vars['node']->executed);
     }
 
     // Load Logs
-    $ref = node_load($vars['rid']);
-      $messages = devshop_task_get_messages($vars['node']);
-        $vars['messages'] = implode("\n", $messages);
-        switch ($vars['task_type']) {
-          case 'devshop-deploy':
-            $vars['type'] = 'Deploy';
-            break;
-          case 'verify':
-          case 'test':
-          case 'sync':
-          case 'install':
-          default:
-            $vars['type'] = ucfirst($vars['task_type']);
-            break;
-        }
+    $messages = devshop_task_get_messages($vars['node']);
+    $vars['messages'] = implode("\n", $messages);
+    switch ($vars['task_type']) {
+      case 'devshop-deploy':
+        $vars['type'] = 'Deploy';
+        break;
+      case 'verify':
+      case 'test':
+      case 'sync':
+      case 'install':
+      default:
+        $vars['type'] = ucfirst($vars['task_type']);
+        break;
+    }
 
     // Add "Follow Logs" button.
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#value' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs',
+        '#markup' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
@@ -216,14 +230,22 @@ function devshop_projects_preprocess_node(&$vars) {
 function devshop_task_get_messages($task_node) {
   $messages = array();
   $outputs = array();
-  $theme = new SolarizedXTermTheme();
-  $styles = $theme->asCss();
-  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
 
-  drupal_add_html_head("<style>$styles</style>");
-  $converter = new AnsiToHtmlConverter($theme);
+  $result = db_query("
+    SELECT message, type, timestamp FROM {hosting_task_log}
+      WHERE nid = :nid
+        AND vid = :vid
+        AND (type LIKE :devshop OR type = :error OR type = :warning)
+      ORDER BY lid", array(
+    ':nid' => $task_node->nid,
+    ':vid' => $task_node->vid,
+    ':devshop' => 'devshop_%',
+    ':error' => 'error',
+    ':warning' => 'warning',
+//    ':success' => 'success',
+//    ':ok' => 'ok',
+  ));
 
-  $result = db_query("SELECT message, type FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE 'devshop_%' OR type = 'error' OR type = 'warning') ORDER BY vid, lid", array(':vid' => $task_node->vid));
   foreach ($result as $record) {
 
     if ($record->type == 'devshop_command') {
@@ -242,28 +264,31 @@ function devshop_task_get_messages($task_node) {
       }
       continue;
     } elseif ($record->type == 'devshop_info') {
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
     } elseif ($record->type == 'devshop_ok') {
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
     } elseif ($record->type == 'devshop_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $results->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
     } elseif ($record->type == 'warning') {
       $command = 'warning_' . count($outputs);
       $outputs[$command]['status'] = 'warning';
       $outputs[$command]['icon'] = 'exclamation-triangle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'warning';
     } elseif ($record->type == 'error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] .= $record->message;
+
+      // @TODO: Here, we can check for obscure aegir errors and write our own.
+      // devshop_check_errors($outputs[$command]['output']);
       $outputs[$command]['command'] = 'error';
     } elseif ($record->type == 'devshop_log') {
       $command = 'notice_' . count($outputs);
@@ -271,6 +296,14 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = '';
       $outputs[$command]['command'] .= $record->message;
       $outputs[$command]['output'] = '';
+    }
+    // Let's show some success messages. There are way too many for verify and install tasks.
+    elseif (($record->type == 'success' || $record->type == 'ok') && $task_node->task_type != 'verify' && $task_node->task_type != 'install') {
+      $command = 'success_' . count($outputs);
+      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['status'] = 'success';
+      $outputs[$command]['icon'] = 'check';
+      $outputs[$command]['command'] = 'drush';
     }
   }
 
@@ -292,11 +325,10 @@ function devshop_task_get_messages($task_node) {
     }
 
     // Convert ASCII to HTML
-    $output = $converter->convert($data['output']);
+    $output = theme('devshop_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
-      $body = "<div class='panel-body ansi_color_bg_black'>
-<pre class=\"ansi_color_bg_black ansi_color_fg_white ansi_box\">$output</pre></div>";
+      $body = "<div class='panel-body panel-ansii'>$output</div>";
     }
     else {
       $body = '';
@@ -315,8 +347,10 @@ HTML;
  * Preprocess for project_add_status.tpl.php
  */
 function template_preprocess_devshop_project_add_status(&$vars) {
-  $vars['web_server_node'] = node_load($vars['project']->settings->default_environment['web_server']);
-  $vars['db_server_node'] = node_load($vars['project']->settings->default_environment['db_server']);
+  if (isset($vars['project']->settings, $vars['project']->settings->default_environment)) {
+    $vars['web_server_node'] = isset($vars['project']->settings->default_environment['web_server']) ? node_load($vars['project']->settings->default_environment['web_server']) : NULL;
+    $vars['db_server_node'] = isset($vars['project']->settings->default_environment['db_server']) ? node_load($vars['project']->settings->default_environment['db_server']) : NULL;
+  }
 }
 
 /**
@@ -325,8 +359,8 @@ function template_preprocess_devshop_project_add_status(&$vars) {
 function template_preprocess_devshop_project_nav(&$vars) {
 
   global $user;
-  $node = $vars['node'];
-  $project = $vars['project'] = $vars['project']->project;
+  $project = $vars['project'];
+  $node = $vars['node'] = node_load($project->nid);
 
   // @TODO: Detect other web URLs for other git hosts.
   if ($project->git_repo_url) {
@@ -390,10 +424,6 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   $vars['dashboard_link'] = l('<i class="fa fa-cubes"></i> ' . t('Dashboard'), "node/$project->nid", array('html' => TRUE));
 
-  if (node_access('update', $node)) {
-    $vars['settings_link'] = l('<i class="fa fa-sliders"></i> ' . t('Settings'), "node/$node->nid/edit", array('html' => TRUE));
-  }
-
   if (arg(2) == 'edit') {
     $vars['settings_active'] = 'active';
   }
@@ -403,6 +433,55 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
   if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
-    $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link'), 'query' => array('token' => drupal_get_token($user->uid))));
+    $vars['branches_items'][] = l(t('Refresh branches'), 'node/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+  }
+
+  // Scrub git urls
+  $vars['safe_git_url'] = scrub_repo_url($project->git_url);
+}
+
+/**
+ * Output pretty console themed ASCII.
+ *
+ * Usage:
+ *   theme('devshop_ascii', $string);
+ */
+function theme_devshop_ascii($vars) {
+  $string = $vars['output'];
+  if (empty($string)) {
+    return $string;
+  }
+
+  // Prepare ASCII Converter
+  $theme = new SolarizedXTermTheme();
+  $styles = $theme->asCss();
+  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
+
+  drupal_add_html_head("<style>$styles</style>");
+  $converter = new AnsiToHtmlConverter($theme);
+  $output = $converter->convert($string);
+
+  return <<<HTML
+  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
+HTML;
+
+}
+
+/**
+ * Replaces a http git URL with an embedded password the *****
+ *
+ * @param $project_git_url
+ * @return string
+ */
+function scrub_repo_url($project_git_url){
+
+  $url = parse_url($project_git_url);
+  if (isset($url['pass'])) {
+    return strtr($project_git_url, array(
+      $url['pass'] => '****',
+    ));
+  }
+  else {
+    return $project_git_url;
   }
 }

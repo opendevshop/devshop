@@ -13,7 +13,8 @@
 
                   if ($('#follow').prop('checked')) {
                       console.log('checked!');
-                      window.scrollTo(0,document.body.scrollHeight);
+                      var position = $('footer').position();
+                      window.scrollTo(position.bottom,document.body.scrollHeight);
                   }
                   console.log('not checked!');
 

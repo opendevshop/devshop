@@ -5,6 +5,13 @@
  */
 
 /**
+ * Implements hook_enable()
+ */
+function devshop_testing_enable() {
+  drupal_set_message('The DevShop testing system has been enabled. Visit your projects settings pages to enable testing.');
+}
+
+/**
  * Implementation of hook_schema().
  */
 function devshop_testing_schema() {
@@ -21,7 +28,6 @@ function devshop_testing_schema() {
         'type' => 'text',
         'not null' => TRUE,
         'size' => 'big',
-        'default' => '',
         'description' => 'A list of tests to run',
       ),
     ),
@@ -30,20 +36,3 @@ function devshop_testing_schema() {
 
   return $schema;
 }
-
-/**
- * Implementation of hook_install().
- */
-function devshop_testing_install() {  
-  // Create tables.
-  drupal_install_schema('devshop_testing');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function devshop_testing_uninstall() {  
-  // Delete tables.
-  drupal_uninstall_schema('devshop_testing');
-}
-

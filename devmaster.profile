@@ -179,6 +179,9 @@ function devmaster_bootstrap() {
   $node->status = 1;
   node_save($node);
 
+  // Save the hostmaster site nid.
+  variable_set('aegir_hostmaster_site_nid', $node->nid);
+
   // Enable the hosting features of modules that we enable by default.
   // The module will already be enabled,
   // this makes sure we also set the default permissions.
@@ -210,6 +213,8 @@ function devmaster_bootstrap() {
   // Disable backup queue for sites by default.
   variable_set('hosting_backup_queue_default_enabled', 0);
 
+  // Set hosting_logs default folder.
+  variable_set('provision_logs_file_path', '/var/aegir/logs');
 }
 
 function devmaster_task_finalize() {
@@ -251,6 +256,9 @@ function devmaster_task_finalize() {
 
   // Disable Aegir's "Welcome" page
   variable_set('hosting_welcome_page', 0);
+
+  // Disable menu settings for projects
+  variable_set('menu_options_project', NULL);
 
   // Make sure blocks are setup properly.
 //  _block_rehash();
