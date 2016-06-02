@@ -26,11 +26,12 @@ function drush_devshop_post_provision_devshop_deploy($branch) {
 
   // If this is a site, log a message.
   if (d()->type == 'site'){
-    $environment = (object) d()->environment;
-    $environment_name = $environment->name;
-    $project_name = d()->project;
 
-    drush_log("[CUSTOM] Successfully checked out $branch to environment $environment_name in project $project_name.", 'ok');
+    $project_name = d()->project;
+    $project = (object) d("@project_{$project_name}")->project;
+    $environment = (object) $project->environments[d()->environment];
+
+    drush_log("[CUSTOM] Successfully checked out $branch to environment $environment->name in project $project_name.", 'ok');
 
     provision_backend_invoke(d()->name, 'status');
 

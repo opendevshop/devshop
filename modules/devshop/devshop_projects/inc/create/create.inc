@@ -29,7 +29,7 @@ function devshop_projects_create_wizard($step = NULL) {
   }
 
   // Create default project object
-  if (empty($project)) {
+  if (empty($project) || !isset($project->git_url)) {
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
@@ -194,14 +194,14 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $project_node = node_load($project->nid);
 
   // Save the extra options to the project node.
-  $project_node->project->install_profile = $project->install_profile;
+  $project_node->project->install_profile = $form_state['values']['install_profile'];
 
   // Create the site nodes, saving to the environment.
   // @TODO: Can we speed things up here by only running install for the first,
   // then  "Cloning" to create the rest?
   foreach ($project_node->project->environments as $environment_name => &$environment) {
     // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $environment->db_server;
+    $db_server = $environment->db_server_nid;
     $site_node = devshop_projects_create_site($project_node->project, node_load($environment->platform), $environment_name, $db_server);
     $environment->site = $site_node->nid;
   }
@@ -262,7 +262,7 @@ function devshop_projects_add_status($type = 'platform') {
       $install_profiles = array();
     }
 
-    $status = _hosting_parse_error_code($platform->environment->last_task->task_status);
+    $status = _hosting_parse_error_code($platform->environment->last_task_node->task_status);
     if ($status == 'Queued') {
       $status = '...';
     }
@@ -272,7 +272,7 @@ function devshop_projects_add_status($type = 'platform') {
       'profiles' => implode(', ', $install_profiles),
     );
     // If task is not completed, mark all tasks not complete.
-    if ($platform->environment->last_task->task_status == HOSTING_TASK_SUCCESS || $platform->environment->last_task->task_status == HOSTING_TASK_ERROR || $platform->environment->last_task->task_status == HOSTING_TASK_WARNING) {
+    if ($platform->environment->last_task_node->task_status == HOSTING_TASK_SUCCESS || $platform->environment->last_task_node->task_status == HOSTING_TASK_ERROR || $platform->environment->last_task_node->task_status == HOSTING_TASK_WARNING) {
       continue;
     }
     else {

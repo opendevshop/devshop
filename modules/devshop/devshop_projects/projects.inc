@@ -35,7 +35,8 @@ function devshop_projects_entity_load($entities, $type) {
 
         $query = db_query("
 SELECT
-  project_nid, name FROM {hosting_devshop_project_environment}
+  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e 
+  LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
     OR platform = :platform
     OR project_nid = :project
@@ -48,15 +49,18 @@ SELECT
         $result = $query->fetch();
 
         // Only load the project node if there is no task
-        if ($entity->type == 'task') {
+        if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
+          $entity->project_name = $result->project_name;
           $entity->environment = $result->name;
         }
-        else {
+        else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
             $entity->project = $project_node->project;
-            $entity->environment = $project_node->project->environments[$result->name];
+            if (isset($project_node->project->environments[$result->name])) {
+              $entity->environment = $project_node->project->environments[$result->name];
+            }
           }
         }
       }
@@ -104,6 +108,14 @@ function devshop_project_load($node) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@github.com:' => 'http://github.com/',
+      'git://' => 'http://',
+      '.git' => '',
+    ));
+  }
+  elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+    $project->git_provider = 'bitbucket';
+    $project->git_repo_url = strtr($project->git_url, array(
+      'git@bitbucket.com:' => 'http://bitbucket',
       'git://' => 'http://',
       '.git' => '',
     ));
@@ -165,7 +177,7 @@ function devshop_project_load($node) {
     $environment->settings = (object) unserialize($environment->settings);
 
     // Get last task
-//    $environment->last_task = node_load($environment->last_task_nid);
+    $environment->last_task_node = node_load($environment->last_task_nid);
 
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);
@@ -211,9 +223,6 @@ function devshop_project_load($node) {
       $environment->created['status'] = '';
     }
 
-    // Get the current git ref type.
-    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
-
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
       $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
@@ -240,9 +249,21 @@ function devshop_project_load($node) {
       'name' => $environment->web_server,
     );
 
+    // On project create, there is no site, so there is no db_server.
+    if (empty($environment->db_server)) {
+      $db_servers = hosting_get_servers('db');
+      // Project wizard saves db_server to "settings". If that doesn't exist, just use the default db server.
+      if (empty($environment->settings->db_server)) {
+        $environment->settings->db_server = $environment->db_server_nid = key($db_servers);
+      }
+
+      $environment->db_server_nid = $environment->settings->db_server;
+      $environment->db_server = $db_servers[$environment->db_server_nid];
+    }
+
     // DB Server
     $environment->servers['db'] = array(
-      'nid' => $environment->db_server,
+      'nid' => $environment->db_server_nid,
       'name' => $environment->db_server,
     );
 
@@ -268,19 +289,35 @@ function devshop_project_load($node) {
       }
     }
 
-    // Last commit
-    $path = $project->code_path . '/' . $environment->name;
-    if (file_exists($path . '/.git')) {
-      $environment->git_ref_id = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1
-    ");
-      $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%h %an %ar %s' --max-count=1");
+    // Git information.
+    $environment->git_ref_stored = $environment->git_ref;
+    if (isset($environment->repo_root) && file_exists($environment->repo_root . '/.git')) {
 
-      $environment->git_sha = trim(shell_exec("cd $path; git rev-parse HEAD"));
+      // Timestamp of last commit.
+      $environment->git_last = shell_exec("cd {$environment->repo_root}; git log --pretty=format:'%ar' --max-count=1");
+
+      // The last commit.
+      $environment->git_commit = shell_exec("cd {$environment->repo_root}; git -c color.ui=always log --max-count=1");
+
+      // Get the exact SHA
+      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD"));
+
+      // Get the actual tag or branch
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+
+      // Get git status.
+      $environment->git_status = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always  status"));
+
+      // Get git diff.
+      $environment->git_diff = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always diff"));
+
     }
     else {
-      $environment->git_ref_id = '';
       $environment->git_last = '';
+      $environment->git_commit = '';
       $environment->git_sha = '';
+      $environment->git_status = '';
+      $environment->git_diff = '';
     }
 
     // Repo root
@@ -317,7 +354,7 @@ function devshop_project_load($node) {
   }
 
   // Put live environment at the top.
-  if (!empty($environments) && isset($project->settings->live) && $project->settings->live['live_environment']) {
+  if (!empty($environments) && isset($project->settings->live) && $project->settings->live['live_environment'] && isset($environments[$project->settings->live['live_environment']])) {
     $project->environments = array();
     $live_env = $project->settings->live['live_environment'];
     $project->environments[$live_env] = $environments[$live_env];

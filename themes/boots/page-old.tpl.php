@@ -99,6 +99,6 @@
   </div>
 
 <?php print $scripts ?>
-<?php print $closure ?>
+<?php print $page_bottom ?>
 </body>
 </html>

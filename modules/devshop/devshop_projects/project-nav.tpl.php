@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-default navbar-project" role="navigation">
   <div class="container-fluid">
     <!-- First Links -->
@@ -17,15 +16,22 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu dropdown-settings" role="menu">
+
             <?php if (node_access('update', $node)): ?>
-            <li><?php print l(t('Project Settings'), "node/{$project->nid}/edit"); ?></li>
-                <li class="divider"></li>
+            <li>
+              <a href="<?php print url("node/{$project->nid}/edit"); ?>" class="btn-sm">
+                <i class="fa fa-th"></i>
+                <?php print t('Project Settings'); ?>
+              </a>
+             </li>
             <?php endif; ?>
 
-            <li><label><?php print t('Environment Settings'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
             <li>
-              <?php print l($environment->name, "node/{$project->nid}/edit/{$environment->name}"); ?>
+              <a href="<?php print url("node/{$project->nid}/edit/env/{$environment->name}"); ?>" class="btn-sm">
+                <i class="fa fa-sliders fa-fw"></i>
+                <?php print $environment->name; ?>
+              </a>
             </li>
             <?php endforeach; ?>
           </ul>
@@ -43,7 +49,7 @@
             <li><label><?php print t('Environment Logs'); ?></label></li>
             <?php foreach ($project->environments as $environment): ?>
               <li>
-                <?php print l($environment->name, "node/{$project->nid}/logs/{$environment->name}"); ?>
+                <?php print l($environment->name, "node/{$environment->site}/tasks"); ?>
               </li>
             <?php endforeach; ?>
           </ul>
@@ -69,7 +75,7 @@
 
 
         <!-- Git URL -->
-        <input type="text" class="form-control" size="26" value="<?php print $project->git_url; ?>" onclick="this.select()">
+        <input type="text" class="form-control" size="26" value="<?php print $safe_git_url; ?>" onclick="this.select()">
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">

@@ -52,15 +52,22 @@ function devshop_projects_node_load($nodes, $types) {
       $task_types = hosting_available_tasks();
       $task_types = array_merge($task_types['site'], $task_types['platform']);
 
+      // Randomize status for design debugging.
+      // To test out constantly changing tasks, uncomment this line.
+      // $node->task_status = rand(-1, 3);
+      // Processing
+      // $node->task_status = -1;
+
       // In Aegir, "executed" and "delta" does not get updated properly.
       // Handle "delta" being not computed yet
       if ($node->task_status == HOSTING_TASK_PROCESSING) {
         $node->duration = format_interval(time() - $node->executed, 1);
       }
       elseif ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->duration = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+        $node->duration = t('Queued for %time',
+          array('%time' => format_interval(time() - $node->changed), 1));
       }
-      else  {
+      else {
         $node->duration = format_interval($node->delta, 1);
       }
 
@@ -70,9 +77,11 @@ function devshop_projects_node_load($nodes, $types) {
       $node->status_name = _hosting_parse_error_code($node->task_status);
 
       // Override "ago" text.
-      $node->ago = format_interval(time() - $node->executed, 1) .' '. t('ago');
+      $node->ago = format_interval(time() - $node->executed,
+          1) . ' ' . t('ago');
       if ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->ago = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
+        $node->ago = t('Queued for %time',
+          array('%time' => format_interval(time() - $node->changed)));
       }
       elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
         $node->ago = format_interval(time() - $node->changed);
@@ -92,10 +101,6 @@ function devshop_projects_node_load($nodes, $types) {
       // Get desired URL
       $node->url = url("node/{$node->nid}");
 
-      // @TODO: Doesn't quite work. we need a different VID for each clone link.
-      //  if ($node->task_type == 'clone') {
-      //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
-      //  }
     }
     // Projects
     elseif ($node->type == 'project') {
@@ -119,6 +124,21 @@ function devshop_projects_node_load($nodes, $types) {
  *  @see hosting_platform_insert()
  */
 function devshop_projects_node_insert($node) {
+
+  // On task insert, save last task.
+  if ($node->type == 'task') {
+    $site = node_load($node->rid);
+
+    if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
+      $site->environment->last_task = $node->nid;
+      devshop_environment_save_last_task($site->environment);
+    }
+
+    // When a task is created or updated that has a project, redirect to the project.
+    if (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+      drupal_goto("node/{$site->project->nid}");
+    }
+  }
 
   if ($node->type != 'project') {
     return;
@@ -191,6 +211,17 @@ function devshop_projects_node_insert($node) {
  */
 function devshop_projects_node_update($node) {
 
+
+  // On task insert, save last task.
+  if ($node->type == 'task') {
+    $site = node_load($node->rid);
+
+    // When a task is created or updated that has a project, redirect to the project.
+    if (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+      drupal_goto("node/{$site->project->nid}");
+    }
+  }
+
   if ($node->type != 'project') {
     return;
   }
@@ -204,7 +235,7 @@ function devshop_projects_node_update($node) {
   $info->code_path = hosting_path_normalize($project->code_path);
   $info->drupal_path = hosting_path_normalize($project->drupal_path);
   $info->base_url = $project->base_url;
-  $info->install_profile = $project->install_profile;
+  $info->install_profile = $project->install_profile? $project->install_profile: $project->settings->default_environment['install_profile'];
 
   // Save serialized data, minus environments
   $info->settings = serialize($project->settings);
@@ -213,6 +244,20 @@ function devshop_projects_node_update($node) {
   drupal_write_record('hosting_devshop_project', $info, 'nid');
   if (!isset($node->no_verify) || $node->no_verify == FALSE) {
     hosting_add_task($node->nid, 'verify');
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function devshop_projects_node_delete($node) {
+
+  // When a platform or site node is FULLY deleted, remove the environment record.
+  // This should never happen, site and platform nodes are never fully deleted.
+  if (($node->type == 'site' || $node->type == 'platform') && !empty($node->project)) {
+    db_delete('hosting_devshop_project_environment')
+      ->condition($node->type, $node->nid)
+      ->execute();
   }
 }
 
@@ -231,127 +276,6 @@ function devshop_projects_delete($node) {
 
   hosting_context_delete($node->nid);
 }
-
-///**
-// * Implementation of hook_nodeapi()
-// * For site and platform nodes, load project and environment objects.
-// *
-// * @see devshop_projects_load()
-// */
-//function devshop_projects_nodeapi(&$node, $op, $a3 = null) {
-
-//  // Load environment info into platforms and sites.
-//  if ($op == 'load' && $node->type == 'platform' || $node->type == 'site') {
-//    $additions = array();
-//    $result = (object) db_query("SELECT project_nid, name FROM {hosting_devshop_project_environment} e WHERE :type  = :nid", array(
-//        ':type' => $node->type,
-//        ':nid'  => $node->nid
-//    ))->fetchAssoc();
-//
-//    // Load project and environment
-//    $project_node = node_load($result->project_nid);
-//    $additions['project'] = $project_node->project;
-//    $additions['environment'] = $project_node->project->environments[$result->name];
-//    return $additions;
-//  }
-
-//  // Load environment info into tasks.
-//  if ($op == 'load' && $node->type == 'task') {
-//    $additions = array();
-//    $result = (object) db_query("SELECT nid, title AS name, name AS environment FROM {hosting_devshop_project_environment} e LEFT JOIN node ON e.project_nid = node.nid WHERE site = :site OR platform = :platform", array(
-//        ':site' => $node->rid,
-//        ':platform' => $node->rid
-//    ))->fetchAssoc();
-//
-//    // Load project and environment
-//    $additions['project'] = $result;
-//    return $additions;
-//  }
-//
-//  // When a task is updated, save the last_task status in the environment settings.
-//  if (($op == 'insert' || $op == 'update') && $node->type == 'task') {
-//    $site = node_load($node->rid);
-//
-//    if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
-//
-//      $site->environment->last_task = $node->nid;
-//      devshop_environment_save_last_task($site->environment);
-//    }
-//  }
-//
-//  // When a task is created or updated that has a project, redirect to the project.
-//  if (($op == 'update' || $op == 'insert') && $node->type == 'task') {
-//    $object = node_load($node->rid);
-//    if (isset($object->project) && arg(0) == 'node' && arg(1) == $object->nid) {
-//      drupal_goto("node/{$object->project->nid}");
-//
-//    }
-//  }
-//
-//  // When a platform or site node is deleted, remove the environment record.
-//  if ($op == 'delete' && ($node->type == 'site' || $node->type == 'platform')) {
-//    drupal_set_message('Deleted environment.');
-//    db_delete('hosting_devshop_project_environment')
-//      ->condition($node->type, $node->nid)
-//      ->execute();
-//  }
-//}
-
-///**
-// * Implements hook_nodeapi_TYPE_OP() for site nodes and view op.
-// */
-//function devshop_projects_nodeapi_task_load(&$node, $a3, $a4) {
-//
-//  $task_types = hosting_available_tasks();
-//  $task_types = array_merge($task_types['site'], $task_types['platform']);
-//
-//  // In Aegir, "executed" and "delta" does not get updated properly.
-//  // Handle "delta" being not computed yet
-//  if ($node->task_status == HOSTING_TASK_PROCESSING) {
-//    $additions['duration'] = format_interval(time() - $node->executed, 1);
-//  }
-//  elseif ($node->task_status == HOSTING_TASK_QUEUED) {
-//    $additions['duration'] = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
-//  }
-//  else  {
-//    $additions['duration'] = format_interval($node->delta, 1);
-//  }
-//
-//  // To test out constantly changing tasks, uncomment this line.
-//  //        $node->task_status = rand(-1, 3);
-//  $additions['status_class'] = devshop_task_status_class($node->task_status);
-//  $additions['status_name'] = _hosting_parse_error_code($node->task_status);
-//
-//  // Override "ago" text.
-//  $additions['ago'] = format_interval(time() - $node->executed, 1) .' '. t('ago');
-//  if ($node->task_status == HOSTING_TASK_QUEUED) {
-//    $additions['ago'] = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
-//  }
-//  elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
-//    $additions['ago'] = format_interval(time() - $node->changed);
-//
-//  }
-//
-//  // Set task type
-//  $additions['type_name'] = $task_types[$node->task_type]['title'];
-//
-//  // If platform's first verify...
-//  if ($node->ref->type == 'platform' && $node->ref->verified == 0) {
-//    $additions['type_name'] = t('Cloning Codebase');
-//  }
-//
-//  // Get Icon
-//  $additions['icon'] = devshop_task_status_icon($node->task_status);
-//
-//  // Get desired URL
-//  $additions['url'] = url("node/{$node->nid}");
-//
-//  // @TODO: Doesn't quite work. we need a different VID for each clone link.
-//  //  if ($node->task_type == 'clone') {
-//  //    $additions['url'] = url("node/{$node->nid}/revisions/{$node->vid}/view");
-//  //  }
-//  return $additions;
-//}
 
 /**
  * @param $environment
