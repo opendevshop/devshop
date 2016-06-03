@@ -136,7 +136,7 @@ Support
 Installation
 ------------
 
-See [the installation instructions](install.md) for detailed information on installing DevShop.
+See [the installation instructions](docs/install.md) for detailed information on installing DevShop.
 
 Usage
 -----
@@ -193,6 +193,6 @@ This means any forks of this code must be released as open source and also be li
 Help Improve Documentation
 --------------------------
 
-Think this can be improved? You can [edit this file on GitHub](https://github.com/opendevshop/devshop/edit/0.x/README.md) and select "Create a new branch for this commit and start a pull request.".
+Think this can be improved? You can [edit this file on GitHub](https://github.com/opendevshop/devshop/edit/1.x/README.md) and select "Create a new branch for this commit and start a pull request.".
 
 Thanks!
