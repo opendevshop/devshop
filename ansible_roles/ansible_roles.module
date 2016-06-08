@@ -129,7 +129,7 @@ function ansible_roles_node_load($nodes, $types)
 
         foreach ($services as $type => $service) {
             // Load custom roles last.
-            if ($type == 'ansible') {
+            if ($type == 'ansible_roles') {
                 continue;
             }
             if (method_exists($service, 'getRoleNames')) {
@@ -137,8 +137,8 @@ function ansible_roles_node_load($nodes, $types)
             }
         }
 
-        if (isset($services['ansible'])) {
-            $roles = array_merge($roles, $node->services['ansible']->roles);
+        if (isset($services['ansible_roles'])) {
+            $roles = array_merge($roles, $node->services['ansible_roles']->getRoleNames());
         }
 
         $node->roles = $roles;
@@ -154,30 +154,10 @@ function ansible_roles_node_view($node, $view_mode, $langcode)
     if ($node->type != 'server' || !isset($node->services)) {
         return;
     }
-
-    // Load all roles to generate a playbook.
-    // Pull out ansible roles to load last.
-    $services = $node->services;
-    $roles = array();
-
-    foreach ($services as $type => $service) {
-        // Load custom roles last.
-        if ($type == 'ansible') {
-            continue;
-        }
-        if (isset($service->roles)) {
-            $roles = array_merge($roles, $service->roles);
-        }
-    }
-
-    if (isset($services['ansible'])) {
-        $roles = array_merge($roles, $node->services['ansible']->roles);
-    }
-
     $node->content['content'] = array(
       '#title' => t('Server Roles'),
       '#type' => 'item',
-      '#markup' => theme('item_list', array('items' => $roles)),
+      '#markup' => theme('item_list', array('items' => $node->roles)),
     );
 
 }

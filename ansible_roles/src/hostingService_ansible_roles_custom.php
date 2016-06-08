@@ -6,6 +6,28 @@
 
 class hostingService_ansible_roles extends hostingService {
   public $service = 'ansible_roles';
+
+  function getRoles() {
+    return array();
+  }
+
+  /**
+   * The list of ansible roles that this service depends on.
+   *
+   * @return array
+   */
+  function getRoleNames() {
+    $roles = $this->getRoles();
+    foreach ($roles as $role) {
+      if (isset($role['name'])) {
+        $names[] = $role['name'];
+      }
+      else {
+        $names[] = $role;
+      }
+    }
+    return $names;
+  }
 }
 
 /**
