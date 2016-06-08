@@ -5,4 +5,4 @@ dependencies[] = hosting_server
 
 core = 7.x
 
-files[] = src/hostingService_ansible_ansible_roles.php
+files[] = src/hostingService_ansible_roles_custom.php

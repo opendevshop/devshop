@@ -5,7 +5,7 @@
  * Implements hook_hosting_service().
  */
 function ansible_roles_hosting_service() {
-    $services['ansible_roles'] = 'ansible';
+    $services['custom'] = 'ansible_roles';
     return $services;
 }
 
@@ -15,8 +15,8 @@ function ansible_roles_hosting_service() {
 function ansible_roles_hosting_service_type()
 {
     return array(
-        'ansible' => array(
-            'title' => t('Server Roles'),
+        'ansible_roles' => array(
+            'title' => t('Server Role'),
         ),
     );
 }

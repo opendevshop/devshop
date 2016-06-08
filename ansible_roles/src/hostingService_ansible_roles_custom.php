@@ -4,16 +4,16 @@
  * Provide the hosting serivce classes for database integration.
  */
 
-class hostingService_ansible extends hostingService {
-  public $service = 'ansible';
+class hostingService_ansible_roles extends hostingService {
+  public $service = 'ansible_roles';
 }
 
 /**
- * A MySQL specific db service implemenstation class.
+ * Custom Ansible Roles service.
  */
-class hostingService_ansible_ansible_roles extends hostingService_ansible {
-  public $type = 'ansible_roles';
-  public $name = 'Ansible Roles';
+class hostingService_ansible_roles_custom extends hostingService_ansible_roles {
+  public $type = 'custom';
+  public $name = 'Custom Roles';
 
   public $has_port = FALSE;
   public $ansible_vars = array();
