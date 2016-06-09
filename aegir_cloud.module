@@ -107,7 +107,12 @@ function aegir_cloud_node_view($node, $view_mode, $langcode) {
         // Data
         $rows = array();
         foreach ($node->services['provider']->provider_data as $key => $value) {
-          $rows[] = array($key, $value);
+          if (is_string($value)) {
+            $rows[] = array($key, $value);
+          }
+          else {
+            $rows[] = array($key, print_r($value, 1));
+          }
         }
         $node->content['info']['provider_data'] = array(
           '#type' => 'item',
