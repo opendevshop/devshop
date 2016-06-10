@@ -7,6 +7,18 @@
 class hostingService_ansible_roles extends hostingService {
   public $service = 'ansible_roles';
 
+  /**
+   * Make the server node vailable in the service.
+   * 
+   * hostingService_ansible_roles constructor.
+   * @param $node
+   * @param null $values
+   */
+  function __construct($node, $values) {
+    parent::__construct($node, $values);
+    $this->server->node = $node;
+  }
+
   function getRoles() {
     return array();
   }
