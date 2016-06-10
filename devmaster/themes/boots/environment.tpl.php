@@ -400,14 +400,8 @@
             </a>
             <?php endif; ?>
 
-            <!-- Browse Files -->
-            <a href="<?php print url("node/$environment->site/files/platform"); ?>" class="btn btn-text text-muted small" title="<?php print t('Browse the files in this environment'); ?>">
-              <i class="fa fa-folder-o"></i>
-              <?php print t('Files'); ?>
-            </a>
-
             <!-- Browse Backups -->
-            <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('Create a view backups.'); ?>">
+            <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text text-muted small" title="<?php print t('View list of backups.'); ?>">
               <i class="fa fa-database"></i>
               <?php print t('Backups'); ?>
             </a>
