@@ -2,7 +2,6 @@
 # vars file for aegir.devmaster
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
-devshop_cli_version: 1.x
 devshop_cli_update: yes
 devshop_cli_path: /usr/share/devshop
 
