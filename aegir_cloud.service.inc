@@ -24,6 +24,17 @@ class hostingService_provider extends hostingService {
    */
   public $provider_server_identifier = '';
 
+  /**
+   * A link to this server in the provider's dashboard.
+   */
+  public $provider_server_url = 'http://provider/server/%id%';
+
+  public function getProviderServerUrl() {
+    return strtr($this->provider_server_url, array(
+      '%id%' => $this->provider_server_identifier,
+    ));
+  }
+
   function form(&$form) {
     $form['provider_data'] = array(
       '#type' => 'value',

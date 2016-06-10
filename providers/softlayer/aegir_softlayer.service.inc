@@ -16,6 +16,8 @@ class hostingService_provider_softlayer extends hostingService_provider {
    */
   public $name = 'IBM SoftLayer';
 
+  public $provider_server_url = 'https://control.softlayer.com/devices/details/%id%/virtualGuest';
+
   function form(&$form) {
 
     $options = variable_get('aegir_cloud_softlayer_options', array());
