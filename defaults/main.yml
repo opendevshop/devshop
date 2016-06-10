@@ -3,6 +3,7 @@
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
 server_hostname: local.devshop.site
+devshop_devmaster_email: admin@local.devshop.site
 
 # The version of devshop & devmaster to install.
 # Overridden by install.sh
