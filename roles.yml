@@ -16,4 +16,4 @@
   version: 1.0.3
 
 - name: opendevshop.devmaster
-  version: master  # Change to the exact release once PR tests pass.
+  version: 1.1.0-rc1  # Change to the exact release once PR tests pass.
