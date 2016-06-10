@@ -11,7 +11,7 @@ devshop_install_profile: devmaster
 devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
-mysql_root_password: PleaseRandomizeOnPlaybookRun
+# mysql_root_password: PleaseRandomizeOnPlaybookRun
 mysql_root_password_update: yes
 
 supervisor_running: yes
