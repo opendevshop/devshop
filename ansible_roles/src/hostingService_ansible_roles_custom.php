@@ -14,7 +14,7 @@ class hostingService_ansible_roles extends hostingService {
    * @param $node
    * @param null $values
    */
-  function __construct($node, $values) {
+  function __construct($node, $values = NULL) {
     parent::__construct($node, $values);
     $this->server->node = $node;
   }
