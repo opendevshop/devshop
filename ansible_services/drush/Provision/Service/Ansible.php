@@ -130,6 +130,9 @@ class Provision_Service_Ansible extends Provision_Service {
       '/usr/bin/ansible-galaxy'
     );
 
+    // Set Timeout to 30 minutes
+    $this->ansible->setTimeout(60 * 30);
+
     $ansible = $this->ansible->playbook();
 
     $ansible->play($this->playbook);
