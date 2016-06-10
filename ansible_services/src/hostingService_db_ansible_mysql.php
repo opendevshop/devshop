@@ -44,8 +44,8 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
         if ($this->ip = db_query("SELECT ip_address FROM {hosting_ip_addresses} WHERE nid = :nid", array(':nid' => $this->server->nid))
             ->fetchField()) {
 
-            // Set bind address to IP address
-            $this->ansible_vars['mysql_bind_address'] = $this->ip;
+            // Set bind address to 0.0.0.0 so it will listen on all.
+            $this->ansible_vars['mysql_bind_address'] = '0.0.0.0';
         }
 
         // Load into ansible variables
