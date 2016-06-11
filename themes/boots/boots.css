@@ -915,3 +915,7 @@ p.error {
 .node-type-server .panel-body .form-item {
     margin-right: 2em;
 }
+
+a.logo img {
+    max-height: 3em;
+}
