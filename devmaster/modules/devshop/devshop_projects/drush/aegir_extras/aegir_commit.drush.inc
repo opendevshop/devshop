@@ -62,25 +62,16 @@ function drush_aegir_commit_provision_commit() {
         // If files option was detected
         if ($files) {
           $files_list = '';
-          $files_to_remove_list = '';
 
           foreach ($files as $file) {
             if (file_exists($file)) {
               $files_list .= ' ' . $file;
-            }
-            else {
-              $files_to_remove_list .= ' ' . $file;
             }
           }
 
           // If files lists is not empty, add "git add" command to queue.
           if (!empty($files_list)) {
             $cmds[] = "git add {$files_list}";
-          }
-
-          // If files_to_remove list is not empty, add git rm to queue.
-          if (!empty($files_to_remove_list)) {
-            $cmds[] = "git rm {$files_to_remove_list}";
           }
         }
         else {
