@@ -111,7 +111,7 @@ function boots_preprocess_environment(&$vars) {
   $environment->active_tasks = 0;
 
   $items = array();
-  $items[] = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$project->nid/logs/$environment->name", array(
+  $items[] = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$environment->site/logs", array(
       'html' => TRUE,
       'attributes' => array(
           'class' => array(
