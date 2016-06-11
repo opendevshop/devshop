@@ -41,17 +41,18 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
   $environment->dothooks_file_path = $hooks_path;
 
   // Attempt to parse
-  try {
-    $environment->dothooks = $yaml->parse(file_get_contents($hooks_path));
-  }
-  catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
-    $environment->warnings[] = array(
-      'text' => t('Invalid YAML in !file: !message', array(
-        '!file' => $hooks_path,
-        '!message' => $e->getMessage(),
-      )),
-      'type' => 'error',
-    );
+  if (!empty($environment->dothooks_file_name)) {
+    try {
+      $environment->dothooks = $yaml->parse(file_get_contents($hooks_path));
+    } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+      $environment->warnings[] = array(
+        'text' => t('Invalid YAML in !file: !message', array(
+          '!file' => $hooks_path,
+          '!message' => $e->getMessage(),
+        )),
+        'type' => 'error',
+      );
+    }
   }
 }
 
