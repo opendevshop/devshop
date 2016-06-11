@@ -9,8 +9,17 @@ Follow this guide.
   - hosting_solr
   - hosting_logs
   - etc
+2. Create a new release of "devshop_stats" project:
+  Rewrite the release number to match drupal.org standards. Only release a new stats module for each minor release.
+  - cd ./source/devmaster-1.x/profiles/modules/contrib/devshop_stats
+  - git tag 7.x-1.0-beta4
+  - git push 7.x-1.0-beta4
+  - Visit module page: https://www.drupal.org/project/devshop_stats/releases.
+  - Click "Add New Release".
+  - Select the tag you created.
 4. Update `opendevshop/devmaster/devmaster.make` with the latest version of drupal core.
 3. Update `opendevshop/devmaster/devmaster.make` with the latest releases of contrib modules.
+4. Update `opendevshop/devmaster/devmaster.make` with the correct version of devshop_stats.
 4. Update `opendevshop/devshop/vars.yml` with the latest versions of drush modules.
 5. Using the commit log as your guide, add a list of new features to the CHANGELOG.org in the devshop repo.  Use the "x commits since this release" feature on github's releases page.  Include changes in both devshop and devmaster repos in the changelog.
 7. Update `opendevshop/devshop/docs/install.md` with the latest version in the example install script.
