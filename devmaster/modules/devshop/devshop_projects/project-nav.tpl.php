@@ -27,12 +27,21 @@
             <?php endif; ?>
 
             <?php foreach ($project->environments as $environment): ?>
-            <li>
-              <a href="<?php print url("node/{$project->nid}/edit/env/{$environment->name}"); ?>" class="btn-sm">
-                <i class="fa fa-sliders fa-fw"></i>
-                <?php print $environment->name; ?>
-              </a>
-            </li>
+              <?php if ($environment->site): ?>
+                <li>
+                  <a href="<?php print url("node/{$project->nid}/edit/env/{$environment->name}"); ?>" class="btn-sm">
+                    <i class="fa fa-sliders fa-fw"></i>
+                    <?php print $environment->name; ?>
+                  </a>
+                </li>
+              <?php else: ?>
+                <li>
+                  <a href="#" class="btn-sm">
+                    <i class="fa fa-sliders fa-fw"></i>
+                    <?php print $environment->name; ?> <small><em><?php print t('Not yet available.'); ?></em></small>
+                  </a>
+                </li>
+              <?php endif; ?>
             <?php endforeach; ?>
           </ul>
         </li>
