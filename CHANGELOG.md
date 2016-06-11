@@ -1,5 +1,23 @@
 # Change Log
 
+# 1.0.0-beta4 (June 10, 2016)
+
+3 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.x
+16 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta3...1.x
+7 commits to DevMaster Ansible Role: https://github.com/opendevshop/ansible-role-devmaster/compare/1.0.2...master
+
+- Improvements to server node template.
+- Added "devshop_devmaster_email" as an ansible variable so it can be configured at install time.
+- Upgraded to drush 8.1.2
+- Moved mysql_root_password to "defaults" so it can be overridden.
+- Fixing a bug that broke environment database server selection when multiple database servers exist.
+- Removing the old "allow deploying data from drush aliases" setting from project settings. Now you just have to enable DevShop Remotes.
+- Removing menu settings for project node form.
+- Improved the "Create Sites" step in the project create wizard. Now properly alerts you to a failed git clone, and added a retry button.
+- Improved help text in step 1 of project creation.
+- Removed broken link to files browser.
+
+
 # 1.0.0-beta3 (May 24, 2016)
 
 6 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta2...1.x
