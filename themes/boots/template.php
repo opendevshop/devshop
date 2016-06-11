@@ -208,6 +208,16 @@ function boots_preprocess_environment(&$vars) {
   }
 
   $vars['environment'] = $environment;
+
+  // Detect hooks.yml file.
+  if (file_exists($environment->repo_root . '/.hooks.yaml')
+    || file_exists($environment->repo_root . '/.hooks.yml')
+    || file_exists($environment->repo_root . '/.hooks')) {
+    $vars['hooks_yml_note'] = t('!file found:');
+  }
+  else {
+    $vars['hooks_yml_note'] = t('Unable to find a file named .hooks, .hooks.yml, or .hooks.yaml. Add one or disable "Run deploy commands in the .hooks file" in project or environment settings.');
+  }
 }
 
 /**
