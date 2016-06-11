@@ -836,3 +836,33 @@ function boots_menu_local_tasks(&$variables) {
 
   return $output;
 }
+
+
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_site_form
+ *
+ * "Environment" Settings form.
+ */
+function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
+
+  // Alter form for better UX
+
+  // Project Settings Vertical Tabs
+  $form['environment_settings'] = array(
+    '#type' => 'vertical_tabs',
+    '#weight' => -11,
+  );
+
+  $form['environment']['settings']['#group'] = 'environment_settings';
+  $form['environment']['settings']['#weight'] = -100;
+  $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
+  $form['hosting_backup_queue']['#group'] = 'environment_settings';
+  $form['http_basic_auth']['#group'] = 'environment_settings';
+  $form['hosting_logs']['#group'] = 'environment_settings';
+
+  $form['aliases_wrapper']['#group'] = 'environment_settings';
+  $form['aliases_wrapper']['#title'] = t('Domain Names');
+  $form['aliases_wrapper']['#prefix'] = '';
+  $form['aliases_wrapper']['#suffix'] = '';
+}
