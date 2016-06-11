@@ -17,6 +17,12 @@
 - Improved help text in step 1 of project creation.
 - Removed broken link to files browser.
 
+## New Contributors
+
+  Two new contributors helped out with documentation and .gitignore changes:
+
+  - Travis Christopher https://github.com/arttus
+  - Tommy Cox: https://github.com/tommycox
 
 # 1.0.0-beta3 (May 24, 2016)
 
