@@ -2,9 +2,11 @@
 
 # 1.0.0-beta4 (June 11, 2016)
 
-3 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.x
-16 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta3...1.x
-7 commits to DevMaster Ansible Role: https://github.com/opendevshop/ansible-role-devmaster/compare/1.0.2...master
+14 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.x
+
+18 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta3...1.x
+
+7 commits to DevMaster Ansible Role: https://github.com/opendevshop/ansible-role-devmaster/compare/1.0.2...1.1.0
 
 - Improvements to server node template.
 - Added "devshop_devmaster_email" as an ansible variable so it can be configured at install time.
