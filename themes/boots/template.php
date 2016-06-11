@@ -865,4 +865,7 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
   $form['aliases_wrapper']['#title'] = t('Domain Names');
   $form['aliases_wrapper']['#prefix'] = '';
   $form['aliases_wrapper']['#suffix'] = '';
+
+  $form['environment']['settings']['client'] = $form['client'];
+  unset($form['client']);
 }
