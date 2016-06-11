@@ -347,7 +347,7 @@ function devshop_projects_update_7000 () {
 }
 
 /**
- * Remove the menu form from the project node form.
+ * Remove the menu form from the site node form.
  */
 function devshop_projects_update_7001 () {
   variable_set('menu_options_site', array());
