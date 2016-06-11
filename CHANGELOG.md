@@ -1,6 +1,6 @@
 # Change Log
 
-# 1.0.0-beta4 (June 10, 2016)
+# 1.0.0-beta4 (June 11, 2016)
 
 3 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.x
 16 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta3...1.x
