@@ -345,3 +345,10 @@ function devshop_projects_update_6011 () {
 function devshop_projects_update_7000 () {
   variable_set('menu_options_project', array());
 }
+
+/**
+ * Remove the menu form from the project node form.
+ */
+function devshop_projects_update_7001 () {
+  variable_set('menu_options_site', array());
+}
