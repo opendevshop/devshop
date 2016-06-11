@@ -325,7 +325,7 @@
                                 <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
                             <?php endforeach; ?>
                             <li class="divider">&nbsp;</li>
-                            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit'); ?></li>
+                            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit', array('fragment' => 'edit-aliases-wrapper')); ?></li>
                         </ul>
                     </div>
 
