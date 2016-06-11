@@ -854,6 +854,7 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
     '#weight' => -11,
   );
 
+  $form['environment']['settings']['#title'] = t('General');
   $form['environment']['settings']['#group'] = 'environment_settings';
   $form['environment']['settings']['#weight'] = -100;
   $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
@@ -868,4 +869,7 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $form['environment']['settings']['client'] = $form['client'];
   unset($form['client']);
+
+  // Help Text
+  $form['#prefix'] = '<h3>' . t('Environment Settings') . ' <small>' . $form['#node']->environment->name . '</small></h3>';
 }
