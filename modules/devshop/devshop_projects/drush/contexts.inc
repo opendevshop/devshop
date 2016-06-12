@@ -92,6 +92,12 @@ function getBranchesAndTags($git_url = NULL) {
 
   foreach ($lines as $line_string) {
 
+    // "annotated" tags come with an extra row and these characters at the end.
+    // See http://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name
+    if (substr($line_string, -3, 3) == '^{}') {
+      continue;
+    }
+
     // @TODO: Would love some regex love here
     // Example remote line:
     // 9fc5727c0823d8d3300ba5aae3328d5998033e45 refs/heads/3-00
