@@ -17,13 +17,23 @@ function devshop_project_create_step_git($form, $form_state) {
 
   if ($project->verify_error) {
     $form['note'] = array(
-      '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
-      '#type' => 'markup',
+      '#markup' => t('We were unable to connect to your git repository. Check the messages, edit your settings, and try again.'),
+      '#prefix' => '<div class="alert alert-danger">',
+      '#suffix' => '</div>',
+    );
+    $form['error'] = array(
+      '#markup' => $project->verify_error,
     );
 
-    // Display some help for certain errors
-    if ($project->verify_error == '[DEVSHOP] Error retrieving remote information: Host key verification failed. fatal: The remote end hung up unexpectedly') {
-      $form['note']['#value'] .= '<div class="messages warning">' . t('You might have to authorize the host your are trying to connect to first.  Add "StrictHostKeyChecking no" to your ~/.ssh/config file to avoid this for all domains.') . '</div>';
+    // Check for "host key"
+    if (strpos($project->verify_error, 'Host key verification failed')) {
+      $form['help'] = array(
+        '#markup' => t('Looks like you need to authorize this host.  SSH into the server as <code>aegir</code> user and run the command <code>git ls-remote !repo</code>. <hr />Add <code>StrictHostKeyChecking no</code> to your <code>~/.ssh/config</code> file to avoid this for all domains in the future.', array(
+          '!repo' => $project->git_url,
+        )),
+        '#prefix' => '<div class="alert alert-warning">',
+        '#suffix' => '</div>',
+      );
     }
   }
 
