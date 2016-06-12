@@ -110,6 +110,7 @@ function devshop_projects_devshop_environment_actions($environment) {
   // Site specific actions.
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {
+      $items[] = '<li class="divider"></li>';
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
         "hosting_confirm/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
         array(
