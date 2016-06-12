@@ -352,3 +352,12 @@ function devshop_projects_update_7000 () {
 function devshop_projects_update_7001 () {
   variable_set('menu_options_site', array());
 }
+
+/**
+ * Enable devshop_testing and aegir_update!
+ */
+function devshop_projects_update_7002 () {
+  module_enable(array(
+    'devshop_testing',
+  ));
+}
