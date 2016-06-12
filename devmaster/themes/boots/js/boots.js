@@ -1,5 +1,5 @@
 (function ($) {
-    Drupal.behaviors.devshopTasks = {
+    Drupal.behaviors.devShopEnvironments = {
         attach: function (context, settings) {
 
             // Match the height of environments so the grid doesn't break.
