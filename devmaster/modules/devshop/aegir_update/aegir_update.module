@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * Implements hook_hosting_tasks().
+ */
+function aegir_update_hosting_tasks() {
+    $tasks['site']['update_drupal'] = array(
+        'title' => t('Update Drupal'),
+        'description' => t('Upgrades drupal core and contrib to the latest versions.'),
+        'dialog' => TRUE,
+        'icon' => 'wrench'
+    );
+    return $tasks;
+}
+
+/**
+ * Implements hook_permission().
+ * @return array
+ */
+function aegir_update_permission() {
+  return array(
+    'create update_drupal task' => array(
+      'title' => t('create update_drupal task'),
+      'description' => t('Create "Update Drupal" task.'),
+    ),
+  );
+}
+
+/**
+ * @return mixed
+ */
+function hosting_task_update_drupal_form() {
+    $form = array();
+    $form['note'] = array(
+      '#markup' => t('This will run the command <code>drush pm-update</code> on your Drupal site.  <em></em>'),
+    );
+    return $form;
+}
+
+/**
+ * Implements hook_devshop_environment_actions().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function aegir_update_devshop_environment_actions($environment) {
+
+    if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+        $items[] = 'update_drupal';
+    }
+    return $items;
+}
