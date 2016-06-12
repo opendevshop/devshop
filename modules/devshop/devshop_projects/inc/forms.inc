@@ -23,7 +23,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
   $form['project'] = array(
     '#tree' => TRUE,
-    '#type' => 'fieldset',
   );
 
   // Hidden fields that can't change.
@@ -40,7 +39,14 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'value',
     '#value' => $project->git_url,
   );
-  $form['project']['code_path'] = array(
+  $form['project']['codebase'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Codebase'),
+    '#group' => 'project_settings',
+    '#tree' => FALSE,
+    '#weight' => -11,
+  );
+  $form['project']['codebase']['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
     '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
@@ -50,7 +56,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#maxlength' => 255,
     '#weight' => 2,
   );
-  $form['project']['drupal_path'] = array(
+  $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
     '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
@@ -59,7 +65,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#maxlength' => 255,
     '#weight' => 3,
   );
-  $form['project']['base_url'] = array(
+  $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Base URL'),
     '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>This will only affect new environments.</em>'),
@@ -82,8 +88,8 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   // Prevent editing code path unless allowed.
   if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
-    $form['project']['code_path']['#type'] = 'value';
-    $form['project']['code_path']['#value'] = $form['project']['code_path']['#default_value'];
+    $form['project']['codebase']['code_path']['#type'] = 'value';
+    $form['project']['codebase']['code_path']['#value'] = $form['project']['codebase']['code_path']['#default_value'];
   }
 
   // Project Settings
@@ -158,7 +164,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Deployment Automation'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
-    '#weight' => -10,
+    '#weight' => -9,
     '#group' => 'project_settings',
   );
 
@@ -779,7 +785,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       '#group' => 'project_settings',
       '#title' => t('Deployment Hooks'),
       '#description' => t('Deployment hooks are run whenever your codebase changes. It is recommended to always enable database updates and cache clearing.'),
-      '#weight' => -9,
+      '#weight' => -10,
   );
 
   // If we are on the project creation wizard, set some sane defaults
