@@ -36,7 +36,7 @@ projects[hosting_tasks_extra][version] = "3.5"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = 3.x
+projects[hosting_logs][version] = 3.1
 projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 0.3
 projects[aegir_config][subdir] = aegir
