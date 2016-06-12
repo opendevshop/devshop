@@ -417,7 +417,7 @@
 
             <!-- Show Hooks -->
             <div class="btn-group btn-hook-" role="group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-rocket"></i> <?php print t('Hooks'); ?>
               </button>
               <ul class="dropdown-menu" role="menu">
