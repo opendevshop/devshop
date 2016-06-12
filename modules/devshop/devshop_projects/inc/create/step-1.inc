@@ -63,6 +63,7 @@ function devshop_project_create_step_git($form, $form_state) {
     '#title' => t('Git URL'),
     '#suffix' => '<p>' . t('Enter the Git URL for your project') . '</p>' . $tips,
     '#default_value' => $project->git_url,
+    '#maxlength' => 1024,
   );
 //
 //  // Project code path.
