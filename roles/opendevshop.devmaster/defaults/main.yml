@@ -4,7 +4,9 @@
 # It is overridden in devshop's install.sh file to match the server's current hostname.
 server_hostname: local.devshop.site
 devshop_devmaster_email: admin@local.devshop.site
-mysql_root_password: PleaseRandomizeOnPlaybookRun
+
+# You should specify your own random mysql_root_password in your own playbooks or inventory.
+# mysql_root_password: PleaseRandomizeOnPlaybookRun
 
 # The version of devshop & devmaster to install.
 # Overridden by install.sh
