@@ -32,7 +32,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'textfield',
       '#title' => t('Project Code Name'),
       '#required' => TRUE,
-      '#suffix' => '<p>' . t('Choose a unique name for your project. Only letters and numbers allowed.') . '</p>',
+      '#suffix' => '<p>' . t('Choose a unique name for your project. Only letters and numbers are allowed.') . '</p>',
       '#size' => 40,
       '#maxlength' => 255,
     );
@@ -49,11 +49,19 @@ function devshop_project_create_step_git($form, $form_state) {
     );
   }
 
+  $username = variable_get('aegir_user', 'aegir');
+
+  $tips[] = t('Use the "ssh" url whenever possible.');
+  $tips[] = t('Code will be cloned to the server using the <code>aegir</code> user. Check the "Repository Access" for SSH information.');
+  $tips[] = t('An entire Drupal codebase must be present in the repository, but does not have to be in the root. See <em>Path to Drupal</em> setting on the next page.');
+  $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
+  $tips = theme('item_list', array('items' => $tips));
+
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git URL'),
-    '#suffix' => '<p>' . t('Enter the Git URL for your project. You should use the "ssh" url whenever possible. An entire Drupal codebase must be present in the repository. If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.') . '</p>',
+    '#suffix' => '<p>' . t('Enter the Git URL for your project') . '</p>' . $tips,
     '#default_value' => $project->git_url,
   );
 //
