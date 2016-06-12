@@ -32,7 +32,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'textfield',
       '#title' => t('Project Code Name'),
       '#required' => TRUE,
-      '#suffix' => '<p>' . t('Choose a unique name for your project.') . '</p>',
+      '#suffix' => '<p>' . t('Choose a unique name for your project. Only letters and numbers allowed.') . '</p>',
       '#size' => 40,
       '#maxlength' => 255,
     );
@@ -53,7 +53,7 @@ function devshop_project_create_step_git($form, $form_state) {
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git URL'),
-    '#suffix' => '<p>' . t('Enter the Git URL for your project. You should use the "ssh" url when possible. An entire Drupal codebase must be present in the root, unless a composer.json file is present.') . '</p>',
+    '#suffix' => '<p>' . t('Enter the Git URL for your project. You should use the "ssh" url whenever possible. An entire Drupal codebase must be present in the repository. If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.') . '</p>',
     '#default_value' => $project->git_url,
   );
 //
@@ -90,7 +90,7 @@ function devshop_project_create_step_git($form, $form_state) {
 
   // If we don't yet have the server's public key saved as a variable...
   if (empty($pubkey)) {
-    $output = t("For convenience, the server's SSH public key will be displayed here, once you run the following command on your server:");
+    $output = t("This DevShop doesn't yet know your server's public SSH key. To import it, run the following command on your server as <code>aegir</code> user:");
     $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
     $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
   }
