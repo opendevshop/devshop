@@ -217,11 +217,9 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
   $testing_form['test_type'] = array(
     '#title' => t('Test Type'),
     '#options' => array(
-      0 => t('None'),
-      'simpletest' => t('SimpleTest'),
       'behat' => t('Behat'),
     ),
-    '#type' => 'radios',
+    '#type' => 'checkboxes',
     '#default_value' => $settings->testing['test_type'],
   );
 
