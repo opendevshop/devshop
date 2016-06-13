@@ -1,5 +1,31 @@
 # Change Log
 
+# 1.0.0-beta5 (June 13, 2016)
+
+1 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta4...1.0.0-beta5
+
+40 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta4...1.0.0-beta5
+
+- Cleaned up environment widget, consolidating links and hooks output.
+- Major cleanup of environment settings form by putting it into vertical tabs!
+- Minor cleanups of project settings form.
+- Cleanup of the Projects page.
+- Added Aegir Update module! One click drupal core updates. (Experimental)
+- Enable DevShop Testing by default! Everyone should test.
+- Changed "Live Environment" to "Primary Environment".
+- Fixed Bugs in provision-commit.
+- Cleaned up "hosting features" list: making sure optional features aren't marked "Enabled".
+- Fixed links to task logs.
+- Fixed link to Edit Domains.
+- Fixed the matchHeight plugin to make the environment grid even.
+- Allow logos to be added.
+- Cleaned up SSH warnings output when creating a project fails.
+- Fixed bug preventing verification of projects after saving a site.
+- Added better help text on project creation form.
+- Fixed listing tags with ^{} characters in them.
+- Added devshop remotes to hosting features.
+- Made git repo field 1024 characters long, making it compatible with Pantheon.
+
 # 1.0.0-beta4 (June 11, 2016)
 
 14 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.0.0-beta4
