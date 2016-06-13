@@ -390,7 +390,7 @@
 
         <div class="list-group-item">
           <label class="sr-only"><?php print t('Browse'); ?></label>
-          <div class="btn-group btn-group-tight" role="group">
+          <div class="btn-group btn-group-tight btn-group-links" role="group">
 
             <?php if (drupal_valid_path("node/{$environment->site}/tasks")): ?>
               <!-- Browse Task Logs -->
@@ -416,7 +416,7 @@
 
 
             <!-- Show Hooks -->
-            <div class="btn-group btn-hook-" role="group">
+            <div class="btn-group btn-hooks" role="group">
               <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-rocket"></i> <?php print t('Hooks'); ?>
               </button>
