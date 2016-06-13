@@ -880,3 +880,14 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   unset($form['path']);
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_site_form
+ *
+ * "Environment" Settings form.
+ */
+function boots_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+
+  $form['#prefix'] = '<h3>' . t('Project Settings') . '</h3>';
+
+}
