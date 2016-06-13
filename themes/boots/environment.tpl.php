@@ -70,7 +70,7 @@
             <?php endif; ?>
 
             <?php if ($environment->name == $project->settings->live['live_environment']): ?>
-                <span class="environment-meta-data text-muted" title="<?php print t('This is the live environment.'); ?>">
+                <span class="environment-meta-data text-muted" title="<?php print t('This is the primary environment.'); ?>">
             <i class="fa fa-bolt"></i>Live
           </span>
             <?php endif; ?>
