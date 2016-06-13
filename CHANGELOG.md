@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.0.0-beta6 (June 13, 2016)
+
+- Hotfix: Project settings weren't saving properly.
+
 # 1.0.0-beta5 (June 13, 2016)
 
 1 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta4...1.0.0-beta5
