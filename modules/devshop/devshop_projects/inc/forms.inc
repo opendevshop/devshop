@@ -55,6 +55,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $project->code_path,
     '#maxlength' => 255,
     '#weight' => 2,
+    '#parents' => array(
+      'project',
+      'code_path',
+    ),
   );
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
@@ -64,6 +68,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
     '#weight' => 3,
+    '#parents' => array(
+      'project',
+      'drupal_path',
+    ),
   );
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
@@ -75,6 +83,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#maxlength' => 255,
     '#weight' => 4,
     '#access' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
+    '#parents' => array(
+      'project',
+      'base_url',
+    ),
   );
 
   // Don't allow editing
