@@ -167,7 +167,7 @@ HTML;
     if (empty($data['header'])) {
       $data['header'] = $header;
     }
-    $output = theme('table', array('header' => $data['header'], 'rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
+    $output = theme('table', array('rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
   }
   return $output;
 }
