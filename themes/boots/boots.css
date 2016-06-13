@@ -925,3 +925,12 @@ a.logo img {
     font-weight: bold;
     display: block;
 }
+
+.btn-group-links {
+    white-space: nowrap;
+}
+
+.btn-hooks {
+    float: none !important;
+    display: inline-block;
+}
