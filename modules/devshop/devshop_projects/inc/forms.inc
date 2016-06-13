@@ -850,7 +850,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
 
   // Look for acquia cloud hooks.
-  if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['acquia_hooks'])) {
+  if (module_exists('devshop_acquia') && (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['acquia_hooks']))) {
     $return['acquia_hooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run Acquia Cloud Hooks'),
