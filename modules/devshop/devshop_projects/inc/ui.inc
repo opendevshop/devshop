@@ -41,22 +41,46 @@ function devshop_projects_projects_page() {
       // Link to Project page
       $url = url("node/$project->nid");
       $version = $platform_node->release->version;
-      $row[] = <<<HTML
+      $title = t('View dashboard for !project project.', array(
+        ''
+      ));
+      $first_col = <<<HTML
 
-<h4>
-  <a href="$url">
-      $project->name
-      <br />
-      <small>$project->install_profile</small>
-  </a>
-
-</h4>
+<a href="$url" title="$title" class="project-link">
+    $project->name
+</a>
 
 HTML;
 
+      // Live URL
+      $live_domain = $project->settings->live['live_domain'];
+      $live_environment = $project->settings->live['live_environment'];
+
+      if ($live_domain) {
+        $first_col .= l($live_domain, "http://$live_domain", array(
+          'attributes' => array(
+            'class' => array('small live-link text-muted'),
+            'target' => '_blank',
+          ),
+        ));
+      }
+      elseif (isset($project->environments[$live_environment])) {
+        $domain = $project->environments[$live_environment]->uri;
+        $first_col .= l($domain, "http://$domain", array(
+          'attributes' => array(
+            'class' => array('small live-link text-muted'),
+            'target' => '_blank',
+          ),
+        ));
+      }
+
+      $row[] = $first_col;
+
       // Drupal Version
-      $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
- $version
+      $row[] = "<span class='text-muted'><i class='fa fa-drupal'></i>
+ $version 
+      <br />
+      <small class='install-profile'>$project->install_profile</small>
 </button>";
     }
     else {
@@ -108,8 +132,6 @@ HTML;
     }
     $count = count($project->environments);
     $row[] = <<<HTML
-  <small class="pull-right text-muted"><i class="fa fa-cubes"></i> $count</small>
-
 <div class="project-environments btn-toolbar" role="toolbar">
   <div class="btn-group btn-group-xs" role="group">
     $items
