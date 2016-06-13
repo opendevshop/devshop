@@ -927,7 +927,7 @@ a.logo img {
 }
 
 .btn-group-links {
-    white-space: nowrap;
+    /*white-space: nowrap;*/
 }
 
 .btn-hooks {
