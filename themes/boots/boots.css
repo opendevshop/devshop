@@ -927,7 +927,11 @@ a.logo img {
 }
 
 .btn-group-links {
-    /*white-space: nowrap;*/
+    white-space: nowrap;
+}
+
+.btn-group-links .btn-hooks {
+    white-space: normal;
 }
 
 .btn-hooks {
