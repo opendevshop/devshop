@@ -41,7 +41,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
   $form['project']['codebase'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Codebase'),
+    '#title' => t('General Settings'),
     '#group' => 'project_settings',
     '#tree' => FALSE,
     '#weight' => -11,
@@ -129,15 +129,21 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
   else {
     $environments_options = array_combine($environments, $environments);
-    $environments_options[''] = t('No live environment');
+    $environments_options[''] = t('None');
   }
 
-  $form['project']['settings']['live']['live_environment'] = array(
+  $form['project']['codebase']['live_environment'] = array(
     '#type' => 'select',
-    '#title' => t('Live environment'),
-    '#description' => t('The environment for the live website.  This locks the live environment from overwrites and disabling, and allows syncing to other environments.'),
+    '#title' => t('Primary Environment'),
+    '#suffix' => '<p class="muted">' . t('Select the primary environment for this project, typically the live environment. This environment will be marked with a <i class="fa fa-bolt"></i> icon. This is the environment that will be cloned when pull requests are created.') . '</p>',
     '#options' => $environments_options,
     '#default_value' => isset($project->settings->live) ? $project->settings->live['live_environment'] : '',
+    '#parents' => array(
+      'project',
+      'settings',
+      'live',
+      'live_environment',
+    ),
   );
 
   // Live Domain
