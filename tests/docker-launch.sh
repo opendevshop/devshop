@@ -13,8 +13,6 @@ CONTAINER_HOSTNAME=devshop.docker
 HOST_PORT=8000
 TRAVIS=true
 
-composer install
-
 # Pulled from our .travis.yml
 docker pull $DISTRIBUTION:$VERSION
 docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$VERSION --tag=$DISTRIBUTION-$VERSION:devmaster .
