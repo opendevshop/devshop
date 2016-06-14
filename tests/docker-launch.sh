@@ -13,10 +13,15 @@ CONTAINER_HOSTNAME=devshop.docker
 HOST_PORT=8000
 TRAVIS=true
 
+# Create an inventory file so we can set some variables
+echo "$CONTAINER_HOSTNAME aegir_user_uid=$UID aegir_user_gid=$UID" > ../inventory
+
 # Pulled from our .travis.yml
 docker pull $DISTRIBUTION:$VERSION
 docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$VERSION --tag=$DISTRIBUTION-$VERSION:devmaster .
 docker run --detach -p $HOST_PORT:80 $RUN_OPTS --volume=$PWD/..:/usr/share/devshop:rw -h $CONTAINER_HOSTNAME $DISTRIBUTION-$VERSION:devmaster $INIT
+
+# Run install.sh
 docker exec --tty $CONTAINER_NAME env TERM=xterm sudo su -c "/usr/share/devshop/install.sh $SCRIPT_OPTS --hostname=$CONTAINER_HOSTNAME"
 
 # Don't stop queue until the user runs tests.
