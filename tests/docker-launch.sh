@@ -13,6 +13,18 @@ CONTAINER_HOSTNAME=devshop.docker
 HOST_PORT=8000
 TRAVIS=true
 
+# Do NOT let this script run as root.
+if [[ ! $EUID -ne 0 ]]; then
+   echo "This script must NOT be run as root. Run it as the same user you edit your files with."
+   echo "This user must also be able to run the 'docker' command."
+   echo "If it cannot, try adding it to the docker group: "
+   echo "  $ sudo usermod -aG docker yourusername  "
+   exit 1
+fi
+
+echo "Running 'vagrant-prepare-host.sh' to get source code..."
+bash vagrant-prepare-host.sh $PWD $DEVSHOP_VERSION
+
 # Create an inventory file so we can set some variables
 echo "$CONTAINER_HOSTNAME aegir_user_uid=$UID aegir_user_gid=$UID" > ../inventory
 
