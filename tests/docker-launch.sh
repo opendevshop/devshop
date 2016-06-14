@@ -38,7 +38,7 @@ docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$VERSION --tag=$DISTRIBUT
 docker run --detach -p $HOST_PORT:80 $RUN_OPTS \
     --volume=$PWD/..:/usr/share/devshop:rw \
     --volume=$PWD/../source/devmaster-$DEVSHOP_VERSION:/var/aegir/devmaster-$DEVSHOP_VERSION \
-    --volume=$PWD/../source/drush/commands:/var/aegir/.drush/commands \
+    --volume=$PWD/../source/drush/commands:/var/aegir/.drush/commands:rw \
     -h $CONTAINER_HOSTNAME $DISTRIBUTION-$VERSION:devmaster $INIT
 
 # Run install.sh
