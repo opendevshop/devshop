@@ -353,14 +353,15 @@ function devshop_projects_update_7001 () {
   variable_set('menu_options_site', array());
 }
 
-/**
- * Enable devshop_testing.
- */
-function devshop_projects_update_7002 () {
+// @TODO: This breaks upgrades. Figure out why and in include it in an upcoming release.
+///**
+// * Enable devshop_testing.
+// */
+//function devshop_projects_update_7002 () {
 //  module_enable(array(
 //    'devshop_testing',
 //  ));
-}
+//}
 
 /**
  * Fully resetting project and site node menu settings.
