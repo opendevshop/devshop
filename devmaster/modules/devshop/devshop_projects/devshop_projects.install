@@ -357,9 +357,9 @@ function devshop_projects_update_7001 () {
  * Enable devshop_testing.
  */
 function devshop_projects_update_7002 () {
-  module_enable(array(
-    'devshop_testing',
-  ));
+//  module_enable(array(
+//    'devshop_testing',
+//  ));
 }
 
 /**
