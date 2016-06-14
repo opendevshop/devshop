@@ -16,10 +16,18 @@ TRAVIS=true
 # Create an inventory file so we can set some variables
 echo "$CONTAINER_HOSTNAME aegir_user_uid=$UID aegir_user_gid=$UID" > ../inventory
 
-# Pulled from our .travis.yml
+# Pull the specified OS disto and version.
 docker pull $DISTRIBUTION:$VERSION
+
+# Build an image using our Dockerfiles
 docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$VERSION --tag=$DISTRIBUTION-$VERSION:devmaster .
-docker run --detach -p $HOST_PORT:80 $RUN_OPTS --volume=$PWD/..:/usr/share/devshop:rw -h $CONTAINER_HOSTNAME $DISTRIBUTION-$VERSION:devmaster $INIT
+
+# Run the image with volumes mapped to our source code.
+docker run --detach -p $HOST_PORT:80 $RUN_OPTS \
+    --volume=$PWD/..:/usr/share/devshop:rw
+    --volume=$PWD/../source/devmaster-$DEVSHOP_VERSION:/var/aegir/devmaster-$DEVSHOP_VERSION \
+    --volume=$PWD/../source/drush/commands:/var/aegir/.drush/commands \
+    -h $CONTAINER_HOSTNAME $DISTRIBUTION-$VERSION:devmaster $INIT
 
 # Run install.sh
 docker exec --tty $CONTAINER_NAME env TERM=xterm sudo su -c "/usr/share/devshop/install.sh $SCRIPT_OPTS --hostname=$CONTAINER_HOSTNAME"
