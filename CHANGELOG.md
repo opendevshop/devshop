@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.0.0-beta7 (June 14, 2016)
+
+- Hotfix: Update hook to enable DevShop testing failes. Removed it for now.
+
 # 1.0.0-beta6 (June 13, 2016)
 
 - Hotfix: Project settings weren't saving properly.
