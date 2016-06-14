@@ -81,9 +81,9 @@ script:
   - 'sudo docker run --detach --name devshop_upgrade_container ${run_opts} -h devshop-upgrade.travis --add-host "dev.drpl8.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
-  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm wget https://github.com/opendevshop/devshop/releases/download/1.0.0-beta5/install.sh'
-  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm bash install.sh ${script_opts} --hostname=devshop-upgrade.travis'
+  - 'sudo docker exec --tty devshop_upgrade_container env TRAVIS=true TERM=xterm wget https://github.com/opendevshop/devshop/releases/download/1.0.0-beta5/install.sh'
+  - 'sudo docker exec --tty devshop_upgrade_container env TRAVIS=true TERM=xterm bash install.sh ${script_opts} --hostname=devshop-upgrade.travis'
 
   # Upgrade command
-  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm devshop upgrade -n'
+  - 'sudo docker exec --tty devshop_upgrade_container env TRAVIS=true TERM=xterm devshop upgrade -n'
 
