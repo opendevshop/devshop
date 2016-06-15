@@ -125,7 +125,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#collapsed' => TRUE,
       '#group' => 'project_settings',
       '#title' => t('Testing'),
-      '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
+      '#description' => t('Configure how testing is handled for this project.'),
     ), devshop_testing_form_elements($form['#node']->project)
     );
 
