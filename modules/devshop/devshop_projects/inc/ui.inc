@@ -10,13 +10,6 @@
  */
 function devshop_projects_projects_page() {
   drupal_set_title(t('Projects'));
-  $header = array(
-    'Project & Install Profile',
-    'Version',
-    'Git URL',
-    'Environments',
-  );
-
   $tasks = hosting_available_tasks('site');
 
   $results = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :status ORDER BY n.changed DESC", array(':status' => 1));
@@ -32,15 +25,18 @@ function devshop_projects_projects_page() {
     }
 
     // Load an environment for extra info like version.
-    // @TODO: load the chosen live environment.
     $first_environment = current($project->environments);
     if ($first_environment) {
       $platform_node = node_load($first_environment->platform);
+      $version = $platform_node->release->version;
+    }
+    else {
+      $version = '';
+    }
       $row = array();
 
       // Link to Project page
       $url = url("node/$project->nid");
-      $version = $platform_node->release->version;
       $title = t('View dashboard for !project project.', array(
         ''
       ));
@@ -85,10 +81,6 @@ HTML;
       <br />
       <small class='install-profile'>$project->install_profile</small>
 </button>";
-    }
-    else {
-      $row[] = t('Unknown');
-    }
 
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => scrub_repo_url($project->git_url)));
