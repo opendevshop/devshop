@@ -63,7 +63,7 @@ HTML;
       }
       else {
         $domain = '';
-        $first_col .= '<em class="small live-link text-muted">' . t('No Environments') . '</em>';
+        $first_col .= '<span class="small live-link text-muted">' . t('No Environments') . '</span>';
       }
 
       $first_col .= l($domain, "http://$domain", array(
