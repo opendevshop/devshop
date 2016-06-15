@@ -22,6 +22,15 @@
                   // Project Node Page
                   if (Drupal.settings.devshopTask == null) {
 
+                      // If $alert_div does not exist, create it.
+                      if ($alert_div.length == 0) {
+                          $lastTaskWrapper = $('.last-task-alert', environment_id);
+                          $lastTaskWrapper.html(task.rendered);
+                          $alert_div = $(task_id + '.environment-tasks-alert');
+
+                          $("time.timeago", $alert_div).timeago();
+                      }
+
                       // Set class of wrapper div
                       $alert_div.attr('class', new_class);
 
