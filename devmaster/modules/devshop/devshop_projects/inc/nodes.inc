@@ -87,6 +87,16 @@ function devshop_projects_node_load($nodes, $types) {
         $node->ago = format_interval(time() - $node->changed);
       }
 
+      // ISO 8601
+      if ($node->executed == 0) {
+        $executed = $node->created;
+      }
+      else {
+        $executed = $node->executed;
+      }
+      $node->task_timestamp = date('c', $executed);
+      $node->task_date = format_date($executed);
+
       // Set task type
       $node->type_name = $task_types[$node->task_type]['title'];
 
