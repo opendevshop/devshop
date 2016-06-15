@@ -1,5 +1,21 @@
 # Change Log
 
+# 1.0.0-beta8 (June 15, 2016)
+
+1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.x
+
+29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.x
+
+- Fixed script to launch devshop in docker containers for development.
+- Fixed numerous problems with DevShop Testing module preventing fully automated testing.
+- Added an example Behat Drupal tests folder: https://github.com/opendevshop/devmaster/tree/1.x/modules/devshop/devshop_testing/tests_example
+- Fixed bug preventing new tasks from loading into the page. No more reloading the page.
+- Added dynamic timestamps using the timeago plugin so it's always updating timestamps.
+- Fixed a number of UI bugs.
+- Fixed broken Project Delete link.
+- Added "--force" to "git submodule update" command.
+- We created a commercial! https://www.youtube.com/watch?v=L3G2BxDkgPk
+
 # 1.0.0-beta7 (June 14, 2016)
 
 - Hotfix: Update hook to enable DevShop testing failes. Removed it for now.
