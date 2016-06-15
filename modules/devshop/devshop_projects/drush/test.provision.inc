@@ -117,10 +117,10 @@ TXT;
 $environment_name:
   extensions:
     Behat\MinkExtension:
-      base_url: $url
+      base_url: '$url'
     Drupal\DrupalExtension:
       drush:
-        alias: $alias
+        alias: '$alias'
       drupal:
         drupal_root: '$root'
       api_driver: 'drupal'
