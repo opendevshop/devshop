@@ -9,13 +9,9 @@ api = 2
 
 projects[drupal][type] = "core"
 
-; DEVELOPMENT MODE
-; When in development, use this:
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
-projects[devmaster][download][branch] = "1.x"
 
-; RELEASE
-; When releasing, lock in the devmaster version.
-;projects[devmaster][download][branch] = 1.0.0
+; Version of DevShop.  Set automatically in release-prep.sh
+projects[devmaster][download][branch] = "1.x"
