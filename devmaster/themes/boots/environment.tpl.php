@@ -759,7 +759,7 @@ sites/all/drush/drushrc.php
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-list-alt"></i>
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu environment-task-logs">
                     <?php print $environment->task_logs; ?>
                 </div>
             </div>
