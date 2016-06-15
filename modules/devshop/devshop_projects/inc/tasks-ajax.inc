@@ -80,6 +80,9 @@ function devshop_projects_tasks_status_json() {
             }
         }
 
+        // Output a rendered task node
+        $task_node->rendered = theme('devshop_task', array('task' => $task_node));
+
         $output[] = $task_node;
   }
 
