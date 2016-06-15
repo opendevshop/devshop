@@ -422,7 +422,14 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
     //Add button for delete project
     $form['actions']['delete'] = array(
-      '#markup' => l(t('Delete this project'), 'node/' . $project->nid . '/project_delete', array('query' => array('token' => drupal_get_token($user->uid)))),
+      '#markup' => l('<i class="fa fa-trash"></i> ' . t('Delete Project'), 'hosting_confirm/' . $project->nid . '/project_delete', array(
+        'query' => array('token' => drupal_get_token($user->uid)),
+        'attributes' => array(
+          'class' => array('btn btn-danger pull-right'),
+        ),
+        'icon' => 'trash',
+        'html' => TRUE,
+      )),
       '#weight' => 10,
     );
   }
