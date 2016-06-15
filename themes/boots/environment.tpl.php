@@ -764,7 +764,9 @@ sites/all/drush/drushrc.php
                 </div>
             </div>
 
-          <?php print theme('devshop_task', array('task' => $environment->last_task_node)); ?>
+            <div class="last-task-alert">
+              <?php print theme('devshop_task', array('task' => $environment->last_task_node)); ?>
+            </div>
         <?php endif; ?>
     </div>
 </div>
