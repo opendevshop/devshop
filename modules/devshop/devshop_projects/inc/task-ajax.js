@@ -136,9 +136,9 @@
                           Drupal.settings.lastTaskStopped = true;
                       }
                   }
-                  // Projects List Page.
-                  // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
-                  else {
+
+                  // Projects List Page: Update badges.
+                  if ($('body.page-projects').length) {
                       var id = '#badge-' + task.project_name + '-' + task.environment;
 
                       // Set class of badge
