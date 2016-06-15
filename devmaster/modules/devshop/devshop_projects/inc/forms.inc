@@ -632,7 +632,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
           // Make the button big
           $form['actions']['submit']['#value'] = t('Delete Project & Environments');
-          $form['actions']['submit']['#attributes']['class'] = 'btn btn-large btn-danger';
+          $form['actions']['submit']['#attributes']['class'][] = 'btn btn-large btn-danger';
 
         }
         break;
