@@ -26,6 +26,9 @@
                       if ($alert_div.length == 0) {
                           $lastTaskWrapper = $('.last-task-alert', environment_id);
                           $lastTaskWrapper.html(task.rendered);
+
+                          $('.environment-task-logs .tasks-wrapper', environment_id).prepend(task.rendered);
+
                           $alert_div = $(task_id + '.environment-tasks-alert');
 
                           $("time.timeago", $alert_div).timeago();
