@@ -181,7 +181,8 @@ function boots_preprocess_environment(&$vars) {
   if (file_exists($path)) {
 
     // Timestamp of last commit.
-    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
+    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ai' --max-count=1");
+    $environment->git_last_readable = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
 
     // The last commit.
     $environment->git_commit = shell_exec("cd $path; git -c color.ui=always log --max-count=1");
