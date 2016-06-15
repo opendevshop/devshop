@@ -23,10 +23,15 @@ git checkout -b $RELEASE_BRANCH
 
 echo "Release Branches created.  Writing version to files..."
 
-sed -i -e "s/1.x/$RELEASE_BRANCH/g" install.sh
-sed -i -e "s/;projects[devmaster][download][branch] = "1.0.0"/projects[devmaster][download][branch] = "1.0.0-beta8"/g' install.sh
+cd ../../../../
+sed -i -e "s/1.x/$VERSION/g" install.sh
+sed -i -e "s/1.x/$VERSION/g" build-devmaster.make
+sed -i -e "s/1.x/$VERSION/g" source/devmaster-1.x/profiles/devmaster/VERSION.txt
 
-echo "build-devmaster.make"
-echo "install.sh"
-echo "opendevshop/devmaster/VERSION.txt"
-echo "opendevshop/devmaster/devmaster.make (devshop_stats)"
+echo " Files with versions have been updated: "
+echo "  - build-devmaster.make"
+echo "  - install.sh"
+echo "  - opendevshop/devmaster/VERSION.txt"
+echo ""
+echo "Please create a new version of devshop_stats, and add the version to opendevshop/devmaster/devmaster.make"
+echo "Review and commit the changes, then run 'release.sh $RELEASE_BRANCH' "
