@@ -57,22 +57,25 @@ HTML;
       $live_environment = $project->settings->live['live_environment'];
 
       if ($live_domain) {
-        $first_col .= l($live_domain, "http://$live_domain", array(
-          'attributes' => array(
-            'class' => array('small live-link text-muted'),
-            'target' => '_blank',
-          ),
-        ));
+        $domain = $live_domain;
       }
       elseif (isset($project->environments[$live_environment])) {
         $domain = $project->environments[$live_environment]->uri;
-        $first_col .= l($domain, "http://$domain", array(
-          'attributes' => array(
-            'class' => array('small live-link text-muted'),
-            'target' => '_blank',
-          ),
-        ));
       }
+      elseif (count($project->environments)) {
+        $domain = current($project->environments)->uri;
+      }
+      else {
+        $domain = '';
+        $first_col .= '<em class="small live-link text-muted">' . t('No Environments') . '</em>';
+      }
+
+      $first_col .= l($domain, "http://$domain", array(
+        'attributes' => array(
+          'class' => array('small live-link text-muted'),
+          'target' => '_blank',
+        ),
+      ));
 
       $row[] = $first_col;
 
