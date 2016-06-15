@@ -14,4 +14,4 @@ projects[devmaster][download][type] = "git"
 projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
 
 ; Version of DevShop.  Set automatically in release-prep.sh
-projects[devmaster][download][branch] = "1.x"
+projects[devmaster][download][branch] = "1.0.0-beta8"
