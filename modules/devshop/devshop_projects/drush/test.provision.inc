@@ -27,16 +27,16 @@ function drush_devshop_provision_provision_test() {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
 
   // Get tests to run
-  if (!isset($environment->settings['testing']['test_type'])) {
+  if (!isset($project->settings['testing']['test_type'])) {
     $default_type = 'behat';
   }
   $type = drush_get_option('test-type', $default_type);
 
-  if ($environment->settings['testing']['tests_to_run'] === NULL) {
+  if ($project->settings['testing']['tests_to_run'] === NULL) {
     $tests = array();
   }
   else {
-    $tests = array_filter($environment->settings['testing']['tests_to_run']);
+    $tests = array_filter($project->settings['testing']['tests_to_run']);
   }
   $tests_to_run = drush_get_option('tests-to-run', $tests);
 
