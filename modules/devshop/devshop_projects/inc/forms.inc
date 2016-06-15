@@ -614,9 +614,13 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         if ($node->type == 'project') {
 
           // Set a better title.
-          drupal_set_title(t('Delete Project: !project', array(
+          drupal_set_title('');
+          $form['title'] = array(
+            '#weight' => -10,
+            '#markup' => '<h1>' .t('Delete Project: !project', array(
             '!project' => l($node->project->name, "node/{$node->nid}"),
-          )));
+          )) . '</h1>'
+          );
 
           // Get a list of environments.
           foreach ($node->project->environments as $environment) {
