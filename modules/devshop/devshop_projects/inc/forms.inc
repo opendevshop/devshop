@@ -430,6 +430,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         'html' => TRUE,
       )),
       '#weight' => 10,
+      '#access' => drupal_valid_path('hosting_confirm/' . $project->nid . '/project_delete'),
     );
   }
 
