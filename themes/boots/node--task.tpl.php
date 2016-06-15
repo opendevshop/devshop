@@ -79,7 +79,7 @@
       <span class="executed inline">
           <i class="fa fa-calendar-o"></i>
           <?php print $date; ?>
-          <small><?php print $executed; ?></small>
+          <small><time class="timeago" datetime="<?php print $node->task_timestamp ?>"></time></small>
       </span>
     </p>
 
