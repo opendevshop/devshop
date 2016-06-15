@@ -27,10 +27,12 @@ function drush_devshop_provision_provision_test() {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
 
   // Get tests to run
-  if (!isset($project->settings['testing']['test_type'])) {
-    $default_type = 'behat';
+  if (!empty($project->settings['testing']['test_type'])) {
+    $type = $project->settings['testing']['test_type'];
   }
-  $type = drush_get_option('test-type', $default_type);
+  else {
+    return drush_set_error('DEVSHOP_CONFIG_ERROR', dt('This project is not configured to run tests.  Check your project settings and try again.'));
+  }
 
   if ($project->settings['testing']['tests_to_run'] === NULL) {
     $tests = array();
