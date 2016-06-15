@@ -427,7 +427,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         'attributes' => array(
           'class' => array('btn btn-danger pull-right'),
         ),
-        'icon' => 'trash',
         'html' => TRUE,
       )),
       '#weight' => 10,
