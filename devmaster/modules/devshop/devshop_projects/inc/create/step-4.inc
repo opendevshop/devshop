@@ -31,6 +31,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
   );
   $all_tasks_queued = TRUE;
   $all_tasks_succeeded = TRUE;
+  $modals = '';
   foreach ($project->environments as $name => $environment) {
 
     // Get platform and latest verify task.
@@ -96,10 +97,52 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $error = db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'error'))->fetchField();
+      $errors = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'devshop%', ':error' => 'error'));
+
+      foreach ($errors as $error) {
+        if ($error->type == 'devshop_info' || $error->type == 'error') {
+          $messages_to_user[] = $error->message;
+        }
+        $messages[] = $error;
+      }
+      $errors_rendered = theme('devshop_ascii', array('output' => implode('\n', $messages_to_user)));
+
+      $codebase_verification_failed = t('Codebase Verification Failed');
+      $close = t('Close');
+      $view_logs = t('View Logs');
+      $logs_url = url("node/{$task->nid}");
+
+      $button = <<<HTML
+<button type="button" class="btn btn-xs btn-danger text-muted" data-toggle="modal" data-target="#errors-modal-$name" title="View detailed errors">
+        <i class="fa fa-exclamation-circle"></i>
+        $codebase_verification_failed
+      </button>
+HTML;
+
+      $modals .= <<<HTML
+
+      <!-- Modal -->
+      <div class="modal modal-lg fade" id="errors-modal-$name" tabindex="-1" role="dialog" aria-labelledby="errors-modal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title" id="errors-modal">$codebase_verification_failed</h4>
+            </div>
+            <div class="modal-body">
+            $errors_rendered
+            </div>
+            <div class="modal-footer">
+              <a href="$logs_url" class="btn btn-link pull-left">$view_logs</a>
+              <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+HTML;
 
       $row['version'] = array(
-        'data' => '<div class="alert alert-danger small">' . $error . '</div> ',
+        'data' => $button,
         'colspan' => 2,
       );
     }
@@ -198,6 +241,8 @@ function devshop_project_create_step_sites($form, &$form_state) {
       '#default_value' => $default_profile,
     );
   }
+
+  $form['#suffix'] = $modals;
   return $form;
 }
 
