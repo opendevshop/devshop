@@ -25,5 +25,5 @@ echo "Release Branches created.  Bump your versions in the following files, comm
 
 echo "build-devmaster.make"
 echo "install.sh"
-echo "vars.yml"
 echo "opendevshop/devmaster/VERSION.txt"
+echo "opendevshop/devmaster/devmaster.make (devshop_stats)"

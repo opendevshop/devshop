@@ -1,5 +1,93 @@
 # Change Log
 
+# 1.0.0-beta8 (June 15, 2016)
+
+1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.x
+
+29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.x
+
+- Fixed script to launch devshop in docker containers for development.
+- Fixed numerous problems with DevShop Testing module preventing fully automated testing.
+- Added an example Behat Drupal tests folder: https://github.com/opendevshop/devmaster/tree/1.x/modules/devshop/devshop_testing/tests_example
+- Fixed bug preventing new tasks from loading into the page. No more reloading the page.
+- Added dynamic timestamps using the timeago plugin so it's always updating timestamps.
+- Fixed a number of UI bugs.
+- Fixed broken Project Delete link.
+- Added "--force" to "git submodule update" command.
+- We created a commercial! https://www.youtube.com/watch?v=L3G2BxDkgPk
+
+# 1.0.0-beta7 (June 14, 2016)
+
+- Hotfix: Update hook to enable DevShop testing failes. Removed it for now.
+
+# 1.0.0-beta6 (June 13, 2016)
+
+- Hotfix: Project settings weren't saving properly.
+
+# 1.0.0-beta5 (June 13, 2016)
+
+1 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta4...1.0.0-beta5
+
+40 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta4...1.0.0-beta5
+
+- Cleaned up environment widget, consolidating links and hooks output.
+- Major cleanup of environment settings form by putting it into vertical tabs!
+- Minor cleanups of project settings form.
+- Cleanup of the Projects page.
+- Added Aegir Update module! One click drupal core updates. (Experimental)
+- Enable DevShop Testing by default! Everyone should test.
+- Changed "Live Environment" to "Primary Environment".
+- Fixed Bugs in provision-commit.
+- Cleaned up "hosting features" list: making sure optional features aren't marked "Enabled".
+- Fixed links to task logs.
+- Fixed link to Edit Domains.
+- Fixed the matchHeight plugin to make the environment grid even.
+- Allow logos to be added.
+- Cleaned up SSH warnings output when creating a project fails.
+- Fixed bug preventing verification of projects after saving a site.
+- Added better help text on project creation form.
+- Fixed listing tags with ^{} characters in them.
+- Added devshop remotes to hosting features.
+- Made git repo field 1024 characters long, making it compatible with Pantheon.
+
+# 1.0.0-beta4 (June 11, 2016)
+
+14 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.0.0-beta4
+
+18 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta3...1.0.0-beta4
+
+7 commits to DevMaster Ansible Role: https://github.com/opendevshop/ansible-role-devmaster/compare/1.0.2...1.1.0
+
+- Improvements to server node template.
+- Added "devshop_devmaster_email" as an ansible variable so it can be configured at install time.
+- Upgraded to drush 8.1.2
+- Moved mysql_root_password to "defaults" so it can be overridden.
+- Fixing a bug that broke environment database server selection when multiple database servers exist.
+- Removing the old "allow deploying data from drush aliases" setting from project settings. Now you just have to enable DevShop Remotes.
+- Removing menu settings for project node form.
+- Improved the "Create Sites" step in the project create wizard. Now properly alerts you to a failed git clone, and added a retry button.
+- Improved help text in step 1 of project creation.
+- Removed broken link to files browser.
+
+## New Contributors
+
+  Two new contributors helped out with documentation and .gitignore changes:
+
+  - Travis Christopher https://github.com/arttus
+  - Tommy Cox: https://github.com/tommycox
+
+# 1.0.0-beta3 (May 24, 2016)
+
+6 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta2...1.x
+234 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta2...1.x
+
+- Added "DevShop Remotes" module: Easily add remote drush aliases to use as database sources.
+- Locked the devshop installer ansible roles to specific verions.
+- Created a new "Process" service for aegir servers for easier command running:
+- Fixed javascript reloading on completed tasks. You can now copy and paste out of logs!
+- Many commits in this release came from DevShop Cloud, now known as Aegir Cloud. We've removed the codebase from core devshop until a final release is ready. See http://drupal.org/project/aegir_cloud more info.
+
+
 # 1.0.0-beta2 (May 9, 2016)
 
 Released at DrupalCon New Orleans!

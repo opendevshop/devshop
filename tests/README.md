@@ -11,13 +11,15 @@ DevShop runs much faster in docker containers than the Vagrant VM. I am going to
 
 I've written some helper scripts that should help:
 
-docker-launch-devshop.sh: 
+`docker-launch.sh`
 will launch a devshop server inside a docker container
 
-docker-test-devshop.sh:
-Runs `devshop test` inside the devshop docker container.
+`docker-test.sh`
+Disables supervisor and hosting queued modules then runs `devshop test` inside the devshop docker container.
 
-docker-destroy-devshop.sh:
+These are the same tests that travis uses.
+
+`docker-destroy-devshop.sh:`
 Kills and removes the containers, to clean up your system.
 
 ## Launching devshop on docker
@@ -26,7 +28,7 @@ To launch devshop on Docker:
 
 1. Clone this repo. cd to this folder.
 2. Edit your `/etc/hosts` file so that devshop.docker points to 127.0.0.1
-2. Run the launch script `$ bash docker-launch-devshop.sh`.  If you must run `sudo` to use the `docker` command, run `sudo bash docker-launch-devshop.sh`.
+2. Run the launch script `$ bash docker-launch.sh`.  Make sure you are using docker as your normal user, not root.
 3. It will build the containers, run the install script, and then run the tests!
 4. To "get into the server" as the aegir user:
 

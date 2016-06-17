@@ -9,6 +9,14 @@ Follow this guide.
   - hosting_solr
   - hosting_logs
   - etc
+2. Create a new release of "devshop_stats" project:
+  Rewrite the release number to match drupal.org standards. Only release a new stats module for each minor release.
+  - cd ./source/devmaster-1.x/profiles/modules/contrib/devshop_stats
+  - git tag 7.x-1.0-beta4
+  - git push 7.x-1.0-beta4
+  - Visit module page: https://www.drupal.org/project/devshop_stats/releases.
+  - Click "Add New Release".
+  - Select the tag you created.
 4. Update `opendevshop/devmaster/devmaster.make` with the latest version of drupal core.
 3. Update `opendevshop/devmaster/devmaster.make` with the latest releases of contrib modules.
 4. Update `opendevshop/devshop/vars.yml` with the latest versions of drush modules.
@@ -19,8 +27,9 @@ Follow this guide.
   - `build-devmaster.make`
   - `install.sh`
   - `vars.yml`
-  - `opendevshop/devmaster/VERSION.txt` 
-5. Create and push a new tag for `devmaster`, `devshop`, and `devshop_provision` using the `release.sh` script.  This script takes a version for an argument and creates release tags in the three repos.
+  - `opendevshop/devmaster/devmaster.make` (Edit the devshop_stats version.)
+  - `opendevshop/devmaster/VERSION.txt`
+5. Create and push a new tag for `devmaster` & `devshop` using the `release.sh` script.  This script takes a version for an argument and creates release tags in the three repos.
 6. Create a new "release" on github to match the new tag at https://github.com/opendevshop/devshop/releases/new.  Copy the release notes from CHANGELOG.md into 
 7. Edit http://drupal.org/project/devshop to show the latest release.
 8. Update the "Current Version" displayed on the gh-pages branch. https://github.com/opendevshop/devshop/edit/gh-pages/index.html 

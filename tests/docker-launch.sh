@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 DEVSHOP_VERSION='1.x'
 DISTRIBUTION='ubuntu'
-DISTRIBUTION_VERSION='14.04'
+VERSION='14.04'
 INIT='/sbin/init'
 CONTAINER_NAME='devshop_server'
 RUN_OPTS="--name=$CONTAINER_NAME"
-SCRIPT_OPTS="--server-webserver=nginx --aegir_user_uid=$UID"
+SCRIPT_OPTS='--server-webserver=nginx'
 CONTAINER_HOSTNAME=devshop.docker
-SUPERVISOR_STOP='service supervisor stop'
+
+# Don't stop supervisor until we want to run tests.
+# SUPERVISOR_STOP='service supervisor stop'
 HOST_PORT=8000
 TRAVIS=true
 
@@ -23,25 +25,30 @@ fi
 echo "Running 'vagrant-prepare-host.sh' to get source code..."
 bash vagrant-prepare-host.sh $PWD $DEVSHOP_VERSION
 
-# Changing UID:GID of source code to Aegir's UID so it can write to these folders.
-# We can change it back to the user later so they can edit the files.
-cd tests
+# Create an inventory file so we can set some variables
+echo "$CONTAINER_HOSTNAME aegir_user_uid=$UID aegir_user_gid=$UID" > ../inventory
 
-composer install
+# Pull the specified OS disto and version.
+docker pull $DISTRIBUTION:$VERSION
 
-# Pulled from our .travis.yml
-docker pull $DISTRIBUTION:$DISTRIBUTION_VERSION
-docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$DISTRIBUTION_VERSION --tag=$DISTRIBUTION-$DISTRIBUTION_VERSION:devmaster .
+# Build an image using our Dockerfiles
+docker build --rm=true --file=Dockerfile.$DISTRIBUTION-$VERSION --tag=$DISTRIBUTION-$VERSION:devmaster .
+
+# Run the image with volumes mapped to our source code.
 docker run --detach -p $HOST_PORT:80 $RUN_OPTS \
     --volume=$PWD/..:/usr/share/devshop:rw \
     --volume=$PWD/../source/devmaster-$DEVSHOP_VERSION:/var/aegir/devmaster-$DEVSHOP_VERSION \
-    --volume=$PWD/../source/drush/commands:/var/aegir/.drush/commands \
-    -h $CONTAINER_HOSTNAME $DISTRIBUTION-$DISTRIBUTION_VERSION:devmaster $INIT
-docker exec --tty $CONTAINER_NAME env TERM=xterm sudo su -c "/usr/share/devshop/install.sh $SCRIPT_OPTS --hostname=$CONTAINER_HOSTNAME"
-docker exec $CONTAINER_NAME $SUPERVISOR_STOP
-docker exec $CONTAINER_NAME env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"
+    --volume=$PWD/../source/drush:/var/aegir/.drush/commands:rw \
+    -h $CONTAINER_HOSTNAME $DISTRIBUTION-$VERSION:devmaster $INIT
 
-bash docker-test-devshop.sh
+# Run install.sh
+docker exec --tty $CONTAINER_NAME env TERM=xterm sudo su -c "/usr/share/devshop/install.sh $SCRIPT_OPTS --hostname=$CONTAINER_HOSTNAME"
+
+# Don't stop queue until the user runs tests.
+# docker exec $CONTAINER_NAME $SUPERVISOR_STOP
+# docker exec $CONTAINER_NAME env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"
+# bash docker-test-devshop.sh
+
 
 echo ""
 echo "NEXT: Please add '127.0.0.1 devshop.docker' to your /etc/hosts file."
@@ -50,8 +57,9 @@ echo " To get into the server, run: "
 echo "    $ docker exec -ti devshop_server su - aegir "
 echo " Then to get into the front end, run:"
 echo "    $ devshop login "
-echo " You will get a URL like http://devshop.docker/user/login/13abc.  you will have to add the port $HOST_PORT."
+echo " You will get a URL like http://devshop.docker/user/login/13abc.  you will have to add the port manually to make the link look like http://devshop.docker:8000/user/login/13abc."
+echo ""
 echo " Good luck! We hope to improve on this soon.  Please post issues at https://github.com/opendevshop/devshop/issues "
 echo " "
-echo " NOTE: To run tests, we have disabled supervisor.  To run the task queue runner, run: "
-echo " docker exec -ti devshop_server su - aegir -c 'drush @hostmaster en hosting_queued -y && drush @hostmaster hosting-queued' "
+echo " To run tests, run the 'docker-test.sh' script."
+echo " To destroy the devshop container, run the 'docker-destroy.sh' script."
