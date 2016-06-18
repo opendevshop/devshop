@@ -95,6 +95,33 @@
     become: yes
     become_user: aegir
     become_method: "{{ ansible_become_method_aegir }}"
-  
+
+- name: Ensure privacy of SSH Keys
+  file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
+  with_items:
+    - { path: '.ssh', mode: '0700' }
+    - { path: '.ssh/id_rsa', mode: '600' }
+    - { path: '.ssh/id_rsa.pub', mode: '644' }
+
+- name: Set git user name and email
+  shell: "git config --global user.email aegir@{{ server_hostname }}"
+  become: yes
+  become_user: aegir
+
+- name: Set git user name and email
+  shell: "git config --global user.name DevShop"
+  become: yes
+  become_user: aegir
+
+- name: Set git user name and email
+  shell: "git config --global push.default simple"
+  become: yes
+  become_user: aegir
+
+- name: Clear the drush cache.
+  command: "{{ drush_path }} cc drush"
+  become: yes
+  become_user: aegir
+
 - name: Setup Supervisor
   include: "supervisor.yml"
