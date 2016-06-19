@@ -7,3 +7,6 @@ services:
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
+
+script:
+  - echo "Hello Role. We will test you later."
