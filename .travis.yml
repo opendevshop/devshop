@@ -1,5 +1,6 @@
 ---
 sudo: required
+install: true
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
