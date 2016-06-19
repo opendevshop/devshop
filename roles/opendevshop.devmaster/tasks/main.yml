@@ -91,10 +91,10 @@
     creates: "{{ aegir_user_home }}/.drush/hostmaster.alias.drushrc.php"
 
 - name: Save SSH key as variable
-    shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
-    become: yes
-    become_user: aegir
-    become_method: "{{ ansible_become_method_aegir }}"
+  shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  become: yes
+  become_user: aegir
+  become_method: "{{ ansible_Ibecome_method_aegir }}"
 
 - name: Ensure privacy of SSH Keys
   file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
