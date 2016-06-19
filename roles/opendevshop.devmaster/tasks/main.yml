@@ -100,17 +100,20 @@
 - name: Set git user name and email
   shell: "git config --global user.email aegir@{{ server_hostname }}"
   become: yes
-  become_user: aegir
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Set git user name and email
   shell: "git config --global user.name DevShop"
   become: yes
-  become_user: aegir
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Set git user name and email
   shell: "git config --global push.default simple"
   become: yes
-  become_user: aegir
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear the drush cache.
   command: "{{ local_bin_path }}/drush cc drush"
