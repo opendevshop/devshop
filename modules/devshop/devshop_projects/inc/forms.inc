@@ -968,7 +968,5 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
 }
 
 function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
-
-  $form['update-status']['#value'] = t('Cancel Task');
-  $form['update-status']['#attributes']['class'] = 'btn-link pull-right';
+  $form['update-status']['#value'] = t('Cancel');
 }
