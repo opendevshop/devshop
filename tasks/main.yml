@@ -85,7 +85,7 @@
     creates: "{{ aegir_user_home }}/.drush/hostmaster.alias.drushrc.php"
 
 - name: Save SSH key as variable
-  shell: "{{ drush_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  shell: "{{ local_bin_path }}/drush @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
   become: yes
   become_user: aegir
   become_method: "{{ ansible_become_method_aegir }}"
