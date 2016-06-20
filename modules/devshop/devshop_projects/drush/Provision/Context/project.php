@@ -6,6 +6,17 @@
 class Provision_Context_project extends Provision_Context {
   public $parent_key = 'server';
 
+  function getEnvironment($name) {
+    if (isset($this->project['environments'][$name])) {
+      return (object) $this->project['environments'][$name];
+    }
+    else {
+      return drush_set_error('DEVSHOP_PROJECT_ERROR', dt('Environment %name not found.', array(
+        '%name' => $name,
+      )));
+    }
+  }
+
   static function option_documentation() {
     return array(
       '--project_name' => 'Project: The codename for this project.',
