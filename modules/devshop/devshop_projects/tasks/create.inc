@@ -221,6 +221,9 @@ function hosting_task_devshop_create_form_submit($form, &$form_state) {
   // Friendly message
   drupal_get_messages('status');
   drupal_set_message(t('Your environment is being created.'));
+
+  // Queue a project verify.
+  hosting_add_task($project_node->nid, 'verify');
 }
 
 /**
