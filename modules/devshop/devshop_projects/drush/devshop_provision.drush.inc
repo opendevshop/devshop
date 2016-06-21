@@ -262,7 +262,7 @@ function drush_devshop_provision_pre_updatedb() {
 /**
  * Run a Symfony Process saving to drush logs.
  */
-function devshop_drush_process($command, $cwd = null, $label = 'Process', $env = array()) {
+function devshop_drush_process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE) {
   drush_log("[$label] $command", 'devshop_command');
 
   // Merge in env vars, inheriting the CLI's
@@ -278,13 +278,18 @@ function devshop_drush_process($command, $cwd = null, $label = 'Process', $env =
 
   $process = new Process(escapeshellcmd($command), $cwd, $env);
   $process->setTimeout(NULL);
-  $exit_code = $process->run(function ($type, $buffer) {
-    if (Process::ERR === $type) {
-      drush_log($buffer, 'devshop_info');
-    } else {
-      drush_log($buffer, 'devshop_info');
-    }
-  });
+  if ($log_output) {
+    $exit_code = $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        drush_log($buffer, 'devshop_info');
+      } else {
+        drush_log($buffer, 'devshop_info');
+      }
+    });
+  }
+  else {
+    $exit_code = $process->run();
+  }
 
   // check exit code
   if ($exit_code === 0) {
