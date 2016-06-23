@@ -63,15 +63,6 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 
       $git_pull_output = devshop_drush_process("git pull", $environment->repo_root, dt('DevShop Deploy'));
       devshop_drush_process("git submodule update --init --recursive --force ", $environment->repo_root, dt('DevShop Deploy'));
-
-      // If on a branch and there are no changes it says "Already up-to-date."
-      if (strpos($git_pull_output, 'Already up-to-date.') !== FALSE) {
-        drush_set_context('devshop_block_deploy_hooks', TRUE);
-      }
-    }
-    // If on a tag, and there are no changes, it outputs one line with the current ref.
-    elseif ($desired_ref_type == 'tag' && count($git_checkout_output_lines) == 1) {
-      drush_set_context('devshop_block_deploy_hooks', TRUE);
     }
 
     devshop_drush_process("git status", $environment->repo_root, dt('DevShop Deploy'));
@@ -81,11 +72,6 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
  * Post provision-devshop-deploy
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
-
-  if (drush_get_context('devshop_block_deploy_hooks')){
-    drush_log(dt('Skipping deploy hooks. No changes detected.'), 'devshop_log');
-    return;
-  }
 
   // Get post deploy options
   $revert = drush_get_option('revert');
