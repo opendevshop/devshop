@@ -1,5 +1,24 @@
 # Change Log
 
+# 1.0.0-beta9 (June 28, 2016)
+
+- Added '--force' to 'git submodule' updates on deploy.
+- Adding local copies of bootstrap js and css so devshop can work offline.
+- Replaced "\n" with actual new lines in ASCII output.
+- Improved creation wizard by loading all errors into a modal window.
+- Fixed bad drush project alias file creation.
+- Fixed the missing 'Cancel' button on tasks.
+- Added a getEnvironment() method to the project context.
+- Add an argument to devshop_drush_process() to be able to skip logging the output.
+- Verify Project is triggered after environment create to ensure metadata is present.
+- Decided to remove the code that skips running deploy hooks if there are "no changes detected".
+- Bumped Drupal to 7.44, Hosting to 3.6, and Views to 3.14.
+- DevMaster Playbook fixes:
+  - Fixed the automatic setting of the aegir public ssh key variable.
+  - Adding back SSH key privacy settings, git config, and drush cache clearing.
+  - Fixed typos in yml tasks.
+- Bumped up default vagrant VM memory to 4GB.
+
 # 1.0.0-beta8 (June 15, 2016)
 
 1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.x
