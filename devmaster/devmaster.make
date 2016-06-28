@@ -2,7 +2,7 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "7.43"
+projects[drupal][version] = "7.44"
 
 # Update this with each new release of devshop
 projects[devshop_stats][version] = "1.x"
@@ -17,7 +17,7 @@ includes[devshop] = "drupal-org.make"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.5"
+projects[hosting][version] = "3.6"
 projects[hosting][subdir] = "aegir"
 
 ; Aegir Core not included in hosting.module
