@@ -23,7 +23,9 @@ if [[ ! $EUID -ne 0 ]]; then
 fi
 
 echo "Running 'vagrant-prepare-host.sh' to get source code..."
+cd ..
 bash vagrant-prepare-host.sh $PWD $DEVSHOP_VERSION
+cd tests
 
 # Create an inventory file so we can set some variables
 echo "$CONTAINER_HOSTNAME aegir_user_uid=$UID aegir_user_gid=$UID" > ../inventory
