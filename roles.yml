@@ -19,5 +19,4 @@
   version: 1.0.4
 
 - name: opendevshop.devmaster
-#  version: 1.1.4
-  version: master
+  version: 1.1.5
