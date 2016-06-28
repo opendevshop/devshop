@@ -22,9 +22,9 @@
 
 # 1.0.0-beta8 (June 15, 2016)
 
-1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.x
+1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.0.0-beta8
 
-29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.x
+29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.0.0-beta8
 
 - Fixed script to launch devshop in docker containers for development.
 - Fixed numerous problems with DevShop Testing module preventing fully automated testing.
