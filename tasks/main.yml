@@ -72,6 +72,12 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
+- name: Clear the drush cache.
+  command: "{{ local_bin_path }}/drush cc drush"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
 - name: Devmaster Install Command
   debug:
     msg: "{{ devmaster_install_command }}"
