@@ -2,6 +2,11 @@
 
 # 1.0.0-beta9 (June 28, 2016)
 
+ 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta8...1.0.0-beta9
+
+ 12 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta8...1.0.0-beta9
+
+- Bumped Drupal to 7.44, Hosting to 3.6, and Views to 3.14.
 - Added '--force' to 'git submodule' updates on deploy.
 - Adding local copies of bootstrap js and css so devshop can work offline.
 - Replaced "\n" with actual new lines in ASCII output.
@@ -12,18 +17,18 @@
 - Add an argument to devshop_drush_process() to be able to skip logging the output.
 - Verify Project is triggered after environment create to ensure metadata is present.
 - Decided to remove the code that skips running deploy hooks if there are "no changes detected".
-- Bumped Drupal to 7.44, Hosting to 3.6, and Views to 3.14.
 - DevMaster Playbook fixes:
   - Fixed the automatic setting of the aegir public ssh key variable.
   - Adding back SSH key privacy settings, git config, and drush cache clearing.
   - Fixed typos in yml tasks.
+  - Fixed a terrible bug that broke installation: Clear Drush Caches!
 - Bumped up default vagrant VM memory to 4GB.
 
 # 1.0.0-beta8 (June 15, 2016)
 
-1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.x
+1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.0.0-beta8
 
-29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.x
+29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.0.0-beta8
 
 - Fixed script to launch devshop in docker containers for development.
 - Fixed numerous problems with DevShop Testing module preventing fully automated testing.
