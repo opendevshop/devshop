@@ -2,6 +2,10 @@
 
 # 1.0.0-beta9 (June 28, 2016)
 
+ 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta8...1.0.0-beta9
+
+ 12 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta8...1.0.0-beta9
+
 - Bumped Drupal to 7.44, Hosting to 3.6, and Views to 3.14.
 - Added '--force' to 'git submodule' updates on deploy.
 - Adding local copies of bootstrap js and css so devshop can work offline.
