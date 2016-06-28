@@ -19,7 +19,7 @@ vagrant_install_script: install.sh
 vagrant_install_script_args: [--playbook=/vagrant, --server-webserver=nginx]
 
 # Defaults virtualbox vagrant machines to 2GB.
-vagrant_virtualbox_memory: 2048
+vagrant_virtualbox_memory: 4096
 
 # The IP Address and hostname to use for the remote and remote2 servers
 # Use `vagrant up remote` or `vagrant up remote2` to launch them.
