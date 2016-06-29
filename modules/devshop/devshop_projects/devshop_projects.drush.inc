@@ -124,10 +124,8 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['test-type'] = $task->task_args['test_type'];
   }
 
-  // Verify Server
-  if ($task->ref->type == 'server' && $task->task_type == 'verify') {
-    $task->options['is-devshop'] = TRUE;
-  }
+  // On every task triggered by devshop, set this option.
+  $task->options['is-devshop'] = TRUE;
 }
 
 /**
