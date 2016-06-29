@@ -26,6 +26,17 @@ function playbooks_drush_command() {
 }
 
 /**
+ * Drush validate hook for provision-playbook command
+ * @param null $playbook_file
+ * @return mixed
+ */
+function drush_playbooks_provision_playbook_validate($playbook_file = NULL) {
+  if (empty($playbook_file)) {
+    return drush_set_error('DRUSH_COMMAND_ERROR', dt('No playbook file specified.'));
+  }
+}
+
+/**
  * Implements the provision-flush_cache command.
  */
 function drush_playbooks_provision_playbook($playbook_file) {
