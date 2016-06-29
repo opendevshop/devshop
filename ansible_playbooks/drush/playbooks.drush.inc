@@ -105,8 +105,6 @@ function drush_playbooks_provision_playbook($playbook_file) {
   else {
     drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
   }
-  drush_log('ANSIBLE PLAYBOOK COMING SOON', 'devshop_ok');
-
 }
 
 /**
