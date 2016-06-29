@@ -30,8 +30,24 @@ function ansible_playbooks_permission() {
  */
 function hosting_task_playbook_form($node) {
  $form['playbook'] = array(
-   '#type' => 'textarea',
+   '#type' => 'textfield',
    '#title' => t('Playbook'),
+   '#description' => t('The absolute path to a playbook file on the server.'),
+ );
+ $form['inventory'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Inventory'),
+   '#description' => t('The absolute path to an inventory file or a comma separated list of hosts.'),
+ );
+ $form['user'] = array(
+   '#type' => 'textfield',
+   '#title' => t('User'),
+   '#description' => t('The user to use to connect to remote hosts.'),
+ );
+ $form['connection'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Connection'),
+   '#description' => t('The connection method to use.'),
  );
   return $form;
 }
