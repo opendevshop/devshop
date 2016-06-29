@@ -8,6 +8,7 @@ function ansible_playbooks_hosting_tasks() {
   $tasks['server']['playbook'] = array(
     'title' => t('Run Playbook'),
     'description' => t('Run an ansible playbook.'),
+    'dialog' => TRUE,
   );
   return $tasks;
 }
