@@ -39,6 +39,11 @@ function hosting_task_playbook_form($node) {
    '#title' => t('Inventory'),
    '#description' => t('The absolute path to an inventory file or a comma separated list of hosts.'),
  );
+ $form['limit'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Limit'),
+   '#description' => t('Limit selected hosts to an additional pattern.'),
+ );
  $form['user'] = array(
    '#type' => 'textfield',
    '#title' => t('User'),

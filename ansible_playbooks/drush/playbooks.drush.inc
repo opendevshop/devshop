@@ -117,6 +117,7 @@ function drush_playbooks_pre_hosting_task() {
   if ($task->task_type == 'playbook') {
     $task->args[] = $task->task_args['playbook'];
     $task->options['inventory'] = $task->task_args['inventory'];
+    $task->options['limit'] = $task->task_args['limit'];
     $task->options['user'] = $task->task_args['user'];
     $task->options['connection'] = $task->task_args['connection'];
   }
