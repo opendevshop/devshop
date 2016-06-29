@@ -108,3 +108,16 @@ function drush_playbooks_provision_playbook($playbook_file) {
   drush_log('ANSIBLE PLAYBOOK COMING SOON', 'devshop_ok');
 
 }
+
+/**
+ * Implements drush_HOOK_pre_COMMAND()
+ */
+function drush_playbooks_pre_hosting_task() {
+  $task = &drush_get_context('HOSTING_TASK');
+  if ($task->task_type == 'playbook') {
+    $task->args[] = $task->task_args['playbook'];
+    $task->options['inventory'] = $task->task_args['inventory'];
+    $task->options['user'] = $task->task_args['user'];
+    $task->options['connection'] = $task->task_args['connection'];
+  }
+}
