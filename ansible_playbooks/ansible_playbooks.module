@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Implements hook_hosting_tasks().
+ */
+function ansible_playbooks_hosting_tasks() {
+  $tasks = array();
+  $tasks['server']['playbook'] = array(
+    'title' => t('Run Playbook'),
+    'description' => t('Run an ansible playbook.'),
+  );
+  return $tasks;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ansible_playbooks_permission() {
+  return array(
+    'create playbook task' => array(
+      'title' => t('create playbook task'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hosting_task_TASK_TYPE_form().
+ */
+function hosting_task_playbook_form($node) {
+ $form['playbook'] = array(
+   '#type' => 'textarea',
+   '#title' => t('Playbook'),
+ );
+  return $form;
+}
