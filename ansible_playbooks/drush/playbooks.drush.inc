@@ -21,6 +21,12 @@ function playbooks_drush_command() {
     'arguments' => array(
       'playbook_file' => 'Path to a playbook.yml file.',
     ),
+    'options' => array(
+      'inventory' => 'Ansible inventory file path or comma separated host list.',
+      'limit' => 'Limit selected hosts to an additional pattern.',
+      'user' => 'Connect as this user.',
+      'connection' => 'Connection type to use.',
+    ),
   );
   return $items;
 }
@@ -57,21 +63,26 @@ function drush_playbooks_provision_playbook($playbook_file) {
   $ansible->play($playbook_file);
   $command = "ansible-playbook {$playbook_file} ";
 
-  if ($ansible_user = drush_get_option('ansible_user', 'root')) {
+  if ($ansible_user = drush_get_option('user', '')) {
     drush_log('Connecting as user ' . $ansible_user, 'status');
     $ansible->user($ansible_user);
     $command .= "-u {$ansible_user} ";
   }
 
-  if ($ansible_limit = drush_get_option('ansible_limit', '')) {
+  if ($ansible_limit = drush_get_option('limit', '')) {
     drush_log('Limiting playbook run to ' . $ansible_limit, 'status');
     $ansible->limit($ansible_limit);
     $command .= "-l {$ansible_limit} ";
   }
 
-  if ($ansible_inventory = drush_get_option('ansible_inventory', '')) {
+  if ($ansible_inventory = drush_get_option('inventory', '')) {
     $ansible->inventoryFile($ansible_inventory);
     $command .= "-i {$ansible_inventory} ";
+  }
+
+  if ($ansible_connection = drush_get_option('connection', '')) {
+    $ansible->connection($ansible_connection);
+    $command .= "-c {$ansible_connection} ";
   }
 
   $is_devshop = drush_get_option('is-devshop', FALSE);
