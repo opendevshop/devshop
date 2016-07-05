@@ -215,7 +215,14 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // Queue site deletion for each environment.
     $project = $task->ref->project;
     foreach ($project->environments as $environment) {
-      hosting_add_task($environment->site, 'delete');
+      // If site exists, trigger deletion.
+      if ($environment->site) {
+        hosting_add_task($environment->site, 'delete');
+      }
+      // If platform exists, trigger deletion.
+      elseif ($environment->platform) {
+        hosting_add_task($environment->platform, 'delete');
+      }
     }
 
     // @TODO: Should probably add our own status column
