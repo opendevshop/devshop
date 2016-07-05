@@ -165,6 +165,9 @@ function drush_devshop_platform_verify() {
     // Clone the repo.
     devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
+    // Skip errors about submodule
+
+
     // If there is "site_to_clone", checkout that site's git ref.
     // This is done for Pull Request Environments. When a PR comes in, we want
     // to clone the site to an identical platform first. This will always succeed.
