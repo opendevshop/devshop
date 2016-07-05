@@ -529,7 +529,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
                                     <li><label><?php print t('This environment is locked. You cannot deploy data here.'); ?></label></li>
-                                <?php elseif (count($target_environments) == 1): ?>
+                                <?php elseif (count($source_environments) == 0): ?>
                                     <li><label><?php print t('No other environments available.'); ?></label></li>
                                 <?php else: ?>
                                     <li><label><?php print t('Deploy data from'); ?></label></li>
