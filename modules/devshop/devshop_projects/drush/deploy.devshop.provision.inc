@@ -4,9 +4,9 @@
  * Contains code for the provision-devshop-deploy command.
  */
 
-use Symfony\Component\Process\Process;
-use GitWrapper\GitWrapper;
 use GitWrapper\GitException;
+use GitWrapper\GitWrapper;
+use Symfony\Component\Process\Process;
 
 /**
  * Pre provision-devshop-deploy
@@ -95,8 +95,12 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Built in Hooks
   if ($composer) {
-    // @TODO: We should automatically look for any composer.json files and run composer install on them. This is what Platform.sh does!
-    $commands[] = "composer install";
+    if (file_exists($environment->repo_root . '/composer.json')) {
+      $commands[] = "composer install";
+    }
+    elseif (file_exists($environment->root . '/composer.json')) {
+      $commands[] = "cd {$environment->root} && composer install";
+    }
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped running composer install...'), 'ok');
