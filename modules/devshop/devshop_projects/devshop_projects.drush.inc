@@ -124,10 +124,8 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['test-type'] = $task->task_args['test_type'];
   }
 
-  // Verify Server
-  if ($task->ref->type == 'server' && $task->task_type == 'verify') {
-    $task->options['is-devshop'] = TRUE;
-  }
+  // On every task triggered by devshop, set this option.
+  $task->options['is-devshop'] = TRUE;
 }
 
 /**
@@ -166,6 +164,9 @@ function drush_devshop_platform_verify() {
 
     // Clone the repo.
     devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
+
+    // Skip errors about submodule
+
 
     // If there is "site_to_clone", checkout that site's git ref.
     // This is done for Pull Request Environments. When a PR comes in, we want
@@ -217,7 +218,14 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // Queue site deletion for each environment.
     $project = $task->ref->project;
     foreach ($project->environments as $environment) {
-      hosting_add_task($environment->site, 'delete');
+      // If site exists, trigger deletion.
+      if ($environment->site) {
+        hosting_add_task($environment->site, 'delete');
+      }
+      // If platform exists, trigger deletion.
+      elseif ($environment->platform) {
+        hosting_add_task($environment->platform, 'delete');
+      }
     }
 
     // @TODO: Should probably add our own status column
@@ -382,7 +390,7 @@ function devshop_projects_post_hosting_install_task($task, $data) {
 
   // Now that environment data is stored in project data we need to verify projects a lot.
   if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
-    hosting_add_task($task->ref->project->nid, 'verfiy');
+    hosting_add_task($task->ref->project->nid, 'verify');
   }
 }
 
@@ -393,7 +401,7 @@ function devshop_projects_post_hosting_clone_task($task, $data) {
 
   // Now that environment data is stored in project data we need to verify projects a lot.
   if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
-    hosting_add_task($task->ref->project->nid, 'verfiy');
+    hosting_add_task($task->ref->project->nid, 'verify');
   }
 }
 
@@ -406,7 +414,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
 
   // Now that environment data is stored in project data we need to verify projects a lot.
   if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
-    hosting_add_task($task->ref->project->nid, 'verfiy');
+    hosting_add_task($task->ref->project->nid, 'verify');
   }
 
   // If this is a new platform created by a project, we will create a site here.

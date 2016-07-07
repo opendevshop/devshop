@@ -22,6 +22,18 @@
                   // Project Node Page
                   if (Drupal.settings.devshopTask == null) {
 
+                      // If $alert_div does not exist, create it.
+                      if ($alert_div.length == 0) {
+                          $lastTaskWrapper = $('.last-task-alert', environment_id);
+                          $lastTaskWrapper.html(task.rendered);
+
+                          $('.environment-task-logs .tasks-wrapper', environment_id).prepend(task.rendered);
+
+                          $alert_div = $(task_id + '.environment-tasks-alert');
+
+                          $("time.timeago", $alert_div).timeago();
+                      }
+
                       // Set class of wrapper div
                       $alert_div.attr('class', new_class);
 
@@ -124,9 +136,9 @@
                           Drupal.settings.lastTaskStopped = true;
                       }
                   }
-                  // Projects List Page.
-                  // For now this JS is only loaded on projects list page, and node pages of type project, site, and task.
-                  else {
+
+                  // Projects List Page: Update badges.
+                  if ($('body.page-projects').length) {
                       var id = '#badge-' + task.project_name + '-' + task.environment;
 
                       // Set class of badge

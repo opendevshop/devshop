@@ -111,14 +111,6 @@ function boots_preprocess_environment(&$vars) {
   $environment->active_tasks = 0;
 
   $items = array();
-  $items[] = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$project->nid/logs/$environment->name", array(
-      'html' => TRUE,
-      'attributes' => array(
-          'class' => array(
-            'list-group-item',
-          ),
-      ),
-  ));
 
   $environment->processing = FALSE;
 
@@ -135,7 +127,15 @@ function boots_preprocess_environment(&$vars) {
 //    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
     $items[] = theme('devshop_task', array('task' => $task));
   }
-  $environment->task_logs = implode("\n", $items);
+  $environment->task_logs = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$environment->site/tasks", array(
+    'html' => TRUE,
+    'attributes' => array(
+      'class' => array(
+        'list-group-item',
+      ),
+    ),
+  ));
+  $environment->task_logs .= '<div class="tasks-wrapper">' . implode("\n", $items) . '</div>';
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
@@ -181,7 +181,8 @@ function boots_preprocess_environment(&$vars) {
   if (file_exists($path)) {
 
     // Timestamp of last commit.
-    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
+    $environment->git_last = shell_exec("cd $path; git log --pretty=format:'%ai' --max-count=1");
+    $environment->git_last_readable = shell_exec("cd $path; git log --pretty=format:'%ar' --max-count=1");
 
     // The last commit.
     $environment->git_commit = shell_exec("cd $path; git -c color.ui=always log --max-count=1");
@@ -208,6 +209,16 @@ function boots_preprocess_environment(&$vars) {
   }
 
   $vars['environment'] = $environment;
+
+  // Detect hooks.yml file.
+  if (file_exists($environment->repo_root . '/.hooks.yaml')
+    || file_exists($environment->repo_root . '/.hooks.yml')
+    || file_exists($environment->repo_root . '/.hooks')) {
+    $vars['hooks_yml_note'] = t('!file found:');
+  }
+  else {
+    $vars['hooks_yml_note'] = t('Unable to find a file named .hooks, .hooks.yml, or .hooks.yaml. Add one or disable "Run deploy commands in the .hooks file" in project or environment settings.');
+  }
 }
 
 /**
@@ -825,4 +836,59 @@ function boots_menu_local_tasks(&$variables) {
   }
 
   return $output;
+}
+
+
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_site_form
+ *
+ * "Environment" Settings form.
+ */
+function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
+
+  // Alter form for better UX
+
+  // Project Settings Vertical Tabs
+  $form['environment_settings'] = array(
+    '#type' => 'vertical_tabs',
+    '#weight' => -11,
+  );
+
+  $form['environment']['settings']['#title'] = t('General Settings');
+  $form['environment']['settings']['#group'] = 'environment_settings';
+  $form['environment']['settings']['#weight'] = -100;
+  $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
+  $form['hosting_backup_queue']['#group'] = 'environment_settings';
+  $form['http_basic_auth']['#group'] = 'environment_settings';
+  $form['hosting_logs']['#group'] = 'environment_settings';
+
+  $form['aliases_wrapper']['#group'] = 'environment_settings';
+  $form['aliases_wrapper']['#title'] = t('Domain Names');
+  $form['aliases_wrapper']['#prefix'] = '';
+  $form['aliases_wrapper']['#suffix'] = '';
+
+  $form['environment']['settings']['client'] = $form['client'];
+  unset($form['client']);
+
+  $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
+  $form['hosting_ssl_wrapper']['#title'] = t('SSL');
+  $form['hosting_ssl_wrapper']['#prefix'] = '';
+  $form['hosting_ssl_wrapper']['#suffix'] = '';
+
+  // Help Text
+  $form['#prefix'] = '<h3>' . t('Environment Settings') . ' <small>' . $form['#node']->environment->name . '</small></h3>';
+
+  unset($form['path']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_site_form
+ *
+ * "Environment" Settings form.
+ */
+function boots_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+
+  $form['#prefix'] = '<h3>' . t('Project Settings') . '</h3>';
+
 }

@@ -52,12 +52,6 @@ function devshop_projects_node_load($nodes, $types) {
       $task_types = hosting_available_tasks();
       $task_types = array_merge($task_types['site'], $task_types['platform']);
 
-      // Randomize status for design debugging.
-      // To test out constantly changing tasks, uncomment this line.
-      // $node->task_status = rand(-1, 3);
-      // Processing
-      // $node->task_status = -1;
-
       // In Aegir, "executed" and "delta" does not get updated properly.
       // Handle "delta" being not computed yet
       if ($node->task_status == HOSTING_TASK_PROCESSING) {
@@ -86,6 +80,16 @@ function devshop_projects_node_load($nodes, $types) {
       elseif ($node->task_status == HOSTING_TASK_PROCESSING) {
         $node->ago = format_interval(time() - $node->changed);
       }
+
+      // ISO 8601
+      if ($node->executed == 0) {
+        $executed = $node->created;
+      }
+      else {
+        $executed = $node->executed;
+      }
+      $node->task_timestamp = date('c', $executed);
+      $node->task_date = format_date($executed);
 
       // Set task type
       $node->type_name = $task_types[$node->task_type]['title'];
@@ -129,6 +133,7 @@ function devshop_projects_node_insert($node) {
   if ($node->type == 'task') {
     $site = node_load($node->rid);
 
+    // @TODO: task_type should be task_status... but the system still works.  Was this never running? It's possible the other hooks that save last task info is all we need.
     if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
       $site->environment->last_task = $node->nid;
       devshop_environment_save_last_task($site->environment);

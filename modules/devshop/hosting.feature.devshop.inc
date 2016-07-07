@@ -30,7 +30,14 @@ function devshop_hosting_hosting_feature() {
     'title' => t('DevShop Acquia'),
     'description' => t('Allows environments to use Acquia Cloud Hooks for Deployment Hooks.'),
     'status' => HOSTING_FEATURE_DISABLED,
-    'module' => 'devshop_dothooks',
+    'module' => 'devshop_acquia',
+    'group' => 'advanced',
+  );
+  $features['devshop_remotes'] = array(
+    'title' => t('DevShop Remote Aliases'),
+    'description' => t('Allows projects to add remote drush aliases as data sources.'),
+    'status' => HOSTING_FEATURE_DISABLED,
+    'module' => 'devshop_remotes',
     'group' => 'advanced',
   );
   return $features;

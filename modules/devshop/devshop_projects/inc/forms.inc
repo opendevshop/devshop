@@ -23,7 +23,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
   $form['project'] = array(
     '#tree' => TRUE,
-    '#type' => 'fieldset',
   );
 
   // Hidden fields that can't change.
@@ -40,7 +39,14 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'value',
     '#value' => $project->git_url,
   );
-  $form['project']['code_path'] = array(
+  $form['project']['codebase'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General Settings'),
+    '#group' => 'project_settings',
+    '#tree' => FALSE,
+    '#weight' => -11,
+  );
+  $form['project']['codebase']['code_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Code path'),
     '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
@@ -49,8 +55,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $project->code_path,
     '#maxlength' => 255,
     '#weight' => 2,
+    '#parents' => array(
+      'project',
+      'code_path',
+    ),
   );
-  $form['project']['drupal_path'] = array(
+  $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
     '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
@@ -58,8 +68,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
     '#weight' => 3,
+    '#parents' => array(
+      'project',
+      'drupal_path',
+    ),
   );
-  $form['project']['base_url'] = array(
+  $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Base URL'),
     '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>This will only affect new environments.</em>'),
@@ -69,6 +83,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#maxlength' => 255,
     '#weight' => 4,
     '#access' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
+    '#parents' => array(
+      'project',
+      'base_url',
+    ),
   );
 
   // Don't allow editing
@@ -82,8 +100,8 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   // Prevent editing code path unless allowed.
   if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
-    $form['project']['code_path']['#type'] = 'value';
-    $form['project']['code_path']['#value'] = $form['project']['code_path']['#default_value'];
+    $form['project']['codebase']['code_path']['#type'] = 'value';
+    $form['project']['codebase']['code_path']['#value'] = $form['project']['codebase']['code_path']['#default_value'];
   }
 
   // Project Settings
@@ -123,15 +141,21 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
   else {
     $environments_options = array_combine($environments, $environments);
-    $environments_options[''] = t('No live environment');
+    $environments_options[''] = t('None');
   }
 
-  $form['project']['settings']['live']['live_environment'] = array(
+  $form['project']['codebase']['live_environment'] = array(
     '#type' => 'select',
-    '#title' => t('Live environment'),
-    '#description' => t('The environment for the live website.  This locks the live environment from overwrites and disabling, and allows syncing to other environments.'),
+    '#title' => t('Primary Environment'),
+    '#suffix' => '<p class="muted">' . t('Select the primary environment for this project, typically the live environment. This environment will be marked with a <i class="fa fa-bolt"></i> icon. This is the environment that will be cloned when pull requests are created.') . '</p>',
     '#options' => $environments_options,
     '#default_value' => isset($project->settings->live) ? $project->settings->live['live_environment'] : '',
+    '#parents' => array(
+      'project',
+      'settings',
+      'live',
+      'live_environment',
+    ),
   );
 
   // Live Domain
@@ -158,7 +182,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Deployment Automation'),
     '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
-    '#weight' => -10,
+    '#weight' => -9,
     '#group' => 'project_settings',
   );
 
@@ -398,8 +422,15 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
     //Add button for delete project
     $form['actions']['delete'] = array(
-      '#markup' => l(t('Delete this project'), 'node/' . $project->nid . '/project_delete', array('query' => array('token' => drupal_get_token($user->uid)))),
+      '#markup' => l('<i class="fa fa-trash"></i> ' . t('Delete Project'), 'hosting_confirm/' . $project->nid . '/project_delete', array(
+        'query' => array('token' => drupal_get_token($user->uid)),
+        'attributes' => array(
+          'class' => array('btn btn-danger pull-right'),
+        ),
+        'html' => TRUE,
+      )),
       '#weight' => 10,
+      '#access' => drupal_valid_path('hosting_confirm/' . $project->nid . '/project_delete'),
     );
   }
 
@@ -584,9 +615,13 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         if ($node->type == 'project') {
 
           // Set a better title.
-          drupal_set_title(t('Delete Project: !project', array(
+          drupal_set_title('');
+          $form['title'] = array(
+            '#weight' => -10,
+            '#markup' => '<h1>' .t('Delete Project: !project', array(
             '!project' => l($node->project->name, "node/{$node->nid}"),
-          )));
+          )) . '</h1>'
+          );
 
           // Get a list of environments.
           foreach ($node->project->environments as $environment) {
@@ -602,7 +637,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
           // Make the button big
           $form['actions']['submit']['#value'] = t('Delete Project & Environments');
-          $form['actions']['submit']['#attributes']['class'] = 'btn btn-large btn-danger';
+          $form['actions']['submit']['#attributes']['class'][] = 'btn btn-large btn-danger';
 
         }
         break;
@@ -692,11 +727,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Remove aegir's helpful info panel.
   unset($form['info']);
 
-  // Help Text
-  $form['note'] = array(
-      '#markup' => t('These settings apply only to the environment !site', array('!site' => l($environment->name, $environment->url))),      '#weight' => -10,
-    );
-
   $form['environment'] = array(
       '#weight' => -9,
       '#tree' => true,
@@ -784,7 +814,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       '#group' => 'project_settings',
       '#title' => t('Deployment Hooks'),
       '#description' => t('Deployment hooks are run whenever your codebase changes. It is recommended to always enable database updates and cache clearing.'),
-      '#weight' => -9,
+      '#weight' => -10,
   );
 
   // If we are on the project creation wizard, set some sane defaults
@@ -843,7 +873,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   }
 
   // Look for acquia cloud hooks.
-  if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['acquia_hooks'])) {
+  if (module_exists('devshop_acquia') && (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['acquia_hooks']))) {
     $return['acquia_hooks'] = array(
       '#type' => 'checkbox',
       '#title' => t('Run Acquia Cloud Hooks'),
@@ -938,7 +968,5 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
 }
 
 function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
-
-  $form['update-status']['#value'] = t('Cancel Task');
-  $form['update-status']['#attributes']['class'] = 'btn-link pull-right';
+  $form['update-status']['#value'] = t('Cancel');
 }
