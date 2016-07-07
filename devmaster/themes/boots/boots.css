@@ -939,6 +939,8 @@ a.logo img {
     display: inline-block;
 }
 
+#devshop-project-create-step-sites #edit-cancel,
+#devshop-project-create-step-environments #edit-cancel,
 #project-node-form #edit-cancel {
     float: right;
 }
