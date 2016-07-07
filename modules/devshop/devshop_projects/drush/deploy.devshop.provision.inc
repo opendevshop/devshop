@@ -4,9 +4,9 @@
  * Contains code for the provision-devshop-deploy command.
  */
 
-use Symfony\Component\Process\Process;
-use GitWrapper\GitWrapper;
 use GitWrapper\GitException;
+use GitWrapper\GitWrapper;
+use Symfony\Component\Process\Process;
 
 /**
  * Pre provision-devshop-deploy
@@ -77,6 +77,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $revert = drush_get_option('revert');
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
+  $composer = drush_get_option('composer', TRUE);
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
@@ -92,6 +93,19 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   drush_log("[{$project_name}] {$environment->name}: " . dt('Running deploy hooks.'), 'notice');
 
+  // Built in Hooks
+  if ($composer) {
+    if (file_exists($environment->repo_root . '/composer.json')) {
+      $commands[] = "composer install";
+    }
+    elseif (file_exists($environment->root . '/composer.json')) {
+      $commands[] = "cd {$environment->root} && composer install";
+    }
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped running composer install...'), 'ok');
+  }
+  
   // Built in Hooks
   if ($update) {
     $commands[] = "drush {$environment->drush_alias} updatedb --yes";
