@@ -447,6 +447,9 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     if (isset($form['#no_next'])) {
       unset($form['buttons']['next']);
     }
+    $form['buttons']['next']['#value'] .= ' <i class="fa fa-chevron-right"></i>';
+    $form['buttons']['return']['#value'] = ' <i class="fa fa-floppy-o"></i> ' . t('Create Project & Environments');
+
     $form['buttons']['next']['#attributes'] =
     $form['buttons']['return']['#attributes'] = array(
       'class' => array(
@@ -824,11 +827,13 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     $environment_revert = FALSE;
     $environment_dothooks = FALSE;
     $environment_acquia_hooks  = FALSE;
+    $environment_composer_install = FALSE;
     $project_update = TRUE;
     $project_cache  = TRUE;
     $project_revert = FALSE;
     $project_dothooks = FALSE;
     $project_acquia_hooks = FALSE;
+    $project_composer_install = FALSE;
   }
   else {
     $environment_update = isset($environment->settings->deploy) ? $environment->settings->deploy['update'] : FALSE;
@@ -836,11 +841,13 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     $environment_revert = isset($environment->settings->deploy) ? $environment->settings->deploy['revert'] : FALSE;
     $environment_dothooks = isset($environment->settings->deploy) ? $environment->settings->deploy['dothooks'] : FALSE;
     $environment_acquia_hooks = isset($environment->settings->deploy) ? $environment->settings->deploy['acquia_hooks'] : FALSE;
+    $environment_composer_install = isset($environment->settings->deploy) ? $environment->settings->deploy['composer'] : FALSE;
     $project_update = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['update'] : FALSE;
     $project_cache = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['cache'] : FALSE;
     $project_revert = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['revert'] : FALSE;
     $project_dothooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['dothooks'] : FALSE;
     $project_acquia_hooks = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['acquia_hooks'] : FALSE;
+    $project_composer_install = isset($project->settings->deploy) ? $project->settings->deploy['default_hooks']['composer'] : FALSE;
   }
 
   $return['update'] = array(
@@ -859,7 +866,12 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     '#description' => t('If features is enabled, revert all of them.'),
     '#default_value' => empty($environment->settings->deploy)? $project_revert : $environment_revert,
   );
-
+  $return['composer'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Run composer install.'),
+      '#description' => t('If a composer.json file is found, run <code>composer install</code>. <em>WARNING:</em> this may result in your git working tree to become modified.'),
+      '#default_value' => empty($environment->settings->deploy)? $project_composer_install : $environment_composer_install,
+  );
   // Look for .hooks or .hooks.yml
   if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['dothooks'])) {
     $return['dothooks'] = array(
