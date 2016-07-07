@@ -944,3 +944,7 @@ a.logo img {
 #project-node-form #edit-cancel {
     float: right;
 }
+
+li.text.code {
+    white-space: nowrap;
+}
