@@ -95,8 +95,19 @@ function devshop_remotes_alias_add_form_validate(&$form, $form_state) {
   $project_node = node_load($form_state['values']['project_nid']);
   $project = $project_node->project;
 
-  // Lowercase the name.
-  form_set_value($form['name'], strtolower($form_state['values']['name']), $form_state);
+  // Lowercase and trim the name.
+  $form_state['values']['name'] = trim(strtolower($form_state['values']['name']));
+  form_set_value($form['name'], $form_state['values']['name'], $form_state);
+
+  // Don't allow the alias to match the project name, it causes drush aliases to break.
+  if ($project_node->title == $form_state['values']['name']) {
+    form_set_error('name', t('The alias name cannot match the project name.'));
+  }
+
+  // Only allow numbers and letters.
+  if (!preg_match('!^[a-z0-9]+$!', $form_state['values']['name'])) {
+    form_set_error('name', t('Only letters and numbers are allowed.'));
+  }
 
   // Check for environment.
   if (isset($project_node->project->environments[$form_state['values']['name']])) {

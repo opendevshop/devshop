@@ -140,7 +140,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     // Add Environment
     $form['add_environment'] = array(
       '#type' => 'submit',
-      '#value' => t('Add environment'),
+      '#value' => '<i class="fa fa-plus"></i> ' . t('Add environment'),
       '#name' => 'add_environment',
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',

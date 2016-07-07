@@ -124,10 +124,8 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['test-type'] = $task->task_args['test_type'];
   }
 
-  // Verify Server
-  if ($task->ref->type == 'server' && $task->task_type == 'verify') {
-    $task->options['is-devshop'] = TRUE;
-  }
+  // On every task triggered by devshop, set this option.
+  $task->options['is-devshop'] = TRUE;
 }
 
 /**
@@ -167,6 +165,9 @@ function drush_devshop_platform_verify() {
     // Clone the repo.
     devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
 
+    // Skip errors about submodule
+
+
     // If there is "site_to_clone", checkout that site's git ref.
     // This is done for Pull Request Environments. When a PR comes in, we want
     // to clone the site to an identical platform first. This will always succeed.
@@ -201,9 +202,26 @@ function drush_devshop_platform_verify() {
     return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check your Path to Drupal.'));
   }
 
-  // Detect composer.json and run composer install.
-  if (file_exists($root . '/composer.json')) {
-    devshop_drush_process("composer install", $root, dt('composer.json detected, running composer install.'));
+  // When verifying the platform for the first time, run 'composer install' if configured to do so.
+  if ($platform->verified && $platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
+
+    if (file_exists($platform->environment->repo_root . '/composer.json')) {
+      $cwd = $platform->environment->repo_root;
+    }
+    elseif (file_exists($root . '/composer.json')) {
+      $cwd = $root;
+    }
+    else {
+      // If composer.json was not found in the drupal root or repo root, do not run.
+      drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
+      return;
+    }
+
+    devshop_drush_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
+      '!folder' => $cwd,
+    )));
+
+    devshop_drush_process("git status", $platform->environment->repo_root, dt('Running git status'));
   }
 }
 
@@ -217,7 +235,14 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // Queue site deletion for each environment.
     $project = $task->ref->project;
     foreach ($project->environments as $environment) {
-      hosting_add_task($environment->site, 'delete');
+      // If site exists, trigger deletion.
+      if ($environment->site) {
+        hosting_add_task($environment->site, 'delete');
+      }
+      // If platform exists, trigger deletion.
+      elseif ($environment->platform) {
+        hosting_add_task($environment->platform, 'delete');
+      }
     }
 
     // @TODO: Should probably add our own status column
