@@ -27,16 +27,18 @@ function drush_devshop_provision_provision_test() {
   drush_log(dt('Provision DevShop Run Tests started...'), 'status');
 
   // Get tests to run
-  if (!isset($environment->settings['testing']['test_type'])) {
-    $default_type = 'behat';
+  if (!empty($project->settings['testing']['test_type'])) {
+    $type = $project->settings['testing']['test_type'];
   }
-  $type = drush_get_option('test-type', $default_type);
+  else {
+    return drush_set_error('DEVSHOP_CONFIG_ERROR', dt('This project is not configured to run tests.  Check your project settings and try again.'));
+  }
 
-  if ($environment->settings['testing']['tests_to_run'] === NULL) {
+  if ($project->settings['testing']['tests_to_run'] === NULL) {
     $tests = array();
   }
   else {
-    $tests = array_filter($environment->settings['testing']['tests_to_run']);
+    $tests = array_filter($project->settings['testing']['tests_to_run']);
   }
   $tests_to_run = drush_get_option('tests-to-run', $tests);
 
@@ -63,38 +65,11 @@ function drush_devshop_provision_provision_test() {
       $message = <<<TXT
 Your project is not yet ready to run Behat tests. Please follow the following steps:
 
-  1. Go to (or create) the '!path' in your repo.  This path is editable in your project settings.
-  2. Create a composer.json and behat.yml files according to the instructions at http://behat-drupal-extension.readthedocs.org/en/3.1/localinstall.html
-
-    NOTE: You do not have to edit the "base_url" or "drush alias" properties in behat.yml. DevShop will automatically set those for each environment at runtime.
-
-    However, if you want to run behat test manually from the CLI using bin/behat, you will have to tweak your behat.yml or just use the one that gets generated: behat.ENVIRONMENT_NAME.yml using the --config flag.
-
-  3. Run `bin/behat --init` to create the files needed to run tests. You will see:
-
-    +d features - place your *.feature files here
-    +d features/bootstrap - place your context classes here
-    +f features/bootstrap/FeatureContext.php - place your definitions, transformations and hooks here
-
-  4. Run `bin/behat` to try to run all your tests.  You should see:
-
-    No scenarios
-    No steps
-    0m0.00s (9.24Mb)
-
-  5. Create a new test in the "features" folder named "homepage.feature" with the following:
-
-    Feature: Homepage.
-      Scenario: Visit homepage.
-        Given I am on the homepage
-        Then I should see "No front page content has been created yet."
-
-  6. To test the test, edit `behat.yml` and set `base_url` to your site's URL, then run `bin/behat`.
-  7. Add the required files and folders to git: composer.json composer.lock behat.yml features
-  8. Add a .gitignore file that ignores the `vendor` and `bin` folders.
-
-DevShop will automatically run `composer install` in the test folder before running the tests, so you shouldn't commit the bin/behat file, or the vendor folder.
-
+  1. Create a folder called '!path' in your repo, or create your own folder 
+     and reconfigure your Project Settings > Testing.
+  2. Copy the files from https://github.com/opendevshop/devmaster/tree/1.x/modules/devshop/devshop_testing/tests_example
+  3. Write more tests!
+  
 TXT;
 
 
@@ -142,10 +117,10 @@ TXT;
 $environment_name:
   extensions:
     Behat\MinkExtension:
-      base_url: $url
+      base_url: '$url'
     Drupal\DrupalExtension:
       drush:
-        alias: $alias
+        alias: '$alias'
       drupal:
         drupal_root: '$root'
       api_driver: 'drupal'

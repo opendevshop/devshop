@@ -10,13 +10,6 @@
  */
 function devshop_projects_projects_page() {
   drupal_set_title(t('Projects'));
-  $header = array(
-    'Project & Install Profile',
-    'Version',
-    'Git URL',
-    'Environments',
-  );
-
   $tasks = hosting_available_tasks('site');
 
   $results = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :status ORDER BY n.changed DESC", array(':status' => 1));
@@ -32,36 +25,62 @@ function devshop_projects_projects_page() {
     }
 
     // Load an environment for extra info like version.
-    // @TODO: load the chosen live environment.
     $first_environment = current($project->environments);
     if ($first_environment) {
       $platform_node = node_load($first_environment->platform);
+      $version = $platform_node->release->version;
+    }
+    else {
+      $version = '';
+    }
       $row = array();
 
       // Link to Project page
       $url = url("node/$project->nid");
-      $version = $platform_node->release->version;
-      $row[] = <<<HTML
+      $title = t('View dashboard for !project project.', array(
+        ''
+      ));
+      $first_col = <<<HTML
 
-<h4>
-  <a href="$url">
-      $project->name
-      <br />
-      <small>$project->install_profile</small>
-  </a>
-
-</h4>
+<a href="$url" title="$title" class="project-link">
+    $project->name
+</a>
 
 HTML;
 
+      // Live URL
+      $live_domain = $project->settings->live['live_domain'];
+      $live_environment = $project->settings->live['live_environment'];
+
+      if ($live_domain) {
+        $domain = $live_domain;
+      }
+      elseif (isset($project->environments[$live_environment])) {
+        $domain = $project->environments[$live_environment]->uri;
+      }
+      elseif (count($project->environments)) {
+        $domain = current($project->environments)->uri;
+      }
+      else {
+        $domain = '';
+        $first_col .= '<span class="small live-link text-muted">' . t('No Environments') . '</span>';
+      }
+
+      $first_col .= l($domain, "http://$domain", array(
+        'attributes' => array(
+          'class' => array('small live-link text-muted'),
+          'target' => '_blank',
+        ),
+      ));
+
+      $row[] = $first_col;
+
       // Drupal Version
-      $row[] = "<button class='btn btn-link'><i class='fa fa-drupal'></i>
- $version
+      $row[] = "<span class='text-muted'><i class='fa fa-drupal'></i>
+ $version 
+      <br />
+      <small class='install-profile'>$project->install_profile</small>
 </button>";
-    }
-    else {
-      $row[] = t('Unknown');
-    }
 
     // Git URL
     $row[] = strtr("<input type='textfield' value='!url' onclick='this.select();'/>", array('!url' => scrub_repo_url($project->git_url)));
@@ -108,8 +127,6 @@ HTML;
     }
     $count = count($project->environments);
     $row[] = <<<HTML
-  <small class="pull-right text-muted"><i class="fa fa-cubes"></i> $count</small>
-
 <div class="project-environments btn-toolbar" role="toolbar">
   <div class="btn-group btn-group-xs" role="group">
     $items
@@ -145,7 +162,7 @@ HTML;
     if (empty($data['header'])) {
       $data['header'] = $header;
     }
-    $output = theme('table', array('header' => $data['header'], 'rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
+    $output = theme('table', array('rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
   }
   return $output;
 }

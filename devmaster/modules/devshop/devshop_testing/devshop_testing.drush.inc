@@ -7,7 +7,8 @@
  */
 function devshop_testing_post_hosting_devshop_deploy_task($task, $data) {
   if ($task->ref->environment->settings->deploy['test']) {
-    hosting_add_task($task->ref->nid, 'test');
+    $node = hosting_add_task($task->ref->nid, 'test');
+    drush_log(l(t('A Test task has been queued.'), "node/{$node->nid}"), 'devshop_log');
   }
 }
 

@@ -107,7 +107,9 @@ function devshop_testing_hosting_tasks() {
  * Our parameters are added in devshop_testing_form_alter()
  */
 function hosting_task_test_form($node) {
-  return devshop_testing_form_elements($node->project, $node->environment->name);
+// $form = devshop_testing_form_elements($node->project, $node->environment->name);
+  $form = array();
+  return $form;
 }
 
 /**
@@ -123,7 +125,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#collapsed' => TRUE,
       '#group' => 'project_settings',
       '#title' => t('Testing'),
-      '#description' => t('Set the default testing settings for environments here.  Each environment can override these settings.'),
+      '#description' => t('Configure how testing is handled for this project.'),
     ), devshop_testing_form_elements($form['#node']->project)
     );
 
@@ -161,7 +163,7 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
   }
   // Run Tests Form: add extra submit handler to stringify the test options.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
-    array_unshift($form['#submit'], 'devshop_testing_task_submit');
+//    array_unshift($form['#submit'], 'devshop_testing_task_submit');
   }
   // Deploy Code Task confirm form.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-deploy') {
@@ -217,8 +219,8 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
   $testing_form['test_type'] = array(
     '#title' => t('Test Type'),
     '#options' => array(
-      0 => t('None'),
-      'simpletest' => t('SimpleTest'),
+      '0' => 'none',
+      'simpletest' => t('Simpletest'),
       'behat' => t('Behat'),
     ),
     '#type' => 'radios',

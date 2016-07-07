@@ -79,7 +79,16 @@ function devshop_projects_create_wizard($step = NULL) {
 
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)) {
-    $project->verify_error = db_query("SELECT message FROM {hosting_task_log} WHERE nid = :nid AND type = :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'error'))->fetchField();
+    $messages = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND type LIKE :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'devshop%'));
+
+    foreach ($messages as $message) {
+      if ($message->type == 'devshop_info') {
+        $messages_to_user[] = $message->message;
+      }
+    }
+    $project->verify_error = theme('devshop_ascii', array('output' => implode('\n', $messages_to_user)));
+
+
     // If not on the first step, go to it.
     if ($step != current(array_keys($form_info['order']))) {
       drupal_goto('projects/add/' . current(array_keys($form_info['order'])));

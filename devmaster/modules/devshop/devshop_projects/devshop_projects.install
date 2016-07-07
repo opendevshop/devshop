@@ -345,3 +345,28 @@ function devshop_projects_update_6011 () {
 function devshop_projects_update_7000 () {
   variable_set('menu_options_project', array());
 }
+
+/**
+ * Remove the menu form from the site node form.
+ */
+function devshop_projects_update_7001 () {
+  variable_set('menu_options_site', array());
+}
+
+// @TODO: This breaks upgrades. Figure out why and in include it in an upcoming release.
+///**
+// * Enable devshop_testing.
+// */
+//function devshop_projects_update_7002 () {
+//  module_enable(array(
+//    'devshop_testing',
+//  ));
+//}
+
+/**
+ * Fully resetting project and site node menu settings.
+ */
+function devshop_projects_update_7003 () {
+  variable_set('menu_options_site', '');
+  variable_set('menu_options_project', '');
+}

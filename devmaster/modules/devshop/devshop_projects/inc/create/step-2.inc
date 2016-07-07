@@ -41,7 +41,8 @@ function devshop_project_create_step_settings($form, &$form_state) {
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
 
   // Remove "live environment" selector.
-  $form['project']['settings']['live']['live_environment']['#type'] = 'value';
+  $form['project']['codebase']['live_environment']['#type'] = 'value';
+  $form['project']['codebase']['live_environment']['#suffix'] = '';
 
   return $form;
 }

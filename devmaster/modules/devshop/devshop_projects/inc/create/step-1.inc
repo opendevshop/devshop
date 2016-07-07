@@ -17,13 +17,23 @@ function devshop_project_create_step_git($form, $form_state) {
 
   if ($project->verify_error) {
     $form['note'] = array(
-      '#value' => '<div class="messages error">' . $project->verify_error . '</div>',
-      '#type' => 'markup',
+      '#markup' => t('We were unable to connect to your git repository. Check the messages, edit your settings, and try again.'),
+      '#prefix' => '<div class="alert alert-danger">',
+      '#suffix' => '</div>',
+    );
+    $form['error'] = array(
+      '#markup' => $project->verify_error,
     );
 
-    // Display some help for certain errors
-    if ($project->verify_error == '[DEVSHOP] Error retrieving remote information: Host key verification failed. fatal: The remote end hung up unexpectedly') {
-      $form['note']['#value'] .= '<div class="messages warning">' . t('You might have to authorize the host your are trying to connect to first.  Add "StrictHostKeyChecking no" to your ~/.ssh/config file to avoid this for all domains.') . '</div>';
+    // Check for "host key"
+    if (strpos($project->verify_error, 'Host key verification failed')) {
+      $form['help'] = array(
+        '#markup' => t('Looks like you need to authorize this host.  SSH into the server as <code>aegir</code> user and run the command <code>git ls-remote !repo</code>. <hr />Add <code>StrictHostKeyChecking no</code> to your <code>~/.ssh/config</code> file to avoid this for all domains in the future.', array(
+          '!repo' => $project->git_url,
+        )),
+        '#prefix' => '<div class="alert alert-warning">',
+        '#suffix' => '</div>',
+      );
     }
   }
 
@@ -32,7 +42,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'textfield',
       '#title' => t('Project Code Name'),
       '#required' => TRUE,
-      '#suffix' => '<p>' . t('Choose a unique name for your project.') . '</p>',
+      '#suffix' => '<p>' . t('Choose a unique name for your project. Only letters and numbers are allowed.') . '</p>',
       '#size' => 40,
       '#maxlength' => 255,
     );
@@ -49,12 +59,21 @@ function devshop_project_create_step_git($form, $form_state) {
     );
   }
 
+  $username = variable_get('aegir_user', 'aegir');
+
+  $tips[] = t('Use the "ssh" url whenever possible.');
+  $tips[] = t('Code will be cloned to the server using the <code>aegir</code> user. Check the "Repository Access" for SSH information.');
+  $tips[] = t('An entire Drupal codebase must be present in the repository, but does not have to be in the root. See <em>Path to Drupal</em> setting on the next page.');
+  $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
+  $tips = theme('item_list', array('items' => $tips));
+
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git URL'),
-    '#suffix' => '<p>' . t('Enter the Git URL for your project. You should use the "ssh" url when possible. An entire Drupal codebase must be present in the root, unless a composer.json file is present.') . '</p>',
+    '#suffix' => '<p>' . t('Enter the Git URL for your project') . '</p>' . $tips,
     '#default_value' => $project->git_url,
+    '#maxlength' => 1024,
   );
 //
 //  // Project code path.
@@ -90,7 +109,7 @@ function devshop_project_create_step_git($form, $form_state) {
 
   // If we don't yet have the server's public key saved as a variable...
   if (empty($pubkey)) {
-    $output = t("For convenience, the server's SSH public key will be displayed here, once you run the following command on your server:");
+    $output = t("This DevShop doesn't yet know your server's public SSH key. To import it, run the following command on your server as <code>aegir</code> user:");
     $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
     $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
   }
