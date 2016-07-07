@@ -438,15 +438,23 @@
                 <?php if ($enabled): ?>
                   <?php if ($hook_type == 'cache'): ?>
                       <li class="text code">
-                        drush clear-cache all
+                          <code>drush clear-cache all</code>
                       </li>
                     <?php elseif ($hook_type == 'update'): ?>
                       <li class="text code">
-                        drush update-db -y
+                          <code>drush update-db -y</code>
                       </li>
                     <?php elseif ($hook_type == 'revert'): ?>
                       <li class="text code">
-                        drush features-revert-all -y
+                          <code>drush features-revert-all -y</code>
+                      </li>
+                    <?php elseif ($hook_type == 'composer'): ?>
+                      <li class="text code">
+                        <code>composer install</code>
+                      </li>
+                    <?php elseif ($hook_type == 'test'): ?>
+                      <li class="text code">
+                        <?php print t('Run Tests'); ?>
                       </li>
                     <?php elseif ($hook_type == 'dothooks'): ?>
                       <li><label><?php print t('File-based Hooks'); ?></label></li>
