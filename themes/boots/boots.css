@@ -938,3 +938,7 @@ a.logo img {
     float: none !important;
     display: inline-block;
 }
+
+#project-node-form #edit-cancel {
+    float: right;
+}
