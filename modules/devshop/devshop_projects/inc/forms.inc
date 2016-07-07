@@ -447,7 +447,8 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     if (isset($form['#no_next'])) {
       unset($form['buttons']['next']);
     }
-    $form['buttons']['next']['#value'] .= ' <i class="glyphicon glyphicon-chevron-right"></i>';
+    $form['buttons']['next']['#value'] .= ' <i class="fa fa-chevron-right"></i>';
+    $form['buttons']['return']['#value'] = ' <i class="fa fa-floppy-o"></i> ' . t('Create Project & Environments');
 
     $form['buttons']['next']['#attributes'] =
     $form['buttons']['return']['#attributes'] = array(
