@@ -1,5 +1,20 @@
 # Change Log
 
+# 1.0.0-beta10 (July 7, 2016)
+
+  28 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta9...1.x
+
+- Added "composer install" deploy hook! You can now configure `composer install` to run on deployment. Works with composer.json in the repo root or the drupal root.
+- Improvements & bug fixes to the "DevShop Remotes" module.
+- Added a "Retry" button to an environment that failed a "clone" task.
+- Added "Environment" to the labels for "Environment Dashboard" and "Environment Settings" links.
+- Added a message if the user has a project in the create project wizard.
+- Added all of bootstrap, including fonts to boots theme, allowing fully offline use.
+- Moved the Cancel button in projects creation wizard to the right side of the page.
+- Added icons to the "Next" button, "Add Environment" and "Finish" buttons in the create project wizard.
+- Renamed the "Finish" button to "Create Project & Environments".
+- Update to Drupal 7.50.
+
 # 1.0.0-beta9 (June 28, 2016)
 
  11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta8...1.0.0-beta9
