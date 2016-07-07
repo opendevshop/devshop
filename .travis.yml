@@ -51,7 +51,8 @@ services:
 
 before_install:
   # Clone devshop
-  - export DEVSHOP_VERSION=1.x
+  # TEMP: Test against the new tests.
+  - export DEVSHOP_VERSION=better-finish
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${DEVSHOP_VERSION}
