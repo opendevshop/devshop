@@ -202,9 +202,26 @@ function drush_devshop_platform_verify() {
     return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check your Path to Drupal.'));
   }
 
-  // Detect composer.json and run composer install.
-  if (file_exists($root . '/composer.json')) {
-    devshop_drush_process("composer install", $root, dt('composer.json detected, running composer install.'));
+  // When verifying the platform for the first time, run 'composer install' if configured to do so.
+  if ($platform->verified && $platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
+
+    if (file_exists($platform->environment->repo_root . '/composer.json')) {
+      $cwd = $platform->environment->repo_root;
+    }
+    elseif (file_exists($root . '/composer.json')) {
+      $cwd = $root;
+    }
+    else {
+      // If composer.json was not found in the drupal root or repo root, do not run.
+      drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
+      return;
+    }
+
+    devshop_drush_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
+      '!folder' => $cwd,
+    )));
+
+    devshop_drush_process("git status", $platform->environment->repo_root, dt('Running git status'));
   }
 }
 
