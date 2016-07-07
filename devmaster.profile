@@ -232,10 +232,10 @@ function devmaster_task_finalize() {
   devmaster_place_blocks($theme);
 
   // Save "menu_options" for our content types, so they don't offer to be put in menus.
-  variable_set('menu_options_client', array());
-  variable_set('menu_options_platform', array());
-  variable_set('menu_options_server', array());
-  variable_set('menu_options_site', array());
+  variable_set('menu_options_client', '');
+  variable_set('menu_options_platform', '');
+  variable_set('menu_options_server', '');
+  variable_set('menu_options_site', '');
 
 //  drupal_set_message(st('Configuring default blocks'));
 //  install_add_block('devshop_hosting', 'devshop_tasks', $theme, 1, 5, 'header', 1);
@@ -258,7 +258,7 @@ function devmaster_task_finalize() {
   variable_set('hosting_welcome_page', 0);
 
   // Disable menu settings for projects
-  variable_set('menu_options_project', NULL);
+  variable_set('menu_options_project', '');
 
   // Make sure blocks are setup properly.
 //  _block_rehash();

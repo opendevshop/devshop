@@ -461,6 +461,10 @@ function theme_devshop_ascii($vars) {
   $converter = new AnsiToHtmlConverter($theme);
   $output = $converter->convert($string);
 
+  $output = strtr($output, array(
+    '\n' => '<br />',
+  ));
+
   return <<<HTML
   <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
 HTML;

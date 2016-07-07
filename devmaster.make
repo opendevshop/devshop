@@ -2,10 +2,10 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "7.43"
+projects[drupal][version] = "7.44"
 
 # Update this with each new release of devshop
-projects[devshop_stats][version] = "1.0-beta3"
+projects[devshop_stats][version] = "1.x"
 
 defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
@@ -14,15 +14,10 @@ defaults[projects][type] = "module"
 ; aegir modules instead of the tagged releases
 includes[devshop] = "drupal-org.make"
 
-projects[hostmaster][type] = "profile"
-projects[hostmaster][version] = "3.4"
-projects[hostmaster][subdir] = ""
-projects[hostmaster][version] = "3.4"
-
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.5"
+projects[hosting][version] = "3.6"
 projects[hosting][subdir] = "aegir"
 
 ; Aegir Core not included in hosting.module
@@ -41,7 +36,7 @@ projects[hosting_tasks_extra][version] = "3.5"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = 3.x
+projects[hosting_logs][version] = 3.1
 projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 0.3
 projects[aegir_config][subdir] = aegir
@@ -64,14 +59,14 @@ projects[r4032login][version] = 1.8
 projects[admin_menu][version] = "3.0-rc5"
 projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha3"
-projects[views][version] = "3.13"
+projects[views][version] = "3.14"
 projects[views_bulk_operations][version] = "3.3"
 projects[ctools][version] = "1.9"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
-projects[devshop_stats][version] = "1.0-beta2"
+projects[devshop_stats][version] = "1.x"
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme

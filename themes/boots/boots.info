@@ -9,6 +9,7 @@ stylesheets[all][] = boots.css
 stylesheets[all][] = fontawesome/css/font-awesome.min.css
 
 scripts[] = js/jquery.matchHeight.js
+scripts[] = js/jquery.timeago.js
 scripts[] = js/boots.js
 
 ; Settings
@@ -17,3 +18,8 @@ settings[bootstrap_fluid_container] = 1
 settings[bootstrap_navbar_position] = 'static-top'
 settings[bootstrap_navbar_inverse] = 1
 settings[bootstrap_region_well-sidebar_first] = 0
+settings[bootstrap_cdn_provider] = custom
+settings[bootstrap_cdn_custom_css] = /profiles/devmaster/themes/boots/bootstrap/bootstrap.css
+settings[bootstrap_cdn_custom_css_min] = /profiles/devmaster/themes/boots/bootstrap/bootstrap.min.css
+settings[bootstrap_cdn_custom_js] = /profiles/devmaster/themes/boots/bootstrap/bootstrap.js
+settings[bootstrap_cdn_custom_js_min] = /profiles/devmaster/themes/boots/bootstrap/bootstrap.min.js

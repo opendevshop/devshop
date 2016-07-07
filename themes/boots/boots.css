@@ -490,7 +490,6 @@ th.checkbox, td.checkbox {
 ul.dropdown-menu li.text {
   padding: .25em 2em;
   font-size: .8em;
-  color: #777;
 }
 
 .node-type-site .environment {
@@ -915,4 +914,27 @@ p.error {
 }
 .node-type-server .panel-body .form-item {
     margin-right: 2em;
+}
+
+a.logo img {
+    max-height: 3em;
+}
+
+.project-link {
+    font-size: 1.5em;
+    font-weight: bold;
+    display: block;
+}
+
+.btn-group-links {
+    white-space: nowrap;
+}
+
+.btn-group-links .btn-hooks {
+    white-space: normal;
+}
+
+.btn-hooks {
+    float: none !important;
+    display: inline-block;
 }

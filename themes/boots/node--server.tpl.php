@@ -33,17 +33,11 @@
         <?php print render($content['info']['status']); ?>
       </span>
     </div>
-    <table class="table">
-      <tr>
-        <td>
-          <?php print render($content); ?>
-        </td>
-        <td>
-          <?php print render($content['tasks_view']); ?>
-        </td>
-      </tr>
-    </table>
+    <div class="panel-body">
+      <?php print render($content['tasks_view']); ?>
+    </div>
+    <div class="panel-body">
+       <?php print render($content); ?>
+    </div>
   </div>
-
-
 </div>
