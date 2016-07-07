@@ -74,7 +74,7 @@ Feature: Create a project
     Then I should see "8.0.2"
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
-    And I press "Finish"
+    And I press "Create Project & Environments"
 
     # FINISH!
     Then I should see "Your project has been created. Your sites are being installed."
