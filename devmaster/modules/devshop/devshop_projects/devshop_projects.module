@@ -28,6 +28,31 @@ include_once('tasks/deploy.inc');
  */
 function devshop_projects_init() {
 
+  // Check for a project in the creation stage, and alert the if outside the wizard pages.
+  if (!(arg(0) == 'projects' && arg(1) == 'add') && current_path() != 'devshop/tasks') {
+
+    ctools_include('object-cache');
+    $project_wizard_cache = ctools_object_cache_get('project', 'devshop_project');
+    if (!empty($project_wizard_cache->step)) {
+
+      // Make sure we don't show this message twice.
+      $message = t('You have an unfinished project. You should !link.', array(
+          '!link' => l(t('finish creating your project'), 'projects/add'),
+      ));
+
+      $show_message = TRUE;
+      $messages = drupal_get_messages('status');
+      foreach ($messages['status'] as $m) {
+        if (strpos($m, $message) !== FALSE) {
+          $show_message = FALSE;
+        }
+      }
+      if ($show_message) {
+        drupal_set_message($message);
+      }
+    }
+  }
+
   // If on the projects page, or a project or site node...
   if (arg(0) == 'node' && is_numeric(arg(1))) {
     $node = node_load(arg(1));
