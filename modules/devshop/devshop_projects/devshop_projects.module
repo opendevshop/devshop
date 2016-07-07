@@ -517,16 +517,16 @@ function devshop_hosting_task_menu_access_csrf($node, $task) {
  */
 function devshop_hosting_project_tab_title($default, $node) {
   if ($default == 'View' && $node->type == 'project') {
-    return t('Dashboard');
+    return t('Project Dashboard');
   }
   if ($default == 'Edit' && $node->type == 'project') {
-    return t('Settings');
+    return t('Project Settings');
   }
   if ($default == 'View' && $node->type == 'site' && isset($node->project)) {
-    return t('Dashboard');
+    return t('Environment Dashboard');
   }
   if ($default == 'Edit' && $node->type == 'site' && isset($node->project)) {
-    return t('Settings');
+    return t('Environment Settings');
   }
   if ($node->type == 'task') {
     if ($default == 'View') {
