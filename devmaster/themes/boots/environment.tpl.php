@@ -166,7 +166,14 @@
                 <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
-                <?php if (empty($environment->site) && $environment->platform): ?>
+                <?php if (
+                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_QUEUED && 
+                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_PROCESSING && 
+                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_QUEUED && 
+                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_PROCESSING && 
+                    empty($environment->site) 
+                    && $environment->platform
+                    ): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_verify", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                         <i class="fa fa-refresh"></i> <?php print t('Retry'); ?>
                     </a>
