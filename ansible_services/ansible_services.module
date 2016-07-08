@@ -15,7 +15,7 @@ function ansible_services_hosting_service() {
         }
 
         // HA Proxy depends on hosting_cluster module.
-        if (module_exists('hosting_cluster')) {
+        if (module_exists('hosting_web_cluster')) {
             $services['ansible_haproxy'] = 'http';
         }
     }
