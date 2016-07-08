@@ -168,7 +168,7 @@
                 </a>
                 <?php if (empty($environment->site) && $environment->platform): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_verify", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
-                        <i class="fa fa-trash"></i> <?php print t('Retry'); ?>
+                        <i class="fa fa-refresh"></i> <?php print t('Retry'); ?>
                     </a>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
                         <i class="fa fa-trash"></i> <?php print t('Destroy Environment'); ?>
