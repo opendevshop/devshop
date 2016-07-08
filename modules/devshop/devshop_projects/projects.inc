@@ -289,6 +289,9 @@ function devshop_project_load($node) {
       }
     }
 
+    // Repo root
+    $environment->repo_root = empty($project->drupal_path) ? $environment->root : str_replace($project->drupal_path, '', $environment->root);
+
     // Git information.
     $environment->git_ref_stored = $environment->git_ref;
     if (isset($environment->repo_root) && file_exists($environment->repo_root . '/.git')) {
@@ -302,8 +305,25 @@ function devshop_project_load($node) {
       // Get the exact SHA
       $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD"));
 
-      // Get the actual tag or branch
+      // Determine the type of git ref the stored version is
+      $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
+      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored}"));
+
+      // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
       $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+      $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
+
+      // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
+      if ($stored_git_sha == $environment->git_sha && $stored_git_ref_type != $environment->git_ref_type) {
+        $git_status = shell_exec("cd {$environment->repo_root}; git status");
+        if (strpos($git_status, 'On branch ') === 0) {
+          $environment->git_ref_type = 'branch';
+          $environment->git_ref = $environment->git_ref_stored;
+        }
+        else {
+          $environment->git_ref_type = 'tag';
+        }
+      }
 
       // Get git status.
       $environment->git_status = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always  status"));
@@ -319,9 +339,6 @@ function devshop_project_load($node) {
       $environment->git_status = '';
       $environment->git_diff = '';
     }
-
-    // Repo root
-    $environment->repo_root = empty($project->drupal_path) ? $environment->root : str_replace($project->drupal_path, '', $environment->root);
 
     // Load encryption status
     if (module_exists('hosting_ssl')) {
