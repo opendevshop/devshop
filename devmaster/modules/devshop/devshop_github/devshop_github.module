@@ -810,9 +810,12 @@ function devshop_github_check_key() {
   catch (\GitHub\Exception\RuntimeException $e) {
     return FALSE;
   }
-
+  $devshop_sshkey = sshkey_parse($devshop_key);
+  $devshop_fingerprint = theme('sshkey_fingerprint', $devshop_sshkey);
   foreach ($keys as $key) {
-    if (strpos($devshop_key, $key['key']) === 0) {
+    $ssh_key = sshkey_parse($key['key']);
+    $fingerprint = theme('sshkey_fingerprint', $ssh_key);
+    if ($fingerprint == $devshop_fingerprint) {
       return TRUE;
     }
   }
