@@ -30,6 +30,4 @@ RUN apt-get install -y -qq \
   vim \
   supervisor \
   openssl \
-  mysql-common \
-  mysql-server \
   php5-mysql
