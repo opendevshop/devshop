@@ -7,7 +7,7 @@
 function aegir_update_hosting_feature() {
   $features['aegir_update'] = array(
     'title' => t('Update Drupal'),
-    'description' => t('Add modules or themes to your git repository.'),
+    'description' => t('Upgrades drupal core and contrib to the latest versions.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'aegir_update',
     'group' => 'advanced',
