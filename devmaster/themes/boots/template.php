@@ -146,7 +146,7 @@ function boots_preprocess_environment(&$vars) {
   // Branch or tag no longer exists in the project.
   if (!isset($project->settings->git['refs'][$environment->git_ref])) {
     $vars['warnings'][] = array(
-      'text' =>  t('The git ref %ref is no longer present in the remote repository.', array(
+      'text' =>  t('The git ref %ref is not present in the remote repository.', array(
         '%ref' => $environment->git_ref,
       )),
       'type' => 'warning',
