@@ -1,0 +1,22 @@
+version: '2'
+
+# This compose file is just an example. Create your own to launch your own Aegir cluster
+
+services:
+
+  hostmaster:
+    image: aegir/hostmaster
+    ports:
+      - 80:80
+    hostname: local.computer
+    links:
+      - database
+    depends_on:
+      - database
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
+
+  database:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
