@@ -15,6 +15,8 @@ services:
       - database
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
+      AEGIR_MAKEFILE: https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make
+      AEGIR_PROFILE: devmaster
 
   database:
     image: mariadb
