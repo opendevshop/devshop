@@ -24,4 +24,5 @@
    * [Scaling](scaling.md)
    * [Troubleshooting](troubleshooting.md)
 * Chapter 1
+   * Intro
 
