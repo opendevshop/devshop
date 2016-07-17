@@ -2,7 +2,7 @@
 
 * [About](README.md)
    * [Roadmap](roadmap.md)
-   * Tour
+   * [Tour](tour.md)
 * [Installation](install.md)
    * [Upgrading DevShop](upgrading.md)
    * [Changing Hostname](changing-hostname.md)
