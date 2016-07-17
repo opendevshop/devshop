@@ -1,5 +1,5 @@
-DevShop
-============
+# DevShop
+
 
 ![OpenDevShop Project Dashboard](https://raw.githubusercontent.com/opendevshop/devshop/1.x/docs/images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
 
@@ -9,14 +9,22 @@ Version | Status | Aegir | Hosts | DevMaster | Install & CLI
 --------|--------|-------|-------|----|-----
 1.x     | Stable |3.x | D6,D7,D8 |  [![DevMaster 1.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=1.x)](https://travis-ci.org/opendevshop/devmaster) |  [![DevShop 1.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=1.x)](https://travis-ci.org/opendevshop/devshop) 
 
-DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush ([DevShop Provision](http://drupal.org/project/devshop_provision)).
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush.
 
 DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
 Code is deployed on push to your git repo automatically.  Deploy any branch or tag to any environment. Data (the database and files) can be deployed between environments.  Run the built-in hooks whenever code or data is deployed, or write your own.
 
-Resources
----------
+# Built on Aegir
+
+DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster), but our own installation profile, [Devmaster](http://github.com/opendevshop/devmaster).
+
+In addition, DevShop uses many additional contributed modules. 
+
+OpenDevShop Inc is a founding member of the Aegir Cooperative.  See [aegir.coop](http://aegir.coop) for more information.
+
+
+## Resources
 
 * [General Documentation](https://devshop.readthedocs.org)  More coming soon.  Documentation is in progress.
 * [Project Homepage](https://www.drupal.org/project/devshop) drupal.org/project/devshop
