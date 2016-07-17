@@ -23,6 +23,6 @@
    * [Going Live](going-live.md)
    * [Scaling](scaling.md)
    * [Troubleshooting](troubleshooting.md)
-* Chapter 1
+* Training Curriculum
    * Intro
 
