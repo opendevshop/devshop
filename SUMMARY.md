@@ -24,5 +24,5 @@
    * [Scaling](scaling.md)
    * [Troubleshooting](troubleshooting.md)
 * Training Curriculum
-   * Intro
+   * [Intro](intro.md)
 
