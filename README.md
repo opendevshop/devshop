@@ -43,21 +43,13 @@ See [aegir.coop](http://aegir.coop) for more information.
 See the [Tour](/tour.md) section of the documentation for a quick walkthrough of the DevShop interface.
 
 
+# Components
 
-Roadmap
--------
-
-We are starting to track our efforts using EPICs and Huboard: [https://huboard.com/opendevshop/devshop](https://huboard.com/opendevshop/devshop)
-
-You can browse the tag EPIC in the GitHub issues to get an idea of what efforts are underway [https://github.com/opendevshop/devshop/labels/EPIC](https://github.com/opendevshop/devshop/labels/EPIC)
-
-Components
-----------
 DevShop currenly consists of four main components:
 
 **DevShop**
 
-DevShop core.  *This repository*
+DevShop core.  (github.com/opendevshop/devshop)[http://github.com/opendevshop/devshop]
 
   * https://github.com/opendevshop/devshop
   * Install scripts.
