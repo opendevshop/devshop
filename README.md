@@ -3,13 +3,22 @@
 
 ![OpenDevShop Project Dashboard](https://raw.githubusercontent.com/opendevshop/devshop/1.x/docs/images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
 
-[![Join the chat at https://gitter.im/opendevshop/devshop](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/opendevshop/devshop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Resources
+
+* [Documentation](https://docs.opendevshop.com) Please Contribute! [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation) 
+* [Chat](http://gitter.im/opendevshop/devshop) on Gitter: [gitter.im/opendevshop/devshop](http://gitter.im/opendevshop/devshop)
+* [Issue Queue](http://github.com/opendevshop/devshop/issues) on GitHub: [github.com/opendevshop/devshop/issues](http://github.com/opendevshop/devshop/issues)
+* [Development Information](http://docs.opendevshop.com/development.html)  Developer documentation will walk you through contributing to DevShop.
+* [OpenDevShop.com](http://www.opendevshop.com): Company website.
+* [Follow us on Twitter](http://twitter.com/opendevshop)
+
+# About Devshop
 
 Version | Status | Aegir | Hosts | DevMaster | Install & CLI 
 --------|--------|-------|-------|----|-----
 1.x     | Stable |3.x | D6,D7,D8 |  [![DevMaster 1.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=1.x)](https://travis-ci.org/opendevshop/devmaster) |  [![DevShop 1.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=1.x)](https://travis-ci.org/opendevshop/devshop) 
 
-DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://drupal.org/project/devmaster)) and a back-end built with drush.
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://github.com/devshop/devmaster)) and a back-end built with drush, Symfony, and Ansible.
 
 DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
@@ -29,12 +38,7 @@ OpenDevShop Inc is a founding member of the Aegir Cooperative.  Lead DevShop dev
 
 See [aegir.coop](http://aegir.coop) for more information.
 
-# Resources
 
-* [Documentation](https://docs.opendevshop.com) Please Contribute! [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation) 
-* [OpenDevShop.com](http://www.opendevshop.com): Company website.
-* [Issue Queue](http://github.com/opendevshop/devshop/issues) github.com/opendevshop/devshop/issues
-* [Development Information](http://docs.opendevshop.com/development.html)  Developer documentation will walk you through contributing to DevShop.
 
 Tour
 ----
