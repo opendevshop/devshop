@@ -17,19 +17,24 @@ Code is deployed on push to your git repo automatically.  Deploy any branch or t
 
 # Built on Aegir
 
-DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster), but our own installation profile, [Devmaster](http://github.com/opendevshop/devmaster).
+DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster), it's own installation profile, [Devmaster](http://github.com/opendevshop/devmaster).  It does not use the theme, Eldir.  The default devshop theme is called [boots](https://github.com/opendevshop/devmaster/tree/1.x/themes/boots) and is included in the Devmaster install profile.
 
-In addition, DevShop uses many additional contributed modules. 
+DevShop uses many additional contributed modules that Aegir core does not.
 
-OpenDevShop Inc is a founding member of the Aegir Cooperative.  See [aegir.coop](http://aegir.coop) for more information.
+@TODO: Create a page listing all contributed modules.
 
+# Aegir Cooperative Founding Member
 
-## Resources
+OpenDevShop Inc is a founding member of the Aegir Cooperative.  Lead DevShop developer Jon Pugh is a core Aegir maintainer.  
 
-* [General Documentation](https://devshop.readthedocs.org)  More coming soon.  Documentation is in progress.
-* [Project Homepage](https://www.drupal.org/project/devshop) drupal.org/project/devshop
-* [Issue Queue](https://www.drupal.org/project/issues/devshop) drupal.org/project/issues/devshop
-* [Development Information](https://devshop.readthedocs.org/en/latest/help/DEVELOPMENT/)  Developer documentation will walk you through contributing to DevShop.
+See [aegir.coop](http://aegir.coop) for more information.
+
+# Resources
+
+* [Documentation](https://docs.opendevshop.com) Please Contribute! [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation) 
+* [OpenDevShop.com](http://www.opendevshop.com): Company website.
+* [Issue Queue](http://github.com/opendevshop/devshop/issues) github.com/opendevshop/devshop/issues
+* [Development Information](http://docs.opendevshop.com/development.html)  Developer documentation will walk you through contributing to DevShop.
 
 Tour
 ----
