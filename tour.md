@@ -5,7 +5,7 @@
 
 ![OpenDevShop Homepage: Projects List](https://raw.githubusercontent.com/opendevshop/devshop/1.x/docs/images/devshop-projects.png "A screenshot of the OpenDevShop Homeage: a clear list of all of your projects and all of your environments.")
 
-The OpenDevShop Homepage shows you a birds eye view of all of your projects.  The name, install profile, git URL, Drupal Version, and a list of all the environments are visible at a glance.
+The OpenDevShop Homepage shows you a birds eye view of all your projects.  The name, install profile, git URL, Drupal Version, and a list of all the environments are visible at a glance.
 
 Each environment indicator is updated in realtime. You can see the status of the latest task for every site in your system.
 
