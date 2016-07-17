@@ -15,7 +15,7 @@
    * [Acquia Cloud Hooks Integration](deployment-hooks-acquia.md)
 * [DevShop Development](development.md)
    * [Release Process](release-process.md)
-* Management DevShop
+* DevShop Management 
    * [Deleting Projects & Environments](deleting.md)
    * [Using SSL](ssl.md)
    * [Password Protection](password-protect.md)
