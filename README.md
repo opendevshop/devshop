@@ -175,11 +175,11 @@ Testing
 
 Very rudimentary testing is happening on TravisCI at http://travisci.org/opendevshop/devshop
 
-TravisCI tests on Ubuntu 12.04, therefor 12.04 is the most supported.
+TravisCI tests on Ubuntu 14.04, therefor 14.04 is the most supported.
 
-The install script has been tested on:
+The install script is tested on:
 
-  - ubuntu 12.04
+  - ubuntu 14.04
   - centos 7.0
 
 License
