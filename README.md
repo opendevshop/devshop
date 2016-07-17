@@ -1,7 +1,7 @@
 # DevShop
 
 
-![OpenDevShop Project Dashboard](https://raw.githubusercontent.com/opendevshop/devshop/1.x/docs/images/devshop.png "A screenshot of the OpenDevShop Project Dashboard")
+![DevShop Project Dashboard](/images/devshop.png "A screenshot of the DevShop Project Dashboard")
 
 # Resources
 
