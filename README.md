@@ -49,31 +49,36 @@ DevShop currenly consists of four main components:
 
 **DevShop**
 
-DevShop core.  (github.com/opendevshop/devshop)[http://github.com/opendevshop/devshop]
+DevShop core.
 
-  * https://github.com/opendevshop/devshop
+  * (github.com/opendevshop/devshop)[https://github.com/opendevshop/devshop]
   * Install scripts.
-  * Ansible playbook and roles.
-  * Vagrantfile.
-  * Tests (coming soon).
-  * Clone this to get everything else.  
-  * Use this for development.
+  * Vagrantfile, Dockerfiles, docker-compose.yml file.
+  * Behat Tests.
+  * Issue Queue
+  * DevShop CLI
 
 **Devmaster**
 
-DevShop Front-End.  
+DevShop Front-End.  A Drupal 7 website.
 
-  * https://github.com/opendevshop/devmaster
+  * [github.com/opendevshop/devmaster](https://github.com/opendevshop/devmaster)
   * An install profile and makefile.
   * DevShop Drupal modules
 
-**DevShop Provision**
+**Aegir & DevShop Ansible Galaxy Roles**
 
-DevShop Drush commands.
+DevShop installs using Ansible Galaxy roles that we maintain. See [galaxy.ansible.com/opendevshop/](https://galaxy.ansible.com/opendevshop) for the full list of available roles.
 
-  * https://github.com/opendevshop/devshop_provision
-  * To be merged into devmaster.  
-  * Drush commands needed for devshop.
+These roles extend the excellent [Ansible roles provided by Jeff Geerling](http://galaxy.ansible.com/geerlingguy):
+
+- geerlingguy.mysql
+- geerlingguy.apache
+- geerlingguy.php
+- geerlingguy.php-mysql
+- geerlingguy.drush
+- geerlingguy.composer
+
 
 Support
 -------
