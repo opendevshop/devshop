@@ -148,6 +148,8 @@ This material will be rolled into the general documentation as we fill out the d
 4. **Remote Servers**
   1. Web Servers: Apache or NGINX. Requires SSH access and sudo access to reload web server.
   2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
+3. **Customizations**
+  1. Customizing settings.php
 
 ## Unit 3: Cloud Management
 
