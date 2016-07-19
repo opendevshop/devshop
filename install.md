@@ -7,7 +7,10 @@ There are a number of ways to get DevShop up and running:
 3. Vagrant: The [core project on GitHub](https://github.com/opendevshop/devshop) contains a Vagrantfile that you may use to launch a working devshop on your local computer.
 4. Ansible: We have an Ansible role publicly available at [galaxy.ansible.com/opendevshop/devmaster](https://galaxy.ansible.com/opendevshop/devmaster/). The Vagrantfile and standalone install script both use Ansible roles to configure the servers.
 
-DevShop is installed with a standalone <a href="https://github.com/opendevshop/devshop/blob/1.x/install.sh">install.sh bash</a> script, which kicks off an ansible playbook.
+
+## Standalone Install Script
+
+DevShop can be installed with a standalone <a href="https://github.com/opendevshop/devshop/blob/1.x/install.sh">install.sh bash</a> script, which kicks off an ansible playbook.
 
 We test this script continuously on Ubuntu 14.04 and CentOS 7.  See https://travis-ci.org/opendevshop/devshop for the test results.
 
