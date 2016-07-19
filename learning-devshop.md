@@ -101,6 +101,10 @@ This material will be rolled into the general documentation as we fill out the d
   2. Using DevShop Drush Aliases.
   3. Adding "Remote Aliases" for Deploying Data.
   4. Using the command line.
+10. **Connecting to Devshop**
+  1. My Account > SSH Keys.
+  2. Always SSH as aegir@server_master.
+  3. Drush Aliases are available on the project dashboard.
 10. **Going Live.**
   1. Selecting your Primary Environment.
   2. Locking your Database.
