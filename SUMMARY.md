@@ -2,8 +2,8 @@
 
 * [About DevShop](README.md)
 * [Roadmap](roadmap.md)
-* [Tour](tour.md)
 * [Installing DevShop](installation.md)
+* [Tour](tour.md)
 * [Upgrading DevShop](upgrading.md)
 * [Changing Hostname](changing-hostname.md)
 * [Setup Examples](examples.md)
