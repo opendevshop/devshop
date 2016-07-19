@@ -1,10 +1,12 @@
 # Summary
 
 ### [About](README.md)
+   * [About](README.md) DevShop
    * [Roadmap](roadmap.md)
    * [Tour](tour.md)
 
 ### [Installation](install.md)
+   * [Installing DevShop](installation.md)
    * [Upgrading DevShop](upgrading.md)
    * [Changing Hostname](changing-hostname.md)
 
@@ -30,4 +32,5 @@
    * [Troubleshooting](troubleshooting.md)
 
 ### [Learning DevShop](learning-devshop.md)
+   * [The Complete DevShop Training](learning-devshop.md)
 
