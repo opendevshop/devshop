@@ -143,6 +143,10 @@ We are actively populating this section. Please be patient as content becomes av
   2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
 
 ## Unit 3: Cloud Management
+
 1. **DevShop Cloud**: How to use DevShop to create new servers using just your API key.
 2. **DevShop Ansible**: How to use DevShop to configure and manage your servers automatically using Ansible. 
+3. **Cloud Examples**: Using Aegir Cluster & DevShop Ansible to launch multiple web servers and a load balancer.
+
+
 
