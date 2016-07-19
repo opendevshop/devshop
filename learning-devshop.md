@@ -8,6 +8,8 @@ We are using it for providing training on DevShop.
 
 We are actively populating this section. Please be patient as content becomes available!
 
+This material will be rolled into the general documentation as we fill out the details.
+
 ## Outline
 
 ### Unit 1: The Basics
