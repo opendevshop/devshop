@@ -107,14 +107,9 @@ We are actively populating this section. Please be patient as content becomes av
 11. **Deployment & Environment Management Strategies**
   1. Dev + Test + Live. 
   2. Live + Pull Request Environments.
-  3. Tagged Releases: Git Tag > Manual Deploy.
+  3. Stage + Tagged Releases: Git Tag > Manual Deploy on Live.
   4. Continuous Deployment: Merge to `master` > Automatic Deploy to Live.
   3. Release Environments + Pull Request Environments. Create an environment with a tagged release for testing, then deploy to live.
-11. **Deployment Strategies**
-  1. Tagged Releases: Git Tag. Manual Deploy.
-  2. Live Branch: Continuous Deployment. Merge to `master` > deploy to live.
 
-
-## Unit 2: Test Driven 
 
 
