@@ -133,8 +133,7 @@ We are actively populating this section. Please be patient as content becomes av
   1. Web Servers: Apache or NGINX. Requires SSH access and sudo access to reload web server.
   2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
 
-
-## Unit 2: Test Driven Development
+## Unit 3: Test Driven Development
 1. **What is CI**: Breakdown of CI terms and topics.
 2. **Branch Driven Development**: Using git & branching to improve code quality and developer efficiency.
 3. **Branch Environments**: Creating copies of your site on different branches to isolate bug fixes and new features  until it’s ready to merge.
