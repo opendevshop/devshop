@@ -29,4 +29,5 @@
 
 
 ### Contributing
+* [How to contribute to DevShop](development.md)
 * [Release Process](release-process.md)
