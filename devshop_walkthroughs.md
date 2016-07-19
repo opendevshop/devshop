@@ -111,6 +111,29 @@ We are actively populating this section. Please be patient as content becomes av
   4. Continuous Deployment: Merge to `master` > Automatic Deploy to Live.
   3. Release Environments + Pull Request Environments. Create an environment with a tagged release for testing, then deploy to live.
 
+## Unit 2: Deep Dive
+
+1. **Web Interface**: Devmaster: Drupal site with Aegir modules.
+  1. Servers & Services.
+  2. Platforms.
+  3. Sites.
+  4. Tasks.
+  5. Queues: Cron, Tasks, Backups, Deploys.
+2. **Command Line Interface**
+  1. Aegir User: No sudo except for webserver reload.
+  2. Drush Aliases & "Contexts": 
+    - Use @hostmaster for web interface.
+  3. Provision Commands.
+  4. Separation between Web & Command Line interface.
+3. **Hosting Task Management**
+  1. `drush @hostmaster hosting-queued`
+  2. Supervisor.
+  3. `drush @hostmaster hosting-tasks` / `drush @hostmaster hosting-task 123`
+4. **Remote Servers**
+  1. Web Servers: Apache or NGINX. Requires SSH access and sudo access to reload web server.
+  2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
+
+
 ## Unit 2: Test Driven Development
 1. **What is CI**: Breakdown of CI terms and topics.
 2. **Branch Driven Development**: Using git & branching to improve code quality and developer efficiency.
