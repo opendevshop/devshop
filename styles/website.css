@@ -1,4 +1,4 @@
 /* CSS for website */
-ol li {
+ol li ol {
   padding-bottom: 1em;
 }
