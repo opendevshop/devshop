@@ -111,5 +111,15 @@ We are actively populating this section. Please be patient as content becomes av
   4. Continuous Deployment: Merge to `master` > Automatic Deploy to Live.
   3. Release Environments + Pull Request Environments. Create an environment with a tagged release for testing, then deploy to live.
 
+## Unit 2: Test Driven Development
+1. **What is CI**: Breakdown of CI terms and topics.
+2. **Branch Driven Development**: Using git & branching to improve code quality and developer efficiency.
+3. **Branch Environments**: Creating copies of your site on different branches to isolate bug fixes and new features  until it’s ready to merge.
+4. **Configuring Automated Testing**: Check the box to run Behat tests. 
+5. **GitHub API Integration**: Pull Request and Commit Status integration.
+6. **Custom Tests with hooks.yml**: Create a file in your Drupal site to run any command you wish.
+7. **Advanced Topics**: Selenium, Docker, Screenshots, Visual Regression, & more.
+
+
 
 
