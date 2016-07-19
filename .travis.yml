@@ -3,73 +3,45 @@ language: generic
 sudo: required
 
 env:
-  # CentOS 6: Not supported yet.
-  #- distribution: centos
-  #  version: 6
-  #  init: /sbin/init
-  #  run_opts: ""
-  # Ubuntu 12.04: Not supported yet.
-  #- distribution: ubuntu
-  #  version: 12.04
-  #  init: /sbin/init
-  #  run_opts: ""
-  - test: CentOS 7 Apache
-    distribution: centos
-    version: 7
-    init: /usr/lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    script_opts: "--server-webserver=apache"
-  #- test: CentOS 7 NGINX
-  #  distribution: centos
-  #  version: 7
-  #  init: /usr/lib/systemd/systemd
-  #  run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #  script_opts: "--server-webserver=nginx"
-  - test: Ubuntu 14.04 Apache
-    distribution: ubuntu
-    version: 14.04
-    init: /sbin/init
-    run_opts: ""
-    script_opts: "--server-webserver=apache"
-# TODO: Get NGINX support to work.
-#  - test: Ubuntu 14.04 Nginx
+  globaL:
+    - DOCKER_VERSION=1.11.2-0~trusty
+    - DOCKER_COMPOSE_VERSION=1.7.1
+
+#env:
+#  - test: Ubuntu 14.04 Apache
 #    distribution: ubuntu
 #    version: 14.04
 #    init: /sbin/init
 #    run_opts: ""
-#    script_opts: "--server-webserver=nginx"
 
 addons:
   hosts:
-    - devshop.travis
-    - dev.projectname.devshop.travis
-    - live.projectname.devshop.travis
-    - dev.drpl8.devshop.travis
+    - aegir.travis
+    - sitetest.aegir.travis
 
 services:
   - docker
 
 before_install:
-  # Pull container
-  - 'sudo docker pull ${distribution}:${version}'
-  # Customize container
-  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
+  # list docker-engine versions
+  - apt-cache madison docker-engine
+
+  # upgrade docker-engine to specific version
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y -qq docker-engine=${DOCKER_VERSION}
+
+  # reinstall docker-compose at specific version
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker --version
+  - docker-compose --version
+  - sudo docker build --rm=true --file=Dockerfile --tag=aegir/hostmaster .
+  - git clone http://github.com/aegir-project/tests.git
+  - cd tests
 
 script:
-  - container_id=$(mktemp)
-    # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "dev.drpl8.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-  # Install script.
-  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis'
-
-  # Turn off hosting queued, and the hosting task queue.
-  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
-  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
-
-  # Build and Run Tests
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
-
-  # Stop container.
-  - 'sudo docker stop devshop_container'
+  # Tests are included in the docker-compose.yml file in the tests repo.
+  - pwd
+  - sudo docker-compose up --abort-on-container-exit
