@@ -23,6 +23,6 @@
    * [Going Live](going-live.md)
    * [Scaling](scaling.md)
    * [Troubleshooting](troubleshooting.md)
-* [Learning DevShop](devshop_walkthroughs.md)
+* [Learning DevShop](learning-devshop.md)
    * [Intro](intro.md)
 
