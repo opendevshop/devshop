@@ -140,6 +140,7 @@ This material will be rolled into the general documentation as we fill out the d
   1. `drush @hostmaster hosting-queued`
   2. Supervisor.
   3. `drush @hostmaster hosting-tasks` / `drush @hostmaster hosting-task 123`
+  4. Using Jenkins for Task Running with [github.com/opendevshop/hosting_task_jenkins](https://github.com/opendevshop/hosting_task_jenkins)
 4. **Remote Servers**
   1. Web Servers: Apache or NGINX. Requires SSH access and sudo access to reload web server.
   2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
