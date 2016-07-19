@@ -1,7 +1,7 @@
 # Summary
 
 ### [About](README.md)
-   * [About](README.md) DevShop
+   * [About DevShop](README.md) 
    * [Roadmap](roadmap.md)
    * [Tour](tour.md)
 
