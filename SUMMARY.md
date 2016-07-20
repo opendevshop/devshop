@@ -3,7 +3,7 @@
 ### Introduction
   * [About DevShop](README.md)
   * [Roadmap](roadmap.md)
-  * Tour
+  * [Tour](./tour.md)
 
 ### Install & Upgrade
   * [Installing DevShop](install.md)
