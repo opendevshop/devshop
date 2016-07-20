@@ -14,7 +14,7 @@ DevShop can be installed with a standalone <a href="https://github.com/opendevsh
 
 We test this script continuously on Ubuntu 14.04 and CentOS 7.  See https://travis-ci.org/opendevshop/devshop for the test results.
 
-<strong>NOTES:<?strong>
+<strong>NOTES:</strong>
 - Do not try to install devshop on a server that is already in use. If you do you will likely have to take manual steps to get it fully functional. It's just easier to start with a fresh server.
 - If installing ubuntu manually, do *not* choose "LAMP Server" or any other type. The install script & ansible role will install all necessary packages.
 
