@@ -6,6 +6,12 @@
 
 DEVMASTER_VERSION=1.x
 
+if [ ! -d source ]; then
+  mkdir source
+fi
+
+cd source
+
 # Build a full devshop frontend on the host with drush make, with working-copy option.
 if [ ! -d devmaster-$DEVMASTER_VERSION ]; then
    drush make ../../build-devmaster.make devmaster-$DEVMASTER_VERSION --working-copy --no-gitinfofile
