@@ -7,6 +7,8 @@ For the history of DevShop, see [CHANGELOG.md](http://github.com)
 
 ### DevShop 1.0.0
 
+**Expected Release:** Q3 2016
+
 The original vision for DevShop is fully automated hosting and scaling.  The [Aegir Cloud](http://drupal.org/project/aegir_cloud) and [Aegir Ansible](http://drupal.org/project/aegir_ansible) modules are the final piece to that puzzle.
 
 When the following features are fully complete we will release 1.0.0:
