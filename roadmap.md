@@ -3,7 +3,6 @@
 ## Past
 For the history of DevShop, see [CHANGELOG.md](http://github.com)
 
-
 ## 1.x Life cycle
 
 ### DevShop 1.0.0
@@ -24,12 +23,13 @@ Many improvements to the Aegir core system are needed to allow work to start on 
 
 - [Decouple Install Task from Site Creation](https://www.drupal.org/node/2754069)
 - [Refactor PROVISION_SITE_INSTALLED to be more verbose and actually check if site was installed.](https://www.drupal.org/node/2764245)
+- [RFC: Refactor how Aegir installs Drupal.](https://www.drupal.org/node/2770077)
 
 ### DevShop 1.2.x
 
-By the 1.2.x cycle, we will have Aegir Docker integration completed.
+In the 1.2.x cycle, we will complete Aegir Docker integration.
 
-Work in progress is available in the [DevShop Rancher](http://github.com/opendevshop/devshop_rancher) project, but it is blocked by the issues listed above.
+Work in progress is available in the [DevShop Rancher](http://github.com/opendevshop/devshop_rancher) project, but is blocked by the issues listed above.
 
 
 ## 2.x
