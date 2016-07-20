@@ -77,14 +77,7 @@ The most important commands to remember are `devshop status` and `devshop login`
 ![$ devshop status](images/devshop-status.png "A screenshot of the devshop status command")
 
 
-Install Script
---------------
-
-The install script ([install.sh](https://github.com/opendevshop/devshop/blob/1.x/install.sh)) will setup everything that is needed to get devshop running from scratch.
-
-No other preparation is needed.
-
-### Install Script Overview
+## What does install.sh do?
 
 We strive to make the source code as readable as possible, so please feel free to read through it.
 
@@ -93,13 +86,12 @@ In summary, the script does the following:
 1. Installs git and Ansible.
 2. Generates a secure MySQL password and saves it to the /root/.my.cnf.
 3. Clones http://github.com/opendevshop/devshop.git to /usr/share/devshop and checks out the chosen version.  These files include the Ansible playbooks and variables files.
-4. Runs the Ansible playbook.
+4. Runs the Ansible playbooks listed in [playbook.yml](https://github.com/opendevshop/devshop/blob/1.x/playbook.yml):
+  - opendevshop.aegir-user
+  - opendevshop.aegir-apache
+  - geerlingguy.php
+  - geerlingguy.php-mysql
+  - geerlingguy.composer
+  - opendevshop.devmaster
 5. Runs the `devshop status` command to ensure everything is working properly.
-
-### Ansible Playbook Overview
-
-The Ansible playbook is located in the devshop repo at [playbook.yml](https://github.com/opendevshop/devshop/blob/1.x/playbook.yml).
-
-Ansible is human readable, so if you are interested in what happens there, just open that file and read it.
-
 
