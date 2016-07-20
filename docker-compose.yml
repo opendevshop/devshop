@@ -16,7 +16,13 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
     volumes:
-        - ./source:/volumes
+      # Use direct mounts if you are on Linux
+      - ./source/devmaster-1.x:/var/aegir/devmaster-docker
+      - ./source/drush:/var/aegir/.drush/commands
+
+      # If you have a mac, it is very slow to have direct volume mounts.
+      # We are attempting a workaround by monitoring for changes and copying the files into place.
+      - ./source:/volumes
 
   database:
     image: mariadb
