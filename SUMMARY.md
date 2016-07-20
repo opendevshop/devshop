@@ -6,7 +6,7 @@
   * Tour
 
 ### Install & Upgrade
-  * [Installing DevShop](installation.md)
+  * [Installing DevShop](install.md)
   * [Upgrading DevShop](upgrading.md)
   * [Changing Hostname](changing-hostname.md)
   * [Setup Examples](examples.md)
