@@ -1,96 +1,36 @@
-DevShop RoadMap
-===============
+# DevShop RoadMap
 
-# Past
+## Past
+For the history of DevShop, see [CHANGELOG.md](http://github.com)
 
-## 0.1.x 
 
-- First semantic versioning release.
-- Completely new user interface. 
-- Behat Testing.
-- Install Script
-- Vagrantfile.
-- Travis CI
-- ReadTheDocs.org setup.
+## 1.x Life cycle
 
-## 0.2.x
+### DevShop 1.0.0
 
-- Aegir cleanups.
-- UI enhancements.
-- Improved Behat Testing and Logging
+The original vision for DevShop is fully automated hosting and scaling.  The [Aegir Cloud](http://drupal.org/project/aegir_cloud) and [Aegir Ansible](http://drupal.org/project/aegir_ansible) modules are the final piece to that puzzle.
 
-## 0.3.x
+When the following features are fully complete we will release 1.0.0:
 
-- DevShop CLI.
-- Improved GitHub integration.
-- Improved testing interfaces.
-- Addition of multiple test engines.
-- Major documentation efforts.
+- [Aegir Cloud](http://drupal.org/project/aegir_cloud): Finish support for Amazon, DigitalOcean, Rackspace, and Linode.
+- Aegir Ansible: Finish production ready playbooks for Aegir Web, Database, and Load Balancing servers, including the security playbooks and user management.
+- [Aegir SSH](http://drupal.org/project/aegir_ssh): Allow per-server user assignment.
 
-## 0.4.x
+### DevShop 1.1.x
 
-- Adding "remote:install" command and ansible playbook to setup remote servers.
-- Added SSL by default.
-- UI Improvements.
-- Aegir SSH module.
-- GitHub API integration.
+The DevShop 1.1.x cycle will focus on user interface improvements and incremental improvements to Aegir.
 
-# Current
-## 0.5.x
- 
-- Major UI improvements across the system.
-- Creation of the `gh-pages` branch for getdevshop.com.
-- Added "Help" widget.
-- "Download Modules" task: add modules to your project through the devshop web UI.
-- Improvements to the "devshop upgrade" command.
-- Introduced ".development_mode" for improved developer experience.
-- Wrote some behat tests for testing the devshop web UI.
+Many improvements to the Aegir core system are needed to allow work to start on adding support for things like Docker or Wordpress:
 
-# In Progress
-## 0.6.x 
+- [Decouple Install Task from Site Creation](https://www.drupal.org/node/2754069)
+- [Refactor PROVISION_SITE_INSTALLED to be more verbose and actually check if site was installed.](https://www.drupal.org/node/2764245)
 
-**Hooks Improvements**
+### DevShop 1.2.x
 
-- DevShop `.hooks`: Create a .hooks file in your codebase to control what happens post-deploy, post-install, post-sync, etc.  See the [documentation](http://devshop.readthedocs.org/en/latest/deployment-hooks/) for more information
-- Acquia Cloud Hooks compatibility: finalize all the hooks.
+By the 1.2.x cycle, we will have Aegir Docker integration completed.
 
-# Future
+Work in progress is available in the [DevShop Rancher](http://github.com/opendevshop/devshop_rancher) project, but it is blocked by the issues listed above.
 
-## 0.7.x
-
-**Tasks Improvements**
-
-- Commit Code: Allow users to commit and push code through the web UI.
-- Update Features: Allow users to recreate their features modules through the web UI.
-- Download Modules: Improving the module to not always commit and push.
-- Rebuild: Destroy and Recreate the environment from the primary.
-
-## 0.8.x
-
-- Drupal 7 / Aegir 3 port: Able to host Drupal 8.
-
-## 0.9.x
-
-- Commit Configuration task.
-- Clean up sub modules: Logs, files browser, git browser.
-
-These are not 1.0.0 release blockers. If we decide to postpone these features to 1.1.x we can. 
-
-# DevShop 1.0.0: Early January 2016
-
-## 1.x
-
-We will release 1.0.0 when we have completed the move to Aegir 3 and can successfully host Drupal 8 sites.
-
-## 1.x.y
-
-### DevShop Cloud
-
-*In Progress:* Branch `devshop-cloud` 
-
-- Provisions servers with cloud hosting providers: DigitalOcean, SoftLayer, AWS, Rackspace 
-
-See `devshop-cloud` branch of [opendevshop/devmaster](https://github.com/opendevshop/devmaster/tree/devshop-cloud/modules/devshop/devshop_cloud) repo.
 
 ## 2.x
 ### Drupal 8 & Symfony
