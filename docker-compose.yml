@@ -5,7 +5,7 @@ version: '2'
 services:
 
   devmaster:
-    image: devmaster
+    image: devshop/devmaster
     ports:
       - 80:80
     hostname: devshop.local.computer
@@ -16,8 +16,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
     volumes:
-        - ./devmaster-1.x:/var/aegir/devmaster-1.x
-        - ./drush:/usr/share/drush/commands
+        - ./source:/volumes
 
   database:
     image: mariadb
