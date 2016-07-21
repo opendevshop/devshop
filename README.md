@@ -30,8 +30,6 @@ DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http
 
 DevShop uses many additional contributed modules that Aegir core does not.
 
-@TODO: Create a page listing all contributed modules.
-
 # Aegir Cooperative Founding Member
 
 OpenDevShop Inc is a founding member of the Aegir Cooperative.  Lead DevShop developer Jon Pugh is a core Aegir maintainer.  
@@ -42,22 +40,21 @@ See [aegir.coop](http://aegir.coop) for more information.
 
 See the [Tour](/tour.md) section of the documentation for a quick walkthrough of the DevShop interface.
 
-Support
--------
+# Support
 
 * Bug reports and feature requests should be reported in the [DevShop Issue Queue](https://www.github.com/opendevshop/devshop/issues).
-* Join #devshop on IRC.
+* Ask for help in the [Chat Room](http://gitter.im/opendevshop/devshop).
 * Contact OpenDevShop Inc at [www.opendevshop.com/contact](http://www.opendevshop.com/contact)
 
-License
--------
+# License
 
 DevShop is licensed under [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt).
 
 This means any forks of this code must be released as open source and also be licensed under the GPL.
 
-Help Improve Documentation
---------------------------
+# Help Improve Documentation
+
+For full documentation on DevShop, visit [docs.opendevshop.com](http://docs.opendevshop.com) or see our git repository [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation).
 
 Think this can be improved? You can [Fork our Documentation on GitHub](https://github.com/opendevshop/documentation)!
 
