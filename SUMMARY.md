@@ -25,7 +25,7 @@
 * [Troubleshooting](troubleshooting.md)
 
 ### Learning DevShop
-* [The Complete DevShop Training](learning-devshop.md)
+* [The Complete DevShop Training](learn.md)
 
 
 ### Contributing
