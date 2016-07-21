@@ -12,7 +12,7 @@ This material will be rolled into the general documentation as we fill out the d
 
 ## Outline
 
-### Unit 1: The Basics
+### Unit 1: Getting DevShop
 
 1. **Preparing for DevShop**: Domain names and DNS.
   1. Buy a domain name or choose a subdomain on an existing domain.
@@ -24,25 +24,27 @@ This material will be rolled into the general documentation as we fill out the d
   3. *Vagrant*: Launch a vagrant image of devshop with our [built in Vagrantfile](https://github.com/opendevshop/devshop/blob/1.x/Vagrantfile).
   4. *Ansible*: Configure a devshop server with our [Devmaster Ansible Role](https://galaxy.ansible.com/opendevshop/devmaster/).
 
-2. **Create a codebase**: How to add Drupal to a git repository.
+### Unit 2: Using DevShop
+
+1. **Create a codebase**: How to add Drupal to a git repository.
   1. Rules for a good codebase.
   2. Create a new git repository.
   3. Download drupal into it.
   4. Push the new code up to your git repository.
 
-3. ** Create Projects**: How to start new Drupal projects.
+2. ** Create Projects**: How to start new Drupal projects.
   1. Adding new projects.
   2. Setting up Git Access.
   3. Automated Deployment Settings.
   4. Environments Creation.
   5. Installation Profile selection.
 
-5. **Create Environments**: How to launch new sites for your project.
+3. **Create Environments**: How to launch new sites for your project.
   1. Create New Environment: Run install profile.
   2. Clone Environment.
   3. Fork Environment.
 
-6. **Project Dashboard**
+4. **Project Dashboard**
   1. Dashboard: List all environments.
   2. Project Settings.
   3. Logs: Environment Task Logs.
@@ -51,7 +53,7 @@ This material will be rolled into the general documentation as we fill out the d
   2. Webhook Settings.
   2. Drush Aliases. 
 
-7. ** Project Settings**
+5. ** Project Settings**
   1. Deployment Hooks: Clear Caches, Revert Features, etc.
   2. Deployment Automation: Immediate, Queued, Manual.
   3. Domain Name Settings: Live Domain, automated subdomains.
@@ -61,7 +63,7 @@ This material will be rolled into the general documentation as we fill out the d
     - Create Environments for Pull Requests
     - Delete Pull Request Environments
     - Pull Request Environment Deploy Method
-8. **Environment Settings**
+6. **Environment Settings**
   1. Lock Database.
   2. Disable Deploy on Commit.
   3. Deployment Hooks.
@@ -70,7 +72,7 @@ This material will be rolled into the general documentation as we fill out the d
   6. HTTP Basic Authentication: Password protect your site.
   6. Error logs: Making logs available.
   7. SSL.
-8. **Environment Dashboard**
+7. **Environment Dashboard**
   1. Environment name, git version, Drupal version, environment status indicators.
   2. Domains list.
   3. Log in button.
@@ -96,12 +98,12 @@ This material will be rolled into the general documentation as we fill out the d
     9. Run Cron.
     10. Run DB Updates.
     11. Backup.
-9. **Importing Sites**
+8. **Importing Sites**
   1. Site Migration primer: Database, Files, Code.
   2. Using DevShop Drush Aliases.
   3. Adding "Remote Aliases" for Deploying Data.
   4. Using the command line.
-10. **Connecting to Devshop**
+9. **Connecting to Devshop**
   1. My Account > SSH Keys.
   2. Always SSH as aegir@server_master.
   3. Drush Aliases are available on the project dashboard.
@@ -117,7 +119,7 @@ This material will be rolled into the general documentation as we fill out the d
   4. Continuous Deployment: Merge to `master` > Automatic Deploy to Live.
   3. Release Environments + Pull Request Environments. Create an environment with a tagged release for testing, then deploy to live.
 
-## Unit 2: Test Driven Development
+## Unit 3: Test Driven Development
 1. **What is CI**: Breakdown of CI terms and topics.
 2. **Branch Driven Development**: Using git & branching to improve code quality and developer efficiency.
 3. **Branch Environments**: Creating copies of your site on different branches to isolate bug fixes and new features  until it’s ready to merge.
@@ -126,7 +128,7 @@ This material will be rolled into the general documentation as we fill out the d
 6. **Custom Tests with hooks.yml**: Create a file in your Drupal site to run any command you wish.
 7. **Advanced Topics**: Selenium, Docker, Screenshots, Visual Regression, & more.
 
-## Unit 3: Deep Dive
+## Unit 4: Deep Dive
 
 1. **Web Interface**: Devmaster: Drupal site with Aegir modules.
   1. Servers & Services.
@@ -151,7 +153,7 @@ This material will be rolled into the general documentation as we fill out the d
 3. **Customizations**
   1. Customizing settings.php
 
-## Unit 3: Cloud Management
+## Unit 5: Cloud Management
 
 1. **DevShop Cloud**: How to use DevShop to create new servers using just your API key.
 2. **DevShop Ansible**: How to use DevShop to configure and manage your servers automatically using Ansible. 
