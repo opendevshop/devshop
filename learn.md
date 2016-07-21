@@ -145,6 +145,7 @@ This material will be rolled into the general documentation as we fill out the d
   3. Sites.
   4. Tasks.
   5. Queues: Cron, Tasks, Backups, Deploys.
+  6. Hosting Settings & DevShop Settings
 2. **Command Line Interface**
   1. Aegir User: No sudo except for webserver reload.
   2. Drush Aliases & "Contexts": 
