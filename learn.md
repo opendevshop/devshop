@@ -118,6 +118,9 @@ This material will be rolled into the general documentation as we fill out the d
   3. Stage + Tagged Releases: Git Tag > Manual Deploy on Live.
   4. Continuous Deployment: Merge to `master` > Automatic Deploy to Live.
   3. Release Environments + Pull Request Environments. Create an environment with a tagged release for testing, then deploy to live.
+12. **Remote Servers**
+  1. Web Servers: Apache or NGINX. Requires SSH access and sudo access to reload web server.
+  2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
 
 ## Unit 3: Test Driven Development
 1. **What is CI**: Breakdown of CI terms and topics.
@@ -128,7 +131,13 @@ This material will be rolled into the general documentation as we fill out the d
 6. **Custom Tests with hooks.yml**: Create a file in your Drupal site to run any command you wish.
 7. **Advanced Topics**: Selenium, Docker, Screenshots, Visual Regression, & more.
 
-## Unit 4: Deep Dive
+## Unit 4: Cloud Management
+
+1. **DevShop Cloud**: How to use DevShop to create new servers using just your API key.
+2. **DevShop Ansible**: How to use DevShop to configure and manage your servers automatically using Ansible. 
+3. **Cloud Examples**: Using Aegir Cluster & DevShop Ansible to launch multiple web servers and a load balancer.
+
+## Unit 5: Deeper Dive
 
 1. **Web Interface**: Devmaster: Drupal site with Aegir modules.
   1. Servers & Services.
@@ -147,17 +156,6 @@ This material will be rolled into the general documentation as we fill out the d
   2. Supervisor.
   3. `drush @hostmaster hosting-tasks` / `drush @hostmaster hosting-task 123`
   4. Using Jenkins for Task Running with [github.com/opendevshop/hosting_task_jenkins](https://github.com/opendevshop/hosting_task_jenkins)
-4. **Remote Servers**
-  1. Web Servers: Apache or NGINX. Requires SSH access and sudo access to reload web server.
-  2. Database Servers: Any MySQL-compatible server. Requires a database root user access.
+
 3. **Customizations**
   1. Customizing settings.php
-
-## Unit 5: Cloud Management
-
-1. **DevShop Cloud**: How to use DevShop to create new servers using just your API key.
-2. **DevShop Ansible**: How to use DevShop to configure and manage your servers automatically using Ansible. 
-3. **Cloud Examples**: Using Aegir Cluster & DevShop Ansible to launch multiple web servers and a load balancer.
-
-
-
