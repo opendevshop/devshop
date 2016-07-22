@@ -3,6 +3,7 @@
 use DigitalOceanV2\Adapter\BuzzAdapter;
 use DigitalOceanV2\DigitalOceanV2;
 
+module_load_include('service.inc', 'aegir_cloud');
 
 class Provision_Service_provider_digital_ocean extends Provision_Service_provider {
 
