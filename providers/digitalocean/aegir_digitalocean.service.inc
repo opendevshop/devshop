@@ -126,8 +126,8 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
 //            $user_data
         );
 
-        form_set_value($form['services']['provider']['softlayer']['provider_data'], $provider_data, $form_state);
-        form_set_value($form['services']['provider']['softlayer']['provider_server_identifier'], $provider_data->id, $form_state);
+        form_set_value($form['services']['provider']['digital_ocean']['provider_data'], $provider_data, $form_state);
+        form_set_value($form['services']['provider']['digital_ocean']['provider_server_identifier'], $provider_data->id, $form_state);
       }
 
     } catch (Exception $e) {
