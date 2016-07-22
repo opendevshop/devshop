@@ -123,6 +123,11 @@ function aegir_softlayer_validate_key($form, $form_state) {
   $apiUsername = $form_state['values']['aegir_cloud_softlayer_api_username'];
   $apiKey = $form_state['values']['aegir_cloud_softlayer_api_key'];
 
+  // Ignore if empty.
+  if (empty($form_state['values']['aegir_cloud_softlayer_api_key'])) {
+    return;
+  }
+
   // Get Create options
   try {
     $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', NULL, $apiUsername, $apiKey);
