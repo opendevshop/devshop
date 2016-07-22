@@ -1,7 +1,5 @@
 <?php
 
-module_load_include('service.inc', 'aegir_cloud');
-
 /**
  * Digital Ocean provider.
  */
