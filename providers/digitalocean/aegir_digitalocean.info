@@ -3,4 +3,4 @@ description = Launches servers on DigitalOcean.
 core = 7.x
 package = Aegir Cloud
 
-dependencies[] = devshop_cloud
+dependencies[] = aegir_cloud
