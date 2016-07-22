@@ -331,6 +331,12 @@ function devshop_project_load($node) {
       // Get git diff.
       $environment->git_diff = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always diff"));
 
+      // Limit git diff to 1000 lines
+      $lines = explode("\n", $environment->git_diff);
+      $lines = array_slice($lines, 0, 1000);
+      $lines[] = '# DIFF TRUNCATED. MORE THAN 1000 LINES';
+      $environment->git_diff  = implode("\n", $lines);
+
     }
     else {
       $environment->git_last = '';
