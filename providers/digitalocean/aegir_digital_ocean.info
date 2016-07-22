@@ -1,6 +1,6 @@
-name = DevShop Cloud: Digital Ocean
-description = Launches servers on Digital Ocean.
+name = Aegir Cloud: DigitalOcean
+description = Launches servers on DigitalOcean.
 core = 7.x
-package = DevShop
+package = Aegir Cloud
 
 dependencies[] = devshop_cloud
