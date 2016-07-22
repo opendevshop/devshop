@@ -16,6 +16,17 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
     if (!$this->server->nid) {
       $default_options = variable_get('aegir_digital_ocean_default_options', array());
       $options = $this->getDigitalOceanOptions();
+
+      // If there are no options, show a link to the settings form.
+      if (empty($options)) {
+        $form['warning'] = array(
+            '#markup' => t('You must first configure your !link to use this provider.', array(
+                    '!link' => l(t('DigitalOcean Credentials'), 'admin/hosting/cloud'))
+            ),
+        );
+        return;
+      }
+
       $form['provider_options'] = array();
       $form['provider_options']['region'] = array(
         '#type' => 'select',
