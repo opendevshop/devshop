@@ -24,6 +24,9 @@
 * [Password Protection](password-protect.md)
 * [Troubleshooting](troubleshooting.md)
 
+### Developing DevShop
+* [Developing DevShop](development.md)
+
 ### Learning DevShop
 * [The Complete DevShop Training](learn.md)
 
