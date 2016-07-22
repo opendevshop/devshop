@@ -81,6 +81,61 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
   }
 
   /**
+   * Validate the server form.
+   * @param $node
+   * @param $form
+   */
+  public function validate(&$node, &$form, &$form_state) {
+
+    if (!empty($node->nid)) {
+      return;
+    }
+
+    try {
+//      $api = $this->softlayer_client('SoftLayer_Account');
+//      $account = $api->getObject();
+//      $this->node = $node;
+
+      // @TODO: Check API Access.
+
+      // Detect form errors.
+      // If there are errors, do not attempt to create server.
+      $errors = form_get_errors();
+      if ($errors) {
+        drupal_set_message(t('Validation errors must be fixed before we can create the server.'), 'error');
+      }
+      // If there are no errors, create the server.
+      // We do this in the validation phase so that we can cause form errors if something goes wrong.
+      else {
+
+        // Create the Softlayer "Virtual Guest"
+        $api = $this->load_api();
+        $droplet = $api->droplet();
+
+        $keys = array_filter($this->provider_options['keys']);
+        $keys = array_values($keys);
+
+        $provider_data = $droplet->create($this->server->remote_host,
+            $this->provider_options['region'],
+            $this->provider_options['size'],
+            $this->provider_options['image'],
+            $this->provider_options['backups'],
+            $this->provider_options['ipv6'],
+            $this->provider_options['private_networking'],
+            $keys
+//            $user_data
+        );
+
+        form_set_value($form['services']['provider']['softlayer']['provider_data'], $provider_data, $form_state);
+        form_set_value($form['services']['provider']['softlayer']['provider_server_identifier'], $provider_data->id, $form_state);
+      }
+
+    } catch (Exception $e) {
+      form_set_error('provider_options', $e->getMessage());
+    }
+  }
+
+  /**
    * Process options
    */
   function getDigitalOceanOptions() {
