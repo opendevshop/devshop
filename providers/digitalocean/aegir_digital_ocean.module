@@ -6,13 +6,13 @@ use DigitalOceanV2\DigitalOceanV2;
 /**
  * Implements hook_menu()
  */
-function devshop_digital_ocean_menu(){
+function aegir_digitalocean_menu(){
   $items = array();
   $items['admin/devshop/digital_ocean'] = array(
     'title' => 'Digital Ocean',
     'description' => 'Retrieve options from Digital Ocean.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_digital_ocean_options_form'),
+    'page arguments' => array('aegir_digitalocean_options_form'),
     'access arguments' => array('administer devshop cloud'),
     'file' => 'options.php',
     'type' => MENU_LOCAL_TASK,
@@ -22,7 +22,7 @@ function devshop_digital_ocean_menu(){
 /**
  * Implements hook_hosting_service()
  */
-function devshop_digital_ocean_hosting_service() {
+function aegir_digitalocean_hosting_service() {
   $options = variable_get('devshop_cloud_digital_ocean_options', array());
   if (!empty($options)) {
     return array(
@@ -39,7 +39,7 @@ function devshop_digital_ocean_hosting_service() {
  *
  * Alters devshop cloud settings form to add digital_ocean api keys.
  */
-function devshop_digital_ocean_form_devshop_cloud_settings_form_alter(&$form, &$form_state) {
+function aegir_digitalocean_form_devshop_cloud_settings_form_alter(&$form, &$form_state) {
 
   $form['digital_ocean'] = array(
     '#type' => 'fieldset',
@@ -56,7 +56,7 @@ function devshop_digital_ocean_form_devshop_cloud_settings_form_alter(&$form, &$
 
 }
 
-function devshop_digital_ocean_load_api(){
+function aegir_digitalocean_load_api(){
   require_once dirname(__FILE__) . '/digital-ocean-master/vendor/autoload.php';
   require_once dirname(__FILE__) . '/digital-ocean-master/src/DigitalOceanV2.php';
   $api_token = variable_get('devshop_cloud_digital_ocean_api_token', array());
@@ -69,6 +69,6 @@ function devshop_digital_ocean_load_api(){
 /**
  * Implementation of hook_nodeapi()
  */
-function devshop_digital_ocean_nodeapi_server_load(&$node) {
+function aegir_digitalocean_nodeapi_server_load(&$node) {
   return array('digital_ocean_token' => variable_get('devshop_cloud_digital_ocean_api_token', array()));
 }
