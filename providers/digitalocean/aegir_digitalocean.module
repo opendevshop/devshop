@@ -1,5 +1,6 @@
 <?php
 
+require_once 'vendor/autoload.php';
 use DigitalOceanV2\Adapter\BuzzAdapter;
 use DigitalOceanV2\DigitalOceanV2;
 
@@ -7,15 +8,9 @@ use DigitalOceanV2\DigitalOceanV2;
  * Implements hook_hosting_service()
  */
 function aegir_digitalocean_hosting_service() {
-  $options = variable_get('devshop_cloud_digital_ocean_options', array());
-  if (!empty($options)) {
-    return array(
-      'digital_ocean' => 'provider',
-    );
-  }
-  else {
-    return array();
-  }
+  return array(
+    'digital_ocean' => 'provider',
+  );
 }
 
 /**
