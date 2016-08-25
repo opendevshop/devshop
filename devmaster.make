@@ -18,22 +18,22 @@ includes[devshop] = "drupal-org.make"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.6"
+projects[hosting][version] = "3.7"
 projects[hosting][subdir] = "aegir"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
 
-projects[hosting_git][version] = "3.5"
+projects[hosting_git][version] = "3.7"
 projects[hosting_git][subdir] = aegir
 
 projects[hosting_remote_import][subdir] = aegir
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.5"
+projects[hosting_site_backup_manager][version] = "3.7"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.5"
+projects[hosting_tasks_extra][version] = "3.7"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
@@ -62,7 +62,7 @@ projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha3"
 projects[views][version] = "3.14"
 projects[views_bulk_operations][version] = "3.3"
-projects[ctools][version] = "1.9"
+projects[ctools][version] = "1.10"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
@@ -70,4 +70,4 @@ projects[intercomio][version] = "1"
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.5
+projects[bootstrap][version] = 3.6
