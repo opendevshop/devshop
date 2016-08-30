@@ -9,6 +9,9 @@ Vagrant.require_version ">= 1.5"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
+  print "DEVSHOP: Vagrant environment is now deprecated.  Docker is now the recommended development environment. \n"
+  print "DEVSHOP: See 'development-launch.sh' script to launch a devshop development environment using Docker. \n"
+
   # Load Variables
   settings = YAML.load_file(File.dirname(__FILE__) + "/vars.vagrant.yml")
   development_mode = settings["vagrant_development"] || File.exist?(File.dirname(__FILE__) + '/.development_mode')
