@@ -5,7 +5,7 @@ version: '2'
 services:
 
   devmaster:
-    image: devshop/devmaster
+    image: aegir/hostmaster:local
     ports:
       - 80:80
     hostname: devshop.local.computer
@@ -16,13 +16,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
     volumes:
-      # Use direct mounts if you are on Linux
-#      - ./source/devmaster-1.x:/var/aegir/devmaster-docker
-#      - ./source/drush:/var/aegir/.drush/commands
-
-      # If you have a mac, it is very slow to have direct volume mounts.
-      # We are attempting a workaround by monitoring for changes and copying the files into place.
-      - ./source:/volumes
+      - ./aegir-home:/var/aegir:Z
 
   database:
     image: mariadb
@@ -30,3 +24,5 @@ services:
       driver: none
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
+
+    command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
