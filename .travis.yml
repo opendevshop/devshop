@@ -50,6 +50,8 @@ services:
   - docker
 
 before_install:
+  - sudo docker --version
+
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
   # Customize container
