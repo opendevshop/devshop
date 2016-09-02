@@ -38,7 +38,7 @@ See [aegir.coop](http://aegir.coop) for more information.
 
 # Tour
 
-See the [Tour](/tour.md) section of the documentation for a quick walkthrough of the DevShop interface.
+See the [Tour](http://docs.opendevshop.com/tour.htmld) section of the documentation for a quick walkthrough of the DevShop interface.
 
 # Support
 
