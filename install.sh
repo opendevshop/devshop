@@ -348,3 +348,5 @@ else
   echo "The command 'devshop status' had an error. Check the logs and try again."
   exit 1
 fi
+
+echo "|| End of install.sh"
