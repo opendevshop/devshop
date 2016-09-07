@@ -9,6 +9,7 @@
   * [Installing DevShop](install.md)
   * [Upgrading DevShop](upgrading.md)
   * [Changing Hostname](changing-hostname.md)
+  * [System Configuration with Ansible](system-configuration.md)
   * [Setup Examples](examples.md)
 
 ### Using DevShop
