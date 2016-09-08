@@ -52,6 +52,12 @@ if [ ! -d documentation ]; then
 fi
 
 # Clone dockerfiles
+if [ ! -d aegir-dockerfiles ]; then
+  echo "Æ | Cloning aegir-dockerfiles..."
+  git clone git@github.com:aegir-project/dockerfiles.git aegir-dockerfiles
+fi
+
+# Clone dockerfiles
 if [ ! -d dockerfiles ]; then
   echo "Æ | Cloning dockerfiles..."
   git clone git@github.com:opendevshop/dockerfiles.git
@@ -79,8 +85,10 @@ echo " Waiting 5 seconds..."
 echo "--------------------------------------------------------"
 sleep 5
 
-echo "Æ | Running docker build --build-arg AEGIR_UID=$USER_UID -t aegir/hostmaster:local -f dockerfiles/Dockerfile-local dockerfiles"
-docker build --build-arg AEGIR_UID=$USER_UID -t aegir/hostmaster:local --no-cache -f dockerfiles/Dockerfile-local dockerfiles
+echo "Æ | Running docker build --build-arg AEGIR_UID=$USER_UID -t aegir/hostmaster:own -f aegir-dockerfiles/Dockerfile aegir-dockerfiles"
+docker build --build-arg AEGIR_UID=$USER_UID -t aegir/hostmaster:own -f aegir-dockerfiles/Dockerfile aegir-dockerfiles
+echo "Æ | docker build -t aegir/hostmaster:local -f aegir-dockerfiles/Dockerfile-local aegir-dockerfiles"
+docker build -t aegir/hostmaster:local -f aegir-dockerfiles/Dockerfile-local aegir-dockerfiles
 
 echo "Æ | Container preparation complete."
 
