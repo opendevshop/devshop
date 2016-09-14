@@ -69,7 +69,7 @@ You should now be able to access your site via https:// using your commercial ce
 
 It is recommended to allow Aegir to create a default self-signed certificate and key first, and then replace the contents of both files (not the files itself) with your real key and certificate. Any chained certificates (bundles) should be included in the same file, directly below your own certificate - there is no need for extra files/lines like it is for Apache configuration.
 
-## Enabling SSL on the DevShop Dashboard
+## Enabling SSL for the DevShop Dashboard
 
 Once you have configured your server for SSL, you might want to enable HTTPS for your DevShop Dashboard website as well.
 
