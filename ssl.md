@@ -68,3 +68,22 @@ You should now be able to access your site via https:// using your commercial ce
 ## NGINX Certificates
 
 It is recommended to allow Aegir to create a default self-signed certificate and key first, and then replace the contents of both files (not the files itself) with your real key and certificate. Any chained certificates (bundles) should be included in the same file, directly below your own certificate - there is no need for extra files/lines like it is for Apache configuration.
+
+## Enabling SSL on the DevShop Dashboard
+
+Once you have configured your server for SSL, you might want to enable HTTPS for your DevShop Dashboard website as well.
+
+To enable HTTPS on your Aegir/DevShop front-end, find the "hostmaster" site.
+
+The hostmaster site node is always available at the path alias "hosting/c/hostmaster", for example http://devshop.local.computer/hosting/c/hostmaster
+
+You can also find the hostmaster site node by visiting http://devshop.local.computer/hosting/sites. Look for the site with the **OpenDevShop DevMaster** profile.
+
+1. Visit the hostmaster site node page. http://devshop.local.computer/hosting/c/hostmaster
+2. Click *Edit*.
+3. Select the *SSL* fieldset.
+4. Select *Optional* or *Required* for **Encryption**.
+5. Enter a name for your *New Encryption Key*. Let Aegir generate a self-signed key first. 
+5. Press the **Save** button.
+
+Once the site verifies, you should be able to access your site via HTTPS.
