@@ -1,17 +1,12 @@
-Using SSL
-=========
+# Using SSL
 
 DevShop & Aegir make setting up SSL relatively easy.
 
-Software Packages
------------------
+## Software Packages
 
-The `openssl` packages are now installed via the devshop installer.
+The required packages are now installed via the devshop install script and Ansible Playbooks. 
 
-However this is a recent addition, you may need to install them yourself.
-
-Package Installation
---------------------
+## Manual Package Installation
 
 If you are missing these packages, you can install them:
 
@@ -23,14 +18,13 @@ On RedHat systems, you also need the `mod_ssl` package.
 
     $ yum install openssl mod_ssl
 
-SSL Setup
----------
+## Aegir SSL Setup
 
-There are a few steps you need to take in the devshop front-end to get SSL going on an environment.
+There are more steps you need to take in the DevShop/Aegir front-end to enable SSL
 
 1. Enable "Hosting SSL" Module:
     - Visit **Admin > Hosting**.
-    - Check the box for **SSL Support** or **NGINX SSL Support** and hit **Save configuration**.
+    - Check the box for **SSL Support** (if you are using Apache) or **NGINX SSL Support** (if you are using NGINX). Press the **Save configuration** button.
 
 2. Configure your server to use *Apache SSL* or *NGINX SSL*:
     - Visit **Servers**.
@@ -38,8 +32,8 @@ There are a few steps you need to take in the devshop front-end to get SSL going
     - Click **Edit**.
     - Select *apache_ssl* or *nginx_ssl* from **Web**.
     - Click **Save**.
-    - A *Verify* task will be queued on the server.
-    - Once the Server's *Verify* task is complete, a *Verify* task will be run on every environment hosted on that server.
+    - A *Verify* task for the server is queued.
+    - Once the Server's *Verify* task is complete, a *Verify* task will be queued for every environment hosted on that server.
 
 3. Configure your site to use SSL:
     - Visit the project dashboard for your project.
@@ -52,8 +46,7 @@ There are a few steps you need to take in the devshop front-end to get SSL going
     - Wait for the site to be verified.
     - Visit the environment's URL and you should be able to access it via HTTPS.
     
-Adding Commercial SSL
----------------------
+## Adding Commercial SSL
 
 If you wish to use your own commercial certificate and key you will need to do the following:
 
@@ -72,7 +65,6 @@ If you wish to use your own commercial certificate and key you will need to do t
 You should now be able to access your site via https:// using your commercial certificate.
 
 
-NGINX Certificates
-------------------
+## NGINX Certificates
 
 It is recommended to allow Aegir to create a default self-signed certificate and key first, and then replace the contents of both files (not the files itself) with your real key and certificate. Any chained certificates (bundles) should be included in the same file, directly below your own certificate - there is no need for extra files/lines like it is for Apache configuration.
