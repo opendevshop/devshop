@@ -17,7 +17,7 @@
 #
 #  Options:
 #    --hostname           The desired fully qualified domain name to set as this machine's hostname
-#    --server_webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
+#    --server-webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
 #    --makefile           The makefile to use to build the front-end site.
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
 
@@ -128,14 +128,14 @@ echo $LINE
 
 # Notify user we are using the found webserver.
 if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
-  echo " An existing Aegir NGINX installation was found. Using 'nginx' for variable 'server_webserver'"
+  echo " An existing Aegir NGINX installation was found. Using 'nginx' for variable 'server-webserver'"
   echo $LINE
 elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
-  echo " An existing Aegir Apache installation was found. Using 'apache' for variable 'server_webserver'"
+  echo " An existing Aegir Apache installation was found. Using 'apache' for variable 'server-webserver'"
   echo $LINE
 fi
 
-# Fail if server_webserver is not apache or nginx
+# Fail if server-webserver is not apache or nginx
 if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
   echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
   exit 1
@@ -348,3 +348,5 @@ else
   echo "The command 'devshop status' had an error. Check the logs and try again."
   exit 1
 fi
+
+echo "|| End of install.sh"

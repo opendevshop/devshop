@@ -16,32 +16,22 @@ env:
 
 addons:
   hosts:
-    - aegir.travis
-    - sitetest.aegir.travis
+    - devshop.travis
+    - dev.projectname.devshop.travis
+    - live.projectname.devshop.travis
+    - dev.drpl8.devshop.travis
 
 services:
   - docker
 
 before_install:
-  # list docker-engine versions
-  - apt-cache madison docker-engine
 
-  # upgrade docker-engine to specific version
-  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y -qq docker-engine=${DOCKER_VERSION}
-
-  # reinstall docker-compose at specific version
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-  - docker --version
-  - docker-compose --version
-  - sudo docker build --rm=true --file=Dockerfile --tag=aegir/hostmaster .
-  - git clone http://github.com/aegir-project/tests.git
-  - cd tests
+  # Prepare Docker
+  - wget https://raw.githubusercontent.com/aegir-project/tests/master/travis/prepare-docker.sh
+  - sudo bash prepare-docker.sh
+  - cd /home/travis/build/opendevshop/devshop/tests
 
 script:
 
-  # Tests are included in the docker-compose.yml file in the tests repo.
-  - pwd
-  - sudo docker-compose up --abort-on-container-exit
+  - sudo docker --version
+  - sudo docker-compose -f docker-compose-hostmaster.yml run hostmaster

@@ -1,7 +1,12 @@
 
 # devshop repos
-source
-roles
+aegir-home
+dockerfiles
+documentation
+hosting
+hostmaster
+provision
+tests
 
 # Local config
 .vagrant

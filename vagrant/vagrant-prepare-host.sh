@@ -10,12 +10,14 @@
 VAGRANT_HOME=$1
 DEVMASTER_VERSION=$2
 cd $1
+cd ..
 
-if [ ! -d source ]; then
-  mkdir source
+if [ ! -d aegir-home ]; then
+  echo "Æ | Creating aegir-home directory..."
+  mkdir aegir-home
 fi
 
-cd source
+cd aegir-home
 
 # Build a full devshop frontend on the host with drush make, with working-copy option.
 if [ ! -d devmaster-$DEVMASTER_VERSION ]; then
@@ -26,18 +28,26 @@ if [ ! -d devmaster-$DEVMASTER_VERSION ]; then
 fi
 
 # Clone drush packages.
-if [ ! -d drush ]; then
-    mkdir drush
-    cd drush
-    git clone git@git.drupal.org:project/provision.git --branch 7.x-3.x
+if [ ! -d .drush ]; then
+    echo "Æ | Creating .drush/commands folder..."
+    mkdir -p .drush/commands
+    cd .drush/commands
+    echo "Æ | Cloning Provision..."
+    git clone git@git.drupal.org:project/provision.git
+    cd provision
+    git checkout $AEGIR_VERSION
+
+    cd ..
+    echo "Æ | Cloning Registry Rebuild..."
     git clone git@git.drupal.org:project/registry_rebuild.git --branch 7.x-2.x
+    cd ../..
 fi
 
 # Clone ansible roles.
-cd ..
+cd $VAGRANT_HOME
 if [ ! -d roles ]; then
     mkdir roles
-    ansible-galaxy install -r roles.yml -p roles
+    ansible-galaxy install -r ../roles.yml -p roles
     cd roles
 
     # Overwrite the roles installed by galaxy with git clones of Our Roles
