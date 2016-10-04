@@ -34,4 +34,4 @@ before_install:
 script:
 
   - sudo docker --version
-  - sudo docker-compose -f docker-compose-hostmaster.yml run hostmaster
+  - sudo docker-compose -f docker-compose.yml run devmaster
