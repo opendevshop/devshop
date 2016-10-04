@@ -32,14 +32,16 @@ The only tools you need on your host machine to develop devshop are:
 
 1. [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
-2. [Install Drush](http://docs.drush.org/en/master/install/):
+2. [Install Drush](http://docs.drush.org/en/master/install/).
+2. [Install Docker](https://docs.docker.com/engine/installation/).
+2. [Install Docker Compose](https://github.com/docker/compose/releases).
 
 3. Clone this Repo and change to it's directory.
 
-  ```
-  git clone git@github.com:opendevshop/devshop.git
-  cd devshop
-  ```
+    ```
+    git clone git@github.com:opendevshop/devshop.git
+    cd devshop
+    ```
 4. Run `development-prepare.sh` script to clone the rest of the source code and prepare docker containers.
 
 5. That's it! Look for a one-time login link that looks like:
