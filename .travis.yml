@@ -7,6 +7,11 @@ env:
     - DOCKER_VERSION=1.11.2-0~trusty
     - DOCKER_COMPOSE_VERSION=1.7.1
 
+# Only run test when committing to master branch.
+branches:
+  only:
+    - 1.x
+
 #env:
 #  - test: Ubuntu 14.04 Apache
 #    distribution: ubuntu
