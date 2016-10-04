@@ -19,7 +19,7 @@ echo " Waiting 5 seconds..."
 sleep 5
 
 docker-compose up -d
-docker-compose logs -ft
+docker-compose logs -f
 
 echo "==========================ÆGIR=========================="
 echo "------------------------ DEVSHOP------------------------"
