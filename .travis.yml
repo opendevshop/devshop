@@ -34,8 +34,18 @@ before_install:
   # Prepare Docker
   - wget https://raw.githubusercontent.com/aegir-project/tests/master/travis/prepare-docker.sh
   - sudo bash prepare-docker.sh
-  - cd /home/travis/build/opendevshop/devshop/tests
 
+  # Prepare folders for compose install from within the container.  -
+  - cd /home/travis/build/opendevshop/devshop/tests
+  - ls -lah
+  - mkdir vendor
+  - chmod 777 vendor
+  - mkdir ../bin
+  - chmod 777 ../bin
+
+  # Get aegir/hostmaster and database images.
+  - sudo docker pull aegir/hostmaster
+  - sudo docker pull mariadb
 script:
 
   - sudo docker --version
