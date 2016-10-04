@@ -20,7 +20,7 @@ services:
       AEGIR_VERSION: 1.x
     volumes:
       - ./aegir-home:/var/aegir:Z
-
+      - ./tests:/var/aegir/tests
   database:
     image: mariadb
     logging:
