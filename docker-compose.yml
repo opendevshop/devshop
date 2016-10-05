@@ -17,7 +17,7 @@ services:
       MYSQL_ROOT_PASSWORD: strongpassword
       AEGIR_MAKEFILE: https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make
       AEGIR_PROFILE: devmaster
-      AEGIR_VERSION: 1.x
+      AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
     volumes:
       - ./aegir-home:/var/aegir:Z
   database:
