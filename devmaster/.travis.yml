@@ -2,6 +2,11 @@ language: generic
 
 sudo: required
 
+# Only run test when committing to 1.x branch.
+branches:
+  only:
+    - 1.x
+
 env:
   # CentOS 6: Not supported yet.
   #- distribution: centos
