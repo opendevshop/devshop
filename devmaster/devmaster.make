@@ -53,7 +53,7 @@ projects[aegir_cloud][version] = 1.x
 ; Contrib Modules
 projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.4
-projects[entity][version] = 1.7
+projects[entity][version] = 1.8
 projects[openidadmin][version] = 1.0
 projects[overlay_paths][version] = 1.3
 projects[r4032login][version] = 1.8
