@@ -282,7 +282,8 @@ function boots_render_tasks($tasks = NULL, $class = '', $actions = array(), $flo
 
       $text = '<i class="fa fa-' . $icon . '"></i> ';
       $text .= $task->title;
-      $text .= ' <small class="task-ago btn-block">' . format_interval(REQUEST_TIME - $task->changed) .' '. t('ago') . '</small>';
+      $datetime = date('c', $task->changed);
+      $text .= ' <time class="timeago task-ago btn-block" datetime="' . $datetime . '">' . format_interval(REQUEST_TIME - $task->changed) .' '. t('ago') . '</time>';
 
       $id = isset($task_node->environment)? "task-{$task_node->environment->project_name}-{$task_node->environment->name}": "task-";
       $task_items[] = l($text, 'node/' . $task->nid, array(
