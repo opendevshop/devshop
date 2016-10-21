@@ -21,7 +21,6 @@ services:
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
     volumes:
       - ./aegir-home:/var/aegir:Z
-
   database:
     image: mariadb
     logging:

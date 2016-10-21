@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+
+  devmaster:
+    image: aegir/hostmaster:local
+    ports:
+      - 80:80
+    hostname: devshop.travis
+    links:
+      - database
+    depends_on:
+      - database
+    command:
+      - run-tests.sh
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
+      AEGIR_MAKEFILE: /source/devshop/build-devmaster.make
+      AEGIR_PROFILE: devmaster
+      AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./:/var/aegir/tests
+      - /home/travis/build/opendevshop/devshop:/source/devshop
+
+  database:
+    image: mariadb
+
+    # Disable logging for this container, for testing environment.
+    logging:
+      driver: "none"
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
+
+    # These options are needed for Drupal 7.50 and up for full UTF-8 support.
+    # See https://www.drupal.org/node/2754539
