@@ -164,11 +164,13 @@ function boots_preprocess_environment(&$vars) {
       'type' => 'warning',
     );
   }
-  foreach ($environment->warnings as $warning) {
-    $vars['warnings'][] = array(
-      'text' => $warning['text'],
-      'type' => $warning['type'],
-    );
+  if (isset($environment->warnings)) {
+    foreach ($environment->warnings as $warning) {
+      $vars['warnings'][] = array(
+        'text' => $warning['text'],
+        'type' => $warning['type'],
+      );
+    }
   }
 
   // Load user into a variable.
