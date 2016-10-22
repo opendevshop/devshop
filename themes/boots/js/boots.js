@@ -30,7 +30,7 @@
                 numbers: []
             }
 
-            $("time.timeago").timeago();
+            $(".timeago").timeago();
         }
     }
 })(jQuery);
