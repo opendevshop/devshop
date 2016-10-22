@@ -305,7 +305,7 @@
       elseif (empty($environment->tasks['delete'])): ?>
 
         <!-- URLs -->
-        <div class="environment-domains list-group-item <?php if ($environment->login_text) print 'login-available'; ?>">
+        <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
 
             <div class="btn-toolbar" role="toolbar">
 
@@ -364,7 +364,7 @@
                 <?php endif;?>
 
                 <!-- Log In Link -->
-                <?php if ($environment->login_text): ?>
+                <?php if (isset($environment->login_text)): ?>
                     <div class="btn-group btn-group-smaller pull-right login-link" role="group">
 
                             <!-- Button trigger modal -->
@@ -433,7 +433,7 @@
               <ul class="dropdown-menu" role="menu">
                 <li><label><?php print t('Deploy Hooks'); ?></label></li>
                 <li class="text"><?php print t('Hooks are run any time new code is deployed.  The following hooks are enabled for this environment:'); ?></li>
-
+                <?php if (isset($environment->settings->deploy)): ?>
                 <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
                 <?php if ($enabled): ?>
                   <?php if ($hook_type == 'cache'): ?>
@@ -490,6 +490,7 @@
                     <?php endif; ?>
                   <?php endif; ?>
                 <?php endforeach; ?>
+                <?php endif; ?>
               </ul>
             </div>
           </div>
@@ -557,7 +558,7 @@
                                             </a>
                                         </li>
                                     <?php endforeach; ?>
-                                    <?php if ($project->settings->deploy['allow_deploy_data_from_alias']): ?>
+                                    <?php if (isset($project->settings->deploy['allow_deploy_data_from_alias'])): ?>
                                         <li class="divider"></li>
                                         <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=other&dest=<?php print $source->name ?>">
                                                 <strong class="btn-block"><?php print t('Other...'); ?></strong>
@@ -712,7 +713,7 @@ sites/all/drush/drushrc.php
           <?php print $label ?>
         </button>
         <button type="button" class="btn btn-text" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>" title="<?php print t('Last Commit'); ?>">
-          <time class='timeago' datetime="<?php print $environment->git_last ?>"><?php print $environment->git_last_readable ?>
+          <time class='timeago' datetime="<?php if (isset($environment->git_last)) print $environment->git_last ?>"><?php if (isset($environment->git_last_readable)) print $environment->git_last_readable ?>
         </button>
         <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
           <div class="modal-dialog modal-lg">
@@ -758,8 +759,8 @@ sites/all/drush/drushrc.php
     </div>
   <?php endif; ?>
 
-    <div class="environment-task-logs <?php if (!$page) print 'list-group-item' ?>">
-        <?php if ($page): ?>
+    <div class="environment-task-logs <?php if (!isset($page)) print 'list-group-item' ?>">
+        <?php if (isset($page)): ?>
             <?php print $environment->task_logs; ?>
        <?php else: ?>
         <!-- Tasks -->
