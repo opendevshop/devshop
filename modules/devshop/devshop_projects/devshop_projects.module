@@ -42,13 +42,16 @@ function devshop_projects_init() {
 
       $show_message = TRUE;
       $messages = drupal_get_messages('status');
-      foreach ($messages['status'] as $m) {
-        if (strpos($m, $message) !== FALSE) {
-          $show_message = FALSE;
+
+      if (isset($messages['status'])) {
+        foreach ($messages['status'] as $m) {
+          if (strpos($m, $message) !== FALSE) {
+            $show_message = FALSE;
+          }
         }
-      }
-      if ($show_message) {
-        drupal_set_message($message);
+        if ($show_message) {
+          drupal_set_message($message);
+        }
       }
     }
   }
