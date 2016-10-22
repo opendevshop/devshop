@@ -740,7 +740,10 @@ function _devshop_projects_site_has_module($nid, $module) {
  */
 function _devshop_projects_project_has_module($node, $module) {
   $environment = key($node->project->environments);
-  return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
+
+  if (isset($node->project->environments[$environment]->site)) {
+    return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
+  }
 }
 
 /**
