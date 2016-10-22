@@ -398,6 +398,10 @@ function boots_preprocess_page(&$vars){
   // On any node/% page...
   if (isset($vars['node']) || arg(0) == 'node' && is_numeric(arg(1))) {
 
+    if (!isset($vars['node'])) {
+      $vars['node'] = node_load(arg(1));
+    }
+
     // Task nodes only have project nid and environment name.
     if (is_numeric($vars['node']->project)) {
       $project_node = node_load($vars['node']->project);
