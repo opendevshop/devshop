@@ -61,12 +61,14 @@ function boots_preprocess_environment(&$vars) {
 
   // Look for remote aliases
   // @TODO: Move to devshop_remotes.module. I could't get devshop_remotes_preprocess_environment() working.
-  foreach ($vars['project']->settings->aliases as $name => $alias) {
-    $alias = (object) $alias;
-    $alias->site = $name;
-    $alias->name = $name;
-    $alias->url = $alias->uri;
-    $vars['source_environments'][$name] = $alias;
+  if (isset($vars['project']->settings->aliases )) {
+    foreach ($vars['project']->settings->aliases as $name => $alias) {
+      $alias = (object) $alias;
+      $alias->site = $name;
+      $alias->name = $name;
+      $alias->url = $alias->uri;
+      $vars['source_environments'][$name] = $alias;
+    }
   }
 
   // Show user Login Link
