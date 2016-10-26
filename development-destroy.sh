@@ -14,3 +14,12 @@ docker-compose kill
 
 echo "Æ| docker-compose rm -fv"
 docker-compose rm -fv
+
+echo "Æ| rm -rf aegir-home/.drush"
+rm -rf aegir-home/.drush
+
+echo "Æ| rm -rf aegir-home/config"
+rm -rf aegir-home/config
+
+echo "Æ| sudo rm -rf aegir-home/devmaster-1.x/sites/devshop.local.computer"
+sudo rm -rf aegir-home/devmaster-1.x/sites/devshop.local.computer
