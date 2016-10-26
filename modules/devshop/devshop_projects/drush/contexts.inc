@@ -98,23 +98,40 @@ function getBranchesAndTags($git_url = NULL) {
       continue;
     }
 
-    // @TODO: Would love some regex love here
     // Example remote line:
-    // 9fc5727c0823d8d3300ba5aae3328d5998033e45 refs/heads/3-00
+    // 9fc5727c0823d8d3300ba5aae3328d5998033e45 refs/heads/master
+    // 9fc5727c0823d8d3300ba5aae3328d5998033e45 refs/tags/1.0
     $line = trim(substr($line_string, 40));
-    $ref = explode("/", $line);
-    $git_ref = array_pop($ref);
+    if (empty($line) || $line == 'HEAD') {
+      continue;
+    }
 
-    if (isset($ref[1]) && $ref[1] == 'heads') {
+    // If branch
+    if (strpos($line, 'refs/heads/') === 0) {
+      $git_ref = str_replace('refs/heads/', '', $line);
       $branches[] = $git_ref;
       $refs[$git_ref] = 'branch';
     }
-    else if (isset($ref[1]) && $ref[1] == 'tags') {
+    // else if tag
+    elseif (strpos($line, 'refs/tags/') === 0) {
+      $git_ref = str_replace('refs/tags/', '', $line);
       $tags[] = $git_ref;
       $refs[$git_ref] = 'tag';
     }
-
+    // If not a tag or a head, continue.
+    // @TODO: Should we store alternative types? GitHub Pull Requests use this.
+    else {
+      continue;
+    }
   }
-  drush_log(dt('[DEVSHOP] Found !b branches and !t tags.', array('!b' => count($branches), '!t' => count($tags),)), 'ok');
+  drush_log(dt('Found !count branches: !list', array(
+    '!count' => count($branches),
+    '!list' => implode(', ', $branches),
+  )), 'devshop_log');
+  drush_log(dt('Found !count tags: !list', array(
+    '!count' => count($tags),
+    '!list' => implode(', ', $tags),
+  )), 'devshop_log');
+
   return array('branches' => $branches, 'tags' => $tags, 'refs' => $refs);
 }
