@@ -12,6 +12,7 @@ function devshop_projects_hosting_tasks() {
   $tasks['project']['verify'] = array(
     'title' => t('Verify Project'),
     'description' => t('Verifies access to the git repository, downloads branch and tag information.'),
+    'access callback' => 'devshop_hosting_task_menu_access',
     'provision_save' => TRUE,
   );
   $tasks['project']['devshop-create'] = array(
