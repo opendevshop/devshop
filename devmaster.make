@@ -67,6 +67,7 @@ projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
+projects[libraries][version] = 2.3
 
 ; Timeago module
 projects[timeago][version] = 2.3
