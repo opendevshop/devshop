@@ -67,6 +67,15 @@ projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
+projects[libraries][version] = 2.3
+
+; Timeago module
+projects[timeago][version] = 2.3
+
+; JQuery TimeAgo plugin
+libraries[timeago][download][type] = get
+libraries[timeago][download][url] = https://raw.githubusercontent.com/rmm5t/jquery-timeago/v1.5.3/jquery.timeago.js
+libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme

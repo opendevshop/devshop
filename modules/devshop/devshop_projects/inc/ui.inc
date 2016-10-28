@@ -152,17 +152,7 @@ HTML;
 HTML;
   }
   else {
-    //Call hooks for alter informacion
-    $data = module_invoke_all('devshop_projects_page', $rows, $header);
-
-    // @TODO: Better hook...
-    if (empty($data['rows'])) {
-      $data['rows'] = $rows;
-    }
-    if (empty($data['header'])) {
-      $data['header'] = $header;
-    }
-    $output = theme('table', array('rows' => $data['rows'], 'attributes' => array('class' => array('table'))));
+    $output = theme('table', array('rows' => $rows, 'attributes' => array('class' => array('table'))));
   }
   return $output;
 }
