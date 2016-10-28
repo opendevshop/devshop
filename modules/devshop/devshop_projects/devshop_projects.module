@@ -42,13 +42,16 @@ function devshop_projects_init() {
 
       $show_message = TRUE;
       $messages = drupal_get_messages('status');
-      foreach ($messages['status'] as $m) {
-        if (strpos($m, $message) !== FALSE) {
-          $show_message = FALSE;
+
+      if (isset($messages['status'])) {
+        foreach ($messages['status'] as $m) {
+          if (strpos($m, $message) !== FALSE) {
+            $show_message = FALSE;
+          }
         }
-      }
-      if ($show_message) {
-        drupal_set_message($message);
+        if ($show_message) {
+          drupal_set_message($message);
+        }
       }
     }
   }
@@ -737,7 +740,10 @@ function _devshop_projects_site_has_module($nid, $module) {
  */
 function _devshop_projects_project_has_module($node, $module) {
   $environment = key($node->project->environments);
-  return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
+
+  if (isset($node->project->environments[$environment]->site)) {
+    return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
+  }
 }
 
 /**
