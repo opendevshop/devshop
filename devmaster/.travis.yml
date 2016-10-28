@@ -77,7 +77,7 @@ script:
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
-  - 'sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
+  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
 
   # Hostmaster Status
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'

@@ -171,6 +171,13 @@ function devshop_projects_node_insert($node) {
 
     // Save the "hosting context", which includes setting the path alias.
     $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
+
+    // Ensure "project_" prefix on hosting context name. Something strange seemed to happen on Drupal core upgrade.  I think hosting_name was always populated before (in devshop_project_node_load()) and for some reason, on Drupal 7.51, it is not and $node->title is used.
+    // @TODO: Confirm this is a difference between Drupal minor versions...
+    if (strpos($name, 'project_') !== 0) {
+      $name = 'project_' . $name;
+    }
+
     hosting_context_register($node->nid, $name);
 
     // Replace the alias created by hosting_context_register.

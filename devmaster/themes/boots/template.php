@@ -61,12 +61,14 @@ function boots_preprocess_environment(&$vars) {
 
   // Look for remote aliases
   // @TODO: Move to devshop_remotes.module. I could't get devshop_remotes_preprocess_environment() working.
-  foreach ($vars['project']->settings->aliases as $name => $alias) {
-    $alias = (object) $alias;
-    $alias->site = $name;
-    $alias->name = $name;
-    $alias->url = $alias->uri;
-    $vars['source_environments'][$name] = $alias;
+  if (isset($vars['project']->settings->aliases )) {
+    foreach ($vars['project']->settings->aliases as $name => $alias) {
+      $alias = (object) $alias;
+      $alias->site = $name;
+      $alias->name = $name;
+      $alias->url = $alias->uri;
+      $vars['source_environments'][$name] = $alias;
+    }
   }
 
   // Show user Login Link
@@ -162,11 +164,13 @@ function boots_preprocess_environment(&$vars) {
       'type' => 'warning',
     );
   }
-  foreach ($environment->warnings as $warning) {
-    $vars['warnings'][] = array(
-      'text' => $warning['text'],
-      'type' => $warning['type'],
-    );
+  if (isset($environment->warnings)) {
+    foreach ($environment->warnings as $warning) {
+      $vars['warnings'][] = array(
+        'text' => $warning['text'],
+        'type' => $warning['type'],
+      );
+    }
   }
 
   // Load user into a variable.
@@ -394,6 +398,10 @@ function boots_preprocess_page(&$vars){
 
   // On any node/% page...
   if (isset($vars['node']) || arg(0) == 'node' && is_numeric(arg(1))) {
+
+    if (!isset($vars['node'])) {
+      $vars['node'] = node_load(arg(1));
+    }
 
     // Task nodes only have project nid and environment name.
     if (is_numeric($vars['node']->project)) {
