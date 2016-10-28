@@ -25,9 +25,9 @@ env:
   #  init: /usr/lib/systemd/systemd
   #  run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
   #  script_opts: "--server-webserver=nginx"
-  - test: Ubuntu 14.04.5 Apache
+  - test: Ubuntu 14.04 Apache
     distribution: ubuntu
-    version: 14.04.5
+    version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
