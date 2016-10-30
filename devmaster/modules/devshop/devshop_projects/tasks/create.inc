@@ -59,9 +59,13 @@ function hosting_task_devshop_create_form($node) {
           );
           $form['environment_source_display'] = array(
             '#type' => 'item',
-            '#title' => t('Clone'),
+            '#title' => t('Source'),
             '#weight' => -1000,
-            '#value' => t('!env environment', array('!env' => "<span class='environment'>{$site->environment->name}</span>")),
+            '#markup' => t('!env environment', array('!env' => "<span class='label label-default'>{$site->environment->name}</span>")) . ': ' . l($site->environment->url, $site->environment->url, array(
+              'attributes' => array(
+                'target' => '_blank',
+              )
+              )),
           );
           $form['environment_source'] = array(
             '#type' => 'value',
