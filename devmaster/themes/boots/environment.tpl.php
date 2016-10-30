@@ -590,6 +590,12 @@
                             </button>
                             <ul class="dropdown-menu devshop-stack" role="menu">
                                 <li><label><?php print t('IP Address'); ?></label></li>
+                                <?php if (empty($environment->ip_addresses)): ?>
+                              <li class="text">
+                                <?php print l(t('Add IP Address'), "node/{$environment->servers['http']['nid']}/edit"); ?>
+                              </li>
+
+                              <?php endif; ?>
                                 <?php foreach ($environment->ip_addresses as $ip): ?>
                                     <li class="text">
                                         <?php print $ip ?>
