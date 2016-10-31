@@ -330,13 +330,25 @@ function devshop_project_load($node) {
       // Get git status.
       $environment->git_status = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always  status"));
 
+      // Limit status to 1000 lines
+      $lines = explode("\n", $environment->git_status);
+      $count = count($lines);
+      if ($count > 100) {
+        $lines = array_slice($lines, 0, 100);
+        $lines[] = "# STATUS TRUNCATED. SHOWING 100 of $count LINES.";
+      }
+      $environment->git_status  = implode("\n", $lines);
+
       // Get git diff.
       $environment->git_diff = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always diff"));
 
       // Limit git diff to 1000 lines
       $lines = explode("\n", $environment->git_diff);
-      $lines = array_slice($lines, 0, 1000);
-      $lines[] = '# DIFF TRUNCATED. MORE THAN 1000 LINES';
+      $count = count($lines);
+      if ($count > 1000) {
+        $lines = array_slice($lines, 0, 1000);
+        $lines[] = "# DIFF TRUNCATED. SHOWING 1000 of $count LINES.";
+      }
       $environment->git_diff  = implode("\n", $lines);
 
     }
