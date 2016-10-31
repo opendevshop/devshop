@@ -310,7 +310,9 @@ function devshop_project_load($node) {
       $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored}"));
 
       // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
-      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+      // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD")));
+
       $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
       // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
