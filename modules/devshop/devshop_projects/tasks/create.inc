@@ -97,18 +97,28 @@ function hosting_task_devshop_create_form($node) {
       '#value' => NULL,
     );
   }
+
+  // Generate field prefix and suffix using domain name pattern.
+  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
+
+  $labels = explode('@environment', strtr($pattern, array(
+    '@project' => $node->project->name,
+    '@hostname' => $_SERVER['SERVER_NAME'],
+  )));
+
   $form['environment_name'] = array(
-    '#title' => t('New Environment Name'),
+    '#title' => t('Environment Name'),
     '#type' => 'textfield',
-    '#description' => t('Enter a system name for your environment.  For consistency, you might want to match the branch name.'),
+    '#description' => t('Enter a system name for your environment. For consistency, you might want to match the branch name.'),
     '#required' => TRUE,
-    '#field_prefix' => 'http://',
-    '#field_suffix' => "." . $node->project->base_url,
+    '#field_prefix' => '<div class="input-group"><div class="input-group-addon">http://' . $labels[0] . '</div>',
+    '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . $labels[1] .'</div>
+        </div>',
     '#size' => 10,
     '#maxlength' => 64,
     '#weight' => -100,
     '#attributes' => array(
-      'data-placement' => 'top',
+      'data-placement' => 'bottom',
     ),
   );
 
