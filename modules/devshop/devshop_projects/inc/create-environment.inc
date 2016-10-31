@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_alter() for Site Creation nodes.
+ *
+ * @see devshop_projects_form_alter()
+ *
  */
 function devshop_projects_create_environment_form(&$form, &$form_state, $form_id) {
 
