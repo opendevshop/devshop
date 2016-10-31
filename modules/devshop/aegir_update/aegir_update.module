@@ -45,6 +45,16 @@ function hosting_task_update_drupal_form() {
 }
 
 /**
+ * Implements hook_post_hosting_TASK_TYPE_task().
+ *
+ * Trigger a verify task for the site and the platform.
+ */
+function aegir_update_post_hosting_update_drupal_task($task, $data) {
+  hosting_add_task($task->ref->platform, 'verify');
+  hosting_add_task($task->ref->nid, 'verify');
+}
+
+/**
  * Implements hook_devshop_environment_actions().
  *
  * Defines the list of tasks that appear under the gear icon.
