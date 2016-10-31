@@ -15,6 +15,7 @@ function aegir_update_drush_command() {
     'description' => 'Updates drupal and contributed packages.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
+  return $items;
 }
 
 /**
