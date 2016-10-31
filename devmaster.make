@@ -25,16 +25,16 @@ projects[hosting][patch][] = "https://www.drupal.org/files/issues/2823827-task-o
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
 
-projects[hosting_git][version] = "3.7"
+projects[hosting_git][version] = "3.8"
 projects[hosting_git][subdir] = aegir
 
 projects[hosting_remote_import][subdir] = aegir
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.7"
+projects[hosting_site_backup_manager][version] = "3.8"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.7"
+projects[hosting_tasks_extra][version] = "3.8"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
