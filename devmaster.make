@@ -18,8 +18,9 @@ includes[devshop] = "drupal-org.make"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.7"
+projects[hosting][version] = "3.8"
 projects[hosting][subdir] = "aegir"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2823827-task-object-labels.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
