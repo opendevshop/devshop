@@ -882,7 +882,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 #hosting-task-confirm-form .form-control#edit-parameters-environment-name {
     width: auto;
     display:inline;
-
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
 }
 .form-control#edit-environment-name {
     width: auto;
