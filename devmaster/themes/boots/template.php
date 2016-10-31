@@ -853,7 +853,9 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
   $form['hosting_ssl_wrapper']['#suffix'] = '';
 
   // Help Text
-  $form['#prefix'] = '<h3>' . t('Environment Settings') . ' <small>' . $form['#node']->environment->name . '</small></h3>';
+  if (!empty($form['#node']->nid)) {
+    $form['#prefix'] = '<h3>' . t('Environment Settings') . ' <small>' . $form['#node']->environment->name . '</small></h3>';
+  }
 
   unset($form['path']);
 }

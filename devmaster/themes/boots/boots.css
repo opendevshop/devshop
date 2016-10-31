@@ -884,6 +884,17 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     display:inline;
 
 }
+.form-control#edit-environment-name {
+    width: auto;
+    text-align: center;
+    display:inline;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.input-group-addon-url {
+    width: 100%;
+    text-align: left;
+}
 
 #devshop-project-create-step-git #edit-cancel {
     float: right;
