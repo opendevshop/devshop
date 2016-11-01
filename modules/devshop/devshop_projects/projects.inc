@@ -140,6 +140,7 @@ function devshop_project_load($node) {
           http.nid as web_server_nid,
           db.title as db_server,
           db.nid as db_server_nid,
+          s.db_name,
           n.title as project_name,
           s.vid,
           sn.title as system_domain,
