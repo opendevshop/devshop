@@ -122,17 +122,11 @@
                   <div class="panel-body">
 
                     <p class="text-muted small">
-                      <?php print t('Drush is installed on the server, with the following alias. You may also access the sites by running Drush locally and !download for this project.', array(
+                      <?php print t('Drush is installed on the server, with the alias <code>$alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
                         '!download' => l(t('downloading the Drush aliases'), "node/{$environment->project->nid}/aliases"),
                       ));
                       ?>
                     </p>
-                    <section>
-                      <label>
-                        Drush Alias
-                      </label>
-                      <input class="form-control" onclick="this.select()" value="<?php print $environment->drush_alias; ?>">
-                    </section>
                     <section>
                       <label>
                         Database CLI
@@ -141,15 +135,30 @@
                     </section>
                     <section>
                       <label>
-                        Database Credentials
-                      </label>
-                      <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sql-connect">
-                    </section>
-                    <section>
-                      <label>
                         List All Commands
                       </label>
                       <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
+                    </section>
+                  </div>
+                </div>
+
+
+                <div class="panel panel-default panel-drush-access">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Other Information</h3>
+                  </div>
+                  <div class="panel-body">
+                    <section>
+                      <label>
+                        Database
+                      </label>
+                      <?php print $environment->db_name; ?>
+                    </section>
+                    <section>
+                      <label>
+                        Path
+                      </label>
+                      <?php print $environment->repo_root; ?>
                     </section>
                   </div>
                 </div>
