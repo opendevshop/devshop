@@ -46,7 +46,10 @@ body.admin-menu .navbar-static-top {
 .environment-meta-data i.fa {
     margin-right: .5em;
 }
-
+.environment-meta-data.environment-access {
+    margin-right: 2em;
+    text-transform: uppercase;
+}
 .environment-link {
     font-weight: bold;
     font-size: 1.1em;
@@ -960,4 +963,20 @@ a.logo img {
 
 li.text.code {
     white-space: nowrap;
+}
+
+.list-group-item-info p {
+    color: #0f0f0f;
+}
+
+.panel-drush-access section {
+    padding-bottom: 1em;
+}
+.panel-drush-access label {
+    width: 25%;
+}
+.panel-drush-access input {
+    width: 70%;
+    display: inline-block;
+    vertical-align: middle;
 }

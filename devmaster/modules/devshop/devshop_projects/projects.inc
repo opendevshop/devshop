@@ -136,7 +136,6 @@ function devshop_project_load($node) {
           p.publish_path as root,
           http.title as remote_host,
           sn.title as uri,
-          sn.title as drush_alias,
           http.title as web_server,
           http.nid as web_server_nid,
           db.title as db_server,
@@ -171,7 +170,7 @@ function devshop_project_load($node) {
     }
 
     // Drush alias
-    $environment->drush_alias = '@' . $environment->drush_alias;
+    $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
     // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
