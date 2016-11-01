@@ -104,7 +104,7 @@
                         ));
                       }
                       else {
-                        print t('NOTE: To access these environments with drush remotely, ask an administrator to add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+                        print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
                       }
                       ?>
                     </p>
