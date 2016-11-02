@@ -5,7 +5,7 @@ version: '2'
 services:
 
   devmaster:
-    image: aegir/hostmaster:local
+    image: aegir/hostmaster:xdebug
     ports:
       - 80:80
     hostname: devshop.local.computer
@@ -19,6 +19,8 @@ services:
       AEGIR_PROFILE: devmaster
       AEGIR_VERSION: 1.x
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
+      XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
+      PHP_IDE_CONFIG: "serverName=devshop.local.computer"
     volumes:
       - ./aegir-home:/var/aegir:Z
 
