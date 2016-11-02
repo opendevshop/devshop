@@ -63,7 +63,7 @@ projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha3"
 projects[views][version] = "3.14"
 projects[views_bulk_operations][version] = "3.3"
-projects[ctools][version] = "1.10"
+projects[ctools][version] = "1.11"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
@@ -80,4 +80,4 @@ libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.6
+projects[bootstrap][version] = 3.7
