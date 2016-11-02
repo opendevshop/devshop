@@ -143,12 +143,17 @@ HTML;
 
   // No Projects
   if (empty($rows)) {
-    $button = l(t('Create your first Project'), 'projects/add');
+    $link = url('projects/add');
+    $welcome = t('Welcome to DevShop!');
+    $text = t('Create your first project to get started.');
+    $button = t('Start a Project');
     $output = <<<HTML
-<div class="empty">
-    <div class="empty-message">You have no projects.</div>
-    <div class="empty-button">$button</div>
+<div class="jumbotron">
+  <h1>$welcome</h1>
+  <p>$text</p>
+  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a></p>
 </div>
+
 HTML;
   }
   else {

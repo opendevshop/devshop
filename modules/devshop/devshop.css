@@ -30,23 +30,6 @@ fieldset.project-environments {
 {
   display: none;  
 }
-.empty {
-  text-align: center;
-  min-height: 165px;
-}
-.empty .empty-message {
-  padding:30px;
-}
-.empty .empty-button a {
-  font: bold 13px/20px "Helvetica Neue",Arial,sans-serif;
-  border: 0px;
-  padding: 5px 10px;
-  color: #fff;
-  background: #666;
-  cursor: pointer;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-}
 
 textarea#rsa {
   display: none;
