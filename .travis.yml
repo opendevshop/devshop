@@ -3,16 +3,6 @@ language: generic
 sudo: required
 
 env:
-  # CentOS 6: Not supported yet.
-  #- distribution: centos
-  #  version: 6
-  #  init: /sbin/init
-  #  run_opts: ""
-  # Ubuntu 12.04: Not supported yet.
-  #- distribution: ubuntu
-  #  version: 12.04
-  #  init: /sbin/init
-  #  run_opts: ""
   - test: CentOS 7 Apache
     distribution: centos
     version: 7
