@@ -14,7 +14,7 @@ env:
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
-    test_command: "devshop devmaster:test"
+    test_command: "'devshop devmaster:test'"
     
   #- test: CentOS 7 NGINX
   #  distribution: centos
@@ -28,7 +28,7 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "devshop devmaster:test"
+    test_command: "'devshop devmaster:test'"
     
   - test: Upgrade Test
     distribution: ubuntu
@@ -36,7 +36,7 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "devshop upgrade 1.x -n && devshop devmaster:test"
+    test_command: "'devshop upgrade 1.x -n && devshop devmaster:test'"
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
@@ -58,6 +58,7 @@ services:
 before_install:
   - sudo docker --version
   - env
+  - echo "Running ${test_command}..."
 
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
@@ -78,7 +79,6 @@ script:
 
   # Build and Run Tests
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-  - echo "Running ${test_command}"
   - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "${test_command}"
 
   # Stop container.
