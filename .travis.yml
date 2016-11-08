@@ -14,8 +14,7 @@ env:
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
-    test_command: "'su - aegir -c devshop devmaster:test'"
-    
+
   #- test: CentOS 7 NGINX
   #  distribution: centos
   #  version: 7
@@ -28,15 +27,15 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "'su - aegir -c devshop devmaster:test'"
-    
+
   - test: Upgrade Test
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "'devshop upgrade 1.x -n && su - aegir -c devshop devmaster:test'"
+    upgrade_devshop: 1
+
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
@@ -77,9 +76,12 @@ script:
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
 
+  # Run Upgrade, if needed.
+  - if [ $upgrade_devshop ]; then sudo docker exec devshop_container env TERM=xterm sudo devshop upgrade 1.x; fi
+
   # Build and Run Tests
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-  - sudo docker exec devshop_container env TERM=xterm sudo ${test_command}
+  - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c 'devshop devmaster:test'
 
   # Stop container.
   - 'sudo docker stop devshop_container'
