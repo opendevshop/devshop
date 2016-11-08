@@ -14,7 +14,7 @@ env:
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     script_opts: "--server-webserver=apache"
-    test_command: "'su - aegir -c \"devshop devmaster:test\"'"
+    test_command: "'su - aegir -c devshop devmaster:test'"
     
   #- test: CentOS 7 NGINX
   #  distribution: centos
@@ -28,7 +28,7 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "'su - aegir -c \"devshop devmaster:test\"'"
+    test_command: "'su - aegir -c devshop devmaster:test'"
     
   - test: Upgrade Test
     distribution: ubuntu
@@ -36,7 +36,7 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "'devshop upgrade 1.x -n && su - aegir -c \"devshop devmaster:test\"'"
+    test_command: "'devshop upgrade 1.x -n && su - aegir -c devshop devmaster:test'"
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
