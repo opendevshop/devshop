@@ -78,7 +78,8 @@ script:
 
   # Build and Run Tests
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-  - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "$test_command"
+  - echo "Running ${test_command}"
+  - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "${test_command}"
 
   # Stop container.
   - 'sudo docker stop devshop_container'
