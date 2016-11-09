@@ -80,4 +80,4 @@ libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.7
+projects[bootstrap][version] = 3.8
