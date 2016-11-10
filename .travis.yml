@@ -79,7 +79,7 @@ script:
   - sudo docker exec --tty devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"
 
   # Run Upgrade, if needed.
-  - if [ $upgrade_devshop ]; then sudo docker exec --tty devshop_container sudo devshop upgrade 1.x; fi
+  - if [ $upgrade_devshop ]; then sudo docker exec --tty devshop_container env TERM=xterm sudo devshop upgrade 1.x -n; fi
 
   # Build and Run Tests
   - sudo docker exec --tty devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"
