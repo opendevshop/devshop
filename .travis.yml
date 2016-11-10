@@ -57,7 +57,6 @@ services:
 before_install:
   - sudo docker --version
   - env
-  - echo "Running ${test_command}..."
 
   # Pull container
   - sudo docker pull ${distribution}:${version}
