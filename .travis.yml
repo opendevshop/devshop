@@ -72,7 +72,7 @@ script:
   - sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "dev.drpl8.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"
 
   # Install script.
-  - sudo docker exec --tty devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis
+  - sudo docker exec devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis
 
   # Turn off hosting queued, and the hosting task queue.
   - sudo docker exec --tty devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"
