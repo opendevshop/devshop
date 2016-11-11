@@ -23,6 +23,7 @@ services:
       PHP_IDE_CONFIG: "serverName=devshop.local.computer"
     volumes:
       - ./aegir-home:/var/aegir:Z
+      - ./:/usr/share/devshop:Z
 
   database:
     image: mariadb
