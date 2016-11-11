@@ -224,10 +224,16 @@ if [ "$TRAVIS" == "true" ]; then
   MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make"
 fi
 
-if [ -f '/root/.my.cnf' ]
+if [ -f /tmp/mysql_root_password ]
+then
+  MYSQL_ROOT_PASSWORD=`cat /tmp/mysql_root_password`
+  echo " Found temporary mysql root password at /tmp/mysql_root_password... $MYSQL_ROOT_PASSWORD"
+
+elif [ -f '/root/.my.cnf' ]
 then
   MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
   echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
+
 else
   MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
   echo " Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
@@ -265,14 +271,6 @@ echo $LINE
 
 
 cd $PLAYBOOK_PATH
-
-# Create inventory file
-if [ ! -f "inventory" ]; then
-  echo $HOSTNAME_FQDN > inventory
-  echo "Created inventory file."
-else
-  echo "Inventory file found."
-fi
 
 echo " Installing ansible roles..."
 ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" --force
@@ -315,7 +313,15 @@ elif [ $SERVER_WEBSERVER == 'nginx' ]; then
   PLAYBOOK_FILE="playbook-nginx.yml"
 fi
 
-ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
+# Create inventory file with our generated variables.
+#if [ ! -f "inventory" ]; then
+  echo "localhost $ANSIBLE_EXTRA_VARS" > /etc/ansible/hosts
+  echo "Created inventory file at /etc/ansible/hosts"
+#else
+#  echo "Inventory file found."
+#fi
+
+ansible-playbook $PLAYBOOK_FILE --connection=local
 
 # @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli
