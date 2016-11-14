@@ -799,6 +799,15 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     overflow-x: hidden;
 }
 
+#project-add-status.panel label
+{
+    font-size: .7em;
+    text-transform: uppercase;
+    color: grey;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-left: 0px;
+}
 
 .panel.devshop-command .panel-heading {
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
