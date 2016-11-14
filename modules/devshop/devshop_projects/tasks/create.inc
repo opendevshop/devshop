@@ -257,31 +257,34 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $settings = (object) $settings;
   global $user;
 
-  // First, create a platform node. Only aegir properties are needed.
-  $platform = new stdClass();
-  $platform->type = 'platform';
-  $platform->title = $project->name . '_' . $new_environment_name;
-  $platform->status = 1;
-  $platform->uid = $user->uid;
-  $platform->name = $user->name;
+  // Create site node.
+  $site = new stdClass();
+  $site->type = 'site';
+  $site->title = devshop_environment_url($project, $new_environment_name);
+  $site->status = 1;
+  $site->uid = $user->uid;
+  $site->name = $user->name;
+  $site->client = HOSTING_DEFAULT_CLIENT;
 
-  // Set web server to the project default.
-  if ($settings->web_server) {
-    $platform->web_server = $settings->web_server;
-  }
+  // Attach a new platform node.
+  $site->platform_node = new stdClass();
+  $site->platform_node->title = $project->name . '_' . $new_environment_name;
 
+  // Specify GIT Url for hosting_git.module
+  $site->platform_node->git['repo_url'] = $project->git_url;
+  $site->platform_node->git['git_ref'] = $new_environment_branch;
+
+  // Determine which web server to use.
   // If no web server was set and project has a default, make sure we set it.
-  elseif (!empty($project->settings->default_environment['web_server'])) {
+  if (empty($settings->web_server) && !empty($project->settings->default_environment['web_server'])) {
     $settings->web_server = $project->settings->default_environment['web_server'];
-    $platform->web_server = $project->settings->default_environment['web_server'];
   }
-  else {
+  elseif (empty($settings->web_server)) {
     $servers = hosting_get_servers('http');
     reset($servers);
 
     // If no web server was set, make sure we set it.
     $settings->web_server = key($servers);
-    $platform->web_server = key($servers);
   }
 
   // Set db server to the project default, if none was set.
@@ -301,17 +304,22 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $settings->web_server = $project->settings->default_environment['web_server'];
   }
 
+  // Now that desired servers have been determined, save to their respective nodes.
+  $site->db_server = $settings->db_server;
+  $site->platform_node->web_server = $settings->web_server;
+
   // If drupal path, append to code path/environment name
   if ($project->drupal_path) {
-    $platform->publish_path = $project->code_path . '/' . $new_environment_name . '/' . $project->drupal_path;
+    $site->platform_node->publish_path = $project->code_path . '/' . $new_environment_name . '/' . $project->drupal_path;
   }
   else {
-    $platform->publish_path = $project->code_path . '/' . $new_environment_name;
+    $site->platform_node->publish_path = $project->code_path . '/' . $new_environment_name;
   }
 
-  // Save the platform node.
-  if ($platform = node_submit($platform)) {
-    node_save($platform);
+  // Save the site node, along with the platform.
+  // This is possible thanks to the patch in https://www.drupal.org/node/2824731
+  if ($site = node_submit($site)) {
+    node_save($site);
   }
 
   // If no new branch specified and fork source is present, set branch to forked environment's branch.
@@ -333,7 +341,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $environment = new stdClass();
     $environment->name = $new_environment_name;
     $environment->git_ref = $branch;
-    $environment->platform = $platform->nid;
+    $environment->platform = $site->platform_node->nid;
 
     // Copy settings from source environment.
     $environment->settings = $source_environment->settings;
@@ -356,7 +364,8 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $environment = new stdClass();
     $environment->name = $new_environment_name;
     $environment->git_ref = $branch;
-    $environment->platform = $platform->nid;
+    $environment->platform = $site->platform_node->nid;
+    $environment->site = $site->nid;
 
     // Use settings passed in to this function.
     $environment->settings = $settings;
@@ -364,7 +373,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
 
   // Get platform verify task
-  $tasks = hosting_get_tasks('rid', $platform->nid);
+  $tasks = hosting_get_tasks('rid', $site->platform_node->nid);
   $environment->last_task = current($tasks)->nid;
 
   db_insert('hosting_devshop_project_environment')
@@ -372,9 +381,10 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'project_nid' => $project->nid,
       'name' => $environment->name,
       'git_ref' => $environment->git_ref,
+      'site' => $environment->site,
       'platform' => $environment->platform,
       'settings' => serialize($environment->settings),
-      'last_task' => $environment->last_task,
+      'last_task' => 0,
     ))
     ->execute();
 }
