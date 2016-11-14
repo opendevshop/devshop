@@ -340,7 +340,6 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     $environment = new stdClass();
     $environment->name = $new_environment_name;
-    $environment->git_ref = $branch;
     $environment->platform = $site->platform_node->nid;
 
     // Copy settings from source environment.
@@ -363,7 +362,6 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     // Next, add the environment record.
     $environment = new stdClass();
     $environment->name = $new_environment_name;
-    $environment->git_ref = $branch;
     $environment->platform = $site->platform_node->nid;
     $environment->site = $site->nid;
 
@@ -380,7 +378,6 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     ->fields(array(
       'project_nid' => $project->nid,
       'name' => $environment->name,
-      'git_ref' => $environment->git_ref,
       'site' => $environment->site,
       'platform' => $environment->platform,
       'settings' => serialize($environment->settings),
