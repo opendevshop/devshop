@@ -12,7 +12,7 @@
     <p><?php print t('Path to Drupal: '); ?><em><?php print $project->drupal_path; ?></em></p>
     <?php endif; ?>
 
-    <?php if (isset($project->settings->live) && isset($project->settings->live['live_domain'])): ?>
+    <?php if (isset($project->settings->live) && !empty($project->settings->live['live_domain'])): ?>
     <p><?php print t('Live Domain: '); ?><em><?php print $project->settings->live['live_domain']; ?></em></p>
     <?php endif; ?>
 
