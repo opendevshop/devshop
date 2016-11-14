@@ -276,17 +276,11 @@ echo " Installing ansible roles..."
 ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" --force
 echo $LINE
 
-# If ansible playbook fails syntax check, report it and exit.
-if [[ ! `ansible-playbook -i inventory --syntax-check playbook.yml` ]]; then
-    echo " Ansible syntax check failed! Check installers/ansible/playbook.yml and try again."
-    exit 1
-fi
-
 # Run the playbook.
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD mysql_root_password_update=yes playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION php_mysql_package=php5-mysql"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
@@ -320,6 +314,12 @@ fi
 #else
 #  echo "Inventory file found."
 #fi
+
+# If ansible playbook fails syntax check, report it and exit.
+if [[ ! `ansible-playbook --syntax-check playbook.yml` ]]; then
+    echo " Ansible syntax check failed! Check installers/ansible/playbook.yml and try again."
+    exit 1
+fi
 
 ansible-playbook $PLAYBOOK_FILE --connection=local
 
