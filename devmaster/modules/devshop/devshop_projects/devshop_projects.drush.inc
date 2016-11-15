@@ -299,10 +299,11 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
   $args = array(
     ':git' => $git_ref,
     ':project' => $task->ref->environment->project_nid,
+    ':site' => $task->ref->environment->site,
     ':name' => $task->ref->environment->project_nid,
   );
 
-  if (db_query('UPDATE {hosting_devshop_project_environment} SET git_ref = :git WHERE project_nid = :project AND name = :name', $args)) {
+  if (db_query('UPDATE {hosting_git} SET git_ref = :git WHERE nid = :site', $args)) {
     drush_log("[DEVSHOP] Git reference {$git_ref} saved to {$task->ref->environment->name} environment record.");
   }
   else {
