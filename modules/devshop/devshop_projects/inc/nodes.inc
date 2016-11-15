@@ -42,6 +42,12 @@ function devshop_projects_node_load($nodes, $types) {
   global $user;
   $project = new stdClass();
 
+  $refs_types = db_select('node', 'n')
+    ->fields('n', array('nid', 'type'))
+    ->condition('type', array('site', 'platform', 'project', 'server'), 'IN')
+    ->execute()
+    ->fetchAllKeyed();
+
   foreach ($nodes as $nid => &$node) {
 
     // Tasks
@@ -50,7 +56,6 @@ function devshop_projects_node_load($nodes, $types) {
       // Prepare bootstrap-compatible things.
       // Load up task types to get our language.
       $task_types = hosting_available_tasks();
-      $task_types = array_merge($task_types['site'], $task_types['platform']);
 
       // In Aegir, "executed" and "delta" does not get updated properly.
       // Handle "delta" being not computed yet
@@ -92,7 +97,7 @@ function devshop_projects_node_load($nodes, $types) {
       $node->task_date = format_date($executed);
 
       // Set task type
-      $node->type_name = $task_types[$node->task_type]['title'];
+      $node->type_name = $task_types[$refs_types[$node->rid]][$node->task_type]['title'];
 
       // If platform's first verify...
       if (isset($node->ref) && $node->ref->type == 'platform' && $node->ref->verified == 0) {
