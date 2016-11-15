@@ -519,3 +519,27 @@ function drush_devshop_provision_pre_provision_verify() {
     drush_log(dt('Project Drush aliases written.'), 'devshop_log');
   }
 }
+
+/**
+ * Implementation of drush_hook_post_provision_install
+ */
+function drush_devshop_provision_post_provision_install() {
+
+  // Sync from the alias.
+  if (drush_get_option('site_install_method') == 'clone') {
+    drush_log(dt('Environment Clone initiated...'), 'devshop_log');
+
+    // Load Environment and Project.
+    $project_name = d()->project;
+    $environment_name = d()->environment;
+    $environment = d('@project_' . $project_name)->project['environments'][$environment_name];
+
+    // If "clone source" is set for this environment, use provision-sync to load in data.
+    if (!empty($environment['settings']['clone_source'])) {
+      $source = $environment['settings']['clone_source'];
+      $destination = d()->name;
+      $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --cache-clear --registry-rebuild";
+      devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    }
+  }
+}
