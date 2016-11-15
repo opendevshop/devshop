@@ -467,7 +467,7 @@ function devshop_projects_post_hosting_import_task($task, $data) {
       }
 
       // If we have been cloned from another environment, run a deploy task.
-      if (!empty($platform->environment->settings->site_to_clone)) {
+      if (!empty($platform->environment->settings->clone_source)) {
 
         // Trigger a verify of the site, so the alias has project information.
         hosting_add_task($site->nid, 'verify');

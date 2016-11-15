@@ -116,8 +116,11 @@ function devshop_projects_node_load($nodes, $types) {
       $node->project = devshop_project_load($node);
     }
     elseif ($node->type == 'site') {
-      // @TODO: Set install_method in order to trigger actions other than install profile.
-      // $node->install_method = 'manual';
+
+      // If site is intended to be a clone, set install_method to sql-sync
+      if (!empty($node->environment->settings->clone_source)) {
+        $node->install_method = 'clone';
+      }
     }
   }
 }

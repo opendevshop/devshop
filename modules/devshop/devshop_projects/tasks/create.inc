@@ -341,6 +341,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $environment = new stdClass();
     $environment->name = $new_environment_name;
     $environment->platform = $site->platform_node->nid;
+    $environment->site = $site->nid;
 
     // Copy settings from source environment.
     $environment->settings = $source_environment->settings;
@@ -351,8 +352,8 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $environment->settings->locked = 0;
     $environment->settings->pull_disabled = 0;
 
-    // Save Clone/fork specific data to the environment
-    $environment->settings->site_to_clone = $source_environment->site;
+    // Save clone source from source_environment's drush alias.
+    $environment->settings->clone_source = '@' . $source_environment->system_domain;
 
     if ($action == 'fork') {
       $environment->settings->branch_to_fork = $source_environment->git_ref;
