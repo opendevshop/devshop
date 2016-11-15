@@ -371,7 +371,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
 
   // Get platform verify task
-  $tasks = hosting_get_tasks('rid', $site->platform_node->nid);
+  $tasks = hosting_get_tasks('rid', $site->nid);
   $environment->last_task = current($tasks)->nid;
 
   db_insert('hosting_devshop_project_environment')
@@ -381,7 +381,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'site' => $environment->site,
       'platform' => $environment->platform,
       'settings' => serialize($environment->settings),
-      'last_task' => 0,
+      'last_task' => $environment->last_task,
     ))
     ->execute();
 }
