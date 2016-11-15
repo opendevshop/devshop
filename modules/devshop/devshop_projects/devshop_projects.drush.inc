@@ -79,9 +79,9 @@ function drush_devshop_projects_pre_hosting_task()
   // Here is where we hook in and clone the site
   // @TODO: Backend tasks should be able to do this.
   // @TODO: Build a "devshop-create-environment" drush command.
-  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
+//  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
 //    drush_devshop_platform_verify();
-  }
+//  }
 
   // Pull
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
