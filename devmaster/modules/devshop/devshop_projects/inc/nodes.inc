@@ -204,7 +204,6 @@ function devshop_projects_node_insert($node) {
       $info = new stdClass();
       $info->project_nid = $node->nid;
       $info->name = $name;
-      $info->git_ref = $environment->git_ref;
       $info->site = $environment->site;
       $info->platform = $environment->platform;
 
@@ -305,7 +304,6 @@ function devshop_environment_save(stdClass &$environment) {
   $info = new stdClass();
   $info->project_nid = $environment->project_nid;
   $info->name = $environment->name;
-  $info->git_ref = $environment->git_ref;
   $info->site = $environment->site;
   $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);

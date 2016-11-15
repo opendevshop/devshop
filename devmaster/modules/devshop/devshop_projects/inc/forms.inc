@@ -938,7 +938,6 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   $info = new stdClass();
   $info->project_nid = $environment->project_nid;
   $info->name = $environment->name;
-  $info->git_ref = $environment->git_ref;
   $info->site = $environment->site;
   $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);
