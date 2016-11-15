@@ -12,9 +12,9 @@ include 'drush/contexts.inc';
  * Saves task status to environment
  */
 function devshop_projects_hosting_task_update_status($task, $status) {
-  $site = $task->ref;
-  if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment)) {
-    $site->environment->last_task = $task->nid;
+  $ref = $task->ref;
+  if (($ref->type == 'site' || $ref->type == 'platform') && isset($ref->environment)) {
+    $ref->environment->last_task = $task->nid;
 
     // @TODO: Look for environment_target on clone task, so we can update that environment's last task as well.
 
@@ -23,7 +23,7 @@ function devshop_projects_hosting_task_update_status($task, $status) {
     if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
 
       // If this object is a platform, lookup the latest tasks from the site node.
-      $tasks_list = hosting_get_tasks('rid', $site->nid);
+      $tasks_list = hosting_get_tasks('rid', $ref->nid);
 
       // The first item in $tasks should be this task.
       // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
@@ -38,14 +38,14 @@ function devshop_projects_hosting_task_update_status($task, $status) {
         }
 
         // Grab the first task that isn't this one or another skippable task
-        $site->environment->last_task = $task_list_item->nid;
+        $ref->environment->last_task = $task_list_item->nid;
 
         // Stop the loop through the tasks.
         break;
       }
     }
 
-    devshop_environment_save_last_task($site->environment);
+    devshop_environment_save_last_task($ref->environment);
   }
 }
 
