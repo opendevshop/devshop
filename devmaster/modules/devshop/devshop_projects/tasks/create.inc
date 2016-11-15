@@ -322,17 +322,17 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     node_save($site);
   }
 
-  // If no new branch specified and fork source is present, set branch to forked environment's branch.
-  if (empty($new_environment_branch) && $source_environment) {
-    $branch = $project->environments[$source_environment]->git_ref;
-  }
-  // If no new branch and fork source not mentioned, return false.
-  elseif (empty($new_environment_branch) && empty($source_environment)) {
-    return FALSE;
-  }
-  else {
-    $branch = $new_environment_branch;
-  }
+//  // If no new branch specified and fork source is present, set branch to forked environment's branch.
+//  if (empty($new_environment_branch) && $source_environment) {
+//    $branch = $project->environments[$source_environment]->git_ref;
+//  }
+//  // If no new branch and fork source not mentioned, return false.
+//  elseif (empty($new_environment_branch) && empty($source_environment)) {
+//    return FALSE;
+//  }
+//  else {
+//    $branch = $new_environment_branch;
+//  }
 
   // If cloning or forking, check if source environment exists...
   if (isset($project->environments[$source_environment])) {
