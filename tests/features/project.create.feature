@@ -100,13 +100,13 @@ Feature: Create a project
 #    Then I should see "No front page content has been created yet."
 
     When I click "Create New Environment"
-    And I fill in "customenvironment" for "Environment Name"
+    And I fill in "test" for "Environment Name"
     And I select "master" from "Branch/Tag"
     Then I press "Create New Environment"
     Then I should see "Environment install in progress."
 
-    When I click "customenvironment"
+    When I click "test"
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
-    When I click "customenvironment.drpl8.devshop.local.computer"
-    Then I should see "Welcome to customenvironment.drpl8.devshop.local.computer"
+    When I click "test.drpl8.devshop.travis"
+    Then I should see "Welcome to test.drpl8.devshop.travis"
