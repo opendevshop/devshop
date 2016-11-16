@@ -4,7 +4,6 @@ Feature: Create a project
   As a project admin
   I need to create a new project
 
-
   Scenario: Create a new drupal 8 project
 
     Given users:
@@ -100,3 +99,14 @@ Feature: Create a project
 # @TODO: Fix our site installation.
 #    Then I should see "No front page content has been created yet."
 
+    When I click "Create New Environment"
+    And I fill in "customenvironment" for "Environment Name"
+    And I select "master" from "Branch/Tag"
+    Then I press "Create New Environment"
+    Then I should see "Environment install in progress."
+
+    When I click "customenvironment"
+    Then I should see "Environment Dashboard"
+    And I should see "Environment Settings"
+    When I click "customenvironment.drpl8.devshop.local.computer"
+    Then I should see "Welcome to customenvironment.drpl8.devshop.local.computer"
