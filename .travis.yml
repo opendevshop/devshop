@@ -35,6 +35,7 @@ addons:
     - dev.projectname.devshop.travis
     - live.projectname.devshop.travis
     - dev.drpl8.devshop.travis
+    - test.drpl8.devshop.travis
 
 services:
   - docker
