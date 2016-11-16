@@ -300,6 +300,7 @@ function devshop_projects_delete($node) {
   ->execute();
 
   hosting_context_delete($node->nid);
+  hosting_task_delete_related_tasks($node->nid);
 }
 
 /**
