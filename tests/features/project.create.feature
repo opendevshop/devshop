@@ -109,4 +109,5 @@ Feature: Create a project
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
     When I click "test.drpl8.devshop.travis"
-    Then I should see "Welcome to test.drpl8.devshop.travis"
+    Then print last response
+    And I should see "Welcome to test.drpl8.devshop.travis"
