@@ -107,6 +107,8 @@ Feature: Create a project
 
     When I run drush "hosting-tasks -v"
     Then print last drush output
+    When I run drush "hosting-tasks -v"
+    Then print last drush output
 
     When I click "test"
     Then I should see "Environment Dashboard"
