@@ -55,6 +55,15 @@ body.admin-menu .navbar-static-top {
     font-size: 1.1em;
 }
 
+.environment-link:hover {
+    text-decoration: none;
+}
+
+.environment-link:hover span {
+    text-decoration: underline;
+}
+
+
 .environment-link strong {
     font-style: inherit;
     color: inherit;
@@ -988,4 +997,8 @@ li.text.code {
     width: 70%;
     display: inline-block;
     vertical-align: middle;
+}
+
+.list-group-item.clone-info {
+    padding: .75em 0;
 }
