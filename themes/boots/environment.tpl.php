@@ -21,6 +21,10 @@
       <!-- Environment Name -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
 
+          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+            <i class="fa fa-bolt" title="<?php print t('Primary Environment'); ?>"></i>
+          <?php endif; ?>
+
           <?php if ($environment->cloned): ?>
             <i class="fa fa-copy"></i>
           <?php endif; ?>
@@ -73,12 +77,6 @@
                 <span class="environment-meta-data text-muted" title="<?php print t('This database is locked.'); ?>">
               <i class="fa fa-lock"></i><?php print t('Locked') ?>
             </span>
-            <?php endif; ?>
-
-            <?php if ($environment->name == $project->settings->live['live_environment']): ?>
-                <span class="environment-meta-data text-muted" title="<?php print t('This is the primary environment.'); ?>">
-            <i class="fa fa-bolt"></i>Live
-          </span>
             <?php endif; ?>
         </div>
 
