@@ -99,9 +99,9 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Load Task Links
-  $environment->task_links = devshop_environment_links($environment);
-  $environment->task_links_rendered = theme("item_list", array(
-    'items' => $environment->task_links,
+  $environment->menu = devshop_environment_menu($environment);
+  $environment->menu_rendered = theme("item_list", array(
+    'items' => $environment->menu,
     'attributes' => array(
       'class' => array('dropdown-menu dropdown-menu-right'),
       )

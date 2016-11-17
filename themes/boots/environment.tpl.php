@@ -1,13 +1,13 @@
 <div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_name; ?>-<?php print $environment->name ?>">
 
-    <?php if (!empty($environment->task_links) && !isset($page)): ?>
+    <?php if (!empty($environment->menu) && !isset($page)): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">
             <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
                 <i class="fa fa-bars"></i>
             </button>
-            <?php print $environment->task_links_rendered; ?>
+            <?php print $environment->menu_rendered; ?>
         </div>
     </div>
     <?php endif; ?>
