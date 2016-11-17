@@ -105,6 +105,9 @@ Feature: Create a project
     Then I press "Create New Environment"
     Then I should see "Environment install in progress."
 
+    When I run drush "hosting-tasks -v"
+    Then print last drush output
+
     When I click "test"
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
