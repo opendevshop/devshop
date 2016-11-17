@@ -26,7 +26,7 @@
           <?php endif; ?>
 
           <?php if ($environment->cloned): ?>
-            <i class="fa fa-copy"></i>
+            <i class="fa fa-clone"></i>
           <?php endif; ?>
 
           <span><?php print $environment->name; ?></span>
@@ -402,13 +402,25 @@
       elseif (empty($environment->tasks['delete'])): ?>
 
         <!-- Cloned Environment Indicator -->
-        <?php if ($environment->cloned): ?>
+        <?php if (isset($environment->cloned)): ?>
           <div class="list-group-item clone-info">
+
+            <div class="btn-toolbar">
+
             <label><?php print t('Clone of'); ?></label>
             <?php print l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}") ?>
             <label>
               <?php print format_date($environment->created['date']); ?>
             </label>
+
+            <?php if (user_access("create sync task")): ?>
+              <div class="btn-group pull-right">
+                <a class="btn btn-default btn-sm pull-right" href="<?php print $environment->clone_rebuild_url; ?>">
+                  <i class="fa fa-repeat"></i> <?php print t('Rebuild'); ?>
+                </a>
+              </div>
+            <?php endif; ?>
+            </div>
 
           </div>
         <?php endif; ?>
