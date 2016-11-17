@@ -4,8 +4,8 @@
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
         <div class="environment-tasks btn-group ">
-            <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Settings & Actions') ;?>">
-                <i class="fa fa-sliders"></i>
+            <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
+                <i class="fa fa-bars"></i>
             </button>
             <?php print $environment->task_links_rendered; ?>
         </div>
