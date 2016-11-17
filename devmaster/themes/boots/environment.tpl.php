@@ -20,7 +20,13 @@
 
       <!-- Environment Name -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
-            <?php print $environment->name; ?></a>
+
+          <?php if ($environment->cloned): ?>
+            <i class="fa fa-copy"></i>
+          <?php endif; ?>
+
+          <span><?php print $environment->name; ?></span>
+        </a>
 
       <?php
       // If we detect a currently running deploy...
@@ -397,6 +403,18 @@
       // SITUATION: Environment is Active!
       elseif (empty($environment->tasks['delete'])): ?>
 
+        <!-- Cloned Environment Indicator -->
+        <?php if ($environment->cloned): ?>
+          <div class="list-group-item clone-info">
+            <label><?php print t('Clone of'); ?></label>
+            <?php print l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}") ?>
+            <label>
+              <?php print format_date($environment->created['date']); ?>
+            </label>
+
+          </div>
+        <?php endif; ?>
+
         <!-- URLs -->
         <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
 
@@ -490,6 +508,7 @@
                 <?php endif;?>
             </div>
         </div>
+
 
         <div class="list-group-item">
           <label class="sr-only"><?php print t('Browse'); ?></label>

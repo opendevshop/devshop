@@ -144,6 +144,7 @@ function devshop_project_load($node) {
           db.nid as db_server_nid,
           s.db_name,
           n.title as project_name,
+          n.created as created,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
@@ -386,6 +387,13 @@ function devshop_project_load($node) {
     // If per-environment hooks config is not allowed, load it from the project.
     if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
       $environment->settings->deploy = $project->settings->deploy['default_hooks'];
+    }
+
+    // Detect cloned environment.
+    if (!empty($environment->settings->clone_source)) {
+      $environment->cloned = TRUE;
+      $environment->clone_source = $environment->settings->clone_source;
+      $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
     }
 
     // Save to project environments collection.
