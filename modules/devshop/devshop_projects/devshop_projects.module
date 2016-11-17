@@ -129,11 +129,11 @@ function devshop_projects_permission() {
 }
 
 /**
- * Implements hook_devshop_environment_actions().
+ * Implements hook_devshop_environment_menu().
  *
  * Defines the list of tasks that appear under the gear icon.
  */
-function devshop_projects_devshop_environment_actions($environment) {
+function devshop_projects_devshop_environment_menu($environment) {
   $items = array();
 
   // Site specific actions.
