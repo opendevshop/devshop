@@ -35,7 +35,7 @@ body.admin-menu .navbar-static-top {
 .environment-meta-data {
     font-family: monospace;
     margin: 0px;
-    padding: 3px;
+    padding: 3px 6px;
     color: #777;
     font-size: .7em;
     white-space: nowrap;
