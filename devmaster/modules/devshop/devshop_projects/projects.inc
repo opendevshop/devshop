@@ -394,6 +394,15 @@ function devshop_project_load($node) {
       $environment->cloned = TRUE;
       $environment->clone_source = $environment->settings->clone_source;
       $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
+
+      $environment->clone_rebuild_url = url(
+        "hosting_confirm/{$environment->site}/site_sync", array(
+          'query' => array(
+            'source' => $environment->clone_source_node->nid,
+            'rebuild' => TRUE,
+          ),
+        )
+      );
     }
 
     // Save to project environments collection.
