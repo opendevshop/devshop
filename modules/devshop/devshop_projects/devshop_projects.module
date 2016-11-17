@@ -184,9 +184,8 @@ function devshop_projects_devshop_environment_actions($environment) {
     $items[] = '<div class="divider"></div>';
 
     // Backup & Restore
-    $items[] = 'backup';
-    if (empty($environment->settings->locked)) {
-      $items[] = 'restore';
+    if (drupal_valid_path("node/$environment->site/backups")) {
+      $items[] = l(t('Backups'), "node/$environment->site/backups");
     }
   }
   elseif ($environment->site && $environment->site_status == HOSTING_SITE_DISABLED)  {

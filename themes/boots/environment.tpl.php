@@ -540,13 +540,6 @@
             </a>
             <?php endif; ?>
 
-            <!-- Browse Backups -->
-            <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text btn-sm text-muted" title="<?php print t('View list of backups.'); ?>">
-              <i class="fa fa-database"></i>
-              <?php print t('Backups'); ?>
-            </a>
-
-
             <!-- Show Hooks -->
             <div class="btn-group btn-hooks" role="group">
               <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
