@@ -108,5 +108,5 @@ Feature: Create a project
     When I click "test"
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
-    When I am on "http://test.drpl8.devshop.travis"
+    When I click "test.drpl8.devshop.travis"
     Then I should see "Welcome to test.drpl8.devshop.travis"
