@@ -77,7 +77,7 @@ body.admin-menu .navbar-static-top {
   border-radius: 5px 5px 0 0;
 }
 
-.environment-tasks button.task-list-button {
+.environment-menu button.task-list-button {
   z-index: 1;
 }
 
@@ -109,21 +109,21 @@ body.admin-menu .navbar-static-top {
 .environment.live-environment .environment-header a.btn-text,
 .environment.live-environment .environment-header button.btn-link,
 .environment.live-environment .environment-header span,
-.environment.live-environment .environment-tasks,
-.environment.live-environment .environment-tasks a,
-.environment.live-environment .environment-tasks a.btn-text,
-.environment.live-environment .environment-tasks button.btn-link
+.environment.live-environment .environment-menu,
+.environment.live-environment .environment-menu a,
+.environment.live-environment .environment-menu a.btn-text,
+.environment.live-environment .environment-menu button.btn-link
 {
     color: white;
 }
 
-.environment.live-environment .environment-tasks .dropdown-menu a,
-.environment.live-environment .environment-tasks .dropdown-menu {
+.environment.live-environment .environment-menu .dropdown-menu a,
+.environment.live-environment .environment-menu .dropdown-menu {
   color: black;
 }
 
 
-.environment.live-environment .environment-tasks button.btn-link:hover {
+.environment.live-environment .environment-menu button.btn-link:hover {
   text-decoration: none;
 }
 
@@ -401,8 +401,8 @@ input.form-control.webhook-url {
   max-width: 27em;
 }
 
-.environment-tasks .devshop-tasks .tasks,
-.environment-tasks .devshop-tasks .actions {
+.environment-menu .devshop-tasks .tasks,
+.environment-menu .devshop-tasks .actions {
   float: left;
   width: 50%;
 }
@@ -541,7 +541,7 @@ ul.dropdown-menu li.text {
 }
 
 .environment > .list-group-item.text,
-.environment-tasks > ul.dropdown-menu li .text
+.environment-menu > ul.dropdown-menu li .text
 {
   padding: 10px 15px;
   white-space: normal;
@@ -629,7 +629,7 @@ html.js fieldset.collapsed {
   overflow: hidden;
 }
 
-.environment-tasks .dropdown-menu a {
+.environment-menu .dropdown-menu a {
     white-space: nowrap;
 }
 
@@ -727,11 +727,11 @@ html.js fieldset.collapsed {
     z-index: 2;
 }
 
-.environment-tasks i.fa {
+.environment-menu i.fa {
     width: 20px;
 }
 
-.environment-tasks .dropdown-menu .divider {
+.environment-menu .dropdown-menu .divider {
     margin: 3px 0px;
 }
 
