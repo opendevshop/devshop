@@ -295,6 +295,125 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
+  <!-- URLs -->
+  <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
+
+    <div class="btn-toolbar" role="toolbar">
+
+      <?php
+      // If we have more than one domain, add the dropdown.
+      if (count($environment->domains) > 1):
+        ?>
+        <div class="btn-group btn-group-smaller btn-urls" role="group">
+          <a href="<?php print $environment->url ?>" target="_blank" class="environment-link">
+            <?php if (!empty($environment->ssl_enabled)): ?>
+              <i class="fa fa-lock text-success"></i>
+            <?php else: ?>
+              <i class="fa fa-globe"></i>
+            <?php endif; ?>
+            <span class="hidden">Visit Environment:</span>
+            <?php print $environment->url ?>
+          </a>
+        </div>
+        <div class="btn-group btn-group-smaller" role="group">
+          <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-globe"></i>
+            <?php print count($environment->domains); ?>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php foreach ($environment->domains as $domain): ?>
+              <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
+            <?php endforeach; ?>
+            <li class="divider">&nbsp;</li>
+            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit', array('fragment' => 'edit-aliases-wrapper')); ?></li>
+          </ul>
+        </div>
+
+        <?php
+      // If site only has one domain (no aliases):
+      else: ?>
+
+        <?php if (!empty($environment->url)): ?>
+          <div class="btn-group btn-group-smaller btn-urls-single" role="group">
+            <a href="<?php print $environment->url ?>" target="_blank">
+              <?php if (!empty($environment->ssl_enabled)): ?>
+                <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
+              <?php else: ?>
+                <i class="fa fa-globe"></i>
+              <?php endif;?>
+              <?php print $environment->url ?>
+            </a>
+          </div>
+        <?php else: ?>
+          <button class="btn btn-xs">
+            <i class="fa fa-globe"></i>
+            <em>&nbsp;</em>
+          </button>
+        <?php endif;?>
+
+      <?php endif;?>
+
+      <!-- Log In Link -->
+      <?php if (isset($environment->login_text)): ?>
+        <div class="btn-group btn-group-smaller pull-right login-link" role="group">
+
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal-<?php print $environment->name ?>" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
+            <i class="fa fa-sign-in"></i>
+            <?php print $environment->login_text; ?>
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="loginModal-<?php print $environment->name ?>" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel-<?php print $environment->name ?>">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="loginModalLabel-<?php print $environment->name ?>">
+                    <?php print $environment->login_text; ?>
+                  </h4>
+                </div>
+                <div class="modal-body">
+                  <i class="fa fa-gear fa-spin"></i>
+                  <?php print t('Requesting new log in link. Please wait...') ?>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <?php endif;?>
+    </div>
+  </div>
+
+
+  <!-- Cloned Environment Indicator -->
+  <?php if (isset($environment->cloned)): ?>
+    <div class="list-group-item clone-info">
+
+      <div class="btn-toolbar">
+
+        <label><?php print t('Clone of'); ?></label>
+        <?php print l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}") ?>
+        <label>
+          <?php print format_date($environment->created['date']); ?>
+        </label>
+
+        <?php if (user_access("create sync task")): ?>
+          <div class="btn-group pull-right">
+            <a class="btn btn-default btn-sm pull-right" href="<?php print $environment->clone_rebuild_url; ?>">
+              <i class="fa fa-repeat"></i> <?php print t('Rebuild'); ?>
+            </a>
+          </div>
+        <?php endif; ?>
+      </div>
+
+    </div>
+  <?php endif; ?>
+
     <?php
 
       // SITUATION: Environment Destroy Initiated
@@ -485,124 +604,6 @@
     <?php
       // SITUATION: Environment is Active!
       elseif (empty($environment->tasks['delete'])): ?>
-
-        <!-- Cloned Environment Indicator -->
-        <?php if (isset($environment->cloned)): ?>
-          <div class="list-group-item clone-info">
-
-            <div class="btn-toolbar">
-
-            <label><?php print t('Clone of'); ?></label>
-            <?php print l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}") ?>
-            <label>
-              <?php print format_date($environment->created['date']); ?>
-            </label>
-
-            <?php if (user_access("create sync task")): ?>
-              <div class="btn-group pull-right">
-                <a class="btn btn-default btn-sm pull-right" href="<?php print $environment->clone_rebuild_url; ?>">
-                  <i class="fa fa-repeat"></i> <?php print t('Rebuild'); ?>
-                </a>
-              </div>
-            <?php endif; ?>
-            </div>
-
-          </div>
-        <?php endif; ?>
-
-        <!-- URLs -->
-        <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
-
-            <div class="btn-toolbar" role="toolbar">
-
-                <?php
-                // If we have more than one domain, add the dropdown.
-                if (count($environment->domains) > 1):
-                    ?>
-                    <div class="btn-group btn-group-smaller btn-urls" role="group">
-                        <a href="<?php print $environment->url ?>" target="_blank" class="environment-link">
-                            <?php if (!empty($environment->ssl_enabled)): ?>
-                                <i class="fa fa-lock text-success"></i>
-                            <?php else: ?>
-                                <i class="fa fa-globe"></i>
-                            <?php endif; ?>
-                            <span class="hidden">Visit Environment:</span>
-                            <?php print $environment->url ?>
-                        </a>
-                    </div>
-                    <div class="btn-group btn-group-smaller" role="group">
-                        <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-globe"></i>
-                            <?php print count($environment->domains); ?>
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <?php foreach ($environment->domains as $domain): ?>
-                                <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
-                            <?php endforeach; ?>
-                            <li class="divider">&nbsp;</li>
-                            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit', array('fragment' => 'edit-aliases-wrapper')); ?></li>
-                        </ul>
-                    </div>
-
-                    <?php
-                // If site only has one domain (no aliases):
-                else: ?>
-
-                    <?php if (!empty($environment->url)): ?>
-                        <div class="btn-group btn-group-smaller btn-urls-single" role="group">
-                            <a href="<?php print $environment->url ?>" target="_blank">
-                                <?php if (!empty($environment->ssl_enabled)): ?>
-                                    <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
-                                <?php else: ?>
-                                    <i class="fa fa-globe"></i>
-                                <?php endif;?>
-                                <?php print $environment->url ?>
-                            </a>
-                        </div>
-                    <?php else: ?>
-                        <button class="btn btn-xs">
-                            <i class="fa fa-globe"></i>
-                            <em>&nbsp;</em>
-                        </button>
-                    <?php endif;?>
-
-                <?php endif;?>
-
-                <!-- Log In Link -->
-                <?php if (isset($environment->login_text)): ?>
-                    <div class="btn-group btn-group-smaller pull-right login-link" role="group">
-
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal-<?php print $environment->name ?>" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
-                                <i class="fa fa-sign-in"></i>
-                                <?php print $environment->login_text; ?>
-                            </button>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="loginModal-<?php print $environment->name ?>" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel-<?php print $environment->name ?>">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="loginModalLabel-<?php print $environment->name ?>">
-                                                <?php print $environment->login_text; ?>
-                                            </h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <i class="fa fa-gear fa-spin"></i>
-                                            <?php print t('Requesting new log in link. Please wait...') ?>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-                <?php endif;?>
-            </div>
-        </div>
 
         <?php
         // Only show this area if they have at least one of these permissions.
