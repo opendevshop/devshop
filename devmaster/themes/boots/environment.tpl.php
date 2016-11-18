@@ -92,6 +92,82 @@
                   </section>
                 </div>
               </div>
+
+              <!-- Show Hooks -->
+              <div class="btn-group btn-hooks" role="group">
+                <h4>
+                  <i class="fa fa-rocket"></i> <?php print t('Deploy Hooks'); ?>
+                </h4>
+                <ul class="list-unstyled" role="menu">
+                  <li class="text"><?php print t('Hooks are run any time new code is deployed.  The following hooks are enabled for this environment:'); ?></li>
+                  <?php if (isset($environment->settings->deploy)): ?>
+                    <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
+                      <?php if ($enabled): ?>
+                        <?php if ($hook_type == 'cache'): ?>
+                          <li class="text code">
+                            <code>drush clear-cache all</code>
+                          </li>
+                        <?php elseif ($hook_type == 'update'): ?>
+                          <li class="text code">
+                            <code>drush update-db -y</code>
+                          </li>
+                        <?php elseif ($hook_type == 'revert'): ?>
+                          <li class="text code">
+                            <code>drush features-revert-all -y</code>
+                          </li>
+                        <?php elseif ($hook_type == 'composer'): ?>
+                          <li class="text code">
+                            <code>composer install</code>
+                          </li>
+                        <?php elseif ($hook_type == 'test'): ?>
+                          <li class="text code">
+                            <?php print t('Run Tests'); ?>
+                          </li>
+                        <?php elseif ($hook_type == 'dothooks'): ?>
+                          <li><?php print t('File-based Hooks'); ?></li>
+                          <?php if (!empty($environment->dothooks_file_name)): ?>
+                            <li class="text"><p class=\"text-info\">
+                                <i class=\"fa fa-question-circle\"></i>
+                                <?php print t("This is your &filename file:", array(
+                                  '&filename' => $environment->dothooks_file_name
+                                )); ?></p></li>
+                            <li>
+                              <pre><?php if (isset($environment->dothooks_file_path)) { print file_get_contents($environment->dothooks_file_path); } ?></pre>
+                            </li>
+                          <?php else:  ?>
+                            <li class="text text-danger">
+                              <i class="fa fa-warning"></i> <?php print $hooks_yml_note; ?>
+                            </li>
+                          <?php endif; ?>
+                        <?php elseif ($hook_type == 'acquia_hooks'): ?>
+                          <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
+                          <li class="text"><p class="text-info">
+                              <i class="fa fa-question-circle"></i>
+                              <?php print t("When code or data is deployed, the appropriate Acquia Cloud Hook within the project will be triggered."); ?></p></li>
+                          <li class="text"><p class="text-muted"><?php print t('See !link1 and !link2 for more information ', array(
+                                '!link1' => l('Acquia Cloud Documentation', 'https://docs.acquia.com/cloud/manage/cloud-hooks'),
+                                '!link2' => l('https://github.com/acquia/cloud-hooks', 'https://github.com/acquia/cloud-hooks'),
+                              )); ?></p>
+                          </li>
+                          <li>
+                            <label>Supported Cloud Hooks</label>
+                          </li>
+                          <li class="text">
+
+                            <ul>
+                              <li><strong>post-code-deploy:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
+                              <li><strong>post-code-update:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
+                              <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                              <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                            </ul>
+
+                          </li>
+                        <?php endif; ?>
+                      <?php endif; ?>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </ul>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -167,17 +243,14 @@
         <?php endif; ?>
 
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-            <span class="environment-meta-data">Disabled</span>
+            <a class="environment-meta-data btn btn-text">Disabled</a>
         <?php endif; ?>
 
-        <!-- Environment Status Indicators -->
-        <div class="environment-indicators">
-            <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
-                <span class="environment-meta-data text-muted" title="<?php print t('This database is locked.'); ?>">
-              <i class="fa fa-lock"></i><?php print t('Locked') ?>
-            </span>
-            <?php endif; ?>
-        </div>
+        <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
+            <a class="environment-meta-data btn btn-text" title="<?php print t('This database is locked.'); ?>">
+          <i class="fa fa-lock"></i><?php print t('Locked') ?>
+        </a>
+        <?php endif; ?>
 
       <?php  if (isset($environment->github_pull_request)): ?>
         <!-- Pull Request -->
@@ -193,6 +266,12 @@
 
       <?php endif; ?>
 
+        <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
+          <!-- Browse Logs -->
+          <a href="<?php print url("node/$environment->site/errors"); ?>" class="environment-meta-data btn btn-text btn-sm " title="<?php print t('View error logs.'); ?>">
+            <i class="fa fa-exclamation-circle"></i><?php print t('Errors'); ?>
+          </a>
+        <?php endif; ?>
     </div>
     </div>
 
@@ -530,98 +609,8 @@
           <label class="sr-only"><?php print t('Browse'); ?></label>
           <div class="btn-group btn-group-tight btn-group-links" role="group">
 
-            <?php if (drupal_valid_path("node/{$environment->site}/tasks")): ?>
-              <!-- Browse Task Logs -->
-              <a href="<?php print url("node/$environment->site/tasks"); ?>" class="btn btn-text btn-sm text-muted" title="<?php print t('Task logs for this environment.'); ?>">
-                <i class="fa fa-th-list"></i>
-                <?php print t('Tasks'); ?>
-              </a>
-            <?php endif; ?>
 
-            <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
-            <!-- Browse Logs -->
-            <a href="<?php print url("node/$environment->site/errors"); ?>" class="btn btn-text btn-sm text-muted" title="<?php print t('Error logs for this environment.'); ?>">
-              <i class="fa fa-exclamation-circle"></i>
-              <?php print t('Errors'); ?>
-            </a>
-            <?php endif; ?>
 
-            <!-- Show Hooks -->
-            <div class="btn-group btn-hooks" role="group">
-              <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-rocket"></i> <?php print t('Hooks'); ?>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li><label><?php print t('Deploy Hooks'); ?></label></li>
-                <li class="text"><?php print t('Hooks are run any time new code is deployed.  The following hooks are enabled for this environment:'); ?></li>
-                <?php if (isset($environment->settings->deploy)): ?>
-                <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
-                <?php if ($enabled): ?>
-                  <?php if ($hook_type == 'cache'): ?>
-                      <li class="text code">
-                          <code>drush clear-cache all</code>
-                      </li>
-                    <?php elseif ($hook_type == 'update'): ?>
-                      <li class="text code">
-                          <code>drush update-db -y</code>
-                      </li>
-                    <?php elseif ($hook_type == 'revert'): ?>
-                      <li class="text code">
-                          <code>drush features-revert-all -y</code>
-                      </li>
-                    <?php elseif ($hook_type == 'composer'): ?>
-                      <li class="text code">
-                        <code>composer install</code>
-                      </li>
-                    <?php elseif ($hook_type == 'test'): ?>
-                      <li class="text code">
-                        <?php print t('Run Tests'); ?>
-                      </li>
-                    <?php elseif ($hook_type == 'dothooks'): ?>
-                      <li><label><?php print t('File-based Hooks'); ?></label></li>
-                      <?php if (!empty($environment->dothooks_file_name)): ?>
-                        <li class="text"><p class=\"text-info\">
-                            <i class=\"fa fa-question-circle\"></i>
-                            <?php print t("This is your &filename:", array(
-                              '&filename' => $environment->dothooks_file_name
-                            )); ?></p></li>
-                        <li>
-                          <pre><?php if (isset($environment->dothooks_file_path)) { print file_get_contents($environment->dothooks_file_path); } ?></pre>
-                        </li>
-                      <?php else:  ?>
-                        <li class="text text-danger">
-                          <i class="fa fa-warning"></i> <?php print $hooks_yml_note; ?>
-                        </li>
-                      <?php endif; ?>
-                    <?php elseif ($hook_type == 'acquia_hooks'): ?>
-                      <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
-                      <li class="text"><p class="text-info">
-                          <i class="fa fa-question-circle"></i>
-                          <?php print t("When code or data is deployed, the appropriate Acquia Cloud Hook within the project will be triggered."); ?></p></li>
-                      <li class="text"><p class="text-muted"><?php print t('See !link1 and !link2 for more information ', array(
-                            '!link1' => l('Acquia Cloud Documentation', 'https://docs.acquia.com/cloud/manage/cloud-hooks'),
-                            '!link2' => l('https://github.com/acquia/cloud-hooks', 'https://github.com/acquia/cloud-hooks'),
-                          )); ?></p>
-                      </li>
-                      <li>
-                        <label>Supported Cloud Hooks</label>
-                      </li>
-                      <li class="text">
-
-                        <ul>
-                          <li><strong>post-code-deploy:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
-                          <li><strong>post-code-update:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
-                          <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
-                          <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
-                        </ul>
-
-                      </li>
-                    <?php endif; ?>
-                  <?php endif; ?>
-                <?php endforeach; ?>
-                <?php endif; ?>
-              </ul>
-            </div>
           </div>
         </div>
 
