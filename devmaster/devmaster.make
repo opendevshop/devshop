@@ -23,6 +23,7 @@ projects[hosting][subdir] = "aegir"
 projects[hosting][patch][] = "https://www.drupal.org/files/issues/2823827-task-object-labels.patch"
 projects[hosting][patch][] = "https://www.drupal.org/files/issues/2824731-site-create-platform.patch"
 projects[hosting][patch][] = "https://www.drupal.org/files/issues/2754069-decouple-install-alternate_0.patch"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2828630-hosting-queued-logs_0.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
