@@ -9,6 +9,95 @@
         <i class="fa fa-question-circle"></i><?php print t('Info'); ?>
       </a>
 
+      <!-- Modal -->
+      <div class="modal fade" id="infoModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel<?php print $environment->site ?>">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="infoModalLabel<?php print $environment->site ?>">Access Information for environment: <?php print $environment->name; ?></h4>
+            </div>
+            <div class="modal-body">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">SSH Access</h3>
+                </div>
+                <div class="panel-body">
+                  <p class="text-muted small">
+                    <?php
+
+                    if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
+                      print t('After you have uploaded your public SSH keys at !link you can access the site via SSH and Drush.', array(
+                        '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
+                      ));
+                    }
+                    else {
+                      print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+                    }
+                    ?>
+                  </p>
+
+                  <label>
+                    Command
+                  </label>
+                  <input class="form-control" onclick="this.select()" value="ssh aegir@<?php print $environment->web_server; ?>">
+                </div>
+              </div>
+              <div class="panel panel-default panel-drush-access">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Drush Access</h3>
+                </div>
+                <div class="panel-body">
+
+                  <p class="text-muted small">
+                    <?php print t('Drush is installed on the server, with the alias <code>$alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
+                      '!download' => l(t('downloading the Drush aliases'), "node/{$environment->project->nid}/aliases"),
+                    ));
+                    ?>
+                  </p>
+                  <section>
+                    <label>
+                      Database CLI
+                    </label>
+                    <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sqlc">
+                  </section>
+                  <section>
+                    <label>
+                      List All Commands
+                    </label>
+                    <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
+                  </section>
+                </div>
+              </div>
+
+
+              <div class="panel panel-default panel-drush-access">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Other Information</h3>
+                </div>
+                <div class="panel-body">
+                  <section>
+                    <label>
+                      Database
+                    </label>
+                    <?php print $environment->db_name; ?>
+                  </section>
+                  <section>
+                    <label>
+                      Path
+                    </label>
+                    <?php print $environment->repo_root; ?>
+                  </section>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="environment-menu btn-group ">
             <button type="button" class="btn btn-link environment-menu-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
                 <i class="fa fa-bars"></i>
@@ -37,6 +126,8 @@
 
           <span><?php print $environment->name; ?></span>
         </a>
+
+      <div class="environment-status">
 
       <?php
       // If we detect a currently running deploy...
@@ -86,95 +177,6 @@
             <?php endif; ?>
         </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="infoModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel<?php print $environment->site ?>">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="infoModalLabel<?php print $environment->site ?>">Access Information for environment: <?php print $environment->name; ?></h4>
-              </div>
-              <div class="modal-body">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">SSH Access</h3>
-                  </div>
-                  <div class="panel-body">
-                    <p class="text-muted small">
-                      <?php
-
-                      if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
-                        print t('After you have uploaded your public SSH keys at !link you can access the site via SSH and Drush.', array(
-                          '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
-                        ));
-                      }
-                      else {
-                        print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
-                      }
-                      ?>
-                    </p>
-
-                    <label>
-                      Command
-                    </label>
-                    <input class="form-control" onclick="this.select()" value="ssh aegir@<?php print $environment->web_server; ?>">
-                  </div>
-                </div>
-                <div class="panel panel-default panel-drush-access">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Drush Access</h3>
-                  </div>
-                  <div class="panel-body">
-
-                    <p class="text-muted small">
-                      <?php print t('Drush is installed on the server, with the alias <code>$alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
-                        '!download' => l(t('downloading the Drush aliases'), "node/{$environment->project->nid}/aliases"),
-                      ));
-                      ?>
-                    </p>
-                    <section>
-                      <label>
-                        Database CLI
-                      </label>
-                      <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sqlc">
-                    </section>
-                    <section>
-                      <label>
-                        List All Commands
-                      </label>
-                      <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
-                    </section>
-                  </div>
-                </div>
-
-
-                <div class="panel panel-default panel-drush-access">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Other Information</h3>
-                  </div>
-                  <div class="panel-body">
-                    <section>
-                      <label>
-                        Database
-                      </label>
-                      <?php print $environment->db_name; ?>
-                    </section>
-                    <section>
-                      <label>
-                        Path
-                      </label>
-                      <?php print $environment->repo_root; ?>
-                    </section>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
       <?php  if (isset($environment->github_pull_request)): ?>
         <!-- Pull Request -->
 
@@ -189,6 +191,7 @@
 
       <?php endif; ?>
 
+    </div>
     </div>
 
     <!-- Environment Warnings -->
