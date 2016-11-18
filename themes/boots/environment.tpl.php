@@ -14,8 +14,10 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="infoModalLabel<?php print $environment->site ?>">Access Information for environment: <?php print $environment->name; ?></h4>
+              <button type="button" class="close btn btn-lg" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="infoModalLabel<?php print $environment->site ?>"><?php print t('Environment Information') ?> <small><?php print $environment->name; ?></small>
+              </h4>
+              <a href="<?php print url($environment->url); ?>" target="_blank" class='btn btn-default btn-sm'><?php print $environment->url; ?> <i class="fa fa-external-link-square"></i> </a>
             </div>
             <div class="modal-body">
               <div class="panel panel-default">
