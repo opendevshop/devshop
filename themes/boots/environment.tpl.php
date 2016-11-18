@@ -3,8 +3,14 @@
     <?php if (!empty($environment->menu) && !isset($page)): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
-        <div class="environment-menu btn-group ">
-            <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
+
+      <!-- Information Modal -->
+      <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
+        <i class="fa fa-question-circle"></i><?php print t('Info'); ?>
+      </a>
+
+      <div class="environment-menu btn-group ">
+            <button type="button" class="btn btn-link environment-menu-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
                 <i class="fa fa-bars"></i>
             </button>
             <?php print $environment->menu_rendered; ?>
@@ -80,18 +86,13 @@
             <?php endif; ?>
         </div>
 
-        <!-- Access Information -->
-        <a type="button" class="environment-meta-data environment-access btn btn-text btn-sm" data-toggle="modal" data-target="#accessModal<?php print $environment->site ?>">
-          <i class="fa fa-key"></i>Access
-        </a>
-
         <!-- Modal -->
-        <div class="modal fade" id="accessModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="accessModalLabel<?php print $environment->site ?>">
+        <div class="modal fade" id="infoModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel<?php print $environment->site ?>">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="accessModalLabel<?php print $environment->site ?>">Access Information for environment: <?php print $environment->name; ?></h4>
+                <h4 class="modal-title" id="infoModalLabel<?php print $environment->site ?>">Access Information for environment: <?php print $environment->name; ?></h4>
               </div>
               <div class="modal-body">
                 <div class="panel panel-default">
