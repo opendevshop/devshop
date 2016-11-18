@@ -604,16 +604,6 @@
             </div>
         </div>
 
-
-        <div class="list-group-item">
-          <label class="sr-only"><?php print t('Browse'); ?></label>
-          <div class="btn-group btn-group-tight btn-group-links" role="group">
-
-
-
-          </div>
-        </div>
-
         <?php
         // Only show this area if they have at least one of these permissions.
         if (
