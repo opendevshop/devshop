@@ -3,7 +3,7 @@
     <?php if (!empty($environment->menu) && !isset($page)): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
-        <div class="environment-tasks btn-group ">
+        <div class="environment-menu btn-group ">
             <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
                 <i class="fa fa-bars"></i>
             </button>
