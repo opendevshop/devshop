@@ -28,18 +28,18 @@ body.admin-menu .navbar-static-top {
   text-overflow: ellipsis;
 }
 
-.environment-drupal-version {
-  max-width: 23%;
-}
-
 .environment-meta-data {
-    font-family: monospace;
     margin: 0px;
     padding: 3px 6px;
     color: #777;
     font-size: .7em;
     white-space: nowrap;
 }
+
+.environment.live-environment .environment-meta-data {
+  color: #fff;
+}
+
 .environment-indicators {
   display: inline;
 }
@@ -52,9 +52,14 @@ body.admin-menu .navbar-static-top {
     position: relative;
     display: inline-block;
     vertical-align: middle;
-    margin-right: -9px;
-    margin-top: -4px;
+    margin-right: -5px;
 }
+
+.environment-status {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .environment-link {
     font-weight: bold;
     font-size: 1.1em;
