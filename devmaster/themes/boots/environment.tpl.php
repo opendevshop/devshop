@@ -801,7 +801,7 @@ sites/all/drush/drushrc.php
 
     ?>
     <div class="list-group-item list-group-item-git">
-      <label><?php print t('Git') ?></label>
+      <label><?php print t('Git Status') ?></label>
 
       <!-- Git Status -->
       <div class="btn-group btn-git-status" role="group">
