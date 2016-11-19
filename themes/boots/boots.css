@@ -1010,3 +1010,14 @@ li.text.code {
 .list-group-item.clone-info {
     padding: .5em 0 .3em;
 }
+
+
+
+.modal-info label {
+  width: 19%;
+}
+
+.modal-info input.form-control {
+  display: inline-block;
+  width: 60%;
+}
