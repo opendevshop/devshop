@@ -109,6 +109,10 @@ Feature: Create a project
     Then print last drush output
     When I run drush "hosting-tasks"
     Then print last drush output
+    When I run drush "hosting-tasks"
+    Then print last drush output
+
+    And I wait "10" seconds
 
     When I click "test"
     Then I should see "Environment Dashboard"
