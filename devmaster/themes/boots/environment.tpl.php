@@ -10,7 +10,7 @@
       </a>
 
       <!-- Modal -->
-      <div class="modal fade" id="infoModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel<?php print $environment->site ?>">
+      <div class="modal modal-info fade" id="infoModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel<?php print $environment->site ?>">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -20,84 +20,66 @@
               <a href="<?php print url($environment->url); ?>" target="_blank" class='btn btn-default btn-sm'><?php print $environment->url; ?> <i class="fa fa-external-link-square"></i> </a>
             </div>
             <div class="modal-body">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">SSH Access</h3>
-                </div>
-                <div class="panel-body">
-                  <p class="text-muted small">
-                    <?php
+              <h4>SSH Access</h4>
+              <p class="text-muted small">
+                <?php
 
-                    if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
-                      print t('After you have uploaded your public SSH keys at !link you can access the site via SSH and Drush.', array(
-                        '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
-                      ));
-                    }
-                    else {
-                      print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
-                    }
-                    ?>
-                  </p>
-
-                  <label>
-                    Command
-                  </label>
-                  <input class="form-control" onclick="this.select()" value="ssh aegir@<?php print $environment->web_server; ?>">
-                </div>
-              </div>
-              <div class="panel panel-default panel-drush-access">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Drush Access</h3>
-                </div>
-                <div class="panel-body">
-
-                  <p class="text-muted small">
-                    <?php print t('Drush is installed on the server, with the alias <code>$alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
-                      '!download' => l(t('downloading the Drush aliases'), "node/{$environment->project->nid}/aliases"),
-                    ));
-                    ?>
-                  </p>
-                  <section>
-                    <label>
-                      Database CLI
-                    </label>
-                    <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sqlc">
-                  </section>
-                  <section>
-                    <label>
-                      List All Commands
-                    </label>
-                    <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
-                  </section>
-                </div>
-              </div>
-
-
-              <div class="panel panel-default panel-drush-access">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Other Information</h3>
-                </div>
-                <div class="panel-body">
-                  <section>
-                    <label>
-                      Database
-                    </label>
-                    <?php print $environment->db_name; ?>
-                  </section>
-                  <section>
-                    <label>
-                      Path
-                    </label>
-                    <?php print $environment->repo_root; ?>
-                  </section>
-                </div>
-              </div>
-
+                if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
+                  print t('Upload your public SSH keys at !link so you can access the site via SSH and Drush.', array(
+                    '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
+                  ));
+                }
+                else {
+                  print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+                }
+                ?>
+              </p>
+              <label>
+                Command
+              </label>
+              <input class="form-control inline" onclick="this.select()" value="ssh aegir@<?php print $environment->web_server; ?>">
+            </div>
+            <div class="modal-body">
+              <h4>Drush Access</h4>
+              <p class="text-muted small">
+                <?php print t('Drush is installed on the server, with the alias <code>@!alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
+                  '!alias' => $environment->system_domain,
+                  '!download' => l(t('downloading the Drush aliases'), "node/{$project->nid}/aliases"),
+                ));
+                ?>
+              </p>
+              <section>
+                <label>
+                  Database CLI
+                </label>
+                <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sqlc">
+              </section>
+              <section>
+                <label>
+                  List All Commands
+                </label>
+                <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
+              </section>
+            </div>
+            <div class="modal-body">
+              <h4>Other Information</h4>
+              <section>
+                <label>
+                  Database
+                </label>
+                <?php print $environment->db_name; ?>
+              </section>
+              <section>
+                <label>
+                  Path
+                </label>
+                <?php print $environment->repo_root; ?>
+              </section>
+            </div>
+            <div class="modal-body">
+              <h4><?php print t('Deploy Hooks'); ?></h4>
               <!-- Show Hooks -->
               <div class="btn-group btn-hooks" role="group">
-                <h4>
-                  <i class="fa fa-rocket"></i> <?php print t('Deploy Hooks'); ?>
-                </h4>
                 <ul class="list-unstyled" role="menu">
                   <li class="text"><?php print t('Hooks are run any time new code is deployed.  The following hooks are enabled for this environment:'); ?></li>
                   <?php if (isset($environment->settings->deploy)): ?>
@@ -468,11 +450,11 @@
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (
-                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_QUEUED && 
-                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_PROCESSING && 
-                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_QUEUED && 
-                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_PROCESSING && 
-                    empty($environment->site) 
+                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_QUEUED &&
+                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_PROCESSING &&
+                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_QUEUED &&
+                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_PROCESSING &&
+                    empty($environment->site)
                     && $environment->platform
                     ): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_verify", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
