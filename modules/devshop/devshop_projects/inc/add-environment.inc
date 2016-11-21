@@ -162,6 +162,41 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     ),
   );
 
+  foreach ($project->environments as $e => $environment) {
+    $environment_options[$e] = $environment->name . ' ' . l($environment->url, $environment->url, array(
+      'attributes' => array('target' => '_blank'),
+    ));
+  }
+
+  if (count($environment_options)) {
+    $form['install_method_clone'] = array(
+      '#type' => 'radios',
+      '#title' => t('Environment to clone'),
+      '#weight' => -98,
+      '#options' => $environment_options,
+      '#default_value' => key($environment_options),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="install_method"]' => array('value' => 'clone'),
+        ),
+      ),
+    );
+  }
+  else {
+    $form['install_method_clone'] = array(
+      '#type' => 'container',
+      '#weight' => -98,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="install_method"]' => array('value' => 'clone'),
+        ),
+      ),
+      'note' => array(
+        '#markup' => t('There are no environments to clone.'),
+      ),
+    );
+  }
+
   // Server Selection
   $form['server_stack'] = array(
     '#type' => 'fieldset',
