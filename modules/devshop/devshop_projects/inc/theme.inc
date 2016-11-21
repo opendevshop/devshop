@@ -48,6 +48,11 @@ function devshop_projects_theme() {
       ),
       'template' => 'task',
     ),
+    'devshop_add_environment_options' => array(
+      'render element' => 'form',
+      'template' => 'add-environment-options',
+      'path' => drupal_get_path('module', 'devshop_projects') . '/includes',
+    ),
   );
 }
 
