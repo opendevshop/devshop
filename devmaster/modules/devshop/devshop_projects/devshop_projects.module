@@ -7,6 +7,7 @@
 
 include_once('projects.inc');
 include_once('inc/create-environment.inc');
+include_once('inc/add-environment.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
@@ -315,6 +316,16 @@ function devshop_projects_menu() {
     'weight' => 1,
     'file' => 'inc/drush.inc',
     'type' => MENU_CALLBACK,
+  );
+
+  // Add Environment page
+  $items['project/%/add-environment'] = array(
+    'title' => 'Add Environment',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'devshop_projects_environment_add_page',
+    'page arguments' => array(1),
+    'access callback' => 'devshop_projects_environment_add_access',
+    'access arguments' => array(1),
   );
 
   // Ajax endpoint for reloads
@@ -825,4 +836,22 @@ function devshop_environment_url($project, $environment_name) {
     '@hostname' => $_SERVER['SERVER_NAME'],
   ));
   return $domain;
+}
+
+/**
+ * Retrieve a project node by name.
+ *
+ * @param $name
+ * @return bool|mixed
+ */
+function devshop_projects_load_by_name($name) {
+  $nid = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('title', $name)
+    ->condition('type', 'project')
+    ->condition('status', 1)
+    ->execute()
+    ->fetchField();
+
+  return node_load($nid);
 }
