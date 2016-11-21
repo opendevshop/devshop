@@ -123,13 +123,13 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   $form['install_method'] = array(
     '#type' => 'radios',
-    '#title' => t('Install Method'),
+    '#title' => t('Method'),
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
       'profile' => t('Drupal Profile'),
       'clone' => t('Clone Environment'),
-      'clone_alias' => t('Sync with Drush'),
+      'drush' => t('Sync with Drush'),
       'import' => t('Import Database'),
     ),
   );
@@ -196,6 +196,30 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
       ),
     );
   }
+
+  $form['install_method_drush'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Drush Alias'),
+    '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
+    '#weight' => -98,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="install_method"]' => array('value' => 'drush'),
+      ),
+    ),
+  );
+
+  $form['install_method_import'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to SQL'),
+    '#description' => t('Enter either a remote MySQL address (in the form of mysql://username:password@host/database) or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql)'),
+    '#weight' => -98,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="install_method"]' => array('value' => 'import'),
+      ),
+    ),
+  );
 
   // Server Selection
   $form['server_stack'] = array(
