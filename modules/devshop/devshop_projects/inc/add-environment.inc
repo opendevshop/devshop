@@ -121,6 +121,46 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     ),
   );
 
+  $form['install_method'] = array(
+    '#type' => 'radios',
+    '#title' => t('Install Method'),
+    '#weight' => -99,
+    '#options' => array(
+      'profile' => t('Drupal Install Profile'),
+      'clone' => t('Clone Environment'),
+      'clone_alias' => t('Sync from Drush Alias'),
+      'import' => t('Import Database'),
+    ),
+  );
+
+  $form['install_method_profile'] = array(
+    '#type' => 'radios',
+    '#title' => t('Drupal Install Profile'),
+    '#weight' => -98,
+    '#options' => array(
+      'minimal' => t('Minimal'),
+      'standard' => t('Standard') . ' ' . t('(Project default)'),
+      'other' => t('Other'),
+    ),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="install_method"]' => array('value' => 'profile'),
+      ),
+    ),
+  );
+  $form['install_method_profile_other'] = array(
+    '#type' => 'textfield',
+    '#attributes' => array(
+      'placeholder' => t('Profile Name'),
+    ),
+    '#weight' => -97,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="install_method_profile"]' => array('value' => 'other'),
+      ),
+    ),
+  );
+
   // Server Selection
   $form['server_stack'] = array(
     '#type' => 'fieldset',
