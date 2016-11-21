@@ -266,7 +266,6 @@ function devshop_environment_method_process($element) {
     );
   }
 
-  kpr($element);
   return $element;
 }
 
