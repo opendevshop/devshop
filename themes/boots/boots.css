@@ -1021,3 +1021,13 @@ li.text.code {
   display: inline-block;
   width: 60%;
 }
+
+#edit-install-method > .form-item {
+  display: inline-block;
+  width: 25%;
+}
+
+#edit-install-method > .form-item > label {
+  width: 100%;
+  white-space: normal;
+}
