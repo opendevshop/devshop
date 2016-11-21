@@ -124,11 +124,12 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   $form['install_method'] = array(
     '#type' => 'radios',
     '#title' => t('Install Method'),
+    '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
-      'profile' => t('Drupal Install Profile'),
+      'profile' => t('Drupal Profile'),
       'clone' => t('Clone Environment'),
-      'clone_alias' => t('Sync from Drush Alias'),
+      'clone_alias' => t('Sync with Drush'),
       'import' => t('Import Database'),
     ),
   );
@@ -243,6 +244,19 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   // so that the site edit node has them as well.
 
   return $form;
+}
+
+function devshop_environment_method_process($element) {
+  $element = form_process_radios($element);
+
+  foreach (element_children($element) as $i) {
+    $element[$i]['#label_attributes']['class'] = array(
+      'btn btn-default'
+    );
+  }
+
+  kpr($element);
+  return $element;
 }
 
 /**
