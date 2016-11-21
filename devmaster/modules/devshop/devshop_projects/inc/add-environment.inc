@@ -14,54 +14,6 @@ function devshop_projects_environment_add_page($project_name) {
   global $user;
   $node = devshop_projects_load_by_name($project_name);
 
-//
-//  $output['install'] = array(
-//    '#type' => 'fieldset',
-//    '#title' => t('Install Profile'),
-//    '#description' => t('Install Drupal from scratch using an install profile.'),
-//    '#group' => 'add_options',
-//    '#collapsible' => TRUE,
-//    '#collapsed' => FALSE,
-//  );
-//  $output['install']['profile_options'] = array(
-//    '#theme' => 'item_list',
-//    '#items' => array(
-//      l(t('Standard'), "hosting_confirm/{$node->nid}/project_devshop-create")
-//    ),
-//  );
-//  $output['clone'] = array(
-//    '#type' => 'fieldset',
-//    '#title' => t('Clone Environment'),
-//    '#description' => t('Clone one of your DevShop environments.'),
-//    '#group' => 'add_options',
-//    '#collapsible' => TRUE,
-//    '#collapsed' => FALSE,
-//  );
-//  $output['clone']['clone_sources'] = array(
-//    '#theme' => 'item_list',
-//    '#items' => array(
-//      l(t('dev'), "hosting_confirm/{$node->nid}/project_devshop-create?clone_nid=")
-//    ),
-//  );
-//  $output['import'] = array(
-//    '#type' => 'fieldset',
-//    '#title' => t('Import Data'),
-//    '#description' => t('Import existing database and files.'),
-//    '#group' => 'add_options',
-//    '#collapsible' => TRUE,
-//    '#collapsed' => FALSE,
-//  );
-//  $output['import']['import_sources'] = array(
-//    '#theme' => 'item_list',
-//    '#items' => array(
-//      l(t('dev'), "hosting_confirm/{$node->nid}/project_devshop-create?clone_nid=")
-//    ),
-//  );
-//
-//  $output['add_options'] = array(
-//    '#type' => 'vertical_tabs',
-//  );
-
   $page['help'] = array(
     '#markup' => t('There are many ways to create a new copy of your website. You can install Drupal from a profile, clone an existing environment, or import a database dump from another location.'),
     '#prefix' => '<div class="alert alert-info"><i class="fa fa-info-circle"></i> ',
