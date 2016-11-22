@@ -74,19 +74,25 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   );
 
   $form['install_method'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Install Method'),
+    '#weight' => -99,
+  );
+  $form['install_method']['install_method'] = array(
     '#type' => 'radios',
     '#title' => t('Install Method'),
+    '#title_display' => 'invisible',
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
-      'manual' => t('Manual'),
+      'manual' => t('Manual Install'),
       'profile' => t('Drupal Profile'),
       'clone' => t('Clone Environment'),
       'import' => t('Import Database'),
     ),
   );
 
-  $form['install_method_none'] = array(
+  $form['install_method']['none'] = array(
     '#type' => 'container',
     '#weight' => -98,
     '#states' => array(
@@ -95,11 +101,11 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
       ),
     ),
     'note' => array(
-      '#markup' => t('No database will be installed. You can install Drupal by visiting install.php or by using Drush.'),
+      '#markup' => t('An empty database will be created. You can install Drupal manually by visiting install.php, by using Drush, or you can manually import a database.'),
     ),
   );
 
-  $form['install_method_profile'] = array(
+  $form['install_method']['profile'] = array(
     '#type' => 'radios',
     '#title' => t('Drupal Install Profile'),
     '#weight' => -98,
@@ -114,7 +120,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
       ),
     ),
   );
-  $form['install_method_profile_other'] = array(
+  $form['install_method']['profile_other'] = array(
     '#type' => 'textfield',
     '#attributes' => array(
       'placeholder' => t('Profile Name'),
@@ -122,7 +128,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     '#weight' => -97,
     '#states' => array(
       'visible' => array(
-        ':input[name="install_method_profile"]' => array('value' => 'other'),
+        ':input[name="profile"]' => array('value' => 'other'),
       ),
     ),
   );
@@ -134,7 +140,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   }
 
   if (count($environment_options)) {
-    $form['install_method_clone'] = array(
+    $form['install_method']['clone'] = array(
       '#type' => 'radios',
       '#title' => t('Environment to clone'),
       '#weight' => -98,
@@ -148,7 +154,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     );
   }
   else {
-    $form['install_method_clone'] = array(
+    $form['install_method']['clone'] = array(
       '#type' => 'container',
       '#weight' => -98,
       '#states' => array(
@@ -162,7 +168,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     );
   }
 
-  $form['install_method_drush'] = array(
+  $form['install_method']['drush'] = array(
     '#type' => 'textfield',
     '#title' => t('Drush Alias'),
     '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
@@ -174,7 +180,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     ),
   );
 
-  $form['install_method_import'] = array(
+  $form['install_method']['import'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to SQL or Drush Alias'),
     '#description' => t('Enter either a remote MySQL address (such as mysql://username:password@host/database), an absolute path to an SQL dump (such as /var/aegir/site-backup.sql), or a Drush alias that is already present on the server (such as @mysite.production).'),
@@ -275,7 +281,10 @@ function devshop_environment_method_process($element) {
 
   foreach (element_children($element) as $i) {
     $element[$i]['#label_attributes']['class'] = array(
-      'btn btn-default'
+      'btn btn-link'
+    );
+    $element[$i]['#wrapper_attributes']['class'] = array(
+      'install-method-wrapper'
     );
   }
 
