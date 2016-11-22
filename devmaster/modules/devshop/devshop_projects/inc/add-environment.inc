@@ -75,14 +75,27 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   $form['install_method'] = array(
     '#type' => 'radios',
-    '#title' => t('Method'),
+    '#title' => t('Install Method'),
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
+      'manual' => t('Manual'),
       'profile' => t('Drupal Profile'),
       'clone' => t('Clone Environment'),
-      'drush' => t('Sync with Drush'),
       'import' => t('Import Database'),
+    ),
+  );
+
+  $form['install_method_none'] = array(
+    '#type' => 'container',
+    '#weight' => -98,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="install_method"]' => array('value' => 'manual'),
+      ),
+    ),
+    'note' => array(
+      '#markup' => t('No database will be installed. You can install Drupal by visiting install.php or by using Drush.'),
     ),
   );
 
@@ -163,8 +176,8 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   $form['install_method_import'] = array(
     '#type' => 'textfield',
-    '#title' => t('Path to SQL'),
-    '#description' => t('Enter either a remote MySQL address (in the form of mysql://username:password@host/database) or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql)'),
+    '#title' => t('Path to SQL or Drush Alias'),
+    '#description' => t('Enter either a remote MySQL address (such as mysql://username:password@host/database), an absolute path to an SQL dump (such as /var/aegir/site-backup.sql), or a Drush alias that is already present on the server (such as @mysite.production).'),
     '#weight' => -98,
     '#states' => array(
       'visible' => array(
