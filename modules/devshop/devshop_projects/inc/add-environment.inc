@@ -29,7 +29,9 @@ function devshop_projects_environment_add_page($project_name) {
  * Includes the site_node_form
  */
 function devshop_environment_add_form($form, $form_state, $project_node) {
+  global $user;
   $project = $project_node->project;
+  $branch_options = devshop_projects_git_ref_options($project);
 
   // We are creating our own form, but we want to let other modules alter it as
   // if it were the site_node_form. This is how drupal_prepare_form() invokes
@@ -71,6 +73,15 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     '#element_validate' => array(
       'devshop_environment_add_form_validate_name'
     ),
+  );
+
+  $form['git_ref'] = array(
+    '#title' => t('Branch,or Tag'),
+    '#description' => t('Choose the git branch or tag you wish to use for this new environment.  <em>If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $project_node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
+    '#type' => 'select',
+    '#options' => $branch_options,
+    '#required' => TRUE,
+    '#weight' => -99,
   );
 
   $form['install_method'] = array(
