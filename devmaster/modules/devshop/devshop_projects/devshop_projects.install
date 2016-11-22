@@ -396,3 +396,17 @@ function devshop_projects_update_7005 () {
     drupal_set_message(t("Unable to remove git_ref field from hosting_devshop_project_environment table."), 'error');
   }
 }
+
+/**
+ * Reduce the character limit for bootstrap to turn form element descriptions into tooltips.
+ */
+function devshop_projects_update_7007 () {
+  // Get the settings
+  $settings = variable_get('theme_boots_settings', array());
+
+  // Set the variable
+  $settings['bootstrap_forms_smart_descriptions_limit'] = 50;
+
+  // Save our settings
+  variable_set('theme_boots_settings', $settings);
+}
