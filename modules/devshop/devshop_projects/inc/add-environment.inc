@@ -297,6 +297,11 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   return $form;
 }
 
+/**
+ * Form element processor for Install Method radio buttons.
+ * @param $element
+ * @return array
+ */
 function devshop_environment_method_process($element) {
   $element = form_process_radios($element);
 
