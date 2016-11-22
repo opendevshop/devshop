@@ -133,11 +133,13 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     ),
   );
 
+  // Generate environments options.
   foreach ($project->environments as $e => $environment) {
     $environment_options[$e] = $environment->name . ' ' . l($environment->url, $environment->url, array(
       'attributes' => array('target' => '_blank'),
     ));
   }
+  $environment_options['drush'] = t('Other Drush Alias');
 
   if (count($environment_options)) {
     $form['install_method']['clone'] = array(
@@ -153,37 +155,24 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
       ),
     );
   }
-  else {
-    $form['install_method']['clone'] = array(
-      '#type' => 'container',
-      '#weight' => -98,
-      '#states' => array(
-        'visible' => array(
-          ':input[name="install_method"]' => array('value' => 'clone'),
-        ),
-      ),
-      'note' => array(
-        '#markup' => t('There are no environments to clone.'),
-      ),
-    );
-  }
 
-  $form['install_method']['drush'] = array(
+  $form['install_method']['clone_source_drush'] = array(
     '#type' => 'textfield',
     '#title' => t('Drush Alias'),
     '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
     '#weight' => -98,
     '#states' => array(
       'visible' => array(
-        ':input[name="install_method"]' => array('value' => 'drush'),
+        ':input[name="clone"]' => array('value' => 'drush'),
+        ':input[name="install_method"]' => array('value' => 'clone'),
       ),
     ),
   );
 
   $form['install_method']['import'] = array(
     '#type' => 'textfield',
-    '#title' => t('Path to SQL or Drush Alias'),
-    '#description' => t('Enter either a remote MySQL address (such as mysql://username:password@host/database), an absolute path to an SQL dump (such as /var/aegir/site-backup.sql), or a Drush alias that is already present on the server (such as @mysite.production).'),
+    '#title' => t('Path to SQL'),
+    '#description' => t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).'),
     '#weight' => -98,
     '#states' => array(
       'visible' => array(
