@@ -36,7 +36,10 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   // We are creating our own form, but we want to let other modules alter it as
   // if it were the site_node_form. This is how drupal_prepare_form() invokes
   // hook_form_alter() and hook_form_FORM_ID_alter() hooks.
-  $form = array();
+  $form = array(
+    '#prefix' => '<div class="container">',
+    '#suffix' => '</div>',
+  );
   $hooks = array('form');
   $hooks[] = 'form_node_form';
   $hooks[] = 'form_site_node_form';
@@ -73,21 +76,30 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     '#element_validate' => array(
       'devshop_environment_add_form_validate_name'
     ),
+    '#wrapper_attributes' => array(
+      'class' => array('col-sm-8 col-md-8'),
+    ),
   );
 
   $form['git_ref'] = array(
-    '#title' => t('Branch,or Tag'),
-    '#description' => t('Choose the git branch or tag you wish to use for this new environment.  <em>If you do not see all remote branches, You can !link</em>', array('!link' => l(t('Refresh branches'), 'node/' . $project_node->nid . '/project_verify', array('attributes' => array('class' => 'refresh-link modalframe-exclude', 'target' => '_parent'), 'query' => array('token' => drupal_get_token($user->uid)))))),
+    '#title' => t('Branch or Tag'),
+    '#description' => t('Select a branch or tag.'),
     '#type' => 'select',
     '#options' => $branch_options,
     '#required' => TRUE,
     '#weight' => -99,
+    '#wrapper_attributes' => array(
+      'class' => array('col-sm-4 col-md-4'),
+    ),
   );
 
   $form['install_method'] = array(
     '#type' => 'fieldset',
     '#title' => t('Install Method'),
     '#weight' => -99,
+    '#attributes' => array(
+      'class' => array('clearfix'),
+    ),
   );
   $form['install_method']['install_method'] = array(
     '#type' => 'radios',

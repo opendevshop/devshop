@@ -1035,3 +1035,13 @@ li.text.code {
   width: 100%;
   white-space: normal;
 }
+
+#edit-install-method {
+  clear: left;
+}
+.form-item-environment-name {
+  padding-left: 0 !important;
+}
+.form-item-git-ref {
+  padding-right: 0 !important;
+}
