@@ -73,9 +73,6 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     '#attributes' => array(
       'data-placement' => 'bottom',
     ),
-    '#element_validate' => array(
-      'devshop_environment_add_form_validate_name'
-    ),
     '#wrapper_attributes' => array(
       'class' => array('col-sm-8 col-md-8'),
     ),
@@ -334,27 +331,4 @@ function devshop_environment_add_form_profile_options($project) {
   }
   $options['_other'] = t('Other');
   return $options;
-}
-
-/**
- * Element Validator for the domain name field: Sets domain according to pattern
- * and environment name.
- *
- * @param $element
- * @param $form_state
- * @param $form
- */
-function devshop_environment_add_form_validate_name($element, &$form_state, $form) {
-  if (!empty($element['#value'])) {
-
-    // Generate field prefix and suffix using domain name pattern.
-    $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
-    $project = node_load($form_state['values']['project']);
-    $domain = strtr($pattern, array(
-      '@environment' => $element['#value'],
-      '@project' => $project->title,
-      '@hostname' => $_SERVER['SERVER_NAME'],
-    ));
-    form_set_value($form['title'], $domain, $form_state);
-  }
 }
