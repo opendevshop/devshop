@@ -83,7 +83,6 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   $form['git_ref'] = array(
     '#title' => t('Branch or Tag'),
-    '#description' => t('Select a branch or tag.'),
     '#type' => 'select',
     '#options' => $branch_options,
     '#required' => TRUE,
@@ -95,7 +94,6 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   $form['install_method'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Install Method'),
     '#weight' => -99,
     '#attributes' => array(
       'class' => array('clearfix'),
@@ -103,8 +101,8 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   );
   $form['install_method']['install_method'] = array(
     '#type' => 'radios',
+    '#required' => TRUE,
     '#title' => t('Install Method'),
-    '#title_display' => 'invisible',
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
