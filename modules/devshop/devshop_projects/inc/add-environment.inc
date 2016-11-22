@@ -109,26 +109,35 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     '#type' => 'radios',
     '#title' => t('Drupal Install Profile'),
     '#weight' => -98,
-    '#options' => array(
-      'minimal' => t('Minimal'),
-      'standard' => t('Standard') . ' ' . t('(Project default)'),
-      'other' => t('Other'),
-    ),
+    '#options' => devshop_environment_add_form_profile_options($project),
     '#states' => array(
       'visible' => array(
         ':input[name="install_method"]' => array('value' => 'profile'),
       ),
     ),
   );
+
+  // Set default profile.
+  if (count($form['install_method']['profile']['#options']) == 1) {
+    $form['install_method']['profile']['#default_value'] = '_other';
+  }
+  else {
+    $form['install_method']['profile']['#default_value'] = $project->settings->default_environment['install_profile'];
+  }
+
   $form['install_method']['profile_other'] = array(
     '#type' => 'textfield',
+    '#title' => t('Other Install Profile'),
+    '#title_display' => 'invisible',
+    '#description' => t('This Drupal profile must exist in your codebase for installation to succeed.'),
     '#attributes' => array(
       'placeholder' => t('Profile Name'),
     ),
     '#weight' => -97,
     '#states' => array(
       'visible' => array(
-        ':input[name="profile"]' => array('value' => 'other'),
+        ':input[name="install_method"]' => array('value' => 'profile'),
+        ':input[name="profile"]' => array('value' => '_other'),
       ),
     ),
   );
@@ -278,6 +287,27 @@ function devshop_environment_method_process($element) {
   }
 
   return $element;
+}
+
+/**
+ * Return all available install profiles found in all platforms for this project.
+ */
+function devshop_environment_add_form_profile_options($project) {
+
+
+  foreach ($project->environments as $e => $environment) {
+
+    $packages = hosting_package_instances_load(array(
+      'package_type' => 'profile',
+      'platform' => $environment->platform,
+    ));
+    foreach ($packages as $instance) {
+      $options[$instance->short_name] = $instance->title;
+      $options[$instance->short_name] .= ' <small class="text-muted">' . $instance->description . '</small>';
+    }
+  }
+  $options['_other'] = t('Other');
+  return $options;
 }
 
 /**
