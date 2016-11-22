@@ -1022,6 +1022,11 @@ li.text.code {
   width: 60%;
 }
 
+.add-environment-container {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 .install-method-wrapper {
   display: inline-block;
   margin-right: 1em;

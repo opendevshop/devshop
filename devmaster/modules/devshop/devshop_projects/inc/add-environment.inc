@@ -37,7 +37,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
   // if it were the site_node_form. This is how drupal_prepare_form() invokes
   // hook_form_alter() and hook_form_FORM_ID_alter() hooks.
   $form = array(
-    '#prefix' => '<div class="container">',
+    '#prefix' => '<div class="container add-environment-container">',
     '#suffix' => '</div>',
   );
   $hooks = array('form');
