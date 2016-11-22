@@ -279,6 +279,11 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
     );
   }
 
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => '<i class="fa fa-plus"></i> ' . t('Create new Environment'),
+  );
+
   // The rest of the DevShop Environment settings are in devshop_projects_form_site_node_form_alter()
   // so that the site edit node has them as well.
 
