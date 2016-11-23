@@ -206,10 +206,20 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
  */
 function devshop_projects_create_environment_form_validate_name($element, &$form_state, $form) {
   if (!empty($element['#value'])) {
+    $project = node_load($form_state['values']['project']);
+
+    // Check existence of the environment name
+    if (!empty($project->environments[$element['#value']])) {
+      form_set_error('environment_name', t('There is already an environment named %name in this project. Please choose a different name.', array('%name' => $form_state['values']['environment_name'])));
+    }
+
+    // Check for illegal chars
+    if (!preg_match('!^[a-z0-9_]+$!', $element['#value'])) {
+      form_set_error('environment_name', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
+    }
 
     // Generate field prefix and suffix using domain name pattern.
     $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
-    $project = node_load($form_state['values']['project']);
     $domain = strtr($pattern, array(
       '@environment' => $element['#value'],
       '@project' => $project->title,
