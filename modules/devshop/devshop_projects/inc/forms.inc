@@ -1329,6 +1329,8 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     $environment = (object) $form_state['values']['environment'];
   }
 
+  $form_state['values']['environment']['settings']['install_method'] = $form_state['values']['install_method'];
+
   $environment->settings = serialize($form_state['values']['environment']['settings']);
 
   // Get platform verify task
@@ -1351,7 +1353,12 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     drupal_get_messages('status');
 
     // Send our own message
-    drupal_set_message(t('Environment settings saved for %env in project %project', array('%env' => $environment->name, '%project' => $project->project_name)));
+    if (empty($primary_keys)) {
+      drupal_set_message(t('Environment settings saved for %env in project %project.', array('%env' => $environment->name, '%project' => $project->project_name)));
+    }
+    else {
+      drupal_set_message(t('Environment %env created in project %project.', array('%env' => $environment->name, '%project' => $project->project_name)));
+    }
   }
   else {
     drupal_set_message(t('Environment was not saved for %env in project %project!', array('%env' => $environment->name, '%project' => $project->project_name)));
