@@ -1048,13 +1048,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     }
 
     // Generate field prefix and suffix using domain name pattern.
-    $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
-    $domain = strtr($pattern, array(
-      '@environment' => $element['#value'],
-      '@project' => $project->name,
-      '@hostname' => $_SERVER['SERVER_NAME'],
-    ));
-    form_set_value($form['title'], $domain, $form_state);
+    form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
   }
 }
 
