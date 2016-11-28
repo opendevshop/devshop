@@ -1083,6 +1083,8 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
+    form_set_value($form['profile'], 0, $form_state);
+    form_set_value($form['platform'], 0, $form_state);
 
   }
 }
@@ -1282,4 +1284,12 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
 
 function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
   $form['update-status']['#value'] = t('Cancel');
+}
+
+/**
+ * Implements hook_hosting_site_options_alter().
+ */
+function devshop_projects_hosting_site_options_alter(&$return, $node) {
+  $return['profile'][] = 0;
+  $return['platform'][] = 0;
 }
