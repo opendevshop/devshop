@@ -868,18 +868,6 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
   $form['hosting_ssl_wrapper']['#prefix'] = '';
   $form['hosting_ssl_wrapper']['#suffix'] = '';
 
-  $form['server_stack'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Server Stack'),
-    '#group' => 'environment_settings',
-  );
-
-  $form['server_stack']['db_server'] = $form['db_server'];
-  $form['server_stack']['db_server']['#group'] = 'environment_settings';
-  $form['server_stack']['db_server']['#tree'] = FALSE;
-  unset($form['db_server']);
-
-
   // Help Text
   if (!empty($form['#node']->nid)) {
     $form['#prefix'] = '<h3>' . t('Environment Settings') . ' <small>' . $form['#node']->environment->name . '</small></h3>';
