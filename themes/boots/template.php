@@ -862,12 +862,23 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
   $form['environment']['settings']['site_language'] = $form['site_language'];
   $form['environment']['settings']['site_language']['#tree'] = FALSE;
   unset($form['site_language']);
-  kpr($form);
 
   $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
   $form['hosting_ssl_wrapper']['#title'] = t('SSL');
   $form['hosting_ssl_wrapper']['#prefix'] = '';
   $form['hosting_ssl_wrapper']['#suffix'] = '';
+
+  $form['server_stack'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Server Stack'),
+    '#group' => 'environment_settings',
+  );
+
+  $form['server_stack']['db_server'] = $form['db_server'];
+  $form['server_stack']['db_server']['#group'] = 'environment_settings';
+  $form['server_stack']['db_server']['#tree'] = FALSE;
+  unset($form['db_server']);
+
 
   // Help Text
   if (!empty($form['#node']->nid)) {
