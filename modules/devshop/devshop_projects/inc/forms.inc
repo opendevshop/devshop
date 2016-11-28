@@ -1224,13 +1224,19 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   $site = $form_state['node'];
 
   // Prepare record for saving
-  $environment = new stdClass();
-  $environment->project_nid = $form_state['values']['project_nid'];
-  $environment->name = $form_state['values']['environment_name'];
-  $environment->site = $site->nid;
-  $environment->platform = $site->platform;
-  $environment->settings = serialize($form_state['values']['environment']['settings']);
+  // When creating a new environment, there is no environment value.
+  if (empty($form_state['values']['environment']['name'])) {
+    $environment = new stdClass();
+    $environment->project_nid = $form_state['values']['project_nid'];
+    $environment->name = $form_state['values']['environment_name'];
+    $environment->site = $site->nid;
+    $environment->platform = $site->platform;
+  }
+  else {
+    $environment = (object) $form_state['values']['environment'];
+  }
 
+  $environment->settings = serialize($form_state['values']['environment']['settings']);
 
   // Get platform verify task
   $tasks = hosting_get_tasks('rid', $site->nid);
