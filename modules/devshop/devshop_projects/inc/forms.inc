@@ -940,11 +940,11 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   );
 
   // Set default profile.
-  if (count($form['install_method']['profile']['#options']) == 1) {
+  if (count($form['install_method']['profile']['#options']) == 1 || empty($project->install_profile)) {
     $form['install_method']['profile']['#default_value'] = '_other';
   }
   else {
-    $form['install_method']['profile']['#default_value'] = $project->settings->default_environment['install_profile'];
+    $form['install_method']['profile']['#default_value'] = $project->install_profile;
   }
 
   $form['install_method']['profile_other'] = array(
