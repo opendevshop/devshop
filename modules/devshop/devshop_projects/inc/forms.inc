@@ -1300,7 +1300,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       $return[$i]['#disabled'] = TRUE;
     }
 
-    $return['#suffix'] = t('Environment-specific deploy hook configuration is not allowed. Check Project Settings to change.');
+    $return['#description'] = t('Environment-specific deploy hook configuration is not allowed. Check Project Settings to change.');
   }
   return $return;
 }
