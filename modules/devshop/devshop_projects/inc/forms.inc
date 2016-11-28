@@ -784,6 +784,13 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 //    exit;
 //  }
 
+  $form['form_title'] = array(
+    '#markup' => t('Environment Settings'),
+    '#prefix' => '<h3>',
+    '#suffix' => '</h3>',
+    '#weight' => -1000,
+  );
+
   // User-configurable Settings
   $form['environment']['settings'] = array(
       '#type' => 'fieldset',
@@ -806,6 +813,39 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // Load deploy hooks form element.
   $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project->project, $environment);
+
+  // UX Improvements
+  // Project Settings Vertical Tabs
+  $form['environment_settings'] = array(
+    '#type' => 'vertical_tabs',
+    '#weight' => -11,
+  );
+
+  $form['environment']['settings']['#title'] = t('General Settings');
+  $form['environment']['settings']['#group'] = 'environment_settings';
+  $form['environment']['settings']['#weight'] = -100;
+  $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
+  $form['hosting_backup_queue']['#group'] = 'environment_settings';
+  $form['http_basic_auth']['#group'] = 'environment_settings';
+  $form['hosting_logs']['#group'] = 'environment_settings';
+
+  $form['aliases_wrapper']['#group'] = 'environment_settings';
+  $form['aliases_wrapper']['#title'] = t('Domain Names');
+  $form['aliases_wrapper']['#prefix'] = '';
+  $form['aliases_wrapper']['#suffix'] = '';
+
+  $form['environment']['settings']['client'] = $form['client'];
+  $form['environment']['settings']['client']['#tree'] = FALSE;
+  unset($form['client']);
+
+  $form['environment']['settings']['site_language'] = $form['site_language'];
+  $form['environment']['settings']['site_language']['#tree'] = FALSE;
+  unset($form['site_language']);
+
+  $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
+  $form['hosting_ssl_wrapper']['#title'] = t('SSL');
+  $form['hosting_ssl_wrapper']['#prefix'] = '';
+  $form['hosting_ssl_wrapper']['#suffix'] = '';
 
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
@@ -1063,7 +1103,6 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       '#markup' => l($db_servers[$db_server_nid], "node/$db_server_nid", array('attributes' => array('target' => '_blank'))),
     );
   }
-
 
   $form['project_nid'] = array(
     '#value' => $project->nid,
