@@ -6,7 +6,6 @@
  */
 
 include_once('projects.inc');
-include_once('inc/create-environment.inc');
 include_once('inc/add-environment.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
