@@ -1036,6 +1036,35 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#default_value' => $project->settings->default_environment['web_server'],
   );
 
+  // Force the new environment to use the "default" servers.
+  if ($project->settings->default_environment['force_default_servers']) {
+    $form['server_stack']['#description'] = t('All environments in this project use this server stack.');
+
+    $web_server_nid = $project->settings->default_environment['web_server'];
+    $form['server_stack']['web_server']['#type'] = array(
+      '#type' => 'value',
+      '#value' => $web_server_nid,
+    );
+    $form['server_stack']['web_server_label'] = array(
+      '#type' => 'item',
+      '#title' => t('Web server'),
+      '#markup' => l($web_servers[$web_server_nid], "node/$web_server_nid", array('attributes' => array('target' => '_blank'))),
+    );
+
+    $db_servers = hosting_get_servers('db');
+    $db_server_nid = $project->settings->default_environment['db_server'];
+    $form['server_stack']['db_server']['#type'] = array(
+      '#type' => 'value',
+      '#value' => $db_server_nid,
+    );
+    $form['server_stack']['db_server_label'] = array(
+      '#type' => 'item',
+      '#title' => t('Database server'),
+      '#markup' => l($db_servers[$db_server_nid], "node/$db_server_nid", array('attributes' => array('target' => '_blank'))),
+    );
+  }
+
+
   $form['project_nid'] = array(
     '#value' => $project->nid,
     '#type' => 'value',
