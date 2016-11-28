@@ -413,8 +413,17 @@ function devshop_projects_block_info() {
  * Implements hook_block_view().
  */
 function devshop_projects_block_view($delta) {
-  if ($delta == 'project_nav' && (arg(0) == 'node' || arg(0) == 'hosting_confirm')) {
-    $node = node_load(arg(1));
+  if ($delta == 'project_nav' && (
+    arg(0) == 'node' || arg(0) == 'hosting_confirm'
+  )) {
+
+    if (is_numeric(arg(1))) {
+      $node = node_load(arg(1));
+    }
+    elseif (arg(1) == 'add') {
+      $node = devshop_projects_load_by_name(arg(3));
+    }
+
     if (node_access('view', $node) && ($node->type == 'project' || !empty($node->project))) {
 
       // If viewed node is project, use that.
