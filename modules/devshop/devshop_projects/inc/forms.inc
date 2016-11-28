@@ -886,11 +886,6 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
-  $form['project'] = array(
-    '#type' => 'value',
-    '#value' => $project_node->nid,
-  );
-
   $form['install_method'] = array(
     '#type' => 'fieldset',
     '#weight' => -99,
