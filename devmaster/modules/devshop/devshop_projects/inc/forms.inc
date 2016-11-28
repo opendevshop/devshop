@@ -827,6 +827,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
   $form['hosting_backup_queue']['#group'] = 'environment_settings';
   $form['http_basic_auth']['#group'] = 'environment_settings';
+  $form['http_basic_auth']['#title'] = t('Password Protection');
   $form['hosting_logs']['#group'] = 'environment_settings';
 
   $form['aliases_wrapper']['#group'] = 'environment_settings';
