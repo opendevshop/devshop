@@ -830,6 +830,13 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['#prefix'] = '<div class="container add-environment-container">';
   $form['#suffix'] = '</div>';
 
+  $form['form_title'] = array(
+    '#markup' => t('Create New Environment'),
+    '#prefix' => '<h3>',
+    '#suffix' => '</h3>',
+    '#weight' => -1000,
+  );
+
   // Generate field prefix and suffix using domain name pattern.
   $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
 
