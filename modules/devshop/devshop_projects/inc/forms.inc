@@ -1013,6 +1013,11 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
+  $form['project_nid'] = array(
+    '#value' => $project->nid,
+    '#type' => 'value',
+  );
+
   // Remove platform and profile options.
   // @TODO: Patch Aegir so we don't have to load all of these platform options.
   $form['platform']['#access'] = FALSE;
@@ -1028,10 +1033,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
  */
 function devshop_projects_create_environment_form_validate_name($element, &$form_state, $form) {
 
-  form_set_error('title', 'stop!');
-
   if (!empty($element['#value'])) {
-    $project = node_load($form_state['values']['project']);
+    $project_node = node_load($form_state['values']['project_nid']);
+    $project = $project_node->project;
 
     // Check existence of the environment name
     if (!empty($project->environments[$element['#value']])) {
@@ -1052,6 +1056,14 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     ));
     form_set_value($form['title'], $domain, $form_state);
   }
+}
+
+/**
+ * Validator for site_node_form for node creation, when creating an environment
+ * in a project.
+ */
+function devshop_projects_create_environment_form_validate() {
+  // form_set_error('title', 'stop!');
 }
 
 /**
