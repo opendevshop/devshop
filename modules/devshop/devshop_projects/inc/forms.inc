@@ -1062,7 +1062,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
     // Specify GIT Url for hosting_git.module
     $platform_node->git['repo_url'] = $project->git_url;
-    $platform_node->git['git_ref'] = $element['#value'];
+    $platform_node->git['git_ref'] = $form_state['values']['git_ref'];
 
     // Determine which web server to use.
     // If no web server was set and project has a default, make sure we set it.
