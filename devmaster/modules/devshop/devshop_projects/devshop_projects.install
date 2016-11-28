@@ -410,3 +410,18 @@ function devshop_projects_update_7007 () {
   // Save our settings
   variable_set('theme_boots_settings', $settings);
 }
+
+/**
+ * Set weight of devshop_projects module to 1 so it loads alters after hosting_git.
+ */
+function devshop_projects_update_7008 () {
+
+  // Push devshop_github's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_projects')
+    ->execute();
+
+}
