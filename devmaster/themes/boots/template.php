@@ -859,6 +859,11 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
   $form['environment']['settings']['client']['#tree'] = FALSE;
   unset($form['client']);
 
+  $form['environment']['settings']['site_language'] = $form['site_language'];
+  $form['environment']['settings']['site_language']['#tree'] = FALSE;
+  unset($form['site_language']);
+  kpr($form);
+
   $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
   $form['hosting_ssl_wrapper']['#title'] = t('SSL');
   $form['hosting_ssl_wrapper']['#prefix'] = '';
