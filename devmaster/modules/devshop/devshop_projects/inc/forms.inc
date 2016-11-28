@@ -1007,6 +1007,12 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       ),
     ),
   );
+
+  // Remove platform and profile options.
+  // @TODO: Patch Aegir so we don't have to load all of these platform options.
+  $form['platform']['#access'] = FALSE;
+  $form['profile']['#access'] = FALSE;
+  $form['git']['#access'] = FALSE;
 }
 
 /**
