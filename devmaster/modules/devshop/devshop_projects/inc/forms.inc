@@ -1353,7 +1353,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     drupal_get_messages('status');
 
     // Send our own message
-    if (empty($primary_keys)) {
+    if (!empty($primary_keys)) {
       drupal_set_message(t('Environment settings saved for %env in project %project.', array('%env' => $environment->name, '%project' => $project->project_name)));
     }
     else {
