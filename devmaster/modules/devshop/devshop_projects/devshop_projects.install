@@ -405,7 +405,7 @@ function devshop_projects_update_7007 () {
   $settings = variable_get('theme_boots_settings', array());
 
   // Set the variable
-  $settings['bootstrap_forms_smart_descriptions_limit'] = 50;
+  $settings['bootstrap_forms_smart_descriptions_limit'] = 40;
 
   // Save our settings
   variable_set('theme_boots_settings', $settings);
