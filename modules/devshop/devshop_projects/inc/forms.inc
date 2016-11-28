@@ -1231,6 +1231,11 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   $environment->platform = $site->platform;
   $environment->settings = serialize($form_state['values']['environment']['settings']);
 
+
+  // Get platform verify task
+  $tasks = hosting_get_tasks('rid', $site->nid);
+  $environment->last_task = current($tasks)->nid;
+
   // Save environment record.
   // If environment already exists, set primary keys.
   $project = node_load($environment->project_nid);
