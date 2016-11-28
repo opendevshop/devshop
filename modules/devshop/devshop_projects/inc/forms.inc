@@ -714,6 +714,54 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // On site create page, use devshop_projects_create_environment_form()
   if (arg(1) == 'add') {
     devshop_projects_create_environment_form($form, $form_state, $form_id);
+
+    $project = devshop_projects_load_by_name(arg(3));
+  }
+  else {
+
+    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
+    $node = $form['#node'];
+    $environment = (object) $node->environment;
+    $project = $node->project;
+
+    // Remove aegir's helpful info panel.
+    unset($form['info']);
+
+    $form['environment'] = array(
+      '#weight' => -9,
+      '#tree' => true,
+    );
+
+    // Values
+    $form['environment']['project_nid'] = array(
+      '#value' => $environment->project_nid,
+      '#type' => 'value',
+    );
+    $form['environment']['project_name'] = array(
+      '#value' => $environment->project_name,
+      '#type' => 'value',
+    );
+    $form['environment']['name'] = array(
+      '#value' => $environment->name,
+      '#type' => 'value',
+    );
+    $form['environment']['git_ref'] = array(
+      '#value' => $environment->git_ref,
+      '#type' => 'value',
+    );
+    $form['environment']['site'] = array(
+      '#value' => $environment->site,
+      '#type' => 'value',
+    );
+    $form['environment']['platform'] = array(
+      '#value' => $environment->platform,
+      '#type' => 'value',
+    );
+
+    $form['environment']['last_task'] = array(
+      '#type' => 'value',
+      '#value' => $environment->last_task,
+    );
   }
 
   //
@@ -736,44 +784,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 //    exit;
 //  }
 
-  // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
-  $node = $form['#node'];
-  $environment = (object) $node->environment;
-
-  // Remove aegir's helpful info panel.
-  unset($form['info']);
-
-  $form['environment'] = array(
-      '#weight' => -9,
-      '#tree' => true,
-  );
-
-  // Values
-  $form['environment']['project_nid'] = array(
-      '#value' => $environment->project_nid,
-      '#type' => 'value',
-  );
-  $form['environment']['project_name'] = array(
-      '#value' => $environment->project_name,
-      '#type' => 'value',
-  );
-  $form['environment']['name'] = array(
-      '#value' => $environment->name,
-      '#type' => 'value',
-  );
-  $form['environment']['git_ref'] = array(
-      '#value' => $environment->git_ref,
-      '#type' => 'value',
-  );
-  $form['environment']['site'] = array(
-      '#value' => $environment->site,
-      '#type' => 'value',
-  );
-  $form['environment']['platform'] = array(
-      '#value' => $environment->platform,
-      '#type' => 'value',
-  );
-
   // User-configurable Settings
   $form['environment']['settings'] = array(
       '#type' => 'fieldset',
@@ -795,12 +805,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   );
 
   // Load deploy hooks form element.
-  $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
-
-  $form['environment']['last_task'] = array(
-    '#type' => 'value',
-    '#value' => $environment->last_task,
-  );
+  $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project->project, $environment);
 
   // Add our own submit handler
   $form['#submit'][] = 'devshop_projects_environment_settings_submit';
@@ -862,7 +867,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
         </div>',
     '#size' => 10,
     '#maxlength' => 64,
-    '#weight' => -100,
+    '#weight' => -101,
     '#attributes' => array(
       'data-placement' => 'bottom',
     ),
@@ -880,7 +885,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#type' => 'select',
     '#options' => $branch_options,
     '#required' => TRUE,
-    '#weight' => -99,
+    '#weight' => -100,
     '#wrapper_attributes' => array(
       'class' => array('col-sm-4 col-md-4'),
     ),
@@ -1013,6 +1018,12 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#type' => 'value',
   );
 
+  $form['platform_node'] = array(
+    '#type' => 'value',
+    '#value' => NULL,
+  );
+
+
   // Remove platform and profile options.
   // @TODO: Patch Aegir so we don't have to load all of these platform options.
   $form['platform']['#access'] = FALSE;
@@ -1044,6 +1055,35 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
     // Generate field prefix and suffix using domain name pattern.
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
+
+    // Attach a new platform node.
+    $platform_node = new stdClass();
+    $platform_node->title = $project->name . '_' . $element['#value'];
+
+    // Specify GIT Url for hosting_git.module
+    $platform_node->git['repo_url'] = $project->git_url;
+    $platform_node->git['git_ref'] = $element['#value'];
+
+    // Determine which web server to use.
+    // If no web server was set and project has a default, make sure we set it.
+    if (empty($form_state['values']['web_server']) && !empty($project->settings->default_environment['web_server'])) {
+      $platform_node->web_server = $project->settings->default_environment['web_server'];
+    }
+    else {
+      $platform_node->web_server = $form_state['values']['web_server'];
+    }
+
+    // If drupal path, append to code path/environment name
+    if ($project->drupal_path) {
+      $platform_node->publish_path = $project->code_path . '/' . $element['#value'] . '/' . $project->drupal_path;
+    }
+    else {
+      $platform_node->publish_path = $project->code_path . '/' . $element['#value'];
+    }
+
+    // Set value in form_state.
+    form_set_value($form['platform_node'], $platform_node, $form_state);
+
   }
 }
 
