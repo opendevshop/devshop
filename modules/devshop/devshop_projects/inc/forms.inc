@@ -826,8 +826,6 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   }
   $project = $project_node->project;
 
-  drupal_set_title(t('Create new Environment'));
-
   // Wrap the form in a container so we can use grid
   $form['#prefix'] = '<div class="container add-environment-container">';
   $form['#suffix'] = '</div>';

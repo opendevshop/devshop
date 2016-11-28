@@ -538,6 +538,17 @@ function boots_preprocess_page(&$vars){
     }
   }
 
+  // Set title on create environment page.
+  if (arg(0) == 'node' && arg(2) == 'site' && !empty(arg(3))) {
+
+    // Look for project. If there is none, return.
+    $project_node = devshop_projects_load_by_name(arg(3));
+    if ($project_node->type == 'project') {
+      $vars['title'] = l($project_node->title, "node/$project_node->nid");
+      $vars['subtitle'] = t('Project');
+    }
+  }
+
   if (variable_get('devshop_support_widget_enable', TRUE)) {
     drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
   }
