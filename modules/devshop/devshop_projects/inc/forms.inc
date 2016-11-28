@@ -1014,6 +1014,28 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
+  $form['server_stack'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Server Stack'),
+    '#group' => 'environment_settings',
+  );
+
+  $form['server_stack']['db_server'] = $form['db_server'];
+  $form['server_stack']['db_server']['#group'] = 'environment_settings';
+  $form['server_stack']['db_server']['#tree'] = FALSE;
+  unset($form['db_server']);
+
+  $web_servers = hosting_get_servers('http');
+  $form['server_stack']['web_server'] = array(
+    '#type' => 'radios',
+    '#title' => t('Web server'),
+    '#description' => t('The web server the site will be hosted on.'),
+    '#options' => $web_servers,
+    '#required' => TRUE,
+    '#tree' => FALSE,
+    '#default_value' => $project->settings->default_environment['web_server'],
+  );
+
   $form['project_nid'] = array(
     '#value' => $project->nid,
     '#type' => 'value',
