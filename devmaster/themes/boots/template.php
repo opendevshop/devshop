@@ -856,6 +856,7 @@ function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
   $form['aliases_wrapper']['#suffix'] = '';
 
   $form['environment']['settings']['client'] = $form['client'];
+  $form['environment']['settings']['client']['#tree'] = FALSE;
   unset($form['client']);
 
   $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
