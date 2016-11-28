@@ -807,8 +807,9 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Load deploy hooks form element.
   $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project->project, $environment);
 
-  // Add our own submit handler
-  $form['#submit'][] = 'devshop_projects_environment_settings_submit';
+  // Add our own submit handler.
+  $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
+
 }
 
 /**
@@ -1220,31 +1221,38 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
 function devshop_projects_environment_settings_submit($form, &$form_state) {
 
   // Save the environment record.
-  // @TODO: Replace with an $environment->save();
-
-  // Ensure correct data types
-  $environment = (object) $form_state['values']['environment'];
-  $environment->settings = (array) $environment->settings;
+  $site = $form_state['node'];
 
   // Prepare record for saving
-  $info = new stdClass();
-  $info->project_nid = $environment->project_nid;
-  $info->name = $environment->name;
-  $info->site = $environment->site;
-  $info->platform = $environment->platform;
-  $info->settings = serialize($environment->settings);
+  $environment = new stdClass();
+  $environment->project_nid = $form_state['values']['project_nid'];
+  $environment->name = $form_state['values']['environment_name'];
+  $environment->site = $site->nid;
+  $environment->platform = $site->platform;
+  $environment->settings = serialize($form_state['values']['environment']['settings']);
 
   // Save environment record.
-  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))) {
+  // If environment already exists, set primary keys.
+  $project = node_load($environment->project_nid);
+  if (isset($project->environments[$environment->name])) {
+    $primary_keys = array('project_nid', 'name');
+  }
+  else {
+    $primary_keys = array();
+  }
+
+  if (drupal_write_record('hosting_devshop_project_environment', $environment, $primary_keys)) {
 
     // Remove the "Site dev.drupal.devshop.local has been updated.
     drupal_get_messages('status');
 
     // Send our own message
-    drupal_set_message(t('Environment settings saved for %env in project %project', array('%env' => $environment->name, '%project' => $environment->project_name)));
+    drupal_set_message(t('Environment settings saved for %env in project %project', array('%env' => $environment->name, '%project' => $project->project_name)));
   }
   else {
-    watchdog('error', 'Environment record not saved: ' . print_r($info, 1));
+    drupal_set_message(t('Environment was not saved for %env in project %project!', array('%env' => $environment->name, '%project' => $project->project_name)));
+
+    watchdog('error', 'Environment record not saved: ' . print_r($environment, 1));
   }
 
   $form_state['redirect'] = 'node/' . $environment->project_nid;
