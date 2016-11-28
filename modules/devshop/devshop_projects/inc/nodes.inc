@@ -122,10 +122,8 @@ function devshop_projects_node_load($nodes, $types) {
     }
     elseif ($node->type == 'site') {
 
-      // If site is intended to be a clone, set install_method to sql-sync
-      if (!empty($node->environment->settings->clone_source)) {
-        $node->install_method = 'clone';
-      }
+      // Load install method into an easy to access property.
+      $node->install_method = $node->environment->settings->install_method['method'];
     }
   }
 }
