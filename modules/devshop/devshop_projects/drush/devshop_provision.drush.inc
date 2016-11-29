@@ -521,7 +521,9 @@ function drush_devshop_provision_pre_provision_verify() {
 }
 
 /**
- * Implementation of drush_hook_post_provision_install
+ * Implementation of drush_hook_post_provision_install()
+ *
+ * This function handles all of the alternative environment install methods.
  */
 function drush_devshop_provision_post_provision_install() {
 
@@ -530,8 +532,8 @@ function drush_devshop_provision_post_provision_install() {
     drush_log(dt('Environment Clone initiated...'), 'devshop_log');
 
     // If "clone source" is set for this environment, use provision-sync to load in data.
-    if (!empty(d()->environment_settings['clone_source'])) {
-      $source = d()->environment_settings['clone_source'];
+    if (!empty(d()->environment_settings['install_method']['method'] == 'clone') && !empty(!empty(d()->environment_settings['install_method']['clone_source']))) {
+      $source = d()->environment_settings['install_method']['clone_source'];
       $destination = d()->name;
       $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --cache-clear --registry-rebuild";
       devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);

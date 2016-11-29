@@ -384,6 +384,9 @@ function devshop_project_load($node) {
       $environment->url = $protocol . $environment->system_domain;
     }
 
+    // System Alias
+    $environment->system_alias = '@' . $environment->system_domain;
+
     // If per-environment hooks config is not allowed, load it from the project.
     if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
       $environment->settings->deploy = $project->settings->deploy['default_hooks'];
