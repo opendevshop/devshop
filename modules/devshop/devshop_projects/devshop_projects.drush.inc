@@ -133,7 +133,7 @@ function drush_devshop_projects_pre_hosting_task()
  *
  * This function handles all of the alternative environment install methods.
  */
-function drush_devshop_provision_post_provision_install() {
+function drush_devshop_projects_post_provision_install() {
 
   // Sync from the alias.
   if (drush_get_option('site_install_method') == 'clone') {
