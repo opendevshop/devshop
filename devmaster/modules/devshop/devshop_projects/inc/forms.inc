@@ -1039,7 +1039,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#weight' => -98,
     '#states' => array(
       'visible' => array(
-        ':input[name="install_method[clone]"]' => array('value' => 'drush'),
+        ':input[name="install_method[clone_source]"]' => array('value' => 'drush'),
         ':input[name="install_method[method]"]' => array('value' => 'clone'),
       ),
     ),
