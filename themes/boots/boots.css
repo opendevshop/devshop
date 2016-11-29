@@ -46,7 +46,10 @@ body.admin-menu .navbar-static-top {
 .environment-meta-data i.fa {
     margin-right: .5em;
 }
-
+.environment-meta-data.environment-access {
+    margin-right: 2em;
+    text-transform: uppercase;
+}
 .environment-link {
     font-weight: bold;
     font-size: 1.1em;
@@ -882,7 +885,20 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 #hosting-task-confirm-form .form-control#edit-parameters-environment-name {
     width: auto;
     display:inline;
-
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.form-control#edit-environment-name {
+    width: auto;
+    text-align: center;
+    display:inline;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.input-group-addon-url {
+    width: 100%;
+    text-align: left;
 }
 
 #devshop-project-create-step-git #edit-cancel {
@@ -943,4 +959,24 @@ a.logo img {
 #devshop-project-create-step-environments #edit-cancel,
 #project-node-form #edit-cancel {
     float: right;
+}
+
+li.text.code {
+    white-space: nowrap;
+}
+
+.list-group-item-info p {
+    color: #0f0f0f;
+}
+
+.panel-drush-access section {
+    padding-bottom: 1em;
+}
+.panel-drush-access label {
+    width: 25%;
+}
+.panel-drush-access input {
+    width: 70%;
+    display: inline-block;
+    vertical-align: middle;
 }

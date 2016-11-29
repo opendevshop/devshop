@@ -136,11 +136,11 @@ function devshop_project_load($node) {
           p.publish_path as root,
           http.title as remote_host,
           sn.title as uri,
-          sn.title as drush_alias,
           http.title as web_server,
           http.nid as web_server_nid,
           db.title as db_server,
           db.nid as db_server_nid,
+          s.db_name,
           n.title as project_name,
           s.vid,
           sn.title as system_domain,
@@ -171,7 +171,7 @@ function devshop_project_load($node) {
     }
 
     // Drush alias
-    $environment->drush_alias = '@' . $environment->drush_alias;
+    $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
     // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
@@ -310,7 +310,9 @@ function devshop_project_load($node) {
       $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored}"));
 
       // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
-      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));
+      // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD")));
+
       $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
       // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
@@ -328,13 +330,25 @@ function devshop_project_load($node) {
       // Get git status.
       $environment->git_status = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always  status"));
 
+      // Limit status to 1000 lines
+      $lines = explode("\n", $environment->git_status);
+      $count = count($lines);
+      if ($count > 100) {
+        $lines = array_slice($lines, 0, 100);
+        $lines[] = "# STATUS TRUNCATED. SHOWING 100 of $count LINES.";
+      }
+      $environment->git_status  = implode("\n", $lines);
+
       // Get git diff.
       $environment->git_diff = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always diff"));
 
       // Limit git diff to 1000 lines
       $lines = explode("\n", $environment->git_diff);
-      $lines = array_slice($lines, 0, 1000);
-      $lines[] = '# DIFF TRUNCATED. MORE THAN 1000 LINES';
+      $count = count($lines);
+      if ($count > 1000) {
+        $lines = array_slice($lines, 0, 1000);
+        $lines[] = "# DIFF TRUNCATED. SHOWING 1000 of $count LINES.";
+      }
       $environment->git_diff  = implode("\n", $lines);
 
     }

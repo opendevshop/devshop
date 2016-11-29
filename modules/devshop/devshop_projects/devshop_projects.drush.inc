@@ -326,7 +326,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
 
     // If this platform isn't in a project, bail.
     $platform = $task->ref;
-    if (empty($platform->project)) {
+    if (!isset($platform->project)) {
       $project = $task->ref->project;
 
       // @TODO: On first verify, "environment" can be missing. Not sure why, yet.
