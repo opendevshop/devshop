@@ -424,129 +424,130 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 //  }
 //}
 
-/**
- * Implements hook_post_hosting_TASK_TYPE_task().
- */
-function devshop_projects_post_hosting_install_task($task, $data) {
+///**
+// * Implements hook_post_hosting_TASK_TYPE_task().
+// */
+//function devshop_projects_post_hosting_install_task($task, $data) {
+//
+//  // Now that environment data is stored in project data we need to verify projects a lot.
+//  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+//    hosting_add_task($task->ref->project->nid, 'verify');
+//  }
+//}
 
-  // Now that environment data is stored in project data we need to verify projects a lot.
-  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
-    hosting_add_task($task->ref->project->nid, 'verify');
-  }
-}
+// @TODO: Remove this. We no longer use Clone task.
+///**
+// * Implements hook_post_hosting_TASK_TYPE_task().
+// */
+//function devshop_projects_post_hosting_clone_task($task, $data) {
+//
+//  // Now that environment data is stored in project data we need to verify projects a lot.
+//  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+//    hosting_add_task($task->ref->project->nid, 'verify');
+//  }
+//}
 
-/**
- * Implements hook_post_hosting_TASK_TYPE_task().
- */
-function devshop_projects_post_hosting_clone_task($task, $data) {
-
-  // Now that environment data is stored in project data we need to verify projects a lot.
-  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
-    hosting_add_task($task->ref->project->nid, 'verify');
-  }
-}
-
-/**
- * Implements hook_post_hosting_TASK_TYPE_task().
- *
- * Ensures that cloned sites that are on project platforms inherit the project.
- */
-function devshop_projects_post_hosting_import_task($task, $data) {
-
-  // Now that environment data is stored in project data we need to verify projects a lot.
-  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
-    hosting_add_task($task->ref->project->nid, 'verify');
-  }
-
-  // If this is a new platform created by a project, we will create a site here.
-  if ($task->ref->type == 'site') {
-    $site = $task->ref;
-    $platform = node_load($site->platform);
-
-    if (isset($platform->environment) && !empty($platform->environment->name)) {
-
-      // Save environment record.
-      drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
-      db_update('hosting_devshop_project_environment')
-        ->fields(array(
-          'site' => $site->nid,
-        ))
-        ->condition('project_nid', $platform->project->nid)
-        ->condition('name', $platform->environment->name)
-        ->execute();
-      drush_log("Saved {$platform->environment->name} in project {$platform->project->name}.", 'devshop_ok');
-
-      // Save aliases if needed.
-      if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
-        $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
-
-        $site->aliases[] = $domain;
-        drush_log('[DevShop Environment] Saving environment data', 'devshop_command');
-        $site->no_verify = TRUE;
-        node_save($site);
-
-      }
-
-      // If we have been cloned from another environment, run a deploy task.
-      if (!empty($platform->environment->settings->clone_source)) {
-
-        // Trigger a verify of the site, so the alias has project information.
-        hosting_add_task($site->nid, 'verify');
-
-        // Trigger a deploy using the project's default hooks.
-        $args = $platform->project->settings->deploy['default_hooks'];
-        $args['git_ref'] = $platform->environment->git_ref;
-
-        // Handle a Pull Request. If there is one, we want to deploy to the PR branch.
-        if (!empty($platform->environment->github_pull_request->pull_request_object->head->ref)) {
-          $args['git_ref'] = $platform->environment->github_pull_request->pull_request_object->head->ref;
-        }
-
-        hosting_add_task($site->nid, 'devshop-deploy', $args);
-
-      } else {
-        // Trigger a verify of the site, so the alias has project information.
-        hosting_add_task($site->nid, 'verify');
-      }
-    }
-  }
-}
-
-/**
- * Utility for execute git commands.
- */
-function _devshop_projects_git_execute($commands, $root = '') {
-  // Execute
-  $return = '';
-  if (is_string($commands)) {
-    $commands = array($commands);
-  }
-  foreach ($commands as $command) {
-    if (!empty($command)) {
-      drush_log("[DEVSHOP] Running Command in $root: $command");
-
-      // @TODO: Create a d()->server->shell_cd_and_exec() function
-      //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
-      // So instead, this is the code from d()->server->shell_exec
-      // d()->server->shell_exec($cmd);
-      if (provision_is_local_host(d()->server->remote_host)) {
-
-        // Run in $root if it exists.
-        if (file_exists($root)) {
-          drush_shell_cd_and_exec($root, escapeshellcmd($command));
-        }
-        else {
-          drush_shell_exec(escapeshellcmd($command));
-        }
-      }
-      else {
-        drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
-      }
-
-      $output = drush_shell_exec_output();
-      drush_log('Shell Output: ' . implode("\n", $output), 'ok');
-      $return .=  implode("\n", $output);
-    }
-  }
-  return $return;
-}
+///**
+// * Implements hook_post_hosting_TASK_TYPE_task().
+// *
+// * Ensures that cloned sites that are on project platforms inherit the project.
+// */
+//function devshop_projects_post_hosting_import_task($task, $data) {
+//
+//  // Now that environment data is stored in project data we need to verify projects a lot.
+//  if ($task->ref->type == 'site' && isset($task->ref->project->nid)) {
+//    hosting_add_task($task->ref->project->nid, 'verify');
+//  }
+//
+//  // If this is a new platform created by a project, we will create a site here.
+//  if ($task->ref->type == 'site') {
+//    $site = $task->ref;
+//    $platform = node_load($site->platform);
+//
+//    if (isset($platform->environment) && !empty($platform->environment->name)) {
+//
+//      // Save environment record.
+//      drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
+//      db_update('hosting_devshop_project_environment')
+//        ->fields(array(
+//          'site' => $site->nid,
+//        ))
+//        ->condition('project_nid', $platform->project->nid)
+//        ->condition('name', $platform->environment->name)
+//        ->execute();
+//      drush_log("Saved {$platform->environment->name} in project {$platform->project->name}.", 'devshop_ok');
+//
+//      // Save aliases if needed.
+//      if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
+//        $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
+//
+//        $site->aliases[] = $domain;
+//        drush_log('[DevShop Environment] Saving environment data', 'devshop_command');
+//        $site->no_verify = TRUE;
+//        node_save($site);
+//
+//      }
+//
+//      // If we have been cloned from another environment, run a deploy task.
+//      if (!empty($platform->environment->settings->clone_source)) {
+//
+//        // Trigger a verify of the site, so the alias has project information.
+//        hosting_add_task($site->nid, 'verify');
+//
+//        // Trigger a deploy using the project's default hooks.
+//        $args = $platform->project->settings->deploy['default_hooks'];
+//        $args['git_ref'] = $platform->environment->git_ref;
+//
+//        // Handle a Pull Request. If there is one, we want to deploy to the PR branch.
+//        if (!empty($platform->environment->github_pull_request->pull_request_object->head->ref)) {
+//          $args['git_ref'] = $platform->environment->github_pull_request->pull_request_object->head->ref;
+//        }
+//
+//        hosting_add_task($site->nid, 'devshop-deploy', $args);
+//
+//      } else {
+//        // Trigger a verify of the site, so the alias has project information.
+//        hosting_add_task($site->nid, 'verify');
+//      }
+//    }
+//  }
+//}
+//
+///**
+// * Utility for execute git commands.
+// */
+//function _devshop_projects_git_execute($commands, $root = '') {
+//  // Execute
+//  $return = '';
+//  if (is_string($commands)) {
+//    $commands = array($commands);
+//  }
+//  foreach ($commands as $command) {
+//    if (!empty($command)) {
+//      drush_log("[DEVSHOP] Running Command in $root: $command");
+//
+//      // @TODO: Create a d()->server->shell_cd_and_exec() function
+//      //  server->shell_exec() uses escapeshellcmd(), so we cannot cd_and_exec!
+//      // So instead, this is the code from d()->server->shell_exec
+//      // d()->server->shell_exec($cmd);
+//      if (provision_is_local_host(d()->server->remote_host)) {
+//
+//        // Run in $root if it exists.
+//        if (file_exists($root)) {
+//          drush_shell_cd_and_exec($root, escapeshellcmd($command));
+//        }
+//        else {
+//          drush_shell_exec(escapeshellcmd($command));
+//        }
+//      }
+//      else {
+//        drush_shell_cd_and_exec($root, 'ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' %s %s', $this->script_user . '@' . d()->server->remote_host, escapeshellcmd($command));
+//      }
+//
+//      $output = drush_shell_exec_output();
+//      drush_log('Shell Output: ' . implode("\n", $output), 'ok');
+//      $return .=  implode("\n", $output);
+//    }
+//  }
+//  return $return;
+//}
