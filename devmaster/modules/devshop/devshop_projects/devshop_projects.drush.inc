@@ -128,6 +128,27 @@ function drush_devshop_projects_pre_hosting_task()
   $task->options['is-devshop'] = TRUE;
 }
 
+/**
+ * Implementation of drush_hook_post_provision_install()
+ *
+ * This function handles all of the alternative environment install methods.
+ */
+function drush_devshop_provision_post_provision_install() {
+
+  // Sync from the alias.
+  if (drush_get_option('site_install_method') == 'clone') {
+    drush_log(dt('Environment Clone initiated...'), 'devshop_log');
+
+    // If "clone source" is set for this environment, use provision-sync to load in data.
+    if (!empty(d()->environment_settings['install_method']['method'] == 'clone') && !empty(!empty(d()->environment_settings['install_method']['clone_source']))) {
+      $source = d()->environment_settings['install_method']['clone_source'];
+      $destination = d()->name;
+      $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --cache-clear --registry-rebuild";
+      devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    }
+  }
+}
+
 // @TODO: Remove this function. This can all be replaced by using hosting_git.
 ///**
 // * Pre hosting task hook for "verify platform" task.
