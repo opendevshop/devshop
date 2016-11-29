@@ -1010,14 +1010,14 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 
   // Generate environments options.
   foreach ($project->environments as $e => $environment) {
-    $environment_options[$e] = $environment->name . ' ' . l($environment->url, $environment->url, array(
+    $environment_options[$environment->system_alias] = $environment->name . ' ' . l($environment->url, $environment->url, array(
         'attributes' => array('target' => '_blank'),
       ));
   }
   $environment_options['drush'] = t('Other Drush Alias');
 
   if (count($environment_options)) {
-    $form['install_method']['clone'] = array(
+    $form['install_method']['clone_source'] = array(
       '#type' => 'radios',
       '#title' => t('Environment to clone'),
       '#weight' => -98,
