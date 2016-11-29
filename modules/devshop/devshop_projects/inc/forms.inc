@@ -1010,13 +1010,14 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 
   // Generate environments options.
   foreach ($project->environments as $e => $environment) {
-    $environment_options[$environment->system_alias] = $environment->name . ' ' . l(t('Launch') . ' <i class="fa fa-external-link"></i>', $environment->url, array(
-        'html' => TRUE,
-        'attributes' => array(
-          'target' => '_blank',
-          'class' => array('btn btn-sm btn-text'),
-        ),
-      ));
+    $link = l(t('View') . ' <i class="fa fa-external-link"></i>', $environment->url, array(
+      'html' => TRUE,
+      'attributes' => array(
+        'target' => '_blank',
+        'class' => array('btn-text'),
+      ),
+    )) . '</small>';
+    $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small>$link</small>";
   }
   $environment_options['drush'] = t('Other Drush Alias');
 

@@ -1050,3 +1050,7 @@ li.text.code {
 .form-item-git-ref {
   padding-right: 0 !important;
 }
+#edit-install-method-clone-source label span {
+  min-width: 6em;
+  display: inline-block;
+}
