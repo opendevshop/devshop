@@ -42,7 +42,7 @@ function devshop_projects_projects_page() {
       ));
       $first_col = <<<HTML
 
-<a href="$url" title="$title" class="project-link">
+<a href="$url" title="$title" class="project-link project_$project->nid">
     $project->name
 </a>
 
