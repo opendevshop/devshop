@@ -115,6 +115,10 @@ function devshop_projects_node_load($nodes, $types) {
 
       $node->project = devshop_project_load($node);
     }
+    elseif ($node->type == 'site') {
+      // @TODO: Set install_method in order to trigger actions other than install profile.
+      // $node->install_method = 'manual';
+    }
   }
 }
 
@@ -171,7 +175,16 @@ function devshop_projects_node_insert($node) {
 
     // Save the "hosting context", which includes setting the path alias.
     $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
-    hosting_context_register($node->nid, $name);
+
+    // Ensure "project_" prefix on hosting context name.
+    if (strpos($name, 'project_') !== 0) {
+      $context_name = 'project_' . $name;
+    }
+    else {
+      $context_name = $name;
+    }
+
+    hosting_context_register($node->nid, $context_name);
 
     // Replace the alias created by hosting_context_register.
     $path['source'] = "node/{$node->nid}";

@@ -6,6 +6,7 @@
  */
 
 include_once('projects.inc');
+include_once('inc/create-environment.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
@@ -643,7 +644,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   $node->type = 'site';
   $node->status = 1;
   $node->uid = $user->uid;
-  $node->title = str_replace('_', '-', $environment_name) . '.' . $project->base_url;
+  $node->title = devshop_environment_url($project, $environment_name);
 
   // Aegir properties
   // @TODO: better client & DB support
@@ -806,4 +807,23 @@ function devshop_load_project_by_name($name) {
   ;
   $node = node_load($nid);
   return $node;
+}
+
+/**
+ * Generate an environment's URL from project and environment name using the domain name pattern.
+ *
+ * @param $project
+ * @param $environment_name
+ * @return string
+ */
+function devshop_environment_url($project, $environment_name) {
+
+  // Generate field prefix and suffix using domain name pattern.
+  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
+  $domain = strtr($pattern, array(
+    '@environment' => $environment_name,
+    '@project' => $project->name,
+    '@hostname' => $_SERVER['SERVER_NAME'],
+  ));
+  return $domain;
 }

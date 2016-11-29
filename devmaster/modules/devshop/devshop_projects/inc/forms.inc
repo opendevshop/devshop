@@ -711,6 +711,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
  */
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
+  // On site create page, use devshop_projects_create_environment_form()
+  if (arg(1) == 'add') {
+    devshop_projects_create_environment_form($form, $form_state, $form_id);
+    return;
+  }
+
   // Get the node object for this form.
   $node = $form['#node'];
 
