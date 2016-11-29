@@ -1044,6 +1044,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#title' => t('Drush Alias'),
     '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
     '#weight' => -98,
+    '#attributes' => array(
+      'placeholder' => t('@drush.alias'),
+    ),
     '#states' => array(
       'visible' => array(
         ':input[name="install_method[clone_source]"]' => array('value' => '_other'),
