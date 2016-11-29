@@ -1054,3 +1054,11 @@ li.text.code {
   min-width: 6em;
   display: inline-block;
 }
+#edit-install-method-clone-source label small.git-ref {
+  min-width: 6em;
+  display: inline-block;
+  margin-left: 1em;
+}
+#edit-install-method-clone-source label:hover {
+  background-color: whitesmoke;
+}
