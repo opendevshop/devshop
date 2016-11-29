@@ -1017,7 +1017,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
         'class' => array('btn-text'),
       ),
     )) . '</small>';
-    $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small>$link</small>";
+    $git_ref = $environment->git_ref;
+    $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
+    $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
   $environment_options['drush'] = t('Other Drush Alias');
 
