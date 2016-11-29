@@ -1021,7 +1021,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
     $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
-  $environment_options['drush'] = t('Other Drush Alias');
+  $environment_options['_other'] = t('Other Drush Alias');
 
   if (count($environment_options)) {
     $form['install_method']['clone_source'] = array(
@@ -1046,7 +1046,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#weight' => -98,
     '#states' => array(
       'visible' => array(
-        ':input[name="install_method[clone_source]"]' => array('value' => 'drush'),
+        ':input[name="install_method[clone_source]"]' => array('value' => '_other'),
         ':input[name="install_method[method]"]' => array('value' => 'clone'),
       ),
     ),
