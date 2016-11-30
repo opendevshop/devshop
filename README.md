@@ -28,9 +28,9 @@ Code is deployed on push to your git repo automatically.  Deploy any branch or t
 
 DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster), it's own installation profile, [Devmaster](http://github.com/opendevshop/devmaster).  It does not use the theme, Eldir.  The default devshop theme is called [boots](https://github.com/opendevshop/devmaster/tree/1.x/themes/boots) and is included in the Devmaster install profile.
 
-DevShop uses many additional contributed modules that Aegir core does not.
 
-@TODO: Create a page listing all contributed modules.
+DevShop uses many additional [contributed modules](/drupal-contributions.md) that Aegir core does not.
+    
 
 # Aegir Cooperative Founding Member
 
