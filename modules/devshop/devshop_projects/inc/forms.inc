@@ -762,6 +762,12 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#type' => 'value',
       '#value' => $environment->last_task,
     );
+    $form['form_title'] = array(
+      '#markup' => t('Environment Settings'),
+      '#prefix' => '<h3>',
+      '#suffix' => '</h3>',
+      '#weight' => -1000,
+    );
   }
 
   //
@@ -783,13 +789,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 //    drupal_goto("node/{$project->nid}/edit/env/{$node->environment->name}");
 //    exit;
 //  }
-
-  $form['form_title'] = array(
-    '#markup' => t('Environment Settings'),
-    '#prefix' => '<h3>',
-    '#suffix' => '</h3>',
-    '#weight' => -1000,
-  );
 
   // User-configurable Settings
   $form['environment']['settings'] = array(
