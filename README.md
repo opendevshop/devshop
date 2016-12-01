@@ -90,7 +90,7 @@ Support
 Installation
 ------------
 
-See [the installation instructions](docs/install.md) for detailed information on installing DevShop.
+See [the installation instructions](install.md) for detailed information on installing DevShop.
 
 Usage
 -----
