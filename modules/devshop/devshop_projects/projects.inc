@@ -393,9 +393,12 @@ function devshop_project_load($node) {
     }
 
     // Detect cloned environment.
-    if (!empty($environment->settings->clone_source)) {
+    if (!empty($environment->settings->install_method['method'] == 'clone')) {
       $environment->cloned = TRUE;
-      $environment->clone_source = $environment->settings->clone_source;
+      $environment->clone_source = $environment->settings->install_method['clone_source'] == '_other'?
+        $environment->settings->install_method['clone_source_drush']:
+        $environment->settings->install_method['clone_source']
+      ;
       $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
 
       $environment->clone_rebuild_url = url(
