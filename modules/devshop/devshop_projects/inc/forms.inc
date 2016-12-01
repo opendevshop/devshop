@@ -951,7 +951,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#weight' => -99,
     '#options' => array(
       'profile' => t('Drupal Profile'),
-      'manual' => t('Manual Install'),
+      'manual' => t('Empty Database'),
       'clone' => t('Clone Environment'),
       'import' => t('Import Database'),
     ),
