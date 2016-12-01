@@ -181,7 +181,7 @@
           <?php endif; ?>
 
           <?php if ($environment->cloned): ?>
-            <i class="fa fa-clone"></i>
+            <i class="fa fa-clone" title="<?php print t('This is a cloned site.'); ?>"></i>
           <?php endif; ?>
 
           <span><?php print $environment->name; ?></span>
