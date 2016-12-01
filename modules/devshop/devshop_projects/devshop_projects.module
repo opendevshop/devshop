@@ -140,7 +140,7 @@ function devshop_projects_devshop_environment_menu($environment) {
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
-        "hosting_confirm/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
+        "node/add/site/{$environment->project_name}/clone/{$environment->name}",
         array(
           'html' => TRUE,
         )

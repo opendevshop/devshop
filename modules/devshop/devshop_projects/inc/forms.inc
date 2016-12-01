@@ -1039,6 +1039,14 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     );
   }
 
+  // Detect clone link. Set defaults.
+  if (arg(4) == 'clone') {
+    $environment_to_clone = arg(5);
+    $form['install_method']['method']['#default_value'] = 'clone';
+    $form['install_method']['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
+    $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
+  }
+
   $form['install_method']['clone_source_drush'] = array(
     '#type' => 'textfield',
     '#title' => t('Drush Alias'),
