@@ -393,7 +393,7 @@ function devshop_project_load($node) {
     }
 
     // Detect cloned environment.
-    if (!empty($environment->settings->install_method['method'] == 'clone')) {
+    if ($environment->settings->install_method['method'] == 'clone') {
       $environment->cloned = TRUE;
       $environment->clone_source = $environment->settings->install_method['clone_source'] == '_other'?
         $environment->settings->install_method['clone_source_drush']:
