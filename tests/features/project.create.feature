@@ -101,7 +101,7 @@ Feature: Create a project
 
     When I click "Create New Environment"
     And I fill in "test" for "Environment Name"
-    And I select "master" from "Branch/Tag"
+    And I select "master" from "Branch or Tag"
     Then I press "Create New Environment"
     Then I should see "Environment install in progress."
 
