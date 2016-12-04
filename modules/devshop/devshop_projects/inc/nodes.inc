@@ -122,10 +122,12 @@ function devshop_projects_node_load($nodes, $types) {
     }
     elseif ($node->type == 'site') {
 
-      // Load install method into an easy to access property.
-      $node->install_method = $node->environment->settings->install_method['method'];
-      if ($node->install_method == 'profile') {
-        $node->profile_name = $node->environment->settings->install_method['profile'];
+      if (isset($node->environment->settings->install_method)) {
+        // Load install method into an easy to access property.
+        $node->install_method = $node->environment->settings->install_method['method'];
+        if ($node->install_method == 'profile') {
+          $node->profile_name = $node->environment->settings->install_method['profile'];
+        }
       }
     }
   }
