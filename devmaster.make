@@ -18,11 +18,10 @@ includes[devshop] = "drupal-org.make"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.8"
+projects[hosting][download][branch] = "7.x-3.8+devshop"
+projects[hosting][download][type] = "git"
+
 projects[hosting][subdir] = "aegir"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2823827-task-object-labels.patch"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2824731-site-create-platform-install-method.patch"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2828630-hosting-queued-logs_1.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
