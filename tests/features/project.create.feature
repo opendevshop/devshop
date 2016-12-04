@@ -102,8 +102,11 @@ Feature: Create a project
     When I click "Create New Environment"
     And I fill in "test" for "Environment Name"
     And I select "master" from "Branch or Tag"
+    And I select "Drupal Profile" from "Install Method"
+
+    #@TODO: Check lots of settings
+
     Then I press "Create New Environment"
-    Then print last response
     Then I should see "Environment test created in project drpl8."
 
     When I run drush "hosting-tasks"
