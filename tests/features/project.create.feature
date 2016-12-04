@@ -102,7 +102,7 @@ Feature: Create a project
     When I click "Create New Environment"
     And I fill in "test" for "Environment Name"
     And I select "master" from "Branch or Tag"
-    And I select "Drupal Profile" from "Install Method"
+    And I select the radio button "Drupal Profile"
 
     #@TODO: Check lots of settings
 
