@@ -1101,10 +1101,8 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     $form['server_stack']['#description'] = t('All environments in this project use this server stack.');
 
     $web_server_nid = $project->settings->default_environment['web_server'];
-    $form['server_stack']['web_server']['#type'] = array(
-      '#type' => 'value',
-      '#value' => $web_server_nid,
-    );
+    $form['server_stack']['web_server']['#type'] = 'value';
+    $form['server_stack']['web_server']['#value'] = $web_server_nid;
     $form['server_stack']['web_server_label'] = array(
       '#type' => 'item',
       '#title' => t('Web server'),
@@ -1113,10 +1111,8 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 
     $db_servers = hosting_get_servers('db');
     $db_server_nid = $project->settings->default_environment['db_server'];
-    $form['server_stack']['db_server']['#type'] = array(
-      '#type' => 'value',
-      '#value' => $db_server_nid,
-    );
+    $form['server_stack']['db_server']['#type'] = 'value';
+    $form['server_stack']['db_server']['#value'] = $db_server_nid;
     $form['server_stack']['db_server_label'] = array(
       '#type' => 'item',
       '#title' => t('Database server'),
