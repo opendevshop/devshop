@@ -883,7 +883,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#weight' => -1000,
   );
 
-  $form['actions']['submit']['#value'] = t('Create new Environment');
+  $form['actions']['submit']['#value'] = t('Create New Environment');
 
   // Generate field prefix and suffix using domain name pattern.
   $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
