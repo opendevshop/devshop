@@ -103,7 +103,7 @@ Feature: Create a project
     And I fill in "test" for "Environment Name"
     And I select "master" from "Branch or Tag"
     Then I press "Create New Environment"
-    Then I should see "Environment install in progress."
+    Then I should see "Environment test created in project drpl8."
 
     When I run drush "hosting-tasks"
     Then print last drush output
