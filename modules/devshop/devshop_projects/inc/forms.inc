@@ -1098,7 +1098,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 
   // Force the new environment to use the "default" servers.
   if ($project->settings->default_environment['force_default_servers']) {
-    $form['server_stack']['#description'] = t('All environments in this project use this server stack.');
+    $form['server_stack']['#description'] = t('All environments in this project must use this server stack.');
 
     $web_server_nid = $project->settings->default_environment['web_server'];
     $form['server_stack']['web_server']['#type'] = 'value';
