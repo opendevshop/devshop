@@ -1072,7 +1072,10 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['install_method']['import'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to SQL'),
-    '#description' => t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).'),
+    '#description' =>
+      t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).') .
+      '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>'
+    ,
     '#weight' => -98,
     '#states' => array(
       'visible' => array(
