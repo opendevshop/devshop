@@ -1082,6 +1082,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
         ':input[name="install_method[method]"]' => array('value' => 'import'),
       ),
     ),
+    '#element_validate' => array(
+      'devshop_projects_create_environment_form_validate_import'
+    ),
   );
 
   $form['server_stack'] = array(
@@ -1229,6 +1232,19 @@ function devshop_projects_create_environment_form_validate_profile($element, &$f
 function devshop_projects_create_environment_form_validate_clone_source($element, &$form_state, $form) {
   if ($form_state['values']['install_method']['method'] == 'clone' && $form_state['values']['install_method']['clone_source'] =='_other' && empty($element['#value'])) {
     form_set_error('install_method][clone_source_drush', t('You must enter a drush alias.'));
+  }
+}
+
+/**
+ * Validator for the "Path to SQL" field.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_projects_create_environment_form_validate_import($element, &$form_state, $form) {
+  if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
+    form_set_error('install_method][import', t('If using the "Import Database" Install Method, you enter a MySQL connection URL or absolute path to an SQL file.'));
   }
 }
 
