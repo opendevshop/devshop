@@ -6,11 +6,7 @@ Feature: Create a project
 
   Scenario: Create a new drupal 8 project
 
-    Given users:
-      | name       | status | roles          |
-      | testadminuser | 1      | administrator |
-
-    Given I am logged in as "testadminuser"
+    Given I am logged in as a user with the "administrator" role
     And I am on the homepage
     When I click "Projects"
     And I click "Start a new Project"
@@ -32,7 +28,7 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
 #    And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks -v"
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
