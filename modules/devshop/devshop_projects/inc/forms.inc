@@ -1197,6 +1197,14 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 }
 
 /**
+ * Validator for site_node_form for node creation, when creating an environment
+ * in a project.
+ */
+function devshop_projects_create_environment_form_validate() {
+  // form_set_error('title', 'stop!');
+}
+
+/**
  * Form element processor for Install Method radio buttons.
  * @param $element
  * @return array
@@ -1235,14 +1243,6 @@ function devshop_environment_add_form_profile_options($project) {
   }
   $options['_other'] = t('Other');
   return $options;
-}
-
-/**
- * Validator for site_node_form for node creation, when creating an environment
- * in a project.
- */
-function devshop_projects_create_environment_form_validate() {
-  // form_set_error('title', 'stop!');
 }
 
 /**
