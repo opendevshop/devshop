@@ -972,6 +972,8 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['install_method']['profile'] = array(
     '#type' => 'radios',
     '#title' => t('Drupal Install Profile'),
+    '#description' => t('These install profiles were found in other environments in this project. If you choose an install profile that does not exist in the codebase, the "Standard" profile will be used.'),
+    '#description_display' => 'before',
     '#weight' => -98,
     '#required' => TRUE,
     '#options' => devshop_environment_add_form_profile_options($project),
@@ -994,7 +996,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#type' => 'textfield',
     '#title' => t('Other Install Profile'),
     '#title_display' => 'invisible',
-    '#description' => t('This Drupal profile must exist in your codebase for installation to succeed.'),
+    '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
     '#attributes' => array(
       'placeholder' => t('Profile Name'),
     ),
@@ -1241,7 +1243,7 @@ function devshop_environment_add_form_profile_options($project) {
       $options[$instance->short_name] .= ' <small class="text-muted">' . $instance->description . '</small>';
     }
   }
-  $options['_other'] = t('Other');
+  $options['_other'] = t('Other') . ' <small class="text-muted">' . t('Choose another profile.') . '</small>';
   return $options;
 }
 
