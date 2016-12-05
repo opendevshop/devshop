@@ -1243,8 +1243,33 @@ function devshop_projects_create_environment_form_validate_clone_source($element
  * @param $form
  */
 function devshop_projects_create_environment_form_validate_import($element, &$form_state, $form) {
+
+  $url_components = parse_url($element['#value']);
+
   if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
-    form_set_error('install_method][import', t('If using the "Import Database" Install Method, you enter a MySQL connection URL or absolute path to an SQL file.'));
+    form_set_error('install_method][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
+  }
+  elseif ($url_components['scheme'] == 'mysql') {
+    $database = array(
+      'database' => ltrim($url_components['path'], '/'),
+      'username' => $url_components['user'],
+      'password' => $url_components['pass'],
+      'host' => $url_components['host'],
+      'driver' => 'mysql', // replace with your database driver
+    );
+    Database::addConnectionInfo('devshop_remote_db', 'default', $database);
+
+    try {
+      db_set_active('devshop_remote_db');
+      $tables = db_query('SHOW TABLES');
+      drupal_set_message(t('Database connection successful.'));
+    }
+    catch (\PDOException $e) {
+      form_set_error('install_method][import', t('Unable to connect to the database: %e', array('%e' => $e->getMessage())));
+    }
+    finally {
+      db_set_active();
+    }
   }
 }
 
