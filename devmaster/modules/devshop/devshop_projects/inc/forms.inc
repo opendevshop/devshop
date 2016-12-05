@@ -883,7 +883,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#weight' => -1000,
   );
 
+  // Add our own validator and submit handlers.
   $form['actions']['submit']['#value'] = t('Create New Environment');
+//  array_unshift($form['actions']['submit']['#submit'], 'devshop_projects_create_environment_form_submit');
 
   // Generate field prefix and suffix using domain name pattern.
   $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
@@ -896,9 +898,6 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   // Hide the "Domain Name" field, as this will be generated
   $form['title']['#access'] = false;
   $form['title']['#required'] = false;
-
-  // Add a validator so we can set extra values on the node.
-  $form['#validate'][] = 'devshop_projects_create_environment_form_validate';
 
   $form['environment_name'] = array(
     '#title' => t('Environment Name'),
@@ -997,6 +996,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#title' => t('Other Install Profile'),
     '#title_display' => 'invisible',
     '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
+    '#element_validate' => array(
+      'devshop_projects_create_environment_form_validate_profile'
+    ),
     '#attributes' => array(
       'placeholder' => t('Profile Name'),
     ),
@@ -1052,6 +1054,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#type' => 'textfield',
     '#title' => t('Drush Alias'),
     '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
+    '#element_validate' => array(
+      'devshop_projects_create_environment_form_validate_clone_source'
+    ),
     '#weight' => -98,
     '#attributes' => array(
       'placeholder' => t('@drush.alias'),
@@ -1199,11 +1204,39 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 }
 
 /**
+ * Validator for the "other profile" field.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_projects_create_environment_form_validate_profile($element, &$form_state, $form) {
+  if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other' && empty($element['#value'])) {
+    form_set_error('install_method][profile_other', t('You must enter a profile name.'));
+  }
+}
+
+/**
+ * Validator for the "clone_source" field.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_projects_create_environment_form_validate_clone_source($element, &$form_state, $form) {
+  if ($form_state['values']['install_method']['method'] == 'clone' && $form_state['values']['install_method']['clone_source'] =='_other' && empty($element['#value'])) {
+    form_set_error('install_method][clone_source_drush', t('You must enter a drush alias.'));
+  }
+}
+
+/**
  * Validator for site_node_form for node creation, when creating an environment
  * in a project.
  */
-function devshop_projects_create_environment_form_validate() {
-  // form_set_error('title', 'stop!');
+function devshop_projects_create_environment_form_submit($form, &$form_state) {
+
+  // @TODO: Clean up install_method values.
+
 }
 
 /**
