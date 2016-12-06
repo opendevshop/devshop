@@ -307,11 +307,11 @@ function devshop_project_load($node) {
       $environment->git_commit = shell_exec("cd {$environment->repo_root}; git -c color.ui=always log --max-count=1");
 
       // Get the exact SHA
-      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD"));
+      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD  2> /dev/null"));
 
       // Determine the type of git ref the stored version is
       $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
-      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored}"));
+      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
 
       // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
       // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
