@@ -529,7 +529,7 @@ function drush_devshop_provision_post_provision_install() {
 
   // Install Method: Clone
   // Sync from a drush alias.
-  drush_log('DEVSHOP: Install Method: ' . d()->environment_settings['install_method']['method'] , 'devshop_log');
+  drush_log('Installing environment with method: ' . d()->environment_settings['install_method']['method'] , 'devshop_log');
   if (d()->environment_settings['install_method']['method'] == 'clone') {
     drush_log(dt('Environment Clone initiated...'), 'devshop_log');
     $clone_source = d()->environment_settings['install_method']['clone_source'];
@@ -555,7 +555,8 @@ function drush_devshop_provision_post_provision_install() {
 
 
     // If import source is a mysql URL:
-    $url = parse_url(d()->environment_settings['install_method']['import']);
+    $path_or_url = d()->environment_settings['install_method']['import'];
+    $url = parse_url($path_or_url);
     if ($url['scheme'] == 'mysql') {
 
       // Dump the file
@@ -564,16 +565,41 @@ function drush_devshop_provision_post_provision_install() {
       $command = "mysqldump -u{$url['user']} -p{$url['pass']} -h{$url['host']} {$db_name}  --result-file={$temp_file_name}";
       devshop_drush_process($command, NULL, dt('Saving database file...'));
 
-      // Import the file
-      $alias = d()->name;
-      $command = "drush {$alias} sqlq 'SOURCE $temp_file_name'";
-      devshop_drush_process($command, NULL, dt('Importing database file...'));
+      $file_to_import = $temp_file_name;
     }
-    elseif (file_exists(d()->environment_settings['install_method']['import'])){
 
-      // If not writable, alert the user
+    // If file exists but is not readable, alert the user.
+    elseif (file_exists($path_or_url) && !is_readable($path_or_url)){
       return drush_set_error('DEVSHOP_IMPORT_ERROR', dt('Unable to import SQL file @path: not readable.'));
-
     }
+
+    // If file exists and is readable, set it as the file to import.
+    elseif (file_exists($path_or_url) && is_readable($path_or_url)){
+      $file_to_import = $path_or_url;
+    }
+
+    // Import the file
+    $alias = d()->name;
+    $command = "drush {$alias} sqlq 'SOURCE {$file_to_import}'";
+    devshop_drush_process($command, NULL, dt('Importing database file...'));
+    devshop_drush_cache_clear($alias);
+    devshop_drush_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
+  }
+}
+
+/**
+ * Runs drush cache-clear or drush cache-rebuild on the chosen alias.
+ *
+ * @param $alias
+ *   A drush alias.
+ */
+function devshop_drush_cache_clear($alias) {
+
+  // Clear all caches.
+  if (drush_drupal_major_version(d()->root) == 8) {
+    devshop_drush_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
+  }
+  else {
+    devshop_drush_process("drush {$alias} cache-clear all", NULL, dt('Clear all Caches'));
   }
 }
