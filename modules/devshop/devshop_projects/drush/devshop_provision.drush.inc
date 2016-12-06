@@ -566,7 +566,7 @@ function drush_devshop_provision_post_provision_install() {
 
       // Import the file
       $alias = d()->name;
-      $command = "drush {$alias} sqlc < $temp_file_name";
+      $command = "drush {$alias} sqlq 'SOURCE $temp_file_name'";
       devshop_drush_process($command, NULL, dt('Importing database file...'));
     }
     elseif (file_exists(d()->environment_settings['install_method']['import'])){
