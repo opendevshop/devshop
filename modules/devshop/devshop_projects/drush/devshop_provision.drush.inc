@@ -527,10 +527,10 @@ function drush_devshop_provision_pre_provision_verify() {
  */
 function drush_devshop_provision_post_provision_install() {
 
-  // Sync from the alias.
-  // This can also be d()->environment_settings['install_method'].
-  // Perhaps if we do that we can skip the hook that sets this as a drush option.
-  if (drush_get_option('site_install_method') == 'clone') {
+  // Install Method: Clone
+  // Sync from a drush alias.
+  drush_log('DEVSHOP: Install Method: ' . d()->environment_settings['install_method']['method'] , 'devshop_log');
+  if (d()->environment_settings['install_method']['method'] == 'clone') {
     drush_log(dt('Environment Clone initiated...'), 'devshop_log');
     $clone_source = d()->environment_settings['install_method']['clone_source'];
 
@@ -548,5 +548,32 @@ function drush_devshop_provision_post_provision_install() {
     $destination = d()->name;
     $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --cache-clear --registry-rebuild";
     devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+  }
+
+  // Install Method: import
+  elseif (d()->environment_settings['install_method']['method'] == 'import') {
+
+
+    // If import source is a mysql URL:
+    $url = parse_url(d()->environment_settings['install_method']['import']);
+    if ($url['scheme'] == 'mysql') {
+
+      // Dump the file
+      $temp_file_name = tempnam('/tmp', 'devshop_remote_db.sql.');
+      $db_name = ltrim($url['path'], '/');
+      $command = "mysqldump -u{$url['user']} -p{$url['pass']} -h{$url['host']} {$db_name}  --result-file={$temp_file_name}";
+      devshop_drush_process($command, NULL, dt('Saving database file...'));
+
+      // Import the file
+      $alias = d()->name;
+      $command = "drush {$alias} sqlc < $temp_file_name";
+      devshop_drush_process($command, NULL, dt('Importing database file...'));
+    }
+    elseif (file_exists(d()->environment_settings['install_method']['import'])){
+
+      // If not writable, alert the user
+      return drush_set_error('DEVSHOP_IMPORT_ERROR', dt('Unable to import SQL file @path: not readable.'));
+
+    }
   }
 }
