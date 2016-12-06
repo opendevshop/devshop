@@ -5,6 +5,20 @@
  */
 
 /**
+ * Implements hook_install()
+ */
+function devshop_projects_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_projects')
+    ->execute();
+}
+
+/**
  * Implements hook_schema().
  */
 function devshop_projects_schema() {
@@ -416,7 +430,7 @@ function devshop_projects_update_7007 () {
  */
 function devshop_projects_update_7008 () {
 
-  // Push devshop_github's system weight to 1.
+  // Push devshop_projects's system weight to 1.
   db_update('system')
     ->fields(array(
       'weight' => 1
