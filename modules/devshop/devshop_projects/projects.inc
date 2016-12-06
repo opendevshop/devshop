@@ -315,7 +315,7 @@ function devshop_project_load($node) {
 
       // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
       // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD")));
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
       $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
