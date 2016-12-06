@@ -28,7 +28,7 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
 #    And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks -v"
+    When I run drush "hosting-tasks"
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
