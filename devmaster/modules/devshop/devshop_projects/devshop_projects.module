@@ -6,7 +6,7 @@
  */
 
 include_once('projects.inc');
-include_once('inc/create-environment.inc');
+include_once('inc/add-environment.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
@@ -129,18 +129,18 @@ function devshop_projects_permission() {
 }
 
 /**
- * Implements hook_devshop_environment_actions().
+ * Implements hook_devshop_environment_menu().
  *
  * Defines the list of tasks that appear under the gear icon.
  */
-function devshop_projects_devshop_environment_actions($environment) {
+function devshop_projects_devshop_environment_menu($environment) {
   $items = array();
 
   // Site specific actions.
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     if (user_access('create devshop-create task')) {
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
-        "hosting_confirm/{$environment->project_nid}/project_devshop-create/clone/{$environment->site}",
+        "node/add/site/{$environment->project_name}/clone/{$environment->name}",
         array(
           'html' => TRUE,
         )
@@ -184,9 +184,8 @@ function devshop_projects_devshop_environment_actions($environment) {
     $items[] = '<div class="divider"></div>';
 
     // Backup & Restore
-    $items[] = 'backup';
-    if (empty($environment->settings->locked)) {
-      $items[] = 'restore';
+    if (drupal_valid_path("node/$environment->site/backups")) {
+      $items[] = l(t('Backups'), "node/$environment->site/backups");
     }
   }
   elseif ($environment->site && $environment->site_status == HOSTING_SITE_DISABLED)  {
@@ -318,6 +317,16 @@ function devshop_projects_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  // Add Environment page
+  $items['project/%/add-environment'] = array(
+    'title' => 'Add Environment',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'devshop_projects_environment_add_page',
+    'page arguments' => array(1),
+    'access callback' => 'devshop_projects_environment_add_access',
+    'access arguments' => array(1),
+  );
+
   // Ajax endpoint for reloads
   $items['devshop/tasks'] = array(
       'page callback' => 'devshop_projects_tasks_status_json',
@@ -403,8 +412,17 @@ function devshop_projects_block_info() {
  * Implements hook_block_view().
  */
 function devshop_projects_block_view($delta) {
-  if ($delta == 'project_nav' && (arg(0) == 'node' || arg(0) == 'hosting_confirm')) {
-    $node = node_load(arg(1));
+  if ($delta == 'project_nav' && (
+    arg(0) == 'node' || arg(0) == 'hosting_confirm'
+  )) {
+
+    if (is_numeric(arg(1))) {
+      $node = node_load(arg(1));
+    }
+    elseif (arg(1) == 'add') {
+      $node = devshop_projects_load_by_name(arg(3));
+    }
+
     if (node_access('view', $node) && ($node->type == 'project' || !empty($node->project))) {
 
       // If viewed node is project, use that.
@@ -826,4 +844,22 @@ function devshop_environment_url($project, $environment_name) {
     '@hostname' => $_SERVER['SERVER_NAME'],
   ));
   return $domain;
+}
+
+/**
+ * Retrieve a project node by name.
+ *
+ * @param $name
+ * @return bool|mixed
+ */
+function devshop_projects_load_by_name($name) {
+  $nid = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('title', $name)
+    ->condition('type', 'project')
+    ->condition('status', 1)
+    ->execute()
+    ->fetchField();
+
+  return node_load($nid);
 }

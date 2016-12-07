@@ -282,7 +282,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
         ->fields(array(
           'project_nid' => $form_state['values']['nid'],
           'name' => $environment->name,
-          'git_ref' => $environment->git_ref,
           'platform' => $environment->platform,
           'settings' => serialize($environment->settings),
         ))
@@ -303,6 +302,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       else {
         $platform->publish_path = $project->code_path . '/' . $environment->name;
       }
+
+      // Git information
+      $platform->git['repo_url'] = $project->git_url;
+      $platform->git['git_ref'] = $environment->git_ref;
 
       // Other attributes
       $platform->web_server = $environment->settings->web_server;

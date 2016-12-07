@@ -1,13 +1,168 @@
 <div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_name; ?>-<?php print $environment->name ?>">
 
-    <?php if (!empty($environment->task_links) && !isset($page)): ?>
+    <?php if (!empty($environment->menu) && !isset($page)): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
-        <div class="environment-tasks btn-group ">
-            <button type="button" class="btn btn-link task-list-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Settings & Actions') ;?>">
-                <i class="fa fa-sliders"></i>
+
+      <!-- Information Modal -->
+      <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
+        <i class="fa fa-question-circle"></i><?php print t('Info'); ?>
+      </a>
+
+      <!-- Modal -->
+      <div class="modal modal-info fade" id="infoModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel<?php print $environment->site ?>">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close btn btn-lg" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="infoModalLabel<?php print $environment->site ?>"><?php print t('Environment Information') ?> <small><?php print $environment->name; ?></small>
+              </h4>
+              <a href="<?php print url($environment->url); ?>" target="_blank" class='btn btn-default btn-sm'><?php print $environment->url; ?> <i class="fa fa-external-link-square"></i> </a>
+            </div>
+            <div class="modal-body">
+              <h4>SSH Access</h4>
+              <p class="text-muted small">
+                <?php
+
+                if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
+                  print t('Upload your public SSH keys at !link so you can access the site via SSH and Drush.', array(
+                    '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
+                  ));
+                }
+                else {
+                  print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
+                }
+                ?>
+              </p>
+              <label>
+                Command
+              </label>
+              <input class="form-control inline" onclick="this.select()" value="ssh aegir@<?php print $environment->web_server; ?>">
+            </div>
+            <div class="modal-body">
+              <h4>Drush Access</h4>
+              <p class="text-muted small">
+                <?php print t('Drush is installed on the server, with the alias <code>@!alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
+                  '!alias' => $environment->system_domain,
+                  '!download' => l(t('downloading the Drush aliases'), "node/{$project->nid}/aliases"),
+                ));
+                ?>
+              </p>
+              <section>
+                <label>
+                  Database CLI
+                </label>
+                <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sqlc">
+              </section>
+              <section>
+                <label>
+                  List All Commands
+                </label>
+                <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
+              </section>
+            </div>
+            <div class="modal-body">
+              <h4>Other Information</h4>
+              <section>
+                <label>
+                  Database
+                </label>
+                <?php print $environment->db_name; ?>
+              </section>
+              <section>
+                <label>
+                  Path
+                </label>
+                <?php print $environment->repo_root; ?>
+              </section>
+            </div>
+            <div class="modal-body">
+              <h4><?php print t('Deploy Hooks'); ?></h4>
+              <!-- Show Hooks -->
+              <div class="btn-group btn-hooks" role="group">
+                <ul class="list-unstyled" role="menu">
+                  <li class="text"><?php print t('Hooks are run any time new code is deployed.  The following hooks are enabled for this environment:'); ?></li>
+                  <?php if (isset($environment->settings->deploy)): ?>
+                    <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
+                      <?php if ($enabled): ?>
+                        <?php if ($hook_type == 'cache'): ?>
+                          <li class="text code">
+                            <code>drush clear-cache all</code>
+                          </li>
+                        <?php elseif ($hook_type == 'update'): ?>
+                          <li class="text code">
+                            <code>drush update-db -y</code>
+                          </li>
+                        <?php elseif ($hook_type == 'revert'): ?>
+                          <li class="text code">
+                            <code>drush features-revert-all -y</code>
+                          </li>
+                        <?php elseif ($hook_type == 'composer'): ?>
+                          <li class="text code">
+                            <code>composer install</code>
+                          </li>
+                        <?php elseif ($hook_type == 'test'): ?>
+                          <li class="text code">
+                            <?php print t('Run Tests'); ?>
+                          </li>
+                        <?php elseif ($hook_type == 'dothooks'): ?>
+                          <li><?php print t('File-based Hooks'); ?></li>
+                          <?php if (!empty($environment->dothooks_file_name)): ?>
+                            <li class="text"><p class=\"text-info\">
+                                <i class=\"fa fa-question-circle\"></i>
+                                <?php print t("This is your &filename file:", array(
+                                  '&filename' => $environment->dothooks_file_name
+                                )); ?></p></li>
+                            <li>
+                              <pre><?php if (isset($environment->dothooks_file_path)) { print file_get_contents($environment->dothooks_file_path); } ?></pre>
+                            </li>
+                          <?php else:  ?>
+                            <li class="text text-danger">
+                              <i class="fa fa-warning"></i> <?php print $hooks_yml_note; ?>
+                            </li>
+                          <?php endif; ?>
+                        <?php elseif ($hook_type == 'acquia_hooks'): ?>
+                          <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
+                          <li class="text"><p class="text-info">
+                              <i class="fa fa-question-circle"></i>
+                              <?php print t("When code or data is deployed, the appropriate Acquia Cloud Hook within the project will be triggered."); ?></p></li>
+                          <li class="text"><p class="text-muted"><?php print t('See !link1 and !link2 for more information ', array(
+                                '!link1' => l('Acquia Cloud Documentation', 'https://docs.acquia.com/cloud/manage/cloud-hooks'),
+                                '!link2' => l('https://github.com/acquia/cloud-hooks', 'https://github.com/acquia/cloud-hooks'),
+                              )); ?></p>
+                          </li>
+                          <li>
+                            <label>Supported Cloud Hooks</label>
+                          </li>
+                          <li class="text">
+
+                            <ul>
+                              <li><strong>post-code-deploy:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
+                              <li><strong>post-code-update:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
+                              <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                              <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
+                            </ul>
+
+                          </li>
+                        <?php endif; ?>
+                      <?php endif; ?>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </ul>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="environment-menu btn-group ">
+            <button type="button" class="btn btn-link environment-menu-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
+                <i class="fa fa-bars"></i>
             </button>
-            <?php print $environment->task_links_rendered; ?>
+            <?php print $environment->menu_rendered; ?>
         </div>
     </div>
     <?php endif; ?>
@@ -20,7 +175,19 @@
 
       <!-- Environment Name -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
-            <?php print $environment->name; ?></a>
+
+          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+            <i class="fa fa-bolt" title="<?php print t('Primary Environment'); ?>"></i>
+          <?php endif; ?>
+
+          <?php if ($environment->cloned): ?>
+            <i class="fa fa-clone" title="<?php print t('This is a cloned site.'); ?>"></i>
+          <?php endif; ?>
+
+          <span><?php print $environment->name; ?></span>
+        </a>
+
+      <div class="environment-status">
 
       <?php
       // If we detect a currently running deploy...
@@ -58,117 +225,14 @@
         <?php endif; ?>
 
         <?php if ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-            <span class="environment-meta-data">Disabled</span>
+            <a class="environment-meta-data btn btn-text">Disabled</a>
         <?php endif; ?>
 
-        <!-- Environment Status Indicators -->
-        <div class="environment-indicators">
-            <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
-                <span class="environment-meta-data text-muted" title="<?php print t('This database is locked.'); ?>">
-              <i class="fa fa-lock"></i><?php print t('Locked') ?>
-            </span>
-            <?php endif; ?>
-
-            <?php if ($environment->name == $project->settings->live['live_environment']): ?>
-                <span class="environment-meta-data text-muted" title="<?php print t('This is the primary environment.'); ?>">
-            <i class="fa fa-bolt"></i>Live
-          </span>
-            <?php endif; ?>
-        </div>
-
-        <!-- Access Information -->
-        <a type="button" class="environment-meta-data environment-access btn btn-text btn-sm" data-toggle="modal" data-target="#accessModal<?php print $environment->site ?>">
-          <i class="fa fa-key"></i>Access
+        <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
+            <a class="environment-meta-data btn btn-text" title="<?php print t('This database is locked.'); ?>">
+          <i class="fa fa-lock"></i><?php print t('Locked') ?>
         </a>
-
-        <!-- Modal -->
-        <div class="modal fade" id="accessModal<?php print $environment->site ?>" tabindex="-1" role="dialog" aria-labelledby="accessModalLabel<?php print $environment->site ?>">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="accessModalLabel<?php print $environment->site ?>">Access Information for environment: <?php print $environment->name; ?></h4>
-              </div>
-              <div class="modal-body">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">SSH Access</h3>
-                  </div>
-                  <div class="panel-body">
-                    <p class="text-muted small">
-                      <?php
-
-                      if (module_exists('aegir_ssh') && user_access('manage own SSH public keys')) {
-                        print t('After you have uploaded your public SSH keys at !link you can access the site via SSH and Drush.', array(
-                          '!link' => l('My Account > SSH Keys', "user/$user->uid/ssh-keys"),
-                        ));
-                      }
-                      else {
-                        print t('In order to access the server with SSH, you must add your public SSH key to the file <code>/var/aegir/.ssh/authorized_keys</code>.');
-                      }
-                      ?>
-                    </p>
-
-                    <label>
-                      Command
-                    </label>
-                    <input class="form-control" onclick="this.select()" value="ssh aegir@<?php print $environment->web_server; ?>">
-                  </div>
-                </div>
-                <div class="panel panel-default panel-drush-access">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Drush Access</h3>
-                  </div>
-                  <div class="panel-body">
-
-                    <p class="text-muted small">
-                      <?php print t('Drush is installed on the server, with the alias <code>$alias</code>. You may also access the sites by running Drush locally and !download for this project.', array(
-                        '!download' => l(t('downloading the Drush aliases'), "node/{$environment->project->nid}/aliases"),
-                      ));
-                      ?>
-                    </p>
-                    <section>
-                      <label>
-                        Database CLI
-                      </label>
-                      <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> sqlc">
-                    </section>
-                    <section>
-                      <label>
-                        List All Commands
-                      </label>
-                      <input class="form-control" onclick="this.select()" value="drush <?php print $environment->drush_alias; ?> help">
-                    </section>
-                  </div>
-                </div>
-
-
-                <div class="panel panel-default panel-drush-access">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Other Information</h3>
-                  </div>
-                  <div class="panel-body">
-                    <section>
-                      <label>
-                        Database
-                      </label>
-                      <?php print $environment->db_name; ?>
-                    </section>
-                    <section>
-                      <label>
-                        Path
-                      </label>
-                      <?php print $environment->repo_root; ?>
-                    </section>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <?php endif; ?>
 
       <?php  if (isset($environment->github_pull_request)): ?>
         <!-- Pull Request -->
@@ -184,6 +248,13 @@
 
       <?php endif; ?>
 
+        <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
+          <!-- Browse Logs -->
+          <a href="<?php print url("node/$environment->site/errors"); ?>" class="environment-meta-data btn btn-text btn-sm " title="<?php print t('View error logs.'); ?>">
+            <i class="fa fa-exclamation-circle"></i><?php print t('Errors'); ?>
+          </a>
+        <?php endif; ?>
+    </div>
     </div>
 
     <!-- Environment Warnings -->
@@ -205,6 +276,125 @@
         </div>
         <?php endforeach; ?>
     <?php endif; ?>
+
+  <!-- URLs -->
+  <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
+
+    <div class="btn-toolbar" role="toolbar">
+
+      <?php
+      // If we have more than one domain, add the dropdown.
+      if (count($environment->domains) > 1):
+        ?>
+        <div class="btn-group btn-group-smaller btn-urls" role="group">
+          <a href="<?php print $environment->url ?>" target="_blank" class="environment-link">
+            <?php if (!empty($environment->ssl_enabled)): ?>
+              <i class="fa fa-lock text-success"></i>
+            <?php else: ?>
+              <i class="fa fa-globe"></i>
+            <?php endif; ?>
+            <span class="hidden">Visit Environment:</span>
+            <?php print $environment->url ?>
+          </a>
+        </div>
+        <div class="btn-group btn-group-smaller" role="group">
+          <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-globe"></i>
+            <?php print count($environment->domains); ?>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php foreach ($environment->domains as $domain): ?>
+              <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
+            <?php endforeach; ?>
+            <li class="divider">&nbsp;</li>
+            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit', array('fragment' => 'edit-aliases-wrapper')); ?></li>
+          </ul>
+        </div>
+
+        <?php
+      // If site only has one domain (no aliases):
+      else: ?>
+
+        <?php if (!empty($environment->url)): ?>
+          <div class="btn-group btn-group-smaller btn-urls-single" role="group">
+            <a href="<?php print $environment->url ?>" target="_blank">
+              <?php if (!empty($environment->ssl_enabled)): ?>
+                <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
+              <?php else: ?>
+                <i class="fa fa-globe"></i>
+              <?php endif;?>
+              <?php print $environment->url ?>
+            </a>
+          </div>
+        <?php else: ?>
+          <button class="btn btn-xs">
+            <i class="fa fa-globe"></i>
+            <em>&nbsp;</em>
+          </button>
+        <?php endif;?>
+
+      <?php endif;?>
+
+      <!-- Log In Link -->
+      <?php if (isset($environment->login_text)): ?>
+        <div class="btn-group btn-group-smaller pull-right login-link" role="group">
+
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal-<?php print $environment->name ?>" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
+            <i class="fa fa-sign-in"></i>
+            <?php print $environment->login_text; ?>
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="loginModal-<?php print $environment->name ?>" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel-<?php print $environment->name ?>">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="loginModalLabel-<?php print $environment->name ?>">
+                    <?php print $environment->login_text; ?>
+                  </h4>
+                </div>
+                <div class="modal-body">
+                  <i class="fa fa-gear fa-spin"></i>
+                  <?php print t('Requesting new log in link. Please wait...') ?>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <?php endif;?>
+    </div>
+  </div>
+
+
+  <!-- Cloned Environment Indicator -->
+  <?php if (isset($environment->cloned)): ?>
+    <div class="list-group-item clone-info">
+
+      <div class="btn-toolbar">
+
+        <label><?php print t('Clone of'); ?></label>
+        <?php print l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}") ?>
+        <label>
+          <?php print format_date($environment->created['date']); ?>
+        </label>
+
+        <?php if (user_access("create sync task")): ?>
+          <div class="btn-group pull-right">
+            <a class="btn btn-default btn-sm pull-right" href="<?php print $environment->clone_rebuild_url; ?>">
+              <i class="fa fa-repeat"></i> <?php print t('Rebuild'); ?>
+            </a>
+          </div>
+        <?php endif; ?>
+      </div>
+
+    </div>
+  <?php endif; ?>
 
     <?php
 
@@ -260,11 +450,11 @@
                     <i class="fa fa-list"></i> <?php print t('View Logs'); ?>
                 </a>
                 <?php if (
-                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_QUEUED && 
-                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_PROCESSING && 
-                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_QUEUED && 
-                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_PROCESSING && 
-                    empty($environment->site) 
+                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_QUEUED &&
+                    current($environment->tasks['verify'])->task_status != HOSTING_TASK_PROCESSING &&
+                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_QUEUED &&
+                    current($environment->tasks['clone'])->task_status != HOSTING_TASK_PROCESSING &&
+                    empty($environment->site)
                     && $environment->platform
                     ): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_verify", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
@@ -396,206 +586,6 @@
     <?php
       // SITUATION: Environment is Active!
       elseif (empty($environment->tasks['delete'])): ?>
-
-        <!-- URLs -->
-        <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
-
-            <div class="btn-toolbar" role="toolbar">
-
-                <?php
-                // If we have more than one domain, add the dropdown.
-                if (count($environment->domains) > 1):
-                    ?>
-                    <div class="btn-group btn-group-smaller btn-urls" role="group">
-                        <a href="<?php print $environment->url ?>" target="_blank" class="environment-link">
-                            <?php if (!empty($environment->ssl_enabled)): ?>
-                                <i class="fa fa-lock text-success"></i>
-                            <?php else: ?>
-                                <i class="fa fa-globe"></i>
-                            <?php endif; ?>
-                            <span class="hidden">Visit Environment:</span>
-                            <?php print $environment->url ?>
-                        </a>
-                    </div>
-                    <div class="btn-group btn-group-smaller" role="group">
-                        <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-globe"></i>
-                            <?php print count($environment->domains); ?>
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <?php foreach ($environment->domains as $domain): ?>
-                                <li><a href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a></li>
-                            <?php endforeach; ?>
-                            <li class="divider">&nbsp;</li>
-                            <li><?php print l(t('Edit Domains'), 'node/' . $environment->site . '/edit', array('fragment' => 'edit-aliases-wrapper')); ?></li>
-                        </ul>
-                    </div>
-
-                    <?php
-                // If site only has one domain (no aliases):
-                else: ?>
-
-                    <?php if (!empty($environment->url)): ?>
-                        <div class="btn-group btn-group-smaller btn-urls-single" role="group">
-                            <a href="<?php print $environment->url ?>" target="_blank">
-                                <?php if (!empty($environment->ssl_enabled)): ?>
-                                    <i class="fa fa-lock" alt="<?php print t('Encrypted'); ?>"></i>
-                                <?php else: ?>
-                                    <i class="fa fa-globe"></i>
-                                <?php endif;?>
-                                <?php print $environment->url ?>
-                            </a>
-                        </div>
-                    <?php else: ?>
-                        <button class="btn btn-xs">
-                            <i class="fa fa-globe"></i>
-                            <em>&nbsp;</em>
-                        </button>
-                    <?php endif;?>
-
-                <?php endif;?>
-
-                <!-- Log In Link -->
-                <?php if (isset($environment->login_text)): ?>
-                    <div class="btn-group btn-group-smaller pull-right login-link" role="group">
-
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#loginModal-<?php print $environment->name ?>" data-remote="<?php print url('devshop/login/reset/' . $environment->site); ?>">
-                                <i class="fa fa-sign-in"></i>
-                                <?php print $environment->login_text; ?>
-                            </button>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="loginModal-<?php print $environment->name ?>" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel-<?php print $environment->name ?>">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="loginModalLabel-<?php print $environment->name ?>">
-                                                <?php print $environment->login_text; ?>
-                                            </h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <i class="fa fa-gear fa-spin"></i>
-                                            <?php print t('Requesting new log in link. Please wait...') ?>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal"><?php print t('Cancel'); ?></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-                <?php endif;?>
-            </div>
-        </div>
-
-        <div class="list-group-item">
-          <label class="sr-only"><?php print t('Browse'); ?></label>
-          <div class="btn-group btn-group-tight btn-group-links" role="group">
-
-            <?php if (drupal_valid_path("node/{$environment->site}/tasks")): ?>
-              <!-- Browse Task Logs -->
-              <a href="<?php print url("node/$environment->site/tasks"); ?>" class="btn btn-text btn-sm text-muted" title="<?php print t('Task logs for this environment.'); ?>">
-                <i class="fa fa-th-list"></i>
-                <?php print t('Tasks'); ?>
-              </a>
-            <?php endif; ?>
-
-            <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
-            <!-- Browse Logs -->
-            <a href="<?php print url("node/$environment->site/errors"); ?>" class="btn btn-text btn-sm text-muted" title="<?php print t('Error logs for this environment.'); ?>">
-              <i class="fa fa-exclamation-circle"></i>
-              <?php print t('Errors'); ?>
-            </a>
-            <?php endif; ?>
-
-            <!-- Browse Backups -->
-            <a href="<?php print url("node/$environment->site/backups"); ?>" class="btn btn-text btn-sm text-muted" title="<?php print t('View list of backups.'); ?>">
-              <i class="fa fa-database"></i>
-              <?php print t('Backups'); ?>
-            </a>
-
-
-            <!-- Show Hooks -->
-            <div class="btn-group btn-hooks" role="group">
-              <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-rocket"></i> <?php print t('Hooks'); ?>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li><label><?php print t('Deploy Hooks'); ?></label></li>
-                <li class="text"><?php print t('Hooks are run any time new code is deployed.  The following hooks are enabled for this environment:'); ?></li>
-                <?php if (isset($environment->settings->deploy)): ?>
-                <?php foreach ($environment->settings->deploy as $hook_type => $enabled): ?>
-                <?php if ($enabled): ?>
-                  <?php if ($hook_type == 'cache'): ?>
-                      <li class="text code">
-                          <code>drush clear-cache all</code>
-                      </li>
-                    <?php elseif ($hook_type == 'update'): ?>
-                      <li class="text code">
-                          <code>drush update-db -y</code>
-                      </li>
-                    <?php elseif ($hook_type == 'revert'): ?>
-                      <li class="text code">
-                          <code>drush features-revert-all -y</code>
-                      </li>
-                    <?php elseif ($hook_type == 'composer'): ?>
-                      <li class="text code">
-                        <code>composer install</code>
-                      </li>
-                    <?php elseif ($hook_type == 'test'): ?>
-                      <li class="text code">
-                        <?php print t('Run Tests'); ?>
-                      </li>
-                    <?php elseif ($hook_type == 'dothooks'): ?>
-                      <li><label><?php print t('File-based Hooks'); ?></label></li>
-                      <?php if (!empty($environment->dothooks_file_name)): ?>
-                        <li class="text"><p class=\"text-info\">
-                            <i class=\"fa fa-question-circle\"></i>
-                            <?php print t("This is your &filename:", array(
-                              '&filename' => $environment->dothooks_file_name
-                            )); ?></p></li>
-                        <li>
-                          <pre><?php if (isset($environment->dothooks_file_path)) { print file_get_contents($environment->dothooks_file_path); } ?></pre>
-                        </li>
-                      <?php else:  ?>
-                        <li class="text text-danger">
-                          <i class="fa fa-warning"></i> <?php print $hooks_yml_note; ?>
-                        </li>
-                      <?php endif; ?>
-                    <?php elseif ($hook_type == 'acquia_hooks'): ?>
-                      <li><label><?php print t('Acquia Cloud Hooks'); ?></label></li>
-                      <li class="text"><p class="text-info">
-                          <i class="fa fa-question-circle"></i>
-                          <?php print t("When code or data is deployed, the appropriate Acquia Cloud Hook within the project will be triggered."); ?></p></li>
-                      <li class="text"><p class="text-muted"><?php print t('See !link1 and !link2 for more information ', array(
-                            '!link1' => l('Acquia Cloud Documentation', 'https://docs.acquia.com/cloud/manage/cloud-hooks'),
-                            '!link2' => l('https://github.com/acquia/cloud-hooks', 'https://github.com/acquia/cloud-hooks'),
-                          )); ?></p>
-                      </li>
-                      <li>
-                        <label>Supported Cloud Hooks</label>
-                      </li>
-                      <li class="text">
-
-                        <ul>
-                          <li><strong>post-code-deploy:</strong> <?php print t('Triggered after a <em>manually</em> started "Deploy Code" task ends.'); ?></li>
-                          <li><strong>post-code-update:</strong> <?php print t('Triggered after an <em>automatic</em> "Deploy Code" task ends. (When developers "git push")'); ?></li>
-                          <li><strong>post-db-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
-                          <li><strong>post-files-copy:</strong> <?php print t('Triggered after a "Deploy Data" task runs if "Database" was selected.'); ?></li>
-                        </ul>
-
-                      </li>
-                    <?php endif; ?>
-                  <?php endif; ?>
-                <?php endforeach; ?>
-                <?php endif; ?>
-              </ul>
-            </div>
-          </div>
-        </div>
 
         <?php
         // Only show this area if they have at least one of these permissions.
@@ -811,7 +801,7 @@ sites/all/drush/drushrc.php
 
     ?>
     <div class="list-group-item list-group-item-git">
-      <label><?php print t('Git') ?></label>
+      <label><?php print t('Git Status') ?></label>
 
       <!-- Git Status -->
       <div class="btn-group btn-git-status" role="group">
