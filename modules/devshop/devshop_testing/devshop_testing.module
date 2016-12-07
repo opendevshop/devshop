@@ -88,12 +88,12 @@ function devshop_testing_hosting_tasks() {
 }
 
 /**
- * Implements hook_devshop_environment_actions().
+ * Implements hook_devshop_environment_menu().
  *
  * Defines the list of tasks that appear under the gear icon.
  */
 // I'm getting rid of this for now for testing. I want this button at the top.
-//function devshop_testing_devshop_environment_actions($environment) {
+//function devshop_testing_devshop_environment_menu($environment) {
 //  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
 //    return array(
 //      'test'

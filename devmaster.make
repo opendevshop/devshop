@@ -2,7 +2,7 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = "core"
-projects[drupal][version] = "7.51"
+projects[drupal][version] = "7.52"
 
 defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
@@ -18,9 +18,10 @@ includes[devshop] = "drupal-org.make"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][version] = "3.8"
+projects[hosting][download][branch] = "7.x-3.8+devshop"
+projects[hosting][download][type] = "git"
+
 projects[hosting][subdir] = "aegir"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2823827-task-object-labels.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme

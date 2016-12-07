@@ -519,3 +519,89 @@ function drush_devshop_provision_pre_provision_verify() {
     drush_log(dt('Project Drush aliases written.'), 'devshop_log');
   }
 }
+
+/**
+ * Implementation of drush_hook_post_provision_install()
+ *
+ * This function handles all of the alternative environment install methods.
+ */
+function drush_devshop_provision_post_provision_install() {
+
+  // Install Method: Clone
+  // Sync from a drush alias.
+  drush_log('Installing environment with method: ' . d()->environment_settings['install_method']['method'] , 'devshop_log');
+  if (d()->environment_settings['install_method']['method'] == 'clone') {
+    drush_log(dt('Environment Clone initiated...'), 'devshop_log');
+    $clone_source = d()->environment_settings['install_method']['clone_source'];
+
+    // If "clone_source" is set to "_other", use the drush alias in "clone_source_drush".
+    if ($clone_source == '_other') {
+      $source = d()->environment_settings['install_method']['clone_source_drush'];
+    }
+    elseif (!empty($clone_source)) {
+      $source = d()->environment_settings['install_method']['clone_source'];
+    }
+    else {
+      return drush_set_error('DEVSHOP_ERROR', dt('Install_method"clone_source" was not set.'));
+    }
+
+    $destination = d()->name;
+    devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
+    $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --cache-clear --registry-rebuild";
+    devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    devshop_drush_process_cache_clear($destination);
+  }
+
+  // Install Method: import
+  elseif (d()->environment_settings['install_method']['method'] == 'import') {
+
+
+    // If import source is a mysql URL:
+    $path_or_url = d()->environment_settings['install_method']['import'];
+    $url = parse_url($path_or_url);
+    if ($url['scheme'] == 'mysql') {
+
+      // Dump the file
+      $temp_file_name = tempnam('/tmp', 'devshop_remote_db.sql.');
+      $db_name = ltrim($url['path'], '/');
+      $command = "mysqldump -u{$url['user']} -p{$url['pass']} -h{$url['host']} {$db_name}  --result-file={$temp_file_name}";
+      devshop_drush_process($command, NULL, dt('Saving database file...'));
+
+      $file_to_import = $temp_file_name;
+    }
+
+    // If file exists but is not readable, alert the user.
+    elseif (file_exists($path_or_url) && !is_readable($path_or_url)){
+      return drush_set_error('DEVSHOP_IMPORT_ERROR', dt('Unable to import SQL file @path: not readable.'));
+    }
+
+    // If file exists and is readable, set it as the file to import.
+    elseif (file_exists($path_or_url) && is_readable($path_or_url)){
+      $file_to_import = $path_or_url;
+    }
+
+    // Import the file
+    $alias = d()->name;
+    $command = "drush {$alias} sqlq 'SOURCE {$file_to_import}'";
+    devshop_drush_process($command, NULL, dt('Importing database file...'));
+    devshop_drush_process_cache_clear($alias);
+    devshop_drush_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
+  }
+}
+
+/**
+ * Runs drush cache-clear or drush cache-rebuild on the chosen alias.
+ *
+ * @param $alias
+ *   A drush alias.
+ */
+function devshop_drush_process_cache_clear($alias) {
+
+  // Clear all caches.
+  if (drush_drupal_major_version(d()->root) == 8) {
+    devshop_drush_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
+  }
+  else {
+    devshop_drush_process("drush {$alias} cache-clear all", NULL, dt('Clear all Caches'));
+  }
+}
