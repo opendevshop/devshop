@@ -28,7 +28,9 @@ env:
 #    init: /sbin/init
 #    run_opts: ""
 #    script_opts: "--server-webserver=nginx"
-
+  # This should match the list of hosts below so that requests resolve to the container.
+  global:
+    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
 addons:
   hosts:
     - devshop.travis
@@ -51,7 +53,7 @@ before_install:
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "dev.drpl8.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
   - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis'
