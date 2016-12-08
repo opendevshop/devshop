@@ -138,11 +138,11 @@ function aegir_commit_validate_files($element, &$form_state) {
 }
 
 /**
- * Implements hook_devshop_environment_actions().
+ * Implements hook_devshop_environment_menu().
  *
  * Defines the list of tasks that appear under the gear icon.
  */
-function aegir_commit_devshop_environment_actions($environment) {
+function aegir_commit_devshop_environment_menu($environment) {
 
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
     $items[] = 'commit';

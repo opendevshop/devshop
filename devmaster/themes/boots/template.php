@@ -99,9 +99,9 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Load Task Links
-  $environment->task_links = devshop_environment_links($environment);
-  $environment->task_links_rendered = theme("item_list", array(
-    'items' => $environment->task_links,
+  $environment->menu = devshop_environment_menu($environment);
+  $environment->menu_rendered = theme("item_list", array(
+    'items' => $environment->menu,
     'attributes' => array(
       'class' => array('dropdown-menu dropdown-menu-right'),
       )
@@ -538,6 +538,17 @@ function boots_preprocess_page(&$vars){
     }
   }
 
+  // Set title on create environment page.
+  if (arg(0) == 'node' && arg(2) == 'site' && !empty(arg(3))) {
+
+    // Look for project. If there is none, return.
+    $project_node = devshop_projects_load_by_name(arg(3));
+    if ($project_node->type == 'project') {
+      $vars['title'] = l($project_node->title, "node/$project_node->nid");
+      $vars['subtitle'] = t('Project');
+    }
+  }
+
   if (variable_get('devshop_support_widget_enable', TRUE)) {
     drupal_add_js(drupal_get_path('theme', 'boots') . '/js/intercomSettings.js', array('type' => 'file'));
   }
@@ -812,52 +823,6 @@ function boots_menu_local_tasks(&$variables) {
   }
 
   return $output;
-}
-
-
-
-/**
- * Implements hook_form_FORM_ID_alter() for node_site_form
- *
- * "Environment" Settings form.
- */
-function boots_form_site_node_form_alter(&$form, &$form_state, $form_id) {
-
-  // Alter form for better UX
-
-  // Project Settings Vertical Tabs
-  $form['environment_settings'] = array(
-    '#type' => 'vertical_tabs',
-    '#weight' => -11,
-  );
-
-  $form['environment']['settings']['#title'] = t('General Settings');
-  $form['environment']['settings']['#group'] = 'environment_settings';
-  $form['environment']['settings']['#weight'] = -100;
-  $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
-  $form['hosting_backup_queue']['#group'] = 'environment_settings';
-  $form['http_basic_auth']['#group'] = 'environment_settings';
-  $form['hosting_logs']['#group'] = 'environment_settings';
-
-  $form['aliases_wrapper']['#group'] = 'environment_settings';
-  $form['aliases_wrapper']['#title'] = t('Domain Names');
-  $form['aliases_wrapper']['#prefix'] = '';
-  $form['aliases_wrapper']['#suffix'] = '';
-
-  $form['environment']['settings']['client'] = $form['client'];
-  unset($form['client']);
-
-  $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
-  $form['hosting_ssl_wrapper']['#title'] = t('SSL');
-  $form['hosting_ssl_wrapper']['#prefix'] = '';
-  $form['hosting_ssl_wrapper']['#suffix'] = '';
-
-  // Help Text
-  if (!empty($form['#node']->nid)) {
-    $form['#prefix'] = '<h3>' . t('Environment Settings') . ' <small>' . $form['#node']->environment->name . '</small></h3>';
-  }
-
-  unset($form['path']);
 }
 
 /**

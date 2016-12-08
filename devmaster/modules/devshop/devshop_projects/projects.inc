@@ -134,6 +134,8 @@ function devshop_project_load($node) {
           s.status as site_status,
           p.status as platform_status,
           p.publish_path as root,
+          g.git_ref as git_ref,
+          g.repo_url as git_url,
           http.title as remote_host,
           sn.title as uri,
           http.title as web_server,
@@ -142,6 +144,7 @@ function devshop_project_load($node) {
           db.nid as db_server_nid,
           s.db_name,
           n.title as project_name,
+          n.created as created,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
@@ -150,6 +153,7 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
         LEFT JOIN {hosting_platform} p ON e.platform = p.nid
+        LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
         LEFT JOIN {node} n ON e.project_nid = n.nid
@@ -303,11 +307,11 @@ function devshop_project_load($node) {
       $environment->git_commit = shell_exec("cd {$environment->repo_root}; git -c color.ui=always log --max-count=1");
 
       // Get the exact SHA
-      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD"));
+      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD  2> /dev/null"));
 
       // Determine the type of git ref the stored version is
       $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
-      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored}"));
+      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
 
       // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
       // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
@@ -380,9 +384,31 @@ function devshop_project_load($node) {
       $environment->url = $protocol . $environment->system_domain;
     }
 
+    // System Alias
+    $environment->system_alias = '@' . $environment->system_domain;
+
     // If per-environment hooks config is not allowed, load it from the project.
     if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
       $environment->settings->deploy = $project->settings->deploy['default_hooks'];
+    }
+
+    // Detect cloned environment.
+    if (isset($environment->settings->install_method) && $environment->settings->install_method['method'] == 'clone') {
+      $environment->cloned = TRUE;
+      $environment->clone_source = $environment->settings->install_method['clone_source'] == '_other'?
+        $environment->settings->install_method['clone_source_drush']:
+        $environment->settings->install_method['clone_source']
+      ;
+      $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
+
+      $environment->clone_rebuild_url = url(
+        "hosting_confirm/{$environment->site}/site_sync", array(
+          'query' => array(
+            'source' => $environment->clone_source_node->nid,
+            'rebuild' => TRUE,
+          ),
+        )
+      );
     }
 
     // Save to project environments collection.

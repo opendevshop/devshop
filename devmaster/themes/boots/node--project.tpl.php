@@ -173,9 +173,9 @@
 
     <?php endforeach; ?>
 
-  <?php if (user_access('create devshop-create task')): ?>
+  <?php if (drupal_valid_path("project/$project->name/add-environment")): ?>
   <div class="placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
-    <a href="/hosting_confirm/<?php print $node->nid; ?>/project_devshop-create" class="btn btn-lg btn-success">
+    <a href="<?php print url("node/add/site/$project->name"); ?>" class="btn btn-lg btn-success">
       <i class="fa fa-plus-square"></i><br />
       <?php print t('Create New Environment'); ?></a>
   </div>
