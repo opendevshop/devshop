@@ -143,8 +143,8 @@ function devshop_project_load($node) {
           db.title as db_server,
           db.nid as db_server_nid,
           s.db_name,
-          n.title as project_name,
-          n.created as created,
+          pn.title as project_name,
+          pn.created as created,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
@@ -156,7 +156,7 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
-        LEFT JOIN {node} n ON e.project_nid = n.nid
+        LEFT JOIN {node} pn ON e.project_nid = pn.nid
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid AND
         e.name != ''
@@ -194,38 +194,6 @@ function devshop_project_load($node) {
       }
     }
     krsort($environment->tasks_list);
-
-    // Detect creation method.
-    // Some sites get installed. Others get imported.
-
-    $environment->created = array();
-    if (!empty($environment->tasks['install'])) {
-      $environment->created['type'] = 'install';
-      $environment->created['date'] = current($environment->tasks['install'])->executed;
-      $environment->created['status'] = current($environment->tasks['install'])->task_status;
-      $environment->created['nid'] = current($environment->tasks['install'])->nid;
-      $environment->created['vid'] = current($environment->tasks['install'])->vid;
-    }
-    elseif (!empty($environment->tasks['import'])) {
-      $environment->created['type'] = 'import';
-      $environment->created['date'] = current($environment->tasks['import'])->executed;
-      $environment->created['status'] = current($environment->tasks['import'])->task_status;
-      $environment->created['nid'] = current($environment->tasks['import'])->nid;
-      $environment->created['vid'] = current($environment->tasks['import'])->vid;
-    }
-    elseif (!empty($environment->tasks['clone'])) {
-      $environment->created['type'] = 'clone';
-      $environment->created['date'] = current($environment->tasks['clone'])->executed;
-      $environment->created['status'] = current($environment->tasks['clone'])->task_status;
-      $environment->created['nid'] = current($environment->tasks['clone'])->nid;
-      $environment->created['vid'] = current($environment->tasks['clone'])->vid;
-    }
-    // Neither import nor install nor clone was found.
-    else {
-      $environment->created['type'] = '';
-      $environment->created['date'] = '';
-      $environment->created['status'] = '';
-    }
 
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
