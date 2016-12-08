@@ -1,5 +1,120 @@
 # Change Log
 
+# 1.0.0-beta10 (July 7, 2016)
+
+  28 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta9...1.x
+
+- Added "composer install" deploy hook! You can now configure `composer install` to run on deployment. Works with composer.json in the repo root or the drupal root.
+- Improvements & bug fixes to the "DevShop Remotes" module.
+- Added a "Retry" button to an environment that failed a "clone" task.
+- Added "Environment" to the labels for "Environment Dashboard" and "Environment Settings" links.
+- Added a message if the user has a project in the create project wizard.
+- Added all of bootstrap, including fonts to boots theme, allowing fully offline use.
+- Moved the Cancel button in projects creation wizard to the right side of the page.
+- Added icons to the "Next" button, "Add Environment" and "Finish" buttons in the create project wizard.
+- Renamed the "Finish" button to "Create Project & Environments".
+- Update to Drupal 7.50.
+
+# 1.0.0-beta9 (June 28, 2016)
+
+ 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta8...1.0.0-beta9
+
+ 12 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta8...1.0.0-beta9
+
+- Bumped Drupal to 7.44, Hosting to 3.6, and Views to 3.14.
+- Added '--force' to 'git submodule' updates on deploy.
+- Adding local copies of bootstrap js and css so devshop can work offline.
+- Replaced "\n" with actual new lines in ASCII output.
+- Improved creation wizard by loading all errors into a modal window.
+- Fixed bad drush project alias file creation.
+- Fixed the missing 'Cancel' button on tasks.
+- Added a getEnvironment() method to the project context.
+- Add an argument to devshop_drush_process() to be able to skip logging the output.
+- Verify Project is triggered after environment create to ensure metadata is present.
+- Decided to remove the code that skips running deploy hooks if there are "no changes detected".
+- DevMaster Playbook fixes:
+  - Fixed the automatic setting of the aegir public ssh key variable.
+  - Adding back SSH key privacy settings, git config, and drush cache clearing.
+  - Fixed typos in yml tasks.
+  - Fixed a terrible bug that broke installation: Clear Drush Caches!
+- Bumped up default vagrant VM memory to 4GB.
+
+# 1.0.0-beta8 (June 15, 2016)
+
+1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.0.0-beta8
+
+29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.0.0-beta8
+
+- Fixed script to launch devshop in docker containers for development.
+- Fixed numerous problems with DevShop Testing module preventing fully automated testing.
+- Added an example Behat Drupal tests folder: https://github.com/opendevshop/devmaster/tree/1.x/modules/devshop/devshop_testing/tests_example
+- Fixed bug preventing new tasks from loading into the page. No more reloading the page.
+- Added dynamic timestamps using the timeago plugin so it's always updating timestamps.
+- Fixed a number of UI bugs.
+- Fixed broken Project Delete link.
+- Added "--force" to "git submodule update" command.
+- We created a commercial! https://www.youtube.com/watch?v=L3G2BxDkgPk
+
+# 1.0.0-beta7 (June 14, 2016)
+
+- Hotfix: Update hook to enable DevShop testing failes. Removed it for now.
+
+# 1.0.0-beta6 (June 13, 2016)
+
+- Hotfix: Project settings weren't saving properly.
+
+# 1.0.0-beta5 (June 13, 2016)
+
+1 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta4...1.0.0-beta5
+
+40 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta4...1.0.0-beta5
+
+- Cleaned up environment widget, consolidating links and hooks output.
+- Major cleanup of environment settings form by putting it into vertical tabs!
+- Minor cleanups of project settings form.
+- Cleanup of the Projects page.
+- Added Aegir Update module! One click drupal core updates. (Experimental)
+- Enable DevShop Testing by default! Everyone should test.
+- Changed "Live Environment" to "Primary Environment".
+- Fixed Bugs in provision-commit.
+- Cleaned up "hosting features" list: making sure optional features aren't marked "Enabled".
+- Fixed links to task logs.
+- Fixed link to Edit Domains.
+- Fixed the matchHeight plugin to make the environment grid even.
+- Allow logos to be added.
+- Cleaned up SSH warnings output when creating a project fails.
+- Fixed bug preventing verification of projects after saving a site.
+- Added better help text on project creation form.
+- Fixed listing tags with ^{} characters in them.
+- Added devshop remotes to hosting features.
+- Made git repo field 1024 characters long, making it compatible with Pantheon.
+
+# 1.0.0-beta4 (June 11, 2016)
+
+14 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta3...1.0.0-beta4
+
+18 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta3...1.0.0-beta4
+
+7 commits to DevMaster Ansible Role: https://github.com/opendevshop/ansible-role-devmaster/compare/1.0.2...1.1.0
+
+- Improvements to server node template.
+- Added "devshop_devmaster_email" as an ansible variable so it can be configured at install time.
+- Upgraded to drush 8.1.2
+- Moved mysql_root_password to "defaults" so it can be overridden.
+- Fixing a bug that broke environment database server selection when multiple database servers exist.
+- Removing the old "allow deploying data from drush aliases" setting from project settings. Now you just have to enable DevShop Remotes.
+- Removing menu settings for project node form.
+- Improved the "Create Sites" step in the project create wizard. Now properly alerts you to a failed git clone, and added a retry button.
+- Improved help text in step 1 of project creation.
+- Removed broken link to files browser.
+
+## New Contributors
+
+  Two new contributors helped out with documentation and .gitignore changes:
+
+  - Travis Christopher https://github.com/arttus
+  - Tommy Cox: https://github.com/tommycox
+
 # 1.0.0-beta3 (May 24, 2016)
 
 6 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta2...1.x

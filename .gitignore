@@ -1,9 +1,16 @@
 
 # devshop repos
-source
+aegir-home
+dockerfiles
+documentation
+hosting
+hostmaster
+provision
+tests
 
 # Local config
 .vagrant
+devmaster_id_rsa.pub
 
 # Symfony code
 vendor
