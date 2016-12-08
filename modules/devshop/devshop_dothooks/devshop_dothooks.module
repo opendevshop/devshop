@@ -136,7 +136,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
     $hook_line = strtr($hook_line, array(
-      '{{alias}}' => $environment->drush_alias,
+      '{{alias}}' => $environment->system_alias,
     ));
     devshop_drush_process($hook_line, $environment->repo_root, 'DevShop .hooks.yml');
   }

@@ -42,7 +42,7 @@ function devshop_projects_projects_page() {
       ));
       $first_col = <<<HTML
 
-<a href="$url" title="$title" class="project-link">
+<a href="$url" title="$title" class="project-link project_$project->nid">
     $project->name
 </a>
 
@@ -185,15 +185,15 @@ function devshop_projects_node_view($node, $view_mode, $langcode) {
 }
 
 /**
- * Generates the list of links under the "Environment Settings" dropdown. (sliders icon)
+ * Generates the Environment Menu item list.
  *
  * @param $environment
  * @return array
  */
-function devshop_environment_links($environment) {
+function devshop_environment_menu($environment) {
   global $user;
   $tasks = hosting_available_tasks('site');
-  $actions = module_invoke_all('devshop_environment_actions', $environment);
+  $actions = module_invoke_all('devshop_environment_menu', $environment);
 
   $site = null;
   $platform = null;
@@ -263,7 +263,7 @@ HTML;
     }
   }
 
-  // Add all actions from hook_devshop_environment_actions()
+  // Add all actions from hook_devshop_environment_menu()
   foreach ($actions as $action) {
     if (isset($tasks[$action])) {
 
