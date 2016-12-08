@@ -6,7 +6,7 @@
 function devshop_pull_callback($project_hosting_context, $hash) {
 
   // Load the project node & list of allowed IPs
-  $project_node = hosting_context_load("project_".$project_hosting_context);
+  $project_node = hosting_context_load("project_{$project_hosting_context}");
   $project = $project_node->project;
   $deploy_settings = $project_node->project->settings->deploy;
 
