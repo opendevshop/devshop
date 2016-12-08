@@ -28,32 +28,51 @@ body.admin-menu .navbar-static-top {
   text-overflow: ellipsis;
 }
 
-.environment-drupal-version {
-  max-width: 23%;
-}
-
 .environment-meta-data {
-    font-family: monospace;
     margin: 0px;
-    padding: 3px;
+    padding: 3px 6px;
     color: #777;
     font-size: .7em;
     white-space: nowrap;
 }
+
+.environment.live-environment .environment-meta-data {
+  color: #fff;
+}
+
 .environment-indicators {
   display: inline;
 }
 .environment-meta-data i.fa {
     margin-right: .5em;
 }
-.environment-meta-data.environment-access {
-    margin-right: 2em;
+.environment-meta-data.environment-info {
     text-transform: uppercase;
+    z-index: 1;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: -5px;
 }
+
+.environment-status {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .environment-link {
     font-weight: bold;
     font-size: 1.1em;
 }
+
+.environment-link:hover {
+    text-decoration: none;
+}
+
+.environment-link:hover span {
+    text-decoration: underline;
+}
+
 
 .environment-link strong {
     font-style: inherit;
@@ -68,14 +87,15 @@ body.admin-menu .navbar-static-top {
   border-radius: 5px 5px 0 0;
 }
 
-.environment-tasks button.task-list-button {
+.environment-menu button.environment-menu-button {
   z-index: 1;
+  padding: .3em;
 }
 
 .environment-dropdowns {
   position: absolute;
   right: 18px;
-  top: 4px;
+  top: 7px;
 }
 
 .environment-domains {
@@ -100,26 +120,23 @@ body.admin-menu .navbar-static-top {
 .environment.live-environment .environment-header a.btn-text,
 .environment.live-environment .environment-header button.btn-link,
 .environment.live-environment .environment-header span,
-.environment.live-environment .environment-tasks,
-.environment.live-environment .environment-tasks a,
-.environment.live-environment .environment-tasks a.btn-text,
-.environment.live-environment .environment-tasks button.btn-link
+.environment.live-environment .environment-header button,
+.environment.live-environment .environment-menu,
+.environment.live-environment .environment-menu a,
+.environment.live-environment .environment-menu a.btn-text,
+.environment.live-environment .environment-menu button.btn-link
 {
     color: white;
 }
 
-.environment.live-environment .environment-tasks .dropdown-menu a,
-.environment.live-environment .environment-tasks .dropdown-menu {
+.environment.live-environment .environment-menu .dropdown-menu a,
+.environment.live-environment .environment-menu .dropdown-menu {
   color: black;
 }
 
 
-.environment.live-environment .environment-tasks button.btn-link:hover {
+.environment.live-environment .environment-menu button.btn-link:hover {
   text-decoration: none;
-}
-
-.environment.live-environment .environment-meta-data {
-    color: #8a6d3b;
 }
 
 #project-info {
@@ -392,8 +409,8 @@ input.form-control.webhook-url {
   max-width: 27em;
 }
 
-.environment-tasks .devshop-tasks .tasks,
-.environment-tasks .devshop-tasks .actions {
+.environment-menu .devshop-tasks .tasks,
+.environment-menu .devshop-tasks .actions {
   float: left;
   width: 50%;
 }
@@ -532,7 +549,7 @@ ul.dropdown-menu li.text {
 }
 
 .environment > .list-group-item.text,
-.environment-tasks > ul.dropdown-menu li .text
+.environment-menu > ul.dropdown-menu li .text
 {
   padding: 10px 15px;
   white-space: normal;
@@ -544,7 +561,7 @@ ul.dropdown-menu li.text {
 }
 
 .environment > .list-group-item.environment-header {
-  padding:10px 36px 10px 10px;
+  padding: 10px 80px 10px 10px;
 }
 
 .environment > .list-group-item  .btn-group > .btn,
@@ -620,7 +637,7 @@ html.js fieldset.collapsed {
   overflow: hidden;
 }
 
-.environment-tasks .dropdown-menu a {
+.environment-menu .dropdown-menu a {
     white-space: nowrap;
 }
 
@@ -718,11 +735,11 @@ html.js fieldset.collapsed {
     z-index: 2;
 }
 
-.environment-tasks i.fa {
+.environment-menu i.fa {
     width: 20px;
 }
 
-.environment-tasks .dropdown-menu .divider {
+.environment-menu .dropdown-menu .divider {
     margin: 3px 0px;
 }
 
@@ -799,6 +816,15 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     overflow-x: hidden;
 }
 
+#project-add-status.panel label
+{
+    font-size: .7em;
+    text-transform: uppercase;
+    color: grey;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-left: 0px;
+}
 
 .panel.devshop-command .panel-heading {
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
@@ -979,4 +1005,60 @@ li.text.code {
     width: 70%;
     display: inline-block;
     vertical-align: middle;
+}
+
+.list-group-item.clone-info {
+    padding: .5em 0 .3em;
+}
+
+
+
+.modal-info label {
+  width: 19%;
+}
+
+.modal-info input.form-control {
+  display: inline-block;
+  width: 60%;
+}
+
+.add-environment-container {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.install-method-wrapper {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.install-method-wrapper.radio input[type="radio"] {
+  margin-left: -16px;
+}
+
+#edit-install-method > .form-item > label {
+  width: 100%;
+  white-space: normal;
+}
+
+#edit-install-method {
+  clear: left;
+}
+.form-item-environment-name {
+  padding-left: 0 !important;
+}
+.form-item-git-ref {
+  padding-right: 0 !important;
+}
+#edit-install-method-clone-source label span {
+  min-width: 6em;
+  display: inline-block;
+}
+#edit-install-method-clone-source label small.git-ref {
+  min-width: 6em;
+  display: inline-block;
+  margin-left: 1em;
+}
+#edit-install-method-clone-source label:hover {
+  background-color: whitesmoke;
 }

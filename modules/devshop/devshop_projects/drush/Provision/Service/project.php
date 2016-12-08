@@ -11,8 +11,8 @@ class Provision_Service_project extends Provision_Service {
    */
   static function subscribe_site($context) {
     $context->setProperty('environment');
+    $context->setProperty('environment_settings');
     $context->setProperty('project');
-    $context->setProperty('git_ref');
   }
 
   /**
@@ -21,7 +21,6 @@ class Provision_Service_project extends Provision_Service {
   static function subscribe_platform($context) {
     $context->setProperty('environment');
     $context->setProperty('project');
-    $context->setProperty('git_ref');
   }
 
 }
