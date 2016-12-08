@@ -5,6 +5,20 @@
  */
 
 /**
+ * Implements hook_install()
+ */
+function devshop_projects_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_projects')
+    ->execute();
+}
+
+/**
  * Implements hook_schema().
  */
 function devshop_projects_schema() {
@@ -68,13 +82,6 @@ function devshop_projects_schema() {
         'length' => 64,
         'default' => '',
         'description' => 'Environment name.',
-      ),
-      'git_ref' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => 'The current branch or tag of this site or platform.',
       ),
       'site' => array(
         'type' => 'int',
@@ -369,4 +376,66 @@ function devshop_projects_update_7001 () {
 function devshop_projects_update_7003 () {
   variable_set('menu_options_site', '');
   variable_set('menu_options_project', '');
+}
+
+/**
+ * Enable Hosting Git and Hosting Git Checkout.
+ */
+function devshop_projects_update_7004 () {
+  module_enable(array(
+    'hosting_git',
+  ));
+}
+
+/**
+ * Save git_ref data to hosting_git table and drop the devshop environment's git_ref field.
+ */
+function devshop_projects_update_7005 () {
+  $environments = db_query('SELECT * FROM {hosting_devshop_project_environment} e LEFT JOIN {hosting_devshop_project} p ON p.nid = e.project_nid');
+  foreach ($environments as $environment) {
+    db_merge('hosting_git')
+      ->key(array('nid' => $environment->platform))
+      ->fields(array(
+        'repo_url' => $environment->git_url,
+        'git_ref' => $environment->git_ref,
+      ))
+      ->execute();
+    drupal_set_message(t("Updated Platform $environment->platform with $environment->git_url and $environment->git_ref"));
+  }
+
+  if (db_drop_field('hosting_devshop_project_environment', 'git_ref')) {
+    drupal_set_message(t("Git ref information has been migrated and the field has been removed."));
+  }
+  else {
+    drupal_set_message(t("Unable to remove git_ref field from hosting_devshop_project_environment table."), 'error');
+  }
+}
+
+/**
+ * Reduce the character limit for bootstrap to turn form element descriptions into tooltips.
+ */
+function devshop_projects_update_7007 () {
+  // Get the settings
+  $settings = variable_get('theme_boots_settings', array());
+
+  // Set the variable
+  $settings['bootstrap_forms_smart_descriptions_limit'] = 40;
+
+  // Save our settings
+  variable_set('theme_boots_settings', $settings);
+}
+
+/**
+ * Set weight of devshop_projects module to 1 so it loads alters after hosting_git.
+ */
+function devshop_projects_update_7008 () {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_projects')
+    ->execute();
+
 }

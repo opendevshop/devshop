@@ -60,7 +60,7 @@
     </div>
     <div class="col-sm-4 col-md-4">
         <?php print theme("item_list", array(
-          'items' => $environment->task_links,
+          'items' => $environment->menu,
           'attributes' => array(
             'class' => array(
               'environment-tasks-nav nav nav-pills nav-stacked',

@@ -23,3 +23,7 @@ settings[bootstrap_cdn_custom_css] = /profiles/devmaster/themes/boots/bootstrap/
 settings[bootstrap_cdn_custom_css_min] = /profiles/devmaster/themes/boots/bootstrap/css/bootstrap.min.css
 settings[bootstrap_cdn_custom_js] = /profiles/devmaster/themes/boots/bootstrap/js/bootstrap.js
 settings[bootstrap_cdn_custom_js_min] = /profiles/devmaster/themes/boots/bootstrap/js/bootstrap.min.js
+
+; "Smart form descriptions" maximum character limit
+; (Form element descriptions shorter than this will be turned into bootstrap tooltips.)
+settings[bootstrap_forms_smart_descriptions_limit] = 40

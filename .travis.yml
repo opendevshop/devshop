@@ -8,6 +8,8 @@ branches:
     - 1.x
 
 env:
+  matrix:
+
   # CentOS 6: Not supported yet.
   #- distribution: centos
   #  version: 6
@@ -44,12 +46,17 @@ env:
 #    run_opts: ""
 #    script_opts: "--server-webserver=nginx"
 
+  # This should match the list of hosts below so that requests resolve to the container.
+  global:
+    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
+
 addons:
   hosts:
     - devshop.travis
     - dev.projectname.devshop.travis
     - live.projectname.devshop.travis
-    - dev.drpl8.devshop.travis
+    - dev.drpl8.devshop.travis.travis
+    - test.drpl8.devshop.travis
 
 services:
   - docker
@@ -57,6 +64,7 @@ services:
 before_install:
   # Clone devshop
   - export DEVSHOP_VERSION=1.x
+  - export DEVSHOP_VERSION=test-create-env
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${DEVSHOP_VERSION}
@@ -74,7 +82,7 @@ before_install:
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
   - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
