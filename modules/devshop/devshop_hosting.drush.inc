@@ -39,12 +39,13 @@ function drush_devshop_hosting_platform_delete($platform_path = NULL) {
         drush_log('[DEVSHOP] Found platform ' . $nid, 'ok');
 
         // Look for existing enabled sites.
-        $site_query = db_select('hosting_site');
-        $site_query->condition('platform', $nid);
-        $site_query->condition('status', HOSTING_SITE_ENABLED);
-        $site_query->fields('nid');
-
-        $site_count = $site_query->countQuery()->execute()->fetchField();
+        $site_count = db_select('hosting_site')
+          ->condition('platform', $nid)
+          ->condition('status', HOSTING_SITE_ENABLED)
+          ->fields('nid')
+          ->countQuery()
+          ->execute()
+          ->fetchField();
 
         if (!empty($site_count)) {
             return drush_set_error(DRUSH_APPLICATION_ERROR, "The platform at path $platform_path still has sites present. Please delete them first.");
