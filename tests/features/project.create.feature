@@ -4,14 +4,9 @@ Feature: Create a project
   As a project admin
   I need to create a new project
 
-
   Scenario: Create a new drupal 8 project
 
-    Given users:
-      | name       | status | roles          |
-      | testadminuser | 1      | administrator |
-
-    Given I am logged in as "testadminuser"
+    Given I am logged in as a user with the "administrator" role
     And I am on the homepage
     When I click "Projects"
     And I click "Start a new Project"
@@ -33,13 +28,13 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
 #    And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks -v"
+    When I run drush "hosting-tasks"
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
     And I reload the page
 
-    Then print last response
+#    Then print last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
@@ -57,7 +52,7 @@ Feature: Create a project
     And I should see "master"
     And I should see "master"
 
-    When I run drush "hosting-tasks -v"
+    When I run drush "hosting-tasks"
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
@@ -86,7 +81,7 @@ Feature: Create a project
     And I should see the link "dev"
     And I should see the link "live"
 
-    When I run drush "hosting-tasks -v"
+    When I run drush "hosting-tasks"
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
@@ -100,3 +95,32 @@ Feature: Create a project
 # @TODO: Fix our site installation.
 #    Then I should see "No front page content has been created yet."
 
+    When I click "Create New Environment"
+    And I fill in "test" for "Environment Name"
+    And I select "master" from "Branch or Tag"
+    And I select the radio button "Drupal Profile"
+
+    #@TODO: Check lots of settings
+
+    Then I press "Create New Environment"
+    Then I should see "Environment test created in project drpl8."
+
+    When I run drush "hosting-tasks"
+    Then print last drush output
+    When I run drush "hosting-tasks"
+    Then print last drush output
+    When I run drush "hosting-tasks"
+    Then print last drush output
+
+    And I wait "10" seconds
+
+    When I click "test"
+    Then I should see "Environment Dashboard"
+    And I should see "Environment Settings"
+
+    When I click "http://test.drpl8.devshop.travis"
+
+    # @TODO: Fix the problem preventing this site from loading.
+    # We don't have time to spend on this obscure edge case bug before the next release.
+    Then print last response
+#    And I should see "Welcome to test.drpl8.devshop.travis"

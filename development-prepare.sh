@@ -13,6 +13,14 @@ if [ ! -d aegir-home ]; then
   mkdir aegir-home
 fi
 
+if [ ! -d provision ]; then
+  echo "Æ | Cloning Provision..."
+  git clone git@git.drupal.org:project/provision.git
+  cd provision
+  git checkout $AEGIR_VERSION
+  cd ..
+fi
+
 cd aegir-home
 
 # Build a full hostmaster frontend on the host with drush make, with working-copy option.
@@ -26,12 +34,6 @@ if [ ! -d .drush ]; then
     echo "Æ | Creating .drush/commands folder..."
     mkdir -p .drush/commands
     cd .drush/commands
-    echo "Æ | Cloning Provision..."
-    git clone git@git.drupal.org:project/provision.git
-    cd provision
-    git checkout $AEGIR_VERSION
-
-    cd ..
     echo "Æ | Cloning Registry Rebuild..."
     git clone git@git.drupal.org:project/registry_rebuild.git --branch 7.x-2.x
     cd ../..
