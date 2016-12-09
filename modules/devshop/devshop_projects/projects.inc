@@ -362,11 +362,13 @@ function devshop_project_load($node) {
     }
 
     // Load Install Method and info.
-    if (!isset($environment->settings->install_method)) {
+    if (isset($environment->settings->install_method)) {
+      $environment->install_method = $environment->settings->install_method['method'];
+    }
+    else {
       $environment->install_method = 'profile';
     }
 
-    $environment->install_method = $environment->settings->install_method['method'];
     switch ($environment->install_method) {
 
       // Install Method: Clone
