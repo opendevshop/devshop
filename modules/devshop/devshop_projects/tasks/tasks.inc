@@ -15,13 +15,6 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'provision_save' => TRUE,
   );
-  $tasks['project']['devshop-create'] = array(
-    'title' => t('Create New Environment'),
-    'description' => t('Creates a new environment within this project.'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-    'hidden' => TRUE,
-  );
   $tasks['project']['devshop-commit'] = array(
     'title' => t('Commit Features'),
     'description' => t('Recreates all Features and commits the result.'),

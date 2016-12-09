@@ -505,17 +505,6 @@ function boots_preprocess_page(&$vars){
     if (isset($node->project)) {
       if ($node->type == 'project') {
         $project_node = $node;
-
-        // On "fork" or "clone", look for source arg.
-        if (arg(2) == 'project_devshop-create' && is_numeric(arg(4))) {
-          $environment_node = node_load(arg(4));
-          $title2text = $environment_node->environment->name;
-          $title2url = 'node/' . $environment_node->environment->site;
-        }
-        elseif (arg(2) == 'project_devshop-create') {
-          $title2text = t('New');
-          $title2url = current_path();
-        }
       }
       else {
         $project_node = node_load($node->project->nid);
