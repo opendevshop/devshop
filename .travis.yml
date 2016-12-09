@@ -31,7 +31,7 @@ env:
     version: 14.04
     init: /sbin/init
     run_opts: ""
-    install_command: "/usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10"
+    install_command: "bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 1.x" # CHANGE 1.x to your branch to test upgrades.
     test_command: "devshop devmaster:test"
 
 # TODO: Get NGINX support to work.
