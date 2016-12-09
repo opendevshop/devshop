@@ -143,6 +143,7 @@ function devshop_project_load($node) {
           db.title as db_server,
           db.nid as db_server_nid,
           s.db_name,
+          s.profile as install_profile,
           pn.title as project_name,
           pn.created as created,
           s.vid,
@@ -360,24 +361,77 @@ function devshop_project_load($node) {
       $environment->settings->deploy = $project->settings->deploy['default_hooks'];
     }
 
-    // Detect cloned environment.
-    if (isset($environment->settings->install_method) && $environment->settings->install_method['method'] == 'clone') {
-      $environment->cloned = TRUE;
-      $environment->clone_source = $environment->settings->install_method['clone_source'] == '_other'?
-        $environment->settings->install_method['clone_source_drush']:
-        $environment->settings->install_method['clone_source']
-      ;
-      $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
-
-      $environment->clone_rebuild_url = url(
-        "hosting_confirm/{$environment->site}/site_sync", array(
-          'query' => array(
-            'source' => $environment->clone_source_node->nid,
-            'rebuild' => TRUE,
-          ),
-        )
-      );
+    // Load Install Method and info.
+    if (!isset($environment->settings->install_method)) {
+      $environment->install_method = 'profile';
     }
+
+    $environment->install_method = $environment->settings->install_method['method'];
+    switch ($environment->install_method) {
+
+      // Install Method: Clone
+      case 'clone':
+        $environment->clone_source = $environment->settings->install_method['clone_source'];
+
+        // Load clone source for "other".
+        if ($environment->clone_source == '_other') {
+          $environment->clone_source = $environment->settings->install_method['clone_source_drush'];
+        }
+
+        // Load clone source nid and environment name.
+        $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
+
+        // If no site node was found with the selected alias, display the alias.
+        if (empty($environment->clone_source_node->name)) {
+          $source_label = $environment->clone_source;
+        }
+        else {
+          $source_label = l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}");
+        }
+
+        // Set Install Method Label
+        $environment->install_method_label = t('Clone of !source', array(
+          '!source' => $source_label,
+        ));
+        break;
+
+      // Install Method: "Empty Database" / "Manual Install"
+      case "manual":
+        $environment->install_method_label = t('Manually Installed');
+        break;
+
+      // Install Method: "Import"
+      case "import":
+        $environment->install_method_label = t('SQL Import');
+        break;
+
+      // Install Method: "Profile"
+      case "profile":
+      default:
+
+        // We don't know package ID until platform verifies.
+        if ($environment->install_profile == 0 && !empty($environment->settings->install_method['profile'])) {
+          $environment->install_method_label = t('Installed with !profile', array(
+            '!profile' => $environment->settings->install_method['profile'],
+          ));
+        }
+        else {
+          $profile = node_load($environment->install_profile);
+          $environment->install_method_label = t('Installed with !profile', array(
+            '!profile' => l($profile->title, "node/{$environment->install_profile}"),
+          ));
+        }
+        break;
+    }
+
+    $environment->clone_rebuild_url = url(
+      "hosting_confirm/{$environment->site}/site_sync", array(
+        'query' => array(
+          'source' => $environment->clone_source_node->nid,
+          'rebuild' => TRUE,
+        ),
+      )
+    );
 
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
