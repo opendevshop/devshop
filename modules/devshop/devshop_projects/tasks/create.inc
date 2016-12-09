@@ -117,7 +117,8 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $environment->settings->pull_disabled = 0;
 
     // Save clone source from source_environment's drush alias.
-    $environment->settings->clone_source = '@' . $source_environment->system_domain;
+    $environment->settings->install_method['method'] = 'clone';
+    $environment->settings->install_method['clone_source'] = $source_environment->system_alias;
 
     if ($action == 'fork') {
       $environment->settings->branch_to_fork = $source_environment->git_ref;
@@ -132,6 +133,10 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     // Use settings passed in to this function.
     $environment->settings = $settings;
+
+    // Save profile to install_method.
+    $environment->settings->install_method['method'] = 'profile';
+    $environment->settings->install_method['profile'] = $project->install_profile;
 
   }
 
