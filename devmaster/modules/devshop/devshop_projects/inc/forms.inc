@@ -479,21 +479,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'hosting_task_confirm_form') {
     switch ($form['task']['#value']) {
 
-      // Create Environment form.
-      case 'devshop-create':
-
-        if (arg(3) == 'clone') {
-          drupal_set_title(t('Clone environment'));
-        }
-        elseif (arg(3) == 'fork') {
-          drupal_set_title(t('Fork environment'));
-        }
-        else {
-          drupal_set_title(t('Create new environment'));
-        }
-        $form['#submit'] = array('hosting_task_devshop_create_form_submit');
-        break;
-
       // Migrate Form: used for changing database server.
       case 'migrate':
 
