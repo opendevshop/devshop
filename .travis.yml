@@ -9,7 +9,7 @@ env:
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    script_opts: "--server-webserver=apache"
+    script: "/usr/share/devshop/install.sh  --server-webserver=apache"
     test_command: "devshop devmaster:test"
     
   #- test: CentOS 7 NGINX
@@ -17,13 +17,13 @@ env:
   #  version: 7
   #  init: /usr/lib/systemd/systemd
   #  run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #  script_opts: "--server-webserver=nginx"
+  #  script: "--server-webserver=nginx"
   - test: Ubuntu 14.04 Apache
     distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
-    script_opts: "--server-webserver=apache"
+    script: "/usr/share/devshop/install.sh --server-webserver=apache"
     test_command: "devshop devmaster:test"
     
   - test: Upgrade Test
@@ -31,7 +31,7 @@ env:
     version: 14.04
     init: /sbin/init
     run_opts: ""
-    script_opts: "--server-webserver=apache"
+    script: "/usr/share/devshop/install.sh --server-webserver=apache"
     test_command: "devshop devmaster:test"
 
 # TODO: Get NGINX support to work.
@@ -40,7 +40,7 @@ env:
 #    version: 14.04
 #    init: /sbin/init
 #    run_opts: ""
-#    script_opts: "--server-webserver=nginx"
+#    script: "--server-webserver=nginx"
   # This should match the list of hosts below so that requests resolve to the container.
   global:
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
@@ -69,7 +69,7 @@ script:
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
-  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis'
+  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm ${script} --hostname=devshop.travis'
 
   # Turn off hosting queued, and the hosting task queue.
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
