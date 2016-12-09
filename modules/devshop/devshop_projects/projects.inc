@@ -426,14 +426,15 @@ function devshop_project_load($node) {
         break;
     }
 
-    $environment->clone_rebuild_url = url(
-      "hosting_confirm/{$environment->site}/site_sync", array(
-        'query' => array(
-          'source' => $environment->clone_source,
-          'rebuild' => TRUE,
-        ),
-      )
-    );
+    // @TODO: Create a "reinstall" task to replace this.
+//    $environment->clone_rebuild_url = url(
+//      "hosting_confirm/{$environment->site}/site_sync", array(
+//        'query' => array(
+//          'source' => $environment->clone_source,
+//          'rebuild' => TRUE,
+//        ),
+//      )
+//    );
 
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
