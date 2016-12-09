@@ -145,7 +145,7 @@ function devshop_project_load($node) {
           s.db_name,
           s.profile as install_profile,
           pn.title as project_name,
-          pn.created as created,
+          sn.created as created,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
