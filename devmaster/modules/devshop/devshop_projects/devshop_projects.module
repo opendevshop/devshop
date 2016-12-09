@@ -89,10 +89,6 @@ function devshop_projects_permission() {
       'title' => t('view projects'),
       'description' => t('Access the projects page.'),
     ),
-    'create devshop-commit task' => array(
-      'title' => t('create devshop-commit task'),
-      'description' => t('Create "devshop-commit" task.'),
-    ),
     'create devshop-delete task' => array(
       'title' => t('create devshop-delete task'),
       'description' => t('Create "devshop-delete" task.'),
@@ -622,14 +618,7 @@ function devshop_hosting_task_menu_access($node, $task) {
   }
 
   if (user_access("create " . $task . " task")) {
-
-    // If Commit Features task, make sure features module is present
-    if ($task == 'devshop-commit') {
-      return _devshop_projects_project_has_module($node, 'features');
-    }
-    else {
-      return TRUE;
-    }
+    return TRUE;
   }
 }
 
