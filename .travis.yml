@@ -32,7 +32,8 @@ env:
     init: /sbin/init
     run_opts: ""
     script_opts: "--server-webserver=apache"
-    test_command: "devshop upgrade 1.x -n && devshop devmaster:test"
+    test_command: "devshop devmaster:test"
+
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
