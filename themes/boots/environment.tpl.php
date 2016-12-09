@@ -372,29 +372,15 @@
   </div>
 
 
-  <!-- Cloned Environment Indicator -->
-  <?php if (isset($environment->cloned)): ?>
-    <div class="list-group-item clone-info">
-
-      <div class="btn-toolbar">
-
-        <label><?php print t('Clone of'); ?></label>
-        <?php print l($environment->clone_source_node->name, "node/{$environment->clone_source_node->nid}") ?>
+  <!-- Environment Info -->
+    <div class="list-group-item environment-info">
         <label>
-          <?php print format_date($environment->created); ?>
+          <?php print t('Created'); ?> <time class="timeago" datetime="<?php print date('c', $environment->created) ?>"><?php print format_date($environment->created); ?></time>
         </label>
-
-        <?php if (user_access("create sync task")): ?>
-          <div class="btn-group pull-right">
-            <a class="btn btn-default btn-sm pull-right" href="<?php print $environment->clone_rebuild_url; ?>">
-              <i class="fa fa-repeat"></i> <?php print t('Rebuild'); ?>
-            </a>
-          </div>
-        <?php endif; ?>
-      </div>
-
+      <label>
+        <?php print $environment->install_method_label; ?>
+      </label>
     </div>
-  <?php endif; ?>
 
     <?php
 
