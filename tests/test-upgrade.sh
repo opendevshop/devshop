@@ -30,4 +30,8 @@ bash install.sh
 
 echo "Running devshop:upgrade command..."
 devshop self-update
-devshop upgrade $UPGRADE_TO_VERSION
+devshop upgrade $UPGRADE_TO_VERSION -n
+
+su - aegir -c "drush @hostmaster hosting-tasks"
+
+su - aegir -c "devshop status"
