@@ -15,12 +15,6 @@ function devshop_projects_hosting_tasks() {
     'access callback' => 'devshop_hosting_task_menu_access',
     'provision_save' => TRUE,
   );
-  $tasks['project']['devshop-commit'] = array(
-    'title' => t('Commit Features'),
-    'description' => t('Recreates all Features and commits the result.'),
-    'access callback' => 'devshop_hosting_task_menu_access',
-    'dialog' => TRUE,
-  );
   $tasks['project']['delete'] = array(
     'title' => t('Delete Project'),
     'description' => t('Delete a project and all associated sites and platforms.'),
