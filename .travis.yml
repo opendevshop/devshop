@@ -9,7 +9,7 @@ env:
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    install_command: "/usr/share/devshop/install.sh  --server-webserver=apache"
+    install_command: "/usr/share/devshop/install.sh  --server-webserver=apache --hostname=devshop.travis"
     test_command: "devshop devmaster:test"
     
   #- test: CentOS 7 NGINX
@@ -23,7 +23,7 @@ env:
     version: 14.04
     init: /sbin/init
     run_opts: ""
-    install_command: "/usr/share/devshop/install.sh --server-webserver=apache"
+    install_command: "/usr/share/devshop/install.sh --server-webserver=apache --hostname=devshop.travis"
     test_command: "devshop devmaster:test"
     
   - test: Upgrade Test
@@ -69,7 +69,7 @@ script:
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
-  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm ${install_command} --hostname=devshop.travis'
+  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm ${install_command}'
 
   # Turn off hosting queued, and the hosting task queue.
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
