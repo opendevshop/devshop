@@ -57,36 +57,3 @@ Enter the base URL for the project.  All Project Sites will be on a subdomain of
 To complete this step, the Verify Project task must finish.
 
 On this page, you choose if you want dev, test, or live platforms and what branches each should live on.  You can also choose the branches of your git repository you wish to create platforms and sites for.
-
-
-Provision Commands & Hostmaster Tasks
--------------------------------------
-DevShop contains a set of features that make Drupal site building within a
-version-controlled code workflow quick and easy.
-
-All tasks are run on project nodes, and all tasks have specific permissions, so you can grant roles the permission to fire specific tasks.
-
-1. Pull Code
-  $ drush @project_NAME provision-devshop-pull ENVIRONMENT
-   
-  This task runs on the dev platform for this project. It runs git pull, and
-  optionally runs new updates, reverts features, and clears caches.  It is used
-  to keep the dev server up to date on every commit via the devshop_pull module,
-  and can be used as the deployment task.
-
-  - Git Pull the code for your site's platform.
-  - Then, all optionally:
-    - Run update.php.
-    - Revert all Features modules
-    - Clear caches
-
-2. Commit Features
-  $ drush @project_NAME provision-devshop-commit ENVIRONMENT --message="My Commit"
-  
-  This task integrates with Features.module to make it very easy to commit
-  your changes to your features.
-
-  - Calls drush features-update-all
-  - Commits the result, with a part automated and part customized commit message.
-  - (Optionally) pushes the commits.
-  - (Optionally) force-reverts after a commit.

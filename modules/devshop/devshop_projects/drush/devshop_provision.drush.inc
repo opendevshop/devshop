@@ -66,31 +66,6 @@ function devshop_provision_drush_command() {
     ),
     'aliases' => array('test'),
   );
-  // @TODO: Remove this once http://drupal.org/node/1995506 is committed
-  $items['devshop-install'] = array(
-    'description' => dt('Install and verify the DevShop frontend.'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'arguments' => array(
-      'example.com' => dt('The URL of the site to install, optional (default: %host).', array('%host' => devshop_fqdn())),
-    ),
-    'options' => array(
-     'http_service_type' => dt('Webserver type to configure (default: %webserver)', array('%webserver' => 'apache')),
-     'drush_make_version' => dt('Drush make version to install, if not present (default: %drush_make', array('%drush_make' => '6.x-2.3')),
-     'aegir_db_host' => dt('Database host to connect to (default: %host)', array('%host' => 'localhost')),
-     'aegir_db_user' => dt('Database user to connect as (default: %user)', array('%user' => 'root')),
-     'aegir_db_pass' => dt('Database password to use'),
-     'client_email' => dt('Email of the first client to create in the frontend'),
-     'client_name' => dt('Name of the first client to create in the frontend (default: %user)', array('%user' => 'admin')),
-     'aegir_host' => dt('Fully qualified domain name of the local server (default: %fqdn)', array('%fqdn' => devshop_fqdn())),
-     'script_user' => dt('User to run the backend as (default: %user)', array('%user' => devshop_current_user())),
-     'web_group' => dt('Group the webserver is running as (default: %group)', array('%group' => devshop_default_web_group())),
-     'version' => dt('The version of this released. (default: %version)', array('%version' => '1.x')),
-     'aegir_root' => dt('Install aegir in this home directory (default: %home). Do not change unless you know what you are doing.', array('%home' => drush_server_home())),
-     'makefile' => dt('The Drupal makefile to use to build the front end.'),
-     'profile' => dt('The Drupal installation profile to use for installing the front-end (default: hostmaster)'),
-     'working-copy' => dt('Keep VCS files when building the hostmaster platform using Drush make.')
-    ),
-  );
   return $items;
 }
 
@@ -451,62 +426,6 @@ function devshop_fqdn($host = NULL) {
   }
   return strtolower(gethostbyaddr(gethostbyname($host)));
 }
-
-//
-//if (!function_exists('provision_autoload_register_prefix')) {
-//  /**
-//   * Register a PECL style prefix with the provision autoloader.
-//   *
-//   * @param string $prefix
-//   *   The class prefix to register.
-//   * @param string $dir
-//   *   The directory to search for the classes in.
-//   * @param bool $prepend
-//   *   If the directory should be searched first for the classes in the given
-//   *   prefix, set this to TRUE, otherwise, the default, FALSE, is fine.
-//   */
-//  function provision_autoload_register_prefix($prefix, $dir, $prepend = FALSE) {
-//
-//    // Get any current directories set for this prefix.
-//    $current_prefixes = provision_autoload()->getPrefixes();
-//    if (isset($current_prefixes[$prefix])) {
-//      $dirs = $current_prefixes[$prefix];
-//    }
-//    else {
-//      $dirs = array();
-//    }
-//
-//    // Now add the new one.
-//    if ($prepend) {
-//      array_unshift($dirs, $dir);
-//    }
-//    else {
-//      array_push($dirs, $dir);
-//    }
-//
-//    // Set the prefixes.
-//    provision_autoload()->addPrefix($prefix, $dirs);
-//  }
-//}
-//
-//if (!function_exists('provision_autoload')) {
-//  /**
-//   * Return an instance of the provision autoloader.
-//   *
-//   * This will instiatate an instance if it needs to.
-//   */
-//  function provision_autoload() {
-//    static $instance = NULL;
-//
-//    if (is_null($instance)) {
-//      $instance = new ClassLoader();
-//      // Activate the autoloader.
-//      $instance->register();
-//    }
-//
-//    return $instance;
-//  }
-//}
 
 /**
  * implementation of provision_verify
