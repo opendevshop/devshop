@@ -1,6 +1,6 @@
 <div class="list-group environment <?php print $environment->class  ?>" id="<?php print $environment->project_name; ?>-<?php print $environment->name ?>">
 
-    <?php if (!empty($environment->menu) && !isset($page)): ?>
+    <?php if (!empty($environment->menu)): ?>
     <!-- Environment Settings & Task Links -->
     <div class="environment-dropdowns">
 
@@ -157,6 +157,8 @@
           </div>
         </div>
       </div>
+    <?php endif; ?>
+    <?php if (!empty($environment->menu) && !isset($page)): ?>
 
       <div class="environment-menu btn-group ">
             <button type="button" class="btn btn-link environment-menu-button dropdown-toggle" data-toggle="dropdown" title="<?php print t('Environment Menu') ;?>">
@@ -164,8 +166,8 @@
             </button>
             <?php print $environment->menu_rendered; ?>
         </div>
-    </div>
     <?php endif; ?>
+    </div>
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
