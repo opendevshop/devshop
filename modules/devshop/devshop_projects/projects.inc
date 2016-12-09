@@ -429,7 +429,7 @@ function devshop_project_load($node) {
     $environment->clone_rebuild_url = url(
       "hosting_confirm/{$environment->site}/site_sync", array(
         'query' => array(
-          'source' => $environment->clone_source_node->nid,
+          'source' => $environment->clone_source,
           'rebuild' => TRUE,
         ),
       )
