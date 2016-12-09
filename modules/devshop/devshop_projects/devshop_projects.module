@@ -89,10 +89,6 @@ function devshop_projects_permission() {
       'title' => t('view projects'),
       'description' => t('Access the projects page.'),
     ),
-    'create devshop-create task' => array(
-      'title' => t('create devshop-create task'),
-      'description' => t('Create "devshop-create" tasks.'),
-    ),
     'create devshop-commit task' => array(
       'title' => t('create devshop-commit task'),
       'description' => t('Create "devshop-commit" task.'),
@@ -138,7 +134,7 @@ function devshop_projects_devshop_environment_menu($environment) {
 
   // Site specific actions.
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
-    if (user_access('create devshop-create task')) {
+    if (node_access('create', 'site')) {
       $items[] = l('<i class="fa fa-copy"></i> '.t('Clone Environment'),
         "node/add/site/{$environment->project_name}/clone/{$environment->name}",
         array(
@@ -146,7 +142,7 @@ function devshop_projects_devshop_environment_menu($environment) {
         )
       );
       $items[] = l('<i class="fa fa-code-fork"></i> '.t('Fork Environment'),
-        "hosting_confirm/{$environment->project_nid}/project_devshop-create/fork/{$environment->site}",
+        "node/add/site/{$environment->project_name}/fork/{$environment->name}",
         array(
           'html' => TRUE,
         )
