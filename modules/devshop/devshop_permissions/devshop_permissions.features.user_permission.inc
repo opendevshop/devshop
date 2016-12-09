@@ -264,15 +264,6 @@ function devshop_permissions_user_default_permissions() {
     ),
   );
 
-  // Exported permission: create devshop-commit task
-  $permissions['create devshop-commit task'] = array(
-    'name' => 'create devshop-commit task',
-    'roles' => array(
-      '0' => 'administrator',
-      '1' => 'authenticated user',
-    ),
-  );
-
   // Exported permission: create devshop-delete task
   $permissions['create devshop-delete task'] = array(
     'name' => 'create devshop-delete task',

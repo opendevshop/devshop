@@ -96,19 +96,6 @@ function drush_devshop_projects_pre_hosting_task()
     }
   }
 
-  // Commit
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-commit') {
-    $task->args['environment'] = $task->task_args['environment'];
-    $task->options['message'] = $task->task_args['message'];
-    $task->options['push'] = $task->task_args['push'];
-    $task->options['revert'] = $task->task_args['revert'];
-  }
-
-  // Download
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-dl') {
-    $task->options['modules'] = $task->task_args['modules'];
-  }
-
   // Run tests
   if ($task->ref->type == 'site' && $task->task_type == 'test') {
 
