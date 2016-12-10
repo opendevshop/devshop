@@ -563,7 +563,7 @@
                         <!-- Deploy: Stack -->
                         <div class="btn-group btn-deploy-servers" role="group">
 
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-tasks"></i>
                                 <?php print t('Stack'); ?>
                                 <span class="caret"></span>
                             </button>
