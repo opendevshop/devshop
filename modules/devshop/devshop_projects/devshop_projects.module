@@ -137,12 +137,17 @@ function devshop_projects_devshop_environment_menu($environment) {
           'html' => TRUE,
         )
       );
-      $items[] = l('<i class="fa fa-code-fork"></i> '.t('Fork Environment'),
-        "node/add/site/{$environment->project_name}/fork/{$environment->name}",
-        array(
-          'html' => TRUE,
-        )
-      );
+
+// Removing "Fork Environment" because it's a decent amount of work to re-do now
+// now that the site node form is being used. It was confusing to users , and we will
+//      have a new beta shortly after this one anyway.
+// @TODO: Un-deprecate Fork Environment.
+//      $items[] = l('<i class="fa fa-code-fork"></i> '.t('Fork Environment'),
+//        "node/add/site/{$environment->project_name}/fork/{$environment->name}",
+//        array(
+//          'html' => TRUE,
+//        )
+//      );
     }
 
     // Add disable or delete task based on hosting variable.
