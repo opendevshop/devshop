@@ -910,6 +910,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['git_ref'] = array(
     '#title' => t('Branch or Tag'),
     '#type' => 'select',
+    '#description' => t('The git reference to checkout for this environment. You can change this later using the "Deploy Code" button.'),
     '#options' => $branch_options,
     '#required' => TRUE,
     '#weight' => -100,
@@ -1034,6 +1035,23 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     $form['install_method']['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
     $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
   }
+
+  // Detect fork link.
+  // @TODO: Get "forking" back in place for the next beta.
+//  if (arg(4) == 'fork') {
+//    $environment_to_clone = arg(5);
+//    $form['install_method']['method']['#default_value'] = 'clone';
+//    $form['install_method']['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
+//    $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
+//    $form['git_ref']['#title'] = t('Base Branch or Tag');
+//    $form['git_ref']['#description'] = t('The git reference you want to create a new branch from.');
+//
+//    $form['git_ref_new'] = array(
+//      '#title' => t('New branch name'),
+//      '#description' => t('New branch name'),
+//    );
+//  }
+
 
   $form['install_method']['clone_source_drush'] = array(
     '#type' => 'textfield',
