@@ -5,8 +5,8 @@
     <div class="environment-dropdowns">
 
       <!-- Information Modal -->
-      <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
-        <i class="fa fa-question-circle"></i><?php print t('Info'); ?>
+      <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" title="<?php print t('Connect') ?>" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
+        <?php print t('Connect') ?>
       </a>
 
       <!-- Modal -->
@@ -279,6 +279,7 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
+  <div class='environment-main'>
   <!-- URLs -->
   <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
 
@@ -563,7 +564,7 @@
                         <!-- Deploy: Stack -->
                         <div class="btn-group btn-deploy-servers" role="group">
 
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-tasks"></i>
                                 <?php print t('Stack'); ?>
                                 <span class="caret"></span>
                             </button>
@@ -751,6 +752,7 @@ sites/all/drush/drushrc.php
       </div>
     </div>
   <?php endif; ?>
+  </div>
 
     <div class="environment-task-logs <?php if (!isset($page)) print 'list-group-item' ?>">
         <?php if (isset($page)): ?>
