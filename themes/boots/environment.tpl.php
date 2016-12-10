@@ -5,8 +5,8 @@
     <div class="environment-dropdowns">
 
       <!-- Information Modal -->
-      <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
-        <i class="fa fa-question-circle"></i><?php print t('Info'); ?>
+      <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" title="<?php print t('Connect') ?>" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
+        <?php print t('Connect') ?>
       </a>
 
       <!-- Modal -->
