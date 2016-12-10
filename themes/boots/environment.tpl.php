@@ -279,6 +279,7 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
+  <div class='environment-main'>
   <!-- URLs -->
   <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
 
@@ -751,6 +752,7 @@ sites/all/drush/drushrc.php
       </div>
     </div>
   <?php endif; ?>
+  </div>
 
     <div class="environment-task-logs <?php if (!isset($page)) print 'list-group-item' ?>">
         <?php if (isset($page)): ?>
