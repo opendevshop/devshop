@@ -206,11 +206,11 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     $t['@freq'] = format_interval($queues['pull']['frequency'], 1);
 
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= '<div class="description">';
-    $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Deploy code every @freq. Only runs deploy hooks if code has changed.  Use only if repository webhooks are not available.', $t);
+    $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Git pull code every @freq. Use only if repository webhooks are not available.', $t);
 
 
     if (user_access('administer hosting queues')) {
-      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . l(t("Deploy Queue configured to run every @freq.", $t), 'admin/hosting/queues');
+      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . l(t("Pull Queue configured to run every @freq.", $t), 'admin/hosting/queues');
     }
     else {
       $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . t("Pull Queue configured to run every @freq.", $t);
