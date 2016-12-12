@@ -37,6 +37,10 @@ function devshop_github_add_key_to_account($form, &$form_state) {
     try {
       $return = $client->currentUser()->keys()->create($params);
     }
+    catch (\Github\Exception\RuntimeException $e) {
+        drupal_set_message($e->getMessage(), 'error');
+        drupal_set_message('Code ' . $e->getCode(), 'error');
+    }
     catch (\GitHub\Exception\ValidationFailedException $e) {
         drupal_set_message($e->getMessage(), 'error');
         drupal_set_message('Code ' . $e->getCode(), 'error');
