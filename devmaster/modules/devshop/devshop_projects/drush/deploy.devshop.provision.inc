@@ -114,15 +114,6 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
     drush_log(dt('[DEVSHOP] Skipped updating database...'), 'ok');
   }
 
-
-  // Revert All Features, unless option is false
-  if ($revert) {
-    $commands[] = "drush {$environment->drush_alias} features-revert-all --yes";
-  }
-  else {
-    drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
-  }
-
   // Clear the whole cache, unless option is false
   if ($cache) {
     if (drush_drupal_major_version(d()->root) == 8) {
@@ -134,6 +125,14 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped clearing all caches...'), 'ok');
+  }
+
+  // Revert All Features, unless option is false
+  if ($revert) {
+    $commands[] = "drush {$environment->drush_alias} features-revert-all --yes";
+  }
+  else {
+    drush_log(dt('[DEVSHOP] Skipped reverting all features...'), 'ok');
   }
 
   foreach ($commands as $command) {
