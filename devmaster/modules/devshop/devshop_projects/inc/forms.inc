@@ -199,11 +199,11 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   // Queue
   $queues = hosting_get_queues();
-  if ($queues['deploy']['enabled']) {
+  if ($queues['pull']['enabled']) {
     $form['project']['settings']['deploy']['method']['#options']['queue'] = t('Queued Deployment');
 
     $t = array();
-    $t['@freq'] = format_interval($queues['deploy']['frequency'], 1);
+    $t['@freq'] = format_interval($queues['pull']['frequency'], 1);
 
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= '<div class="description">';
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Deploy code every @freq. Only runs deploy hooks if code has changed.  Use only if repository webhooks are not available.', $t);
@@ -213,8 +213,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . l(t("Deploy Queue configured to run every @freq.", $t), 'admin/hosting/queues');
     }
     else {
-      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . t("Deploy Queue configured to run every @freq.", $t);
-
+      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . t("Pull Queue configured to run every @freq.", $t);
     }
 
     $form['project']['settings']['deploy']['method']['#options']['queue'] .= '</div>';
@@ -1186,6 +1185,17 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     // Specify GIT Url for hosting_git.module
     $platform_node->git['repo_url'] = $project->git_url;
     $platform_node->git['git_ref'] = $form_state['values']['git_ref'];
+
+    // Enable git pull queue for this platform if chosen.
+    if ($project->settings->deploy['method'] == 'queue') {
+      $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
+    }
+    // For devshop "webhook" and "manual" methods, disable git pull for now.
+    // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
+    else {
+      $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
+    }
+
 
     // Determine which web server to use.
     // If no web server was set and project has a default, make sure we set it.
