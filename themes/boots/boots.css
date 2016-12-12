@@ -11,6 +11,11 @@ body.admin-menu .navbar-static-top {
   border: none;
 }
 
+.environment .list-group-item:first-child {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
 .environment-main {
   border-left: 1px #ededed solid;
   border-right: 1px #ededed solid;
@@ -95,6 +100,11 @@ body.admin-menu .navbar-static-top {
   overflow: hidden;
   padding-right: 30px;
   border-radius: 5px 5px 0 0;
+}
+
+.environment-header.list-group-item-disabled {
+  border: 1px #ededed solid;
+  background: whitesmoke;
 }
 
 .environment-menu button.environment-menu-button {

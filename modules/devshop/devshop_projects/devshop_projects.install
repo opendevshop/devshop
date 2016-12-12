@@ -384,6 +384,7 @@ function devshop_projects_update_7003 () {
 function devshop_projects_update_7004 () {
   module_enable(array(
     'hosting_git',
+    'hosting_git_pull',
   ));
 }
 
