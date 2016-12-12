@@ -97,6 +97,11 @@ body.admin-menu .navbar-static-top {
   border-radius: 5px 5px 0 0;
 }
 
+.environment-header.list-group-item-disabled {
+  border: 1px #ededed solid;
+  background: whitesmoke;
+}
+
 .environment-menu button.environment-menu-button {
   z-index: 1;
   padding: .3em;
