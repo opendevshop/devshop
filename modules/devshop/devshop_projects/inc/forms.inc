@@ -647,8 +647,13 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     }
 
     $form['title']['#type'] = 'value';
-    $form['makefile']['#type'] = 'value';
     unset($form['info']);
+
+    if (isset($platform_node->project)) {
+      // Hide makefile
+      $form['frommakefile']['#access'] = FALSE;
+      $form['git']['pull_url']['#access'] = FALSE;
+    }
 
     // If switching webservers...
     if ($_GET['web_server']) {
