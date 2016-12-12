@@ -663,7 +663,7 @@ function boots_preprocess_node_project(&$vars){
   }
 
   if ($project->settings->deploy['method'] == 'queue') {
-    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_deploy_last_run', FALSE));
+    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_pull_last_run', FALSE));
   }
 
   // Webhook status output.
