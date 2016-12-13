@@ -19,5 +19,5 @@ devmaster_install_command: "{{ local_bin_path }}/devshop devmaster:install --sit
 drush_dl_method: wget
 
 devshop_drush_packages:
-  provision: 7.x-3.x
+  provision: 7.x-3.8+devshop
   registry_rebuild: 7.x-2.2
