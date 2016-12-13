@@ -8,18 +8,11 @@ require_once 'vendor/autoload.php';
  */
 function devshop_github_hosting_task_update_status($task, $status) {
 
-  drush_log('[DEVSHOP GITHUB] Responding to hook update status...');
-
-  // On initial pull request, the "clone" task is what runs.
-  if ($task->task_type == 'clone') {
-    $platform = node_load($task->task_args['target_platform']);
-    $environment = $platform->environment;
-    $project = $platform->project;
-  }
-  // Subsequent tasks are "deploy" and "verify"
-  elseif (($task->task_type == 'verify' && $task->ref->type == 'site') || $task->task_type == 'devshop-deploy' || $task->task_type == 'test') {
-    $environment = $task->ref->environment;
+  // React only on certain task types and if project and environment exist.
+  $types = array('install', 'test', 'devshop-deploy');
+  if (in_array($task->task_type, $types) && isset($task->ref->project) && !empty($task->ref->project) && isset($task->ref->environment) && !empty($task->ref->environment)) {
     $project = $task->ref->project;
+    $environment = $task->ref->environment;
   }
   else {
     return;
