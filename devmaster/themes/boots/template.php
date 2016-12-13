@@ -36,6 +36,10 @@ function boots_preprocess_environment(&$vars) {
   // Available deploy data targets.
   $vars['target_environments'] = $project->environments;
 
+  // Get token for task links
+  global $user;
+  $vars['token'] = drupal_get_token($user->uid);
+
   // Load git refs and create links
   $vars['git_refs'] = array();
   foreach ($project->settings->git['refs'] as $ref => $type) {
@@ -164,6 +168,70 @@ function boots_preprocess_environment(&$vars) {
       'type' => 'warning',
     );
   }
+
+  // Site delete initiated.
+  if (!empty($environment->tasks['delete'])) {
+    foreach ($environment->tasks['delete'] as $task) {
+      if ($environment->site == $task->rid) {
+        $site_delete_task = $task;
+        $site_delete_status = l($site_delete_task->status_name, "node/{$site_delete_task->nid}");
+      }
+      elseif ($environment->platform == $task->rid) {
+        $platform_delete_task = $task;
+        $platform_delete_status = l($platform_delete_task->status_name, "node/{$platform_delete_task->nid}");
+      }
+    }
+
+    if (isset($site_delete_task)) {
+      $vars['warnings'][] = array(
+        'text' => t('Site Destroy') . ': ' . $site_delete_status,
+        'type' => 'warning',
+      );
+    }
+    if (isset($platform_delete_task)) {
+      $vars['warnings'][] = array(
+        'text' => t('Platform Destroy') . ': ' . $platform_delete_status,
+        'type' => 'warning',
+      );
+    }
+  }
+
+  // Site is Disabled
+  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+    $buttons = '';
+    $buttons .= l(
+      '<i class="fa fa-power-off"></i> ' . t('Enable'),
+      "hosting_confirm/{$environment->site}/site_enable",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-success'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-trash"></i> ' . t('Destroy'),
+      "hosting_confirm/{$environment->site}/site_delete",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-danger'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+
+    $vars['warnings']['disabled'] = array(
+      'text' => t('Environment is disabled.'),
+      'buttons' => $buttons,
+    );
+  }
+
   if (isset($environment->warnings)) {
     foreach ($environment->warnings as $warning) {
       $vars['warnings'][] = array(
@@ -176,9 +244,6 @@ function boots_preprocess_environment(&$vars) {
   // Load user into a variable.
   global $user;
   $vars['user'] = $user;
-
-  // Get token for task links
-  $vars['token'] = drupal_get_token($user->uid);
   $vars['environment'] = $environment;
 
   // Detect hooks.yml file.
