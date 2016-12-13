@@ -468,7 +468,7 @@ function drush_devshop_provision_post_provision_install() {
     $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --updatedb --cache-clear --registry-rebuild";
     devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
     devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
-    devshop_drush_process_cache_clear($destination);
+//    devshop_drush_process_cache_clear($destination);
   }
 
   // Install Method: import
