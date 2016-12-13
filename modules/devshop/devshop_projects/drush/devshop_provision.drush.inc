@@ -465,9 +465,9 @@ function drush_devshop_provision_post_provision_install() {
     }
 
     $destination = d()->name;
-    devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
     $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --updatedb --cache-clear --registry-rebuild";
     devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
     devshop_drush_process_cache_clear($destination);
   }
 
@@ -503,6 +503,7 @@ function drush_devshop_provision_post_provision_install() {
     $alias = d()->name;
     $command = "drush {$alias} sqlq 'SOURCE {$file_to_import}'";
     devshop_drush_process($command, NULL, dt('Importing database file...'));
+    devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
     devshop_drush_process_cache_clear($alias);
     devshop_drush_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
   }
