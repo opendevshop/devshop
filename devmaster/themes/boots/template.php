@@ -169,8 +169,39 @@ function boots_preprocess_environment(&$vars) {
     );
   }
 
-  // Site delete initiated.
-  if (!empty($environment->tasks['delete'])) {
+  // Site delete failed.
+  if (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
+    $install_task = current($environment->tasks['install']);
+    $buttons = l(
+      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      "node/{$install_task->nid}",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-success'),
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-trash"></i> ' . t('Destroy'),
+      "hosting_confirm/{$environment->site}/site_delete",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-danger'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+    $vars['warnings'][] = array(
+      'text' => t('Installation failed. The site is not available.'),
+      'buttons' => $buttons,
+      'type' => 'error',
+    );
+  }
+  elseif (!empty($environment->tasks['delete'])) {
     foreach ($environment->tasks['delete'] as $task) {
       if ($environment->site == $task->rid) {
         $site_delete_task = $task;
@@ -197,7 +228,7 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Site is Disabled
-  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+  elseif ($environment->site_status == HOSTING_SITE_DISABLED) {
     $buttons = '';
     $buttons .= l(
       '<i class="fa fa-power-off"></i> ' . t('Enable'),

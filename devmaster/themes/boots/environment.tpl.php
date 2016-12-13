@@ -398,36 +398,9 @@
         <?php print $environment->install_method_label; ?>
       </label>
     </div>
-
-    <?php
-
-      // SITUATION: Site Install Failed
-      if (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR): ?>
-
-        <div class="list-group-item center-block text text-muted">
-            <i class="fa fa-warning"></i>  <?php print t('Site Install failed. The environment is not available.'); ?>
-        </div>
-        <div class="list-group-item center-block text text-muted">
-            <div class="btn-group " role="group">
-                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
-                    <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
-                </a>
-                <?php if (variable_get('hosting_require_disable_before_delete', TRUE) && $environment->site_status != HOSTING_SITE_DISABLED): ?>
-                <a href="<?php print url("hosting_confirm/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
-                    <i class="fa fa-power-off"></i> <?php print t('Disable the Environment'); ?>
-                </a>
-                <?php else: ?>
-                    <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
-                        <i class="fa fa-trash"></i> <?php print t('Destroy the Environment'); ?>
-                    </a>
-                <?php endif; ?>
-
-            </div>
-        </div>
-
     <?php
       // SITUATION: Site Install Queued or processing.
-      elseif (!empty($environment->tasks['install']) && (current($environment->tasks['install'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['install'])->task_status == HOSTING_TASK_PROCESSING)): ?>
+      if (!empty($environment->tasks['install']) && (current($environment->tasks['install'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['install'])->task_status == HOSTING_TASK_PROCESSING)): ?>
 
         <div class="list-group-item center-block text text-muted">
           <i class="fa fa-truck"></i>
