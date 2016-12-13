@@ -128,15 +128,6 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Configure how testing is handled for this project.'),
     ), devshop_testing_form_elements($form['#node']->project)
     );
-
-    // Default deploy hooks.
-    $form['project']['settings']['deploy']['default_hooks']['test'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run Tests'),
-      '#description' => t('Run tests after every code deploy.'),
-      '#weight' => 100,
-      '#default_value' => $form['#node']->environment->settings->deploy['test'],
-    );
   }
 
   // If it's the site (environment) form, it is the override.
@@ -151,29 +142,10 @@ function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
       '#weight' => 100,
     );
     $form['environment']['settings']['testing'] = devshop_testing_form_elements($form['#node']->project,  $form['#node']->environment->name);
-
-    // Add to deploy hooks.
-    $form['environment']['settings']['deploy']['test'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run Tests'),
-      '#description' => t('Run tests after every code deploy.'),
-      '#weight' => 100,
-      '#default_value' => $form['#node']->environment->settings->deploy['test'],
-    );
   }
   // Run Tests Form: add extra submit handler to stringify the test options.
   elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
 //    array_unshift($form['#submit'], 'devshop_testing_task_submit');
-  }
-  // Deploy Code Task confirm form.
-  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'devshop-deploy') {
-    $node = node_load($form['nid']['#value']);
-    $form['parameters']['test'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run Tests'),
-      '#description' => t('Run tests after this code deploy.'),
-      '#default_value' => $node->environment->settings->deploy['test'],
-    );
   }
 }
 
@@ -290,6 +262,37 @@ function devshop_testing_task_submit(&$form, &$form_state) {
   // Implode tests to run
 //  $value = implode(',', array_filter($form_state['values']['parameters']['tests_to_run']));
 //  form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
+}
+
+/**
+ * Implements hook_devshop_deploy_hooks_form_elements_alter().
+ */
+function devshop_testing_devshop_deploy_hooks_form_elements_alter(&$form, $is_environment_form) {
+  // Add to deploy hooks.
+
+  // If this is the environment form and the project allows environment specific deploy hooks...
+  if ($is_environment_form && $form['#project']->settings->deploy['allow_environment_deploy_config']) {
+    $default_value = $form['#environment']->settings->deploy['test'];
+  }
+  // If this is env form and project does not allow env specific deploy hooks...
+  elseif ($is_environment_form && !$form['#project']->settings->deploy['allow_environment_deploy_config']) {
+    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
+  }
+  // If this is a project form...
+  elseif (!$is_environment_form) {
+    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
+  }
+  else {
+    $default_value = 0;
+  }
+
+  $form['test'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Run Tests.'),
+    '#description' => t('Run tests after every code deploy.'),
+    '#weight' => 100,
+    '#default_value' => $default_value,
+  );
 }
 
 /**
