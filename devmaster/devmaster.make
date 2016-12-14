@@ -82,3 +82,6 @@ libraries[timeago][destination] = libraries
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
 projects[bootstrap][version] = 3.8
+
+; Include devel module.
+projects[devel][version] = "1"
