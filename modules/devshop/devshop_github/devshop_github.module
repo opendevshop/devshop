@@ -69,6 +69,11 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       '#title' => t('Delete Pull Request Environments'),
       '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : FALSE,
       '#description' => t('When Pull Requests are closed, delete the environment.'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
+        ),
+      ),
   );
 
   // Pull Request Environment method.
@@ -95,6 +100,11 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
           $node->project->settings->github['pull_request_environments_method'] : 'devshop__github__install',
       '#description' => t('Select the method for creating the pull request environments.'),
       '#options' => $options,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
+        ),
+      ),
   );
   $form['project']['settings']['github']['pull_request_reinstall'] = array(
     '#type' => 'checkbox',
@@ -103,6 +113,11 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       $node->project->settings->github['pull_request_reinstall'] : 0,
     '#description' => t('Destroy and reinstall Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed.'),
     '#options' => $options,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 }
 
