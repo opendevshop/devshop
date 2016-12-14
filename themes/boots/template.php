@@ -100,6 +100,17 @@ function boots_preprocess_environment(&$vars) {
   // Pull Request?
   if (isset($environment->github_pull_request) && $environment->github_pull_request) {
     $environment->class .= ' pull-request';
+    $vars['warnings'][] = array(
+      'type' => 'info',
+      'icon' => 'github',
+      'text' => l($environment->github_pull_request->pull_request_object->title, $environment->github_pull_request->pull_request_object->html_url, array(
+        'absolute' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'title' => t('Visit this Pull Request on GitHub'),
+        ),
+      )),
+    );
   }
 
   // Load Task Links
