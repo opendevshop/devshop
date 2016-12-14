@@ -139,9 +139,6 @@ $environment_name:
       drupal:
         drupal_root: '$root'
 
-      # @TODO: This shouldn't be forced, right?
-      api_driver: 'drupal'
-
 YML;
 
     $behat_yml_file = $full_behat_folder_path . "/behat.$environment_name.yml";
