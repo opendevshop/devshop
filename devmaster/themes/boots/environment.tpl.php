@@ -280,6 +280,10 @@
             else {
               $class = 'default';
             }
+
+            if (isset($warning['icon'])) {
+              $icon = $warning['icon'];
+            }
             ?>
         <div class="list-group-item list-group-item-<?php print $class ?> text">
           <div class="buttons pull-right">
@@ -399,24 +403,8 @@
       </label>
     </div>
     <?php
-      // SITUATION: Site Install Queued or processing.
-      if (!empty($environment->tasks['install']) && (current($environment->tasks['install'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['install'])->task_status == HOSTING_TASK_PROCESSING)): ?>
-
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-truck"></i>
-          <?php print t('Environment install in progress.'); ?>
-        </div>
-
-        <?php
-      // SITUATION: Environment Disable Initiated
-      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-power-off"></i>
-          <?php print t('Environment is being disabled.'); ?>
-        </div>
-    <?php
       // SITUATION: Environment is Active!
-      elseif (empty($environment->tasks['delete'])): ?>
+      if (empty($environment->tasks['delete'])): ?>
 
         <?php
         // Only show this area if they have at least one of these permissions.

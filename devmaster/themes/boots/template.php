@@ -169,7 +169,8 @@ function boots_preprocess_environment(&$vars) {
     );
   }
 
-  // Site delete failed.
+  // Determine Environment State. Only one of these may be active at a time.
+  // State: Site install failed.
   if (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
     $install_task = current($environment->tasks['install']);
     $buttons = l(
@@ -201,6 +202,27 @@ function boots_preprocess_environment(&$vars) {
       'type' => 'error',
     );
   }
+
+  // State: Site Install Queued or processing.
+  elseif (!empty($environment->tasks['install']) && (current($environment->tasks['install'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['install'])->task_status == HOSTING_TASK_PROCESSING)) {
+
+    $vars['warnings'][] = array(
+      'text' => t('Environment install in progress!'),
+      'type' => 'info',
+      'icon' => 'truck',
+    );
+  }
+
+  // State: Environment Disable Initiated
+  elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)) {
+
+    $vars['warnings'][] = array(
+      'text' => t('Environment is being disabled.'),
+      'type' => 'info',
+    );
+  }
+
+  // State: Site Delete initiated.
   elseif (!empty($environment->tasks['delete'])) {
     foreach ($environment->tasks['delete'] as $task) {
       if ($environment->site == $task->rid) {
@@ -227,7 +249,7 @@ function boots_preprocess_environment(&$vars) {
     }
   }
 
-  // Site is Disabled
+  // State: Site is Disabled
   elseif ($environment->site_status == HOSTING_SITE_DISABLED) {
     $buttons = '';
     $buttons .= l(
