@@ -162,8 +162,8 @@ function boots_preprocess_environment(&$vars) {
   // No hooks configured.
   if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
-      'text' => t('No deploy hooks are configured. Check your !link.', array(
-        '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
+      'text' => t('No deploy hooks are configured. Check !link.', array(
+        '!link' => l(t('Environment Settings'), "node/{$environment->site}/edit"),
       )),
       'type' => 'warning',
     );
@@ -281,6 +281,7 @@ function boots_preprocess_environment(&$vars) {
 
     $vars['warnings']['disabled'] = array(
       'text' => t('Environment is disabled.'),
+      'type' => 'info',
       'buttons' => $buttons,
     );
   }
