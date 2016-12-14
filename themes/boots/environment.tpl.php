@@ -245,20 +245,6 @@
         </a>
         <?php endif; ?>
 
-      <?php  if (isset($environment->github_pull_request)): ?>
-        <!-- Pull Request -->
-
-
-        <div class="environment-pull-request">
-          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
-            <i class="fa fa-github"></i>
-            <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>:
-            <?php print $environment->github_pull_request->pull_request_object->title;?>
-          </a>
-        </div>
-
-      <?php endif; ?>
-
         <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
           <!-- Browse Logs -->
           <a href="<?php print url("node/$environment->site/errors"); ?>" class="environment-meta-data btn btn-text btn-sm " title="<?php print t('View error logs.'); ?>">
