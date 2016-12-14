@@ -88,7 +88,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   if (empty($environments)) {
-    $options[t('Clone another environment')][] = t('No environments available.');
+    $options[t('Clone another environment')][] = t('No environments available. Check Project settings when you have one.');
   }
   else {
     $options[t('Clone another environment')] = array_combine($environments, $environments);
