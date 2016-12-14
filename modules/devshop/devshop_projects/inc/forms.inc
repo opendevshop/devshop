@@ -800,7 +800,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   );
 
   // Load deploy hooks form element.
-  $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project->project, $environment);
+  $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
 
   // UX Improvements
   // Project Settings Vertical Tabs
@@ -1369,6 +1369,9 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
       '#weight' => -10,
   );
 
+  $return['#project'] = $project;
+  $return['#environment'] = $environment;
+
   // If we are on the project creation wizard, set some sane defaults
   if (current_path() == 'projects/add/settings') {
     $environment_update = FALSE;
@@ -1443,6 +1446,10 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     );
   }
 
+  // Allow other modules to alter the deploy hooks form elements.
+  // @TODO: Create a new hook: "hook_devshop_deploy_hooks()"
+  drupal_alter('devshop_deploy_hooks_form_elements', $return, $is_environment_form);
+
   // Disable deploy hooks on environment form, deploy task form ,and sync task form.
   if (
     // Environment form
@@ -1451,10 +1458,26 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   ) {
 
     foreach (element_children($return) as $i) {
-      $return[$i]['#disabled'] = TRUE;
-    }
+      $return[$i]['#type'] = 'value';
+      $return[$i]['#value'] = $project->settings->deploy['default_hooks'][$i];
 
-    $return['#description'] = t('Environment-specific deploy hook configuration is not allowed. Check Project Settings to change.');
+      $return["{$i}_display"] = array(
+        '#type' => 'markup',
+        '#markup' => t($return[$i]['#title']),
+        '#prefix' => '<div class="list-group-item">' . ($return[$i]['#default_value']? '<i class="fa fa-check-square-o text-success pull-left"></i>': '<i class="fa fa-square-o  text-muted pull-left"></i>'),
+        '#suffix' => '</div>'
+      );
+    }
+    $return['#description'] = t('Environment-specific deploy hook configuration is not allowed.');
+
+    $project_node = node_load($project->nid);
+    if (node_access('update', $project_node)) {
+      $return['#description'] .= t('Visit !link to change.', array(
+        '!link' => l(t('Project Settings'), "node/{$project->nid}/edit", array(
+          'fragment' => 'edit-project-settings-deploy-default-hooks',
+        )),
+      ));
+    }
   }
   return $return;
 }

@@ -417,11 +417,14 @@ function devshop_project_load($node) {
             '!profile' => $environment->settings->install_method['profile'],
           ));
         }
-        else {
+        elseif (!empty($environment->settings->install_method['profile'])) {
           $profile = node_load($environment->install_profile);
           $environment->install_method_label = t('Installed with !profile', array(
             '!profile' => l($profile->title, "node/{$environment->install_profile}"),
           ));
+        }
+        else {
+          $environment->install_method_label = '';
         }
         break;
     }

@@ -11,15 +11,51 @@ body.admin-menu .navbar-static-top {
   border: none;
 }
 
-.environment .list-group-item:first-child {
+.environment .list-group-item:first-child,
+.environment .list-group-item:last-child {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .environment-main {
   border-left: 1px #ededed solid;
   border-right: 1px #ededed solid;
   border-collapse: collapse;
+}
+.environment-messages .list-group-item-info {
+  background-color: whitesmoke;
+  color: #777;
+
+  border-bottom: 1px solid whitesmoke;
+  border-top: 1px solid whitesmoke;
+  border-collapse: collapse;
+}
+.environment-messages .list-group-item-default {
+  color: #777;
+  border-bottom: 1px solid whitesmoke;
+  border-top: 1px solid whitesmoke;
+  border-collapse: collapse;
+}
+
+.environment-messages .list-group-item {
+  padding: 0px;
+
+  border-bottom: 1px solid whitesmoke;
+  border-top: 1px solid whitesmoke;
+  border-collapse: collapse;
+}
+.environment-messages .list-group-item .text {
+  padding: 5px 10px;
+
+}
+
+.environment.disabled .list-group-item-disabled {
+  background-color: #e5e5e5 !important;
+}
+.environment.disabled .list-group-item-info {
+  background-color: whitesmoke !important;
 }
 
 .table-controls {
