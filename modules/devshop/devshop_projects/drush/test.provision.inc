@@ -178,7 +178,7 @@ YML;
       $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile $environment_name --colors --format-settings='{\"expand\": true}'";
 
       // Run behat command
-      devshop_drush_process($cmd, $full_behat_folder_path, 'DevShop Testing');
+      devshop_drush_process($cmd, $full_behat_folder_path, 'DevShop Testing', array(), TRUE, 'Test Run Failed');
     }
   }
 }
