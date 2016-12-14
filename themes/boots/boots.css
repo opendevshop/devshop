@@ -41,7 +41,6 @@ body.admin-menu .navbar-static-top {
 
 .environment-messages .list-group-item {
   padding: 0px;
-  background-color: #f9f9f9 !important;
 
   border-bottom: 1px solid whitesmoke;
   border-top: 1px solid whitesmoke;
@@ -50,6 +49,13 @@ body.admin-menu .navbar-static-top {
 .environment-messages .list-group-item .text {
   padding: 5px 10px;
 
+}
+
+.environment.disabled .list-group-item-disabled {
+  background-color: #e5e5e5 !important;
+}
+.environment.disabled .list-group-item-info {
+  background-color: whitesmoke !important;
 }
 
 .table-controls {
