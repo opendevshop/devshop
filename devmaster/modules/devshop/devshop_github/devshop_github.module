@@ -112,7 +112,6 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     '#default_value' => isset($node->project->settings->github) ?
       $node->project->settings->github['pull_request_reinstall'] : 0,
     '#description' => t('Destroy and reinstall Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed.'),
-    '#options' => $options,
     '#states' => array(
       'visible' => array(
         ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
