@@ -36,6 +36,10 @@ function boots_preprocess_environment(&$vars) {
   // Available deploy data targets.
   $vars['target_environments'] = $project->environments;
 
+  // Get token for task links
+  global $user;
+  $vars['token'] = drupal_get_token($user->uid);
+
   // Load git refs and create links
   $vars['git_refs'] = array();
   foreach ($project->settings->git['refs'] as $ref => $type) {
@@ -158,12 +162,130 @@ function boots_preprocess_environment(&$vars) {
   // No hooks configured.
   if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
-      'text' => t('No deploy hooks are configured. Check your !link.', array(
-        '!link' => l(t('Environment Settings'), "node/{$project->nid}/edit/{$environment->nid}"),
+      'text' => t('No deploy hooks are configured. Check !link.', array(
+        '!link' => l(t('Environment Settings'), "node/{$environment->site}/edit"),
       )),
       'type' => 'warning',
     );
   }
+
+  // Determine Environment State. Only one of these may be active at a time.
+  // State: Site install failed.
+  if (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
+    $install_task = current($environment->tasks['install']);
+    $buttons = l(
+      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      "node/{$install_task->nid}",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-success'),
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-trash"></i> ' . t('Destroy'),
+      "hosting_confirm/{$environment->site}/site_delete",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-danger'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+    $vars['warnings'][] = array(
+      'text' => t('Installation failed. The site is not available.'),
+      'buttons' => $buttons,
+      'type' => 'error',
+    );
+  }
+
+  // State: Site Install Queued or processing.
+  elseif (!empty($environment->tasks['install']) && (current($environment->tasks['install'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['install'])->task_status == HOSTING_TASK_PROCESSING)) {
+
+    $vars['warnings'][] = array(
+      'text' => t('Environment install in progress!'),
+      'type' => 'info',
+      'icon' => 'truck',
+    );
+  }
+
+  // State: Environment Disable Initiated
+  elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)) {
+
+    $vars['warnings'][] = array(
+      'text' => t('Environment is being disabled.'),
+      'type' => 'info',
+    );
+  }
+
+  // State: Site Delete initiated.
+  elseif (!empty($environment->tasks['delete'])) {
+    foreach ($environment->tasks['delete'] as $task) {
+      if ($environment->site == $task->rid) {
+        $site_delete_task = $task;
+        $site_delete_status = l($site_delete_task->status_name, "node/{$site_delete_task->nid}");
+      }
+      elseif ($environment->platform == $task->rid) {
+        $platform_delete_task = $task;
+        $platform_delete_status = l($platform_delete_task->status_name, "node/{$platform_delete_task->nid}");
+      }
+    }
+
+    if (isset($site_delete_task)) {
+      $vars['warnings'][] = array(
+        'text' => t('Site Destroy') . ': ' . $site_delete_status,
+        'type' => 'warning',
+      );
+    }
+    if (isset($platform_delete_task)) {
+      $vars['warnings'][] = array(
+        'text' => t('Platform Destroy') . ': ' . $platform_delete_status,
+        'type' => 'warning',
+      );
+    }
+  }
+
+  // State: Site is Disabled
+  elseif ($environment->site_status == HOSTING_SITE_DISABLED) {
+    $buttons = '';
+    $buttons .= l(
+      '<i class="fa fa-power-off"></i> ' . t('Enable'),
+      "hosting_confirm/{$environment->site}/site_enable",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-success'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-trash"></i> ' . t('Destroy'),
+      "hosting_confirm/{$environment->site}/site_delete",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-danger'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+
+    $vars['warnings']['disabled'] = array(
+      'text' => t('Environment is disabled.'),
+      'type' => 'info',
+      'buttons' => $buttons,
+    );
+  }
+
   if (isset($environment->warnings)) {
     foreach ($environment->warnings as $warning) {
       $vars['warnings'][] = array(
@@ -176,9 +298,6 @@ function boots_preprocess_environment(&$vars) {
   // Load user into a variable.
   global $user;
   $vars['user'] = $user;
-
-  // Get token for task links
-  $vars['token'] = drupal_get_token($user->uid);
   $vars['environment'] = $environment;
 
   // Detect hooks.yml file.

@@ -258,6 +258,8 @@
         <?php endif; ?>
     </div>
     </div>
+  <div class='environment-main'>
+    <div class='environment-messages'>
 
     <!-- Environment Warnings -->
     <?php if (!empty($warnings)): ?>
@@ -271,15 +273,31 @@
                 $icon = 'exclamation-circle';
                 $class = 'danger';
             }
+            elseif ($warning['type'] == 'info') {
+                $icon = 'info-circle fa-';
+                $class = 'info';
+            }
+            else {
+              $class = 'default';
+            }
+
+            if (isset($warning['icon'])) {
+              $icon = $warning['icon'];
+            }
             ?>
         <div class="list-group-item list-group-item-<?php print $class ?> text">
-            <i class="fa fa-<?php print $icon ?>"></i>
+          <div class="buttons pull-right">
+            <?php print $warning['buttons'] ?>
+          </div>
+          <div class="text">
+            <?php if ($icon): ?><i class="fa fa-<?php print $icon ?>"></i><?php endif; ?>
             <?php print $warning['text'] ?>
+          </div>
         </div>
         <?php endforeach; ?>
     <?php endif; ?>
+    </div>
 
-  <div class='environment-main'>
   <!-- URLs -->
   <div class="environment-domains list-group-item <?php if (isset($environment->login_text)) print 'login-available'; ?>">
 
@@ -384,105 +402,9 @@
         <?php print $environment->install_method_label; ?>
       </label>
     </div>
-
-    <?php
-
-      // SITUATION: Environment Destroy Initiated
-      if (!empty($environment->tasks['delete'])): ?>
-      <!-- Status Display -->
-      <?php
-
-      foreach ($environment->tasks['delete'] as $task) {
-        if ($environment->site == $task->rid) {
-          $site_delete_task = $task;
-          $site_delete_status = l($site_delete_task->status_name, "node/{$site_delete_task->nid}");
-        }
-        elseif ($environment->platform == $task->rid) {
-          $platform_delete_task = $task;
-          $platform_delete_status = l($platform_delete_task->status_name, "node/{$platform_delete_task->nid}");
-        }
-      }
-
-      ?>
-
-      <?php if (isset($site_delete_task)): ?>
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-trash"></i>
-          <?php print t('Site Destroy'); ?>: <?php print $site_delete_status; ?>
-        </div>
-      <?php endif; ?>
-
-      <?php if (isset($platform_delete_task)): ?>
-      <div class="list-group-item center-block text text-muted">
-        <i class="fa fa-trash"></i>
-        <?php print t('Platform Destroy'); ?>: <?php print $platform_delete_status; ?>
-      </div>
-      <?php endif; ?>
-
-    <?php
-      // SITUATION: Site Install Failed
-      elseif (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR): ?>
-
-        <div class="list-group-item center-block text text-muted">
-            <i class="fa fa-warning"></i>  <?php print t('Site Install failed. The environment is not available.'); ?>
-        </div>
-        <div class="list-group-item center-block text text-muted">
-            <div class="btn-group " role="group">
-                <a href="<?php print url("node/{$environment->created['nid']}"); ?>" class="btn btn-default">
-                    <i class="fa fa-refresh"></i> <?php print t('View the Logs and Retry'); ?>
-                </a>
-                <?php if (variable_get('hosting_require_disable_before_delete', TRUE) && $environment->site_status != HOSTING_SITE_DISABLED): ?>
-                <a href="<?php print url("hosting_confirm/{$environment->site}/site_disable", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
-                    <i class="fa fa-power-off"></i> <?php print t('Disable the Environment'); ?>
-                </a>
-                <?php else: ?>
-                    <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
-                        <i class="fa fa-trash"></i> <?php print t('Destroy the Environment'); ?>
-                    </a>
-                <?php endif; ?>
-
-            </div>
-        </div>
-
-    <?php
-      // SITUATION: Site Install Queued or processing.
-      elseif (!empty($environment->tasks['install']) && (current($environment->tasks['install'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['install'])->task_status == HOSTING_TASK_PROCESSING)): ?>
-
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-truck"></i>
-          <?php print t('Environment install in progress.'); ?>
-        </div>
-
-        <?php
-      // SITUATION: Environment Disable Initiated
-      elseif (!empty($environment->tasks['disable']) && (current($environment->tasks['disable'])->task_status == HOSTING_TASK_QUEUED || current($environment->tasks['disable'])->task_status == HOSTING_TASK_PROCESSING)): ?>
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-power-off"></i>
-          <?php print t('Environment is being disabled.'); ?>
-        </div>
-        <?php
-
-      // SITUATION: Site is Disabled
-      elseif ($environment->site_status == HOSTING_SITE_DISABLED): ?>
-        <div class="list-group-item center-block text text-muted">
-          <i class="fa fa-power-off"></i>
-          <?php print t('Environment is disabled.'); ?>
-        </div>
-
-        <div class="list-group-item center-block text text-muted">
-          <div class="btn-group">
-            <a href="<?php print url("hosting_confirm/{$environment->site}/site_enable", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-              <i class="fa fa-power-off"></i> <?php print t('Enable'); ?>
-            </a>
-            <a href="<?php print url("hosting_confirm/{$environment->site}/site_delete", array('query' => array('token' => $token))); ?>" class="btn btn-lg">
-              <i class="fa fa-trash"></i> <?php print t('Destroy'); ?>
-            </a>
-          </div>
-        </div>
-
     <?php
       // SITUATION: Environment is Active!
-      elseif (empty($environment->tasks['delete'])): ?>
+      if (empty($environment->tasks['delete'])): ?>
 
         <?php
         // Only show this area if they have at least one of these permissions.

@@ -72,6 +72,8 @@
 
 <div class="drupal-content">
     <?php
+    hide($content['info']);
+    hide($content['tasks_view']);
   print render($content);
 ?>
 </div>

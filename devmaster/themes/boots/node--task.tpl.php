@@ -157,38 +157,5 @@
         </div>
     </div>
 
-    <?php  if (isset($node->test_results_formatted) && $node->test_results_formatted): ?>
-  <div role="tabpanel">
-
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist" id="task-tabs">
-      <li role="presentation" class="active"><a href="#task" aria-controls="task" role="tab" data-toggle="tab">
-          <?php print t('Results'); ?>
-        </a></li>
-      <li role="presentation"><a href="#logs" aria-controls="logs" role="tab" data-toggle="tab">
-          <?php print t('Details'); ?>
-        </a></li>
-    </ul>
-
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="task">
-        <div class="padded-top">
-          <div class="results-wrapper">
-            <?php print $node->test_results_formatted; ?>
-          </div>
-          <label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs</label>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="logs">
-        <div class="padded-top">
-          <?php print render($content); ?>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<?php endif; ?>
-
   <?php print isset($links) ? $links : ''; ?>
 </div>
