@@ -887,7 +887,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 //  array_unshift($form['actions']['submit']['#submit'], 'devshop_projects_create_environment_form_submit');
 
   // Generate field prefix and suffix using domain name pattern.
-  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
+  $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
 
   $labels = explode('@environment', strtr($pattern, array(
     '@project' => $project_node->title,
