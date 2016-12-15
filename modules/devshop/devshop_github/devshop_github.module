@@ -90,7 +90,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   }
   $form['project']['settings']['github']['pull_request_environments_method'] = array(
       '#type' => 'select',
-      '#title' => t('Pull Request Environment Deploy Method'),
+      '#title' => t('Pull Request Environment Creation Method'),
       '#default_value' => isset($node->project->settings->github) ?
           $node->project->settings->github['pull_request_environments_method'] : 'devshop__github__install',
       '#description' => t('Select the method for creating the pull request environments.'),
