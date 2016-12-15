@@ -540,7 +540,7 @@ function devshop_github_webhook($project_node) {
           $message .= "Deploying code to environments: " . implode(', ', $environments_to_pull);
         }
         else {
-          $message .= "No environments found to run git pull on. ");
+          $message .= "No environments found to run git pull on. ";
         }
         break;
 
