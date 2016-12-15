@@ -512,10 +512,16 @@ function devshop_github_webhook($project_node) {
 
               // If project is set to reinstall pull request environments, and this is a pull request environment, run a forced install task.
               if (isset($project->settings->github['pull_request_reinstall']) && $project->settings->github['pull_request_reinstall'] && isset($environment->github_pull_request)) {
+
+                // Trigger deploy task to get latest code.
+                // Pass no args to skip DB updates, cache clearing, etc.
+                hosting_add_task($environment->site, 'devshop-deploy');
+
+                // Trigger "install" with force-reinstall
                 hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
               }
 
-              // Otherwise, run a "deploy" task.
+              // Otherwise, just run a "deploy" task.
               else {
 
                 // Default args to the environments deploy settings.
