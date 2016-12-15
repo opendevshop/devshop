@@ -48,7 +48,7 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#title' => t('Environment Domain Name Pattern'),
     '#type' => 'textfield',
     '#description' => t("Each environment will have a system domain name generated for it based on it's name. Use @project for project name, @hostname for '%host', @environment for the environment's name.", array('%host' => $_SERVER['SERVER_NAME'])),
-    '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
+    '#default_value' => variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname'),
   );
 
 //  $form['support'] = array(
