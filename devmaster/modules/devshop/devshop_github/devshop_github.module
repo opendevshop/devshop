@@ -589,6 +589,10 @@ function devshop_github_webhook($project_node) {
               }
             }
 
+            $project_node = node_load($project->nid);
+            $project = $project_node->project;
+            $environment = $project->environment[$environment_name];
+
             $owner = $project->github_owner;
             $repo = $project->github_repo;
             $message .= "About to try to create a deployment for $owner/$repo...  \n";
@@ -600,8 +604,6 @@ function devshop_github_webhook($project_node) {
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
               $sha = $data->pull_request->head->sha;
-              $environment_name_url = str_replace('_', '-', $environment_name);
-              $url = "http://{$environment_name_url}.{$project->base_url}";
 
               $params = new stdClass();
               $params->ref = $sha;
@@ -622,7 +624,7 @@ function devshop_github_webhook($project_node) {
               // Create deployment status
               $params = new stdClass();
               $params->state = 'pending';
-              $params->target_url = $url;
+              $params->target_url = $environment->url;;
               $params->description = t('New environment is being created.  Please stand by.');
               $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/deployments/{$deployment->id}/statuses", json_encode($params));
 
@@ -633,7 +635,7 @@ function devshop_github_webhook($project_node) {
 
               $params = new stdClass();
               $params->state = 'pending';
-              $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
+              $params->target_url = url("node/$environment->site", array('absolute' => TRUE));
               $params->description = t('DevShop: Deploy');
               $params->context = 'devshop/deploy';
 
@@ -645,25 +647,25 @@ function devshop_github_webhook($project_node) {
               // For now it is using the "live environment" setting.
               // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
 
-              // If live environment is set to run tests on deploy...
-              $live_environment = $project->settings->live['live_environment'];
-              if ($project->environments[$live_environment]->settings->deploy['test']) {
-                $params = new stdClass();
-                $params->state = 'pending';
-                $params->target_url = url(
-                  "node/$project->nid",
-                  array('absolute' => true)
-                );
-                $params->description = t('DevShop: Run Tests');
-                $params->context = 'devshop/tests';
-
-                // Post status to github
-                $status = $client->getHttpClient()->post(
-                  "/repos/$owner/$repo/statuses/$sha",
-                  json_encode($params)
-                );
-                $message .= " Commit Status for pending test run Created! \n";
-              }
+//              // If live environment is set to run tests on deploy...
+//              $live_environment = $project->settings->live['live_environment'];
+//              if ($project->environments[$live_environment]->settings->deploy['test']) {
+//                $params = new stdClass();
+//                $params->state = 'pending';
+//                $params->target_url = url(
+//                  "node/$environment->site",
+//                  array('absolute' => true)
+//                );
+//                $params->description = t('DevShop: Run Tests');
+//                $params->context = 'devshop/tests';
+//
+//                // Post status to github
+//                $status = $client->getHttpClient()->post(
+//                  "/repos/$owner/$repo/statuses/$sha",
+//                  json_encode($params)
+//                );
+//                $message .= " Commit Status for pending test run Created! \n";
+//              }
 
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub Runtime Error: ' . $e->getMessage());
