@@ -52,7 +52,7 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   // Generate field prefix and suffix using domain name pattern.
   // @TODO: When per-project patterns are added, look for that setting instead of the variable.
-  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
+  $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
 
   $labels = explode('@environment', strtr($pattern, array(
     '@project' => $project_node->title,
