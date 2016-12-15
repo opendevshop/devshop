@@ -62,7 +62,7 @@ This material will be rolled into the general documentation as we fill out the d
   6. GitHub or BitBucket integration: 
     - Create Environments for Pull Requests
     - Delete Pull Request Environments
-    - Pull Request Environment Deploy Method
+    - Pull Request Environment Creation Method
 6. **Environment Settings**
   1. Lock Database.
   2. Disable Deploy on Commit.
