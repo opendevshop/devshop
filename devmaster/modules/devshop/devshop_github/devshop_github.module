@@ -518,7 +518,9 @@ function devshop_github_webhook($project_node) {
 
                 // Trigger deploy task to get latest code.
                 // Pass no args to skip DB updates, cache clearing, etc.
-                hosting_add_task($environment->site, 'devshop-deploy');
+                hosting_add_task($environment->site, 'devshop-deploy', array(
+                  'git_ref' => $environment->git_ref,
+                ));
 
                 // Trigger "install" with force-reinstall
                 hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
