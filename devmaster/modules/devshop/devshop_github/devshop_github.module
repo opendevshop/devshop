@@ -497,11 +497,14 @@ function devshop_github_webhook($project_node) {
 
         // Check for environments set to pull
         $environments_to_pull = array();
+        $message = "Push Received for git ref $git_ref.";
+
         foreach ($project->environments as $environment_name => $environment) {
 
           // Only pull if deploy is not disabled or if environment is tracking a tag.
           if (
-            $environment->site_status == HOSTING_SITE_ENABLED &&
+//            @TODO: Remove this. If a site install failed, it shows up as "disabled"
+//            $environment->site_status == HOSTING_SITE_ENABLED &&
             $git_ref == $environment->git_ref &&
             !$environment->settings->pull_disabled &&
             !in_array($environment->git_ref, $project->settings->git['tags'])
@@ -533,7 +536,12 @@ function devshop_github_webhook($project_node) {
           }
         }
 
-        $message = "Push Received for git ref $git_ref. Deploying code to environments: " . implode(', ', $environments_to_pull);
+        if (empty($environments_to_pull)) {
+          $message .= "Deploying code to environments: " . implode(', ', $environments_to_pull);
+        }
+        else {
+          $message .= "No environments found to run git pull on. ");
+        }
         break;
 
       case 'pull_request':
