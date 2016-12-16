@@ -161,14 +161,15 @@ function boots_preprocess_environment(&$vars) {
 
   // Check for any potential problems
   // Branch or tag no longer exists in the project.
-  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
-    $vars['warnings'][] = array(
-      'text' =>  t('The git ref %ref is not present in the remote repository.', array(
-        '%ref' => $environment->git_ref,
-      )),
-      'type' => 'warning',
-    );
-  }
+// @TODO: This fires a false flag too often. Consider removing it.
+//  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
+//    $vars['warnings'][] = array(
+//      'text' =>  t('The git ref %ref is not present in the remote repository.', array(
+//        '%ref' => $environment->git_ref,
+//      )),
+//      'type' => 'warning',
+//    );
+//  }
 
   // No hooks configured.
   if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
