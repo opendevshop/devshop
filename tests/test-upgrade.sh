@@ -10,7 +10,13 @@ fi
 
 # Get argument as the version we should install.
 UPGRADE_FROM_VERSION=$1
-UPGRADE_TO_VERSION=$2
+
+# Detect version to install from Travis variables.
+if [ -z $TRAVIS_PULL_REQUEST_BRANCH ]; then
+  UPGRADE_TO_VERSION=$TRAVIS_BRANCH
+else
+  UPGRADE_TO_VERSION=$TRAVIS_PULL_REQUEST_BRANCH
+fi
 
 if [ -z $UPGRADE_FROM_VERSION ]; then
   echo "No arguments found. Please specify the version to upgrade from:"
