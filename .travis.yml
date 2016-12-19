@@ -4,6 +4,14 @@ sudo: required
 
 env:
   matrix:
+  - test="Upgrade"
+    distribution="ubuntu"
+    version="14.04"
+    init="/sbin/init"
+    run_opts=""
+    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10"
+    test_command="devshop devmaster:test"
+
   - test="CentOS 7 Apache"
     distribution="centos"
     version="7"
@@ -20,13 +28,6 @@ env:
     install_command="/usr/share/devshop/install.sh --server-webserver=apache --hostname=devshop.travis"
     test_command="devshop devmaster:test"
 
-  - test="Upgrade"
-    distribution="ubuntu"
-    version="14.04"
-    init="/sbin/init"
-    run_opts=""
-    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10"
-    test_command="devshop devmaster:test"
 
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
