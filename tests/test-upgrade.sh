@@ -11,6 +11,9 @@ fi
 # Get argument as the version we should install.
 UPGRADE_FROM_VERSION=$1
 
+echo ">env"
+env
+
 # Detect version to install from Travis variables.
 if [ -z $TRAVIS_PULL_REQUEST_BRANCH ]; then
   UPGRADE_TO_VERSION=$TRAVIS_BRANCH
