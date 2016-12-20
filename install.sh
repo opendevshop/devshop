@@ -71,6 +71,8 @@ fi
 
 LINE=---------------------------------------------
 
+MAKEFILE_PATH="/usr/share/devshop/build-devmaster.make"
+
 # Detect playbook path option
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -250,12 +252,6 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   fi
   PLAYBOOK_PATH=/usr/share/devshop
 #  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
-  echo $LINE
-fi
-
-# If MAKEFILE PATH is not found, default to CLI's build-devmaster.
-if [ ! -f "$MAKEFILE_PATH" ]; then
-  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
   echo $LINE
 fi
 
