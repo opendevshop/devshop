@@ -35,7 +35,7 @@ fi
 
 set -ev
 curl -OL "https://github.com/opendevshop/devshop/releases/download/$UPGRADE_FROM_VERSION/install.sh"
-sudo bash install.sh
+sudo bash install.sh --makefile=https://raw.githubusercontent.com/opendevshop/devshop/$UPGRADE_FROM_VERSION/build-devmaster.make
 
 echo "Running devshop:upgrade command..."
 devshop self-update
