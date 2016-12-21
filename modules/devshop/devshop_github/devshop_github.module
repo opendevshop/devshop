@@ -673,6 +673,9 @@ function devshop_github_webhook($project_node) {
             } catch (Github\Exception\RuntimeException $e) {
               watchdog('devshop_github', 'GitHub Runtime Error: ' . $e->getMessage());
               $message .= 'GitHub RunTimeException during PR Create: ' . $e->getMessage() . $e->getCode();
+
+              http_response_code(500);
+
               if ($e->getCode() == '409') {
                 $message .= "\n Branch is out of date! alert the developer!";
 
