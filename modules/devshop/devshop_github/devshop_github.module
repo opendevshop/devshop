@@ -613,7 +613,7 @@ function devshop_github_webhook($project_node) {
               ;
               $params->required_contexts = array();
 
-              $message .= "\nEnvironment: " . print_r($environment, 1);
+              // $message .= "\nEnvironment: " . print_r($environment, 1);
               $message .= "\nDeployment Params: " . print_r($params, 1);
 
               $post_url = "/repos/$owner/$repo/deployments";
