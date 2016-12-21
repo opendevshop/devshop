@@ -823,6 +823,9 @@ function devshop_github_webhook($project_node) {
                 // Post status to github
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
               }
+              else {
+                http_response_code(500);
+              }
               $message .= $log . "\n";
             }
 
