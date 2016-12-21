@@ -1353,10 +1353,12 @@ function devshop_environment_add_form_profile_options($project) {
 
   foreach ($project->environments as $e => $environment) {
 
+    drupal_set_message('environment  '.$environment->name.' with platform '. $environment->platform);
     $packages = hosting_package_instances_load(array(
       'package_type' => 'profile',
-      'platform' => $environment->platform,
+      'rid' => $environment->platform,
     ));
+
     foreach ($packages as $instance) {
       $options[$instance->short_name] = $instance->title;
       $options[$instance->short_name] .= ' <small class="text-muted">' . $instance->description . '</small>';
