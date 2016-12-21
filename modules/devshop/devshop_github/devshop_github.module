@@ -737,7 +737,10 @@ function devshop_github_webhook($project_node) {
             // Create a new deployment
             $owner = $project->github_owner;
             $repo = $project->github_repo;
-            $message .= "About to set deployment status for $owner/$repo...  \n";
+            $environment = $project->environments[$environment_name];
+
+            $message .= "About to set deployment status for repo $owner/$repo using environment $environment_name  \n";
+            $message .= "Environment: " . print_r($environment, 1);
 
             try {
               $token = variable_get('devshop_github_token', '');
@@ -745,7 +748,6 @@ function devshop_github_webhook($project_node) {
               $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
 
               $sha = $data->pull_request->head->sha;
-              $environment = (object) $project->environments[$environment_name];
 
               $params = new stdClass();
               $params->ref = $sha;
