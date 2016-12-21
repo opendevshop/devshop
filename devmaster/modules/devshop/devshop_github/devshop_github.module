@@ -590,7 +590,7 @@ function devshop_github_webhook($project_node) {
 
             $project_node = node_load($project->nid);
             $project = $project_node->project;
-            $environment = $project->environment[$environment_name];
+            $environment = $project->environments[$environment_name];
 
             $owner = $project->github_owner;
             $repo = $project->github_repo;
