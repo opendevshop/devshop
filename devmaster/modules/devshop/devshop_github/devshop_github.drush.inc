@@ -21,6 +21,11 @@ function devshop_github_hosting_task_update_status($task, $status) {
   // If a pull request object is available...
   if (isset($environment->github_pull_request->pull_request_object->deployment)) {
 
+    // If project is configured to reinstall every time, only react on "install" tasks. Otherwise, we get two github deployments because both a "deploy" (git pull) and a "install" task are run on each git push.
+    if ($project->settings->github['pull_request_reinstall'] && $task->task_type == 'devshop-deploy') {
+      return;
+    }
+
     // Create a deployment status
     $owner = $project->github_owner;
     $repo = $project->github_repo;
