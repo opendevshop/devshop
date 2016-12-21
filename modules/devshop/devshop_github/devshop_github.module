@@ -739,6 +739,12 @@ function devshop_github_webhook($project_node) {
             $repo = $project->github_repo;
             $environment = $project->environments[$environment_name];
 
+            // Environment might have been deleted.
+            if (empty($environment)) {
+              $message .= "Environment $environment_name not found in project $project->name.";
+              continue;
+            }
+
             $message .= "About to set deployment status for repo $owner/$repo using environment $environment_name  \n";
             $message .= "Environment: " . print_r($environment, 1);
 
