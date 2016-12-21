@@ -835,7 +835,7 @@ function devshop_github_webhook($project_node) {
 
             // Save environment record.
             $results = db_select('hosting_devshop_github_pull_requests', 'pr')
-              ->condition(array('id' => $data->pull_request->id))
+              ->condition('id', $data->pull_request->id)
               ->fields('pr', array('id'))
               ->execute()
               ->fetchAssoc();
