@@ -706,9 +706,9 @@ function devshop_github_webhook($project_node) {
               $info->pull_request_object = serialize($data->pull_request);
 
               // Last minute check for existing PR info
-              $results = db_select('hosting_devshop_github_pull_requests', 'h')
+              $results = db_select('hosting_devshop_github_pull_requests', 'pr')
                 ->condition('id', $data->pull_request->id)
-                ->fields('h', array('id'))
+                ->fields('pr', array('id'))
                 ->execute()
                 ->fetchAssoc();
 
@@ -834,9 +834,9 @@ function devshop_github_webhook($project_node) {
             $info->pull_request_object = serialize($data->pull_request);
 
             // Save environment record.
-            $results = db_select('hosting_devshop_github_pull_requests')
+            $results = db_select('hosting_devshop_github_pull_requests', 'pr')
               ->condition(array('id' => $data->pull_request->id))
-              ->fields(array('id'))
+              ->fields('pr', array('id'))
               ->execute()
               ->fetchAssoc();
 
