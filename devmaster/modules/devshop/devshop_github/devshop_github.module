@@ -834,11 +834,18 @@ function devshop_github_webhook($project_node) {
             $info->pull_request_object = serialize($data->pull_request);
 
             // Save environment record.
-            if (isset($project->environments[$environment_name]->github_pull_request)) {
-              $update = array('id');
+            $results = db_select('hosting_devshop_github_pull_requests')
+              ->condition(array('id' => $data->pull_request->id))
+              ->fields(array('id'))
+              ->execute()
+              ->fetchAssoc();
+
+            // If there are results, save $update param for drupal_write_record().
+            if (empty($results)) {
+              $update = array();
             }
             else {
-              $update = array();
+              $update = array('id');
             }
 
             if (drupal_write_record('hosting_devshop_github_pull_requests', $info, $update)) {
