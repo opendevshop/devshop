@@ -70,7 +70,6 @@ before_install:
   # Pull container
   - 'sudo docker pull ${distribution}:${version}'
   # Customize container
-  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
   - 'sudo docker build --rm=true --file=devshop/tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible devshop/tests'
 script:
   - container_id=$(mktemp)
