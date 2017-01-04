@@ -120,8 +120,4 @@ Feature: Create a project
     And I should see "Environment Settings"
 
     When I click "http://test.drpl8.devshop.travis"
-
-    # @TODO: Fix the problem preventing this site from loading.
-    # We don't have time to spend on this obscure edge case bug before the next release.
-    Then print last response
-#    And I should see "Welcome to test.drpl8.devshop.travis"
+    Then I should see "test.drpl8.devshop.travis" in the ".site-branding__name" element
