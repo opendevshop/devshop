@@ -99,6 +99,7 @@ Feature: Create a project
     And I fill in "test" for "Environment Name"
     And I select "master" from "Branch or Tag"
     And I select the radio button "Drupal Profile"
+    Then I select the radio button "Standard Install with commonly used features pre-configured."
 
     #@TODO: Check lots of settings
 
