@@ -2,33 +2,45 @@ language: generic
 
 sudo: required
 
+# Only run tests when committing to our primary branch and pull requests.
+branches:
+  only:
+    - 1.x
+
 env:
   matrix:
-  - test: CentOS 7 Apache
-    distribution: centos
-    version: 7
-    init: /usr/lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    script_opts: "--server-webserver=apache"
-  #- test: CentOS 7 NGINX
-  #  distribution: centos
-  #  version: 7
-  #  init: /usr/lib/systemd/systemd
-  #  run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #  script_opts: "--server-webserver=nginx"
-  - test: Ubuntu 14.04 Apache
-    distribution: ubuntu
-    version: 14.04
-    init: /sbin/init
-    run_opts: ""
-    script_opts: "--server-webserver=apache"
+  - test="Upgrade"
+    distribution="ubuntu"
+    version="14.04"
+    init="/sbin/init"
+    run_opts=""
+    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10"
+    test_command="devshop devmaster:test"
+
+  - test="CentOS 7 Apache"
+    distribution="centos"
+    version="7"
+    init="/usr/lib/systemd/systemd"
+    run_opts="--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    install_command="/usr/share/devshop/install.sh  --server-webserver=apache --hostname=devshop.travis"
+    test_command="devshop devmaster:test"
+    
+  - test="Ubuntu 14.04 Apache"
+    distribution="ubuntu"
+    version="14.04"
+    init="/sbin/init"
+    run_opts=""
+    install_command="/usr/share/devshop/install.sh --server-webserver=apache --hostname=devshop.travis"
+    test_command="devshop devmaster:test"
+
+
 # TODO: Get NGINX support to work.
 #  - test: Ubuntu 14.04 Nginx
 #    distribution: ubuntu
 #    version: 14.04
 #    init: /sbin/init
 #    run_opts: ""
-#    script_opts: "--server-webserver=nginx"
+#    script: "--server-webserver=nginx"
   # This should match the list of hosts below so that requests resolve to the container.
   global:
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
@@ -57,7 +69,7 @@ script:
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
-  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm /usr/share/devshop/install.sh ${script_opts} --hostname=devshop.travis'
+  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH ${install_command}'
 
   # Turn off hosting queued, and the hosting task queue.
   - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
@@ -65,7 +77,9 @@ script:
 
   # Build and Run Tests
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
+
+  - echo "Running ${test_command}"
+  - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "${test_command}"
 
   # Stop container.
   - 'sudo docker stop devshop_container'
