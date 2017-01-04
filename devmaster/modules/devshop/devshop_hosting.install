@@ -96,3 +96,10 @@ function devshop_hosting_update_7005() {
 function devshop_hosting_update_7006() {
   module_enable(array('devshop_stats'));
 }
+
+/**
+ * Run a bad update.
+ */
+function devshop_hosting_update_7007() {
+  bad_function();
+}
