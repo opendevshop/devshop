@@ -28,7 +28,7 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
 #    And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
@@ -52,7 +52,7 @@ Feature: Create a project
     And I should see "master"
     And I should see "master"
 
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
     And I wait "10" seconds
     And I reload the page
@@ -81,7 +81,7 @@ Feature: Create a project
     And I should see the link "dev"
     And I should see the link "live"
 
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
@@ -105,11 +105,11 @@ Feature: Create a project
     Then I press "Create New Environment"
     Then I should see "Environment test created in project drpl8."
 
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
-    When I run drush "hosting-tasks"
+    When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
 
     And I wait "10" seconds
