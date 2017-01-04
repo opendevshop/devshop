@@ -15,11 +15,24 @@ UPGRADE_TO_MAKEFILE=$2
 echo ">env"
 env
 
-# Detect version to install from Travis variables.
-if [ -z $TRAVIS_PULL_REQUEST_BRANCH ]; then
-  UPGRADE_TO_VERSION=$TRAVIS_BRANCH
-else
-  UPGRADE_TO_VERSION=$TRAVIS_PULL_REQUEST_BRANCH
+# If repo being tested is devshop... use the build branch as the upgrade target.
+if [ "$TRAVIS_REPO_SLUG"=="opendevshop/devshop" ]; then
+
+    # If TRAVIS_PULL_REQUEST_BRANCH variable doesn't exist, it's not a pull request, use the $TRAV)S_BRANCH variable.
+    if [ -z $TRAVIS_PULL_REQUEST_BRANCH ]; then
+      UPGRADE_TO_VERSION=$TRAVIS_BRANCH
+    else
+      UPGRADE_TO_VERSION=$TRAVIS_PULL_REQUEST_BRANCH
+    fi
+
+elif [ "$TRAVIS_REPO_SLUG"=="opendevshop/devmaster" ]; then
+
+    # If DEVSHOP_UPGRADE_TO_VERSION variable is not set, use 1.x.
+    if [ -z $DEVSHOP_UPGRADE_TO_VERSION ]; then
+      UPGRADE_TO_VERSION="1.x"
+    else
+      UPGRADE_TO_VERSION=$DEVSHOP_UPGRADE_TO_VERSION
+    fi
 fi
 
 if [ -z $UPGRADE_FROM_VERSION ]; then
