@@ -10,6 +10,7 @@ fi
 
 # Get argument as the version we should install.
 UPGRADE_FROM_VERSION=$1
+UPGRADE_TO_MAKEFILE=$2
 
 echo ">env"
 env
@@ -39,7 +40,7 @@ sudo bash install.sh --makefile=https://raw.githubusercontent.com/opendevshop/de
 
 echo "Running devshop:upgrade command..."
 devshop self-update
-devshop upgrade $UPGRADE_TO_VERSION -n
+devshop upgrade $UPGRADE_TO_VERSION -n --makefile=$UPGRADE_TO_MAKEFILE
 
 su - aegir -c "drush @hostmaster hosting-tasks"
 
