@@ -58,7 +58,7 @@ services:
 
 before_install:
   # Clone devshop
-  - export DEVSHOP_VERSION=1.x
+  - export DEVSHOP_VERSION=unforked-tasks-tests
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${DEVSHOP_VERSION}
