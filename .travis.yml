@@ -16,6 +16,7 @@ env:
     run_opts=""
     install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 /usr/share/devshop/build-devmaster-test.make"
     test_command="devshop devmaster:test"
+    DEVSHOP_UPGRADE_TO_VERSION="1.x"
 
   - test="CentOS 7 Apache"
     distribution="centos"
@@ -78,7 +79,7 @@ script:
   - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   # Install script.
-  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH ${install_command} --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
+  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG DEVSHOP_UPGRADE_TO_VERSION=$DEVSHOP_UPGRADE_TO_VERSION TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH ${install_command} --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
 
   # Hostmaster Status
   - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
