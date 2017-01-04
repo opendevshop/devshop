@@ -14,7 +14,7 @@ env:
     version="14.04"
     init="/sbin/init"
     run_opts=""
-    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 /usr/share/devshop/build-devmaster.make"
+    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 /usr/share/devshop/build-devmaster-test.make"
     test_command="devshop devmaster:test"
 
   - test="CentOS 7 Apache"
@@ -62,9 +62,10 @@ before_install:
   - cd devshop
   - git checkout -qf ${DEVSHOP_VERSION}
   - git status
-  - echo projects[devmaster][download][type] = "copy" >> build-devmaster.make
-  - echo projects[devmaster][download][url] = "/usr/share/devshop/devmaster" >> build-devmaster.make
-  - cat build-devmaster.make
+  - cp build-devmaster.make build-devmaster-test.make
+  - echo projects[devmaster][download][type] = "copy" >> build-devmaster-test.make
+  - echo projects[devmaster][download][url] = "/usr/share/devshop/devmaster" >> build-devmaster-test.make
+  - cat build-devmaster-test.make
   - cd ..
 
   # Pull container
