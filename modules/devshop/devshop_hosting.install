@@ -98,7 +98,7 @@ function devshop_hosting_update_7006() {
 }
 
 /**
- * Run a bad update.
+ * Run a bad update to test failed upgrades.
  */
 function devshop_hosting_update_7007() {
   bad_function();
