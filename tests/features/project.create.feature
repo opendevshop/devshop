@@ -30,7 +30,7 @@ Feature: Create a project
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
-    And I wait "10" seconds
+#    And I wait "10" seconds
     And I reload the page
     And I reload the page
 
@@ -54,7 +54,7 @@ Feature: Create a project
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
-    And I wait "10" seconds
+#    And I wait "10" seconds
     And I reload the page
 
     Then I should see "dev"
@@ -62,7 +62,7 @@ Feature: Create a project
     And I should see "master"
 
     And I should see "master"
-    And I wait "10" seconds
+#    And I wait "10" seconds
     And I reload the page
 #    When I click "Process Failed"
 #    Then print last response
@@ -85,7 +85,7 @@ Feature: Create a project
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
-    Then I wait "5" seconds
+#    Then I wait "5" seconds
     And I reload the page
     Then I should see the link "dev"
     Then I should see the link "live"
@@ -99,6 +99,7 @@ Feature: Create a project
     And I fill in "test" for "Environment Name"
     And I select "master" from "Branch or Tag"
     And I select the radio button "Drupal Profile"
+    Then I select the radio button "Standard Install with commonly used features pre-configured."
 
     #@TODO: Check lots of settings
 
@@ -112,15 +113,11 @@ Feature: Create a project
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
 
-    And I wait "10" seconds
+#    And I wait "10" seconds
 
     When I click "test"
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
     When I click "http://test.drpl8.devshop.travis"
-
-    # @TODO: Fix the problem preventing this site from loading.
-    # We don't have time to spend on this obscure edge case bug before the next release.
-    Then print last response
-#    And I should see "Welcome to test.drpl8.devshop.travis"
+    Then I should see "test.drpl8.devshop.travis" in the ".site-branding__name" element
