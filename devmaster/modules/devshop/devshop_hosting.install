@@ -92,7 +92,11 @@ function devshop_hosting_update_7005() {
 
 /**
  * Enable devshop_stats module.
- */
+ *
+ * Removed now that we had a "successful failure". https://travis-ci.org/opendevshop/devmaster/jobs/189200584#L2682
+ *
 function devshop_hosting_update_7006() {
   module_enable(array('devshop_stats'));
 }
+ */
+
