@@ -52,7 +52,7 @@ curl -OL "https://github.com/opendevshop/devshop/releases/download/$UPGRADE_FROM
 sudo bash install.sh --makefile=https://raw.githubusercontent.com/opendevshop/devshop/$UPGRADE_FROM_VERSION/build-devmaster.make
 
 echo "Running devshop:upgrade command..."
-devshop self-update
+devshop self-update $UPGRADE_TO_VERSION
 devshop upgrade $UPGRADE_TO_VERSION -n --makefile=$UPGRADE_TO_MAKEFILE
 
 su - aegir -c "drush @hostmaster hosting-tasks"
