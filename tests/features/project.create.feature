@@ -30,7 +30,6 @@ Feature: Create a project
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
-#    And I wait "10" seconds
     And I reload the page
     And I reload the page
 
@@ -54,7 +53,6 @@ Feature: Create a project
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
-#    And I wait "10" seconds
     And I reload the page
 
     Then I should see "dev"
@@ -62,7 +60,6 @@ Feature: Create a project
     And I should see "master"
 
     And I should see "master"
-#    And I wait "10" seconds
     And I reload the page
 #    When I click "Process Failed"
 #    Then print last response
@@ -85,7 +82,6 @@ Feature: Create a project
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
-#    Then I wait "5" seconds
     And I reload the page
     Then I should see the link "dev"
     Then I should see the link "live"
@@ -113,7 +109,6 @@ Feature: Create a project
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
 
-#    And I wait "10" seconds
 
     When I click "test"
     Then I should see "Environment Dashboard"
