@@ -16,7 +16,7 @@ echo ">env"
 env
 
 # If repo being tested is devshop... use the build branch as the upgrade target.
-if [ "$TRAVIS_REPO_SLUG"=="opendevshop/devshop" ]; then
+if [ $TRAVIS_REPO_SLUG == "opendevshop/devshop" ]; then
 
     echo "Repo opendevshop/devshop found..."
 
@@ -27,7 +27,7 @@ if [ "$TRAVIS_REPO_SLUG"=="opendevshop/devshop" ]; then
       UPGRADE_TO_VERSION=$TRAVIS_PULL_REQUEST_BRANCH
     fi
 
-elif [ "$TRAVIS_REPO_SLUG"=="opendevshop/devmaster" ]; then
+elif [ $TRAVIS_REPO_SLUG == "opendevshop/devmaster" ]; then
 
     echo "Repo opendevshop/devmaster found..."
 
