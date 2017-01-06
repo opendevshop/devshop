@@ -104,7 +104,7 @@ body.admin-menu .navbar-static-top {
     margin-right: .5em;
 }
 
-.environment-meta-data a.environment-info i.fa {
+.environment-meta-data.environment-info i.fa {
     margin-right: 0;
 }
 .environment-meta-data.environment-info {
