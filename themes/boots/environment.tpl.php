@@ -6,7 +6,7 @@
 
       <!-- Information Modal -->
       <a type="button" class="environment-meta-data environment-info btn btn-text btn-sm" title="<?php print t('Environment Information') ?>" data-toggle="modal" data-target="#infoModal<?php print $environment->site ?>">
-          <i class="fa fa-info-circle"></i>
+          <i class="fa fa-info-circle fa-2x"></i>
           <span class="sr-only">
             <?php print t('Environment Information') ?>
           </span>
