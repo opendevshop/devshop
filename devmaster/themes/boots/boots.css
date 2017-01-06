@@ -103,6 +103,10 @@ body.admin-menu .navbar-static-top {
 .environment-meta-data i.fa {
     margin-right: .5em;
 }
+
+.environment-meta-data a.environment-info i.fa {
+    margin-right: 0;
+}
 .environment-meta-data.environment-info {
     text-transform: uppercase;
     z-index: 1;
