@@ -114,5 +114,5 @@ Feature: Create a project
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
-    When I click "http://test.drpl8.devshop.travis"
+    When I click "View Site"
     Then I should see "test.drpl8.devshop.travis" in the ".site-branding__name" element
