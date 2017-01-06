@@ -401,8 +401,10 @@
         <label>
           <?php print t('Created'); ?>
         </label>
-        <time class="timeago" datetime="<?php print date('c', $environment->created) ?>"><?php print format_date($environment->created); ?></time>
-        <?php print $environment->install_method_label; ?>
+        <span class="content">
+            <time class="timeago" datetime="<?php print date('c', $environment->created) ?>"><?php print format_date($environment->created); ?></time>
+            <?php print $environment->install_method_label; ?>
+        </span>
     </div>
     <?php
       // SITUATION: Environment is Active!
