@@ -399,11 +399,10 @@
   <!-- Environment Info -->
     <div class="list-group-item environment-info">
         <label>
-          <?php print t('Created'); ?> <time class="timeago" datetime="<?php print date('c', $environment->created) ?>"><?php print format_date($environment->created); ?></time>
+          <?php print t('Created'); ?>
         </label>
-      <label>
+        <time class="timeago" datetime="<?php print date('c', $environment->created) ?>"><?php print format_date($environment->created); ?></time>
         <?php print $environment->install_method_label; ?>
-      </label>
     </div>
     <?php
       // SITUATION: Environment is Active!
