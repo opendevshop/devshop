@@ -31,7 +31,7 @@ function drush_acquia_post_provision_devshop_deploy($branch) {
     }
 
     // Detect hook files.
-    $cloud_hooks_path = $environment->repo_root . '/hooks';
+    $cloud_hooks_path = $environment->repo_path . '/hooks';
     if (file_exists($cloud_hooks_path)) {
       drush_log('[DEVSHOP] Acquia Cloud Hooks detected...', 'ok');
     }

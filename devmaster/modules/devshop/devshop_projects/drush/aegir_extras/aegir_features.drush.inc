@@ -45,7 +45,7 @@ function drush_aegir_features_provision_features_update() {
     }
 
     // Show git status
-    devshop_drush_process("git status", $environment->repo_root, NULL, dt('Checking git status'));
+    devshop_drush_process("git status", $environment->repo_path, NULL, dt('Checking git status'));
 
     // Revert force revert the features if the user asked.
     if ($revert) {
