@@ -296,10 +296,14 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       $platform->title = $project->name . '_' . $name;
 
       // Platform publish_path
-      if (!empty($project->drupal_path)) {
+  
+      // If drupal path is set, repo path and platform path are different. Append drupal_path to repo path to create publish path.
+      if ($project->drupal_path) {
+        $platform->git['repo_path'] = $project->code_path . '/' . $environment->name;
         $platform->publish_path = $project->code_path . '/' . $environment->name . '/' . $project->drupal_path;
       }
       else {
+        $platform->git['repo_path'] = $project->code_path . '/' . $environment->name;
         $platform->publish_path = $project->code_path . '/' . $environment->name;
       }
 
