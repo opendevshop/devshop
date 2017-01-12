@@ -26,8 +26,9 @@ projects[hosting][subdir] = "aegir"
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
 
-projects[hosting_git][version] = "3.8"
 projects[hosting_git][subdir] = aegir
+projects[hosting_git][download][branch] = "2838489-repo-platform-path"
+projects[hosting_git][download][type] = "git"
 
 projects[hosting_remote_import][subdir] = aegir
 
