@@ -110,7 +110,9 @@ To setup your IDE to listen for debug connections, use the following settings:
   
 In PHPStorm, this is in the *Settings > PHP > Debug > DGBp Proxy* page.
 
-Don't forget to "Start Listening to PHP Debug Connections" and to set a breakpoint or an error to see the debugger work.
+Don't forget to "Start Listening to PHP Debug Connections", get an XDEBUG plugin for your browser and enable it for devshop.local.computer, and to set a breakpoint or an error to see the debugger work.
+
+If using PHPStorm, It will ask you to map files. You should map ./aegir-home to /var/aegir as "Absolute path on the server".
 
 If your Docker machine IP is not 172.17.0.1, you can change it but you must also change a line in docker-compose.yml:
 
