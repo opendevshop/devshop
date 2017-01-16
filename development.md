@@ -103,10 +103,10 @@ This is extremely helpful when working on tasks, which might be running in the b
 
 To setup your IDE to listen for debug connections, use the following settings:
 
-  > DGBp Proxy:
-  > idekey: PHPSTORM
-  > Host: 172.17.0.1
-  > Port: 9000
+  **DGBp Proxy**:
+  - idekey: PHPSTORM
+  - Host: 172.17.0.1
+  - Port: 9000
   
 In PHPStorm, this is in the *Settings > PHP > Debug > DGBp Proxy* page.
 
