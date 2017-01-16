@@ -94,6 +94,29 @@ with your forked repo url and branch like so:
     
 See the `./source/devmaster-1.x/profiles/devmaster` folder for the fully built devmaster stack. 
 
+Debugging
+---------
+
+The containers now contain XDEBUG that works for web requests and drush calls.
+
+This is extremely helpful when working on tasks, which might be running in the backend.
+
+To setup your IDE to listen for debug connections, use the following settings:
+
+  > DGBp Proxy:
+  > idekey: PHPSTORM
+  > Host: 172.17.0.1
+  > Port: 9000
+  
+In PHPStorm, this is in the *Settings > PHP > Debug > DGBp Proxy* page.
+
+Don't forget to "Start Listening to PHP Debug Connections" and to set a breakpoint or an error to see the debugger work.
+
+If your Docker machine IP is not 172.17.0.1, you can change it but you must also change a line in docker-compose.yml:
+
+        XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
+
+
 Help Improve Documentation
 --------------------------
 
