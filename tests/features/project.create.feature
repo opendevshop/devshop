@@ -92,7 +92,7 @@ Feature: Create a project
 #    Then I should see "No front page content has been created yet."
 
     When I click "Create New Environment"
-    And I fill in "test" for "Environment Name"
+    And I fill in "testenv" for "Environment Name"
     And I select "master" from "Branch or Tag"
     And I select the radio button "Drupal Profile"
     Then I select the radio button "Standard Install with commonly used features pre-configured."
@@ -100,7 +100,7 @@ Feature: Create a project
     #@TODO: Check lots of settings
 
     Then I press "Create New Environment"
-    Then I should see "Environment test created in project drpl8."
+    Then I should see "Environment testenv created in project drpl8."
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
@@ -109,9 +109,10 @@ Feature: Create a project
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
 
-    When I click "test" in the "main" region
+    When I click "testenv" in the "main" region
+    Then print current URL
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
-    When I click "http://test.drpl8.devshop.travis"
-    Then I should see "test.drpl8.devshop.travis" in the ".site-branding__name" element
+    When I click "http://testenv.drpl8.devshop.travis"
+    Then I should see "testenv.drpl8.devshop.travis" in the ".site-branding__name" element
