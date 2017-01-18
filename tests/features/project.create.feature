@@ -109,8 +109,7 @@ Feature: Create a project
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
 
-
-    When I click "test"
+    When I click "test" in the "main" region
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
