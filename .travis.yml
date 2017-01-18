@@ -43,14 +43,14 @@ env:
 #    script: "--server-webserver=nginx"
   # This should match the list of hosts below so that requests resolve to the container.
   global:
-    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
+    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 addons:
   hosts:
     - devshop.travis
     - dev.projectname.devshop.travis
     - live.projectname.devshop.travis
     - dev.drpl8.devshop.travis
-    - test.drpl8.devshop.travis
+    - testenv.drpl8.devshop.travis
 
 services:
   - docker
