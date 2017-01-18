@@ -40,6 +40,12 @@ class DevmasterTest extends Command {
         'The root path to the site to test, if @hostmaster alias is not found.',
         '/var/aegir/devmaster-1.x'
       )
+      ->addOption(
+        'name',
+        '',
+        InputOption::VALUE_OPTIONAL,
+        'A test name to pass to bin/behat --name option'
+      )
     ;
   }
 
@@ -92,7 +98,13 @@ class DevmasterTest extends Command {
 //    $fs->dumpFile($settings_default_path, trim($output));
 
     // Run bin/behat
-    $process = new Process('bin/behat --colors');
+    $cmd = 'bin/behat --colors';
+    
+    if ($input->getOption('name')) {
+      $cmd .= ' --name=' . $input->getOption('name');
+    }
+    
+    $process = new Process($cmd);
     $process->setTimeout(NULL);
     $process->setWorkingDirectory(__DIR__ . '/../../../tests');
     $process->setEnv(array(
