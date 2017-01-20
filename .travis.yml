@@ -81,5 +81,8 @@ script:
   - echo "Running ${test_command}"
   - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "${test_command}"
 
+  # Test Drupal Console
+  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drupal list"'
+
   # Stop container.
   - 'sudo docker stop devshop_container'
