@@ -433,7 +433,7 @@ function devshop_fqdn($host = NULL) {
 function drush_devshop_provision_pre_provision_verify() {
   if (d()->type === 'project' || (d()->type === 'site' || d()->type === 'platform')) {
     
-    if (d()->type == 'site') {
+    if (d()->type == 'site' || d()->type == 'platform') {
       $project_context = 'project_' . d()->project;
       $drush_aliases = new Provision_Config_ProjectAliases(d($project_context)->name, d($project_context)->project);
     }
