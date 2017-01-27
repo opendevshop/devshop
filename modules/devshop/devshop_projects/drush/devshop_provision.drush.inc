@@ -431,8 +431,16 @@ function devshop_fqdn($host = NULL) {
  * implementation of provision_verify
  */
 function drush_devshop_provision_pre_provision_verify() {
-  if (d()->type === 'project') {
-    $drush_aliases = new Provision_Config_ProjectAliases(d()->name, d()->project);
+  if (d()->type === 'project' || (d()->type === 'site' || d()->type === 'platform')) {
+    
+    if (d()->type == 'site') {
+      $project_context = 'project_' . d()->project;
+      $drush_aliases = new Provision_Config_ProjectAliases(d($project_context)->name, d($project_context)->project);
+    }
+    else {
+      $drush_aliases = new Provision_Config_ProjectAliases(d()->name, d()->project);
+    }
+    
     $drush_aliases->write();
 
     drush_log(dt('Project Drush aliases written.'), 'devshop_log');
