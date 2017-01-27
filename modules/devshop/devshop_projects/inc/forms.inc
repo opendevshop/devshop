@@ -579,11 +579,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
             $form['parameters']['source'] = array(
               '#type' => 'value',
-              '#value' => $source->environment->drush_alias,
+              '#value' => $source->environment->system_alias,
             );
             $form['parameters']['destination'] = array(
               '#type' => 'value',
-              '#value' => $node->environment->drush_alias,
+              '#value' => $node->environment->system_alias,
             );
           }
 
