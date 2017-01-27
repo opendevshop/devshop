@@ -110,7 +110,12 @@ class RoboFile extends \Robo\Tasks
   /**
    * Launch devshop containers using docker-compose up, optionally outputting logs.
    */
-  public function up() {
+  public function up($opts = ['follow' => false]) {
+    $cmd = "docker-compose up -d";
+    if ($opts['follow']) {
+      $cmd .= "; docker-compose logs -f";
+    }
+    $this->_exec($cmd);
   }
   
   /**
