@@ -50,10 +50,55 @@ class RoboFile extends \Robo\Tasks
     }
   }
   
+  private $repos = [
+    'provision' => 'git@git.drupal.org:project/provision.git',
+    'aegir-home/.drush/commands/registry_rebuild' => 'git@git.drupal.org:project/registry_rebuild.git',
+    'documentation' => 'http://github.com/opendevshop/documentation.git',
+    'dockerfiles' => 'http://github.com/opendevshop/dockerfiles.git',
+    'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
+  ];
+  
   /**
    * Clone all needed source code and build devmaster from the makefile.
    */
   public function prepareSourcecode() {
+  
+    
+    // Create the Aegir Home directory.
+    if (file_exists("aegir-home/.drush/commands")) {
+      $this->say("aegir-home/.drush/commands already exists.");
+    }
+    else {
+      $this->taskExecStack()
+      ->exec('mkdir -p aegir-home/.drush/commands')
+      ->run();
+    }
+      
+    // Clone all git repositories.
+    foreach ($this->repos as $path => $url) {
+      if (file_exists($path)) {
+        $this->say("$path already exists.");
+      }
+      else {
+        $this->taskGitStack()
+          ->cloneRepo($url, $path)
+          ->run();
+      }
+    }
+    
+    // Run drush make to build the devmaster stack.
+    $make_path = "aegir-home/devmaster-1.x";
+    if (file_exists("aegir-home/devmaster-1.x")) {
+      $this->say("Path aegir-home/devmaster-1.x already exists.");
+    } else {
+      $result = $this->_exec("drush make build-devmaster.make aegir-home/devmaster-1.x --working-copy --no-gitinfofile");
+      if ($result->wasSuccessful()) {
+        $this->say('Built devmaster from makefile.');
+      }
+      else {
+        $this->say("Drush make failed with the exit code " . $result->getExitCode());
+      }
+    }
   }
   
   /**
