@@ -50,7 +50,10 @@ function drush_devshop_provision_provision_test() {
   }
   elseif ($type == 'behat') {
     // Get paths from options or site context.
-    $repo_path = $environment->repo_path;
+    $repo_path = !empty(d()->platform->repo_path)?
+      d()->platform->repo_path:
+      d()->platform->publish_path
+    ;
     $behat_folder_path = drush_get_option('behat-folder-path', $project->settings['testing']['behat_folder_path']);
 
     // If no repo at that path, error.
