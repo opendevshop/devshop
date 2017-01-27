@@ -11,7 +11,9 @@ class RoboFile extends \Robo\Tasks
   const DOCKER_COMPOSE_VERSION = '1.10.0';
   
   /**
-   * Launch a running devshop after preparing the host, sourcecode & containers.
+   * Launch devshop after running prep:host, prep:source, and prep:containers.
+   *
+   * If you only run one command, run this one.
    */
   public function launch() {
     $this->prepareHost();
