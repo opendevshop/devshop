@@ -11,6 +11,16 @@ class RoboFile extends \Robo\Tasks
   const DOCKER_COMPOSE_VERSION = '1.10.0';
   
   /**
+   * Launch a running devshop after preparing the host, sourcecode & containers.
+   */
+  public function launch() {
+    $this->prepareHost();
+    $this->prepareSourcecode();
+    $this->prepareContainers();
+    $this->up(['follow' => TRUE]);
+  }
+  
+  /**
    * Check for docker, docker-compose and drush. Install them if they are missing.
    */
   public function prepareHost() {
