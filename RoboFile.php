@@ -7,6 +7,9 @@
 class RoboFile extends \Robo\Tasks
 {
   
+  // The version of docker-compose to suggest the user install.
+  const DOCKER_COMPOSE_VERSION = '1.10.0';
+  
   /**
    * Check for docker, docker-compose and drush. Install them if they are missing.
    */
@@ -30,7 +33,7 @@ class RoboFile extends \Robo\Tasks
       $this->yell('Could not run docker-compose command.', 40, 'red');
       $this->say("Run the following command as root to install it or see https://docs.docker.com/compose/install/ for more information.");
       
-      $this->say('curl -L "https://github.com/docker/compose/releases/download/1.10.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
+      $this->say('curl -L "https://github.com/docker/compose/releases/download/'  . self::DOCKER_COMPOSE_VERSION .'/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
     }
     
     // Check for drush
