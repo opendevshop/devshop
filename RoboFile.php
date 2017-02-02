@@ -17,14 +17,18 @@ class RoboFile extends \Robo\Tasks
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
   
   /**
-   * Launch devshop after running prep:host, prep:source, and prep:containers.
+   * Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
    *
    * If you only run one command, run this one.
    */
-  public function launch() {
+  public function launch($opts = ['build' => false]) {
     $this->prepareHost();
     $this->prepareSourcecode();
-    $this->prepareContainers();
+    
+    if ($opts['build']) {
+      $this->prepareContainers();
+    }
+      
     $this->up(['follow' => TRUE]);
   }
   
