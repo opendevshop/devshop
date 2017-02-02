@@ -155,6 +155,7 @@ class RoboFile extends \Robo\Tasks
    * Stream logs from the containers using docker-compose logs -f
    */
   public function logs() {
+    $this->_exec("docker-compose logs -f");
   }
   
   /**
