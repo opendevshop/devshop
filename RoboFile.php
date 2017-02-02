@@ -10,6 +10,12 @@ class RoboFile extends \Robo\Tasks
   // The version of docker-compose to suggest the user install.
   const DOCKER_COMPOSE_VERSION = '1.10.0';
   
+  // Defines where devmaster is installed.  'aegir-home/devmaster-$DEVSHOP_LOCAL_VERSION'
+  const DEVSHOP_LOCAL_VERSION = '1.x';
+  
+  // Defines the URI we will use for the devmaster site.
+  const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
+  
   /**
    * Launch devshop after running prep:host, prep:source, and prep:containers.
    *
@@ -147,9 +153,31 @@ class RoboFile extends \Robo\Tasks
   }
   
   /**
-   * Destroy all containers and volumes using docker-compose rm -f
+   * Destroy all containers, docker volumes, and aegir configuration.
    */
   public function destroy() {
+    $this->_exec('docker-compose kill');
+    $this->_exec('docker-compose rm -fv');
+    
+    $version = self::DEVSHOP_LOCAL_VERSION;
+    $uri = self::DEVSHOP_LOCAL_URI;
+    
+    if ($this->taskFilesystemStack()
+      ->remove('aegir-home/config')
+      ->remove("aegir-home/projects")
+      ->remove("aegir-home/.drush/project_aliases")
+      ->remove("aegir-home/devmaster-{$version}/sites/{$uri}")
+      ->run()
+      ->wasSuccessful()) {
+      
+      // Remove only drush aliases, leave commands
+      $this->_exec('rm aegir-home/.drush/*');
+
+      $this->say("Deleted local folders. ");
+    }
+    else {
+      $this->yell('Unable to delete local folders! Remove manually to fully destroy your local install.');
+    }
   }
   
   /**
