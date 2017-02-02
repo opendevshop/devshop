@@ -35,7 +35,7 @@ class RoboFile extends \Robo\Tasks
     else {
       $this->say('Could not run docker command. Find instructons for installing at https://www.docker.com/products/docker');
     }
-  
+    
     // Check for docker-compose
     $this->say('Checking for docker-compose...');
     if ($this->_exec('docker-compose -v')->wasSuccessful()) {
@@ -56,7 +56,7 @@ class RoboFile extends \Robo\Tasks
     else {
       $this->yell('Could not run drush.', 40, 'red');
       $this->say("Run the following command as root to install it or see http://www.drush.org/en/master/install/ for more information.");
-    
+      
       $this->say('php -r "readfile(\'https://s3.amazonaws.com/files.drush.org/drush.phar\');" > /usr/local/bin/drush
  && chmod +x /usr/local/bin/drush');
     }
@@ -74,7 +74,7 @@ class RoboFile extends \Robo\Tasks
    * Clone all needed source code and build devmaster from the makefile.
    */
   public function prepareSourcecode() {
-  
+    
     
     // Create the Aegir Home directory.
     if (file_exists("aegir-home/.drush/commands")) {
@@ -82,10 +82,10 @@ class RoboFile extends \Robo\Tasks
     }
     else {
       $this->taskExecStack()
-      ->exec('mkdir -p aegir-home/.drush/commands')
-      ->run();
+        ->exec('mkdir -p aegir-home/.drush/commands')
+        ->run();
     }
-      
+    
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
       if (file_exists($path)) {
@@ -143,6 +143,7 @@ class RoboFile extends \Robo\Tasks
    * Stop devshop containers using docker-compose stop
    */
   public function stop() {
+    $this->_exec('docker-compose stop');
   }
   
   /**
@@ -155,7 +156,6 @@ class RoboFile extends \Robo\Tasks
    * Stream logs from the containers using docker-compose logs -f
    */
   public function logs() {
-    $this->_exec("docker-compose logs -f");
   }
   
   /**
