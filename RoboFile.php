@@ -170,14 +170,15 @@ class RoboFile extends \Robo\Tasks
       ->remove('aegir-home/config')
       ->remove("aegir-home/projects")
       ->remove("aegir-home/.drush/project_aliases")
-      ->remove("aegir-home/devmaster-{$version}/sites/{$uri}")
+      ->remove("aegir-home/.drush/*.php")
       ->run()
       ->wasSuccessful()) {
       
-      // Remove only drush aliases, leave commands
-      $this->_exec('rm aegir-home/.drush/*');
+      // Remove devmaster site folder
+      $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
 
-      $this->say("Deleted local folders. ");
+      $this->say("Deleted local folders. Source code is still in place.");
+      $this->say("To launch a new instance, run `robo up`");
     }
     else {
       $this->yell('Unable to delete local folders! Remove manually to fully destroy your local install.');
