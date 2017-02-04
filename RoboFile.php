@@ -21,7 +21,7 @@ class RoboFile extends \Robo\Tasks
    *
    * If you only run one command, run this one.
    */
-  public function launch($opts = ['build' => false]) {
+  public function launch($opts = ['build' => 0]) {
     $this->prepareHost();
     $this->prepareSourcecode();
     
