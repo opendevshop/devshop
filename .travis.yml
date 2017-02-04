@@ -60,14 +60,14 @@ before_install:
 
   # Install Robo
   - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
-  - php robo
+  - php robo.phar
 
   # Launch devshop including preparing the source code.
-  - php robo launch
+  - php robo.phar launch
   - docker-compose exec devmaster drush @hostmaster dis hosting_queued -y
 
 script:
-  - ./robo test
+  - php robo.phar test
   - docker-compose exec devmaster /usr/share/devshop/bin/devshop devmaster:test
 
 #
