@@ -61,9 +61,15 @@ before_install:
   # Install Robo
   - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
   - php robo.phar
+  - alias robo="php robo.phar"
+
+  # Install Drush
+  - wget https://github.com/drush-ops/drush/releases/download/8.1.9/drush.phar
+  - php drush.phar
+  - alias drush="php drush.phar"
 
   # Launch devshop including preparing the source code.
-  - php robo.phar launch
+  - robo launch
   - docker-compose exec devmaster drush @hostmaster dis hosting_queued -y
 
 script:
