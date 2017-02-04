@@ -127,12 +127,21 @@ class RoboFile extends \Robo\Tasks
    * Build aegir and devshop containers from the Dockerfiles.
    */
   public function prepareContainers() {
+  
+    $user_uid = $this->_exec('id -u')->getMessage();
+    $this->say("Found current UID $user_uid. Passing to docker build as a build-arg...");
+    $this->taskDockerBuild('dockerfiles')
+      ->option('file', 'dockerfiles/Dockerfile-xdebug')
+      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('devshop/devmaster:xdebug')
+      ->run()
+      ;
   }
   
   /**
    * Launch devshop containers using docker-compose up, optionally outputting logs.
    */
-  public function up($opts = ['follow' => 1]) {
+  public function up($opts = ['follow' => true, 'test|t' => false]) {
     
     if (!file_exists('aegir-home')) {
       if ($this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
@@ -143,9 +152,15 @@ class RoboFile extends \Robo\Tasks
         return;
       }
     }
-    $cmd = "docker-compose up -d";
-    if ($opts['follow']) {
-      $cmd .= "; docker-compose logs -f";
+    
+    if ($opts['test']) {
+      $cmd = "docker-compose run devmaster 'run-tests.sh'";
+    }
+    else {
+      $cmd = "docker-compose up -d";
+      if ($opts['follow']) {
+        $cmd .= "; docker-compose logs -f";
+      }
     }
     $this->_exec($cmd);
   }
