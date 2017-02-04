@@ -141,7 +141,7 @@ class RoboFile extends \Robo\Tasks
   /**
    * Launch devshop containers using docker-compose up, optionally outputting logs.
    */
-  public function up($opts = ['follow' => true, 'test|t' => false]) {
+  public function up($opts = ['follow' => 1, 'test' => false]) {
     
     if (!file_exists('aegir-home')) {
       if ($this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
