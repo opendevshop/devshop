@@ -59,12 +59,11 @@ before_install:
   - sudo docker --version
 
   # Install Robo
-  - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar -o robo
-  - chmod +x robo
-  - ./robo
+  - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
+  - php robo
 
   # Launch devshop including preparing the source code.
-  - ./robo launch
+  - php robo launch
   - docker-compose exec devmaster drush @hostmaster dis hosting_queued -y
 
 script:
