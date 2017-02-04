@@ -166,23 +166,33 @@ class RoboFile extends \Robo\Tasks
     
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
+  
+    if ($this->confirm('Keep aegir-home folder and devmaster stack?')) {
+      if ($this->taskFilesystemStack()
+        ->remove('aegir-home/config')
+        ->remove("aegir-home/projects")
+        ->remove("aegir-home/.drush/project_aliases")
+        ->remove("aegir-home/.drush/*.php")
+        ->run()
+        ->wasSuccessful()) {
     
-    if ($this->taskFilesystemStack()
-      ->remove('aegir-home/config')
-      ->remove("aegir-home/projects")
-      ->remove("aegir-home/.drush/project_aliases")
-      ->remove("aegir-home/.drush/*.php")
-      ->run()
-      ->wasSuccessful()) {
-      
-      // Remove devmaster site folder
-      $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
-
-      $this->say("Deleted local folders. Source code is still in place.");
-      $this->say("To launch a new instance, run `robo up`");
+        // Remove devmaster site folder
+        $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
+    
+        $this->say("Deleted local folders. Source code is still in place.");
+        $this->say("To launch a new instance, run `robo up`");
+      }
+      else {
+        $this->yell('Unable to delete local folders! Remove manually to fully destroy your local install.');
+      }
     }
     else {
-      $this->yell('Unable to delete local folders! Remove manually to fully destroy your local install.');
+      if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
+        $this->say("Entire aegir-home folder deleted.");
+      }
+      else {
+        $this->yell("Unable to delete aegir-home folder, even with sudo!");
+      }
     }
   }
   
