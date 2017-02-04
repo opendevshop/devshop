@@ -197,6 +197,8 @@ class RoboFile extends \Robo\Tasks
    * Enter a bash shell in the devmaster container.
    */
   public function shell() {
+    $this->say('Not yet implemented. Run the command:');
+    $this->say('docker-compose exec devmaster bash');
   }
   
   /**
