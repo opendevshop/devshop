@@ -230,10 +230,7 @@ class RoboFile extends \Robo\Tasks
    * Run all devshop tests on the containers.
    */
   public function test() {
-    // Stop running containers.
-    $this->stop();
-    
-    // Up containers with "test" option, so tests run instead of hosting-queued.
-    $this->up(['test' => TRUE]);
+    $this->say('Not yet implemented. Run the command:');
+    $this->say('docker-compose exec devmaster run-tests.sh');
   }
 }
