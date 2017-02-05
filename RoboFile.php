@@ -182,7 +182,7 @@ class RoboFile extends \Robo\Tasks
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
   
-    if ($this->confirm('Keep aegir-home folder and devmaster stack?')) {
+    if ($this->confirm("Keep aegir-home/devmaster-{$version} folder?")) {
       if ($this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
