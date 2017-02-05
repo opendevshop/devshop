@@ -68,6 +68,9 @@ before_install:
   - sudo mv drush.phar /usr/local/bin/drush
   - sudo chmod +x /usr/local/bin/drush
 
+  # Prepare tests
+  - composer install -d tests
+
 script:
 
   # Launch devshop including preparing the source code.
