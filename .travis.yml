@@ -71,7 +71,7 @@ before_install:
 script:
 
   # Launch devshop including preparing the source code.
-  - robo up --test
+  - robo up --test -n
 
 #
 #  # Pull container
