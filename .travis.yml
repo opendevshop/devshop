@@ -68,13 +68,10 @@ before_install:
   - sudo mv drush.phar /usr/local/bin/drush
   - sudo chmod +x /usr/local/bin/drush
 
-  # Launch devshop including preparing the source code.
-  - robo launch
-  - sudo docker-compose exec devmaster drush @hostmaster dis hosting_queued -y
-
 script:
-  - robo test
-  - sudo docker-compose exec devmaster /usr/share/devshop/bin/devshop devmaster:test
+
+  # Launch devshop including preparing the source code.
+  - robo up --test
 
 #
 #  # Pull container
