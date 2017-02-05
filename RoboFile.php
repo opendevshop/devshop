@@ -164,7 +164,12 @@ class RoboFile extends \Robo\Tasks
         $cmd .= "; docker-compose logs -f";
       }
     }
-    $this->_exec($cmd);
+    if ($this->_exec($cmd)->wasSuccessful()) {
+      exit(0);
+    }
+    else {
+      exit(1);
+    }
   }
   
   /**
