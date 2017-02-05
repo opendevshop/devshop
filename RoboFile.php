@@ -139,12 +139,14 @@ class RoboFile extends \Robo\Tasks
   }
   
   /**
-   * Launch devshop containers using docker-compose up, optionally outputting logs.
+   * Launch devshop containers using docker-compose up and follow logs.
+   *
+   * Use "--test" option to run tests instead of the hosting queue.
    */
   public function up($opts = ['follow' => 1, 'test' => false]) {
     
     if (!file_exists('aegir-home')) {
-      if ($this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
+      if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
         $this->prepareSourcecode();
       }
       else {
@@ -175,14 +177,14 @@ class RoboFile extends \Robo\Tasks
   /**
    * Destroy all containers, docker volumes, and aegir configuration.
    */
-  public function destroy() {
+  public function destroy($opts = ['force' => 0]) {
     $this->_exec('docker-compose kill');
     $this->_exec('docker-compose rm -fv');
     
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
   
-    if ($this->confirm("Keep aegir-home/devmaster-{$version} folder?")) {
+    if (!$opts['no-interaction'] && $this->confirm("Keep aegir-home/devmaster-{$version} folder?")) {
       if ($this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
