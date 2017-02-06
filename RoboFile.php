@@ -119,6 +119,7 @@ class RoboFile extends \Robo\Tasks
       }
       else {
         $this->say("Drush make failed with the exit code " . $result->getExitCode());
+        exit(1);
       }
     }
   }
