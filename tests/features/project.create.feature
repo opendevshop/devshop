@@ -115,4 +115,4 @@ Feature: Create a project
     And I should see "Environment Settings"
 
     When I click "Visit Site"
-    Then I should see "testenv.drpl8.devshop.travis" in the ".site-branding__name" element
+    Then I should see "Welcome to testenv.drpl8"
