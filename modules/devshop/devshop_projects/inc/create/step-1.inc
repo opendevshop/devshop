@@ -12,9 +12,9 @@
  */
 function devshop_project_create_step_git($form, $form_state) {
   $project = &$form_state['project'];
-
+  
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
-
+  
   if ($project->verify_error) {
     $form['note'] = array(
       '#markup' => t('We were unable to connect to your git repository. Check the messages, edit your settings, and try again.'),
@@ -24,7 +24,7 @@ function devshop_project_create_step_git($form, $form_state) {
     $form['error'] = array(
       '#markup' => $project->verify_error,
     );
-
+    
     // Check for "host key"
     if (strpos($project->verify_error, 'Host key verification failed')) {
       $form['help'] = array(
@@ -36,7 +36,7 @@ function devshop_project_create_step_git($form, $form_state) {
       );
     }
   }
-
+  
   if (empty($project->name)) {
     $form['title'] = array(
       '#type' => 'textfield',
@@ -58,15 +58,15 @@ function devshop_project_create_step_git($form, $form_state) {
       '#markup' => $project->name,
     );
   }
-
+  
   $username = variable_get('aegir_user', 'aegir');
-
+  
   $tips[] = t('Use the "ssh" url whenever possible.');
   $tips[] = t('Code will be cloned to the server using the <code>aegir</code> user. Check the "Repository Access" for SSH information.');
   $tips[] = t('An entire Drupal codebase must be present in the repository, but does not have to be in the root. See <em>Path to Drupal</em> setting on the next page.');
   $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
   $tips = theme('item_list', array('items' => $tips));
-
+  
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
@@ -103,10 +103,10 @@ function devshop_project_create_step_git($form, $form_state) {
 //      'data-base_url' => devshop_projects_url($project->name, ''),
 //    ),
 //  );
-
+  
   // Display helpful tips for connecting.
   $pubkey = variable_get('devshop_public_key', '');
-
+  
   // If we don't yet have the server's public key saved as a variable...
   if (empty($pubkey)) {
     $output = t("This DevShop doesn't yet know your server's public SSH key. To import it, run the following command on your server as <code>aegir</code> user:");
@@ -120,7 +120,7 @@ function devshop_project_create_step_git($form, $form_state) {
   <textarea id="rsa" onclick='this.select()'>$pubkey</textarea>
 HTML;
   }
-
+  
   // Add info about connecting to Repo
   $form['connect'] = array(
     '#type' => 'fieldset',
@@ -139,27 +139,28 @@ HTML;
  */
 function devshop_project_create_step_git_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
-
+  
   if (empty($project->nid)) {
-
+    
     // PROJECT NAME
     // No spaces or special characters allowed.
     $project_name = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
-
+    
     // Set the value to our trimmed and lowercased proejct name.
     form_set_value($form['title'], $project_name, $form_state);
-
+    
     // Check for bad characters.
     if (!ctype_alnum($project_name)) {
       form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
     }
-
+    
     // Check for duplicate project name here.
-    $node = hosting_context_load($project_name);
-    if ($node->nid != $project->nid) {
+    // hosting_context_load() only works if a node exists with that ID.
+    if (db_query("SELECT nid FROM {hosting_context} WHERE name = :name", array(':name' => 'project_' . $project_name))->fetch()) {
       form_set_error('title', t('That name is in use.  Please try again.'));
     }
   }
+  
 //
 //  // CODE PATH & BASE URL
 //  // Code path and base url must be unique
@@ -186,9 +187,9 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
  */
 function devshop_project_create_step_git_submit(&$from, &$form_state) {
   global $user;
-
+  
   $project = &$form_state['project'];
-
+  
   // If the project already exists, this means the git url has changed...
   if ($project->nid) {
     // Change the git url and save the node.  Verification will run again.
@@ -205,29 +206,29 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     // as possible.
     $node = new stdClass;
     $node->title = $form_state['values']['title'];
-
+    
     $node->type = 'project';
     $node->status = 0;
     $node->uid = $user->uid;
     $node->name = $user->name;
-
+    
     // Create project object
     $project->name = $form_state['values']['title'];
     $project->git_url = $form_state['values']['git_url'];
     $project->code_path = $form_state['values']['code_path'];
     $project->base_url = $form_state['values']['base_url'];
-
+    
     // @TODO: We will clone the code for step 2 and look for drupal.
     $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
-
+    
     // Attach to node
     $node->project = $project;
-
+    
     // Save project node, triggering verification.
     if ($node = node_submit($node)) {
       node_save($node);
     }
-
+    
     // Save NID to ctools object cache.
     if ($node->nid) {
       $project->nid = $node->nid;
