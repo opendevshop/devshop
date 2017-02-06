@@ -1,7 +1,7 @@
 core = 7.x
 api = 2
 
-intentional break
+projects[intentional break][version] = "1.x"
 
 projects[drupal][type] = "core"
 projects[drupal][version] = "7.52"
