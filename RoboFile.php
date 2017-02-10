@@ -131,6 +131,13 @@ class RoboFile extends \Robo\Tasks
   
     $user_uid = $this->_exec('id -u')->getMessage();
     $this->say("Found current UID $user_uid. Passing to docker build as a build-arg...");
+
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile')
+      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('aegir/hostmaster')
+      ->run()
+      ;
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
       ->option('build-arg', "AEGIR_UID=$user_uid")
