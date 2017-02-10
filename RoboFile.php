@@ -119,6 +119,7 @@ class RoboFile extends \Robo\Tasks
       }
       else {
         $this->say("Drush make failed with the exit code " . $result->getExitCode());
+        exit(1);
       }
     }
   }
@@ -130,10 +131,29 @@ class RoboFile extends \Robo\Tasks
   
     $user_uid = $this->_exec('id -u')->getMessage();
     $this->say("Found current UID $user_uid. Passing to docker build as a build-arg...");
+
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile')
+      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('aegir/hostmaster')
+      ->run()
+      ;
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
+      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('aegir/hostmaster:xdebug')
+      ->run()
+      ;
     $this->taskDockerBuild('dockerfiles')
       ->option('file', 'dockerfiles/Dockerfile-xdebug')
       ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('devshop/devmaster:xdebug')
+      ->run()
+      ;
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-web')
+      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('aegir/web')
       ->run()
       ;
   }
