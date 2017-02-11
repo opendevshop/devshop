@@ -125,16 +125,20 @@ class RoboFile extends \Robo\Tasks
   }
   
   /**
-   * Build aegir and devshop containers from the Dockerfiles.
+   * Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
    */
-  public function prepareContainers() {
+  public function prepareContainers($user_uid = NULL) {
   
-    $user_uid = $this->_exec('id -u')->getMessage();
-    $this->say("Found current UID $user_uid. Passing to docker build as a build-arg...");
+    if (is_null($user_uid)) {
+      $user_uid = $this->_exec('id -u')->getMessage();
+    }
+
+    $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
 
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile')
       ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->option('no-cache')
       ->tag('aegir/hostmaster')
       ->run()
       ;
