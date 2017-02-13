@@ -69,6 +69,7 @@ Once the robo CLI is installed, cd to the DevShop repo directory and run `robo` 
       launch              Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
       list                Lists commands
       logs                Stream logs from the containers using docker-compose logs -f
+      login               Get a one-time login link to Devamster.
       shell               Enter a bash shell in the devmaster container.
       stop                Stop devshop containers using docker-compose stop
       test                Run all devshop tests on the containers.
