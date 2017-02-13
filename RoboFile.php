@@ -264,4 +264,11 @@ class RoboFile extends \Robo\Tasks
     $this->say('Not yet implemented. Run the command:');
     $this->say('docker-compose exec devmaster run-tests.sh');
   }
+  
+  /**
+   * Get a one-time login link to Devamster.
+   */
+  public function login() {
+    $this->_exec('docker-compose exec -T devmaster drush @hostmaster uli');
+  }
 }
