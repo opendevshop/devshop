@@ -1,23 +1,13 @@
 DevShop Development
 ===================
 
-## Docker
+DevShop is a big project with a lot of git repositories, so we've made sure to include tools to make it easier.
 
-This project contains scripts for launching DevShop on Docker for development purposes:
+## Docker via Robo
 
-  - `development-prepare.sh`: Run this script first. It will prepare the needed source code for devshop, as well as build the containers needed.
-  - `development-launch.sh`: This script is run automatically by `development-prepare.sh` to launch the containers and install Devmaster.
-  - `development-destroy.sh`: This script removes all traces of the devshop containers and their volumes.
+We've implemented a RoboFile to allow us to use the Robo CLI to manage the development environment.
 
-## Vagrant 
-
-The Vagrantfile in this project is now deprecated, but is still included in the `vagrant` folder if you wish to use it.
-
-It uses the install.sh file in this repo to provision the vagrant server.
-
-This is the recommended install method for servers as well as vagrant boxes.
-
-See [Development with Vagrant](development-vagrant.md) for legacy instructions.
+Visit http://robo.li for more information on Robo.
 
 Dependencies
 ------------
@@ -31,8 +21,8 @@ The only tools you need on your host machine to develop devshop are:
 - Docker Compose version 1.6.0+.
 
 1. [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
-
 2. [Install Drush](http://docs.drush.org/en/master/install/).
+2. [Install Robo](http://robo.li/).
 2. [Install Docker](https://docs.docker.com/engine/installation/).
 2. [Install Docker Compose](https://github.com/docker/compose/releases).
 
@@ -42,7 +32,21 @@ The only tools you need on your host machine to develop devshop are:
     git clone git@github.com:opendevshop/devshop.git
     cd devshop
     ```
-4. Run `development-prepare.sh` script to clone the rest of the source code and prepare docker containers.
+    
+4. If working on a Mac (or a linux machine with a user other than uid 1000), you need to regenerate your containers so the Aegir user UID matches your local user UID:
+
+  ```
+  robo prepare:containers
+  ```
+  
+  The command will attempt to automatically detect your UID. If you need to set it manually, you can pass the UID as an argument
+  
+  ```
+  robo prepare:containers 1001
+  ```
+  
+  
+4. Run `robo up` script to clone the rest of the source code and launch the docker containers.
 
 5. That's it! Look for a one-time login link that looks like:
 
@@ -50,9 +54,29 @@ The only tools you need on your host machine to develop devshop are:
   http://devshop.local.computer/user/reset/1/1475596064/EzLbpsTpSgKLJl7GmO0
   ```
 
-  The `development-prepare.sh` scripts and `development-launch.sh` scripts will remain open, following the docker logs.  Press CTRL-C to cancel out of the logs if you wish.  
+  The `docker logs` will remain open.  Press CTRL-C to cancel out of the logs if you wish, the containers will still run.  
   
-  More information on how to access the containers is output when you cancel the logs.
+Robo
+----
+
+Our Robofile.php has all the commands you need to manage a local development copy of DevShop:.
+
+Once the robo CLI is installed, cd to the DevShop repo directory and run `robo` to see a list of available commands.
+ 
+    Available commands:
+      destroy             Destroy all containers, docker volumes, and aegir configuration.
+      help                Displays help for a command
+      launch              Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
+      list                Lists commands
+      logs                Stream logs from the containers using docker-compose logs -f
+      shell               Enter a bash shell in the devmaster container.
+      stop                Stop devshop containers using docker-compose stop
+      test                Run all devshop tests on the containers.
+      up                  Launch devshop containers using docker-compose up and follow logs.
+     prepare
+      prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
+      prepare:host        Check for docker, docker-compose and drush. Install them if they are missing.
+      prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
 
 Repos
 -----
@@ -118,6 +142,15 @@ If your Docker machine IP is not 172.17.0.1, you can change it but you must also
 
         XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
 
+## Vagrant 
+
+The Vagrantfile in this project is now deprecated, but is still included in the `vagrant` folder if you wish to use it.
+
+It uses the install.sh file in this repo to provision the vagrant server.
+
+This is the recommended install method for servers as well as vagrant boxes.
+
+See [Development with Vagrant](development-vagrant.md) for legacy instructions.
 
 Help Improve Documentation
 --------------------------
