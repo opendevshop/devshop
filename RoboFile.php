@@ -148,6 +148,12 @@ class RoboFile extends \Robo\Tasks
       ->tag('aegir/hostmaster:xdebug')
       ->run()
       ;
+    // devshop/devmaster
+    $this->taskDockerBuild('dockerfiles')
+      ->option('file', 'dockerfiles/Dockerfile')
+      ->tag('devshop/devmaster')
+      ->run()
+      ;
     // devshop/devmaster:xdebug
     $this->taskDockerBuild('dockerfiles')
       ->option('file', 'dockerfiles/Dockerfile-xdebug')
