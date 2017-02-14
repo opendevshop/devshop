@@ -135,27 +135,28 @@ class RoboFile extends \Robo\Tasks
 
     $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
 
+    // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile')
       ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster')
       ->run()
       ;
+    // aegir/hostmaster:xdebug
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster:xdebug')
       ->run()
       ;
+    // devshop/devmaster:xdebug
     $this->taskDockerBuild('dockerfiles')
       ->option('file', 'dockerfiles/Dockerfile-xdebug')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('devshop/devmaster:xdebug')
       ->run()
       ;
+    // aegir/web
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-web')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/web')
       ->run()
       ;
