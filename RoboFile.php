@@ -6,24 +6,23 @@
  *   3. Run `robo` to see the commands.
  *   4. If you have drush, docker, and docker compose, you can launch a devshop with `robo up`
  *
- * Robo commands
-Available commands:
-  destroy             Destroy all containers, docker volumes, and aegir configuration.
-  help                Displays help for a command
-  launch              Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
-  list                Lists commands
-  login               Get a one-time login link to Devamster.
-  logs                Stream logs from the containers using docker-compose logs -f
-  shell               Enter a bash shell in the devmaster container.
-  stop                Stop devshop containers using docker-compose stop
-  test                Run all devshop tests on the containers.
-  up                  Launch devshop containers using docker-compose up and follow logs.
- prepare
-  prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
-  prepare:host        Check for docker, docker-compose and drush. Install them if they are missing.
-  prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
-
- *  
+ * Available commands:
+ *
+ *   destroy             Destroy all containers, docker volumes, and aegir configuration.
+ *   help                Displays help for a command
+ *   launch              Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
+ *   list                Lists commands
+ *   login               Get a one-time login link to Devamster.
+ *   logs                Stream logs from the containers using docker-compose logs -f
+ *   shell               Enter a bash shell in the devmaster container.
+ *   stop                Stop devshop containers using docker-compose stop
+ *   test                Run all devshop tests on the containers.
+ *   up                  Launch devshop containers using docker-compose up and follow logs.
+ *   prepare
+ *   prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
+ *   prepare:host        Check for docker, docker-compose and drush. Install them if they are missing.
+ *   prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
+ *
  * @see http://robo.li/
  */
 class RoboFile extends \Robo\Tasks
