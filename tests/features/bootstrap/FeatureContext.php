@@ -5,6 +5,9 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Symfony\Component\Process\Process;
+
+use Behat\Testwork\Hook\Scope\AfterSuiteScope;
+
 /**
  * Defines application features from the specific context.
  */
@@ -112,5 +115,14 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
     }
     $value = $radiobutton->getAttribute('value');
     $radiobutton->selectOption($value, FALSE);
+  }
+  
+  /**
+   * @AfterSuite
+   */
+  public static function deleteProjectCode(AfterSuiteScope $scope)
+  {
+    print "Deleting /var/aegir/projects/drpl8";
+    print shell_exec('rm -rf /var/aegir/projects/drpl8');
   }
 }
