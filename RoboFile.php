@@ -137,10 +137,11 @@ class RoboFile extends \Robo\Tasks
       $result = $this->_exec("drush make build-devmaster.make aegir-home/devmaster-1.x --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
         $this->say('Built devmaster from makefile.');
+        return TRUE;
       }
       else {
         $this->say("Drush make failed with the exit code " . $result->getExitCode());
-        exit(1);
+        return FALSE;
       }
     }
   }
@@ -198,7 +199,10 @@ class RoboFile extends \Robo\Tasks
     
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
-        $this->prepareSourcecode();
+        if ($this->prepareSourcecode() == FALSE) {
+          $this->say('Prepare source code failed.');
+          exit(1);
+        }
       }
       else {
         $this->say('aegir-home must exist for devshop to work. Not running docker-compose up.');
