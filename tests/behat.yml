@@ -2,33 +2,20 @@ default:
   suites:
     default:
       contexts:
-        - FeatureContext
+        - FeatureContext:
+            project: qa
+            environment: dev
         - Drupal\DrupalExtension\Context\DrupalContext
         - Drupal\DrupalExtension\Context\MinkContext
+        - Drupal\DrupalExtension\Context\MessageContext
+        - Drupal\DrupalExtension\Context\DrushContext
   extensions:
     Behat\MinkExtension:
       goutte: ~
       selenium2: ~
-      # We do not include base_url here because then we cannot override it on the command line.
-      # base_url: http://devshop.site
-      show_cmd: firefox %s
+      base_url: http://devmaster.local.computer
     Drupal\DrupalExtension:
       blackbox: ~
-      api_driver: 'drupal'
-      drupal:
-        # We do not include root here because then we cannot override it on the command line.
-        # drupal_root: /var/aegir/devmaster-1.x
+      api_driver: drush
       drush:
-        alias: 'hostmaster'
-        # We do not include root here because then we cannot override it on the command line.
-        # root: /var/aegir/devmaster-0.x
-      region_map:
-        main: "#block-system-main"
-
-# Use this profile when running bin/behat directly.
-# Usage:
-#    bin/behat --profile=devmaster
-devmaster:
-  extensions:
-    Behat\MinkExtension:
-      base_url: http://devshop.site
+        alias: '@hostmaster'
