@@ -20,7 +20,21 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
    * You can also pass arbitrary arguments to the
    * context constructor through behat.yml.
    */
-  public function __construct() {
+  public $project;
+  public $environment;
+  public function __construct($project, $environment)
+  {
+        $this->project = $project;
+        $this->environment = $environment;
+        
+  }
+
+  /**
+    * @Given I am at project site
+    */
+  public function iAmAtProjectSite()
+  {
+        $this->visitPath("project/".$this->project);
   }
 
   /**
