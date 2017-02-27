@@ -8,12 +8,20 @@ I need to submit the form
     And I am at project site
     When I click "Environment Settings"
   
-  Scenario Outline: Lock database setting
-    Given I select "<option>" from "<field>"
-    When I press the "Save" button
+  Scenario: Enable Backup default setting
+    Given I select "enabled" from "hosting_backup_queue_status"
+    When I select "default" from "hosting_backup_queue_settings"
+    And I press the "Save" button
+    Then I should see "created in project"
+  
+  Scenario: Enable Backup custom setting
+    Given I select "custom" from "hosting_backup_queue_settings"
+    When I select "3600" from "hosting_backup_queue_schedule"
+    And I press the "Save" button
     Then I should see "created in project"
 
-    Examples:
-    |option|field|
-    |enabled|hosting_backup_queue_status|
-    |disabled|hosting_backup_queue_status|
+
+  Scenario: Disable Backup setting
+    Given I select "disabled" from "hosting_backup_queue_status"
+    When I press the "Save" button
+    Then I should see "created in project"
