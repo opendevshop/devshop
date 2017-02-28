@@ -9,19 +9,20 @@ I need to submit the form
     When I click "Environment Settings"
   
   Scenario: Enable Backup default setting
-    Given I select "enabled" from "hosting_backup_queue_status"
-    When I select "default" from "hosting_backup_queue_settings"
+    When I select the radio button "Backups enabled"
+    And I select the radio button "Default settings"
     And I press the "Save" button
     Then I should see "created in project"
   
   Scenario: Enable Backup custom setting
-    Given I select "custom" from "hosting_backup_queue_settings"
-    When I select "3600" from "hosting_backup_queue_schedule"
+    When I select the radio button "Backups enabled"
+    And I select the radio button "Site specific settings"
+    When I select "1 day" from "Backup interval"
     And I press the "Save" button
     Then I should see "created in project"
 
 
   Scenario: Disable Backup setting
-    Given I select "disabled" from "hosting_backup_queue_status"
-    When I press the "Save" button
+    When I select the radio button "Backups disabled"
+    And I press the "Save" button
     Then I should see "created in project"
