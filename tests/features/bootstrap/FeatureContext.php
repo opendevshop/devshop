@@ -1,17 +1,15 @@
 <?php
 
-use Drupal\DrupalExtension\Context\DrushContext;
+use Drupal\DrupalExtension\Context\RawDrupalContext;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-use Symfony\Component\Process\Process;
 
-use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext extends DrushContext implements SnippetAcceptingContext {
+class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext {
 
   /**
    * Initializes context.

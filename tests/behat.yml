@@ -13,7 +13,7 @@ default:
     Behat\MinkExtension:
       goutte: ~
       selenium2: ~
-      base_url: http://devmaster.local.computer
+      base_url: http://devshop.local.computer
     Drupal\DrupalExtension:
       blackbox: ~
       api_driver: drush
