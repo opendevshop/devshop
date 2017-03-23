@@ -130,11 +130,14 @@ class RoboFile extends \Robo\Tasks
     }
     
     // Run drush make to build the devmaster stack.
-    $make_path = "aegir-home/devmaster-1.x";
-    if (file_exists("aegir-home/devmaster-1.x")) {
-      $this->say("Path aegir-home/devmaster-1.x already exists.");
+    $make_destination = "aegir-home/devmaster-1.x";
+    $makefile_path = "build-devmaster.make";
+
+    if (file_exists($make_destination)) {
+      $this->say("Path {$make_destination} already exists.");
     } else {
-      $result = $this->_exec("drush make build-devmaster.make aegir-home/devmaster-1.x --working-copy --no-gitinfofile");
+      
+      $result = $this->_exec("drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
         $this->say('Built devmaster from makefile.');
         return TRUE;
