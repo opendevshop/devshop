@@ -1,4 +1,4 @@
-language: generic
+language: php
 
 sudo: required
 
@@ -8,31 +8,31 @@ branches:
     - 1.x
 
 env:
-  matrix:
-  - test="Upgrade"
-    distribution="ubuntu"
-    version="14.04"
-    init="/sbin/init"
-    run_opts=""
-    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 /usr/share/devshop/build-devmaster-test.make"
-    test_command="devshop devmaster:test"
-    DEVSHOP_UPGRADE_TO_VERSION="1.x"
-
-  - test="CentOS 7 Apache"
-    distribution="centos"
-    version="7"
-    init="/usr/lib/systemd/systemd"
-    run_opts="--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    install_command="/usr/share/devshop/install.sh  --server-webserver=apache --hostname=devshop.travis"
-    test_command="devshop devmaster:test"
-
-  - test="Ubuntu 14.04 Apache"
-    distribution="ubuntu"
-    version="14.04"
-    init="/sbin/init"
-    run_opts=""
-    install_command="/usr/share/devshop/install.sh --server-webserver=apache --hostname=devshop.travis"
-    test_command="devshop devmaster:test"
+#  matrix:
+#  - test="Upgrade"
+#    distribution="ubuntu"
+#    version="14.04"
+#    init="/sbin/init"
+#    run_opts=""
+#    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 /usr/share/devshop/build-devmaster-test.make"
+#    test_command="devshop devmaster:test"
+#    DEVSHOP_UPGRADE_TO_VERSION="1.x"
+#
+#  - test="CentOS 7 Apache"
+#    distribution="centos"
+#    version="7"
+#    init="/usr/lib/systemd/systemd"
+#    run_opts="--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+#    install_command="/usr/share/devshop/install.sh  --server-webserver=apache --hostname=devshop.travis"
+#    test_command="devshop devmaster:test"
+#
+#  - test="Ubuntu 14.04 Apache"
+#    distribution="ubuntu"
+#    version="14.04"
+#    init="/sbin/init"
+#    run_opts=""
+#    install_command="/usr/share/devshop/install.sh --server-webserver=apache --hostname=devshop.travis"
+#    test_command="devshop devmaster:test"
 
 
 # TODO: Get NGINX support to work.
@@ -43,54 +43,66 @@ env:
 #    run_opts: ""
 #    script: "--server-webserver=nginx"
   # This should match the list of hosts below so that requests resolve to the container.
-  global:
-    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
-addons:
-  hosts:
-    - devshop.travis
-    - dev.projectname.devshop.travis
-    - live.projectname.devshop.travis
-    - dev.drpl8.devshop.travis
-    - test.drpl8.devshop.travis
+#  global:
+#    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
+#addons:
+#  hosts:
+#    - devshop.travis
+#    - dev.projectname.devshop.travis
+#    - live.projectname.devshop.travis
+#    - dev.drpl8.devshop.travis
+#    - test.drpl8.devshop.travis
 
 services:
   - docker
 
 before_install:
+  # Install Robo
+  - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
+  - sudo mv robo.phar /usr/local/bin/robo
+  - sudo chmod +x /usr/local/bin/robo
+
+  # Install Drush
+  - wget https://github.com/drush-ops/drush/releases/download/8.1.9/drush.phar
+  - sudo mv drush.phar /usr/local/bin/drush
+  - sudo chmod +x /usr/local/bin/drush
+
   # Clone devshop
   - export DEVSHOP_VERSION=1.x
+  - cd ..
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
   - git checkout -qf ${DEVSHOP_VERSION}
   - git status
-  - cp build-devmaster.make build-devmaster-test.make
-  - echo projects[devmaster][download][type] = "copy" >> build-devmaster-test.make
-  - echo projects[devmaster][download][url] = "/usr/share/devshop/devmaster" >> build-devmaster-test.make
-  - cat build-devmaster-test.make
-  - cd ..
+  - pwd
+  - echo projects[devmaster][download][type] = "copy" >> build-devmaster.make
+  - echo projects[devmaster][download][url] = "../devmaster" >> build-devmaster.make
+  - cat build-devmaster.make
 
-  # Pull container
-  - 'sudo docker pull ${distribution}:${version}'
-  # Customize container
-  - 'sudo docker build --rm=true --file=devshop/tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible devshop/tests'
+  # Prepare devshop CLI and tests
+  - composer install
+  - composer install -d tests
+
 script:
-  - container_id=$(mktemp)
-    # Run container in detached state
-  - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - robo up --test -n
 
-  # Install script.
-  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG DEVSHOP_UPGRADE_TO_VERSION=$DEVSHOP_UPGRADE_TO_VERSION TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH ${install_command} --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
-
-  # Hostmaster Status
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
-
-  # Turn off hosting queued, and the hosting task queue.
-  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
-  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
-
-  # Build and Run Tests
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
-
-  # Stop container.
-  - 'sudo docker stop devshop_container'
+#  - container_id=$(mktemp)
+#    # Run container in detached state
+#  - 'sudo docker run --detach --name devshop_container --volume="${PWD}/devshop":/usr/share/devshop:rw --volume="${PWD}":/usr/share/devshop/devmaster:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+#
+#  # Install script.
+#  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG DEVSHOP_UPGRADE_TO_VERSION=$DEVSHOP_UPGRADE_TO_VERSION TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH ${install_command} --makefile=/usr/share/devshop/devmaster/build-devmaster-test.make'
+#
+#  # Hostmaster Status
+#  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "drush @hostmaster status"'
+#
+#  # Turn off hosting queued, and the hosting task queue.
+#  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
+#  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
+#
+#  # Build and Run Tests
+#  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
+#  - 'sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "devshop devmaster:test"'
+#
+#  # Stop container.
+#  - 'sudo docker stop devshop_container'
