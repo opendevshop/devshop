@@ -17,7 +17,7 @@ Feature: Create a project with Drupal in the docroot.
 
     # Step 2
     Then print current URL
-#    Then save last response
+    Then print last response
     Then I should see "rooty"
     And I should see "http://github.com/opendevshop/drupal_docroot"
     When I fill in "docroot" for "Path to Drupal"
