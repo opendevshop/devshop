@@ -11,14 +11,14 @@ Feature: Create a project with Drupal in the docroot.
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "rooty" for "Project Code Name"
+    Then I fill in "rootproject" for "Project Code Name"
     And I fill in "http://github.com/opendevshop/drupal_docroot" for "Git URL"
     When I press "Next"
 
     # Step 2
     Then print current URL
     Then print last response
-    Then I should see "rooty"
+    Then I should see "rootproject"
     And I should see "http://github.com/opendevshop/drupal_docroot"
     When I fill in "docroot" for "Path to Drupal"
 
@@ -26,7 +26,7 @@ Feature: Create a project with Drupal in the docroot.
     When I press "Next"
     Then I should see "Please wait while we connect to your repository and determine any branches."
     And I should see "Path to Drupal"
-    And I should see "rooty"
+    And I should see "rootproject"
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
