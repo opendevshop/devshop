@@ -59,6 +59,8 @@ Feature: Create a project with Drupal in the docroot.
     And I press "Create Project & Environments"
 
     # FINISH!
+    Then print current URL
+    And print last response
     Then I should see "Your project has been created. Your sites are being installed."
     And I should see "Dashboard"
     And I should see "Settings"
