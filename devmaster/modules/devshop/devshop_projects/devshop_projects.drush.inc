@@ -74,7 +74,14 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['message'] = $task->task_args['message'];
     $task->options['update'] = $task->task_args['update'];
   }
-
+  
+  // Verify Platform
+  // Here is where we hook in and clone the site
+  // @TODO: This can be removed once hosting_git migration is complete.
+  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
+    drush_devshop_platform_verify();
+   }
+  
   // Pull
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
     $task->args['environments'] = $task->task_args['environments'];
@@ -107,103 +114,103 @@ function drush_devshop_projects_pre_hosting_task()
   $task->options['is-devshop'] = TRUE;
 }
 
-// @TODO: Remove this function. This can all be replaced by using hosting_git.
-///**
-// * Pre hosting task hook for "verify platform" task.
-// *  - Clones the repository on first run, checks out the selected after that.
-// *
-// * Not a hook! Called from drush_devshop_projects_pre_hosting_task
-// */
-//function drush_devshop_platform_verify() {
-//
-//  drush_log(dt("[DEVSHOP] Hello. Preparing aegir platform codebase..."));
-//
-//  // Verify Platform
-//  $task = &drush_get_context('HOSTING_TASK');
-//
-//  $platform = $task->ref;
+// @TODO: Remove this function for hosting_git migration.
+/**
+ * Pre hosting task hook for "verify platform" task.
+ *  - Clones the repository on first run, checks out the selected after that.
+ *
+ * Not a hook! Called from drush_devshop_projects_pre_hosting_task
+ */
+function drush_devshop_platform_verify() {
 
-//  // If for some reason we still do not have an environment... bail.
-//  if (empty($platform->environment)) {
-//    return drush_set_error('DEVSHOP_ERROR', dt('Unable to determine environment. Please contact your administrator.'));
-//  }
-//
-//  $root = $platform->publish_path;
-//  $git_ref = $platform->environment->git_ref;
-//
-//  $git_remote = $platform->project->git_url;
-//  $drupal_path = $platform->project->drupal_path;
-//
-//  //Remove drupal_path to clone.
-//  if ($drupal_path) {
-//    $root = str_replace($drupal_path, '', $root);
-//  }
-//
-//  // Check if the platform code exists. If it doesn't, clone it.
-//  if (!is_dir($root)) {
-//
-//    // Clone the repo.
-//    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
-//
-//    // Skip errors about submodule
-//
-//
-//    // If there is "site_to_clone", checkout that site's git ref.
-//    // This is done for Pull Request Environments. When a PR comes in, we want
-//    // to clone the site to an identical platform first. This will always succeed.
-//    // Then, we trigger a deployment to the new branch.
-//    //
-//    // This ensures that initial pull request environments run the same "deploy"
-//    // hooks. It means we don't have to hack into the "clone" task to run deploy
-//    // hooks anymore.
-//    if ($platform->environment->settings->site_to_clone) {
-//      $site = node_load($platform->environment->settings->site_to_clone);
-//      $git_ref = $site->environment->git_ref;
-//    }
-//
-//    // If there is a git ref, check it out.
-//    // We don't do this on git clone, because it could be a tag.
-//    // @TODO: Won't the platform ALWAYS have a git_branch?
-//    if ($git_ref) {
-//      devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
-//    }
-//  }
-//
-//  // If this is the first verification, and branch needs to be created (for "fork environment")
-//  if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
-//    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $root, dt('Creating a new branch.'));
-//
-//    // Push the branch
-//    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", $root, dt('Pushing new branch.'));
-//  }
-//
-//  // Detect a bad path_to_drupal
-//  if (!file_exists($platform->environment->root . '/index.php')) {
-//    return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check your Path to Drupal.'));
-//  }
-//
-//  // When verifying the platform for the first time, run 'composer install' if configured to do so.
-//  if ($platform->verified && $platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
-//
-//    if (file_exists($platform->environment->repo_root . '/composer.json')) {
-//      $cwd = $platform->environment->repo_root;
-//    }
-//    elseif (file_exists($root . '/composer.json')) {
-//      $cwd = $root;
-//    }
-//    else {
-//      // If composer.json was not found in the drupal root or repo root, do not run.
-//      drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
-//      return;
-//    }
-//
-//    devshop_drush_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
-//      '!folder' => $cwd,
-//    )));
-//
-//    devshop_drush_process("git status", $platform->environment->repo_root, dt('Running git status'));
-//  }
-//}
+  drush_log(dt("[DEVSHOP] Hello. Preparing aegir platform codebase..."));
+
+  // Verify Platform
+  $task = &drush_get_context('HOSTING_TASK');
+
+  $platform = $task->ref;
+
+  // If for some reason we still do not have an environment... bail.
+  if (empty($platform->environment)) {
+    return drush_set_error('DEVSHOP_ERROR', dt('Unable to determine environment. Please contact your administrator.'));
+  }
+
+  $root = $platform->publish_path;
+  $git_ref = $platform->environment->git_ref;
+
+  $git_remote = $platform->project->git_url;
+  $drupal_path = $platform->project->drupal_path;
+
+  //Remove drupal_path to clone.
+  if ($drupal_path) {
+    $root = str_replace($drupal_path, '', $root);
+  }
+
+  // Check if the platform code exists. If it doesn't, clone it.
+  if (!is_dir($root)) {
+
+    // Clone the repo.
+    devshop_drush_process("git clone --recursive $git_remote $root", NULL, dt('Cloning git repository'));
+
+    // Skip errors about submodule
+
+
+    // If there is "site_to_clone", checkout that site's git ref.
+    // This is done for Pull Request Environments. When a PR comes in, we want
+    // to clone the site to an identical platform first. This will always succeed.
+    // Then, we trigger a deployment to the new branch.
+    //
+    // This ensures that initial pull request environments run the same "deploy"
+    // hooks. It means we don't have to hack into the "clone" task to run deploy
+    // hooks anymore.
+    if ($platform->environment->settings->site_to_clone) {
+      $site = node_load($platform->environment->settings->site_to_clone);
+      $git_ref = $site->environment->git_ref;
+    }
+
+    // If there is a git ref, check it out.
+    // We don't do this on git clone, because it could be a tag.
+    // @TODO: Won't the platform ALWAYS have a git_branch?
+    if ($git_ref) {
+      devshop_drush_process("git checkout $git_ref", $root, dt('Checking out specified version'));
+    }
+  }
+
+  // If this is the first verification, and branch needs to be created (for "fork environment")
+  if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
+    devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $root, dt('Creating a new branch.'));
+
+    // Push the branch
+    devshop_drush_process("git push -u origin {$platform->environment->git_ref}", $root, dt('Pushing new branch.'));
+  }
+
+  // Detect a bad path_to_drupal
+  if (!file_exists($platform->environment->root . '/index.php')) {
+    return drush_set_error('DEVSHOP_ERROR', dt($platform->environment->root . '/index.php file not found. Check "Path to Drupal" in Project Settings.'));
+  }
+
+  // When verifying the platform for the first time, run 'composer install' if configured to do so.
+  if ($platform->verified && $platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
+
+    if (file_exists($platform->environment->repo_root . '/composer.json')) {
+      $cwd = $platform->environment->repo_root;
+    }
+    elseif (file_exists($root . '/composer.json')) {
+      $cwd = $root;
+    }
+    else {
+      // If composer.json was not found in the drupal root or repo root, do not run.
+      drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
+      return;
+    }
+
+    devshop_drush_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
+      '!folder' => $cwd,
+    )));
+
+    devshop_drush_process("git status", $platform->environment->repo_root, dt('Running git status'));
+  }
+}
 
 /**
  * Implements hook_post_hosting_TASK_TYPE_task() for delete tasks().
