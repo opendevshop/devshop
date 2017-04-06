@@ -431,7 +431,7 @@ function devshop_fqdn($host = NULL) {
  * implementation of provision_verify
  */
 function drush_devshop_provision_pre_provision_verify() {
-  if (d()->type === 'project' || (d()->type === 'site' || d()->type === 'platform')) {
+  if (d()->type === 'project' || (!empty(d()->project) && d()->type === 'site' || d()->type === 'platform')) {
     
     if (d()->type == 'site' || d()->type == 'platform') {
       $project_context = 'project_' . d()->project;
