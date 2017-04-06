@@ -157,7 +157,9 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
     // Check for duplicate project name here.
     // hosting_context_load() only works if a node exists with that ID.
     if (db_query("SELECT nid FROM {hosting_context} WHERE name = :name", array(':name' => 'project_' . $project_name))->fetch()) {
-      form_set_error('title', t('That name is in use.  Please try again.'));
+      form_set_error('title', t('The name @project is in use.  Please try again.', array(
+        '@project' => $project_name,
+      )));
     }
   }
   
