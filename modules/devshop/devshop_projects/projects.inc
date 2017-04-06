@@ -229,9 +229,13 @@ function devshop_project_load($node) {
       if (empty($environment->settings->db_server)) {
         $environment->settings->db_server = $environment->db_server_nid = key($db_servers);
       }
-
-      $environment->db_server_nid = $environment->settings->db_server;
-      $environment->db_server = $db_servers[$environment->db_server_nid];
+      else {
+        $environment->db_server_nid = $environment->settings->db_server;
+      }
+      
+      if (!empty($db_servers[$environment->db_server_nid])) {
+        $environment->db_server = $db_servers[$environment->db_server_nid];
+      }
     }
 
     // DB Server
