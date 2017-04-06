@@ -686,10 +686,10 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   db_update('hosting_devshop_project_environment')
     ->fields(array(
       'site' => $node->nid,
+      'last_task' =>  current($tasks)->nid,
     ))
     ->condition('project_nid', $project->nid)
     ->condition('name', $environment_name)
-    ->condition('last_task', current($tasks)->nid)
     ->execute();
 
   return $node;
