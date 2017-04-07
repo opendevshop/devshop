@@ -68,7 +68,7 @@ before_install:
   - sudo chmod +x /usr/local/bin/drush
 
   # Clone devshop
-  - export DEVSHOP_VERSION=test-docroot
+  - export DEVSHOP_VERSION=1.x
   - cd ..
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
