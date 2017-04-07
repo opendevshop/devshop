@@ -50,12 +50,15 @@ function drush_devshop_provision_provision_test() {
   }
   elseif ($type == 'behat') {
     // Get paths from options or site context.
-    $repo_path = $environment->repo_root;
+    $repo_path = !empty(d()->platform->repo_path)?
+      d()->platform->repo_path:
+      d()->platform->publish_path
+    ;
     $behat_folder_path = drush_get_option('behat-folder-path', $project->settings['testing']['behat_folder_path']);
 
     // If no repo at that path, error.
     if (!file_exists($repo_path)){
-      return drush_set_error('DEVSHOP_MISSING_FILE', dt('repo_root does not exist.'));
+      return drush_set_error('DEVSHOP_MISSING_FILE', dt('repo_path does not exist.'));
     }
     // If no file at behat bin path, error.
     $tests_folder = $repo_path  . '/' .$behat_folder_path;
