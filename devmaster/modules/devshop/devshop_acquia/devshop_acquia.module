@@ -38,7 +38,7 @@ function drush_run_acquia_hook($task) {
   $project = (object) $task->ref->project;
 
   // If project has no path to drupal, we know it's not acquia.
-  if ($project->drupal_path != 'docroot' || !file_exists($environment->repo_root . '/hooks')) {
+  if ($project->drupal_path != 'docroot' || !file_exists($environment->repo_path . '/hooks')) {
     drush_log('Acquia Cloud Hooks error', 'devshop_command');
     drush_log('./docroot or ./hooks folder is missing, but Acquia hooks are configured to run.  Please create the hooks or turn off Acquia Cloud Hooks for the project.', 'devshop_error');
     return drush_set_error('DRUSH_ERROR');
@@ -69,10 +69,10 @@ function drush_run_acquia_hook($task) {
 
   foreach ($hooks as $hook) {
 
-  drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name} ... Scanning  {$environment->repo_root}/hooks/common/{$hook}  & {$environment->repo_root}/hooks/{$environment->name}/{$hook} ", 'ok');
+  drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name} ... Scanning  {$environment->repo_path}/hooks/common/{$hook}  & {$environment->repo_path}/hooks/{$environment->name}/{$hook} ", 'ok');
 
   // Collect cloud hook scripts to run for all environments "common".
-  $files = scandir("{$environment->repo_root}/hooks/common/{$hook}");
+  $files = scandir("{$environment->repo_path}/hooks/common/{$hook}");
   if (empty($files)) $files = array();
 
   // The list of files we will run.
@@ -83,20 +83,20 @@ function drush_run_acquia_hook($task) {
 
   // Collect the full path to each script.
   foreach ($files as $script) {
-    $scripts[] = realpath("{$environment->repo_root}/hooks/common/{$hook}/{$script}");
+    $scripts[] = realpath("{$environment->repo_path}/hooks/common/{$hook}/{$script}");
   }
 
   // Collect cloud hook scripts to run for this environment.
-  if (file_exists("{$environment->repo_root}/hooks/{$environment->name}/{$hook}")) {
+  if (file_exists("{$environment->repo_path}/hooks/{$environment->name}/{$hook}")) {
 
-    $files = scandir("{$environment->repo_root}/hooks/{$environment->name}/{$hook}");
+    $files = scandir("{$environment->repo_path}/hooks/{$environment->name}/{$hook}");
 
     // Remove incorrect entries from scandir.
     $files= array_diff($files, array('..', '.', '.gitignore'));
 
     // Collect the full path to each script.
     foreach ($files as $script) {
-      $scripts[] = realpath("{$environment->repo_root}/hooks/{$environment->name}/{$hook}/{$script}");
+      $scripts[] = realpath("{$environment->repo_path}/hooks/{$environment->name}/{$hook}/{$script}");
     }
   }
 
@@ -109,7 +109,7 @@ function drush_run_acquia_hook($task) {
   // Usage: post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
   foreach ($scripts as $file) {
     drush_log('[DEVSHOP] Running Acquia Cloud Hook: ' . $file, 'ok');
-    $hook_path = str_replace($environment->repo_root, '', $file);
+    $hook_path = str_replace($environment->repo_path, '', $file);
     drush_log("[Acquia Cloud Hook $hook] $hook_path", 'devshop_command');
 
     // This is a trick.  DevShop doesn't have aliases like $project.$environment.
