@@ -12,16 +12,15 @@ Feature: Create a project
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "drpl8" for "Project Code Name"
-    And I fill in "http://github.com/jonpugh/drupal8" for "Git URL"
+    And I fill in "http://github.com/opendevshop/drupal_docroot" for "Git URL"
     When I press "Next"
 
     # Step 2
     Then print current URL
 #    Then save last response
     Then I should see "drpl8"
-    And I should see "http://github.com/jonpugh/drupal8"
-#   Uncomment once we have steps to unset the path to drupal.
-#    When I fill in "docroot" for "Path to Drupal"
+    And I should see "http://github.com/opendevshop/drupal_docroot"
+    When I fill in "docroot" for "Path to Drupal"
 
     # Step 3
     When I press "Next"
