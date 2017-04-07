@@ -280,7 +280,7 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
   // Doing this post deploy ensures it was actually checked out.
   drush_log('[DEVSHOP] Environment Deployed.  Saving new git ref to project settings.');
 
-  $git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$task->ref->environment->repo_root}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));;
+  $git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$task->ref->environment->repo_path}; git describe --tags --exact-match || git symbolic-ref -q HEAD")));;
 
   $args = array(
     ':git' => $git_ref,

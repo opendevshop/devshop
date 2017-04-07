@@ -206,11 +206,11 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
 //  $tests = array();
 //
 //  // Final check for repo root.
-//  if (empty($environment->repo_root)){
+//  if (empty($environment->repo_path)){
 //    $tests[] = 'Something is wrong. Environment not found.';
 //  }
 //  else {
-//    $directory = $environment->repo_root . '/' . $settings->testing['behat_folder_path'] . '/features';
+//    $directory = $environment->repo_path . '/' . $settings->testing['behat_folder_path'] . '/features';
 //
 //    $files = file_scan_directory($directory, '.feature', array('.', '..'));
 //
