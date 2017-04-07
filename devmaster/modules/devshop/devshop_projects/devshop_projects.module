@@ -678,11 +678,15 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   if ($node = node_submit($node)) {
     node_save($node);
   }
-
+  
+  // Lookup install task to use it for last task.
+  $tasks = hosting_get_tasks('rid', $node->nid);
+  
   // Update environment with our site
   db_update('hosting_devshop_project_environment')
     ->fields(array(
       'site' => $node->nid,
+      'last_task' =>  current($tasks)->nid,
     ))
     ->condition('project_nid', $project->nid)
     ->condition('name', $environment_name)
