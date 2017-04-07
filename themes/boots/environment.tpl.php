@@ -74,9 +74,15 @@
               </section>
               <section>
                 <label>
-                  Path
+                  Repository Path
                 </label>
-                <?php print $environment->repo_root; ?>
+                <?php print $environment->repo_path; ?>
+              </section>
+              <section>
+                <label>
+                  Publish Path
+                </label>
+                <?php print $environment->publish_path; ?>
               </section>
             </div>
             <div class="modal-body">
@@ -661,7 +667,7 @@ sites/all/drush/drushrc.php
                     </a>
                     <?php endif; ?>
                   </div>
-                  <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_root)); ?>
+                  <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_path)); ?>
                 </div>
 
                 <?php print theme('devshop_ascii', array('output' => $environment->git_commit)); ?>

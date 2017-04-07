@@ -46,26 +46,26 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   $environment = (object) $project->environments[d()->environment];
   $desired_ref_type = $project->settings['git']['refs'][$git_ref];
 
-    drush_log('[Current Working Directory]' . $environment->repo_root, 'devshop_log');
+    drush_log('[Current Working Directory]' . $environment->repo_path, 'devshop_log');
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
 
     // Fetch
-    devshop_drush_process("git fetch --all", $environment->repo_root, dt('DevShop Deploy'));
+    devshop_drush_process("git fetch --all", $environment->repo_path, dt('DevShop Deploy'));
 
     // Checkout the chosen ref
-    $git_checkout_output = devshop_drush_process("git checkout {$git_ref}", $environment->repo_root, dt('DevShop Deploy'));
+    $git_checkout_output = devshop_drush_process("git checkout {$git_ref}", $environment->repo_path, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
 
     // Run Git Pull
     if ($desired_ref_type == 'branch') {
 
-      $git_pull_output = devshop_drush_process("git pull", $environment->repo_root, dt('DevShop Deploy'));
-      devshop_drush_process("git submodule update --init --recursive --force ", $environment->repo_root, dt('DevShop Deploy'));
+      $git_pull_output = devshop_drush_process("git pull", $environment->repo_path, dt('DevShop Deploy'));
+      devshop_drush_process("git submodule update --init --recursive --force ", $environment->repo_path, dt('DevShop Deploy'));
     }
 
-    devshop_drush_process("git status", $environment->repo_root, dt('DevShop Deploy'));
+    devshop_drush_process("git status", $environment->repo_path, dt('DevShop Deploy'));
 }
 
 /**
@@ -95,7 +95,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Built in Hooks
   if ($composer) {
-    if (file_exists($environment->repo_root . '/composer.json')) {
+    if (file_exists($environment->repo_path . '/composer.json')) {
       $commands[] = "composer install";
     }
     elseif (file_exists($environment->root . '/composer.json')) {
@@ -136,7 +136,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   }
 
   foreach ($commands as $command) {
-    devshop_drush_process($command, $environment->repo_root, 'DevShop Deploy Hook');
+    devshop_drush_process($command, $environment->repo_path, 'DevShop Deploy Hook');
   }
 }
 

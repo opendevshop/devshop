@@ -24,17 +24,17 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
     return;
   }
 
-  if (file_exists($environment->repo_root . '/.hooks.yaml')) {
+  if (file_exists($environment->repo_path . '/.hooks.yaml')) {
     $hooks_file = '.hooks.yaml';
-    $hooks_path = $environment->repo_root . '/.hooks.yaml';
+    $hooks_path = $environment->repo_path . '/.hooks.yaml';
   }
-  elseif (file_exists($environment->repo_root . '/.hooks.yml')) {
+  elseif (file_exists($environment->repo_path . '/.hooks.yml')) {
     $hooks_file = '.hooks.yml';
-    $hooks_path = $environment->repo_root . '/.hooks.yml';
+    $hooks_path = $environment->repo_path . '/.hooks.yml';
   }
-  elseif (file_exists($environment->repo_root . '/.hooks')) {
+  elseif (file_exists($environment->repo_path . '/.hooks')) {
     $hooks_file = '.hooks';
-    $hooks_path = $environment->repo_root . '/.hooks';
+    $hooks_path = $environment->repo_path . '/.hooks';
   }
 
   $environment->dothooks_file_name = $hooks_file;
@@ -138,7 +138,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
     $hook_line = strtr($hook_line, array(
       '{{alias}}' => $environment->system_alias,
     ));
-    devshop_drush_process($hook_line, $environment->repo_root, 'DevShop .hooks.yml');
+    devshop_drush_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml');
   }
 }
 

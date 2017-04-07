@@ -112,7 +112,7 @@ function aegir_download_drush_pm_post_download($drupal_project, $release) {
     $wrapper->streamOutput();
 
     try {
-      $git = $wrapper->workingCopy($environment->repo_root);
+      $git = $wrapper->workingCopy($environment->repo_path);
 
       $download_path = $drupal_project['full_project_path'];
       $git
