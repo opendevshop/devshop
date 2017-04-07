@@ -301,9 +301,9 @@ function boots_preprocess_environment(&$vars) {
   $vars['environment'] = $environment;
 
   // Detect hooks.yml file.
-  if (file_exists($environment->repo_root . '/.hooks.yaml')
-    || file_exists($environment->repo_root . '/.hooks.yml')
-    || file_exists($environment->repo_root . '/.hooks')) {
+  if (file_exists($environment->repo_path . '/.hooks.yaml')
+    || file_exists($environment->repo_path . '/.hooks.yml')
+    || file_exists($environment->repo_path . '/.hooks')) {
     $vars['hooks_yml_note'] = t('!file found:');
   }
   else {

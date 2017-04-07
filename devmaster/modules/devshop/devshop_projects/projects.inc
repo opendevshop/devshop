@@ -134,8 +134,10 @@ function devshop_project_load($node) {
           s.status as site_status,
           p.status as platform_status,
           p.publish_path as root,
+          p.publish_path as publish_path,
           g.git_ref as git_ref,
           g.repo_url as git_url,
+          g.repo_path as repo_path,
           http.title as remote_host,
           sn.title as uri,
           http.title as web_server,
@@ -262,35 +264,32 @@ function devshop_project_load($node) {
       }
     }
 
-    // Repo root
-    $environment->repo_root = empty($project->drupal_path) ? $environment->root : str_replace($project->drupal_path, '', $environment->root);
-
     // Git information.
     $environment->git_ref_stored = $environment->git_ref;
-    if (isset($environment->repo_root) && file_exists($environment->repo_root . '/.git')) {
+    if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
 
       // Timestamp of last commit.
-      $environment->git_last = shell_exec("cd {$environment->repo_root}; git log --pretty=format:'%ar' --max-count=1");
+      $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ar' --max-count=1");
 
       // The last commit.
-      $environment->git_commit = shell_exec("cd {$environment->repo_root}; git -c color.ui=always log --max-count=1");
+      $environment->git_commit = shell_exec("cd {$environment->repo_path}; git -c color.ui=always log --max-count=1");
 
       // Get the exact SHA
-      $environment->git_sha = trim(shell_exec("cd {$environment->repo_root}; git rev-parse HEAD  2> /dev/null"));
+      $environment->git_sha = trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
 
       // Determine the type of git ref the stored version is
       $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
-      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_root}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
+      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_path}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
 
       // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
       // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_root}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
       $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
 
       // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
       if ($stored_git_sha == $environment->git_sha && $stored_git_ref_type != $environment->git_ref_type) {
-        $git_status = shell_exec("cd {$environment->repo_root}; git status");
+        $git_status = shell_exec("cd {$environment->repo_path}; git status");
         if (strpos($git_status, 'On branch ') === 0) {
           $environment->git_ref_type = 'branch';
           $environment->git_ref = $environment->git_ref_stored;
@@ -301,7 +300,7 @@ function devshop_project_load($node) {
       }
 
       // Get git status.
-      $environment->git_status = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always  status"));
+      $environment->git_status = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always  status"));
 
       // Limit status to 1000 lines
       $lines = explode("\n", $environment->git_status);
@@ -313,7 +312,7 @@ function devshop_project_load($node) {
       $environment->git_status  = implode("\n", $lines);
 
       // Get git diff.
-      $environment->git_diff = trim(shell_exec("cd {$environment->repo_root}; git -c color.ui=always diff"));
+      $environment->git_diff = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always diff"));
 
       // Limit git diff to 1000 lines
       $lines = explode("\n", $environment->git_diff);

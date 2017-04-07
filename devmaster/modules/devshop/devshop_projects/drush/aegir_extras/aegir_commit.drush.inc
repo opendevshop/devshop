@@ -49,14 +49,14 @@ function drush_aegir_commit_provision_commit() {
       $wrapper = new GitWrapper();
       $wrapper->streamOutput();
 
-      $git = $wrapper->workingCopy($environment->repo_root);
+      $git = $wrapper->workingCopy($environment->repo_path);
       $status = $git->getStatus();
 
       if (empty($status)) {
         drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
       }
       else {
-        devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
+        devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
         $cmds = array();
 
         // If files option was detected
@@ -79,24 +79,24 @@ function drush_aegir_commit_provision_commit() {
         }
 
         foreach ($cmds as $cmd) {
-          devshop_drush_process($cmd, $environment->repo_root, 'Adding files to local repository...');
+          devshop_drush_process($cmd, $environment->repo_path, 'Adding files to local repository...');
         }
 
-        devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
+        devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
 
         $hostmaster_uri = d('hostmaster')->uri;
         $message = escapeshellarg("$message
 --------------
 Committed by OpenDevShop via http://$hostmaster_uri");
 
-        devshop_drush_process("git commit -m {$message}", $environment->repo_root, 'Committing changes to local repository...', array(
+        devshop_drush_process("git commit -m {$message}", $environment->repo_path, 'Committing changes to local repository...', array(
           'GIT_AUTHOR_NAME' => $name,
           'GIT_AUTHOR_EMAIL' => $mail,
           'GIT_COMMITTER_NAME' => $name,
           'GIT_COMMITTER_EMAIL' => $mail,
         ));
 
-        devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
+        devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
       }
 
       // Push the result, if desired.
@@ -109,14 +109,14 @@ Committed by OpenDevShop via http://$hostmaster_uri");
           return;
         }
         else {
-          devshop_drush_process("git push", $environment->repo_root, 'Pushing code to remote repository...');
-          devshop_drush_process('git status', $environment->repo_root, dt('Git Status'));
+          devshop_drush_process("git push", $environment->repo_path, 'Pushing code to remote repository...');
+          devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
         }
       }
     }
     catch (GitException $e) {
       drush_log('Git Error', 'devshop_command');
-      drush_log("Unable to load git repository at path '{$environment->repo_root}'", 'devshop_error');
+      drush_log("Unable to load git repository at path '{$environment->repo_path}'", 'devshop_error');
       drush_set_error($e->getMessage());
     }
   }
