@@ -19,6 +19,12 @@ body.admin-menu .navbar-static-top {
   border-bottom-right-radius: 0px;
 }
 
+.environment .list-group-item .content {
+    font-size: .7em;
+    text-transform: uppercase;
+    color: grey;
+}
+
 .environment-main {
   border-left: 1px #ededed solid;
   border-right: 1px #ededed solid;
@@ -96,6 +102,10 @@ body.admin-menu .navbar-static-top {
 }
 .environment-meta-data i.fa {
     margin-right: .5em;
+}
+
+.environment-meta-data.environment-info i.fa {
+    margin-right: 0;
 }
 .environment-meta-data.environment-info {
     text-transform: uppercase;
