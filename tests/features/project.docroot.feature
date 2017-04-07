@@ -6,6 +6,7 @@ Feature: Create a project with Drupal in the docroot.
 
   Scenario: Create a new drupal 8 project with drupal in docroot folder
 
+    When I run drush "en dblog -y"
     Given I am logged in as a user with the "administrator" role
     And I am on the homepage
     When I click "Projects"
@@ -61,6 +62,9 @@ Feature: Create a project with Drupal in the docroot.
     # FINISH!
     Then print current URL
     And print last response
+    When I run drush "wd-show"
+    Then print last drush output
+
     Then I should see "Your project has been created. Your sites are being installed."
     And I should see "Dashboard"
     And I should see "Settings"
