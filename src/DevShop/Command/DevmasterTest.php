@@ -46,6 +46,12 @@ class DevmasterTest extends Command {
         InputOption::VALUE_OPTIONAL,
         'A test name to pass to bin/behat --name option'
       )
+      ->addOption(
+        'behat-path',
+        '',
+        InputOption::VALUE_OPTIONAL,
+        'The absolute path to the tests to run. Defaults to DevShop CLI path.'
+      )
     ;
   }
 
@@ -62,6 +68,17 @@ class DevmasterTest extends Command {
     else {
       $output->writeln("<error>Hostmaster alias not found.</error>");
       exit(1);
+    }
+    
+    // Check behat path.
+    if (empty($input->getOption('behat-path'))) {
+      // If no behat path is set, use this repository root / tests.
+      $input->setOption('behat-path', __DIR__ . '/../../../tests');
+    }
+    
+    // Check that the behat path is valid.
+    if (!file_exists($input->getOption('behat-path') . '/behat.yml')) {
+      throw new \Exception('No behat.yml found at ' . $input->getOption('behat-path'));
     }
   }
 
@@ -106,7 +123,7 @@ class DevmasterTest extends Command {
     
     $process = new Process($cmd);
     $process->setTimeout(NULL);
-    $process->setWorkingDirectory(__DIR__ . '/../../../tests');
+    $process->setWorkingDirectory($input->getOption('behat-path'));
     $process->setEnv(array(
       'HOME' => '/var/aegir',
       'PATH' => getenv('PATH') . ':/usr/share/composer/vendor/bin/',
