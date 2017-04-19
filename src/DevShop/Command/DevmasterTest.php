@@ -72,8 +72,15 @@ class DevmasterTest extends Command {
     
     // Check behat path.
     if (empty($input->getOption('behat-path'))) {
-      // If no behat path is set, use this repository root / tests.
-      $input->setOption('behat-path', __DIR__ . '/../../../tests');
+      
+      // Use environment variable if one exists.
+      if (!empty($_SERVER['BEHAT_PATH'])) {
+        $input->setOption('behat-path', $_SERVER['BEHAT_PATH']);
+      }
+      else {
+        // If no behat path is set, use this repository root / tests.
+        $input->setOption('behat-path', __DIR__ . '/../../../tests');
+      }
     }
     
     // Check that the behat path is valid.
