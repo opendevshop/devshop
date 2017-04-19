@@ -225,7 +225,7 @@ class RoboFile extends \Robo\Tasks
       
       // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
       // @TODO: Instead of run-tests.sh, run a test-upgrade.sh script to run hostmaster-migrate, then run-tests.sh.
-      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e devmaster 'drush @hostmaster hostmaster-migrate \$HOSTNAME /var/aegir/devmaster-1.x -y; run-tests.sh' ";
+      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e devmaster '/usr/share/devshop/tests/test-upgrade.sh' ";
     }
     else {
       $cmd = "docker-compose up -d";
