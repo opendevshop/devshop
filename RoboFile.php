@@ -28,6 +28,9 @@
 class RoboFile extends \Robo\Tasks
 {
   
+  // Install this version first when testing upgrades.
+  const UPGRADE_FROM_VERSION = '1.0.0-beta10';
+  
   // The version of docker-compose to suggest the user install.
   const DOCKER_COMPOSE_VERSION = '1.10.0';
   
@@ -198,7 +201,7 @@ class RoboFile extends \Robo\Tasks
    *
    * Use "--test" option to run tests instead of the hosting queue.
    */
-  public function up($opts = ['follow' => 1, 'test' => false]) {
+  public function up($opts = ['follow' => 1, 'test' => false, 'test-upgrade' => false]) {
     
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
@@ -215,6 +218,14 @@ class RoboFile extends \Robo\Tasks
     
     if ($opts['test']) {
       $cmd = "docker-compose run devmaster 'run-tests.sh'";
+    }
+    elseif ($opts['test-upgrade']) {
+      $version = self::UPGRADE_FROM_VERSION;
+//      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
+      
+      // Launch a devmaster container as if it were the last release, then run tests on it.
+      // @TODO: Instead of run-tests.sh, run a test-upgrade.sh script to run hostmaster-migrate, then run-tests.sh.
+      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make devmaster 'run-tests.sh' ";
     }
     else {
       $cmd = "docker-compose up -d";
