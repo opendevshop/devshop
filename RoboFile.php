@@ -251,8 +251,8 @@ class RoboFile extends \Robo\Tasks
       if ($this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
-        ->remove("aegir-home/.drush/project_aliases")
-        ->remove("aegir-home/.drush/*.php")
+        ->remove("aegir-home/.drush")
+        ->remove("aegir-home/clients")
         ->run()
         ->wasSuccessful()) {
     
