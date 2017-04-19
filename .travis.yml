@@ -7,7 +7,7 @@ branches:
   only:
     - 1.x
 #
-env:
+#env:
 #  matrix:
 #  - test="Upgrade"
 #    distribution="ubuntu"
@@ -41,8 +41,18 @@ env:
 #    run_opts: ""
 #    script: "--server-webserver=nginx"
   # This should match the list of hosts below so that requests resolve to the container.
+
+env:
   global:
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
+
+  matrix:
+  - test="Upgrade"
+    UPGRADE_FROM_VERSION="1.0.0-beta10"
+    ROBO_UP_OPTIONS="--test-upgrade"
+
+  - test="Install"
+    ROBO_UP_OPTIONS="--test"
 
 addons:
   hosts:
@@ -75,7 +85,7 @@ before_install:
 script:
 
   # Launch devshop including preparing the source code.
-  - robo up --test -n
+  - robo up ${ROBO_UP_OPTIONS} -n
 
 #
 #  # Pull container
