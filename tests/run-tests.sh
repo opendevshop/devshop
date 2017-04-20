@@ -1,6 +1,11 @@
 #!/bin/bash
 
-if [[ $* == *--upgrade* ]]; then
+#if [[ $* == *--upgrade* ]]; then
+#
+#      set -ex
+#      echo "STARTING UPGRADE >>>>>>>>>>>>>>>>>"
+#      drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y
+#fi
 
       set -ex
       echo "HELLO UPGRADE >>>>>>>>>>>>>>>>>"
