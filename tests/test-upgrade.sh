@@ -2,7 +2,11 @@
 
 set -ex
 drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y
-run-tests.sh
+
+drush @hostmaster vset hosting_queued_paused 1
+
+# Run the test suite.
+/usr/share/devshop/bin/devshop devmaster:test
 
 #
 ## Get argument as the version we should install.
