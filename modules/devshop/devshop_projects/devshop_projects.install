@@ -5,6 +5,13 @@
  */
 
 /**
+ * Redefine HOSTING_ADMIN_CLIENT, it is missing for some reason during the update process.
+ */
+if (!defined('HOSTING_ADMIN_CLIENT')) {
+  define('HOSTING_ADMIN_CLIENT', 1);
+}
+
+/**
  * Implements hook_install()
  */
 function devshop_projects_install() {
