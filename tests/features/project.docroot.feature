@@ -1,5 +1,6 @@
-#@api
-#Feature: Create a project with Drupal in the docroot.
+@api
+Feature: Create a project with Drupal in the docroot.
+
 #  In order to start developing a drupal site
 #  As a project admin
 #  I need to create a new project
