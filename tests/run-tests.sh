@@ -2,7 +2,7 @@
 
 set -ex
 
-echo "run-tests.sh | Running  /usr/share/devshop/bin/devshop devmaster:test"
+echo "Running  /usr/share/devshop/bin/devshop devmaster:test"
 
 # Pause the task queue.
 drush @hostmaster vset hosting_queued_paused 1
