@@ -2,7 +2,10 @@
 
 set -ex
 
-echo "Running  /usr/share/devshop/bin/devshop devmaster:test"
+if [[ $* == *--upgrade* ]]; then
+      echo "Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y"
+      drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y
+fi
 
 # Pause the task queue.
 drush @hostmaster vset hosting_queued_paused 1
