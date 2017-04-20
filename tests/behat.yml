@@ -32,4 +32,10 @@ default:
 devmaster:
   extensions:
     Behat\MinkExtension:
-      base_url: http://devshop.site
+      base_url: http://devshop.local.computer
+    Drupal\DrupalExtension:
+      drupal:
+        drupal_root: /var/aegir/devmaster-1.x
+      drush:
+        alias: 'hostmaster'
+        root: /var/aegir/devmaster-1.x
