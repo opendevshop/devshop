@@ -92,9 +92,8 @@ before_install:
   - echo projects[devmaster][download][url] = "../devmaster" >> build-devmaster.make
   - cat build-devmaster.make
 
-  # Prepare devshop CLI and tests
+  # Prepare devshop CLI.
   - composer install
-  - composer install -d tests
 
 script:
   - robo up ${ROBO_UP_OPTIONS} -n
