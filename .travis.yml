@@ -44,6 +44,11 @@ branches:
 
 env:
   global:
+    - DEVSHOP_VERSION=1.x
+
+# Remove comment once devmaster branch move-tests is merged.
+#    - BEHAT_PATH=/var/aegir/devmaster-${DEVSHOP_VERSION}/profiles/devmaster/tests
+    - BEHAT_PATH=/usr/share/devshop/tests
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 
   matrix:
@@ -78,9 +83,8 @@ before_install:
   - sudo mv drush.phar /usr/local/bin/drush
   - sudo chmod +x /usr/local/bin/drush
 
-  # Prepare devshop CLI and tests
+  # Prepare devshop CLI.
   - composer install
-  - composer install -d tests
 
 script:
 

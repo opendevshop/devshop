@@ -3,23 +3,10 @@
 namespace DevShop\Command;
 
 use DevShop\Console\Command;
-
-use Github\Exception\RuntimeException;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
-
 use Symfony\Component\Process\Process;
-use Github\Client;
-
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Finder\Finder;
 
 class DevmasterTest extends Command {
   protected function configure() {
@@ -123,6 +110,19 @@ class DevmasterTest extends Command {
 //    $fs = new Filesystem();
 //    $fs->dumpFile($path, trim($output));
 //    $fs->dumpFile($settings_default_path, trim($output));
+
+    // Run composer install
+    $process = new Process('composer install');
+    $process->setTimeout(NULL);
+    $process->setWorkingDirectory($input->getOption('behat-path'));
+
+    $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        echo $buffer;
+      } else {
+        echo $buffer;
+      }
+    });
 
     // Run bin/behat
     $cmd = 'bin/behat --colors';
