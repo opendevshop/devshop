@@ -232,7 +232,7 @@ class RoboFile extends \Robo\Tasks
       
       // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
       // @TODO: Instead of run-tests.sh, run a test-upgrade.sh script to run hostmaster-migrate, then run-tests.sh.
-      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make devmaster '$command'";
+      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
     }
     else {
       $cmd = "docker-compose up -d";
@@ -257,6 +257,10 @@ class RoboFile extends \Robo\Tasks
   
   /**
    * Destroy all containers, docker volumes, and aegir configuration.
+   *
+   * Running with --no-interaction will keep the drupal devmaster codebase in place.
+   *
+   * Running with --force
    */
   public function destroy($opts = ['force' => 0]) {
     $this->_exec('docker-compose kill');
@@ -265,7 +269,7 @@ class RoboFile extends \Robo\Tasks
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
   
-    if (!$opts['no-interaction'] && $this->confirm("Keep aegir-home/devmaster-{$version} folder?")) {
+    if ( !$opts['force'] && ($opts['no-interaction'] || $this->confirm("Keep aegir-home/devmaster-{$version} folder?"))) {
       if ($this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
