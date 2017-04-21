@@ -5,7 +5,7 @@ version: '2'
 services:
 
   devmaster:
-    image: devshop/devmaster:xdebug
+    image: aegir/hostmaster:dev
     ports:
       - 80:80
     hostname: devshop.local.computer
