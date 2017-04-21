@@ -447,10 +447,3 @@ function devshop_projects_update_7008 () {
     ->execute();
 
 }
-
-/**
- * Intentionally broken update, for testing the testing!
- */
-function devshop_projects_update_7009 () {
-  not_a_function();
-}
