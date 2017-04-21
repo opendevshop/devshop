@@ -219,7 +219,7 @@ class RoboFile extends \Robo\Tasks
     $command = "/usr/share/devshop/tests/run-tests.sh";
     
     if ($opts['test']) {
-      $cmd = "docker-compose run devmaster '$command'";
+      $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} devmaster '$command'";
     }
     elseif ($opts['test-upgrade']) {
       $version = self::UPGRADE_FROM_VERSION;
