@@ -55,6 +55,7 @@ branches:
 
 env:
   global:
+    - DEVSHOP_VERSION=1.x
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 
   matrix:
@@ -80,7 +81,6 @@ before_install:
   - sudo chmod +x /usr/local/bin/drush
 
   # Clone devshop
-  - export DEVSHOP_VERSION=1.x
   - cd ..
   - git clone http://github.com/opendevshop/devshop
   - cd devshop
@@ -91,9 +91,8 @@ before_install:
   - echo projects[devmaster][download][url] = "../devmaster" >> build-devmaster.make
   - cat build-devmaster.make
 
-  # Prepare devshop CLI and tests
+  # Prepare devshop CLI.
   - composer install
-  - composer install -d tests
 
 script:
   - robo up ${ROBO_UP_OPTIONS} -n
