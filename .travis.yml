@@ -48,7 +48,7 @@ env:
 
 # Remove comment once devmaster branch move-tests is merged.
 #    - BEHAT_PATH=/var/aegir/devmaster-${DEVSHOP_VERSION}/profiles/devmaster/tests
-    - BEHAT_PATH=../../../tests
+    - BEHAT_PATH=/usr/share/devshop/tests
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 
   matrix:
