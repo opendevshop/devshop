@@ -57,6 +57,15 @@ env:
   global:
     - DEVSHOP_VERSION=1.x
     - BEHAT_PATH=/var/aegir/devmaster-${DEVSHOP_VERSION}/profiles/devmaster/tests
+    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
+
+  matrix:
+  - test="Upgrade"
+    UPGRADE_FROM_VERSION="1.0.0-beta10"
+    ROBO_UP_OPTIONS="--test-upgrade"
+
+  - test="Install"
+    ROBO_UP_OPTIONS="--test"
 
 services:
   - docker
@@ -88,7 +97,7 @@ before_install:
   - composer install -d tests
 
 script:
-  - robo up --test -n
+  - robo up ${ROBO_UP_OPTIONS} -n
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state
