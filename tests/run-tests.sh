@@ -3,10 +3,10 @@
 set -e
 
 # Run remaining tasks from install process.
-echo ">> Running remaining tasks: drush @hostmaster hosting-tasks -v --debug --fork=0"
-drush @hostmaster hosting-tasks -v --debug --fork=0 --strict=0
-drush @hostmaster hosting-tasks -v --debug --fork=0 --strict=0
-drush @hostmaster hosting-tasks -v --debug --fork=0 --strict=0
+echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0"
+drush @hostmaster hosting-tasks --fork=0 --strict=0
+
+echo ">> Running remaining tasks: Complete!"
 
 if [[ $* == *--upgrade* ]]; then
       echo ">> Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y"
