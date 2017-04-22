@@ -266,6 +266,12 @@ class RoboFile extends \Robo\Tasks
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
         ->detached()
         ->privileged()
+        ->env('TERM', 'xterm')
+        ->env('TRAVIS', true)
+        ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
+        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
+        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init[$opts['install-sh-image']])
         ->run()
         ->wasSuccessful() ) {
@@ -275,26 +281,23 @@ class RoboFile extends \Robo\Tasks
 
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
-      $this->taskDockerExec('devshop_container')
-        ->env('TERM', 'xterm')
-        ->env('TRAVIS', true)
-        ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
-        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
-        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+      if (!$this->taskDockerExec('devshop_container')
         ->exec('/usr/share/devshop/install.sh --server-webserver=apache')
-        ->run();
+        ->run()
+        ->wasSuccessful() ) {
+        $this->say('Docker Exec install.sh failed.');
+        exit(1);
+      }
 
       if ($opts['test']) {
         # Run test script on the container.
-        $this->taskDockerExec('devshop_container')
-          ->env('TERM', 'xterm')
-          ->env('TRAVIS', true)
-          ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
-          ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
-          ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
-          ->exec('/usr/share/devshop/tests/run-tests.sh')
-          ->run();
-      }
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec('/usr/share/devshop/tests.run-tests.sh')
+          ->run()
+          ->wasSuccessful()) {
+          $this->say('Docker Exec run-tests.sh failed.');
+          exit(1);
+        }
     }
     else {
       $cmd = "docker-compose up -d";
