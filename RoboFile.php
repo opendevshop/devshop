@@ -259,8 +259,8 @@ class RoboFile extends \Robo\Tasks
       # Launch Server container
       if (!$this->taskDockerRun($opts['install-sh-image'])
         ->name('devshop_container')
-        ->volume('./', '/usr/share/devshop')
-        ->volume('./aegir-home', '/var/aegir')
+        ->volume(__DIR__, '/usr/share/devshop')
+        ->volume('aegir-home', '/var/aegir')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
