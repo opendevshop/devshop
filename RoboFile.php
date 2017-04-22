@@ -294,10 +294,12 @@ class RoboFile extends \Robo\Tasks
         if (!$this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/tests.run-tests.sh')
           ->run()
-          ->wasSuccessful()) {
+          ->wasSuccessful()
+        ) {
           $this->say('Docker Exec run-tests.sh failed.');
           exit(1);
         }
+      }
     }
     else {
       $cmd = "docker-compose up -d";
