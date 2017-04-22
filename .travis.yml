@@ -56,7 +56,7 @@ env:
     COMMAND="robo up --test"
 
   - test="Install with SH"
-    COMMAND="robo up --install-sh"
+    COMMAND="robo up --mode=install.sh"
 
 addons:
   hosts:
