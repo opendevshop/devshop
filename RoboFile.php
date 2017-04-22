@@ -28,6 +28,9 @@
 class RoboFile extends \Robo\Tasks
 {
   
+  // Install this version first when testing upgrades.
+  const UPGRADE_FROM_VERSION = '1.0.0-beta10';
+  
   // The version of docker-compose to suggest the user install.
   const DOCKER_COMPOSE_VERSION = '1.10.0';
   
@@ -130,11 +133,14 @@ class RoboFile extends \Robo\Tasks
     }
     
     // Run drush make to build the devmaster stack.
-    $make_path = "aegir-home/devmaster-1.x";
-    if (file_exists("aegir-home/devmaster-1.x")) {
-      $this->say("Path aegir-home/devmaster-1.x already exists.");
+    $make_destination = "aegir-home/devmaster-1.x";
+    $makefile_path = "build-devmaster.make";
+
+    if (file_exists($make_destination)) {
+      $this->say("Path {$make_destination} already exists.");
     } else {
-      $result = $this->_exec("drush make build-devmaster.make aegir-home/devmaster-1.x --working-copy --no-gitinfofile");
+      
+      $result = $this->_exec("drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
         $this->say('Built devmaster from makefile.');
         return TRUE;
@@ -195,7 +201,7 @@ class RoboFile extends \Robo\Tasks
    *
    * Use "--test" option to run tests instead of the hosting queue.
    */
-  public function up($opts = ['follow' => 1, 'test' => false]) {
+  public function up($opts = ['follow' => 1, 'test' => false, 'test-upgrade' => false]) {
     
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
@@ -209,9 +215,24 @@ class RoboFile extends \Robo\Tasks
         return;
       }
     }
+
+    $command = "/usr/share/devshop/tests/run-tests.sh";
     
     if ($opts['test']) {
-      $cmd = "docker-compose run devmaster 'run-tests.sh'";
+      $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
+    }
+    elseif ($opts['test-upgrade']) {
+      $version = self::UPGRADE_FROM_VERSION;
+      $command .= ' --upgrade';
+
+      // @TODO: Have this detect the branch and use that for the version.
+      $root_target = '/var/aegir/devmaster-1.x';
+
+//      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
+      
+      // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
+      // @TODO: Instead of run-tests.sh, run a test-upgrade.sh script to run hostmaster-migrate, then run-tests.sh.
+      $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
     }
     else {
       $cmd = "docker-compose up -d";
@@ -236,6 +257,10 @@ class RoboFile extends \Robo\Tasks
   
   /**
    * Destroy all containers, docker volumes, and aegir configuration.
+   *
+   * Running with --no-interaction will keep the drupal devmaster codebase in place.
+   *
+   * Running with --force
    */
   public function destroy($opts = ['force' => 0]) {
     $this->_exec('docker-compose kill');
@@ -244,17 +269,17 @@ class RoboFile extends \Robo\Tasks
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
   
-    if (!$opts['no-interaction'] && $this->confirm("Keep aegir-home/devmaster-{$version} folder?")) {
+    if ( !$opts['force'] && ($opts['no-interaction'] || $this->confirm("Keep aegir-home/devmaster-{$version} folder?"))) {
       if ($this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
-        ->remove("aegir-home/.drush/project_aliases")
-        ->remove("aegir-home/.drush/*.php")
+        ->remove("aegir-home/.drush")
         ->run()
         ->wasSuccessful()) {
     
         // Remove devmaster site folder
         $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
+        $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     
         $this->say("Deleted local folders. Source code is still in place.");
         $this->say("To launch a new instance, run `robo up`");
