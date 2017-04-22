@@ -49,11 +49,14 @@ env:
 
   matrix:
   - test="Upgrade"
+    COMMAND="robo up --test-upgrade"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
-    ROBO_UP_OPTIONS="--test-upgrade"
 
-  - test="Install"
-    ROBO_UP_OPTIONS="--test"
+  - test="Install on Docker"
+    COMMAND="robo up --test"
+
+  - test="Install with SH"
+    COMMAND="robo up --install-sh"
 
 addons:
   hosts:
@@ -85,7 +88,7 @@ before_install:
 script:
 
   # Launch devshop including preparing the source code.
-  - robo up ${ROBO_UP_OPTIONS} -n
+  - ${COMMAND} -n
 
 #
 #  # Pull container
