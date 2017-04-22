@@ -201,7 +201,15 @@ class RoboFile extends \Robo\Tasks
    *
    * Use "--test" option to run tests instead of the hosting queue.
    */
-  public function up($opts = ['follow' => 1, 'test' => false, 'test-upgrade' => false]) {
+  public function up($opts = [
+    'follow' => 1,
+    'test' => false,
+    'test-upgrade' => false,
+
+    // Set 'mode' => 'install.sh' to run a traditional OS install.
+    'mode' => 'docker-compose',
+    'install-sh-image' => 'ubuntu:14.04'
+  ]) {
     
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
@@ -217,7 +225,7 @@ class RoboFile extends \Robo\Tasks
     }
 
     $command = "/usr/share/devshop/tests/run-tests.sh";
-    
+    if ($opts['mode'] == 'docker-compose') {
     if ($opts['test']) {
       $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
     }
@@ -229,10 +237,63 @@ class RoboFile extends \Robo\Tasks
       $root_target = '/var/aegir/devmaster-1.x';
 
 //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
-      
+
       // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
       // @TODO: Instead of run-tests.sh, run a test-upgrade.sh script to run hostmaster-migrate, then run-tests.sh.
       $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
+    }
+    }
+    elseif ($opts['mode'] == 'install.sh') {
+
+      $init = [
+        'centos:7' => '/usr/lib/systemd/systemd',
+        'ubuntu:14.04' => '/sbin/init',
+      ];
+
+      # This is the list of test sites, set in .travis.yml.
+      # This is so requests to these sites go back to localhost.
+      if (empty($_SERVER['SITE_HOSTS'])) {
+        $_SERVER['SITE_HOSTS'] = 'devshop.local.computer';
+      }
+
+      # Launch Server container
+      if (!$this->taskDockerRun($opts['install-sh-image'])
+        ->name('devshop_container')
+        ->volume(getcwd(), '/usr/share/devshop')
+        ->option('--hostname', 'devshop.local.computer')
+        ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
+        ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
+        ->detached()
+        ->privileged()
+        ->exec($init[$opts['install-sh-image']])
+        ->run()
+        ->wasSuccessful() ) {
+        $this->say('Docker Run failed.');
+        exit(1);
+      }
+
+      # Run install script on the container.
+      # @TODO: Run the last version on the container, then upgrade.
+      $this->taskDockerExec('devshop_container')
+        ->env('TERM', 'xterm')
+        ->env('TRAVIS', true)
+        ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
+        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
+        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->exec('/usr/share/devshop/install.sh --server-webserver=apache')
+        ->run();
+
+      if ($opts['test']) {
+        # Run test script on the container.
+        $this->taskDockerExec('devshop_container')
+          ->env('TERM', 'xterm')
+          ->env('TRAVIS', true)
+          ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
+          ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
+          ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+          ->exec('/usr/share/devshop/tests/run-tests.sh')
+          ->run();
+      }
     }
     else {
       $cmd = "docker-compose up -d";
