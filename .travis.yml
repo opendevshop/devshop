@@ -45,7 +45,7 @@ branches:
 env:
   global:
     - DEVSHOP_VERSION=1.x
-    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
+    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer'
 
   matrix:
   - test="Upgrade"
@@ -65,6 +65,7 @@ addons:
     - live.projectname.devshop.travis
     - dev.drpl8.devshop.travis
     - testenv.drpl8.devshop.travis
+    - dev.rootproject.devshop.local.computer
 
 services:
   - docker
