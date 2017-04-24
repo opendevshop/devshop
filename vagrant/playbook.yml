@@ -1,0 +1,14 @@
+##
+# DevShop: DevMaster Server with Apache
+#
+
+---
+- hosts: all
+  user: root
+  roles:
+    - opendevshop.aegir-user
+    - opendevshop.aegir-apache
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.composer
+    - opendevshop.devmaster
