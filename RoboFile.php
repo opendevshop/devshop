@@ -279,6 +279,16 @@ class RoboFile extends \Robo\Tasks
         exit(1);
       }
 
+      # Install mysql first to ensure it is started.
+      if (!$this->taskDockerExec('devshop_container')
+        ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
+        ->run()
+        ->wasSuccessful()
+      ) {
+        $this->say('Set init policy failed.');
+        exit(1);
+      }
+
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       if (!$this->taskDockerExec('devshop_container')
