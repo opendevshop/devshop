@@ -55,12 +55,11 @@ env:
   - test="Install on Docker"
     COMMAND="robo up --test"
 
-  - test="Install on Ubutnu with install.sh"
+  - test="Install on Ubuntu 14.04"
     COMMAND="robo up --mode=install.sh"
 
-  - test="Install on CentOS with install.sh"
-    OS="centos:7"
-    COMMAND="robo up --mode=install.sh --install-sh-image=$OS"
+  - test="Install on CentOS 7"
+    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7"
 
 addons:
   hosts:
