@@ -248,6 +248,7 @@ class RoboFile extends \Robo\Tasks
       $init = [
         'centos:7' => '/usr/lib/systemd/systemd',
         'ubuntu:14.04' => '/sbin/init',
+        'geerlingguy/docker-centos7-ansible' => '/sbin/init',
       ];
 
       # This is the list of test sites, set in .travis.yml.
