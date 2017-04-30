@@ -56,10 +56,10 @@ env:
     COMMAND="robo up --test"
 
   - test="Install on Ubuntu 14.04"
-    COMMAND="robo up --mode=install.sh"
+    COMMAND="robo up --mode=install.sh --test"
 
   - test="Install on CentOS 7"
-    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7"
+    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
 
 addons:
   hosts:
