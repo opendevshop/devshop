@@ -305,8 +305,15 @@ class RoboFile extends \Robo\Tasks
       if ($opts['test']) {
 
         # Disable supervisor
+        if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+          $service = 'supervisor';
+        }
+        else {
+          $service = 'supervisord';
+        }
+
         if (!$this->taskDockerExec('devshop_container')
-          ->exec('service supervisord stop')
+          ->exec("service $service stop")
           ->run()
           ->wasSuccessful()
         ) {
