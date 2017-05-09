@@ -4,7 +4,7 @@ set -e
 
 # Run remaining tasks from install process.
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0"
-drush @hostmaster hosting-tasks --fork=0 --strict=0
+drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
 
 echo ">> Running remaining tasks: Complete!"
 
