@@ -305,7 +305,7 @@ class RoboFile extends \Robo\Tasks
       if ($opts['test']) {
         # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
-          ->exec('su - aegir -c  - drush @hostmaster vset hosting_queue_tasks_enabled 0 -y')
+          ->exec('su - aegir -c  - drush @hostmaster vset hosting_queue_tasks_enabled 0')
           ->run()
           ->wasSuccessful()
         ) {
