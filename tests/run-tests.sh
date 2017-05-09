@@ -5,6 +5,7 @@ set -e
 # Run remaining tasks from install process.
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force"
 drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
+drush @hostmaster sql-query "DELETE FROM semaphore;"
 
 echo ">> Running remaining tasks: Complete!"
 
