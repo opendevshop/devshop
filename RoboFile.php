@@ -294,7 +294,7 @@ class RoboFile extends \Robo\Tasks
 
       # Disable supervisor
       if (!$this->taskDockerExec('devshop_container')
-        ->exec('service supervisor stop')
+        ->exec('service supervisord stop')
         ->run()
         ->wasSuccessful()
       ) {
