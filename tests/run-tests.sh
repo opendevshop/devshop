@@ -15,7 +15,7 @@ if [[ $* == *--upgrade* ]]; then
       # Force all tasks to appear as completed.'
       drush @hostmaster sql-query "UPDATE hosting_task SET task_status = 1;"
 
-      drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y
+      drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y -v --debug
 
       echo ">> Upgrade Complete."
 fi
