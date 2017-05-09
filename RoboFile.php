@@ -292,16 +292,6 @@ class RoboFile extends \Robo\Tasks
         }
       }
 
-      # Disable supervisor
-      if (!$this->taskDockerExec('devshop_container')
-        ->exec('service supervisord stop')
-        ->run()
-        ->wasSuccessful()
-      ) {
-        $this->say('Unable to disable supervisor.');
-        exit(1);
-      }
-
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       if (!$this->taskDockerExec('devshop_container')
@@ -313,6 +303,16 @@ class RoboFile extends \Robo\Tasks
       }
 
       if ($opts['test']) {
+
+        # Disable supervisor
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec('service supervisord stop')
+          ->run()
+          ->wasSuccessful()
+        ) {
+          $this->say('Unable to disable supervisor.');
+          exit(1);
+        }
 
         # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
