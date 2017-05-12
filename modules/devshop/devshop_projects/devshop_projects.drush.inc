@@ -120,7 +120,7 @@ function drush_devshop_projects_pre_hosting_task()
  *
  * Provides the "Fork environment" feature: Checks out a new branch and pushes it.
  */
-function devshop_dothooks_post_hosting_verify_task($task, $data) {
+function devshop_projects_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'platform') {
 
     // Fork Environment:
@@ -172,7 +172,7 @@ function devshop_dothooks_post_hosting_verify_task($task, $data) {
   // Verify Platform
 //  $task = &drush_get_context('HOSTING_TASK');
 
-  $platform = $task->ref;
+//  $platform = $task->ref;
 
   // If for some reason we still do not have an environment... bail.
 //  if (empty($platform->environment)) {
