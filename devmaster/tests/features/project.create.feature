@@ -115,3 +115,12 @@ Feature: Create a project
 
     When I click "Visit Site"
     Then I should see "Welcome to testenv.drpl8"
+
+    Then I move backward one page
+    When I click "Project Settings"
+    Then I select "testenv" from "Primary Environment"
+
+  # @TODO: Remove on the next commit to trigger a test failure.
+#    And I press "save"
+#    Then I should see "DevShop Project drpl8 has been updated."
+#    And I should see an ".environment-link .fa-bolt" element
