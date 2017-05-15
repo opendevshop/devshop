@@ -120,7 +120,6 @@ Feature: Create a project
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
 
-  # @TODO: Remove on the next commit to trigger a test failure.
-#    And I press "save"
-#    Then I should see "DevShop Project drpl8 has been updated."
-#    And I should see an ".environment-link .fa-bolt" element
+    And I press "Save"
+    Then I should see "DevShop Project drpl8 has been updated."
+    And I should see an ".environment-link .fa-bolt" element
