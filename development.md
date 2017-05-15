@@ -143,6 +143,13 @@ If your Docker machine IP is not 172.17.0.1, you can change it but you must also
 
         XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
 
+To detect what your machine's host IP is, you can run the following command from within the container: 
+
+        docker-compose exec devmaster bash
+        /sbin/ip route|awk '/default/ { print $3 }'
+
+Credit to http://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container
+
 ## Vagrant 
 
 The Vagrantfile in this project is now deprecated, but is still included in the `vagrant` folder if you wish to use it.
