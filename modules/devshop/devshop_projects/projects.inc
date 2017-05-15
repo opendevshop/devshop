@@ -133,6 +133,7 @@ function devshop_project_load($node) {
           e.*,
           s.status as site_status,
           p.status as platform_status,
+          p.nid as platform,
           p.publish_path as root,
           p.publish_path as publish_path,
           g.git_ref as git_ref,
