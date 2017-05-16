@@ -307,69 +307,8 @@ function devshop_environment_add_form($form, $form_state, $project_node) {
 
   array_unshift($form['#validate'], 'node_form_validate');
 
-  // Add a validator
-//  $form['#validate'][] = 'devshop_environment_add_form_validate';
-//  $form['#submit'][] = 'devshop_environment_add_form_submit';
-
   // The rest of the DevShop Environment settings are in devshop_projects_form_site_node_form_alter()
   // so that the site edit node has them as well.
 
-//  dsm($form);
   return $form;
-}
-
-/**
- * Validation for devshop_environment_add_form
- * 
- * @param $form
- * @param $form_state
- */
-function devshop_environment_add_form_validate($form, &$form_state) {
-
-  $project_node = node_load($form_state['values']['project']);
-  $project = $project_node->project;
-
-  // Check existence of the environment name
-  if (!empty($project->environments[$form_state['values']['environment_name']])) {
-    form_set_error('environment_name', t('There is already an environment named %name in this project. Please choose a different name.', array('%name' => $form_state['values']['environment_name'])));
-  }
-
-  // Check for illegal chars
-  if (!preg_match('!^[a-z0-9_]+$!', $form_state['values']['environment_name'])) {
-    form_set_error('environment_name', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
-  }
-}
-
-
-/**
- * Validation for devshop_environment_add_form
- *
- * @param $form
- * @param $form_state
- */
-function devshop_environment_add_form_submit($form, &$form_state) {
-  $project_node = node_load($form_state['values']['project']);
-  $environment_name = $form_state['values']['environment_name'];
-  $environment_settings = $form_state['values']['environment']['settings'];
-  $environment_settings['install_method'] = $form_state['values']['install_method'];
-  $environment_settings['db_server'] = $form_state['values']['db_server'];
-  $environment_settings['web_server'] = $form_state['values']['web_server'];
-  $environment_settings['deploy'] = $project_node->project->settings->deploy['default_hooks'];
-
-  $action = $form_state['values']['action'];
-  $git_ref = $form_state['values']['git_ref'];
-  $environment_to_clone = $form_state['values']['environment_source'];
-
-  $site_node_base = (object) $form_state['values'];
-  hosting_create_environment($project_node->project, $environment_name, $git_ref, $environment_to_clone, $environment_settings, $action, $site_node_base);
-
-  // Redirect to project dashboard.
-  $form_state['redirect'] = 'node/' . $project_node->nid;
-
-  // Friendly message
-//  drupal_get_messages('status');
-  drupal_set_message(t('Your environment is being created.'));
-
-  // Queue a project verify.
-  hosting_add_task($project_node->nid, 'verify');
 }
