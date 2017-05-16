@@ -62,6 +62,11 @@
       <small><?php print $project->install_profile ?></small>
     </li>
 
+    <li>
+      <strong>Code Path</strong>
+      <small><?php print $project->code_path ?></small>
+    </li>
+
     <!-- Drush Info -->
     <li class="pull-right">
       <button type="button" class="btn btn-xs btn-link text-muted" data-toggle="modal" data-target="#drush-alias-modal" title="Drush Aliases">
