@@ -10,12 +10,9 @@ foreach ($project['environments'] as $name => $environment) {
   if ($environment['site_status'] != 1) {
     continue;
   }
+  // Tell drush to inherit from the provision site alias record.
   $alias = array(
-    'root' => $environment['root'],
-    'uri' => $environment['uri'],
-    'path-aliases' => array(
-      '%files' =>  "sites/{$environment['uri']}/files"
-    ),
+    'parent' => '@' . $environment['uri']
   );
 
   // If web server is not server master, add "remote host and user.
