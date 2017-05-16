@@ -484,7 +484,16 @@ function devshop_fqdn($host = NULL) {
 //}
 
 /**
- * implementation of provision_verify
+ * Implementation of drush_hook_provision_pre_COMMAND()
+ * Calls drush_devshop_provision_pre_provision_verify()
+ */
+function drush_devshop_provision_pre_provision_deploy() {
+  drush_devshop_provision_pre_provision_verify();
+}
+
+/**
+ * Implementation of drush_hook_provision_pre_COMMAND()
+ * for Verify tasks: Writes easier to use drush aliases for each project.
  */
 function drush_devshop_provision_pre_provision_verify() {
   if (d()->type === 'project' || (!empty(d()->project) && d()->type === 'site' || d()->type === 'platform')) {
