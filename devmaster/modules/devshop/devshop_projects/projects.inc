@@ -133,6 +133,7 @@ function devshop_project_load($node) {
           e.*,
           s.status as site_status,
           p.status as platform_status,
+          p.nid as platform,
           p.publish_path as root,
           p.publish_path as publish_path,
           g.git_ref as git_ref,
@@ -155,7 +156,7 @@ function devshop_project_load($node) {
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
-        LEFT JOIN {hosting_platform} p ON e.platform = p.nid
+        LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
         LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
