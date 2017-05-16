@@ -62,7 +62,6 @@ Feature: Create a project with Drupal in the docroot.
 
     # FINISH!
     Then print current URL
-    And print last response
     When I run drush "wd-show"
     Then print last drush output
 
@@ -80,6 +79,7 @@ Feature: Create a project with Drupal in the docroot.
 
     And I reload the page
     Then I should see the link "dev"
+    And print last response
 
-    When I click "Visit Site"
-    Then I should see "Welcome to"
+#    When I click "Visit Site"
+#    Then I should see "Welcome to"
