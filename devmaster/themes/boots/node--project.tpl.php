@@ -61,6 +61,10 @@
       <strong>Install Profile</strong>
       <small><?php print $project->install_profile ?></small>
     </li>
+    <li data-toggle="tooltip" data-placement="bottom" title="<?php print t('The source code for each environment will be placed into subfolders of this folder.');?>">
+      <strong>Base Path</strong>
+      <small><?php print $project->code_path ?></small>
+    </li>
 
     <!-- Drush Info -->
     <li class="pull-right">
