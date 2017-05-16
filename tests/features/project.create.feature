@@ -119,7 +119,7 @@ Feature: Create a project
     Then I move backward one page
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
-    And I press "save"
+    And I press "Save"
 
     Then I should see "DevShop Project drpl8 has been updated."
     And I should see an ".environment-link .fa-bolt" element
