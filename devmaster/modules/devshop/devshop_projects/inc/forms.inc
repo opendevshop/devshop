@@ -48,8 +48,8 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
   $form['project']['codebase']['code_path'] = array(
     '#type' => 'textfield',
-    '#title' => t('Code path'),
-    '#description' => t('The absolute path on the filesystem that will be used to create the platform in the directory specified above.'),
+    '#title' => t('Base path'),
+    '#description' => t('All environments in this project will be installed inside this path. <em>Changing this will only affect new environments. Existing environments will not change.</em>'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->code_path,
@@ -76,7 +76,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Base URL'),
-    '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>This will only affect new environments.</em>'),
+    '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>Changing this will only affect new environments. Existing environments will not change.</em>'),
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->base_url,
