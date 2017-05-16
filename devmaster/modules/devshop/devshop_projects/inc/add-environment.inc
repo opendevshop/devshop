@@ -348,7 +348,6 @@ function devshop_environment_add_form_validate($form, &$form_state) {
  * @param $form_state
  */
 function devshop_environment_add_form_submit($form, &$form_state) {
-  dsm($form_state);
   $project_node = node_load($form_state['values']['project']);
   $environment_name = $form_state['values']['environment_name'];
   $environment_settings = $form_state['values']['environment']['settings'];
