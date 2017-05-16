@@ -381,11 +381,15 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 function devshop_projects_validate($node, &$form, &$form_state) {
 
   // Code path and base url must be unique
-  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path;', array(':status' => 1, ':code_path' => $form_state['values']['project']['code_path']))->fetchField()) {
-    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
+  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path AND n.nid != :nid;', array(':status' => 1, ':code_path' => $form_state['values']['project']['code_path'], ':nid' => $form_state['values']['nid']))->fetchField()) {
+    form_set_error('code_path', t('The code path %path is in use by another project. Please enter a different path.', array(
+      '%path' => $form_state['values']['project']['code_path'],
+    )));
   }
-  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url;', array(':status' => 1, ':base_url' => $form_state['values']['project']['base_url']))->fetchField()) {
-    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
+  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url AND n.nid != :nid;;', array(':status' => 1, ':base_url' => $form_state['values']['project']['base_url'], ':nid' => $form_state['values']['nid']))->fetchField()) {
+    form_set_error('base_url', t('The base URL %url is in use by another project.  Please enter a different base URL.', array(
+      '%url' => $form_state['values']['project']['base_url'],
+    )));
   }
 }
 
