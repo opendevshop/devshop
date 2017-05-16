@@ -1189,6 +1189,8 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
     // Specify GIT Url for hosting_git.module
     $platform_node->git['repo_url'] = $project->git_url;
+    $platform_node->git['repo_path'] = $project->code_path . '/' . $element['#value'];
+    $platform_node->git['repo_docroot'] = $project->drupal_path;
     $platform_node->git['git_ref'] = $form_state['values']['git_ref'];
 
     // Enable git pull queue for this platform if chosen.
