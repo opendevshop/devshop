@@ -156,7 +156,7 @@ function devshop_project_load($node) {
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
-        LEFT JOIN {hosting_platform} p ON s.platform = p.nid
+        LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
         LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
