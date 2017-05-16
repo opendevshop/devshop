@@ -33,7 +33,7 @@ projects[hosting_git][download][type] = "git"
 projects[hosting_remote_import][subdir] = aegir
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.8"
+projects[hosting_site_backup_manager][version] = "3.10"
 
 projects[hosting_tasks_extra][subdir] = aegir
 projects[hosting_tasks_extra][version] = "3.8"
@@ -62,10 +62,10 @@ projects[overlay_paths][version] = 1.3
 projects[r4032login][version] = 1.8
 projects[admin_menu][version] = "3.0-rc5"
 projects[adminrole][version] = "1.1"
-projects[jquery_update][version] = "3.0-alpha3"
-projects[views][version] = "3.14"
-projects[views_bulk_operations][version] = "3.3"
-projects[ctools][version] = "1.11"
+projects[jquery_update][version] = "3.0-alpha5"
+projects[views][version] = "3.16"
+projects[views_bulk_operations][version] = "3.4"
+projects[ctools][version] = "1.12"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
