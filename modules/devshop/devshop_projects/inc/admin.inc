@@ -51,16 +51,16 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
   );
 
-  $form['support'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('DevShop Support'),
-  );
-  $form['support']['devshop_support_widget_enable'] = array(
-    '#title' => t('Show Help Widget'),
-    '#description' => t('Uncheck this box if you want to hide the Help widget that appears at the bottom right of the page.'),
-    '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
-  );
+//  $form['support'] = array(
+//      '#type' => 'fieldset',
+//      '#title' => t('DevShop Support'),
+//  );
+//  $form['support']['devshop_support_widget_enable'] = array(
+//    '#title' => t('Show Help Widget'),
+//    '#description' => t('Uncheck this box if you want to hide the Help widget that appears at the bottom right of the page.'),
+//    '#type' => 'checkbox',
+//    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
+//  );
 
   // Server settings.
   $form['server'] = array(
