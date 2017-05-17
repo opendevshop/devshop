@@ -75,8 +75,8 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
-    '#title' => t('Base URL'),
-    '#description' => t('The base domain name for this project. All environments will get a subdomain under this one.  <em>Changing this will only affect new environments. Existing environments will not change.</em>'),
+    '#title' => t('Environment Domain Name Pattern'),
+    '#description' => t("Each environment will have a system domain name generated for it based on it's name. Use @project for project name, @hostname for '%host', @environment for the environment's name.", array('%host' => $_SERVER['SERVER_NAME'])) . '<em>' . t('Changing this will only affect new environments.'). '</em>',
     '#required' => TRUE,
     '#size' => 40,
     '#default_value' => $project->base_url,
