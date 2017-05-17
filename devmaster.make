@@ -74,6 +74,13 @@ projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
 projects[libraries][version] = 2.3
 
+; Hosting HTTPS with Let's Encrypt!
+; @TODO: Update with a new alpha.
+projects[hosting_https][type] = module
+projects[hosting_https][download][type] = git
+projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
+projects[hosting_https][download][branch] = master
+
 ; Timeago module
 projects[timeago][version] = 2.3
 
