@@ -80,6 +80,7 @@ projects[hosting_https][type] = module
 projects[hosting_https][download][type] = git
 projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
 projects[hosting_https][download][branch] = master
+projects[hosting_https][subdir] = "aegir"
 
 ; Timeago module
 projects[timeago][version] = 2.3
