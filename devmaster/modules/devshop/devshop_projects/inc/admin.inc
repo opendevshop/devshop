@@ -38,16 +38,16 @@ function devshop_projects_settings_form($form, &$form_state) {
   );
 
   $form['urls']['devshop_projects_allow_custom_base_url'] = array(
-    '#title' => t('Allow custom base URL per project.'),
-    '#description' => t('All environments are made available at http://{ENVIRONMENT}.BASE_URL. Check this box to make the Base URL configurable per project.'),
+    '#title' => t('Allow custom Environment URL Pattern per project.'),
+    '#description' => t('If enabled each project can set an Environment URL Pattern.'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
   );
   // @TODO: Add @environment as a replacement pattern.
   $form['urls']['devshop_project_environment_url_pattern'] = array(
-    '#title' => t('Domain Name Pattern'),
+    '#title' => t('Environment URL Pattern'),
     '#type' => 'textfield',
-    '#description' => t('Each environment (aegir site) gets an initial URL. You can use @project for project name and @hostname for "%host". Environments are put underneath this URL as subdomains.', array('%host' => $_SERVER['SERVER_NAME'])),
+    '#description' => t("Each environment will have a system URL generated for it based on it's name. Use @project for project name, @hostname for '%host', @environment for the environment's name.", array('%host' => $_SERVER['SERVER_NAME'])),
     '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
   );
 
