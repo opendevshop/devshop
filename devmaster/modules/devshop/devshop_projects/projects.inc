@@ -341,6 +341,9 @@ function devshop_project_load($node) {
     if (module_exists('hosting_ssl')) {
       $environment->ssl_enabled  = db_query('SELECT ssl_enabled FROM {hosting_ssl_site} WHERE nid = :nid', array(':nid' => $environment->site))->fetchField();
     }
+    elseif (module_exists('hosting_https')) {
+      $environment->ssl_enabled  = db_query('SELECT https_enabled FROM {hosting_https_site} WHERE nid = :nid', array(':nid' => $environment->site))->fetchField();
+    }
     else {
       $environment->ssl_enabled = FALSE;
     }
