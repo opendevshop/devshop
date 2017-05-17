@@ -27,7 +27,9 @@ projects[hosting][subdir] = "aegir"
 projects[eldir][type] = theme
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][download][branch] = "2838489-repo-platform-path"
+
+# @TODO: PIn this on next release of hosting_git.
+projects[hosting_git][download][branch] = "7.x-3.x"
 projects[hosting_git][download][type] = "git"
 
 projects[hosting_remote_import][subdir] = aegir
@@ -36,7 +38,7 @@ projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_site_backup_manager][version] = "3.10"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.8"
+projects[hosting_tasks_extra][version] = "3.10"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
