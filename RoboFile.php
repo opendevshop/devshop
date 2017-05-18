@@ -310,7 +310,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function shell() {
     $this->say('Not yet implemented. Run the command:');
-    $this->say('docker-compose exec devmaster bash');
+    $this->output()->writeln('docker-compose exec devmaster bash');
   }
   
   /**
@@ -318,7 +318,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function test() {
     $this->say('Not yet implemented. Run the command:');
-    $this->say('docker-compose exec devmaster run-tests.sh');
+    $this->output()->writeln('docker-compose exec devmaster run-tests.sh');
   }
   
   /**
