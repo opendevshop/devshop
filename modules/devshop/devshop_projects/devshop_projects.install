@@ -20,7 +20,7 @@ if (!defined('HOSTING_ADMIN_CLIENT')) {
  */
 function devshop_projects_update_dependencies() {
   $dependencies['devshop_projects'][7004] = array(
-    'http_basic_auth' => 7300,
+    'hosting_http_basic_auth' => 7300,
   );
   return $dependencies;
 }
