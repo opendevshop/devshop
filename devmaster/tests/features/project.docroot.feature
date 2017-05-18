@@ -18,8 +18,6 @@ Feature: Create a project with Drupal in the docroot.
     When I press "Next"
 
     # Step 2
-    Then print current URL
-    Then print last response
     Then I should see "rootproject"
     And I should not see "The name rootproject is in use.  Please try again."
     And I should see "http://github.com/opendevshop/drupal_docroot"
@@ -36,7 +34,6 @@ Feature: Create a project with Drupal in the docroot.
     And I reload the page
     And I reload the page
 
-#    Then print last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
@@ -54,7 +51,6 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
-#    Then print last response
     Then I should see "8.2.7"
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
@@ -79,7 +75,6 @@ Feature: Create a project with Drupal in the docroot.
 
     And I reload the page
     Then I should see the link "dev"
-    And print last response
 
 #    When I click "Visit Site"
 #    Then I should see "Welcome to"

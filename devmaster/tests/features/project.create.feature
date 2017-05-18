@@ -16,8 +16,6 @@ Feature: Create a project
     When I press "Next"
 
     # Step 2
-    Then print current URL
-    Then print last response
     Then I should see "drpl8"
     And I should see "http://github.com/opendevshop/drupal_docroot.git"
     When I fill in "docroot" for "Path to Drupal"
@@ -32,7 +30,6 @@ Feature: Create a project
     And I reload the page
     And I reload the page
 
-#    Then print last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
@@ -42,7 +39,6 @@ Feature: Create a project
     And I select "master" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     Then I press "Next"
-#    Then print last response
 
     # Step 4
     And I should see "dev"
@@ -61,7 +57,6 @@ Feature: Create a project
     And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
-#    Then print last response
     Then I should see "8."
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
@@ -109,7 +104,6 @@ Feature: Create a project
     Then print last drush output
 
     When I click "testenv" in the "main" region
-    Then print current URL
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 

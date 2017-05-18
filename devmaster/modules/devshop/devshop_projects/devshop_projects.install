@@ -12,6 +12,20 @@ if (!defined('HOSTING_ADMIN_CLIENT')) {
 }
 
 /**
+ * Implements hook_update_dependencies()
+ *
+ * Ensures http_basic_auth update runs before ours.
+ *
+ * Prevents breakage on upgrade from beta10 to HEAD: https://travis-ci.org/opendevshop/devmaster/jobs/233420027
+ */
+function devshop_projects_update_dependencies() {
+  $dependencies['devshop_projects'][7004] = array(
+    'hosting_http_basic_auth' => 7300,
+  );
+  return $dependencies;
+}
+
+/**
  * Implements hook_install()
  */
 function devshop_projects_install() {
