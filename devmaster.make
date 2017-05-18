@@ -27,7 +27,9 @@ projects[hosting][subdir] = "aegir"
 projects[eldir][type] = theme
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][download][branch] = "2838489-repo-platform-path"
+
+# @TODO: PIn this on next release of hosting_git.
+projects[hosting_git][download][branch] = "7.x-3.x"
 projects[hosting_git][download][type] = "git"
 
 projects[hosting_remote_import][subdir] = aegir
@@ -36,7 +38,7 @@ projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_site_backup_manager][version] = "3.10"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.8"
+projects[hosting_tasks_extra][version] = "3.10"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_logs][subdir] = aegir
@@ -71,6 +73,19 @@ projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
 projects[libraries][version] = 2.3
+
+; Hosting HTTPS with Let's Encrypt!
+; @TODO: Update with a new alpha.
+projects[hosting_https][type] = module
+projects[hosting_https][download][type] = git
+projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
+projects[hosting_https][download][branch] = master
+projects[hosting_https][subdir] = "aegir"
+
+; Dehydrated for LetsEncrypt.org
+libraries[dehydrated][download][type] = git
+libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
+libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
 
 ; Timeago module
 projects[timeago][version] = 2.3
