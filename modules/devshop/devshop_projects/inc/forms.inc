@@ -824,12 +824,20 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['site_language'] = $form['site_language'];
   $form['environment']['settings']['site_language']['#tree'] = FALSE;
   unset($form['site_language']);
-
-  $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
-  $form['hosting_ssl_wrapper']['#title'] = t('SSL');
-  $form['hosting_ssl_wrapper']['#prefix'] = '';
-  $form['hosting_ssl_wrapper']['#suffix'] = '';
-
+  
+  if (isset($form['hosting_ssl_wrapper'])) {
+    $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
+    $form['hosting_ssl_wrapper']['#title'] = t('HTTPS');
+    $form['hosting_ssl_wrapper']['#prefix'] = '';
+    $form['hosting_ssl_wrapper']['#suffix'] = '';
+  }
+  if (isset($form['hosting_https_wrapper'])) {
+    $form['hosting_https_wrapper']['#group'] = 'environment_settings';
+    $form['hosting_https_wrapper']['#title'] = t('HTTPS');
+    $form['hosting_https_wrapper']['#prefix'] = '';
+    $form['hosting_https_wrapper']['#suffix'] = '';
+  }
+  
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
