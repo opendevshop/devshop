@@ -373,6 +373,7 @@ function devshop_projects_nodeapi_task_view(&$node, $a3, $a4) {
     '#title' => t('Project'),
     '#markup' => l($task_host->project->name, "node/{$task_host->project->nid}"),
     '#weight' => -12,
+    '#access' => isset($task_host->project),
   );
   $node->content['info']['parameters'] = array(
     '#type' => 'item',
