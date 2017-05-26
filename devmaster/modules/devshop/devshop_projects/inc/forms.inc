@@ -693,6 +693,8 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
  * "Environment" Settings form.
  */
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
+  
+  $node = $form['#node'];
 
   $form['environment'] = array(
     '#weight' => -9,
@@ -705,10 +707,14 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
     $project = devshop_projects_load_by_name(arg(3));
   }
+
+  // Only act on site nodes that are in projects.
+  elseif (!isset($node->environment)) {
+    return;
+  }
   else {
 
     // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
-    $node = $form['#node'];
     $environment = (object) $node->environment;
     $project = $node->project;
 
