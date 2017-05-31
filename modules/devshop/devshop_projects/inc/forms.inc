@@ -483,9 +483,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $form['help']['#weight'] = 100;
           $form['help']['#value'] = t("Are you sure you want to change this environment's database server?");
 
-          // Set URI value
-          $form['parameters']['new_uri']['#type'] = 'value';
-          $form['parameters']['new_uri']['#value'] = $form['parameters']['new_uri']['#default_value'];
+          // Hide "URI" field unless "rename" GET parameter is added.
+          if (!isset($_GET['rename'])) {
+            $form['parameters']['new_uri']['#type'] = 'value';
+            $form['parameters']['new_uri']['#value'] = $form['parameters']['new_uri']['#default_value'];
+          }
 
           // Display something helpful
           $form['old'] = array(
