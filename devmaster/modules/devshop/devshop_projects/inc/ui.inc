@@ -212,6 +212,18 @@ function devshop_environment_menu($environment) {
       $items[] = '<div class="divider"></div>';
 
     }
+
+    if (user_access('change site domain names') && user_access('create migrate tasks') ) {
+      $href = "hosting_confirm/{$environment->site}/site_migrate";
+      $items[] = l('<i class="fa fa-globe"></i> '.t('Change Domain Name'),
+        $href, array(
+          'query' => array(
+            'rename' => 1,
+            'token' => drupal_get_token($user->uid),
+          ),
+          'html' => TRUE,
+        ));
+    }
     if (node_access('view', $site)) {
       $aegir_items[] = l('<i class="fa fa-globe"></i> '.t('Aegir Site'),
         "node/{$environment->site}",

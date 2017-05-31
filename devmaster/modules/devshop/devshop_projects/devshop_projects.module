@@ -117,6 +117,10 @@ function devshop_projects_permission() {
       'title' => t('administer projects'),
       'description' => t('Administer DevShop projects.'),
     ),
+    'change site domain name' => array(
+      'title' => t("Change a site's primary domain name."),
+      'description' => t('Alter the main domain name the site responds to.'),
+    ),
   );
 }
 
