@@ -119,6 +119,10 @@
 
   <header role="banner" id="page-header">
 
+    <?php if (!empty($site_slogan)): ?>
+        <p class="lead pull-right"><?php print $site_slogan; ?></p>
+    <?php endif; ?>
+
     <?php if (!empty($title)): ?>
       <h1 class="page-header">
         <?php print $title; ?>
@@ -136,10 +140,6 @@
           <small><?php print $subtitle2 ?></small>
         <?php endif; ?>
       </h3>
-    <?php endif; ?>
-
-    <?php if (!empty($site_slogan)): ?>
-      <p class="lead"><?php print $site_slogan; ?></p>
     <?php endif; ?>
 
     <?php print render($page['header']); ?>
