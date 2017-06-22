@@ -19,7 +19,7 @@ Feature: Create a project with Drupal in the docroot.
 
     # Step 2
     Then I should see "rootproject"
-    And I should not see "The name rootproject is in use.  Please try again."
+    And I should not see "The name rootproject is in use. Please try again."
     And I should see "http://github.com/opendevshop/drupal_docroot"
     When I fill in "docroot" for "Path to Drupal"
 
