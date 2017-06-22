@@ -201,7 +201,7 @@ class RoboFile extends \Robo\Tasks
    *
    * Use "--test" option to run tests instead of the hosting queue.
    */
-  public function up($opts = ['follow' => 1, 'test' => false, 'test-upgrade' => false]) {
+  public function up($opts = ['follow' => 1, 'test' => false, 'test-upgrade' => false, 'user-uid' => null]) {
     
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
@@ -240,6 +240,18 @@ class RoboFile extends \Robo\Tasks
         $cmd .= "; docker-compose logs -f";
       }
     }
+    
+    // Build a local container.
+    if (is_null($opts['user-uid'])) {
+      $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+    }
+  
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-local')
+      ->tag('aegir/hostmaster:local')
+      ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+      ->run();
+    
     if ($this->_exec($cmd)->wasSuccessful()) {
       exit(0);
     }
