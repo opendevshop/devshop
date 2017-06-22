@@ -52,3 +52,4 @@ services:
     image: selenium/standalone-chrome-debug:3.4.0-dysprosium
     ports:
       - 4444:4444
+      - 5900:5900
