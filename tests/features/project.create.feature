@@ -60,6 +60,9 @@ Feature: Create a project
     Then I should see "8."
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
+
+#    Then I break
+
     And I press "Create Project & Environments"
 
     # FINISH!
@@ -71,6 +74,9 @@ Feature: Create a project
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
     And I should see the link "live"
+
+#    Then I break
+    And I should see the link "http://drpl8.dev.devshop.local.computer"
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
