@@ -76,7 +76,7 @@ Feature: Create a project
     And I should see the link "live"
 
 #    Then I break
-    And I should see the link "http://drpl8.dev.devshop.local.computer"
+    And I should see the link "http://dev.drpl8.devshop.local.computer"
     And I should see the link "Aegir Site"
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
