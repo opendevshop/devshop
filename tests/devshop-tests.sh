@@ -23,7 +23,8 @@ fi
 drush @hostmaster vset hosting_queued_paused 1
 
 # Run the test suite.
-/usr/share/devshop/bin/devshop devmaster:test
+#/usr/share/devshop/bin/devshop devmaster:test
+drush @hostmaster provision-test --behat-folder-path=profiles/devmaster/tests --test-type=behat
 
 # Unpause the task queue.
 drush @hostmaster vset hosting_queued_paused 0
