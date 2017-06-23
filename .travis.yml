@@ -2,6 +2,9 @@ language: php
 
 sudo: required
 
+# Use old travis image: https://blog.travis-ci.com/2017-06-21-trusty-updates-2017-Q2-launch
+group: deprecated-2017Q2
+
 # Only run tests when committing to our primary branch and pull requests.
 branches:
   only:
