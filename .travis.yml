@@ -48,15 +48,14 @@ env:
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 
   matrix:
-    include:
-      - test="Upgrade"
-        UPGRADE_FROM_VERSION="1.0.0-beta10"
-        ROBO_UP_OPTIONS="--test-upgrade"
-        group=deprecated-2017Q2
+    - test="Upgrade"
+      UPGRADE_FROM_VERSION="1.0.0-beta10"
+      ROBO_UP_OPTIONS="--test-upgrade"
+      group=deprecated-2017Q2
 
-      - test="Install"
-        ROBO_UP_OPTIONS="--test"
-        group=deprecated-2017Q2
+    - test="Install"
+      ROBO_UP_OPTIONS="--test"
+      group=deprecated-2017Q2
 
 addons:
   hosts:
