@@ -208,7 +208,9 @@ class RoboFile extends \Robo\Tasks
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
-    'install-sh-image' => 'ubuntu:14.04'
+    'install-sh-image' => 'ubuntu:14.04',
+    'test-upgrade' => false,
+    'user-uid' => null
   ]) {
     
     if (!file_exists('aegir-home')) {
@@ -338,7 +340,18 @@ class RoboFile extends \Robo\Tasks
         $cmd .= "; docker-compose logs -f";
       }
     }
-
+    
+    // Build a local container.
+    if (is_null($opts['user-uid'])) {
+      $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+    }
+  
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-local')
+      ->tag('aegir/hostmaster:local')
+      ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+      ->run();
+    
     if (isset($cmd)) {
       if ($this->_exec($cmd)->wasSuccessful()) {
         exit(0);
@@ -411,7 +424,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function shell() {
     $this->say('Not yet implemented. Run the command:');
-    $this->say('docker-compose exec devmaster bash');
+    $this->output()->writeln('docker-compose exec devmaster bash');
   }
   
   /**
@@ -419,7 +432,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function test() {
     $this->say('Not yet implemented. Run the command:');
-    $this->say('docker-compose exec devmaster run-tests.sh');
+    $this->output()->writeln('docker-compose exec devmaster run-tests.sh');
   }
   
   /**
