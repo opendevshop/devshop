@@ -216,7 +216,7 @@ class RoboFile extends \Robo\Tasks
       }
     }
 
-    $command = "/usr/share/devshop/tests/run-tests.sh";
+    $command = "/usr/share/devshop/tests/devshop-tests.sh";
     
     if ($opts['test']) {
       $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
