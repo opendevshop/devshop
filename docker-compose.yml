@@ -52,3 +52,4 @@ services:
     image: selenium/standalone-chrome:3.0.1-germanium
     ports:
       - 4444:4444
+      - 5900:5900
