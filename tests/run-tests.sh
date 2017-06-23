@@ -19,13 +19,16 @@ if [[ $* == *--upgrade* ]]; then
       echo ">> Upgrade Complete."
 fi
 
-set -ex
+#set -ex
 
 # Pause the task queue.
+echo ">> Running 'drush @hostmaster vset hosting_queued_paused 1'..."
 drush @hostmaster vset hosting_queued_paused 1
 
 # Run the test suite.
+echo ">> Running '/usr/share/devshop/bin/devshop devmaster:test'..."
 /usr/share/devshop/bin/devshop devmaster:test
 
 # Unpause the task queue.
+echo ">> Running 'drush @hostmaster vset hosting_queued_paused 0'..."
 drush @hostmaster vset hosting_queued_paused 0
