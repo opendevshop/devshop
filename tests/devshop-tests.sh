@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ev
+set -e
 
 # Run remaining tasks from install process.
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0"
