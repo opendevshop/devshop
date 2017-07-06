@@ -10,15 +10,15 @@ echo ">> Running remaining tasks: Complete!"
 
 # Force all tasks to appear as completed.'
 echo ">> Checking Processing or queued tasks: "
-drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0;"
+drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0 GROUP BY nid ORDER BY vid DESC;"
 sleep 3
 
 echo ">> Checking Processing or queued tasks: "
-drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0;"
+drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0 GROUP BY nid ORDER BY vid DESC;"
 sleep 3
 
 echo ">> Checking Processing or queued tasks: "
-drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0;"
+drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0 GROUP BY nid ORDER BY vid DESC;"
 sleep 3
 
 echo ">> All TASKS:"
