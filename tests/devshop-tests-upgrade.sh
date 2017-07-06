@@ -13,7 +13,7 @@ echo ">> Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTN
 # Force all tasks to appear as completed.'
 drush @hostmaster sql-query "UPDATE hosting_task SET task_status = 1;"
 
-drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y
+drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y -v
 
 echo ">> Upgrade Complete."
 
