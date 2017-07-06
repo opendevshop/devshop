@@ -17,4 +17,4 @@ drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y
 
 echo ">> Upgrade Complete."
 
-bash devshop-tests.sh
+bash /usr/share/devshop/tests/devshop-tests.sh
