@@ -12,6 +12,8 @@ echo ">> Running remaining tasks: Complete!"
 echo ">> Waiting for tasks to complete... "
 
 tasks_ready() {
+  echo "Running drush hosting-tasks..."
+  drush @hostmaster hosting-tasks --fork=0 --strict=0 --force -v
 
   COUNT=`drush @hostmaster eval "print hosting_task_count()"`
   COUNT_RUNNING=`drush @hostmaster eval "print hosting_task_count_running()"`
