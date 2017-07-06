@@ -11,9 +11,19 @@ echo ">> Running remaining tasks: Complete!"
 echo ">> Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y"
 
 # Force all tasks to appear as completed.'
-#echo ">> Resetting all tasks..."
-drush @hostmaster sql-query "SELECT * FROM hosting_task;"
-#drush @hostmaster sql-query "UPDATE hosting_task SET task_status = 1;"
+echo ">> Checking Processing or queued tasks: "
+drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0;"
+sleep 3
+
+echo ">> Checking Processing or queued tasks: "
+drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0;"
+sleep 3
+
+echo ">> Checking Processing or queued tasks: "
+drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0;"
+sleep 3
+
+echo ">> All TASKS:"
 drush @hostmaster sql-query "SELECT * FROM hosting_task;"
 
 
