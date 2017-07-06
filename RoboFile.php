@@ -223,7 +223,7 @@ class RoboFile extends \Robo\Tasks
     }
     elseif ($opts['test-upgrade']) {
       $version = self::UPGRADE_FROM_VERSION;
-      $command .= ' --test-upgrade';
+      $command .= ' --upgrade';
 
       // @TODO: Have this detect the branch and use that for the version.
       $root_target = '/var/aegir/devmaster-1.x';
