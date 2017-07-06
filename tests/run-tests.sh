@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # Run remaining tasks from install process.
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0"
@@ -18,8 +18,6 @@ if [[ $* == *--upgrade* ]]; then
 
       echo ">> Upgrade Complete."
 fi
-
-set -ex
 
 # Pause the task queue.
 drush @hostmaster vset hosting_queued_paused 1
