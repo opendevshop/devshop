@@ -9,20 +9,31 @@ drush @hostmaster hosting-tasks --fork=0 --strict=0 --force -v
 echo ">> Running remaining tasks: Complete!"
 
 # Force all tasks to appear as completed.'
-echo ">> Checking Processing or queued tasks: "
-drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0 GROUP BY nid ORDER BY vid DESC;"
-sleep 3
+echo ">> Waiting for tasks to complete... "
 
-echo ">> Checking Processing or queued tasks: "
-drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0 GROUP BY nid ORDER BY vid DESC;"
-sleep 3
+tasks_ready() {
 
-echo ">> Checking Processing or queued tasks: "
-drush @hostmaster sql-query "SELECT COUNT(nid) FROM hosting_task t WHERE task_status = -1 OR task_status = 0 GROUP BY nid ORDER BY vid DESC;"
-sleep 3
+  COUNT=`drush @hostmaster eval "print hosting_task_count()"`
+  COUNT_RUNNING=`drush @hostmaster eval "print hosting_task_count_running()"`
 
-echo ">> All TASKS:"
-drush @hostmaster sql-query "SELECT * FROM hosting_task;"
+  echo "$COUNT tasks still queued, $COUNT_RUNNING running."
+
+  if [ $COUNT == "0" ] && [ $COUNT_RUNNING == "0" ]; then
+    echo "No Tasks Left!"
+    exit 0
+  else
+    echo "Tasks are left. Not yet Ready."
+    exit 1
+  fi
+
+}
+
+while !(tasks_ready)
+do
+   sleep 3
+   echo "ÆGIR | Checking tasks..."
+done
+
 
 
 #echo ">> Spawing hosting queued in a new process so tasks run during upgrade/migrate..."
