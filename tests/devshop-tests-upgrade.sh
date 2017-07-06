@@ -14,6 +14,7 @@ echo ">> Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTN
 echo ">> Resetting all tasks..."
 drush @hostmaster sql-query "SELECT * FROM hosting_task;"
 drush @hostmaster sql-query "UPDATE hosting_task SET task_status = 1;"
+drush @hostmaster sql-query "SELECT * FROM hosting_task;"
 
 drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y -v
 
