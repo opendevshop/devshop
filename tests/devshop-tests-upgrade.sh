@@ -4,11 +4,9 @@ set -e
 
 # Run remaining tasks from install process.
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0"
-drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
+drush @hostmaster hosting-tasks --fork=0 --strict=0 --force -v
 
 echo ">> Running remaining tasks: Complete!"
-
-echo ">> Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y"
 
 # Force all tasks to appear as completed.'
 echo ">> Checking Processing or queued tasks: "
@@ -31,6 +29,7 @@ drush @hostmaster sql-query "SELECT * FROM hosting_task;"
 #drush @hostmaster en hosting_queued -y
 #drush @hostmaster hosting-queued &
 
+echo ">> Triggering Upgrade: Running drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y"
 drush @hostmaster hostmaster-migrate $HOSTNAME $AEGIR_HOSTMASTER_ROOT_TARGET -y -v
 
 echo ">> Upgrade Complete."
