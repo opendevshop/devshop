@@ -227,22 +227,22 @@ class RoboFile extends \Robo\Tasks
     }
 
     if ($opts['mode'] == 'docker-compose') {
-    if ($opts['test']) {
-      $command = "/usr/share/devshop/tests/devshop-tests.sh";
-      $cmd = "docker-compose run -T -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
-    }
-    elseif ($opts['test-upgrade']) {
-      $version = self::UPGRADE_FROM_VERSION;
-      $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
+      if ($opts['test']) {
+        $command = "/usr/share/devshop/tests/devshop-tests.sh";
+        $cmd = "docker-compose run -T -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
+      }
+      elseif ($opts['test-upgrade']) {
+        $version = self::UPGRADE_FROM_VERSION;
+        $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
 
-      // @TODO: Have this detect the branch and use that for the version.
-      $root_target = '/var/aegir/devmaster-1.x';
+        // @TODO: Have this detect the branch and use that for the version.
+        $root_target = '/var/aegir/devmaster-1.x';
 
-//      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
-      
-      // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-      $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
-    }
+  //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
+
+        // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
+        $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
+      }
     }
     elseif ($opts['mode'] == 'install.sh') {
 
