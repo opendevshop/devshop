@@ -34,7 +34,7 @@ Feature: Create a project
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
 
-#    And I press "Add environment"
+    And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
