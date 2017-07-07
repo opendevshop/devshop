@@ -694,6 +694,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
     ))
     ->condition('project_nid', $project->nid)
     ->condition('name', $environment_name)
+    ->condition('last_task', current($tasks)->nid)
     ->execute();
 
   return $node;
