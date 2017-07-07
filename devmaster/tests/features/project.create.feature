@@ -34,7 +34,7 @@ Feature: Create a project
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
 
-#    And I press "Add environment"
+    And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
@@ -60,6 +60,9 @@ Feature: Create a project
     Then I should see "8."
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
+
+#    Then I break
+
     And I press "Create Project & Environments"
 
     # FINISH!
@@ -71,6 +74,10 @@ Feature: Create a project
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
     And I should see the link "live"
+
+#    Then I break
+    And I should see the link "http://dev.drpl8.devshop.local.computer"
+    And I should see the link "Aegir Site"
 
     When I run drush "hosting-tasks --fork=0 --strict=0"
     Then print last drush output
