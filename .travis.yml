@@ -59,7 +59,7 @@ env:
     COMMAND="robo up --mode=install.sh --test"
 
   - test="Install  with Ansible on CentOS 7"
-    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
+    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
 
 addons:
   hosts:
