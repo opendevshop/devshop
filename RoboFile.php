@@ -279,9 +279,9 @@ class RoboFile extends \Robo\Tasks
     
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
-  
-    if ( !$opts['force'] && ($opts['no-interaction'] || $this->confirm("Keep aegir-home/devmaster-{$version} folder?"))) {
-      if ($this->taskFilesystemStack()
+
+    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder?"))) {
+      if (!$this->confirm("Destroy local config, drush aliases, and projects?") && $this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
         ->remove("aegir-home/.drush")
