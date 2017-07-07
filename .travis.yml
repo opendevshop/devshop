@@ -52,13 +52,13 @@ env:
     COMMAND="robo up --test-upgrade"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
 
-  - test="Install on Docker"
+  - test="Install with Docker"
     COMMAND="robo up --test"
 
-  - test="Install on Ubuntu 14.04"
+  - test="Install with Ansible on Ubuntu 14.04"
     COMMAND="robo up --mode=install.sh --test"
 
-  - test="Install on CentOS 7"
+  - test="Install  with Ansible on CentOS 7"
     COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
 
 addons:
