@@ -226,22 +226,21 @@ class RoboFile extends \Robo\Tasks
       }
     }
 
-    $command = "/usr/share/devshop/tests/run-tests.sh";
     if ($opts['mode'] == 'docker-compose') {
     if ($opts['test']) {
-      $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
+      $command = "/usr/share/devshop/tests/devshop-tests.sh";
+      $cmd = "docker-compose run -T -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
     }
     elseif ($opts['test-upgrade']) {
       $version = self::UPGRADE_FROM_VERSION;
-      $command .= ' --upgrade';
+      $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
 
       // @TODO: Have this detect the branch and use that for the version.
       $root_target = '/var/aegir/devmaster-1.x';
 
 //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
-
+      
       // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-      // @TODO: Instead of run-tests.sh, run a test-upgrade.sh script to run hostmaster-migrate, then run-tests.sh.
       $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
     }
     }
@@ -340,18 +339,19 @@ class RoboFile extends \Robo\Tasks
         $cmd .= "; docker-compose logs -f";
       }
     }
-    
+
     // Build a local container.
     if (is_null($opts['user-uid'])) {
       $opts['user-uid'] = $this->_exec('id -u')->getMessage();
     }
-  
+
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-local')
       ->tag('aegir/hostmaster:local')
       ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
       ->run();
-    
+
+
     if (isset($cmd)) {
       if ($this->_exec($cmd)->wasSuccessful()) {
         exit(0);
@@ -382,9 +382,9 @@ class RoboFile extends \Robo\Tasks
     
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
-  
-    if ( !$opts['force'] && ($opts['no-interaction'] || $this->confirm("Keep aegir-home/devmaster-{$version} folder?"))) {
-      if ($this->taskFilesystemStack()
+
+    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder?"))) {
+      if (!$this->confirm("Destroy local config, drush aliases, and projects?") && $this->taskFilesystemStack()
         ->remove('aegir-home/config')
         ->remove("aegir-home/projects")
         ->remove("aegir-home/.drush")
