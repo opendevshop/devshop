@@ -74,6 +74,8 @@ services:
   - docker
 
 before_install:
+  - env
+  - id -u
   - sudo docker --version
 
   # Install Robo
@@ -120,3 +122,4 @@ script:
 #
 #  # Stop container.
 #  - 'sudo docker stop devshop_container'
+
