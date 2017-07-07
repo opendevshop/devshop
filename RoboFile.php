@@ -320,16 +320,18 @@ class RoboFile extends \Robo\Tasks
    * Enter a bash shell in the devmaster container.
    */
   public function shell() {
-    $this->say('Not yet implemented. Run the command:');
-    $this->output()->writeln('docker-compose exec devmaster bash');
+    $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+    $process->setTty(true);
+    $process->run();
   }
-  
+
   /**
    * Run all devshop tests on the containers.
    */
   public function test() {
-    $this->say('Not yet implemented. Run the command:');
-    $this->output()->writeln('docker-compose exec devmaster run-tests.sh');
+    $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster /usr/share/devshop/tests/devshop-tests.sh");
+    $process->setTty(true);
+    $process->run();
   }
   
   /**
