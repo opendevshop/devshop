@@ -324,11 +324,11 @@ class RoboFile extends \Robo\Tasks
 
         # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
-          ->exec('su - aegir -c  - /usr/share/devshop/tests/run-tests.sh')
+          ->exec('su - aegir -c  - /usr/share/devshop/tests/devshop-tests.sh')
           ->run()
           ->wasSuccessful()
         ) {
-          $this->say('Docker Exec run-tests.sh failed.');
+          $this->say('Docker Exec devshop-tests.sh failed.');
           exit(1);
         }
       }
@@ -432,7 +432,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function test() {
     $this->say('Not yet implemented. Run the command:');
-    $this->output()->writeln('docker-compose exec devmaster run-tests.sh');
+    $this->output()->writeln('docker-compose exec devmaster /usr/share/devshop/tests/devshop-tests.sh');
   }
   
   /**
