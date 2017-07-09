@@ -115,7 +115,7 @@ Feature: Create a project
     And I should see "Environment Settings"
 
     When I click "Visit Site"
-    Then I should see "Welcome to testenv.drpl8"
+    Then I should see "Welcome to drpl8.testenv"
 
     Then I move backward one page
     When I click "Project Settings"
