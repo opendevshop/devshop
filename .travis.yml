@@ -58,11 +58,11 @@ env:
   - test="Install with Ansible on Ubuntu 14.04"
     COMMAND="robo up --mode=install.sh --test"
 
-  - test="Install  with Ansible on CentOS 7"
-    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
-
-  - test="Install with Ansible on Fedora 25"
-    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
+#  - test="Install  with Ansible on CentOS 7"
+#    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
+#
+#  - test="Install with Ansible on Fedora 25"
+#    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
 
 addons:
   hosts:
