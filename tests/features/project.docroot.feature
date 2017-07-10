@@ -29,7 +29,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "Path to Drupal"
     And I should see "rootproject"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
     And I reload the page
@@ -43,7 +43,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "dev"
     And I should see "master"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
 
