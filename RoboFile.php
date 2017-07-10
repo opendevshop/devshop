@@ -324,7 +324,7 @@ class RoboFile extends \Robo\Tasks
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if (!$this->taskDockerExec('devshop_container')
+      if ($this->ask('Run install.sh script?') == 'y' && !$this->taskDockerExec('devshop_container')
         ->exec($install_command)
         ->run()
         ->wasSuccessful() ) {
