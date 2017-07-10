@@ -25,7 +25,7 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
 #    And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks -v --debug --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
     And I reload the page
