@@ -209,6 +209,7 @@ class RoboFile extends \Robo\Tasks
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
     'install-sh-image' => 'ubuntu:14.04',
+    'install-sh-options' => '--server-webserver=apache',
     'test-upgrade' => false,
     'user-uid' => null
   ]) {
@@ -301,8 +302,9 @@ class RoboFile extends \Robo\Tasks
 
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
+      $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
       if (!$this->taskDockerExec('devshop_container')
-        ->exec('/usr/share/devshop/install.sh --server-webserver=apache')
+        ->exec($install_command)
         ->run()
         ->wasSuccessful() ) {
         $this->say('Docker Exec install.sh failed.');
