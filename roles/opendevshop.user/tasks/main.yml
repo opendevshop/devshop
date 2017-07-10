@@ -4,6 +4,11 @@
   - name: Include OS-specific variables.
     include_vars: "{{ ansible_os_family }}.yml"
 
+  - name: Ensure openssh-client is available (including ssh-keygen tool)
+    apt:
+        name: 'openssh-client'
+        state: present
+
   - name: Create Aegir Group (so we can set the GID)
     group:
       name: "{{ aegir_user_name }}"
