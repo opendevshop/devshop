@@ -250,6 +250,27 @@ class RoboFile extends \Robo\Tasks
           $cmd .= "; docker-compose logs -f";
         }
       }
+  
+      // Build a local container.
+      if (is_null($opts['user-uid'])) {
+        $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+      }
+  
+      $this->taskDockerBuild('aegir-dockerfiles')
+        ->option('file', 'aegir-dockerfiles/Dockerfile-local')
+        ->tag('aegir/hostmaster:local')
+        ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+        ->run();
+  
+  
+      if (isset($cmd)) {
+        if ($this->_exec($cmd)->wasSuccessful()) {
+          exit(0);
+        }
+        else {
+          exit(1);
+        }
+      }
     }
     elseif ($opts['mode'] == 'install.sh') {
 
@@ -339,27 +360,6 @@ class RoboFile extends \Robo\Tasks
           $this->say('Docker Exec devshop-tests.sh failed.');
           exit(1);
         }
-      }
-    }
-
-    // Build a local container.
-    if (is_null($opts['user-uid'])) {
-      $opts['user-uid'] = $this->_exec('id -u')->getMessage();
-    }
-
-    $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-local')
-      ->tag('aegir/hostmaster:local')
-      ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
-      ->run();
-
-
-    if (isset($cmd)) {
-      if ($this->_exec($cmd)->wasSuccessful()) {
-        exit(0);
-      }
-      else {
-        exit(1);
       }
     }
   }
