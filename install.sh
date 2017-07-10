@@ -174,7 +174,7 @@ if [ ! `command -v ansible` ]; then
 
         # Build ansible from source to ensure the latest version.
         yum install -y git epel-release redhat-lsb-core > /dev/null 1>&1
-        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.0
+        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.3
 
         # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
         if ! [ -d "ansible" ]; then
@@ -185,7 +185,7 @@ if [ ! `command -v ansible` ]; then
           # Build ansible RPM from source code.
           yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
           cd ansible
-          git checkout v2.0.1.0-1
+          git checkout v2.3.0.0-1
           make rpm > /dev/null 2>&1
           rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
 
@@ -208,6 +208,8 @@ else
     echo " Ansible already installed. Skipping installation."
     echo $LINE
 fi
+
+ansible --version
 
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then

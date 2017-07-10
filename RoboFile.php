@@ -201,7 +201,18 @@ class RoboFile extends \Robo\Tasks
    *
    * Use "--test" option to run tests instead of the hosting queue.
    */
-  public function up($opts = ['follow' => 1, 'test' => false, 'test-upgrade' => false, 'user-uid' => null]) {
+  public function up($opts = [
+    'follow' => 1,
+    'test' => false,
+    'test-upgrade' => false,
+
+    // Set 'mode' => 'install.sh' to run a traditional OS install.
+    'mode' => 'docker-compose',
+    'install-sh-image' => 'ubuntu:14.04',
+    'install-sh-options' => '--server-webserver=apache',
+    'test-upgrade' => false,
+    'user-uid' => null
+  ]) {
     
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
@@ -216,46 +227,140 @@ class RoboFile extends \Robo\Tasks
       }
     }
 
-    
-    if ($opts['test']) {
-      $command = "/usr/share/devshop/tests/devshop-tests.sh";
-      $cmd = "docker-compose run -T -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
-    }
-    elseif ($opts['test-upgrade']) {
-      $version = self::UPGRADE_FROM_VERSION;
-      $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
+    if ($opts['mode'] == 'docker-compose') {
+      if ($opts['test']) {
+        $command = "/usr/share/devshop/tests/devshop-tests.sh";
+        $cmd = "docker-compose run -T -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
+      }
+      elseif ($opts['test-upgrade']) {
+        $version = self::UPGRADE_FROM_VERSION;
+        $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
 
-      // @TODO: Have this detect the branch and use that for the version.
-      $root_target = '/var/aegir/devmaster-1.x';
+        // @TODO: Have this detect the branch and use that for the version.
+        $root_target = '/var/aegir/devmaster-1.x';
 
-//      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
-      
-      // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-      $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
-    }
-    else {
-      $cmd = "docker-compose up -d";
-      if ($opts['follow']) {
-        $cmd .= "; docker-compose logs -f";
+  //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
+
+        // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
+        $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
+      }
+      else {
+        $cmd = "docker-compose up -d";
+        if ($opts['follow']) {
+          $cmd .= "; docker-compose logs -f";
+        }
+      }
+  
+      // Build a local container.
+      if (is_null($opts['user-uid'])) {
+        $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+      }
+  
+      $this->taskDockerBuild('aegir-dockerfiles')
+        ->option('file', 'aegir-dockerfiles/Dockerfile-local')
+        ->tag('aegir/hostmaster:local')
+        ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+        ->run();
+  
+  
+      if (isset($cmd)) {
+        if ($this->_exec($cmd)->wasSuccessful()) {
+          exit(0);
+        }
+        else {
+          exit(1);
+        }
       }
     }
-    
-    // Build a local container.
-    if (is_null($opts['user-uid'])) {
-      $opts['user-uid'] = $this->_exec('id -u')->getMessage();
-    }
-  
-    $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-local')
-      ->tag('aegir/hostmaster:local')
-      ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
-      ->run();
-    
-    if ($this->_exec($cmd)->wasSuccessful()) {
-      exit(0);
-    }
-    else {
-      exit(1);
+    elseif ($opts['mode'] == 'install.sh') {
+
+      $init = [
+        'centos:7' => '/usr/lib/systemd/systemd',
+        'ubuntu:14.04' => '/sbin/init',
+        'geerlingguy/docker-centos7-ansible' => '/sbin/init',
+      ];
+
+      # This is the list of test sites, set in .travis.yml.
+      # This is so requests to these sites go back to localhost.
+      if (empty($_SERVER['SITE_HOSTS'])) {
+        $_SERVER['SITE_HOSTS'] = 'devshop.local.computer';
+      }
+
+      # Launch Server container
+      if (!$this->taskDockerRun($opts['install-sh-image'])
+        ->name('devshop_container')
+        ->volume(__DIR__, '/usr/share/devshop')
+        ->volume('aegir-home', '/var/aegir')
+        ->option('--hostname', 'devshop.local.computer')
+        ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
+        ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
+        ->detached()
+        ->privileged()
+        ->env('TERM', 'xterm')
+        ->env('TRAVIS', true)
+        ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
+        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
+        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->exec('/usr/share/devshop/tests/run-tests.sh')
+        ->exec($init[$opts['install-sh-image']])
+        ->run()
+        ->wasSuccessful() ) {
+        $this->say('Docker Run failed.');
+        exit(1);
+      }
+
+      # Install mysql first to ensure it is started.
+      if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
+          ->run()
+          ->wasSuccessful()
+        ) {
+          $this->say('Set init policy failed.');
+          exit(1);
+        }
+      }
+
+      # Run install script on the container.
+      # @TODO: Run the last version on the container, then upgrade.
+      $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
+      if (($this->input()->getOption('no-interaction') || $this->ask('Run install.sh script?') == 'y') && !$this->taskDockerExec('devshop_container')
+        ->exec($install_command)
+        ->run()
+        ->wasSuccessful() ) {
+        $this->say('Docker Exec install.sh failed.');
+        exit(1);
+      }
+
+      if ($opts['test']) {
+
+        # Disable supervisor
+        if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+          $service = 'supervisor';
+        }
+        else {
+          $service = 'supervisord';
+        }
+
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec("service $service stop")
+          ->run()
+          ->wasSuccessful()
+        ) {
+          $this->say('Unable to disable supervisor.');
+          exit(1);
+        }
+
+        # Run test script on the container.
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec('su - aegir -c  - /usr/share/devshop/tests/devshop-tests.sh')
+          ->run()
+          ->wasSuccessful()
+        ) {
+          $this->say('Docker Exec devshop-tests.sh failed.');
+          exit(1);
+        }
+      }
     }
   }
   
@@ -274,8 +379,13 @@ class RoboFile extends \Robo\Tasks
    * Running with --force
    */
   public function destroy($opts = ['force' => 0]) {
-    $this->_exec('docker-compose kill');
-    $this->_exec('docker-compose rm -fv');
+    
+    if ($this->confirm("Destroy docker containers and volumes?")) {
+      $this->_exec('docker-compose kill');
+      $this->_exec('docker-compose rm -fv');
+      $this->_exec('docker kill devshop_container');
+      $this->_exec('docker rm -fv devshop_container');
+    }
     
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
