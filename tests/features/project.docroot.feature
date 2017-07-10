@@ -69,7 +69,7 @@ Feature: Create a project with Drupal in the docroot.
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
