@@ -5,8 +5,15 @@
     include_vars: "{{ ansible_os_family }}.yml"
 
   - name: Ensure openssh-client is available (including ssh-keygen tool)
+    when: ansible_os_family == 'Debian'
     apt:
         name: 'openssh-client'
+        state: present
+
+  - name: Ensure openssh-client is available (including ssh-keygen tool)
+    when: ansible_os_family == 'RedHapt'
+    yum:
+        name: 'openssh'
         state: present
 
   - name: Create Aegir Group (so we can set the GID)
