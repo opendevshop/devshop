@@ -335,7 +335,7 @@ class RoboFile extends \Robo\Tasks
       if ($opts['test']) {
 
         # Disable supervisor
-        if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
           $service = 'supervisor';
         }
         else {
