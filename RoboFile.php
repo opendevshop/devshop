@@ -243,6 +243,12 @@ class RoboFile extends \Robo\Tasks
         // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
         $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
       }
+      else {
+        $cmd = "docker-compose up -d";
+        if ($opts['follow']) {
+          $cmd .= "; docker-compose logs -f";
+        }
+      }
     }
     elseif ($opts['mode'] == 'install.sh') {
 
@@ -331,12 +337,6 @@ class RoboFile extends \Robo\Tasks
           $this->say('Docker Exec devshop-tests.sh failed.');
           exit(1);
         }
-      }
-    }
-    else {
-      $cmd = "docker-compose up -d";
-      if ($opts['follow']) {
-        $cmd .= "; docker-compose logs -f";
       }
     }
 
