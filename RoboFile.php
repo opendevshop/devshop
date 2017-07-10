@@ -208,7 +208,7 @@ class RoboFile extends \Robo\Tasks
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
-    'install-sh-image' => 'ubuntu:14.04',
+    'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
     'user-uid' => null
   ]) {
@@ -276,6 +276,7 @@ class RoboFile extends \Robo\Tasks
       $init = [
         'centos:7' => '/usr/lib/systemd/systemd',
         'ubuntu:14.04' => '/sbin/init',
+        'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
         'geerlingguy/docker-centos7-ansible' => '/sbin/init',
       ];
 
@@ -334,7 +335,7 @@ class RoboFile extends \Robo\Tasks
       if ($opts['test']) {
 
         # Disable supervisor
-        if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
           $service = 'supervisor';
         }
         else {
