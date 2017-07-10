@@ -210,7 +210,6 @@ class RoboFile extends \Robo\Tasks
     'mode' => 'docker-compose',
     'install-sh-image' => 'ubuntu:14.04',
     'install-sh-options' => '--server-webserver=apache',
-    'test-upgrade' => false,
     'user-uid' => null
   ]) {
     
