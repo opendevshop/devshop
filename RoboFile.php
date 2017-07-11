@@ -324,7 +324,7 @@ class RoboFile extends \Robo\Tasks
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if (($this->input()->getOption('no-interaction') || $this->ask('Run install.sh script?') == 'y') && !$this->taskDockerExec('devshop_container')
+      if (($this->input()->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
         ->exec($install_command)
         ->run()
         ->wasSuccessful() ) {
@@ -380,7 +380,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function destroy($opts = ['force' => 0]) {
     
-    if ($this->confirm("Destroy docker containers and volumes?")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy docker containers and volumes?")) {
       $this->_exec('docker-compose kill');
       $this->_exec('docker-compose rm -fv');
       $this->_exec('docker kill devshop_container');
@@ -390,16 +390,13 @@ class RoboFile extends \Robo\Tasks
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
 
-    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder?"))) {
-      if (!$this->confirm("Destroy local config, drush aliases, and projects?") && $this->taskFilesystemStack()
-        ->remove('aegir-home/config')
-        ->remove("aegir-home/projects")
-        ->remove("aegir-home/.drush")
-        ->run()
-        ->wasSuccessful()) {
-    
+    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder? (If answered 'n', devmaster root will be saved.)"))) {
+      if ($this->confirm("Destroy local config, drush aliases, and projects?")) {
+        
         // Remove devmaster site folder
-        $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
+        $this->_exec("sudo rm -rf aegir-home/.drush");
+        $this->_exec("sudo rm -rf aegir-home/config");
+        $this->_exec("sudo rm -rf aegir-home/projects");
         $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     
         $this->say("Deleted local folders. Source code is still in place.");
