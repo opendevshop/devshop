@@ -166,7 +166,7 @@ class RoboFile extends \Robo\Tasks
     // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
+//      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster')
       ->run()
       ;
