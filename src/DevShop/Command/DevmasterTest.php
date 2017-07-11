@@ -125,7 +125,7 @@ class DevmasterTest extends Command {
     });
 
     // Run bin/behat
-    $cmd = 'bin/behat --colors';
+    $cmd = 'bin/behat --colors --format-settings=\'{"expand": true}\'';
     
     if ($input->getOption('name')) {
       $cmd .= ' --name=' . $input->getOption('name');
