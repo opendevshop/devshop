@@ -60,22 +60,12 @@ env:
 
   matrix:
   - test="Upgrade"
-    COMMAND="robo up --test-upgrade"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
+    ROBO_UP_OPTIONS="--test-upgrade"
 
-  - test="Install with Docker"
-    COMMAND="robo up --test"
+  - test="Install"
+    ROBO_UP_OPTIONS="--test"
 
-  - test="Install with Ansible on Ubuntu 14.04 with Apache"
-    COMMAND="robo up --mode=install.sh --test"
-
-#  - test="Install with Ansible on Ubuntu 14.04 with NGINX"
-#    COMMAND="robo up --mode=install.sh --test --install-sh-options='--server-webserver=nginx'"
-
-  - test="Install with Ansible on CentOS 7"
-    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
-
-    
 services:
   - docker
 
@@ -105,7 +95,7 @@ before_install:
   - composer install
 
 script:
-  - ${COMMAND} -n
+  - robo up ${ROBO_UP_OPTIONS} -n
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state
