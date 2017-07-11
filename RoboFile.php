@@ -255,11 +255,13 @@ class RoboFile extends \Robo\Tasks
         $opts['user-uid'] = $this->_exec('id -u')->getMessage();
       }
   
-      $this->taskDockerBuild('aegir-dockerfiles')
-        ->option('file', 'aegir-dockerfiles/Dockerfile-local')
-        ->tag('aegir/hostmaster:local')
-        ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
-        ->run();
+      if ($opts['user-uid'] != '1000') {
+        $this->taskDockerBuild('aegir-dockerfiles')
+          ->option('file', 'aegir-dockerfiles/Dockerfile-local')
+          ->tag('aegir/hostmaster:local')
+          ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+          ->run();
+      }
   
   
       if (isset($cmd)) {
