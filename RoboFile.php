@@ -166,7 +166,7 @@ class RoboFile extends \Robo\Tasks
     // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
+//      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster')
       ->run()
       ;
@@ -176,18 +176,18 @@ class RoboFile extends \Robo\Tasks
       ->tag('aegir/hostmaster:xdebug')
       ->run()
       ;
-    // devshop/devmaster
-    $this->taskDockerBuild('dockerfiles')
-      ->option('file', 'dockerfiles/Dockerfile')
-      ->tag('devshop/devmaster')
-      ->run()
-      ;
-    // devshop/devmaster:xdebug
-    $this->taskDockerBuild('dockerfiles')
-      ->option('file', 'dockerfiles/Dockerfile-xdebug')
-      ->tag('devshop/devmaster:xdebug')
-      ->run()
-      ;
+//    // devshop/devmaster
+//    $this->taskDockerBuild('dockerfiles')
+//      ->option('file', 'dockerfiles/Dockerfile')
+//      ->tag('devshop/devmaster')
+//      ->run()
+//      ;
+//    // devshop/devmaster:xdebug
+//    $this->taskDockerBuild('dockerfiles')
+//      ->option('file', 'dockerfiles/Dockerfile-xdebug')
+//      ->tag('devshop/devmaster:xdebug')
+//      ->run()
+//      ;
     // aegir/web
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-web')
