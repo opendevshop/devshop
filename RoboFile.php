@@ -397,6 +397,7 @@ class RoboFile extends \Robo\Tasks
         $this->_exec("sudo rm -rf aegir-home/.drush");
         $this->_exec("sudo rm -rf aegir-home/config");
         $this->_exec("sudo rm -rf aegir-home/projects");
+        $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
         $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     
         $this->say("Deleted local folders. Source code is still in place.");
