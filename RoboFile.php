@@ -325,6 +325,11 @@ class RoboFile extends \Robo\Tasks
         }
       }
 
+      // Display home folder.
+      $this->taskDockerExec('devshop_container')
+        ->exec('ls -la /var/aegir')
+        ->run();
+
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
