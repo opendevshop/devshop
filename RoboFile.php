@@ -216,7 +216,7 @@ class RoboFile extends \Robo\Tasks
 
     // Determine current UID.
     if (is_null($opts['user-uid'])) {
-      $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+      $opts['user-uid'] = trim($this->_exec('id -u')->getMessage());
     }
 
     if (!file_exists('aegir-home')) {
@@ -332,6 +332,11 @@ class RoboFile extends \Robo\Tasks
         ->exec('ls -la /var/aegir')
         ->run();
 
+      // Try to set ownership of home folder to AEGIR_UID.
+      $this->taskDockerExec('devshop_container')
+        ->exec("chown {$opts['user-uid']} /var/aegir -R")
+        ->run();
+
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
@@ -407,6 +412,7 @@ class RoboFile extends \Robo\Tasks
         // Remove devmaster site folder
         $this->_exec("sudo rm -rf aegir-home/.drush");
         $this->_exec("sudo rm -rf aegir-home/config");
+        $this->_exec("sudo rm -rf aegir-home/clients");
         $this->_exec("sudo rm -rf aegir-home/projects");
         $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
         $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
