@@ -213,7 +213,12 @@ class RoboFile extends \Robo\Tasks
     'user-uid' => null,
     'xdebug' => false,
   ]) {
-    
+
+    // Determine current UID.
+    if (is_null($opts['user-uid'])) {
+      $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+    }
+
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
         if ($this->prepareSourcecode() == FALSE) {
@@ -252,10 +257,6 @@ class RoboFile extends \Robo\Tasks
       }
   
       // Build a local container.
-      if (is_null($opts['user-uid'])) {
-        $opts['user-uid'] = $this->_exec('id -u')->getMessage();
-      }
-  
       if ($opts['user-uid'] != '1000') {
         $dockerfile = $opts['xdebug']? 'aegir-dockerfiles/Dockerfile-local-xdebug': 'aegir-dockerfiles/Dockerfile-local';
         $this->taskDockerBuild('aegir-dockerfiles')
@@ -305,6 +306,7 @@ class RoboFile extends \Robo\Tasks
         ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
         ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->env('AEGIR_USER_UID', $opts['user-uid'])
         ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init[$opts['install-sh-image']])
         ->run()
