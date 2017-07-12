@@ -101,7 +101,7 @@ before_install:
   - git status
   - pwd
   - echo projects[devmaster][download][type] = "copy" >> build-devmaster.make
-  - echo projects[devmaster][download][url] = "../devmaster" >> build-devmaster.make
+  - echo projects[devmaster][download][url] = "/home/travis/build/opendevshop/devmaster" >> build-devmaster.make
   - cat build-devmaster.make
 
   # Prepare devshop CLI.
