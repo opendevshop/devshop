@@ -210,7 +210,8 @@ class RoboFile extends \Robo\Tasks
     'mode' => 'docker-compose',
     'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
-    'user-uid' => null
+    'user-uid' => null,
+    'xdebug' => false,
   ]) {
     
     if (!file_exists('aegir-home')) {
@@ -256,8 +257,9 @@ class RoboFile extends \Robo\Tasks
       }
   
       if ($opts['user-uid'] != '1000') {
+        $dockerfile = $opts['xdebug']? 'aegir-dockerfiles/Dockerfile-local-xdebug': 'aegir-dockerfiles/Dockerfile-local';
         $this->taskDockerBuild('aegir-dockerfiles')
-          ->option('file', 'aegir-dockerfiles/Dockerfile-local')
+          ->option('file', $dockerfile)
           ->tag('aegir/hostmaster:local')
           ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
           ->run();
