@@ -558,19 +558,8 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             }
           }
 
-          drupal_set_title(t('Deploy data to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
+          drupal_set_title(t('Sync Data to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
           $environment = $node->environment;
-
-          $form['help'] = array(
-            '#prefix' => '<div class="alert alert-warning" role="alert">',
-            '#suffix' => '</div>',
-
-            'target' => array(
-              '#markup' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
-              '#prefix' => '<p class="text-danger">',
-              '#suffix' => '</p>',
-            ),
-          );
 
           // If source is empty, ask for an alias.
           if (empty($source)) {
@@ -588,11 +577,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           else {
 
             $source_environment = $source->environment;
-            $form['help']['source'] = array(
-              '#markup' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
-              '#prefix' => '<p>',
-              '#suffix' => '</p>',
-            );
 
             $form['parameters']['source'] = array(
               '#type' => 'value',
@@ -610,14 +594,52 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           unset($form['parameters']['libraries']);
 
           // Better output
-          $form['parameters']['database']['#prefix'] = '<label>' . t('What to Deploy?') . '</label>';
+          $form['parameters']['database']['#prefix'] = '<label>' . t('What to Sync?') . '</label>';
           $form['parameters']['registry-rebuild']['#prefix'] = '<label>' . t('Run Deploy Hooks?') . '</label>';
           $form['parameters']['backup']['#weight'] = -11;
 
-          $form['actions']['submit']['#value'] = t('Deploy Data');
+          $form['actions']['submit']['#value'] = '<i class="fa fa-arrow-right"></i>' . t('Sync Data');
+          $form['actions']['submit']['#attributes'] = array(
+            'class' => array(
+              'btn-success'
+            ),
+          );
           $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
 
-          $form['warning']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+          $form['warning']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Sync Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+
+
+          $destroyed = t('This environment will be destroyed.');
+          $source = t('This environment will be copied.');
+
+          $html = <<<HTML
+          
+<div class="container no-wrap">
+  <div class="inline">
+    <a href="$source_environment->url" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment->name} </span>
+      <br/>   <small>$source_environment->url</small>
+    </a>
+    <br/>   <em class="text-sm">$source</em>
+
+  </div>
+  <div class="inline btn">
+  
+    <i class="fa fa-arrow-right fa-4x"></i>
+    
+  </div>
+  <div class="inline">
+    <a href="$environment->url" class="btn btn-danger btn-lg"><span class="text-lg"><i class="fa fa-trash"></i> {$environment->name} </span>
+      <br/>   <small class="text-sm">$environment->url</small>
+    </a>
+    <br/>   <em class="text-sm">$destroyed</em>
+  </div>
+</div>
+HTML;
+
+          $form['notes'] = array(
+            '#markup' => $html,
+            '#weight' => -10,
+          );
         }
         break;
       case 'delete':
