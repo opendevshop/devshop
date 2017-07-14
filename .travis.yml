@@ -82,7 +82,8 @@ services:
 before_install:
   - env
   - id -u
-  - sudo docker --version
+  - docker --version
+  - docker-compose --version
 
   # Install Robo
   - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
