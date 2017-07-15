@@ -616,7 +616,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           
 <div class="container no-wrap">
   <div class="inline">
-    <a href="$source_environment->url" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment->name} </span>
+    <a href="$source_environment->url" target="_blank" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment->name} </span>
       <br/>   <small>$source_environment->url</small>
     </a>
     <br/>   <em class="text-sm">$source</em>
@@ -628,7 +628,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     
   </div>
   <div class="inline">
-    <a href="$environment->url" class="btn btn-danger btn-lg"><span class="text-lg"><i class="fa fa-trash"></i> {$environment->name} </span>
+    <a href="$environment->url" target="_blank" class="btn btn-danger btn-lg"><span class="text-lg"><i class="fa fa-trash"></i> {$environment->name} </span>
       <br/>   <small class="text-sm">$environment->url</small>
     </a>
     <br/>   <em class="text-sm">$destroyed</em>
