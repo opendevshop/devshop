@@ -6,7 +6,6 @@
  */
 
 include_once('projects.inc');
-include_once('inc/add-environment.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
@@ -323,15 +322,15 @@ function devshop_projects_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  // Add Environment page
-  $items['project/%/add-environment'] = array(
-    'title' => 'Add Environment',
-    'type' => MENU_CALLBACK,
-    'page callback' => 'devshop_projects_environment_add_page',
-    'page arguments' => array(1),
-    'access callback' => 'devshop_projects_environment_add_access',
-    'access arguments' => array(1),
-  );
+//  // Add Environment page
+//  $items['project/%/add-environment'] = array(
+//    'title' => 'Add Environment',
+//    'type' => MENU_CALLBACK,
+//    'page callback' => 'devshop_projects_environment_add_page',
+//    'page arguments' => array(1),
+//    'access callback' => 'devshop_projects_environment_add_access',
+//    'access arguments' => array(1),
+//  );
 
   // Ajax endpoint for reloads
   $items['devshop/tasks'] = array(
