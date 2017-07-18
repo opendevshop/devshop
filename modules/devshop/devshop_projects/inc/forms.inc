@@ -391,6 +391,12 @@ function devshop_projects_validate($node, &$form, &$form_state) {
       '%url' => $form_state['values']['project']['base_url'],
     )));
   }
+  
+  // "Environment Domain Name Pattern" (Base URL)
+  // Ensure @environment is included.
+  if (strpos($form_state['values']['project']['base_url'], '@environment') === FALSE ) {
+    form_set_error('project][base_url', t('Environment Domain Name Pattern must include @environment placeholder.'));
+  }
 }
 
 /**
