@@ -17,6 +17,7 @@ We test this script continuously on Ubuntu 14.04 and CentOS 7.  See https://trav
 <strong>NOTES:</strong>
 - Do not try to install devshop on a server that is already in use. If you do you will likely have to take manual steps to get it fully functional. It's just easier to start with a fresh server.
 - If installing ubuntu manually, do *not* choose "LAMP Server" or any other type. The install script & ansible role will install all necessary packages.
+- **Always** run the install.sh script as *root*.  Using `sudo bash install.sh` may not work, as it uses /root/.my.cnf to track database permissions.
 
 [1.x](https://github.com/opendevshop/devshop) is now the current stable branch. `0.x` branch is now deprecated! Drupal 6 is End of Life.
 
@@ -48,20 +49,21 @@ Setup
 
 - If you don't have root but have a sudo user:
 
-        ubuntu@devshop:~$ wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
-        ubuntu@devshop:~$ sudo bash install.sh
+        ubuntu@devshop:~$ sudo su
+        root@devshop:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
+        root@devshop:~# bash install.sh
 
 - If you need to change the hostname, use the `--hostname` option:
 
-        ubuntu@devshop:~$ sudo bash install.sh --hostname=devshop.mysite.com
+        root@devshop:~# bash install.sh --hostname=devshop.mysite.com
 
 - If you wish to install NGINX instead of apache, use the `--server-webserver=nginx` option:
 
-        ubuntu@devshop:~$ sudo bash install.sh --server-webserver=nginx
+         root@devshop:~# bash install.sh --server-webserver=nginx
 
 - If you wish to use a different playbook or makefile for the devmaster front-end, you can use the `--makefile` and `--playbook` commands:
 
-        ubuntu@devshop:~$ sudo bash install.sh --makefile=devmaster-super.make --playbook=playbook-super.yml
+         root@devshop:~# bash install.sh --makefile=devmaster-super.make --playbook=playbook-super.yml
 
 - If you wish to set the Aegir user's UID to something other than 12345, you can use the `--aegir_user_uid` option. This might be useful if you are setting up Docker containers to mounting NFS.
 
