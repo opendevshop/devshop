@@ -764,34 +764,6 @@ function _devshop_projects_project_has_module($node, $module) {
 }
 
 /**
- * Helper function to generate the URL for an environment.
- * @param $name
- * @param $environment
- * @return string
- */
-function devshop_projects_url($name, $environment = NULL) {
-
-  // If we don't have a name yet, just return the server name.
-  if (empty($name)) {
-    return $_SERVER['SERVER_NAME'];
-  }
-  else {
-    $pattern = variable_get('devshop_project_environment_url_pattern', "@environment.@project.@hostname");
-
-    $replacements = array(
-      '@environment' => $environment,
-      '@project' => $name,
-      '@hostname' => $_SERVER['SERVER_NAME'],
-    );
-
-    if (is_null($environment)) {
-      $replacements['@environment.'] = '';
-    }
-    return strtr($pattern, $replacements);
-  }
-}
-
-/**
  * Reset all environment's "last task" to the NID.
  */
 function devshop_reset_last_tasks () {
