@@ -391,6 +391,12 @@ function devshop_projects_validate($node, &$form, &$form_state) {
       '%url' => $form_state['values']['project']['base_url'],
     )));
   }
+  
+  // "Environment Domain Name Pattern" (Base URL)
+  // Ensure @environment is included.
+  if (strpos($form_state['values']['project']['base_url'], '@environment') === FALSE ) {
+    form_set_error('project][base_url', t('Environment Domain Name Pattern must include @environment placeholder.'));
+  }
 }
 
 /**
@@ -887,8 +893,13 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 //  array_unshift($form['actions']['submit']['#submit'], 'devshop_projects_create_environment_form_submit');
 
   // Generate field prefix and suffix using domain name pattern.
-  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
-
+  if (variable_get('devshop_projects_allow_custom_base_url')) {
+    $pattern = $project->base_url;
+  }
+  else {
+    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+  }
+  
   $labels = explode('@environment', strtr($pattern, array(
     '@project' => $project_node->title,
     '@hostname' => $_SERVER['SERVER_NAME'],
