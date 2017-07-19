@@ -43,12 +43,14 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
   );
-  // @TODO: Add @environment as a replacement pattern.
   $form['urls']['devshop_project_environment_url_pattern'] = array(
     '#title' => t('Environment Domain Name Pattern'),
     '#type' => 'textfield',
     '#description' => t("Each environment will have a system domain name generated for it based on it's name. Use @project for project name, @hostname for '%host', @environment for the environment's name.", array('%host' => $_SERVER['SERVER_NAME'])),
-    '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
+    '#default_value' => variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname'),
+    '#element_validate' => array(
+      'devshop_project_settings_validate_environment_url_pattern',
+    ),
   );
 
 //  $form['support'] = array(
@@ -74,4 +76,13 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#default_value' => variable_get('devshop_public_key', ''),
   );
   return system_settings_form($form);
+}
+
+/**
+ * Validate that the default environment domain pattern has @environment and @project.
+ */
+function devshop_project_settings_validate_environment_url_pattern($element, &$form_state, $form) {
+  if (strpos($form_state['values']['devshop_project_environment_url_pattern'], '@environment') === FALSE || strpos($form_state['values']['devshop_project_environment_url_pattern'], '@project') === FALSE) {
+    form_error($element, t('The placeholders @project and @environment must be in the Environment Domain Name Pattern.'));
+  }
 }
