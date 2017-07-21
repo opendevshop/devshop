@@ -177,7 +177,7 @@ function devshop_projects_devshop_environment_menu($environment) {
       $items[] = '<div class="divider"></div>';
     }
     elseif (module_exists('aegir_features') && strpos($environment->version, '7') === 0) {
-      $items[] = 'features_update_all';
+      $items[] = 'features_update';
       $items[] = 'features_revert_all';
       $items[] = '<div class="divider"></div>';
     }
