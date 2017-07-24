@@ -443,7 +443,7 @@ function devshop_github_webhook($project_node) {
 
   // @TODO: Handle form content from github as well.
   if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
-    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
+    $data = json_decode(file_get_contents('php://input'));
 
     $args = array();
     $args['cache'] = 1;
