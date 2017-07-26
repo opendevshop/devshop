@@ -197,9 +197,33 @@ class RoboFile extends \Robo\Tasks
   }
   
   /**
-   * Launch devshop containers using docker-compose up and follow logs.
+   * Launch devshop in a variety of ways. Useful for local development and CI testing.
    *
-   * Use "--test" option to run tests instead of the hosting queue.
+   * Builds a container to match the local user to allow write permissions to Aegir Home.
+   *
+   * Examples:
+   *
+   *   robo up
+   *   Launch a devshop in containers using docker-compose.
+   *
+   *   robo up --test
+   *   Launch then test a devshop in a single process.
+   *
+   *   robo up --test
+   *   Launch, upgrade, then test a devshop in a single process.
+   *
+   *   robo up --mode=install.sh --test
+   *   Launch an OS container, then install devshop using install.sh, then run tests.
+   *
+   *   robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible
+   *   Launch an OS container, then install devshop using install.sh in a CentOS 7 image.
+   *
+   * @option $test Run tests after containers are up and devshop is installed.
+   * @option $test-upgrade Install an old version, upgrade it to this version, then run tests.
+   * @option $mode Set to 'install.sh' to use the install.sh script for setup.
+   * @option $install-sh-image Enter any docker image to use for running the install-sh-image. Since we need ansible, we are using geerlingguy's geerlingguy/docker-centos7-ansible and geerlingguy/docker-ubuntu1404-ansible images.
+   * @option $user-uid Override the detected current user's UID when building containers.
+   * @option $xdebug Set this option to launch with an xdebug container.
    */
   public function up($opts = [
     'follow' => 1,
