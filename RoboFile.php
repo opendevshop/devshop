@@ -306,7 +306,7 @@ class RoboFile extends \Robo\Tasks
         'centos:7' => '/usr/lib/systemd/systemd',
         'ubuntu:14.04' => '/sbin/init',
         'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
-        'geerlingguy/docker-centos7-ansible' => '/sbin/init',
+        'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
 
       # This is the list of test sites, set in .travis.yml.
@@ -323,6 +323,7 @@ class RoboFile extends \Robo\Tasks
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
+        ->option('-t')
         ->detached()
         ->privileged()
         ->env('TERM', 'xterm')
