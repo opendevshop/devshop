@@ -69,3 +69,4 @@ extra_packages:
   - supervisor
   - openssl
   - mod_ssl
+  - sendmail
