@@ -1,0 +1,244 @@
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+/**
+ * Implements hook_hosting_service()
+ */
+function aegir_cloud_packet_hosting_service() {
+  return array(
+    'packet' => 'provider',
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ *
+ * Alters aegir cloud settings form to add packet api keys.
+ */
+function aegir_cloud_packet_form_aegir_cloud_settings_form_alter(&$form, &$form_state) {
+
+  $form['packet'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Packet'),
+    '#weight' => -100,
+  );
+
+  $url = 'https://app.packet.net/portal#/api-keys';
+  $form['packet']['aegir_cloud_packet_api_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API Key'),
+    '#description' => t('Enter your packet API key here.  Get your API key at !link', array(
+      '!link' => l($url, $url),
+    )),
+    '#default_value' => variable_get('aegir_cloud_packet_api_key', ''),
+  );
+
+  $username = variable_get('aegir_cloud_packet_api_username', array());
+  $key = variable_get('aegir_cloud_packet_api_key', array());
+
+  if (empty($key)) {
+  }
+  else {
+    $options = variable_get('aegir_cloud_packet_options', array());
+
+    $form['packet']['info'] = array(
+      '#type' => 'item',
+      '#title' => t('packet Options'),
+      '#markup' => empty($options)? t('No options available. Click "Refresh packet Options".'): 'packet options are saved.',
+    );
+
+    $keys = variable_get('aegir_cloud_packet_ssh_keys', array());
+    $key_count = count($keys);
+    $form['packet']['keys'] = array(
+      '#type' => 'item',
+      '#title' => t('packet SSH Keys'),
+      '#markup' => format_plural($key_count, t('One key available'), t('!num keys available', array(
+        '!num' => $key_count
+      ))),
+    );
+
+    // Get fingerprint of ssh key for comparison.
+    try {
+      $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_public_key', ''));
+
+      $fingerprint = theme_sshkey_fingerprint($key_vars);
+      foreach ($keys as $key) {
+        if ($fingerprint == $key->fingerprint) {
+          $key_found = TRUE;
+          $form['packet']['key_ok'] = array(
+            '#prefix' => '<div class="alert alert-success">',
+            '#suffix' => '</div>',
+            '#markup' => t('!link key was found in your !link2. Ready to Provision.', array(
+            '!link' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
+            '!link2' => l(t('Packet Account'), 'https://app.packet.net/portal#/ssh-keys'),
+          )));
+        }
+      }
+    }
+    catch (SSHKeyParseException $e) {
+      $key_found = FALSE;
+    }
+
+    if (!$key_found) {
+      $form['packet']['key_warning'] = array(
+        '#prefix' => '<div class="alert alert-danger">',
+        '#suffix' => '</div>',
+        '#markup' => t('!link1 was not found in your packet Account.  !link2', array(
+          '!link1' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
+          '!link2' => l(t('Add your public key to packet'), 'https://app.packet.net/portal#/ssh-keys'),
+        )),
+      );
+    }
+
+    $form['packet']['refresh'] = array(
+      '#type' => 'submit',
+      '#value' => t('Refresh Packet.net Options'),
+      '#submit' => array(
+        'aegir_cloud_packet_refresh_options'
+      ),
+    );
+  }
+
+  // Validate the API key.
+  $form['#validate'][] = 'aegir_cloud_packet_validate_key';
+}
+
+/**
+ * Form validator to check the API key.
+ * @param $form
+ * @param $form_state
+ */
+function aegir_cloud_packet_validate_key($form, $form_state) {
+
+  try {
+
+    //Create a configuration object
+    $config = new PacketHost\Client\Adapter\Configuration\DefaultConfiguration(
+      $form_state['values']['aegir_cloud_packet_api_key']
+    );
+
+    //Build the adapter and Api
+    $adapter = new PacketHost\Client\Adapter\GuzzleAdapter($config);
+    $api = new PacketHost\Client\PacketApi($adapter);
+
+    //Create options array with request params
+    $options = [
+      'queryParams' => 'per_page=20'
+    ];
+
+    // Fetching projects
+    $projects = $api->project()->getAll($options);
+
+    if (!empty($projects)) {
+      drupal_set_message(t('Successfully connected to Packet.net.'));
+    }
+  }
+  catch (Exception $e) {
+      form_set_error('aegir_cloud_packet_api_key', t('Packet API Error:') . ' ' . $e->getMessage());
+  }
+}
+
+/**
+ * Refresh packet options.
+ */
+function aegir_cloud_packet_refresh_options() {
+
+  try {
+
+    //Create a configuration object
+    $config = new PacketHost\Client\Adapter\Configuration\DefaultConfiguration(
+      variable_get('aegir_cloud_packet_api_key', '')
+    );
+
+    //Build the adapter and Api
+    $adapter = new PacketHost\Client\Adapter\GuzzleAdapter($config);
+    $api = new PacketHost\Client\PacketApi($adapter);
+
+    $options = array();
+
+    // Fetching projects
+    $projects = $api->project()->getAll();
+    foreach ($projects as $project) {
+      $options['projects'][$project->id] = $project->name;
+    }
+
+    // Fetching facilities
+    $facilities = $api->facility()->getAll();
+    $facilities_ids = [];
+    foreach ($facilities as $facility) {
+      // Only allow facilities that allow baremetal.
+      if (in_array('baremetal', $facility->features)) {
+        $options['facilities'][$facility->code] = $facility->name;
+
+        $facilities_ids[] = $facility->id;
+      }
+    }
+
+    // Fetching Operating Systems
+    $oses = $api->operatingSystem()->getAll();
+    foreach ($oses as $os) {
+      $options['oses'][$os->slug] = $os->name;
+    }
+
+    // Fetching Plans
+    $plans = $api->plan()->getAll();
+    foreach ($plans as $plan) {
+
+      // Ensure the plan is available
+      foreach ($plan->availableIn as $in) {
+        $available_id = strtr($in->href, array(
+          '/facilities/' => '',
+        ));
+        if (in_array($available_id, $facilities_ids)) {
+
+          $plan_labels = [];
+          $plan_labels[] = $plan->name;
+          $plan_labels[] = $plan->specs->cpus[0]->type;
+          $plan_labels[] = $plan->specs->memory->total;
+          $plan_labels[] = $plan->specs->drives[0]->size;
+          $plan_labels[] = '$' . $plan->pricing->hour . '/hour';
+          $plan_labels[] = '$' . $plan->pricing->hour * 24 . '/day';
+
+          $options['plans'][$plan->slug] = implode(' - ', $plan_labels);
+        }
+      }
+    }
+
+    variable_set('aegir_cloud_packet_options', $options);
+//    variable_set('aegir_cloud_packet_ssh_keys_options', $ssh_key_options);
+//
+//    dsm($options);
+    drupal_set_message(t('Packet.net options have been retrieved.'));
+
+  } catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+  }
+
+  // Fetch SSH keys
+  $ssh_keys = $api->sshKey()->getAll();
+
+  // Get fingerprint of aegir ssh key for comparison.
+  try {
+    $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_public_key', ''));
+
+    $aegir_sshkey_fingerprint = theme_sshkey_fingerprint($key_vars);
+    foreach ($ssh_keys as $key) {
+      if ($aegir_sshkey_fingerprint == $key->fingerprint) {
+        variable_set('aegir_cloud_public_key_packet_id', $key->id);
+      }
+
+      $ssh_key_objects[] = (object) [
+        'id' => $key->id,
+        'fingerprint' => $key->fingerprint,
+        'label' => $key->label,
+      ];
+      $ssh_key_options[$key->id] = $key->label;
+    }
+    variable_set('aegir_cloud_packet_ssh_keys', $ssh_key_objects);
+    variable_set('aegir_cloud_packet_ssh_keys_options', $ssh_key_options);
+  }
+  catch (SSHKeyParseException $e) {
+    $key_found = FALSE;
+  }
+}
