@@ -101,8 +101,8 @@ before_install:
 script:
 
   # Launch devshop including preparing the source code.
-  - echo "Running ${COMMAND} -n ..."
-  - ${COMMAND} -n
+  - echo "Running ${COMMAND} -n --xdebug=0 ..."
+  - ${COMMAND} -n --xdebug=0
 
 #
 #  # Pull container
