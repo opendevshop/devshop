@@ -3,20 +3,6 @@
 include_once('aegir_cloud.drush.inc');
 
 /**
- * Implements hook_hosting_feature().
- */
-function aegir_cloud_hosting_feature() {
-  $features['aegir_cloud'] = array(
-    'title' => t('Aegir Cloud'),
-    'description' => t('Create servers via cloud hosting providers.'),
-    'status' => HOSTING_FEATURE_DISABLED,
-    'module' => 'aegir_cloud',
-    'group' => 'advanced',
-  );
-  return $features;
-}
-
-/**
  * Implements hook_menu()
  */
 function aegir_cloud_menu(){
