@@ -235,7 +235,7 @@ class RoboFile extends \Robo\Tasks
     'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
     'user-uid' => null,
-    'xdebug' => true,
+    'disable-xdebug' => true,
   ]) {
 
     // Determine current UID.

@@ -102,7 +102,7 @@ script:
 
   # Launch devshop including preparing the source code.
   - echo "Running ${COMMAND} -n --xdebug=0 ..."
-  - ${COMMAND} -n --xdebug=0
+  - ${COMMAND} -n --disable-xdebug
 
 #
 #  # Pull container
