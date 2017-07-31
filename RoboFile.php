@@ -368,7 +368,6 @@ class RoboFile extends \Robo\Tasks
       if (($this->input()->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
         ->exec($install_command)
         ->option('tty')
-        ->interactive(FALSE)
         ->run()
         ->wasSuccessful() ) {
         $this->say('Docker Exec install.sh failed.');
