@@ -2,7 +2,7 @@
 
 - name: Install Apache2 PHP Mod.
   apt:
-    name: 'libapache2-mod-php5'
+    name: 'libapache2-mod-php'
     state: present
   notify:
     - restart webserver
