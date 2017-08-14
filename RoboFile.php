@@ -235,7 +235,7 @@ class RoboFile extends \Robo\Tasks
     'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
     'user-uid' => null,
-    'xdebug' => false,
+    'disable-xdebug' => true,
   ]) {
 
     // Determine current UID.
@@ -367,7 +367,7 @@ class RoboFile extends \Robo\Tasks
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
       if (($this->input()->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
         ->exec($install_command)
-        ->option('tty')
+//        ->option('tty')
         ->run()
         ->wasSuccessful() ) {
         $this->say('Docker Exec install.sh failed.');
