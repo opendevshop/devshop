@@ -138,7 +138,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     if ($platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
 
       if (file_exists($platform->git['repo_path'] . '/composer.json')) {
-        $cwd = $platform->repo_path;
+        $cwd = $platform->git['repo_path'];
       }
       elseif (file_exists($platform->publish_path . '/composer.json')) {
         $cwd = $platform->publish_path;
