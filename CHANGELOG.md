@@ -1,5 +1,11 @@
 # Change Log
 
+# George & Maxwell Pugh (September 20, 2016)
+
+- 6lbs 1oz & 6lbs 2oz
+- The Mount Sinai Hospital NYC
+- Significantly increases the amount of awwwww.
+
 # 1.0.0-beta10 (July 7, 2016)
 
   28 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta9...1.x
