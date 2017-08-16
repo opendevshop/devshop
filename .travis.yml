@@ -101,33 +101,5 @@ before_install:
 script:
 
   # Launch devshop including preparing the source code.
-  - echo "Running ${COMMAND} -n ..."
-  - ${COMMAND} -n
-
-#
-#  # Pull container
-#  - 'sudo docker pull ${distribution}:${version}'
-#  # Customize container
-#  - 'sudo docker build --rm=true --file=tests/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible tests'
-#
-#script:
-#  - container_id=$(mktemp)
-#    # Run container in detached state
-#  - 'sudo docker run --detach --name devshop_container --volume="${PWD}":/usr/share/devshop:rw ${run_opts} -h devshop.travis --add-host "${SITE_HOSTS}":127.0.0.1 ${distribution}-${version}:ansible "${init}" > "${container_id}"'
-#
-#  # Install script.
-#  - 'sudo docker exec devshop_container env TRAVIS=true TERM=xterm TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH ${install_command}'
-#
-#  # Turn off hosting queued, and the hosting task queue.
-#  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster dis hosting_queued -y -v"'
-#  - 'sudo docker exec devshop_container env sudo su - aegir -c "drush @hostmaster vset hosting_queue_tasks_enabled 0 -y"'
-#
-#  # Build and Run Tests
-#  - 'sudo docker exec devshop_container env TERM=xterm sudo su - -c "cd /usr/share/devshop/tests && composer update"'
-#
-#  - echo "Running ${test_command}"
-#  - sudo docker exec devshop_container env TERM=xterm sudo su - aegir -c "${test_command}"
-#
-#  # Stop container.
-#  - 'sudo docker stop devshop_container'
-
+  - echo "Running ${COMMAND} -n --xdebug=0 ..."
+  - ${COMMAND} -n --disable-xdebug
