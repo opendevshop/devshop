@@ -51,7 +51,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
-    Then I should see "8.2.7"
+    Then I should see "8."
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
     And I press "Create Project & Environments"
