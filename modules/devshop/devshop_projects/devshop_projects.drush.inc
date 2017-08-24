@@ -137,8 +137,8 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     // Run 'composer install' if configured to do so.
     if ($platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
 
-      if (file_exists($platform->repo_path . '/composer.json')) {
-        $cwd = $platform->repo_path;
+      if (file_exists($platform->git['repo_path'] . '/composer.json')) {
+        $cwd = $platform->git['repo_path'];
       }
       elseif (file_exists($platform->publish_path . '/composer.json')) {
         $cwd = $platform->publish_path;
@@ -153,7 +153,7 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         '!folder' => $cwd,
       )));
 
-      devshop_drush_process("git status", $platform->repo_path, dt('Running git status'));
+      devshop_drush_process("git status", $platform->git['repo_path'], dt('Running git status'));
     }
   }
 }

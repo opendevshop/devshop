@@ -443,7 +443,7 @@ function devshop_github_webhook($project_node) {
 
   // @TODO: Handle form content from github as well.
   if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
-    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
+    $data = json_decode(file_get_contents('php://input'));
 
     $args = array();
     $args['cache'] = 1;
@@ -651,9 +651,9 @@ function devshop_github_webhook($project_node) {
               $info->pull_request_object = serialize($data->pull_request);
 
               // Last minute check for existing PR info
-              $results = db_select('hosting_devshop_github_pull_requests')
-                ->condition(array('id' => $data->pull_request->id))
-                ->fields(array('id'))
+              $results = db_select('hosting_devshop_github_pull_requests', 'h')
+                ->condition('id', $data->pull_request->id)
+                ->fields('h', array('id'))
                 ->execute()
                 ->fetchAssoc();
 
