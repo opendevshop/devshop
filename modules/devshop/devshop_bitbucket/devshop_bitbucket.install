@@ -87,9 +87,9 @@ function devshop_bitbucket_update_7000() {
  */
 function devshop_bitbucket_update_7001() {
   db_update('system')
-  ->fields(array(
-    'weight' => 2
-  ))
-  ->condition('name', 'devshop_bitbucket')
-  ->execute();
+    ->fields(array(
+      'weight' => 2
+    ))
+    ->condition('name', 'devshop_bitbucket')
+    ->execute();
 }
