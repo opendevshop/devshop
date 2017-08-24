@@ -386,8 +386,9 @@ function devshop_projects_validate($node, &$form, &$form_state) {
       '%path' => $form_state['values']['project']['code_path'],
     )));
   }
-  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url AND n.nid != :nid;;', array(':status' => 1, ':base_url' => $form_state['values']['project']['base_url'], ':nid' => $form_state['values']['nid']))->fetchField()) {
-    form_set_error('base_url', t('The base URL %url is in use by another project.  Please enter a different base URL.', array(
+  // If custom domain pattern is allowed, AND domain pattern does not have "@project" in it, AND domain pattern is not the default AND it is found on another project, throw an error.
+  if (variable_get('devshop_projects_allow_custom_base_url', FALSE) && strpos($form_state['values']['project']['base_url'], '@project') === FALSE && $form_state['values']['project']['base_url'] !=  variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname') && db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url AND n.nid != :nid;;', array(':status' => 1, ':base_url' => $form_state['values']['project']['base_url'], ':nid' => $form_state['values']['nid']))->fetchField()) {
+    form_set_error('base_url', t('The Environment Domain Pattern %url is in use by another project.  Please enter a different Environment Domain Pattern.', array(
       '%url' => $form_state['values']['project']['base_url'],
     )));
   }
