@@ -270,6 +270,7 @@ function devshop_github_node_load($nodes, $types) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
           if (isset($node->project->environments[$pull_request->environment_name])) {
             $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+            $node->project->environments[$pull_request->environment_name]->settings['github_pull_request'] =  $pull_request->pull_request_object;
           }
         }
       }
