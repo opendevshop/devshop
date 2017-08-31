@@ -1,12 +1,6 @@
 core = 7.x
 api = 2
 
-
-;; DEVELOPMENT
-;; Includes clones of all modules.
-;; Comment this out for release.
-includes[development] = "devmaster.development.make.yml"
-
 projects[drupal][type] = "core"
 
 # This is not used when building the distribution. See https://github.com/opendevshop/devshop/blob/1.x/build-devmaster.make
