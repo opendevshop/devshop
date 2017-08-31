@@ -48,3 +48,8 @@ projects:
     download:
       type: git
       branch: 7.x-1.x
+
+  devshop_stats:
+    download:
+      type: git
+      branch: 7.x-1.x
