@@ -1,6 +1,12 @@
 core = 7.x
 api = 2
 
+
+;; DEVELOPMENT
+;; Includes clones of all modules.
+;; Comment this out for release.
+includes[development] = "devmaster.development.make.yml"
+
 projects[drupal][type] = "core"
 
 # This is not used when building the distribution. See https://github.com/opendevshop/devshop/blob/1.x/build-devmaster.make
@@ -20,10 +26,8 @@ includes[devshop] = "drupal-org.make"
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][download][branch] = "7.x-3.x"
-projects[hosting][download][type] = "git"
-
-projects[hosting][subdir] = "aegir"
+projects[hosting][subdir] = aegir
+projects[hosting][version] = "3.x"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
@@ -105,3 +109,9 @@ projects[bootstrap][version] = 3.14
 
 ; Include devel module.
 projects[devel][version] = "1"
+
+
+;; DEVELOPMENT
+;; Includes clones of all modules.
+;; Comment this out for release.
+includes[development] = "devmaster.development.make.yml"
