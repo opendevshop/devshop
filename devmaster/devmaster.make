@@ -21,7 +21,7 @@ includes[devshop] = "drupal-org.make"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.x"
+projects[hosting][version] = "3.11"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
@@ -32,15 +32,16 @@ projects[hosting_git][version] = "3.x"
 projects[hosting_remote_import][subdir] = aegir
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.x"
+projects[hosting_site_backup_manager][version] = "3.11"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.x"
+projects[hosting_tasks_extra][version] = "3.11"
 
 projects[hosting_filemanager][subdir] = aegir
+projects[hosting_filemanager][version] = "1.x"
 
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = 3.x
+projects[hosting_logs][version] = 3.2
 
 projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 0.3
