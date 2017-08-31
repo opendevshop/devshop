@@ -29,18 +29,15 @@ projects[hosting][subdir] = "aegir"
 projects[eldir][type] = theme
 
 projects[hosting_git][subdir] = aegir
-
-# @TODO: PIn this on next release of hosting_git.
-projects[hosting_git][download][branch] = "7.x-3.x"
-projects[hosting_git][download][type] = "git"
+projects[hosting_git][version] = "3.x"
 
 projects[hosting_remote_import][subdir] = aegir
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.10"
+projects[hosting_site_backup_manager][version] = "3.x"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.10"
+projects[hosting_tasks_extra][version] = "3.x"
 
 projects[hosting_filemanager][subdir] = aegir
 
@@ -72,7 +69,7 @@ projects[r4032login][version] = 1.8
 projects[admin_menu][version] = "3.0-rc5"
 projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha5"
-projects[views][version] = "3.16"
+projects[views][version] = "3.18"
 projects[views_bulk_operations][version] = "3.4"
 projects[ctools][version] = "1.12"
 projects[features][version] = "2.10"
@@ -104,7 +101,7 @@ libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.8
+projects[bootstrap][version] = 3.14
 
 ; Include devel module.
 projects[devel][version] = "1"
