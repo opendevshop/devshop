@@ -1131,3 +1131,10 @@ li.text.code {
 #edit-install-method-clone-source label:hover {
   background-color: whitesmoke;
 }
+.no-wrap {
+    white-space: nowrap;
+}
+.inline {
+    display: inline-block;
+    vertical-align: middle;
+}
