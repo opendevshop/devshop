@@ -58,6 +58,7 @@ function drush_aegir_commit_provision_commit() {
           $files_list = '';
 
           foreach ($files as $file) {
+            $file = $git_path . '/' . $file;
             if (file_exists($file)) {
               $files_list .= ' ' . $file;
             }

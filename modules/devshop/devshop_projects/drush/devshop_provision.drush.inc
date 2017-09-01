@@ -7,7 +7,6 @@
 require_once('vendor/autoload.php');
 
 use Symfony\Component\Process\Process;
-use Symfony\Component\ClassLoader\ClassLoader;
 
 /**
  * Implements hook_drush_init()
@@ -512,10 +511,13 @@ function drush_devshop_provision_pre_provision_verify() {
     else {
       $drush_aliases = new Provision_Config_ProjectAliases(d()->name, d()->project);
     }
-    
-    $drush_aliases->write();
 
-    drush_log(dt('Project Drush aliases written.'), 'devshop_log');
+    // Only write drush aliases if project name was found.
+    if (!empty($drush_aliases->data['name'])) {
+      $drush_aliases->write();
+      drush_log(dt('Project Drush aliases written.'), 'devshop_log');
+    }
+
   }
 }
 
