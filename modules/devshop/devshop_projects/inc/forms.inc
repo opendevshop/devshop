@@ -320,6 +320,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Install Profile
   $available_profiles = array();
   foreach ($project->environments as $name => $environment) {
+    // Passing null to hosting_get_profiles returns all profiles.
+    if (is_null($environment->platform)) {
+      continue;
+    }
     $profiles_shortnames = hosting_get_profiles($environment->platform, 'short_name');
     if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
       $profiles[$name] = array_combine($profiles_shortnames, (array)hosting_get_profiles($environment->platform));
@@ -1250,42 +1254,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = new stdClass();
-    $platform_node->title = $project->name . '_' . $element['#value'];
-
-    // Specify GIT Url for hosting_git.module
-    $platform_node->git['repo_url'] = $project->git_url;
-    $platform_node->git['repo_path'] = $project->code_path . '/' . $element['#value'];
-    $platform_node->git['repo_docroot'] = $project->drupal_path;
-    $platform_node->git['git_ref'] = $form_state['values']['git_ref'];
-
-    // Enable git pull queue for this platform if chosen.
-    if ($project->settings->deploy['method'] == 'queue') {
-      $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
-    }
-    // For devshop "webhook" and "manual" methods, disable git pull for now.
-    // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
-    else {
-      $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
-    }
-
-
-    // Determine which web server to use.
-    // If no web server was set and project has a default, make sure we set it.
-    if (empty($form_state['values']['web_server']) && !empty($project->settings->default_environment['web_server'])) {
-      $platform_node->web_server = $project->settings->default_environment['web_server'];
-    }
-    else {
-      $platform_node->web_server = $form_state['values']['web_server'];
-    }
-
-    // If drupal path, append to code path/environment name
-    if ($project->drupal_path) {
-      $platform_node->publish_path = $project->code_path . '/' . $element['#value'] . '/' . $project->drupal_path;
-    }
-    else {
-      $platform_node->publish_path = $project->code_path . '/' . $element['#value'];
-    }
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
@@ -1293,6 +1262,73 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['platform'], 0, $form_state);
 
   }
+}
+
+/**
+ * Helper to prepare the platform object to be attached to the site node.
+ *
+ * Example:
+ *
+ *   $platform = devshop_prepare_platform_node($project, $environment_name, $git_ref, $web_server, $prepare_node);
+ *   if ($platform = node_submit($platform)) {
+ *     node_save($platform);
+ *   }
+ *
+ * @param $project
+ *   A fully loaded project object.
+ *
+ * @param $environment_name
+ *   The name of the environment.
+ *
+ * @param $git_ref
+ *   The desired git reference for the environment.
+ *
+ * @param $web_server
+ *   The NID of a web server to use for this platform.
+ *
+ * @return stdClass
+ *   A populated object ready for node_submit and node_save.
+ */
+function devshop_prepare_platform_node($project, $environment_name, $git_ref, $web_server) {
+  $platform_node = new stdClass();
+  $platform_node->type = 'platform';
+  $platform_node->title = $project->name . '_' . $environment_name;
+  
+  // Specify GIT Url for hosting_git.module
+  $platform_node->git['repo_url'] = $project->git_url;
+  $platform_node->git['git_ref'] = $git_ref;
+  
+  // Enable git pull queue for this platform if chosen.
+  if ($project->settings->deploy['method'] == 'queue') {
+    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
+  }
+  // For devshop "webhook" and "manual" methods, disable git pull for now.
+  // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
+  else {
+    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
+  }
+  
+  
+  // Determine which web server to use.
+  // If no web server was set and project has a default, make sure we set it.
+  if (empty($web_server) && !empty($project->settings->default_environment['web_server'])) {
+    $platform_node->web_server = $project->settings->default_environment['web_server'];
+  }
+  else {
+    $platform_node->web_server = $web_server;
+  }
+
+  $platform_node->git['repo_path'] = $project->code_path . '/' . $environment_name;
+
+  // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
+  if ($project->drupal_path) {
+    $platform_node->publish_path = $platform_node->git['repo_path'] . '/' . $project->drupal_path;
+    $platform_node->git['repo_docroot'] = $project->drupal_path;
+  }
+  else {
+    $platform_node->publish_path = $platform_node->git['repo_path'];
+  }
+  return $platform_node;
 }
 
 /**
