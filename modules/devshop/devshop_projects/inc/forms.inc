@@ -63,7 +63,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
-    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root. If using a makefile, this is the path where Drupal will be built.'),
+    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
     '#size' => 40,
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
@@ -73,20 +73,21 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'drupal_path',
     ),
   );
-  $form['project']['codebase']['makefile_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Path to Makefile'),
-    '#description' => t('Enter the relative path to a makefile inside your repository. Leave blank if a full Drupal codebasee is in the repository.'),
-    '#size' => 40,
-    '#default_value' => $project->settings->makefile_path,
-    '#maxlength' => 255,
-    '#weight' => 4,
-    '#parents' => array(
-      'project',
-      'settings',
-      'makefile_path',
-    ),
-  );
+// This was accidentally merged from the makefiles branch.
+//  $form['project']['codebase']['makefile_path'] = array(
+//    '#type' => 'textfield',
+//    '#title' => t('Path to Makefile'),
+//    '#description' => t('Enter the relative path to a makefile inside your repository. Leave blank if a full Drupal codebasee is in the repository.'),
+//    '#size' => 40,
+//    '#default_value' => $project->settings->makefile_path,
+//    '#maxlength' => 255,
+//    '#weight' => 4,
+//    '#parents' => array(
+//      'project',
+//      'settings',
+//      'makefile_path',
+//    ),
+//  );
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Environment Domain Name Pattern'),
