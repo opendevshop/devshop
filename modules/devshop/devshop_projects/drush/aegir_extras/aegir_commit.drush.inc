@@ -50,7 +50,7 @@ function drush_aegir_commit_provision_commit() {
         drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
       }
       else {
-        devshop_drush_process('git status', $git_path, dt('Git Status'));
+        devshop_process('git status', $git_path, dt('Git Status'));
         $cmds = array();
 
         // If files option was detected
@@ -74,24 +74,24 @@ function drush_aegir_commit_provision_commit() {
         }
 
         foreach ($cmds as $cmd) {
-          devshop_drush_process($cmd, $git_path, 'Adding files to local repository...');
+          devshop_process($cmd, $git_path, 'Adding files to local repository...');
         }
 
-        devshop_drush_process('git status', $git_path, dt('Git Status'));
+        devshop_process('git status', $git_path, dt('Git Status'));
 
         $hostmaster_uri = d('hostmaster')->uri;
         $message = escapeshellarg("$message
 --------------
 Committed by OpenDevShop via http://$hostmaster_uri");
 
-        devshop_drush_process("git commit -m {$message}", $git_path, 'Committing changes to local repository...', array(
+        devshop_process("git commit -m {$message}", $git_path, 'Committing changes to local repository...', array(
           'GIT_AUTHOR_NAME' => $name,
           'GIT_AUTHOR_EMAIL' => $mail,
           'GIT_COMMITTER_NAME' => $name,
           'GIT_COMMITTER_EMAIL' => $mail,
         ));
 
-        devshop_drush_process('git status', $git_path, dt('Git Status'));
+        devshop_process('git status', $git_path, dt('Git Status'));
       }
 
       // Push the result, if desired.
@@ -104,8 +104,8 @@ Committed by OpenDevShop via http://$hostmaster_uri");
           return;
         }
         else {
-          devshop_drush_process("git push", $git_path, 'Pushing code to remote repository...');
-          devshop_drush_process('git status', $git_path, dt('Git Status'));
+          devshop_process("git push", $git_path, 'Pushing code to remote repository...');
+          devshop_process('git status', $git_path, dt('Git Status'));
         }
       }
     }
