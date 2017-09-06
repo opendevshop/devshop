@@ -214,7 +214,7 @@ function devmaster_bootstrap() {
   variable_set('hosting_backup_queue_default_enabled', 0);
 
   // Set hosting_logs default folder.
-  variable_set('provision_logs_file_path', '/var/aegir/logs');
+  variable_set('provision_logs_file_path', '/var/log/aegir');
 }
 
 function devmaster_task_finalize() {
