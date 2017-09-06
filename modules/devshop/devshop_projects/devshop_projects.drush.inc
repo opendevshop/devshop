@@ -127,10 +127,10 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     // If this is the first verification, and branch needs to be created (for "fork environment")
     $platform = $task->ref;
     if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
-      devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $platform->repo_path, dt('Creating a new branch.'));
+      devshop_process("git checkout -b {$platform->environment->git_ref}", $platform->repo_path, dt('Creating a new branch.'));
 
       // Push the branch
-      devshop_drush_process("git push -u origin {$platform->environment->git_ref}", $platform->repo_path, dt('Pushing new branch.'));
+      devshop_process("git push -u origin {$platform->environment->git_ref}", $platform->repo_path, dt('Pushing new branch.'));
     }
 
 
@@ -149,11 +149,11 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
         return;
       }
 
-      devshop_drush_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
+      devshop_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
         '!folder' => $cwd,
       )));
 
-      devshop_drush_process("git status", $platform->git['repo_path'], dt('Running git status'));
+      devshop_process("git status", $platform->git['repo_path'], dt('Running git status'));
     }
   }
 }
