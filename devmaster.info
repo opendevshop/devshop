@@ -38,6 +38,9 @@ dependencies[] = hosting_tasks_extra
 dependencies[] = hosting_backup_queue
 dependencies[] = hosting_site_backup_manager
 
+dependencies[] = fix_permissions
+dependencies[] = fix_ownership
+
 ; Drupal contrib
 dependencies[] = admin_menu
 dependencies[] = admin_menu_toolbar
