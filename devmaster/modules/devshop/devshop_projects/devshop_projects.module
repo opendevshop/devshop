@@ -295,20 +295,6 @@ function devshop_projects_menu() {
     }
   }
 
-  // Environment settings pages
-  $items['node/%node/edit/env'] = array(
-    'title' => 'Edit',
-    'description' => '',
-    'page callback' => 'devshop_project_environment_settings_page',
-    'page arguments' => array(1),
-    'access callback' => 'node_access',
-    'access arguments' => array('update', 1),
-    'weight' => 1,
-    'file' => 'node.pages.inc',
-    'file path' => drupal_get_path('module', 'node'),
-    'type' => MENU_LOCAL_TASK,
-  );
-
   // Drush aliases download.
   $items['node/%node/aliases'] = array(
     'title' => 'Drush Aliases',
@@ -458,20 +444,6 @@ function devshop_projects_block_view($delta) {
   if (isset($block)) {
     return $block;
   }
-}
-
-/**
- * Environment settings page menu callback.
- *
- * Pulls in the node edit form for the site of the project.
- */
-function devshop_project_environment_settings_page($project_node, $environment) {
-
-  $site_node = node_load($project_node->project->environments[$environment]->site);
-
-  drupal_set_title($project_node->title);
-  // TODO $site_node needs to have $form as its first parameter.
-  return drupal_get_form($site_node->type . '_node_form', $site_node);
 }
 
 /**
