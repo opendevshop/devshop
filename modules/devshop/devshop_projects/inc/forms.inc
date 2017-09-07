@@ -867,12 +867,18 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['http_basic_auth']['#group'] = 'environment_settings';
   $form['http_basic_auth']['#title'] = t('Password Protection');
   $form['hosting_logs']['#group'] = 'environment_settings';
-
-  $form['aliases_wrapper']['#group'] = 'environment_settings';
-  $form['aliases_wrapper']['#title'] = t('Domain Names');
-  $form['aliases_wrapper']['#prefix'] = '';
-  $form['aliases_wrapper']['#suffix'] = '';
-
+  
+  // Have to add new element for Domains because of the way drupal ajax callback works.
+  $form['domains'] = array(
+    '#title' => t('Domain Names'),
+    '#type' => 'fieldset',
+    '#group' => 'environment_settings',
+  );
+  $form['domains']['aliases_wrapper'] = $form['aliases_wrapper'];
+  $form['domains']['aliases_wrapper']['#type'] = 'container';
+  $form['domains']['aliases_wrapper']['add_alias']['#ajax']['callback'] = 'devshop_hosting_alias_add_alias_callback';
+  unset($form['aliases_wrapper']);
+  
   $form['environment']['settings']['client'] = $form['client'];
   $form['environment']['settings']['client']['#tree'] = FALSE;
   unset($form['client']);
@@ -906,6 +912,15 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
 }
+
+
+/**
+ * Ajax callback for returning "Add Alias" form element, since we moved ours to a sub fieldset.
+ */
+function devshop_hosting_alias_add_alias_callback($form, $form_state) {
+  return $form['domains']['aliases_wrapper'];
+}
+
 
 /**
  * Form alters for "site_node_form", which is our "Create Environment" form.
