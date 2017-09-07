@@ -809,26 +809,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     );
   }
 
-  //
-//  // Get the node object for this form.
-//  $node = $form['#node'];
-//
-//  // Look for #project (like on node create form)
-//  if ($node->project) {
-//    $project = $node->project;
-//  } elseif (isset($form['#project'])) {
-//    $project = $form['#project'];
-//  }
-//  else {
-//    return;
-//  }
-//
-//  // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
-//  if (!empty($project) && arg(1) == $node->nid) {
-//    drupal_goto("node/{$project->nid}/edit/env/{$node->environment->name}");
-//    exit;
-//  }
-
   // User-configurable Settings
   $form['environment']['settings'] = array(
       '#type' => 'fieldset',
