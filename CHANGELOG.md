@@ -1,5 +1,27 @@
 # Change Log
 
+# 1.0.0-rc1 (%)
+
+% Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.x
+
+- Moved git handling to Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
+- Added a docker-compose.yml file for launching in Docker. Tuned for local development but can be adapted for production use.
+- Moved Documentation to a dedicated repository: https://github.com/opendevshop/documentation
+- Added a Robofile.php for easy launching and development. Install the Robo CLI and `robo up` to get a running devshop on Docker. See http://robo.li/ for more information.
+- Standardized on using `robo` commands for local dev and Travis testing.
+- Removed old `tests/docker-launch.sh` and `tests/docker-destroy.sh` scripts, now that we have robo.
+- Improved Travis CI testing: Now installs using Docker, and with Ansible, on both CentOS and Ubuntu. Upgrade is tested as well.
+- Pushed devmaster back into drupal.org and refactored makefiles to make it more of a true distribution. See https://www.drupal.org/project/devmaster.
+- Added geerlingguy.composer Ansible role.
+- Added `--name` option to `devshop devmaster:test` command to pass to bin/behat --name.
+- Added `behat-path` option to `devshop devmaster:test` command to allow customizing which set of tests to run.
+- Added `--makefile` option to `devshop upgrade` command to allow overriding the desired makefile.
+- Removed the last remnants of our custom Ansible role files: This MOTD template never worked, anyway! https://github.com/opendevshop/devshop/blob/376a74f9db5d154fad05d6083f0f402ac0f19fba/templates/motd.j2
+- Moved Behat tests for DevShop to Devmaster, since most (all?) of the code being tested is actually in that repository. Makes changing tests to adapt to changing functionality much easier if its in the same repository.
+- Removed custom Dockerfiles used for testing.
+- Deprecated the Vagrant based development environment, moving it into a subfolder.
+
+
 # George & Maxwell Pugh (September 20, 2016)
 
 - 6lbs 1oz & 6lbs 2oz
