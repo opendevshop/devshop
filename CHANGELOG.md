@@ -4,6 +4,9 @@
 
 % Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.x
 
+- Update Drupal Core to 7.54.
+- Update Drupal Contrib.
+- Add Hosting HTTPS to allow LetsEncrypt automated certificates for HTTPS. (Experimental)
 - Moved git handling to Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
 - Added a docker-compose.yml file for launching in Docker. Tuned for local development but can be adapted for production use.
 - Moved Documentation to a dedicated repository: https://github.com/opendevshop/documentation
@@ -20,7 +23,38 @@
 - Moved Behat tests for DevShop to Devmaster, since most (all?) of the code being tested is actually in that repository. Makes changing tests to adapt to changing functionality much easier if its in the same repository.
 - Removed custom Dockerfiles used for testing.
 - Deprecated the Vagrant based development environment, moving it into a subfolder.
-
+- Added a separate Makefile in YML for development: ensures all projects are downloaded with git.  (devmaster.development.make.yml)
+ - Fixed numerous bugs with Hosting Logs. Now you can easily make error logs available to uses, if needed.
+ - Fixed DevShop Deploy, Aegir Commit, DevShop Acquia, DevShop Dothooks, and Aegir Download module to work with repo_path instead of repo_root.
+ - Change the hook named `hook_devshop_environment_actions()` to `hook_devshop_environment_menu()`.f
+ - Fix 2 problems with BitBucket forms and webhooks. From new contributor @josebc! https://github.com/opendevshop/devmaster/pull/73
+ - Fix bug where "Import/Export Config" tasks would show for Drupal 7 sites. 
+ - Adding Features Update and Features Revert to Environment Menu.
+ - For Pull Request environments, add option to reinstall site on every git-push! This respects the "install method", allowing re-install of profile, re-sync from production, or import from external database!
+ - Added ability to "Change Site Domain Name" by using the "migrate" task.
+ - Temporarily removing "Fork Environment" feature, we will get it into Hosting Git in the next RC.
+ - Configure a "Environment Domain Name Pattern" instead of "Base Url". Define your environment's URLs with a pattern like "@project.@environment.@hostname" or "@environment.domain.com".
+ - In project drush aliases, just use 'parent' property to make our @project.env aliases work exactly like provision's.
+ -  Renamed devshop_drush_process() to devshop_process();
+ - Save environment settings into provision context data.
+ - Fix bug preventing branch names from having "/" characters.
+ - Removing custom drush command `devshop-install`. Now works with `hostmaster-install`.
+ - Allow installation by multiple methods: Install profile, clone other environment, Import from SQL Database, or Empty Database!
+ - Add more details to automatically generated behat.yml files.
+ - Adding `--strict` to `bin/behat` command so that missing steps fail the process.
+ - Remove DevShop Deploy queue since Hosting Git Platforms now handles that.
+ - Make all URLs in Behat console output logs clickable. Useful in test results.
+ - Bigger, Bolder empty projects page.
+ - Plenty of UI enhancements:
+   - Add "Install Method" and date to environment template.
+    - Add Site Slogan bsck into page template.
+    - Improve detection and messaging of environment state.
+ - Remove loading of tons of git info from the command line for a significant performance boost.
+- Switch to using the node/add/site form for environments, thanks to patches to Aegir to allow platform and site creation in one request.
+- Removing old unused devshop-create and devshop-commit tasks.
+- Improved tests:
+  - On failure, echo last page source and watchdog logs.
+  
 
 # George & Maxwell Pugh (September 20, 2016)
 
