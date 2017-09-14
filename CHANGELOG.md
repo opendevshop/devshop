@@ -54,7 +54,8 @@
 - Removing old unused devshop-create and devshop-commit tasks.
 - Improved tests:
   - On failure, echo last page source and watchdog logs.
-  
+- Enable fix_permissions and fix_ownership modules by default for better file management.
+
 
 # George & Maxwell Pugh (September 20, 2016)
 
