@@ -9,7 +9,11 @@ drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
 echo ">> Running remaining tasks: Complete!"
 
 # Pause the task queue.
+drush @hostmaster dis hosting_queued -y
 drush @hostmaster vset hosting_queued_paused 1
+
+# Enable watchdog
+drush @hostmaster en dblog -y
 
 # Run the test suite.
 /usr/share/devshop/bin/devshop devmaster:test

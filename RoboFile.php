@@ -166,8 +166,8 @@ class RoboFile extends \Robo\Tasks
     // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
-      ->tag('aegir/hostmaster')
+//      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('aegir/hostmaster:dev')
       ->run()
       ;
     // aegir/hostmaster:xdebug
@@ -176,18 +176,18 @@ class RoboFile extends \Robo\Tasks
       ->tag('aegir/hostmaster:xdebug')
       ->run()
       ;
-    // devshop/devmaster
-    $this->taskDockerBuild('dockerfiles')
-      ->option('file', 'dockerfiles/Dockerfile')
-      ->tag('devshop/devmaster')
-      ->run()
-      ;
-    // devshop/devmaster:xdebug
-    $this->taskDockerBuild('dockerfiles')
-      ->option('file', 'dockerfiles/Dockerfile-xdebug')
-      ->tag('devshop/devmaster:xdebug')
-      ->run()
-      ;
+//    // devshop/devmaster
+//    $this->taskDockerBuild('dockerfiles')
+//      ->option('file', 'dockerfiles/Dockerfile')
+//      ->tag('devshop/devmaster')
+//      ->run()
+//      ;
+//    // devshop/devmaster:xdebug
+//    $this->taskDockerBuild('dockerfiles')
+//      ->option('file', 'dockerfiles/Dockerfile-xdebug')
+//      ->tag('devshop/devmaster:xdebug')
+//      ->run()
+//      ;
     // aegir/web
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-web')
@@ -197,9 +197,33 @@ class RoboFile extends \Robo\Tasks
   }
   
   /**
-   * Launch devshop containers using docker-compose up and follow logs.
+   * Launch devshop in a variety of ways. Useful for local development and CI testing.
    *
-   * Use "--test" option to run tests instead of the hosting queue.
+   * Builds a container to match the local user to allow write permissions to Aegir Home.
+   *
+   * Examples:
+   *
+   *   robo up
+   *   Launch a devshop in containers using docker-compose.
+   *
+   *   robo up --test
+   *   Launch then test a devshop in a single process.
+   *
+   *   robo up --test
+   *   Launch, upgrade, then test a devshop in a single process.
+   *
+   *   robo up --mode=install.sh --test
+   *   Launch an OS container, then install devshop using install.sh, then run tests.
+   *
+   *   robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible
+   *   Launch an OS container, then install devshop using install.sh in a CentOS 7 image.
+   *
+   * @option $test Run tests after containers are up and devshop is installed.
+   * @option $test-upgrade Install an old version, upgrade it to this version, then run tests.
+   * @option $mode Set to 'install.sh' to use the install.sh script for setup.
+   * @option $install-sh-image Enter any docker image to use for running the install-sh-image. Since we need ansible, we are using geerlingguy's geerlingguy/docker-centos7-ansible and geerlingguy/docker-ubuntu1404-ansible images.
+   * @option $user-uid Override the detected current user's UID when building containers.
+   * @option $xdebug Set this option to launch with an xdebug container.
    */
   public function up($opts = [
     'follow' => 1,
@@ -208,11 +232,17 @@ class RoboFile extends \Robo\Tasks
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
-    'install-sh-image' => 'ubuntu:14.04',
+    'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
-    'user-uid' => null
+    'user-uid' => null,
+    'disable-xdebug' => true,
   ]) {
-    
+
+    // Determine current UID.
+    if (is_null($opts['user-uid'])) {
+      $opts['user-uid'] = trim($this->_exec('id -u')->getMessage());
+    }
+
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
         if ($this->prepareSourcecode() == FALSE) {
@@ -251,15 +281,14 @@ class RoboFile extends \Robo\Tasks
       }
   
       // Build a local container.
-      if (is_null($opts['user-uid'])) {
-        $opts['user-uid'] = $this->_exec('id -u')->getMessage();
+      if ($opts['user-uid'] != '1000') {
+        $dockerfile = $opts['xdebug']? 'aegir-dockerfiles/Dockerfile-local-xdebug': 'aegir-dockerfiles/Dockerfile-local';
+        $this->taskDockerBuild('aegir-dockerfiles')
+          ->option('file', $dockerfile)
+          ->tag('aegir/hostmaster:local')
+          ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+          ->run();
       }
-  
-      $this->taskDockerBuild('aegir-dockerfiles')
-        ->option('file', 'aegir-dockerfiles/Dockerfile-local')
-        ->tag('aegir/hostmaster:local')
-        ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
-        ->run();
   
   
       if (isset($cmd)) {
@@ -276,7 +305,8 @@ class RoboFile extends \Robo\Tasks
       $init = [
         'centos:7' => '/usr/lib/systemd/systemd',
         'ubuntu:14.04' => '/sbin/init',
-        'geerlingguy/docker-centos7-ansible' => '/sbin/init',
+        'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
+        'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
 
       # This is the list of test sites, set in .travis.yml.
@@ -289,10 +319,11 @@ class RoboFile extends \Robo\Tasks
       if (!$this->taskDockerRun($opts['install-sh-image'])
         ->name('devshop_container')
         ->volume(__DIR__, '/usr/share/devshop')
-        ->volume('aegir-home', '/var/aegir')
+        ->volume(__DIR__ . '/aegir-home', '/var/aegir')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
+        ->option('-t')
         ->detached()
         ->privileged()
         ->env('TERM', 'xterm')
@@ -300,6 +331,7 @@ class RoboFile extends \Robo\Tasks
         ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
         ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->env('AEGIR_USER_UID', $opts['user-uid'])
         ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init[$opts['install-sh-image']])
         ->run()
@@ -320,11 +352,22 @@ class RoboFile extends \Robo\Tasks
         }
       }
 
+      // Display home folder.
+      $this->taskDockerExec('devshop_container')
+        ->exec('ls -la /var/aegir')
+        ->run();
+
+      // Try to set ownership of home folder to AEGIR_UID.
+      $this->taskDockerExec('devshop_container')
+        ->exec("chown {$opts['user-uid']} /var/aegir -R")
+        ->run();
+
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if (($this->input()->getOption('no-interaction') || $this->ask('Run install.sh script?') == 'y') && !$this->taskDockerExec('devshop_container')
+      if (($this->input()->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
         ->exec($install_command)
+//        ->option('tty')
         ->run()
         ->wasSuccessful() ) {
         $this->say('Docker Exec install.sh failed.');
@@ -334,7 +377,7 @@ class RoboFile extends \Robo\Tasks
       if ($opts['test']) {
 
         # Disable supervisor
-        if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
           $service = 'supervisor';
         }
         else {
@@ -379,7 +422,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function destroy($opts = ['force' => 0]) {
     
-    if ($this->confirm("Destroy docker containers and volumes?")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy docker containers and volumes?")) {
       $this->_exec('docker-compose kill');
       $this->_exec('docker-compose rm -fv');
       $this->_exec('docker kill devshop_container');
@@ -389,15 +432,14 @@ class RoboFile extends \Robo\Tasks
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
 
-    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder?"))) {
-      if (!$this->confirm("Destroy local config, drush aliases, and projects?") && $this->taskFilesystemStack()
-        ->remove('aegir-home/config')
-        ->remove("aegir-home/projects")
-        ->remove("aegir-home/.drush")
-        ->run()
-        ->wasSuccessful()) {
-    
+    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder? (If answered 'n', devmaster root will be saved.)"))) {
+      if ($this->confirm("Destroy local config, drush aliases, and projects?")) {
+        
         // Remove devmaster site folder
+        $this->_exec("sudo rm -rf aegir-home/.drush");
+        $this->_exec("sudo rm -rf aegir-home/config");
+        $this->_exec("sudo rm -rf aegir-home/clients");
+        $this->_exec("sudo rm -rf aegir-home/projects");
         $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
         $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     
