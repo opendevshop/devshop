@@ -44,7 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     if (development_mode)
 
       config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "../playbook.yml"
+        ansible.playbook = "playbook.yml"
         ansible.raw_arguments  = [
           '--become'
         ]

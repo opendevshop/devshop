@@ -3,23 +3,14 @@
 namespace DevShop\Command;
 
 use DevShop\Console\Command;
-
-use Github\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
-use Github\Client;
-
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Finder\Finder;
 
 class Upgrade extends Command
 {
@@ -33,6 +24,13 @@ class Upgrade extends Command
         InputArgument::OPTIONAL,
         'The git tag or branch to install.'
       )
+
+      // makefile
+      ->addOption(
+        'makefile', NULL, InputOption::VALUE_OPTIONAL,
+        'The makefile to use to build the devmaster platform.'
+      )
+
     ;
   }
 
@@ -113,13 +111,17 @@ class Upgrade extends Command
     while ($this->checkVersion($target_version) == FALSE) {
       $question = new Question("Target Version: (Default: $default_version) ", $default_version);
       $target_version = $helper->ask($input, $output, $question);
-      $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
 
       if (!$this->checkVersion($target_version)) {
         $output->writeln("<fg=red>Version $target_version not found</>");
       }
     }
     $output->writeln("Version $target_version confirmed.");
+
+    $devmaster_makefile = $input->getOption('makefile');
+    if (empty($devmaster_makefile)) {
+      $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
+    }
 
 
     // Determine the target path.

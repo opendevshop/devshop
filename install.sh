@@ -26,6 +26,7 @@
 DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
+AEGIR_USER_UID=${AEGIR_USER_UID:-1000}
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -70,6 +71,8 @@ if [ "$TRAVIS" == "true" ]; then
 fi
 
 LINE=---------------------------------------------
+
+MAKEFILE_PATH="/usr/share/devshop/build-devmaster.make"
 
 # Detect playbook path option
 while [ $# -gt 0 ]; do
@@ -172,7 +175,7 @@ if [ ! `command -v ansible` ]; then
 
         # Build ansible from source to ensure the latest version.
         yum install -y git epel-release redhat-lsb-core > /dev/null 1>&1
-        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.0
+        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.3
 
         # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
         if ! [ -d "ansible" ]; then
@@ -183,7 +186,7 @@ if [ ! `command -v ansible` ]; then
           # Build ansible RPM from source code.
           yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
           cd ansible
-          git checkout v2.0.1.0-1
+          git checkout v2.3.0.0-1
           make rpm > /dev/null 2>&1
           rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
 
@@ -206,6 +209,8 @@ else
     echo " Ansible already installed. Skipping installation."
     echo $LINE
 fi
+
+ansible --version
 
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
@@ -253,12 +258,6 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
   echo $LINE
 fi
 
-# If MAKEFILE PATH is not found, default to CLI's build-devmaster.
-if [ ! -f "$MAKEFILE_PATH" ]; then
-  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
-  echo $LINE
-fi
-
 echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
@@ -288,7 +287,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"

@@ -1,12 +1,14 @@
 
 # devshop repos
 aegir-home
+aegir-dockerfiles
+aegir-tests
 dockerfiles
 documentation
 hosting
 hostmaster
 provision
-tests
+
 
 # Local config
 .vagrant
