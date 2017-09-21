@@ -122,9 +122,14 @@ function devshop_projects_node_load($nodes, $types) {
     }
     elseif ($node->type == 'site') {
 
-      if (isset($node->environment->settings->install_method)) {
-        // Load install method into an easy to access property.
+      // @TODO: Check if this is ever needed now that install_method is in core aegir.
+      // Load install method into an easy to access property.
+      if (empty($node->install_method) && isset($node->environment->settings->install_method)) {
         $node->install_method = $node->environment->settings->install_method['method'];
+      }
+
+      // If profile ID is empty but name is stored, load to $node->profile_name so that provision will load it.
+      if (empty($node->profile) && !empty($node->environment->settings->install_method['profile'])) {
         $node->profile_name = $node->environment->settings->install_method['profile'];
       }
     }
