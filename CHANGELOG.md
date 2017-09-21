@@ -6,6 +6,7 @@
 
 - Update Drupal Core to 7.54.
 - Update Drupal Contrib.
+- Update Aegir Hosting modules to 3.12.0
 - Add Hosting HTTPS to allow LetsEncrypt automated certificates for HTTPS. (Experimental)
 - Moved git handling to Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
 - Added a docker-compose.yml file for launching in Docker. Tuned for local development but can be adapted for production use.
