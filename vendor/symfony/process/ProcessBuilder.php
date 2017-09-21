@@ -26,7 +26,7 @@ class ProcessBuilder
     private $env = array();
     private $input;
     private $timeout = 60;
-    private $options = array();
+    private $options;
     private $inheritEnv = true;
     private $prefix = array();
     private $outputDisabled = false;
@@ -46,7 +46,7 @@ class ProcessBuilder
      *
      * @param string[] $arguments An array of arguments
      *
-     * @return ProcessBuilder
+     * @return static
      */
     public static function create(array $arguments = array())
     {
@@ -58,7 +58,7 @@ class ProcessBuilder
      *
      * @param string $argument A command argument
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function add($argument)
     {
@@ -74,7 +74,7 @@ class ProcessBuilder
      *
      * @param string|array $prefix A command prefix or an array of command prefixes
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function setPrefix($prefix)
     {
@@ -91,7 +91,7 @@ class ProcessBuilder
      *
      * @param string[] $arguments
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function setArguments(array $arguments)
     {
@@ -105,7 +105,7 @@ class ProcessBuilder
      *
      * @param null|string $cwd The working directory
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function setWorkingDirectory($cwd)
     {
@@ -119,10 +119,14 @@ class ProcessBuilder
      *
      * @param bool $inheritEnv
      *
-     * @return ProcessBuilder
+     * @return $this
+     *
+     * @deprecated since version 3.3, to be removed in 4.0.
      */
     public function inheritEnvironmentVariables($inheritEnv = true)
     {
+        @trigger_error(sprintf('The %s() method is deprecated since version 3.3 and will be removed in 4.0.', __METHOD__), E_USER_DEPRECATED);
+
         $this->inheritEnv = $inheritEnv;
 
         return $this;
@@ -137,7 +141,7 @@ class ProcessBuilder
      * @param string      $name  The variable name
      * @param null|string $value The variable value
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function setEnv($name, $value)
     {
@@ -155,7 +159,7 @@ class ProcessBuilder
      *
      * @param array $variables The variables
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function addEnvironmentVariables(array $variables)
     {
@@ -167,15 +171,15 @@ class ProcessBuilder
     /**
      * Sets the input of the process.
      *
-     * @param mixed $input The input as a string
+     * @param resource|scalar|\Traversable|null $input The input content
      *
-     * @return ProcessBuilder
+     * @return $this
      *
      * @throws InvalidArgumentException In case the argument is invalid
      */
     public function setInput($input)
     {
-        $this->input = ProcessUtils::validateInput(sprintf('%s::%s', __CLASS__, __FUNCTION__), $input);
+        $this->input = ProcessUtils::validateInput(__METHOD__, $input);
 
         return $this;
     }
@@ -187,7 +191,7 @@ class ProcessBuilder
      *
      * @param float|null $timeout
      *
-     * @return ProcessBuilder
+     * @return $this
      *
      * @throws InvalidArgumentException
      */
@@ -216,10 +220,14 @@ class ProcessBuilder
      * @param string $name  The option name
      * @param string $value The option value
      *
-     * @return ProcessBuilder
+     * @return $this
+     *
+     * @deprecated since version 3.3, to be removed in 4.0.
      */
     public function setOption($name, $value)
     {
+        @trigger_error(sprintf('The %s() method is deprecated since version 3.3 and will be removed in 4.0.', __METHOD__), E_USER_DEPRECATED);
+
         $this->options[$name] = $value;
 
         return $this;
@@ -228,7 +236,7 @@ class ProcessBuilder
     /**
      * Disables fetching output and error output from the underlying process.
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function disableOutput()
     {
@@ -240,7 +248,7 @@ class ProcessBuilder
     /**
      * Enables fetching output and error output from the underlying process.
      *
-     * @return ProcessBuilder
+     * @return $this
      */
     public function enableOutput()
     {
@@ -262,19 +270,15 @@ class ProcessBuilder
             throw new LogicException('You must add() command arguments before calling getProcess().');
         }
 
-        $options = $this->options;
-
         $arguments = array_merge($this->prefix, $this->arguments);
-        $script = implode(' ', array_map(array(__NAMESPACE__.'\\ProcessUtils', 'escapeArgument'), $arguments));
+        $process = new Process($arguments, $this->cwd, $this->env, $this->input, $this->timeout, $this->options);
+        // to preserve the BC with symfony <3.3, we convert the array structure
+        // to a string structure to avoid the prefixing with the exec command
+        $process->setCommandLine($process->getCommandLine());
 
         if ($this->inheritEnv) {
-            $env = array_replace($_ENV, $_SERVER, $this->env);
-        } else {
-            $env = $this->env;
+            $process->inheritEnvironmentVariables();
         }
-
-        $process = new Process($script, $this->cwd, $env, $this->input, $this->timeout, $options);
-
         if ($this->outputDisabled) {
             $process->disableOutput();
         }
