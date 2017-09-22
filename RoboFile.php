@@ -491,4 +491,83 @@ class RoboFile extends \Robo\Tasks
   public function login() {
     $this->_exec('docker-compose exec -T devmaster drush @hostmaster uli');
   }
+
+  /**
+  * Create a new release of DevShop.
+  */
+  public function release($version = NULL, $drupal_org_version = NULL) {
+
+    if (empty($version)) {
+      // @TODO Verify version string.
+      $version = $this->ask('What is the new version? ');
+    }
+    $version = trim($version);
+    if (!$this->confirm("Are you sure you want the version number to be $version?")) {
+      $this->release();
+      return;
+    }
+
+    if (empty($drupal_org_version)) {
+      $drupal_org_version = $this->ask("What should the Drupal.org version be? (Do not include 7.x or the second dot of the semantic version. ie 1.00-rc1 for 1.0.0-rc1)");
+    }
+
+    if (empty($drupal_org_version)){
+      $this->release($version);
+      return;
+    }
+
+    if (!$this->confirm("Are you sure you want the Drupal.org tag to be 7.x-$drupal_org_version?")) {
+      $this->release();
+      return;
+    }
+
+    $this->yell("The new version shall be $version!!!");
+    $release_branch = "release-{$version}";
+
+    $not_ready = TRUE;
+    while ($not_ready) {
+      $not_ready = !$this->confirm("Are you absolutely sure all contrib modules and drupal core are up to date in ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make?? Go check. I'll wait.");
+    }
+
+    $release_directories[] = '.';
+    $release_directories[] = './aegir-home/devmaster-1.x/profiles/devmaster';
+
+    $dirs = implode(' ', $release_directories);
+    if ($this->confirm("Create the branch $release_branch in directories $dirs")) {
+      $cwd = getcwd();
+      foreach ($release_directories as $directory) {
+        chdir($directory);
+        $this->_exec("git checkout -b $release_branch");
+      }
+      chdir($cwd);
+    }
+
+    // Write version to files.
+    if ($this->confirm("Write '$version' to ./aegir-home/devmaster-1.x/profiles/devmaster/VERSION.txt")) {
+      file_put_contents('./aegir-home/devmaster-1.x/profiles/devmaster/VERSION.txt', $version);
+    }
+
+    if ($this->confirm("Write '$version' to install.sh? ")) {
+      $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=1.0.0-rc1/' ./install.sh");
+    }
+
+    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make? ")) {
+      $this->_exec("sed -i -e 's/;RELEASE_LINE/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
+    }
+
+    if ($this->confirm("Tag release of devshop_stats module to 7.x-$drupal_org_version? ")) {
+      chdir('./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats');
+      $this->taskGitStack()
+        ->tag("7.x-$drupal_org_version")
+        ->run();
+      chdir($cwd);
+    }
+
+    $this->say("Almost there. @TODO manually: ");
+    $this->say("2. Create new devshop_stats release.");
+    $this->say("3. Alter devmaster.make to include this tag");
+    $this->say("4. Show diff and allow commit.");
+    $this->say("5. Git push new tag $version for devshop and devmaster.");
+    $this->say("6. Visit GitHub and copy CHANGELOG into Release notes for the new tag $version.");
+  }
 }
