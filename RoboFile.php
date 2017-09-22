@@ -531,6 +531,11 @@ class RoboFile extends \Robo\Tasks
       $not_ready = !$this->confirm("Are you absolutely sure all contrib modules and drupal core are up to date in ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make?? Go check. I'll wait.");
     }
 
+    $not_ready = TRUE;
+    while ($not_ready) {
+      $not_ready = !$this->confirm("Did you write a great CHANGELOG.md? Please make sure all (good) changes are included on the main branch (1.x) before continuing!");
+    }
+
     $release_directories[] = '.';
     $release_directories[] = './aegir-home/devmaster-1.x/profiles/devmaster';
 
