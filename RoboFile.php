@@ -521,6 +521,8 @@ class RoboFile extends \Robo\Tasks
       return;
     }
 
+    $drupal_org_tag = "7.x-$drupal_org_version";
+
     $this->yell("The new version shall be $version!!!");
     $release_branch = "release-{$version}";
 
@@ -575,10 +577,10 @@ class RoboFile extends \Robo\Tasks
 
       if (file_exists('.git/config')) {
         $this->taskGitStack()
-          ->tag("7.x-$drupal_org_version")
+          ->tag($drupal_org_tag)
           ->run();
         $this->taskGitStack()
-          ->push("origin", "7.x-$drupal_org_version")
+          ->push("origin", $drupal_org_tag)
           ->run();
       }
       else {
@@ -588,7 +590,7 @@ class RoboFile extends \Robo\Tasks
     }
 
     $this->say("Now, go create a new release for devshop_stats, so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
-    $this->say("Use the tag $drupal_org_version");
+    $this->say("Use the tag $drupal_org_tag");
 
     $not_ready = TRUE;
     while ($not_ready) {
@@ -607,7 +609,7 @@ class RoboFile extends \Robo\Tasks
       chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
       $this->taskGitStack()
         ->tag($version, "DevShop $version")
-        ->tag($drupal_org_version, "DevShop $version")
+        ->tag($drupal_org_tag, "DevShop $version")
         ->run();
       chdir($cwd);
     }
@@ -622,11 +624,11 @@ class RoboFile extends \Robo\Tasks
       chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
       if (!$this->taskGitStack()
         ->push("origin", $version)
-        ->push("origin", $drupal_org_version)
+        ->push("origin", $drupal_org_tag)
         ->push("drupal", $version)
-        ->push("drupal", $drupal_org_version)
+        ->push("drupal", $drupal_org_tag)
         ->run()
-      ->wasSuccessful()
+        ->wasSuccessful()
       ) {
         $this->say('Pushing to remotes origin or drupal failed. If you need to add drupsl origin: git remote add origin username@git.drupal.org:project/devmaster.git');
       }
