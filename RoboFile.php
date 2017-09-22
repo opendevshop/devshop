@@ -607,10 +607,27 @@ class RoboFile extends \Robo\Tasks
       chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
       $this->taskGitStack()
         ->tag($version, "DevShop $version")
-        ->tag("7.x-$drupal_org_version", "DevShop $version")
+        ->tag($drupal_org_version, "DevShop $version")
         ->run();
       chdir($cwd);
     }
+
+    if ($this->confirm("Push the new release tags devshop $version and devmaster $drupal_org_version? ")) {
+
+      chdir($cwd);
+      $this->taskGitStack()
+        ->push("origin", $version)
+        ->run();
+
+      chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
+      $this->taskGitStack()
+        ->push("origin", $version)
+        ->push("origin", $drupal_org_version)
+        ->run();
+
+      chdir($cwd);
+    }
+
 
     // @TODO: Put the new version in gh-pages branch index.html
 
