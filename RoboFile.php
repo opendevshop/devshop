@@ -587,11 +587,15 @@ class RoboFile extends \Robo\Tasks
       chdir($cwd);
     }
 
-    $this->say("Almost there. @TODO manually: ");
-//    $this->say("2. Create new devshop_stats release.");
-    $this->say("3. Alter devmaster.make to include this tag");
-    $this->say("4. Show diff and allow commit.");
-    $this->say("5. Git push new tag $version for devshop and devmaster.");
+    $this->say("Now, go create a new release for devshop_stats: , so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
+    $this->say("Use the tag $drupal_org_version");
+
+    $not_ready = TRUE;
+    while ($not_ready) {
+      $not_ready = !$this->confirm("Is the release ready?");
+    }
+
+    $this->say("Ok, last manual step:");
     $this->say("6. Visit GitHub and copy CHANGELOG into Release notes for the new tag $version.");
   }
 }
