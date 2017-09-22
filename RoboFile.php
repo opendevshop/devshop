@@ -587,13 +587,32 @@ class RoboFile extends \Robo\Tasks
       chdir($cwd);
     }
 
-    $this->say("Now, go create a new release for devshop_stats: , so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
+    $this->say("Now, go create a new release for devshop_stats, so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
     $this->say("Use the tag $drupal_org_version");
 
     $not_ready = TRUE;
     while ($not_ready) {
       $not_ready = !$this->confirm("Is the release ready?");
     }
+
+    if ($this->confirm("Create a tag in devshop and devmaster repos? ")) {
+
+      // Tag devshop with $version.
+      chdir($cwd);
+      $this->taskGitStack()
+        ->tag($version, "DevShop $version")
+        ->run();
+
+      // Tag devmaster with version and drupal_org_version.
+      chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
+      $this->taskGitStack()
+        ->tag($version, "DevShop $version")
+        ->tag("7.x-$drupal_org_version", "DevShop $version")
+        ->run();
+      chdir($cwd);
+    }
+
+    // @TODO: Put the new version in gh-pages branch index.html
 
     $this->say("Ok, last manual step:");
     $this->say("6. Visit GitHub and copy CHANGELOG into Release notes for the new tag $version.");
