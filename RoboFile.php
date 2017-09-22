@@ -612,7 +612,7 @@ class RoboFile extends \Robo\Tasks
       chdir($cwd);
     }
 
-    if ($this->confirm("Push the new release tags devshop $version and devmaster $drupal_org_version? ")) {
+    if ($this->confirm("Push the new release tags devshop $version and devmaster $drupal_org_version? (will attempt to push devmaster to remote 'drupal'.)")) {
 
       chdir($cwd);
       $this->taskGitStack()
@@ -620,18 +620,24 @@ class RoboFile extends \Robo\Tasks
         ->run();
 
       chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
-      $this->taskGitStack()
+      if (!$this->taskGitStack()
         ->push("origin", $version)
         ->push("origin", $drupal_org_version)
-        ->run();
+        ->push("drupal", $version)
+        ->push("drupal", $drupal_org_version)
+        ->run()
+      ->wasSuccessful()
+      ) {
+        $this->say('Pushing to remotes origin or drupal failed. If you need to add drupsl origin: git remote add origin username@git.drupal.org:project/devmaster.git');
+      }
 
       chdir($cwd);
     }
 
 
-    // @TODO: Put the new version in gh-pages branch index.html
-
-    $this->say("Ok, last manual step:");
-    $this->say("6. Visit GitHub and copy CHANGELOG into Release notes for the new tag $version.");
+    $this->say("The final steps we still have to do manually:");
+    $this->say("1. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster.make");
+    $this->say("2. Create a new 'release' on GitHub: https://github.com/opendevshop/devshop/releases/new using tag $version.  Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
+    $this->say("3. Put the new version in gh-pages branch index.html");
   }
 }
