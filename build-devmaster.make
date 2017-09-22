@@ -16,5 +16,5 @@ projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.gi
 projects[devmaster][download][branch] = "1.x"
 
 ; RELEASE
-; When releasing, lock in the devmaster version.
-; projects[devmaster][version] = "1.00-beta11"
+; Leave RELEASE_LINE in place for replacement by release script in RoboFile.php
+;RELEASE_LINE
