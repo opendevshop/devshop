@@ -27,19 +27,19 @@
  */
 class RoboFile extends \Robo\Tasks
 {
-  
+
   // Install this version first when testing upgrades.
   const UPGRADE_FROM_VERSION = '1.0.0-beta10';
-  
+
   // The version of docker-compose to suggest the user install.
   const DOCKER_COMPOSE_VERSION = '1.10.0';
-  
+
   // Defines where devmaster is installed.  'aegir-home/devmaster-$DEVSHOP_LOCAL_VERSION'
   const DEVSHOP_LOCAL_VERSION = '1.x';
-  
+
   // Defines the URI we will use for the devmaster site.
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
-  
+
   /**
    * Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
    *
@@ -48,14 +48,14 @@ class RoboFile extends \Robo\Tasks
   public function launch($opts = ['build' => 0]) {
     $this->prepareHost();
     $this->prepareSourcecode();
-    
+
     if ($opts['build']) {
       $this->prepareContainers();
     }
-      
+
     $this->up(['follow' => TRUE]);
   }
-  
+
   /**
    * Check for docker, docker-compose and drush. Install them if they are missing.
    */
@@ -69,7 +69,7 @@ class RoboFile extends \Robo\Tasks
     else {
       $this->say('Could not run docker command. Find instructons for installing at https://www.docker.com/products/docker');
     }
-    
+
     // Check for docker-compose
     $this->say('Checking for docker-compose...');
     if ($this->_exec('docker-compose -v')->wasSuccessful()) {
@@ -78,10 +78,10 @@ class RoboFile extends \Robo\Tasks
     else {
       $this->yell('Could not run docker-compose command.', 40, 'red');
       $this->say("Run the following command as root to install it or see https://docs.docker.com/compose/install/ for more information.");
-      
+
       $this->say('curl -L "https://github.com/docker/compose/releases/download/'  . self::DOCKER_COMPOSE_VERSION .'/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
     }
-    
+
     // Check for drush
     $this->say('Checking for drush...');
     if ($this->_exec('drush --version')->wasSuccessful()) {
@@ -90,12 +90,12 @@ class RoboFile extends \Robo\Tasks
     else {
       $this->yell('Could not run drush.', 40, 'red');
       $this->say("Run the following command as root to install it or see http://www.drush.org/en/master/install/ for more information.");
-      
+
       $this->say('php -r "readfile(\'https://s3.amazonaws.com/files.drush.org/drush.phar\');" > /usr/local/bin/drush
  && chmod +x /usr/local/bin/drush');
     }
   }
-  
+
   private $repos = [
     'provision' => 'http://git.drupal.org/project/provision.git',
     'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
@@ -103,13 +103,13 @@ class RoboFile extends \Robo\Tasks
     'dockerfiles' => 'http://github.com/opendevshop/dockerfiles.git',
     'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
   ];
-  
+
   /**
    * Clone all needed source code and build devmaster from the makefile.
    */
   public function prepareSourcecode() {
-    
-    
+
+
     // Create the Aegir Home directory.
     if (file_exists("aegir-home/.drush/commands")) {
       $this->say("aegir-home/.drush/commands already exists.");
@@ -119,7 +119,7 @@ class RoboFile extends \Robo\Tasks
         ->exec('mkdir -p aegir-home/.drush/commands')
         ->run();
     }
-    
+
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
       if (file_exists($path)) {
@@ -131,7 +131,7 @@ class RoboFile extends \Robo\Tasks
           ->run();
       }
     }
-    
+
     // Run drush make to build the devmaster stack.
     $make_destination = "aegir-home/devmaster-1.x";
     $makefile_path = "build-devmaster.make";
@@ -139,7 +139,7 @@ class RoboFile extends \Robo\Tasks
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
     } else {
-      
+
       $result = $this->_exec("drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
         $this->say('Built devmaster from makefile.');
@@ -151,12 +151,12 @@ class RoboFile extends \Robo\Tasks
       }
     }
   }
-  
+
   /**
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
    */
   public function prepareContainers($user_uid = NULL) {
-  
+
     if (is_null($user_uid)) {
       $user_uid = $this->_exec('id -u')->getMessage();
     }
@@ -166,36 +166,36 @@ class RoboFile extends \Robo\Tasks
     // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile')
-//      ->option('build-arg', "AEGIR_UID=$user_uid")
+      //      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster:dev')
       ->run()
-      ;
+    ;
     // aegir/hostmaster:xdebug
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
       ->tag('aegir/hostmaster:xdebug')
       ->run()
-      ;
-//    // devshop/devmaster
-//    $this->taskDockerBuild('dockerfiles')
-//      ->option('file', 'dockerfiles/Dockerfile')
-//      ->tag('devshop/devmaster')
-//      ->run()
-//      ;
-//    // devshop/devmaster:xdebug
-//    $this->taskDockerBuild('dockerfiles')
-//      ->option('file', 'dockerfiles/Dockerfile-xdebug')
-//      ->tag('devshop/devmaster:xdebug')
-//      ->run()
-//      ;
+    ;
+    //    // devshop/devmaster
+    //    $this->taskDockerBuild('dockerfiles')
+    //      ->option('file', 'dockerfiles/Dockerfile')
+    //      ->tag('devshop/devmaster')
+    //      ->run()
+    //      ;
+    //    // devshop/devmaster:xdebug
+    //    $this->taskDockerBuild('dockerfiles')
+    //      ->option('file', 'dockerfiles/Dockerfile-xdebug')
+    //      ->tag('devshop/devmaster:xdebug')
+    //      ->run()
+    //      ;
     // aegir/web
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-web')
       ->tag('aegir/web')
       ->run()
-      ;
+    ;
   }
-  
+
   /**
    * Launch devshop in a variety of ways. Useful for local development and CI testing.
    *
@@ -268,7 +268,7 @@ class RoboFile extends \Robo\Tasks
         // @TODO: Have this detect the branch and use that for the version.
         $root_target = '/var/aegir/devmaster-1.x';
 
-  //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
+        //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
 
         // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
         $cmd = "docker-compose run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION=7.x-3.10 devmaster '$command'";
@@ -279,7 +279,7 @@ class RoboFile extends \Robo\Tasks
           $cmd .= "; docker-compose logs -f";
         }
       }
-  
+
       // Build a local container.
       if ($opts['user-uid'] != '1000') {
         $dockerfile = $opts['xdebug']? 'aegir-dockerfiles/Dockerfile-local-xdebug': 'aegir-dockerfiles/Dockerfile-local';
@@ -289,8 +289,8 @@ class RoboFile extends \Robo\Tasks
           ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
           ->run();
       }
-  
-  
+
+
       if (isset($cmd)) {
         if ($this->_exec($cmd)->wasSuccessful()) {
           exit(0);
@@ -366,10 +366,10 @@ class RoboFile extends \Robo\Tasks
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
       if (($this->input()->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
-        ->exec($install_command)
-//        ->option('tty')
-        ->run()
-        ->wasSuccessful() ) {
+          ->exec($install_command)
+          //        ->option('tty')
+          ->run()
+          ->wasSuccessful() ) {
         $this->say('Docker Exec install.sh failed.');
         exit(1);
       }
@@ -405,14 +405,14 @@ class RoboFile extends \Robo\Tasks
       }
     }
   }
-  
+
   /**
    * Stop devshop containers using docker-compose stop
    */
   public function stop() {
     $this->_exec('docker-compose stop');
   }
-  
+
   /**
    * Destroy all containers, docker volumes, and aegir configuration.
    *
@@ -421,20 +421,20 @@ class RoboFile extends \Robo\Tasks
    * Running with --force
    */
   public function destroy($opts = ['force' => 0]) {
-    
+
     if ($opts['no-interaction'] || $this->confirm("Destroy docker containers and volumes?")) {
       $this->_exec('docker-compose kill');
       $this->_exec('docker-compose rm -fv');
       $this->_exec('docker kill devshop_container');
       $this->_exec('docker rm -fv devshop_container');
     }
-    
+
     $version = self::DEVSHOP_LOCAL_VERSION;
     $uri = self::DEVSHOP_LOCAL_URI;
 
     if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder? (If answered 'n', devmaster root will be saved.)"))) {
       if ($this->confirm("Destroy local config, drush aliases, and projects?")) {
-        
+
         // Remove devmaster site folder
         $this->_exec("sudo rm -rf aegir-home/.drush");
         $this->_exec("sudo rm -rf aegir-home/config");
@@ -442,7 +442,7 @@ class RoboFile extends \Robo\Tasks
         $this->_exec("sudo rm -rf aegir-home/projects");
         $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
         $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
-    
+
         $this->say("Deleted local folders. Source code is still in place.");
         $this->say("To launch a new instance, run `robo up`");
       }
@@ -459,14 +459,14 @@ class RoboFile extends \Robo\Tasks
       }
     }
   }
-  
+
   /**
    * Stream logs from the containers using docker-compose logs -f
    */
   public function logs() {
     $this->_exec('docker-compose logs -f');
   }
-  
+
   /**
    * Enter a bash shell in the devmaster container.
    */
@@ -484,7 +484,7 @@ class RoboFile extends \Robo\Tasks
     $process->setTty(true);
     $process->run();
   }
-  
+
   /**
    * Get a one-time login link to Devamster.
    */
@@ -493,8 +493,8 @@ class RoboFile extends \Robo\Tasks
   }
 
   /**
-  * Create a new release of DevShop.
-  */
+   * Create a new release of DevShop.
+   */
   public function release($version = NULL, $drupal_org_version = NULL) {
 
     if (empty($version)) {
@@ -555,10 +555,28 @@ class RoboFile extends \Robo\Tasks
       $this->_exec("sed -i -e 's/;RELEASE_LINE/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
     }
 
+    if ($this->confirm("Show git diff before committing?")) {
+      foreach ($release_directories as $dir) {
+        chdir($dir);
+        $this->_exec("git diff -U1");
+      }
+      chdir($cwd);
+    }
+    if ($this->confirm("Commit changes to $release_branch? ")) {
+      foreach ($release_directories as $dir) {
+        chdir($dir);
+        $this->_exec("git commit -am 'Automated Commit from DevShop Robofile.php `release` command. Preparing version $version.'");
+      }
+      chdir($cwd);
+    }
+
     if ($this->confirm("Tag release of devshop_stats module to 7.x-$drupal_org_version? ")) {
       chdir('./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats');
       $this->taskGitStack()
         ->tag("7.x-$drupal_org_version")
+        ->run();
+      $this->taskGitStack()
+        ->push("origin", "7.x-$drupal_org_version")
         ->run();
       chdir($cwd);
     }
