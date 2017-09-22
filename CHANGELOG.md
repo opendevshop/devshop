@@ -56,7 +56,7 @@
 - Improved tests:
   - On failure, echo last page source and watchdog logs.
 - Enable fix_permissions and fix_ownership modules by default for better file management.
-
+- Fix problems with cloning sites that used custom profiles.
 
 # George & Maxwell Pugh (September 20, 2016)
 
