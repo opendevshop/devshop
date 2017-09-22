@@ -17,4 +17,4 @@ projects[devmaster][download][branch] = "1.x"
 
 ; RELEASE
 ; Leave RELEASE_LINE in place for replacement by release script in RoboFile.php
-;RELEASE_LINE
+projects[devmaster][version] = 1.00-robo6
