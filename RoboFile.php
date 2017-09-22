@@ -1,32 +1,31 @@
 <?php
+
 /**
- * This file provides commands to the robo CLI for managing development and testing of devshop.
+ * This file provides commands to the robo CLI for managing development and
+ * testing of devshop.
  *   1. Install robo CLI: http://robo.li/
  *   2. Clone this repo and change into the directory.
  *   3. Run `robo` to see the commands.
- *   4. If you have drush, docker, and docker compose, you can launch a devshop with `robo up`
+ *   4. If you have drush, docker, and docker compose, you can launch a devshop
+ * with `robo up`
  *
  * Available commands:
  *
- *   destroy             Destroy all containers, docker volumes, and aegir configuration.
- *   help                Displays help for a command
- *   launch              Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
- *   list                Lists commands
- *   login               Get a one-time login link to Devamster.
- *   logs                Stream logs from the containers using docker-compose logs -f
- *   shell               Enter a bash shell in the devmaster container.
- *   stop                Stop devshop containers using docker-compose stop
- *   test                Run all devshop tests on the containers.
- *   up                  Launch devshop containers using docker-compose up and follow logs.
- *   prepare
- *   prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
- *   prepare:host        Check for docker, docker-compose and drush. Install them if they are missing.
- *   prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
+ *   destroy             Destroy all containers, docker volumes, and aegir
+ * configuration. help                Displays help for a command launch
+ *       Launch devshop after running prep:host and prep:source. Use --build to
+ * build new local containers. list                Lists commands login
+ *       Get a one-time login link to Devamster. logs                Stream
+ * logs from the containers using docker-compose logs -f shell
+ * Enter a bash shell in the devmaster container. stop                Stop
+ * devshop containers using docker-compose stop test                Run all
+ * devshop tests on the containers. up                  Launch devshop
+ * containers using docker-compose up and follow logs. prepare
+ * prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument. prepare:host        Check for docker, docker-compose and drush. Install them if they are missing. prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
  *
  * @see http://robo.li/
  */
-class RoboFile extends \Robo\Tasks
-{
+class RoboFile extends \Robo\Tasks {
 
   // Install this version first when testing upgrades.
   const UPGRADE_FROM_VERSION = '1.0.0-beta10';
@@ -41,7 +40,8 @@ class RoboFile extends \Robo\Tasks
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
   /**
-   * Launch devshop after running prep:host and prep:source. Use --build to build new local containers.
+   * Launch devshop after running prep:host and prep:source. Use --build to
+   * build new local containers.
    *
    * If you only run one command, run this one.
    */
@@ -57,12 +57,16 @@ class RoboFile extends \Robo\Tasks
   }
 
   /**
-   * Check for docker, docker-compose and drush. Install them if they are missing.
+   * Check for docker, docker-compose and drush. Install them if they are
+   * missing.
    */
   public function prepareHost() {
     // Check for docker
     $this->say('Checking for Docker...');
-    if ($this->taskDockerRun('hello-world')->printed(FALSE)->run()->wasSuccessful()) {
+    if ($this->taskDockerRun('hello-world')
+      ->printed(FALSE)
+      ->run()
+      ->wasSuccessful()) {
       $this->_exec('docker -v');
       $this->say('Docker detected.');
     }
@@ -79,7 +83,7 @@ class RoboFile extends \Robo\Tasks
       $this->yell('Could not run docker-compose command.', 40, 'red');
       $this->say("Run the following command as root to install it or see https://docs.docker.com/compose/install/ for more information.");
 
-      $this->say('curl -L "https://github.com/docker/compose/releases/download/'  . self::DOCKER_COMPOSE_VERSION .'/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
+      $this->say('curl -L "https://github.com/docker/compose/releases/download/' . self::DOCKER_COMPOSE_VERSION . '/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
     }
 
     // Check for drush
@@ -91,8 +95,7 @@ class RoboFile extends \Robo\Tasks
       $this->yell('Could not run drush.', 40, 'red');
       $this->say("Run the following command as root to install it or see http://www.drush.org/en/master/install/ for more information.");
 
-      $this->say('php -r "readfile(\'https://s3.amazonaws.com/files.drush.org/drush.phar\');" > /usr/local/bin/drush
- && chmod +x /usr/local/bin/drush');
+      $this->say('php -r "readfile(\'https://s3.amazonaws.com/files.drush.org/drush.phar\');" > /usr/local/bin/drush && chmod +x /usr/local/bin/drush');
     }
   }
 
@@ -138,7 +141,8 @@ class RoboFile extends \Robo\Tasks
 
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
-    } else {
+    }
+    else {
 
       $result = $this->_exec("drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
@@ -153,7 +157,8 @@ class RoboFile extends \Robo\Tasks
   }
 
   /**
-   * Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
+   * Build aegir and devshop containers from the Dockerfiles. Detects your UID
+   * or you can pass as an argument.
    */
   public function prepareContainers($user_uid = NULL) {
 
@@ -168,14 +173,12 @@ class RoboFile extends \Robo\Tasks
       ->option('file', 'aegir-dockerfiles/Dockerfile')
       //      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster:dev')
-      ->run()
-    ;
+      ->run();
     // aegir/hostmaster:xdebug
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
       ->tag('aegir/hostmaster:xdebug')
-      ->run()
-    ;
+      ->run();
     //    // devshop/devmaster
     //    $this->taskDockerBuild('dockerfiles')
     //      ->option('file', 'dockerfiles/Dockerfile')
@@ -192,14 +195,15 @@ class RoboFile extends \Robo\Tasks
     $this->taskDockerBuild('aegir-dockerfiles')
       ->option('file', 'aegir-dockerfiles/Dockerfile-web')
       ->tag('aegir/web')
-      ->run()
-    ;
+      ->run();
   }
 
   /**
-   * Launch devshop in a variety of ways. Useful for local development and CI testing.
+   * Launch devshop in a variety of ways. Useful for local development and CI
+   * testing.
    *
-   * Builds a container to match the local user to allow write permissions to Aegir Home.
+   * Builds a container to match the local user to allow write permissions to
+   * Aegir Home.
    *
    * Examples:
    *
@@ -213,29 +217,36 @@ class RoboFile extends \Robo\Tasks
    *   Launch, upgrade, then test a devshop in a single process.
    *
    *   robo up --mode=install.sh --test
-   *   Launch an OS container, then install devshop using install.sh, then run tests.
+   *   Launch an OS container, then install devshop using install.sh, then run
+   * tests.
    *
-   *   robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible
-   *   Launch an OS container, then install devshop using install.sh in a CentOS 7 image.
+   *   robo up --mode=install.sh
+   * --install-sh-image=geerlingguy/docker-centos7-ansible Launch an OS
+   * container, then install devshop using install.sh in a CentOS 7 image.
    *
    * @option $test Run tests after containers are up and devshop is installed.
-   * @option $test-upgrade Install an old version, upgrade it to this version, then run tests.
+   * @option $test-upgrade Install an old version, upgrade it to this version,
+   *   then run tests.
    * @option $mode Set to 'install.sh' to use the install.sh script for setup.
-   * @option $install-sh-image Enter any docker image to use for running the install-sh-image. Since we need ansible, we are using geerlingguy's geerlingguy/docker-centos7-ansible and geerlingguy/docker-ubuntu1404-ansible images.
-   * @option $user-uid Override the detected current user's UID when building containers.
+   * @option $install-sh-image Enter any docker image to use for running the
+   *   install-sh-image. Since we need ansible, we are using geerlingguy's
+   *   geerlingguy/docker-centos7-ansible and
+   *   geerlingguy/docker-ubuntu1404-ansible images.
+   * @option $user-uid Override the detected current user's UID when building
+   *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
    */
   public function up($opts = [
     'follow' => 1,
-    'test' => false,
-    'test-upgrade' => false,
+    'test' => FALSE,
+    'test-upgrade' => FALSE,
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
     'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
-    'user-uid' => null,
-    'disable-xdebug' => true,
+    'user-uid' => NULL,
+    'disable-xdebug' => TRUE,
   ]) {
 
     // Determine current UID.
@@ -282,7 +293,7 @@ class RoboFile extends \Robo\Tasks
 
       // Build a local container.
       if ($opts['user-uid'] != '1000') {
-        $dockerfile = $opts['xdebug']? 'aegir-dockerfiles/Dockerfile-local-xdebug': 'aegir-dockerfiles/Dockerfile-local';
+        $dockerfile = $opts['xdebug'] ? 'aegir-dockerfiles/Dockerfile-local-xdebug' : 'aegir-dockerfiles/Dockerfile-local';
         $this->taskDockerBuild('aegir-dockerfiles')
           ->option('file', $dockerfile)
           ->tag('aegir/hostmaster:local')
@@ -327,7 +338,7 @@ class RoboFile extends \Robo\Tasks
         ->detached()
         ->privileged()
         ->env('TERM', 'xterm')
-        ->env('TRAVIS', true)
+        ->env('TRAVIS', TRUE)
         ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
         ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
@@ -335,7 +346,7 @@ class RoboFile extends \Robo\Tasks
         ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init[$opts['install-sh-image']])
         ->run()
-        ->wasSuccessful() ) {
+        ->wasSuccessful()) {
         $this->say('Docker Run failed.');
         exit(1);
       }
@@ -365,11 +376,12 @@ class RoboFile extends \Robo\Tasks
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if (($this->input()->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
+      if (($this->input()
+            ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
           ->exec($install_command)
           //        ->option('tty')
           ->run()
-          ->wasSuccessful() ) {
+          ->wasSuccessful()) {
         $this->say('Docker Exec install.sh failed.');
         exit(1);
       }
@@ -416,7 +428,8 @@ class RoboFile extends \Robo\Tasks
   /**
    * Destroy all containers, docker volumes, and aegir configuration.
    *
-   * Running with --no-interaction will keep the drupal devmaster codebase in place.
+   * Running with --no-interaction will keep the drupal devmaster codebase in
+   * place.
    *
    * Running with --force
    */
@@ -472,7 +485,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function shell() {
     $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
-    $process->setTty(true);
+    $process->setTty(TRUE);
     $process->run();
   }
 
@@ -481,7 +494,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function test() {
     $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster /usr/share/devshop/tests/devshop-tests.sh");
-    $process->setTty(true);
+    $process->setTty(TRUE);
     $process->run();
   }
 
@@ -511,7 +524,7 @@ class RoboFile extends \Robo\Tasks
       $drupal_org_version = $this->ask("What should the Drupal.org version be? (Do not include 7.x or the second dot of the semantic version. ie 1.00-rc1 for 1.0.0-rc1)");
     }
 
-    if (empty($drupal_org_version)){
+    if (empty($drupal_org_version)) {
       $this->release($version);
       return;
     }
