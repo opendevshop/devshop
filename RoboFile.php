@@ -638,7 +638,7 @@ class RoboFile extends \Robo\Tasks
 
 
     $this->say("The final steps we still have to do manually:");
-    $this->say("1. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster.make");
+    $this->say("1. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster");
     $this->say("2. Create a new 'release' on GitHub: https://github.com/opendevshop/devshop/releases/new using tag $version.  Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
     $this->say("3. Put the new version in gh-pages branch index.html");
   }
