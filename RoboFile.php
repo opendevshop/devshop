@@ -572,17 +572,23 @@ class RoboFile extends \Robo\Tasks
 
     if ($this->confirm("Tag release of devshop_stats module to 7.x-$drupal_org_version? ")) {
       chdir('./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats');
-      $this->taskGitStack()
-        ->tag("7.x-$drupal_org_version")
-        ->run();
-      $this->taskGitStack()
-        ->push("origin", "7.x-$drupal_org_version")
-        ->run();
+
+      if (file_exists('.git/config')) {
+        $this->taskGitStack()
+          ->tag("7.x-$drupal_org_version")
+          ->run();
+        $this->taskGitStack()
+          ->push("origin", "7.x-$drupal_org_version")
+          ->run();
+      }
+      else {
+        $this->yell('No Tag Written! devshop_stats folder is not a git clone. Check ./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats and ensure it is a git clone of http://git.drupal.org/project/devshop_stats');
+      }
       chdir($cwd);
     }
 
     $this->say("Almost there. @TODO manually: ");
-    $this->say("2. Create new devshop_stats release.");
+//    $this->say("2. Create new devshop_stats release.");
     $this->say("3. Alter devmaster.make to include this tag");
     $this->say("4. Show diff and allow commit.");
     $this->say("5. Git push new tag $version for devshop and devmaster.");
