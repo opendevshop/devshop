@@ -12,6 +12,3 @@
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster
-
-  vars:
-    php_mysql_package: php5-mysql
