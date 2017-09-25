@@ -14,4 +14,4 @@
     - opendevshop.devmaster
 
   vars:
-    __php_mysql_package: php5-mysql
+    php_mysql_package: php5-mysql
