@@ -8,4 +8,6 @@ core = 7.x
 api = 2
 
 includes[] = drupal-org-core.make
-projects[devmaster][version] = 1.00-beta10
+projects[devmaster][type] = profile
+projects[devmaster][download][type] = git
+projects[devmaster][download][branch] = 7.x-1.x
