@@ -6,7 +6,8 @@
 
 - Update Drupal Core to 7.54.
 - Update Drupal Contrib.
-- Update Aegir Hosting modules to 3.12.0
+- Update Aegir Hosting modules to 3.12.0. Release notes available at: http://docs.aegirproject.org/en/3.x/release-notes/3.12/  (Please read, MANY huge improvements.)
+- Preparing Aegir for Docker hosting: https://www.drupal.org/node/2794915
 - Add Hosting HTTPS to allow LetsEncrypt automated certificates for HTTPS. (Experimental)
 - Moved git handling to Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
 - Added a docker-compose.yml file for launching in Docker. Tuned for local development but can be adapted for production use.
@@ -56,7 +57,7 @@
 - Improved tests:
   - On failure, echo last page source and watchdog logs.
 - Enable fix_permissions and fix_ownership modules by default for better file management.
-
+- Fix problems with cloning sites that used custom profiles.
 
 # George & Maxwell Pugh (September 20, 2016)
 
