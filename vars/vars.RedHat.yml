@@ -8,6 +8,8 @@ php_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 supervisor_daemon: supervisord
 supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 
+php_mysql_package: php55-php-mysqlnd
+
 php_packages:
   - php55
 #  - php55-php-mysqlnd
