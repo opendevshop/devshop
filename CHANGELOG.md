@@ -6,8 +6,8 @@ Here it is!
 
 Apologies for the long release cycle this time around. See below for more details on the previous release.
 
-580 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
-432 Commits to DevShop https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
+- 580 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
+- 432 Commits to DevShop https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
 
 ### Updates 
 
@@ -65,6 +65,7 @@ Apologies for the long release cycle this time around. See below for more detail
 ### DevShop Development Tools Improvements
 - Added a Robofile.php for easy launching and development. Install the Robo CLI and `robo up` to get a running devshop on Docker. See http://robo.li/ for more information.
 - Deprecated the Vagrant based development environment, moving it into a subfolder.
+- New `robo release` command to walk you through the release process!
 
 ### Other Improvements
 
