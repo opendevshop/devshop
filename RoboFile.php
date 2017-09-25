@@ -553,8 +553,8 @@ class RoboFile extends \Robo\Tasks {
     $release_directories[] = './aegir-home/devmaster-1.x/profiles/devmaster';
 
     $dirs = implode(' ', $release_directories);
+    $cwd = getcwd();
     if ($this->confirm("Create the branch $release_branch in directories $dirs")) {
-      $cwd = getcwd();
       foreach ($release_directories as $directory) {
         chdir($directory);
         $this->_exec("git checkout -b $release_branch");
