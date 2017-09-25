@@ -575,6 +575,11 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("sed -i -e 's/;RELEASE_LINE/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
     }
 
+    if ($this->confirm("Remove development makefile from devmaster.make? ")) {
+      $replace = escapeshellarg("s/includes\[development\] = devmaster.development.make.yml/; Removed for release. /");
+      $this->_exec("sed -i -e $replace ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make");
+    }
+
     if ($this->confirm("Show git diff before committing?")) {
       foreach ($release_directories as $dir) {
         chdir($dir);
