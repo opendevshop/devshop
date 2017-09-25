@@ -4,10 +4,6 @@
  * Contains code for the provision-devshop-deploy command.
  */
 
-use GitWrapper\GitException;
-use GitWrapper\GitWrapper;
-use Symfony\Component\Process\Process;
-
 /**
  * Pre provision-devshop-deploy
  */
@@ -58,12 +54,13 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     $git_checkout_output = devshop_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
 
-    // Run Git Pull
+    // Run Git Pull, if on a branch.
     if ($desired_ref_type == 'branch') {
-
       $git_pull_output = devshop_process("git pull", d()->platform->repo_path, dt('DevShop Deploy'));
-      devshop_process("git submodule update --init --recursive --force ", d()->platform->repo_path, dt('DevShop Deploy'));
     }
+
+    // Run a submodule update and init.
+    devshop_process("git submodule update --init --recursive --force ", d()->platform->repo_path, dt('DevShop Deploy'));
 
     devshop_process("git status", d()->platform->repo_path, dt('DevShop Deploy'));
 }
