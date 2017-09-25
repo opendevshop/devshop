@@ -415,14 +415,19 @@ function devshop_projects_update_7004 () {
 function devshop_projects_update_7005 () {
   $environments = db_query('SELECT * FROM {hosting_devshop_project_environment} e LEFT JOIN {hosting_devshop_project} p ON p.nid = e.project_nid');
   foreach ($environments as $environment) {
-    db_merge('hosting_git')
-      ->key(array('nid' => $environment->platform))
-      ->fields(array(
-        'repo_url' => $environment->git_url,
-        'git_ref' => $environment->git_ref,
-      ))
-      ->execute();
-    drupal_set_message(t("Updated Platform $environment->platform with $environment->git_url and $environment->git_ref"));
+    if ($environment->platform) {
+      db_merge('hosting_git')
+        ->key(array('nid' => $environment->platform))
+        ->fields(array(
+          'repo_url' => $environment->git_url,
+          'git_ref' => $environment->git_ref,
+        ))
+        ->execute();
+      drupal_set_message(t("Updated Platform $environment->platform with $environment->git_url and $environment->git_ref"));
+    }
+    else {
+      drupal_set_message(t("No Platform found for environment $environment->name for site $environment->site."), 'warning');
+    }
   }
 
   if (db_drop_field('hosting_devshop_project_environment', 'git_ref')) {
