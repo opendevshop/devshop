@@ -1,48 +1,51 @@
 # Change Log
 
-# 1.0.0-rc1 (%)
+## 1.0.0-rc1 (%)
 
 % Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.x
 
-## Updates 
+### Updates 
 
 - Update Drupal Core to 7.54.
 - Update Drupal Contrib.
 - Update Aegir Hosting modules to 3.12.0. Release notes available at: http://docs.aegirproject.org/en/3.x/release-notes/3.12/  (Please read, MANY huge improvements.)
 
-## New Features
+### New Features
 
+- Allow environment installation by multiple methods: Install profile, clone other environment, Import from SQL Database, or leave an Empty Database!
 - Add Hosting HTTPS to allow automated certificate creation and renewal from LetsEncrypt.org.
 - For Pull Request environments, add option to reinstall site on every git-push! This respects the "install method", allowing re-install of profile, re-sync from production, or import from external database!
 - Added ability to "Change Site Domain Name" by using the "migrate" task.
 - Configure a "Environment Domain Name Pattern" instead of "Base Url". Define your environment's URLs with a pattern like "@project.@environment.@hostname" or "@environment.domain.com".
-- Allow installation by multiple methods: Install profile, clone other environment, Import from SQL Database, or Empty Database!
 - Make all URLs in Behat console output logs clickable. Useful in test results.
 - Bigger, Bolder empty projects page.
 - Plenty of UI enhancements:
     - Add "Install Method" and date to environment template.
     - Add Site Slogan back into page template.
     - Improve detection and messaging of environment state.
-- Remove loading of tons of git info from the command line for a significant performance boost.
-- Switch to using the node/add/site form for environments, thanks to patches to Aegir to allow platform and site creation in one request.
-- Removing old unused devshop-create and devshop-commit tasks.
 
+### Aegir improvements in 3.12.0
 
-## Organization
+- Switch to using Semantic Versioning!  Aegir tag 7.x-3.120 is for Aegir 3.12.0
+- Preparing Aegir for Docker hosting by allowing more open connections to Database servers: https://www.drupal.org/node/2794915
+- Allow hostmaster install profile to be set in Debian package variable: https://www.drupal.org/node/2886587.  This will allow DevShop devmaster to start using the aegir hostmaster debian package.
+- Added 'install_method' property to Aegir sites. If set to "profile", the default behavior (site install) executes. Set to something else to skip this and to flag it for something else later: https://www.drupal.org/node/2754069
+- Add option to "provision-install" for "--force-reinstall". This new option will quickly delete the site and install it again using the original install_method. https://www.drupal.org/node/2836185
+
+### Organization
 
 - Moved Documentation to a dedicated repository: https://github.com/opendevshop/documentation
 - Pushed devmaster back into drupal.org and refactored makefiles to make it more of a true distribution. See https://www.drupal.org/project/devmaster.
 - Added a separate Makefile in YML for development: ensures all projects are downloaded with git.  (devmaster.development.make.yml)
 
-## Subsystem Improvements
+### Subsystem Improvements
 
-- Preparing Aegir for Docker hosting: https://www.drupal.org/node/2794915
-- Moved git handling to Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
+- Moved git handling to Aegir's Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
 - Added a docker-compose.yml file for launching in Docker. Tuned for local development but can be adapted for production use.
 - Added geerlingguy.composer Ansible role.
 - Removed the last remnants of our custom Ansible role files: This MOTD template never worked, anyway! https://github.com/opendevshop/devshop/blob/376a74f9db5d154fad05d6083f0f402ac0f19fba/templates/motd.j2
 
-## Testing Improvements
+### Testing Improvements
 
 - Standardized on using `robo` commands for local dev and Travis testing.
 - Removed old `tests/docker-launch.sh` and `tests/docker-destroy.sh` scripts, now that we have robo.
@@ -54,11 +57,11 @@
 - Removed custom Dockerfiles used for testing.
 - On failure, echo last page source and watchdog logs.
 
-## DevShop Development Tools Improvements
+### DevShop Development Tools Improvements
 - Added a Robofile.php for easy launching and development. Install the Robo CLI and `robo up` to get a running devshop on Docker. See http://robo.li/ for more information.
 - Deprecated the Vagrant based development environment, moving it into a subfolder.
 
-## Other Improvements
+### Other Improvements
 
 - Fixed numerous bugs with Hosting Logs. Now you can easily make error logs available to uses, if needed.
 - Fixed DevShop Deploy, Aegir Commit, DevShop Acquia, DevShop Dothooks, and Aegir Download module to work with repo_path instead of repo_root.
@@ -77,6 +80,8 @@
 - Remove DevShop Deploy queue since Hosting Git Platforms now handles that.
 - Enable fix_permissions and fix_ownership modules by default for better file management.
 - Fix problem with cloning sites that used custom profiles.
+- Remove loading of tons of git info from the command line for a significant performance boost.
+- Removing old unused devshop-create and devshop-commit tasks.
 
 # George & Maxwell Pugh (September 20, 2016)
 
