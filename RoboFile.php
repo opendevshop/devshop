@@ -553,8 +553,8 @@ class RoboFile extends \Robo\Tasks {
     $release_directories[] = './aegir-home/devmaster-1.x/profiles/devmaster';
 
     $dirs = implode(' ', $release_directories);
+    $cwd = getcwd();
     if ($this->confirm("Create the branch $release_branch in directories $dirs")) {
-      $cwd = getcwd();
       foreach ($release_directories as $directory) {
         chdir($directory);
         $this->_exec("git checkout -b $release_branch");
@@ -573,6 +573,11 @@ class RoboFile extends \Robo\Tasks {
 
     if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make? ")) {
       $this->_exec("sed -i -e 's/;RELEASE_LINE/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
+    }
+
+    if ($this->confirm("Remove development makefile from devmaster.make? ")) {
+      $replace = escapeshellarg("s/includes\[development\] = devmaster.development.make.yml/; Removed for release. /");
+      $this->_exec("sed -i -e $replace ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make");
     }
 
     if ($this->confirm("Show git diff before committing?")) {
