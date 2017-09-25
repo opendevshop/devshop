@@ -1,8 +1,13 @@
 # Change Log
 
-## 1.0.0-rc1 (%)
+## 1.0.0-rc1 (September 25 2017)
 
-% Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.x
+Here it is!
+
+Apologies for the long release cycle this time around. See below for more details on the previous release.
+
+580 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
+432 Commits to DevShop https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
 
 ### Updates 
 
@@ -128,7 +133,7 @@
   - Fixed a terrible bug that broke installation: Clear Drush Caches!
 - Bumped up default vagrant VM memory to 4GB.
 
-# 1.0.0-beta8 (June 15, 2016)
+## 1.0.0-beta8 (June 15, 2016)
 
 1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.0.0-beta8
 
