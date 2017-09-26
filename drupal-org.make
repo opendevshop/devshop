@@ -12,39 +12,41 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.11"
+projects[hosting][version] = "3.120"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
+projects[eldir][version] = "3.120"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.x"
+projects[hosting_git][version] = "3.120"
 
 projects[hosting_remote_import][subdir] = aegir
+projects[hosting_remote_import][version] = "3.120"
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.11"
+projects[hosting_site_backup_manager][version] = "3.120"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.111"
+projects[hosting_tasks_extra][version] = "3.120"
+
+projects[hosting_logs][subdir] = aegir
+projects[hosting_logs][version] = "3.120"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_filemanager][version] = "1.x"
-
-projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = 3.3
 
 projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 1.0
 
 projects[aegir_config][subdir] = aegir
-projects[aegir_config][version] = 1.x
+projects[aegir_config][version] = 1.00-beta1
 
 projects[aegir_ansible][subdir] = aegir
-projects[aegir_ansible][version] = 1.x
+projects[aegir_ansible][version] = 1.00-beta1
 
 projects[aegir_cloud][subdir] = aegir
-projects[aegir_cloud][version] = 1.x
+projects[aegir_cloud][version] = 1.00-beta1
 
 ; Not working yet.
 ;projects[hosting_solr][version] = "1"
@@ -70,11 +72,11 @@ projects[libraries][version] = 2.3
 
 ; Hosting HTTPS with Let's Encrypt!
 ; @TODO: Update with a new alpha.
-; projects[hosting_https][type] = module
-; projects[hosting_https][download][type] = git
-; projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
-; projects[hosting_https][download][branch] = master
-; projects[hosting_https][subdir] = "aegir"
+projects[hosting_https][type] = module
+projects[hosting_https][download][type] = git
+projects[hosting_https][download][url] = https://gitlab.com/aegir/hosting_https.git
+projects[hosting_https][download][branch] = master
+projects[hosting_https][subdir] = "aegir"
 
 ; Dehydrated for LetsEncrypt.org
 ; libraries[dehydrated][download][type] = git
@@ -99,4 +101,4 @@ projects[devel][version] = "1"
 ;; DEVELOPMENT
 ;; Includes clones of all modules.
 ;; Comment this out for release.
-; includes[development] = "devmaster.development.make.yml"
+includes[development] = "devmaster.development.make.yml"
