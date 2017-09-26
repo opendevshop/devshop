@@ -109,8 +109,12 @@ class RoboFile extends \Robo\Tasks {
 
   /**
    * Clone all needed source code and build devmaster from the makefile.
+   *
+   * @option no-dev Use build-devmaster.make instead of the development makefile.
    */
-  public function prepareSourcecode() {
+  public function prepareSourcecode($opts = [
+    'no-dev' => FALSE,
+  ]) {
 
 
     // Create the Aegir Home directory.
@@ -137,7 +141,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Run drush make to build the devmaster stack.
     $make_destination = "aegir-home/devmaster-1.x";
-    $makefile_path = "build-devmaster-dev.make.yml";
+    $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
 
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
@@ -235,6 +239,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
+   * @option no-dev Use build-devmaster.make instead of the development makefile.
    */
   public function up($opts = [
     'follow' => 1,
@@ -247,6 +252,7 @@ class RoboFile extends \Robo\Tasks {
     'install-sh-options' => '--server-webserver=apache',
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
+    'no-dev' => FALSE,
   ]) {
 
     // Determine current UID.
@@ -256,7 +262,7 @@ class RoboFile extends \Robo\Tasks {
 
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
-        if ($this->prepareSourcecode() == FALSE) {
+        if ($this->prepareSourcecode($opts) == FALSE) {
           $this->say('Prepare source code failed.');
           exit(1);
         }
@@ -568,7 +574,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($this->confirm("Write '$version' to install.sh? ")) {
-      $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=1.0.0-rc1/' ./install.sh");
+      $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=$version/' ./install.sh");
     }
 
     if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make? ")) {
