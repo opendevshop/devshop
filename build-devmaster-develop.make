@@ -14,3 +14,5 @@ projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
 projects[devmaster][download][branch] = "1.x"
+
+projects[devel][version] = "1"
