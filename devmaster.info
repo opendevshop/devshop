@@ -50,7 +50,6 @@ dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
 dependencies[] = r4032login
 dependencies[] = jquery_update
-dependencies[] = distro_update
 dependencies[] = module_filter
 
 ; This breaks hosting.install.  Removing it for now.
