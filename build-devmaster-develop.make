@@ -10,6 +10,7 @@ api = 2
 projects[drupal][type] = core
 projects[drupal][version] = 7.56
 
-; RELEASE
-; Leave RELEASE_LINE in place for replacement by release script in RoboFile.php
-;RELEASE_LINE
+projects[devmaster][type] = "profile"
+projects[devmaster][download][type] = "git"
+projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
+projects[devmaster][download][branch] = "1.x"
