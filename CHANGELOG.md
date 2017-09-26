@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-rc3 (September 26 2017)
+
+8 Commits to DevShop https://github.com/opendevshop/devshop/compare/1.0.0-rc1...1.0.0-rc3
+7 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc2...1.0.0-rc3
+
+- Removed "Fix Permissions" and "Fix Ownership" from being installed by default. We don't have server config setup yet.
+- Bumped bootstrap theme to latest version.
+- Putting all development repos into a YML makefile in build-devmaster-dev.make.yml, removing extra makefile from devmaster repo.
+
 ## 1.0.0-rc2 (September 26 2017)
 
 3 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc1...1.0.0-rc2
