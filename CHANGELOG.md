@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.0-rc2 (September 26 2017)
+
+3 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc1...1.0.0-rc2
+
+- Fixes makefile organization so Drupal.org can display distribution package metadata.
+- Fixes warning on upgrade if platform NID doesn't exist for an environment.
+
 ## 1.0.0-rc1 (September 25 2017)
 
 Here it is!
