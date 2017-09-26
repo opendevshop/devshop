@@ -62,7 +62,7 @@ before_install:
   - composer install
 
 script:
-  - ${COMMAND} -n
+  - ${COMMAND} -n --no-dev
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state
