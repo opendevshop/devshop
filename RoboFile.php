@@ -574,7 +574,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($this->confirm("Write '$version' to install.sh? ")) {
-      $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=1.0.0-rc1/' ./install.sh");
+      $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=$version/' ./install.sh");
     }
 
     if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make? ")) {
