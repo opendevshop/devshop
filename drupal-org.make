@@ -97,8 +97,3 @@ projects[bootstrap][version] = 3.14
 
 ; Include devel module.
 projects[devel][version] = "1"
-
-;; DEVELOPMENT
-;; Includes clones of all modules.
-;; Comment this out for release.
-includes[development] = "devmaster.development.make.yml"
