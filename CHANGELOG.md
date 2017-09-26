@@ -2,12 +2,17 @@
 
 ## 1.0.0-rc3 (September 26 2017)
 
-8 Commits to DevShop https://github.com/opendevshop/devshop/compare/1.0.0-rc1...1.0.0-rc3
-7 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc2...1.0.0-rc3
+10 Commits to DevShop https://github.com/opendevshop/devshop/compare/1.0.0-rc1...1.0.0-rc3
+12 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc2...1.0.0-rc3
 
 - Removed "Fix Permissions" and "Fix Ownership" from being installed by default. We don't have server config setup yet.
 - Bumped bootstrap theme to latest version.
+- Disable and uninstall distro_update module. No longer supported.
+- Removing Hosting HTTPS, until it moves to drupal.org.
 - Putting all development repos into a YML makefile in build-devmaster-dev.make.yml, removing extra makefile from devmaster repo.
+- Re-organizing makefiles so development makefile can stay separate and we don't have to modify on release. 
+- Moving the development repos to a YML based makefile build-devmaster-dev.make.yml!
+- Add `robo up --no-dev` option to build devmaster from build-devmaster.make. Otherwise, it uses build-devmaster-dev.make.yml. This is so devmaster's travis yml can still work.
 
 ## 1.0.0-rc2 (September 26 2017)
 
