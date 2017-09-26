@@ -100,3 +100,10 @@ function devshop_hosting_update_7006() {
 }
  */
 
+/**
+ * Disable and uninstall distro_update module.
+ */
+function devshop_hosting_update_7006() {
+  module_disable(array('distro_update'));
+  drupal_uninstall_modules(array('distro_update'));
+}
