@@ -11,5 +11,5 @@ projects[drupal][type] = core
 projects[drupal][version] = 7.56
 
 ; RELEASE
-; Leave RELEASE_LINE in place for replacement by release script in RoboFile.php
-;RELEASE_LINE
+; Leave in place for replacement by release process.
+projects[devmaster][version] = 1.x
