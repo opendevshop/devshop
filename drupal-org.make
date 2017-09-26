@@ -5,7 +5,7 @@ defaults[projects][subdir] = "contrib"
 defaults[projects][type] = "module"
 
 ; Update this with each new release of devshop
-projects[devshop_stats][version] = "1.x"
+projects[devshop_stats][version] = 1.x
 projects[devshop_stats][subdir] = "contrib"
 
 ; Aegir Modules
