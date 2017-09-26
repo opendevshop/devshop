@@ -137,7 +137,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Run drush make to build the devmaster stack.
     $make_destination = "aegir-home/devmaster-1.x";
-    $makefile_path = "build-devmaster-develop.make";
+    $makefile_path = "build-devmaster-dev.make.yml";
 
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
@@ -577,11 +577,6 @@ class RoboFile extends \Robo\Tasks {
 
     if ($this->confirm("Write '$drupal_org_version' to drupal-org.make for devshop_stats? ")) {
       $this->_exec("sed -i -e 's/projects\[devshop_stats\]\[version\] = 1.x/projects[devshop_stats][version] = $drupal_org_version/' ./aegir-home/devmaster-1.x/profiles/devmaster/drupal-org.make");
-    }
-
-    if ($this->confirm("Remove development makefile from devmaster.make? ")) {
-      $replace = escapeshellarg("s/includes\[development\] = devmaster.development.make.yml/; Removed for release. /");
-      $this->_exec("sed -i -e $replace ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make");
     }
 
     if ($this->confirm("Show git diff before committing?")) {

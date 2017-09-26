@@ -1,0 +1,74 @@
+
+# DevShop Development Makefile
+core: "7.x"
+api: "2"
+
+projects:
+  drupal:
+    type: core
+    version: 7.56
+
+  # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
+  devmaster:
+    type: profile
+    download:
+      type: git
+      branch: 1.x
+      url: http://github.com/opendevshop/devmaster.git
+
+  devel:
+    version: 1
+
+  hosting:
+    download:
+      type: git
+      branch: 7.x-3.x
+
+  hosting_git:
+    download:
+      type: git
+      branch: 7.x-3.x
+
+  hosting_remote_import:
+    download:
+      type: git
+      branch: 7.x-3.x
+
+  hosting_site_backup_manager:
+    download:
+      type: git
+      branch: 7.x-3.x
+
+  hosting_tasks_extra:
+    download:
+      type: git
+      branch: 7.x-3.x
+  hosting_filemanager:
+    download:
+      type: git
+      branch: 7.x-1.x
+  hosting_logs:
+    download:
+      type: git
+      branch: 7.x-3.x
+  aegir_ssh:
+    download:
+      type: git
+      branch: 7.x-1.x
+  aegir_config:
+    download:
+      type: git
+      branch: 7.x-1.x
+  aegir_ansible:
+    download:
+      type: git
+      branch: 7.x-1.x
+  aegir_cloud:
+    download:
+      type: git
+      branch: 7.x-1.x
+
+  devshop_stats:
+    download:
+      type: git
+      branch: 7.x-1.x
