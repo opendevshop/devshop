@@ -54,9 +54,8 @@ before_install:
   - git checkout -qf ${DEVSHOP_VERSION}
   - git status
   - pwd
-  - echo projects[devmaster][download][type] = "copy" >> build-devmaster.make
-  - echo projects[devmaster][download][url] = "../devmaster" >> build-devmaster.make
-  - cat build-devmaster.make
+  - cp build-devmaster-travis-forks.make.yml build-devmaster-dev.make.yml
+  - cat build-devmaster-dev.make.yml
 
   # Prepare devshop CLI.
   - composer install
