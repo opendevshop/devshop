@@ -54,10 +54,7 @@ before_install:
   - git checkout -qf ${DEVSHOP_VERSION}
   - git status
   - pwd
-  - 'echo "  devmaster:            " >> build-devmaster-dev.make.yml'
-  - 'echo "    download:           " >> build-devmaster-dev.make.yml'
-  - 'echo "      type: copy        " >> build-devmaster-dev.make.yml'
-  - 'echo "      url: ../devmaster " >> build-devmaster-dev.make.yml'
+  - cp build-devmaster-travis-forks.make.yml build-devmaster-dev.make.yml
   - cat build-devmaster-dev.make.yml
 
   # Prepare devshop CLI.
