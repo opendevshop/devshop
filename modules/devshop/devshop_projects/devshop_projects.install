@@ -466,3 +466,13 @@ function devshop_projects_update_7008 () {
     ->execute();
 
 }
+
+/**
+ * Update hosting contexts for project node to ensure they all begin with "project_".
+ */
+function devshop_projects_update_7009 () {
+  $query = "UPDATE hosting_context c JOIN node n ON n.nid=c.nid  SET c.name = CONCAT('project_', name) WHERE n.type='project' AND c.name NOT LIKE 'project_'";
+  if (!db_query($query)) {
+    drupal_set_message(t('Something went wrong when running a query to update hosting_context table to ensure all projects are prefixed with "project_":') . $query);
+  }
+}
