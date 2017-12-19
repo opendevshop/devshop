@@ -65,6 +65,23 @@ function drush_devshop_projects_pre_hosting_task()
 
   $task =& drush_get_context('HOSTING_TASK');
 
+  // For all tasks
+  if ($task->ref->type == 'site' || $task->ref->type == 'platform') {
+    $drush_aliases = new Provision_Config_ProjectAliases($task->ref->project->name, $task->ref->project);
+  }
+  else {
+    $drush_aliases = new Provision_Config_ProjectAliases(d($task->ref->hosting_name)->name, d($task->ref->hosting_name)->project);
+  }
+  
+  // Only write drush aliases if project name was found.
+  if (!empty($drush_aliases->data['name'])) {
+    $drush_aliases->write();
+    drush_log(dt('Drush aliases written for %name project.', [
+      '%name' => $drush_aliases->data['name'],
+    ]), 'devshop_log');
+  }
+  
+
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
   if ($task->task_type == 'download') {
     drush_log('[AEGIR DEVSHOP_PROJECTS] Download package enabled...', 'ok');
