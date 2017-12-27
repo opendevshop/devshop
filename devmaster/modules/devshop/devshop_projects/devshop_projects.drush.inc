@@ -149,29 +149,27 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
       // Push the branch
       devshop_process("git push -u origin {$platform->environment->git_ref}", $platform->repo_path, dt('Pushing new branch.'));
     }
-
-
-    // Run 'composer install' if configured to do so.
-    if ($platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
-
-      if (file_exists($platform->git['repo_path'] . '/composer.json')) {
-        $cwd = $platform->git['repo_path'];
-      }
-      elseif (file_exists($platform->publish_path . '/composer.json')) {
-        $cwd = $platform->publish_path;
-      }
-      else {
-        // If composer.json was not found in the drupal root or repo root, do not run.
-        drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
-        return;
-      }
-
-      devshop_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
-        '!folder' => $cwd,
-      )));
-
-      devshop_process("git status", $platform->git['repo_path'], dt('Running git status'));
-    }
+//    // Run 'composer install' if configured to do so.
+//    if ($platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
+//
+//      if (file_exists($platform->git['repo_path'] . '/composer.json')) {
+//        $cwd = $platform->git['repo_path'];
+//      }
+//      elseif (file_exists($platform->publish_path . '/composer.json')) {
+//        $cwd = $platform->publish_path;
+//      }
+//      else {
+//        // If composer.json was not found in the drupal root or repo root, do not run.
+//        drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
+//        return;
+//      }
+////
+////      devshop_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
+////        '!folder' => $cwd,
+////      )));
+//
+//      devshop_process("git status", $platform->git['repo_path'], dt('Running git status'));
+//    }
   }
 }
 
