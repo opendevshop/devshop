@@ -14,6 +14,9 @@ projects:
     download:
       type: git
       branch: 1.x
+
+      # Development branch. Delete before merge.
+      branch: hosting-git-hooks
       url: http://github.com/opendevshop/devmaster.git
 
   devel:
@@ -28,6 +31,9 @@ projects:
     download:
       type: git
       branch: 7.x-3.x
+
+      # Development branch. Delete before merge.
+      branch: 2897894-git-hooks
 
   hosting_remote_import:
     download:
