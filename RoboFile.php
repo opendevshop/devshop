@@ -167,7 +167,7 @@ class RoboFile extends \Robo\Tasks {
   public function prepareContainers($user_uid = NULL) {
 
     if (is_null($user_uid)) {
-      $user_uid = $this->_exec('id -u')->getMessage();
+      $user_uid = trim(shell_exec('id -u'));
     }
 
     $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
@@ -257,7 +257,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Determine current UID.
     if (is_null($opts['user-uid'])) {
-      $opts['user-uid'] = trim($this->_exec('id -u')->getMessage());
+      $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
     if (!file_exists('aegir-home')) {
