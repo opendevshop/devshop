@@ -42,12 +42,6 @@ projects[aegir_ssh][version] = 1.0
 projects[aegir_config][subdir] = aegir
 projects[aegir_config][version] = 1.00-beta1
 
-projects[aegir_ansible][subdir] = aegir
-projects[aegir_ansible][version] = 1.00-beta1
-
-projects[aegir_cloud][subdir] = aegir
-projects[aegir_cloud][version] = 1.00-beta1
-
 ; Not working yet.
 ;projects[hosting_solr][version] = "1"
 
