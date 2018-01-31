@@ -287,7 +287,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
       }
       // If platform exists, trigger deletion.
       elseif ($environment->platform) {
-        hosting_add_task($environment->platform, 'delete');
+        hosting_add_task($environment->platform, 'delete', array('force' => 1));
       }
     }
 
