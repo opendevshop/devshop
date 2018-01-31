@@ -679,7 +679,7 @@ HTML;
         }
 
         // On site delete forms, set parameter --force.
-        elseif ($node->type == 'site') {
+        elseif ($node->type == 'site' || $node->type == 'platform') {
           $form['parameters']['force'] = array(
             '#type' => 'value',
             '#value' => 1,
