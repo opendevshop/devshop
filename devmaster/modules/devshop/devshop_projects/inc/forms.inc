@@ -677,6 +677,14 @@ HTML;
           $form['actions']['submit']['#attributes']['class'][] = 'btn btn-large btn-danger';
 
         }
+
+        // On site delete forms, set parameter --force.
+        elseif ($node->type == 'site') {
+          $form['parameters']['force'] = array(
+            '#type' => 'value',
+            '#value' => 1,
+          );
+        }
         break;
     }
   }
