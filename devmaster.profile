@@ -260,6 +260,9 @@ function devmaster_task_finalize() {
   // Disable menu settings for projects
   variable_set('menu_options_project', '');
 
+  // Force things to delete even if things fail.
+  variable_set('hosting_delete_force', 1);
+
   // Make sure blocks are setup properly.
 //  _block_rehash();
 
