@@ -13,7 +13,7 @@ projects:
     type: profile
     download:
       type: git
-      branch: makefiles
+      branch: 1.x
       url: http://github.com/opendevshop/devmaster.git
 
   devel:
