@@ -1,19 +1,21 @@
 # Aegir Roles
 
 - name: geerlingguy.php
-  version: 2.0.3
+  version: 3.0.4
 
 - name: geerlingguy.php-mysql
-  version: 1.2.0
-  
+  version: 2.0.0
+
 - name: opendevshop.aegir-user
   version: 1.0.0
 
-- name: opendevshop.aegir-apache
-  version: 1.0.1
+- src: https://github.com/rsau/ansible-role-aegir-apache.git
+  version: 0c5e9f6d3ec94231a32e4b09c7a30b836a490b82
+  name: opendevshop.aegir-apache
 
 - name: opendevshop.aegir-nginx
   version: 1.0.3
 
-- name: opendevshop.devmaster
-  version: 1.1.1
+- src: https://github.com/rsau/ansible-role-devmaster.git
+  version: 7578951c330ab3c50fd0c70c85e65d357de7e65c
+  name: opendevshop.devmaster
