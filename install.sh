@@ -3,15 +3,15 @@
 #  DevShop Standalone Install Script
 #  =================================
 #
-#  This script will install a full devshop server from scratch. 
-#  
+#  This script will install a full devshop server from scratch.
+#
 #  Please read the full "Installing DevShop" instructions at https://devshop.readthedocs.org/en/latest/install/
 #
 #  Before you start, please visit https://github.com/opendevshop/devshop/releases to be sure you have the latest version of this script,
 #  Or you may try the 0.x script with the URL https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
-# 
+#
 #  Must run with root or sudo privileges:
-#  
+#
 #    ubuntu@devshop:~$ wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
 #    ubuntu@devshop:~$ bash install.sh
 #
@@ -23,7 +23,7 @@
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
-DEVSHOP_VERSION=1.x
+DEVSHOP_VERSION=ubuntu-16
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 
@@ -210,7 +210,7 @@ fi
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get install git -y -qq
-        
+
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
     yum install epel-release -y
     yum install git -y
