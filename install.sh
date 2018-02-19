@@ -28,6 +28,8 @@ SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-1000}
 
+export ANSIBLE_FORCE_COLOR=true
+
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo "                   v $DEVSHOP_VERSION        "
