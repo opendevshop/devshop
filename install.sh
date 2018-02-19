@@ -39,7 +39,7 @@ if [ $EUID -ne 0 ]; then
 fi
 
 # The rest of the scripts are only cloned if the playbook path option is not found.
-DEVSHOP_GIT_REPO='http://github.com/opendevshop/devshop.git'
+DEVSHOP_GIT_REPO='http://github.com/DropForge-Labs/devshop.git'
 DEVSHOP_SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [ -f '/etc/os-release' ]; then
