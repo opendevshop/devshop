@@ -7,15 +7,9 @@
 core = 7.x
 api = 2
 
-projects[drupal][type] = "core"
-
-; DEVELOPMENT MODE
-; When in development, use this:
-projects[devmaster][type] = "profile"
-projects[devmaster][download][type] = "git"
-projects[devmaster][download][url] = "http://github.com/opendevshop/devmaster.git"
-projects[devmaster][download][branch] = "1.x"
+projects[drupal][type] = core
+projects[drupal][version] = 7.56
 
 ; RELEASE
-; When releasing, lock in the devmaster version.
-;projects[devmaster][download][branch] = "1.0.0"
+; Leave in place for replacement by release process.
+projects[devmaster][version] = 1.x

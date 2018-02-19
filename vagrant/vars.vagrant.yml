@@ -1,0 +1,30 @@
+# VAGRANT variables.  These variables are used to configure your vagrant VM.
+# They do not need to be changed.
+
+# The version of devshop to install.
+devshop_version:              1.x
+
+# The hostname of the server.  Must resolve to the IP address.
+# local.devshop.site resolves to 10.10.10.10
+server_hostname: local.devshop.site
+
+# Set `vagrant_development` to TRUE if you wish to prepare a development environment.
+# You may also add a file to this folder called ".development_mode".  If this file is present, development mode will always be enabled.
+# Then, "vagrant up" will run the "vagrant-prepare-guest.sh" scripts, and the source/drush and source/devmaster-1.x folders will be mapped into the VM.
+vagrant_development: FALSE
+
+# The IP to use for the VM.
+vagrant_private_network_ip: 10.10.10.10
+vagrant_install_script: install.sh
+vagrant_install_script_args: [--server-webserver=nginx]
+
+# Defaults virtualbox vagrant machines to 2GB.
+vagrant_virtualbox_memory: 4096
+
+# The IP Address and hostname to use for the remote and remote2 servers
+# Use `vagrant up remote` or `vagrant up remote2` to launch them.
+remote_vagrant_private_network_ip: 10.10.10.11
+remote_server_hostname: devshop.remote
+
+remote2_vagrant_private_network_ip: 10.10.10.12
+remote2_server_hostname: devshop.remote2

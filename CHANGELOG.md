@@ -1,10 +1,165 @@
 # Change Log
 
-# 1.0.0-beta8 (June 15, 2016)
+## 1.0.0-rc3 (September 26 2017)
 
-1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.x
+10 Commits to DevShop https://github.com/opendevshop/devshop/compare/1.0.0-rc1...1.0.0-rc3
+12 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc2...1.0.0-rc3
 
-29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.x
+- Removed "Fix Permissions" and "Fix Ownership" from being installed by default. We don't have server config setup yet.
+- Bumped bootstrap theme to latest version.
+- Disable and uninstall distro_update module. No longer supported.
+- Removing Hosting HTTPS, until it moves to drupal.org.
+- Putting all development repos into a YML makefile in build-devmaster-dev.make.yml, removing extra makefile from devmaster repo.
+- Re-organizing makefiles so development makefile can stay separate and we don't have to modify on release. 
+- Moving the development repos to a YML based makefile build-devmaster-dev.make.yml!
+- Add `robo up --no-dev` option to build devmaster from build-devmaster.make. Otherwise, it uses build-devmaster-dev.make.yml. This is so devmaster's travis yml can still work.
+
+## 1.0.0-rc2 (September 26 2017)
+
+3 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-rc1...1.0.0-rc2
+
+- Fixes makefile organization so Drupal.org can display distribution package metadata.
+- Fixes warning on upgrade if platform NID doesn't exist for an environment.
+
+## 1.0.0-rc1 (September 25 2017)
+
+Here it is!
+
+Apologies for the long release cycle this time around. See below for more details on the previous release.
+
+- 580 Commits to Devmaster https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
+- 432 Commits to DevShop https://github.com/opendevshop/devmaster/compare/1.0.0-beta10...1.0.0-rc1
+
+### Updates 
+
+- Update Drupal Core to 7.54.
+- Update Drupal Contrib.
+- Update Aegir Hosting modules to 3.12.0. Release notes available at: http://docs.aegirproject.org/en/3.x/release-notes/3.12/  (Please read, MANY huge improvements.)
+
+### New Features
+
+- Allow environment installation by multiple methods: Install profile, clone other environment, Import from SQL Database, or leave an Empty Database!
+- Add Hosting HTTPS to allow automated certificate creation and renewal from LetsEncrypt.org.
+- For Pull Request environments, add option to reinstall site on every git-push! This respects the "install method", allowing re-install of profile, re-sync from production, or import from external database!
+- Added ability to "Change Site Domain Name" by using the "migrate" task.
+- Configure a "Environment Domain Name Pattern" instead of "Base Url". Define your environment's URLs with a pattern like "@project.@environment.@hostname" or "@environment.domain.com".
+- Make all URLs in Behat console output logs clickable. Useful in test results.
+- Bigger, Bolder empty projects page.
+- Plenty of UI enhancements:
+    - Add "Install Method" and date to environment template.
+    - Add Site Slogan back into page template.
+    - Improve detection and messaging of environment state.
+
+### Aegir improvements in 3.12.0
+
+- Switch to using Semantic Versioning!  Aegir tag 7.x-3.120 is for Aegir 3.12.0
+- Preparing Aegir for Docker hosting by allowing more open connections to Database servers: https://www.drupal.org/node/2794915
+- Allow hostmaster install profile to be set in Debian package variable: https://www.drupal.org/node/2886587.  This will allow DevShop devmaster to start using the aegir hostmaster debian package.
+- Added 'install_method' property to Aegir sites. If set to "profile", the default behavior (site install) executes. Set to something else to skip this and to flag it for something else later: https://www.drupal.org/node/2754069
+- Add option to "provision-install" for "--force-reinstall". This new option will quickly delete the site and install it again using the original install_method. https://www.drupal.org/node/2836185
+
+### Organization
+
+- Moved Documentation to a dedicated repository: https://github.com/opendevshop/documentation
+- Pushed devmaster back into drupal.org and refactored makefiles to make it more of a true distribution. See https://www.drupal.org/project/devmaster.
+- Added a separate Makefile in YML for development: ensures all projects are downloaded with git.  (devmaster.development.make.yml)
+
+### Subsystem Improvements
+
+- Moved git handling to Aegir's Hosting Git Module! One more step towards moving devshop into Aegir. Platforms are now saved using the git ref from the project.
+- Added a docker-compose.yml file for launching in Docker. Tuned for local development but can be adapted for production use.
+- Added geerlingguy.composer Ansible role.
+- Removed the last remnants of our custom Ansible role files: This MOTD template never worked, anyway! https://github.com/opendevshop/devshop/blob/376a74f9db5d154fad05d6083f0f402ac0f19fba/templates/motd.j2
+
+### Testing Improvements
+
+- Standardized on using `robo` commands for local dev and Travis testing.
+- Removed old `tests/docker-launch.sh` and `tests/docker-destroy.sh` scripts, now that we have robo.
+- Improved Travis CI testing: Now installs using Docker, and with Ansible, on both CentOS and Ubuntu. Upgrade is tested as well.
+- Added `--name` option to `devshop devmaster:test` command to pass to bin/behat --name.
+- Added `behat-path` option to `devshop devmaster:test` command to allow customizing which set of tests to run.
+- Added `--makefile` option to `devshop upgrade` command to allow overriding the desired makefile.
+- Moved Behat tests for DevShop to Devmaster, since most (all?) of the code being tested is actually in that repository. Makes changing tests to adapt to changing functionality much easier if its in the same repository.
+- Removed custom Dockerfiles used for testing.
+- On failure, echo last page source and watchdog logs.
+
+### DevShop Development Tools Improvements
+- Added a Robofile.php for easy launching and development. Install the Robo CLI and `robo up` to get a running devshop on Docker. See http://robo.li/ for more information.
+- Deprecated the Vagrant based development environment, moving it into a subfolder.
+- New `robo release` command to walk you through the release process!
+
+### Other Improvements
+
+- Fixed numerous bugs with Hosting Logs. Now you can easily make error logs available to uses, if needed.
+- Fixed DevShop Deploy, Aegir Commit, DevShop Acquia, DevShop Dothooks, and Aegir Download module to work with repo_path instead of repo_root.
+- Change the hook named `hook_devshop_environment_actions()` to `hook_devshop_environment_menu()`.f
+- Fix 2 problems with BitBucket forms and webhooks. From new contributor @josebc! https://github.com/opendevshop/devmaster/pull/73
+- Fix bug where "Import/Export Config" tasks would show for Drupal 7 sites. 
+- Adding Features Update and Features Revert to Environment Menu.
+- Temporarily removing "Fork Environment" feature, we will get it into Hosting Git in the next RC.
+- In project drush aliases, just use 'parent' property to make our @project.env aliases work exactly like provision's.
+-  Renamed devshop_drush_process() to devshop_process();
+- Save environment settings into provision context data.
+- Fix bug preventing branch names from having "/" characters.
+- Removing custom drush command `devshop-install`. Now works with `hostmaster-install`.
+- Add more details to automatically generated behat.yml files.
+- Adding `--strict` to `bin/behat` command so that missing steps fail the process.
+- Remove DevShop Deploy queue since Hosting Git Platforms now handles that.
+- Enable fix_permissions and fix_ownership modules by default for better file management.
+- Fix problem with cloning sites that used custom profiles.
+- Remove loading of tons of git info from the command line for a significant performance boost.
+- Removing old unused devshop-create and devshop-commit tasks.
+
+# George & Maxwell Pugh (September 20, 2016)
+
+- 6lbs 1oz & 6lbs 2oz
+- The Mount Sinai Hospital NYC
+- Significantly increases the amount of awwwww.
+
+# 1.0.0-beta10 (July 7, 2016)
+
+  28 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta9...1.x
+
+- Added "composer install" deploy hook! You can now configure `composer install` to run on deployment. Works with composer.json in the repo root or the drupal root.
+- Improvements & bug fixes to the "DevShop Remotes" module.
+- Added a "Retry" button to an environment that failed a "clone" task.
+- Added "Environment" to the labels for "Environment Dashboard" and "Environment Settings" links.
+- Added a message if the user has a project in the create project wizard.
+- Added all of bootstrap, including fonts to boots theme, allowing fully offline use.
+- Moved the Cancel button in projects creation wizard to the right side of the page.
+- Added icons to the "Next" button, "Add Environment" and "Finish" buttons in the create project wizard.
+- Renamed the "Finish" button to "Create Project & Environments".
+- Update to Drupal 7.50.
+
+# 1.0.0-beta9 (June 28, 2016)
+
+ 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta8...1.0.0-beta9
+
+ 12 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta8...1.0.0-beta9
+
+- Bumped Drupal to 7.44, Hosting to 3.6, and Views to 3.14.
+- Added '--force' to 'git submodule' updates on deploy.
+- Adding local copies of bootstrap js and css so devshop can work offline.
+- Replaced "\n" with actual new lines in ASCII output.
+- Improved creation wizard by loading all errors into a modal window.
+- Fixed bad drush project alias file creation.
+- Fixed the missing 'Cancel' button on tasks.
+- Added a getEnvironment() method to the project context.
+- Add an argument to devshop_drush_process() to be able to skip logging the output.
+- Verify Project is triggered after environment create to ensure metadata is present.
+- Decided to remove the code that skips running deploy hooks if there are "no changes detected".
+- DevMaster Playbook fixes:
+  - Fixed the automatic setting of the aegir public ssh key variable.
+  - Adding back SSH key privacy settings, git config, and drush cache clearing.
+  - Fixed typos in yml tasks.
+  - Fixed a terrible bug that broke installation: Clear Drush Caches!
+- Bumped up default vagrant VM memory to 4GB.
+
+## 1.0.0-beta8 (June 15, 2016)
+
+1 commit to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-beta7...1.0.0-beta8
+
+29 commit to DevMaster: https://github.com/opendevshop/devmaster/compare/1.0.0-beta7...1.0.0-beta8
 
 - Fixed script to launch devshop in docker containers for development.
 - Fixed numerous problems with DevShop Testing module preventing fully automated testing.

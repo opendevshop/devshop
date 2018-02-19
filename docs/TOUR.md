@@ -1,3 +1,0 @@
-DevShop Tour
-===========
-Coming soon.
