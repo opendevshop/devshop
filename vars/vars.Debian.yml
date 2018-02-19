@@ -5,9 +5,8 @@ apache_user: www-data
 supervisor_daemon: supervisor
 supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner.conf
 
-php_mysql_package: php5-mysql
-
 php_packages_extra:
   - vim
   - supervisor
   - openssl
+  - postfix
