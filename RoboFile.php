@@ -319,12 +319,14 @@ class RoboFile extends \Robo\Tasks {
     }
     elseif ($opts['mode'] == 'install.sh') {
 
-      $init = [
+      $init_map = [
         'centos:7' => '/usr/lib/systemd/systemd',
         'ubuntu:14.04' => '/sbin/init',
         'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
         'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
+
+      $init = isset($init_map[$opts['install-sh-image']])? $init_map[$opts['install-sh-image']]: '/sbin/init';
 
       # This is the list of test sites, set in .travis.yml.
       # This is so requests to these sites go back to localhost.
@@ -350,7 +352,7 @@ class RoboFile extends \Robo\Tasks {
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
         ->env('AEGIR_USER_UID', $opts['user-uid'])
         ->exec('/usr/share/devshop/tests/run-tests.sh')
-        ->exec($init[$opts['install-sh-image']])
+        ->exec($init)
         ->run()
         ->wasSuccessful()) {
         $this->say('Docker Run failed.');
