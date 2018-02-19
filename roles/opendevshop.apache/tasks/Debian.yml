@@ -1,10 +1,20 @@
 ---
 
+
 - name: Install Apache2 PHP Mod.
+  apt:
+    name: 'libapache2-mod-php'
+    state: present
+  notify:
+    - restart webserver
+    - restart php-fpm
+  when: (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '16')
+
+- name: Install Apache2 PHP Mod (Ubuntu 14).
   apt:
     name: 'libapache2-mod-php5'
     state: present
   notify:
     - restart webserver
     - restart php-fpm
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and ansible_distribution_major_version != '16'
