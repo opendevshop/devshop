@@ -10,6 +10,7 @@ supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 
 extra_packages:
   - postfix
+  - sendmail
 
 php_mysql_package: php55-php-mysqlnd
 
