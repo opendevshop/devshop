@@ -5,6 +5,12 @@
 - name: Include OS-specific variables.
   include_vars: "vars.{{ ansible_os_family }}.yml"
 
+- name: Install extra packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: '{{ extra_packages }}'
+
 - name: Install Drush
   get_url:
     url: "https://github.com/drush-ops/drush/releases/download/{{ drush_release_version }}/drush.phar"
