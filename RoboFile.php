@@ -379,7 +379,7 @@ class RoboFile extends \Robo\Tasks {
             ->run()
             ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
-            ->exec("apt-get install dbus systemd-cron -y")
+            ->exec("apt-get install dbus -y")
             ->run()
             ->wasSuccessful()
         )) {
