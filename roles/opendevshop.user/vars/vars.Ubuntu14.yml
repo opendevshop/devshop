@@ -1,5 +1,7 @@
 ---
 
+# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+
 # Variables from geerlingguy.php v2
 php_packages:
   - php5
