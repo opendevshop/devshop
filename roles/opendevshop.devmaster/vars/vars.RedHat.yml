@@ -12,6 +12,9 @@ extra_packages:
   - postfix
   - sendmail
   - cronie
+  - supervisor
+  - openssl
+  - mod_ssl
 
 php_mysql_package: php55-php-mysqlnd
 
