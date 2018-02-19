@@ -7,19 +7,7 @@ supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner
 
 php_mysql_package: php5-mysql
 
-extra_packages:
-  - php5
-  - php5-mcrypt
-  - php5-cli
-  - php5-common
-  - php5-curl
-  - php5-dev
-  - php5-fpm
-  - php5-gd
-  - php-pear
-  - php-apc
-  - postfix
-  - libpcre3-dev
+php_packages_extra:
   - vim
   - supervisor
   - openssl
