@@ -371,6 +371,22 @@ class RoboFile extends \Robo\Tasks {
           exit(1);
         }
       }
+      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+        // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
+        if (!(
+          $this->taskDockerExec('devshop_container')
+            ->exec("apt-get update")
+            ->run()
+            ->wasSuccessful() &&
+          $this->taskDockerExec('devshop_container')
+            ->exec("apt-get install dbus -y")
+            ->run()
+            ->wasSuccessful()
+        )) {
+          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
+          exit(1);
+        }
+      }
 
       // Display home folder.
       $this->taskDockerExec('devshop_container')
