@@ -6,9 +6,18 @@
   include_vars: "vars.{{ ansible_os_family }}.yml"
 
 - name: Install extra packages
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  with_items: '{{ extra_packages }}'
+
+- name: Install extra packages
   yum:
     name: "{{ item }}"
     state: present
+  when: ansible_os_family == "RedHat"
   with_items: '{{ extra_packages }}'
 
 - name: Install Drush
