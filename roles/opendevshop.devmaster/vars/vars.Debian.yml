@@ -10,3 +10,4 @@ extra_packages:
   - supervisor
   - openssl
   - postfix
+  - cron
