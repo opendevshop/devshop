@@ -1615,7 +1615,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   // Save environment record.
   // If environment already exists, set primary keys.
   $project = node_load($environment->project_nid);
-  if (isset($project->environments[$environment->name])) {
+  if (isset($project->project->environments[$environment->name])) {
     $primary_keys = array('project_nid', 'name');
   }
   else {
@@ -1629,7 +1629,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
 
     // Send our own message
     if (!empty($primary_keys)) {
-      drupal_set_message(t('Environment settings saved for %env in project %project.', array('%env' => $environment->name, '%project' => $project->project_name)));
+      drupal_set_message(t('Settings saved for environment !env.', array('!env' => l($environment->name, "node/{$environment->site}"))));
     }
     else {
       drupal_set_message(t('Environment !env created in project %project.', array(
