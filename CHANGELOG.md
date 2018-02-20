@@ -1,5 +1,9 @@
 # Change Log
 
+## Next Release
+
+- Compatibility with Ubuntu 16.04 LTS Xenial
+
 ## 1.0.0-rc3 (September 26 2017)
 
 10 Commits to DevShop https://github.com/opendevshop/devshop/compare/1.0.0-rc1...1.0.0-rc3
