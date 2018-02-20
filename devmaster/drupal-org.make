@@ -12,26 +12,26 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.120"
+projects[hosting][version] = "3.141"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
-projects[eldir][version] = "3.120"
+projects[eldir][version] = "3.141"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.120"
+projects[hosting_git][version] = "3.141"
 
 projects[hosting_remote_import][subdir] = aegir
-projects[hosting_remote_import][version] = "3.120"
+projects[hosting_remote_import][version] = "3.141"
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.120"
+projects[hosting_site_backup_manager][version] = "3.141"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.120"
+projects[hosting_tasks_extra][version] = "3.141"
 
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = "3.120"
+projects[hosting_logs][version] = "3.141"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_filemanager][version] = "1.x"
@@ -48,7 +48,7 @@ projects[aegir_config][version] = 1.00-beta1
 ; Contrib Modules
 projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.4
-projects[entity][version] = 1.8
+projects[entity][version] = 1.9
 projects[openidadmin][version] = 1.0
 projects[overlay_paths][version] = 1.3
 projects[r4032login][version] = 1.8
@@ -57,7 +57,7 @@ projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha5"
 projects[views][version] = "3.18"
 projects[views_bulk_operations][version] = "3.4"
-projects[ctools][version] = "1.12"
+projects[ctools][version] = "1.13"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
