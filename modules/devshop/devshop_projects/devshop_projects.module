@@ -48,10 +48,14 @@ function devshop_projects_init() {
           if (strpos($m, $message) !== FALSE) {
             $show_message = FALSE;
           }
+          else {
+            drupal_set_message($m);
+          }
         }
-        if ($show_message) {
-          drupal_set_message($message);
-        }
+      }
+
+      if ($show_message) {
+        drupal_set_message($message);
       }
     }
   }
