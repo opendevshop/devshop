@@ -523,7 +523,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             '#weight' => '-1',
           );
 
-          foreach ($form['parameters'] as $key => &$element) {
+          foreach ($form['parameters'] as $key => $element) {
             if (is_int($key)) {
               // Don't unset the target platform. Just hide it.
               if (isset($element['target_platform']['#default_value'])) {

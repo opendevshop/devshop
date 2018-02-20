@@ -948,7 +948,7 @@ HTML;
   $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
-  foreach ($vars['node']->project->environments as &$environment) {
+  foreach ($vars['node']->project->environments as $environment) {
 
     // Render each environment.
     $vars['environments'][] = theme('environment', array(
