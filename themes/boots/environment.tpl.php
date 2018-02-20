@@ -555,7 +555,7 @@
     $item_class = 'default';
     $icon = 'check';
     $label = t('Clean');
-    $node = '';
+    $note = '';
 
     if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
       $icon = 'arrow-right';
