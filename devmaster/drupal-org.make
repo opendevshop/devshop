@@ -16,7 +16,7 @@ projects[hosting][version] = "3.141"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
-projects[eldir][version] = "3.141"
+projects[eldir][version] = "3.140"
 
 projects[hosting_git][subdir] = aegir
 projects[hosting_git][version] = "3.141"
