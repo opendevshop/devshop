@@ -57,7 +57,7 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Look for all available source environments
-  foreach ($vars['project']->environments as &$source_environment) {
+  foreach ($vars['project']->environments as $source_environment) {
     if ($source_environment->site) {
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
