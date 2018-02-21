@@ -1,5 +1,8 @@
 ---
 
+  - name: Include global variables.
+    include_vars: "vars.yml"
+
   # Include variables and define needed variables.
   - name: Include OS-specific variables.
     include_vars: "{{ ansible_os_family }}.yml"

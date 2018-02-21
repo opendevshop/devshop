@@ -1,0 +1,4 @@
+---
+
+# Enable php opcache.
+php_opcache_enabled_in_ini: true
