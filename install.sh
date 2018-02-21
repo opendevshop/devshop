@@ -42,6 +42,7 @@ DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-1000}
+ANSIBLE_VERBOSITY="";
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -104,9 +105,21 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
+      -v|--verbose)
+      ANSIBLE_VERBOSITY="-v"
+      shift # past argument
+      ;;
+      -vvv|--very-verbose)
+      ANSIBLE_VERBOSITY="-vvv"
+      shift # past argument
+      ;;
+      -vvvv|--debug)
+      ANSIBLE_VERBOSITY="-vvvv"
+      shift # past argument
+      ;;
     *)
       echo $LINE
-      echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
+      echo ' Invalid option.'
       echo $LINE
       exit 1
   esac
@@ -329,7 +342,7 @@ elif [ $SERVER_WEBSERVER == 'nginx' ]; then
   PLAYBOOK_FILE="playbook-nginx.yml"
 fi
 
-ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
+ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS" $ANSIBLE_VERBOSITY
 
 # @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli
