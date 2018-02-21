@@ -344,6 +344,7 @@ class RoboFile extends \Robo\Tasks {
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
         ->option('-t')
+        ->publish(80,80)
         ->detached()
         ->privileged()
         ->env('TERM', 'xterm')
