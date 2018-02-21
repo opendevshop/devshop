@@ -16,8 +16,6 @@ Feature: Create a project
     When I press "Next"
 
     # Step 2
-    Then print current URL
-    Then print last response
     Then I should see "drpl8"
     And I should see "http://github.com/opendevshop/drupal_docroot.git"
     When I fill in "docroot" for "Path to Drupal"
@@ -27,22 +25,20 @@ Feature: Create a project
     Then I should see "Please wait while we connect to your repository and determine any branches."
 #    And I should see "Path to Drupal: docroot"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
     And I reload the page
 
-#    Then print last response
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
 
-#    And I press "Add environment"
+    And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "master" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     Then I press "Next"
-#    Then print last response
 
     # Step 4
     And I should see "dev"
@@ -50,7 +46,7 @@ Feature: Create a project
     And I should see "master"
     And I should see "master"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
 
@@ -61,10 +57,12 @@ Feature: Create a project
     And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
-#    Then print last response
     Then I should see "8."
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
+
+#    Then I break
+
     And I press "Create Project & Environments"
 
     # FINISH!
@@ -77,7 +75,11 @@ Feature: Create a project
     And I should see the link "dev"
     And I should see the link "live"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+#    Then I break
+    And I should see the link "http://drpl8.dev.devshop.local.computer"
+    And I should see the link "Aegir Site"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
@@ -101,25 +103,24 @@ Feature: Create a project
     Then I press "Create New Environment"
     Then I should see "Environment testenv created in project drpl8."
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
 
     When I click "testenv" in the "main" region
-    Then print current URL
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
     When I click "Visit Site"
-    Then I should see "Welcome to testenv.drpl8"
+    Then I should see "Welcome to drpl8.testenv"
 
     Then I move backward one page
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
-
     And I press "Save"
+
     Then I should see "DevShop Project drpl8 has been updated."
     And I should see an ".environment-link .fa-bolt" element

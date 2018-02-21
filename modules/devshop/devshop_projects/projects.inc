@@ -133,6 +133,7 @@ function devshop_project_load($node) {
           e.*,
           s.status as site_status,
           p.status as platform_status,
+          p.nid as platform,
           p.publish_path as root,
           p.publish_path as publish_path,
           g.git_ref as git_ref,
@@ -155,7 +156,7 @@ function devshop_project_load($node) {
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
-        LEFT JOIN {hosting_platform} p ON e.platform = p.nid
+        LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
         LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
@@ -270,75 +271,13 @@ function devshop_project_load($node) {
 
     // Git information.
     $environment->git_ref_stored = $environment->git_ref;
-    if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
-
-      // Timestamp of last commit.
-      $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ar' --max-count=1");
-
-      // The last commit.
-      $environment->git_commit = shell_exec("cd {$environment->repo_path}; git -c color.ui=always log --max-count=1");
-
-      // Get the exact SHA
-      $environment->git_sha = trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
-
-      // Determine the type of git ref the stored version is
-      $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
-      $stored_git_sha =  trim(shell_exec("cd {$environment->repo_path}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
-
-      // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
-      // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-      $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
-
-      $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
-
-      // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
-      if ($stored_git_sha == $environment->git_sha && $stored_git_ref_type != $environment->git_ref_type) {
-        $git_status = shell_exec("cd {$environment->repo_path}; git status");
-        if (strpos($git_status, 'On branch ') === 0) {
-          $environment->git_ref_type = 'branch';
-          $environment->git_ref = $environment->git_ref_stored;
-        }
-        else {
-          $environment->git_ref_type = 'tag';
-        }
-      }
-
-      // Get git status.
-      $environment->git_status = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always  status"));
-
-      // Limit status to 1000 lines
-      $lines = explode("\n", $environment->git_status);
-      $count = count($lines);
-      if ($count > 100) {
-        $lines = array_slice($lines, 0, 100);
-        $lines[] = "# STATUS TRUNCATED. SHOWING 100 of $count LINES.";
-      }
-      $environment->git_status  = implode("\n", $lines);
-
-      // Get git diff.
-      $environment->git_diff = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always diff"));
-
-      // Limit git diff to 1000 lines
-      $lines = explode("\n", $environment->git_diff);
-      $count = count($lines);
-      if ($count > 1000) {
-        $lines = array_slice($lines, 0, 1000);
-        $lines[] = "# DIFF TRUNCATED. SHOWING 1000 of $count LINES.";
-      }
-      $environment->git_diff  = implode("\n", $lines);
-
-    }
-    else {
-      $environment->git_last = '';
-      $environment->git_commit = '';
-      $environment->git_sha = '';
-      $environment->git_status = '';
-      $environment->git_diff = '';
-    }
 
     // Load encryption status
     if (module_exists('hosting_ssl')) {
       $environment->ssl_enabled  = db_query('SELECT ssl_enabled FROM {hosting_ssl_site} WHERE nid = :nid', array(':nid' => $environment->site))->fetchField();
+    }
+    elseif (module_exists('hosting_https')) {
+      $environment->ssl_enabled  = db_query('SELECT https_enabled FROM {hosting_https_site} WHERE nid = :nid', array(':nid' => $environment->site))->fetchField();
     }
     else {
       $environment->ssl_enabled = FALSE;

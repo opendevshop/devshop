@@ -5,14 +5,53 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Symfony\Component\Process\Process;
-
+use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 
 /**
  * Defines application features from the specific context.
  */
 class FeatureContext extends DrushContext implements SnippetAcceptingContext {
-
+  
+  
+  /**
+   * Make MinkContext available.
+   * @var \Drupal\DrupalExtension\Context\MinkContext
+   */
+  private $minkContext;
+  
+  /**
+   * Prepare Contexts.
+   * @BeforeScenario
+   */
+  public function gatherContexts(BeforeScenarioScope $scope)
+  {
+    $environment = $scope->getEnvironment();
+    $this->minkContext = $environment->getContext('Drupal\DrupalExtension\Context\MinkContext');
+  }
+  
+  /**
+   * Log output and watchdog logs after any failed step.
+   * @AfterStep
+   */
+  public function logAfterFailedStep($event)
+  {
+    if ($event->getTestResult()->getResultCode() === \Behat\Testwork\Tester\Result\TestResult::FAILED) {
+      
+      // Print Current URL and Last reponse after any step failure.
+      echo "Step Failed.";
+      
+      echo "\nLasts Response:\n";
+      $this->minkContext->printLastResponse();
+      
+      echo "\nWatchdog Errors:\n";
+      $this->assertDrushCommand('wd-show');
+      $this->printLastDrushOutput();
+      
+    }
+  }
+  
   /**
    * Initializes context.
    *

@@ -38,29 +38,31 @@ function devshop_projects_settings_form($form, &$form_state) {
   );
 
   $form['urls']['devshop_projects_allow_custom_base_url'] = array(
-    '#title' => t('Allow custom base URL per project.'),
-    '#description' => t('All environments are made available at http://{ENVIRONMENT}.BASE_URL. Check this box to make the Base URL configurable per project.'),
+    '#title' => t('Allow custom Environment Domain Name Pattern per project.'),
+    '#description' => t('If enabled each project can set an Environment URL Pattern.'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
   );
-  // @TODO: Add @environment as a replacement pattern.
   $form['urls']['devshop_project_environment_url_pattern'] = array(
-    '#title' => t('Domain Name Pattern'),
+    '#title' => t('Environment Domain Name Pattern'),
     '#type' => 'textfield',
-    '#description' => t('Each environment (aegir site) gets an initial URL. You can use @project for project name and @hostname for "%host". Environments are put underneath this URL as subdomains.', array('%host' => $_SERVER['SERVER_NAME'])),
-    '#default_value' => variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname'),
+    '#description' => t("Each environment will have a system domain name generated for it based on it's name. Use @project for project name, @hostname for '%host', @environment for the environment's name.", array('%host' => $_SERVER['SERVER_NAME'])),
+    '#default_value' => variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname'),
+    '#element_validate' => array(
+      'devshop_project_settings_validate_environment_url_pattern',
+    ),
   );
 
-  $form['support'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('DevShop Support'),
-  );
-  $form['support']['devshop_support_widget_enable'] = array(
-    '#title' => t('Show Help Widget'),
-    '#description' => t('Uncheck this box if you want to hide the Help widget that appears at the bottom right of the page.'),
-    '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
-  );
+//  $form['support'] = array(
+//      '#type' => 'fieldset',
+//      '#title' => t('DevShop Support'),
+//  );
+//  $form['support']['devshop_support_widget_enable'] = array(
+//    '#title' => t('Show Help Widget'),
+//    '#description' => t('Uncheck this box if you want to hide the Help widget that appears at the bottom right of the page.'),
+//    '#type' => 'checkbox',
+//    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
+//  );
 
   // Server settings.
   $form['server'] = array(
@@ -74,4 +76,13 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#default_value' => variable_get('devshop_public_key', ''),
   );
   return system_settings_form($form);
+}
+
+/**
+ * Validate that the default environment domain pattern has @environment and @project.
+ */
+function devshop_project_settings_validate_environment_url_pattern($element, &$form_state, $form) {
+  if (strpos($form_state['values']['devshop_project_environment_url_pattern'], '@environment') === FALSE || strpos($form_state['values']['devshop_project_environment_url_pattern'], '@project') === FALSE) {
+    form_error($element, t('The placeholders @project and @environment must be in the Environment Domain Name Pattern.'));
+  }
 }
