@@ -522,7 +522,16 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             '#value' => l($environment->servers['db']['name'], 'hosting/c/server_' . $environment->servers['db']['nid']),
             '#weight' => '-1',
           );
-
+        }
+        if (isset($_GET['rename'])) {
+          drupal_set_title(t('Change Domain Name for environment @env in project @proj?', array(
+            '@env' => $environment->name,
+            '@proj' => $environment->project_name,
+          )));
+          $form['help']['#value'] = t("Are you sure you want to change this environment's domain name?");
+          $form['submit']['#value'] = t('Change Domain');
+        }
+        if (isset($_GET['rename']) || $_GET['deploy'] == 'stack') {
           foreach ($form['parameters'] as $key => $element) {
             if (is_int($key)) {
               // Don't unset the target platform. Just hide it.
@@ -535,7 +544,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
               }
             }
           }
-          $form['parameters']['#suffix'] = '</div>';
         }
         break;
 
