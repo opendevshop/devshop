@@ -1,9 +1,7 @@
 <?php
 
-use Symfony\Component\Process\Process;
-use GitWrapper\GitWrapper;
-use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitException;
+use GitWrapper\GitWrapper;
 
 /**
  * Implementation of hook_drush_command().
@@ -31,12 +29,8 @@ function aegir_commit_drush_command()
 function drush_aegir_commit_provision_commit() {
 
   if (d()->type == 'site') {
-
-    $project_name = d()->project;
-    $project = (object) d("@project_{$project_name}")->project;
-    $environment = (object) $project->environments[d()->environment];
-
-    $git_url = $project->git_url;
+    $git_url = d()->platform->repo_url;
+    $git_path = d()->platform->repo_path;
 
     $message = trim(drush_get_option('message', ''));
     $files = json_decode(drush_get_option('files', '[]'));
@@ -49,14 +43,14 @@ function drush_aegir_commit_provision_commit() {
       $wrapper = new GitWrapper();
       $wrapper->streamOutput();
 
-      $git = $wrapper->workingCopy($environment->repo_path);
+      $git = $wrapper->workingCopy($git_path);
       $status = $git->getStatus();
 
       if (empty($status)) {
         drush_log('[Git Status] Working Directory is clean. Nothing to commit.', 'devshop_log');
       }
       else {
-        devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
+        devshop_process('git status', $git_path, dt('Git Status'));
         $cmds = array();
 
         // If files option was detected
@@ -64,6 +58,7 @@ function drush_aegir_commit_provision_commit() {
           $files_list = '';
 
           foreach ($files as $file) {
+            $file = $git_path . '/' . $file;
             if (file_exists($file)) {
               $files_list .= ' ' . $file;
             }
@@ -79,24 +74,24 @@ function drush_aegir_commit_provision_commit() {
         }
 
         foreach ($cmds as $cmd) {
-          devshop_drush_process($cmd, $environment->repo_path, 'Adding files to local repository...');
+          devshop_process($cmd, $git_path, 'Adding files to local repository...');
         }
 
-        devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
+        devshop_process('git status', $git_path, dt('Git Status'));
 
         $hostmaster_uri = d('hostmaster')->uri;
         $message = escapeshellarg("$message
 --------------
 Committed by OpenDevShop via http://$hostmaster_uri");
 
-        devshop_drush_process("git commit -m {$message}", $environment->repo_path, 'Committing changes to local repository...', array(
+        devshop_process("git commit -m {$message}", $git_path, 'Committing changes to local repository...', array(
           'GIT_AUTHOR_NAME' => $name,
           'GIT_AUTHOR_EMAIL' => $mail,
           'GIT_COMMITTER_NAME' => $name,
           'GIT_COMMITTER_EMAIL' => $mail,
         ));
 
-        devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
+        devshop_process('git status', $git_path, dt('Git Status'));
       }
 
       // Push the result, if desired.
@@ -109,14 +104,14 @@ Committed by OpenDevShop via http://$hostmaster_uri");
           return;
         }
         else {
-          devshop_drush_process("git push", $environment->repo_path, 'Pushing code to remote repository...');
-          devshop_drush_process('git status', $environment->repo_path, dt('Git Status'));
+          devshop_process("git push", $git_path, 'Pushing code to remote repository...');
+          devshop_process('git status', $git_path, dt('Git Status'));
         }
       }
     }
     catch (GitException $e) {
       drush_log('Git Error', 'devshop_command');
-      drush_log("Unable to load git repository at path '{$environment->repo_path}'", 'devshop_error');
+      drush_log("Unable to load git repository at path " . $git_path, 'devshop_error');
       drush_set_error($e->getMessage());
     }
   }

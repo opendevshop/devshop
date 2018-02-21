@@ -7,52 +7,6 @@ branches:
   only:
     - 1.x
 
-#env:
-#  matrix:
-#  - test="Upgrade"
-#    distribution="ubuntu"
-#    version="14.04"
-#    init="/sbin/init"
-#    run_opts=""
-#    install_command="bash /usr/share/devshop/tests/test-upgrade.sh 1.0.0-beta10 /usr/share/devshop/build-devmaster-test.make"
-#    test_command="devshop devmaster:test"
-#    DEVSHOP_UPGRADE_TO_VERSION="1.x"
-#
-#  - test="CentOS 7 Apache"
-#    distribution="centos"
-#    version="7"
-#    init="/usr/lib/systemd/systemd"
-#    run_opts="--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-#    install_command="/usr/share/devshop/install.sh  --server-webserver=apache --hostname=devshop.travis"
-#    test_command="devshop devmaster:test"
-#
-#  - test="Ubuntu 14.04 Apache"
-#    distribution="ubuntu"
-#    version="14.04"
-#    init="/sbin/init"
-#    run_opts=""
-#    install_command="/usr/share/devshop/install.sh --server-webserver=apache --hostname=devshop.travis"
-#    test_command="devshop devmaster:test"
-
-
-# TODO: Get NGINX support to work.
-#  - test: Ubuntu 14.04 Nginx
-#    distribution: ubuntu
-#    version: 14.04
-#    init: /sbin/init
-#    run_opts: ""
-#    script: "--server-webserver=nginx"
-  # This should match the list of hosts below so that requests resolve to the container.
-#  global:
-#    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis test.drpl8.devshop.travis'
-#addons:
-#  hosts:
-#    - devshop.travis
-#    - dev.projectname.devshop.travis
-#    - live.projectname.devshop.travis
-#    - dev.drpl8.devshop.travis
-#    - test.drpl8.devshop.travis
-
 env:
   global:
     - DEVSHOP_VERSION=1.x
@@ -60,16 +14,29 @@ env:
 
   matrix:
   - test="Upgrade"
+    COMMAND="robo up --test-upgrade"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
-    ROBO_UP_OPTIONS="--test-upgrade"
 
-  - test="Install"
-    ROBO_UP_OPTIONS="--test"
+  - test="Install with Docker"
+    COMMAND="robo up --test"
 
+  - test="Install with Ansible on Ubuntu 14.04 with Apache"
+    COMMAND="robo up --mode=install.sh --test"
+
+#  - test="Install with Ansible on Ubuntu 14.04 with NGINX"
+#    COMMAND="robo up --mode=install.sh --test --install-sh-options='--server-webserver=nginx'"
+
+  - test="Install with Ansible on CentOS 7"
+    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
+
+    
 services:
   - docker
 
 before_install:
+  - pwd
+  - env
+
   # Install Robo
   - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
   - sudo mv robo.phar /usr/local/bin/robo
@@ -87,15 +54,14 @@ before_install:
   - git checkout -qf ${DEVSHOP_VERSION}
   - git status
   - pwd
-  - echo projects[devmaster][download][type] = "copy" >> build-devmaster.make
-  - echo projects[devmaster][download][url] = "../devmaster" >> build-devmaster.make
-  - cat build-devmaster.make
+  - cp build-devmaster-travis-forks.make.yml build-devmaster-dev.make.yml
+  - cat build-devmaster-dev.make.yml
 
   # Prepare devshop CLI.
   - composer install
 
 script:
-  - robo up ${ROBO_UP_OPTIONS} -n
+  - ${COMMAND} -n --no-dev
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state

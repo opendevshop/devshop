@@ -57,7 +57,7 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Look for all available source environments
-  foreach ($vars['project']->environments as &$source_environment) {
+  foreach ($vars['project']->environments as $source_environment) {
     if ($source_environment->site) {
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
@@ -100,6 +100,17 @@ function boots_preprocess_environment(&$vars) {
   // Pull Request?
   if (isset($environment->github_pull_request) && $environment->github_pull_request) {
     $environment->class .= ' pull-request';
+    $vars['warnings'][] = array(
+      'type' => 'info',
+      'icon' => 'github',
+      'text' => l($environment->github_pull_request->pull_request_object->title, $environment->github_pull_request->pull_request_object->html_url, array(
+        'absolute' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'title' => t('Visit this Pull Request on GitHub'),
+        ),
+      )),
+    );
   }
 
   // Load Task Links
@@ -150,14 +161,15 @@ function boots_preprocess_environment(&$vars) {
 
   // Check for any potential problems
   // Branch or tag no longer exists in the project.
-  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
-    $vars['warnings'][] = array(
-      'text' =>  t('The git ref %ref is not present in the remote repository.', array(
-        '%ref' => $environment->git_ref,
-      )),
-      'type' => 'warning',
-    );
-  }
+// @TODO: This fires a false flag too often. Consider removing it.
+//  if (!isset($project->settings->git['refs'][$environment->git_ref])) {
+//    $vars['warnings'][] = array(
+//      'text' =>  t('The git ref %ref is not present in the remote repository.', array(
+//        '%ref' => $environment->git_ref,
+//      )),
+//      'type' => 'warning',
+//    );
+//  }
 
   // No hooks configured.
   if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
@@ -308,6 +320,72 @@ function boots_preprocess_environment(&$vars) {
   }
   else {
     $vars['hooks_yml_note'] = t('Unable to find a file named .hooks, .hooks.yml, or .hooks.yaml. Add one or disable "Run deploy commands in the .hooks file" in project or environment settings.');
+  }
+  
+  //   Load git information
+  if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
+    
+    // Timestamp of last commit.
+    $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ar' --max-count=1");
+    
+    // The last commit.
+    $environment->git_commit = shell_exec("cd {$environment->repo_path}; git -c color.ui=always log --max-count=1");
+    
+    // Get the exact SHA
+    $environment->git_sha = trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
+    
+    // Determine the type of git ref the stored version is
+    $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
+    $stored_git_sha =  trim(shell_exec("cd {$environment->repo_path}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
+    
+    // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
+    // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
+    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+    
+    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
+    
+    // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
+    if ($stored_git_sha == $environment->git_sha && $stored_git_ref_type != $environment->git_ref_type) {
+      $git_status = shell_exec("cd {$environment->repo_path}; git status");
+      if (strpos($git_status, 'On branch ') === 0) {
+        $environment->git_ref_type = 'branch';
+        $environment->git_ref = $environment->git_ref_stored;
+      }
+      else {
+        $environment->git_ref_type = 'tag';
+      }
+    }
+    
+    // Get git status.
+    $environment->git_status = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always  status"));
+    
+    // Limit status to 1000 lines
+    $lines = explode("\n", $environment->git_status);
+    $count = count($lines);
+    if ($count > 100) {
+      $lines = array_slice($lines, 0, 100);
+      $lines[] = "# STATUS TRUNCATED. SHOWING 100 of $count LINES.";
+    }
+    $environment->git_status  = implode("\n", $lines);
+    
+    // Get git diff.
+    $environment->git_diff = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always diff"));
+    
+    // Limit git diff to 1000 lines
+    $lines = explode("\n", $environment->git_diff);
+    $count = count($lines);
+    if ($count > 1000) {
+      $lines = array_slice($lines, 0, 1000);
+      $lines[] = "# DIFF TRUNCATED. SHOWING 1000 of $count LINES.";
+    }
+    $environment->git_diff  = implode("\n", $lines);
+  }
+  else {
+    $environment->git_last = '';
+    $environment->git_commit = '';
+    $environment->git_sha = '';
+    $environment->git_status = '';
+    $environment->git_diff = '';
   }
 }
 
@@ -870,7 +948,7 @@ HTML;
   $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
-  foreach ($vars['node']->project->environments as &$environment) {
+  foreach ($vars['node']->project->environments as $environment) {
 
     // Render each environment.
     $vars['environments'][] = theme('environment', array(

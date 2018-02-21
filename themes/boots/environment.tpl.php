@@ -191,10 +191,6 @@
             <i class="fa fa-bolt" title="<?php print t('Primary Environment'); ?>"></i>
           <?php endif; ?>
 
-          <?php if ($environment->cloned): ?>
-            <i class="fa fa-clone" title="<?php print t('This is a cloned site.'); ?>"></i>
-          <?php endif; ?>
-
           <span><?php print $environment->name; ?></span>
         </a>
 
@@ -244,20 +240,6 @@
           <i class="fa fa-lock"></i><?php print t('Locked') ?>
         </a>
         <?php endif; ?>
-
-      <?php  if (isset($environment->github_pull_request)): ?>
-        <!-- Pull Request -->
-
-
-        <div class="environment-pull-request">
-          <a href="<?php print $environment->github_pull_request->pull_request_object->html_url ?>" class="pull-request" target="_blank">
-            <i class="fa fa-github"></i>
-            <?php print t('PR') . ' ' . $environment->github_pull_request->number ?>:
-            <?php print $environment->github_pull_request->pull_request_object->title;?>
-          </a>
-        </div>
-
-      <?php endif; ?>
 
         <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
           <!-- Browse Logs -->
@@ -569,7 +551,7 @@
     $item_class = 'default';
     $icon = 'check';
     $label = t('Clean');
-    $node = '';
+    $note = '';
 
     if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
       $icon = 'arrow-right';
