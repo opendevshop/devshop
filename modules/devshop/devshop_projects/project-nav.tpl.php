@@ -29,7 +29,7 @@
             <?php foreach ($project->environments as $environment): ?>
               <?php if ($environment->site): ?>
                 <li>
-                  <a href="<?php print url("node/{$project->nid}/edit/env/{$environment->name}"); ?>" class="btn-sm">
+                  <a href="<?php print url("node/{$environment->site}/edit"); ?>" class="btn-sm">
                     <i class="fa fa-sliders fa-fw"></i>
                     <?php print $environment->name; ?>
                   </a>

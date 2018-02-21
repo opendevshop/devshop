@@ -73,6 +73,21 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'drupal_path',
     ),
   );
+// This was accidentally merged from the makefiles branch.
+//  $form['project']['codebase']['makefile_path'] = array(
+//    '#type' => 'textfield',
+//    '#title' => t('Path to Makefile'),
+//    '#description' => t('Enter the relative path to a makefile inside your repository. Leave blank if a full Drupal codebasee is in the repository.'),
+//    '#size' => 40,
+//    '#default_value' => $project->settings->makefile_path,
+//    '#maxlength' => 255,
+//    '#weight' => 4,
+//    '#parents' => array(
+//      'project',
+//      'settings',
+//      'makefile_path',
+//    ),
+//  );
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Environment Domain Name Pattern'),
@@ -306,6 +321,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Install Profile
   $available_profiles = array();
   foreach ($project->environments as $name => $environment) {
+    // Passing null to hosting_get_profiles returns all profiles.
+    if (is_null($environment->platform)) {
+      continue;
+    }
     $profiles_shortnames = hosting_get_profiles($environment->platform, 'short_name');
     if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
       $profiles[$name] = array_combine($profiles_shortnames, (array)hosting_get_profiles($environment->platform));
@@ -386,10 +405,17 @@ function devshop_projects_validate($node, &$form, &$form_state) {
       '%path' => $form_state['values']['project']['code_path'],
     )));
   }
-  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url AND n.nid != :nid;;', array(':status' => 1, ':base_url' => $form_state['values']['project']['base_url'], ':nid' => $form_state['values']['nid']))->fetchField()) {
-    form_set_error('base_url', t('The base URL %url is in use by another project.  Please enter a different base URL.', array(
+  // If custom domain pattern is allowed, AND domain pattern does not have "@project" in it, AND domain pattern is not the default AND it is found on another project, throw an error.
+  if (variable_get('devshop_projects_allow_custom_base_url', FALSE) && strpos($form_state['values']['project']['base_url'], '@project') === FALSE && $form_state['values']['project']['base_url'] !=  variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname') && db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url AND n.nid != :nid;;', array(':status' => 1, ':base_url' => $form_state['values']['project']['base_url'], ':nid' => $form_state['values']['nid']))->fetchField()) {
+    form_set_error('base_url', t('The Environment Domain Pattern %url is in use by another project.  Please enter a different Environment Domain Pattern.', array(
       '%url' => $form_state['values']['project']['base_url'],
     )));
+  }
+  
+  // "Environment Domain Name Pattern" (Base URL)
+  // Ensure @environment is included.
+  if (strpos($form_state['values']['project']['base_url'], '@environment') === FALSE ) {
+    form_set_error('project][base_url', t('Environment Domain Name Pattern must include @environment placeholder.'));
   }
 }
 
@@ -506,7 +532,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $form['submit']['#value'] = t('Change Domain');
         }
         if (isset($_GET['rename']) || $_GET['deploy'] == 'stack') {
-          foreach ($form['parameters'] as $key => &$element) {
+          foreach ($form['parameters'] as $key => $element) {
             if (is_int($key)) {
               // Don't unset the target platform. Just hide it.
               if (isset($element['target_platform']['#default_value'])) {
@@ -545,19 +571,8 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             }
           }
 
-          drupal_set_title(t('Deploy data to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
+          drupal_set_title(t('Sync Data to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
           $environment = $node->environment;
-
-          $form['help'] = array(
-            '#prefix' => '<div class="alert alert-warning" role="alert">',
-            '#suffix' => '</div>',
-
-            'target' => array(
-              '#markup' => t('Target: ') . l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))) . ' <span><i class="fa fa-warning"></i> ' . t('Data will be destroyed.') . '</span>',
-              '#prefix' => '<p class="text-danger">',
-              '#suffix' => '</p>',
-            ),
-          );
 
           // If source is empty, ask for an alias.
           if (empty($source)) {
@@ -575,11 +590,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           else {
 
             $source_environment = $source->environment;
-            $form['help']['source'] = array(
-              '#markup' => t('Source: ') . l($source_environment->url, $source_environment->url, array('attributes' => array('target' => '_blank'))),
-              '#prefix' => '<p>',
-              '#suffix' => '</p>',
-            );
 
             $form['parameters']['source'] = array(
               '#type' => 'value',
@@ -597,14 +607,52 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           unset($form['parameters']['libraries']);
 
           // Better output
-          $form['parameters']['database']['#prefix'] = '<label>' . t('What to Deploy?') . '</label>';
+          $form['parameters']['database']['#prefix'] = '<label>' . t('What to Sync?') . '</label>';
           $form['parameters']['registry-rebuild']['#prefix'] = '<label>' . t('Run Deploy Hooks?') . '</label>';
           $form['parameters']['backup']['#weight'] = -11;
 
-          $form['actions']['submit']['#value'] = t('Deploy Data');
+          $form['actions']['submit']['#value'] = '<i class="fa fa-arrow-right"></i>' . t('Sync Data');
+          $form['actions']['submit']['#attributes'] = array(
+            'class' => array(
+              'btn-success'
+            ),
+          );
           $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
 
-          $form['warning']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Deploy Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+          $form['warning']['#markup'] = '<div class="alert alert-spacing alert-danger">' . t('Clicking "Sync Data" will DESTROY the database for the environment !link.', array('!link' => l($environment->url, $environment->url, array('attributes' => array('target' => '_blank'))))) . '</div>';
+
+
+          $destroyed = t('This environment will be destroyed.');
+          $source = t('This environment will be copied.');
+
+          $html = <<<HTML
+          
+<div class="container no-wrap">
+  <div class="inline">
+    <a href="$source_environment->url" target="_blank" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment->name} </span>
+      <br/>   <small>$source_environment->url</small>
+    </a>
+    <br/>   <em class="text-sm">$source</em>
+
+  </div>
+  <div class="inline btn">
+  
+    <i class="fa fa-arrow-right fa-4x"></i>
+    
+  </div>
+  <div class="inline">
+    <a href="$environment->url" target="_blank" class="btn btn-danger btn-lg"><span class="text-lg"><i class="fa fa-trash"></i> {$environment->name} </span>
+      <br/>   <small class="text-sm">$environment->url</small>
+    </a>
+    <br/>   <em class="text-sm">$destroyed</em>
+  </div>
+</div>
+HTML;
+
+          $form['notes'] = array(
+            '#markup' => $html,
+            '#weight' => -10,
+          );
         }
         break;
       case 'delete':
@@ -769,26 +817,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     );
   }
 
-  //
-//  // Get the node object for this form.
-//  $node = $form['#node'];
-//
-//  // Look for #project (like on node create form)
-//  if ($node->project) {
-//    $project = $node->project;
-//  } elseif (isset($form['#project'])) {
-//    $project = $form['#project'];
-//  }
-//  else {
-//    return;
-//  }
-//
-//  // If this site is in a project and we are on it's node/%/edit page, send to special environments form.
-//  if (!empty($project) && arg(1) == $node->nid) {
-//    drupal_goto("node/{$project->nid}/edit/env/{$node->environment->name}");
-//    exit;
-//  }
-
   // User-configurable Settings
   $form['environment']['settings'] = array(
       '#type' => 'fieldset',
@@ -827,12 +855,18 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['http_basic_auth']['#group'] = 'environment_settings';
   $form['http_basic_auth']['#title'] = t('Password Protection');
   $form['hosting_logs']['#group'] = 'environment_settings';
-
-  $form['aliases_wrapper']['#group'] = 'environment_settings';
-  $form['aliases_wrapper']['#title'] = t('Domain Names');
-  $form['aliases_wrapper']['#prefix'] = '';
-  $form['aliases_wrapper']['#suffix'] = '';
-
+  
+  // Have to add new element for Domains because of the way drupal ajax callback works.
+  $form['domains'] = array(
+    '#title' => t('Domain Names'),
+    '#type' => 'fieldset',
+    '#group' => 'environment_settings',
+  );
+  $form['domains']['aliases_wrapper'] = $form['aliases_wrapper'];
+  $form['domains']['aliases_wrapper']['#type'] = 'container';
+  $form['domains']['aliases_wrapper']['add_alias']['#ajax']['callback'] = 'devshop_hosting_alias_add_alias_callback';
+  unset($form['aliases_wrapper']);
+  
   $form['environment']['settings']['client'] = $form['client'];
   $form['environment']['settings']['client']['#tree'] = FALSE;
   unset($form['client']);
@@ -853,11 +887,28 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     $form['hosting_https_wrapper']['#prefix'] = '';
     $form['hosting_https_wrapper']['#suffix'] = '';
   }
+
+  // Ensure values are saved.
+  if (!isset($form['install_method'])) {
+    $form['install_method'] = array(
+      '#type' => 'value',
+      '#value' => $environment->settings->install_method,
+    );
+  }
   
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
 }
+
+
+/**
+ * Ajax callback for returning "Add Alias" form element, since we moved ours to a sub fieldset.
+ */
+function devshop_hosting_alias_add_alias_callback($form, $form_state) {
+  return $form['domains']['aliases_wrapper'];
+}
+
 
 /**
  * Form alters for "site_node_form", which is our "Create Environment" form.
@@ -895,8 +946,13 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 //  array_unshift($form['actions']['submit']['#submit'], 'devshop_projects_create_environment_form_submit');
 
   // Generate field prefix and suffix using domain name pattern.
-  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
-
+  if (variable_get('devshop_projects_allow_custom_base_url')) {
+    $pattern = $project->base_url;
+  }
+  else {
+    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+  }
+  
   $labels = explode('@environment', strtr($pattern, array(
     '@project' => $project_node->title,
     '@hostname' => $_SERVER['SERVER_NAME'],
@@ -1202,42 +1258,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = new stdClass();
-    $platform_node->title = $project->name . '_' . $element['#value'];
-
-    // Specify GIT Url for hosting_git.module
-    $platform_node->git['repo_url'] = $project->git_url;
-    $platform_node->git['repo_path'] = $project->code_path . '/' . $element['#value'];
-    $platform_node->git['repo_docroot'] = $project->drupal_path;
-    $platform_node->git['git_ref'] = $form_state['values']['git_ref'];
-
-    // Enable git pull queue for this platform if chosen.
-    if ($project->settings->deploy['method'] == 'queue') {
-      $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
-    }
-    // For devshop "webhook" and "manual" methods, disable git pull for now.
-    // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
-    else {
-      $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
-    }
-
-
-    // Determine which web server to use.
-    // If no web server was set and project has a default, make sure we set it.
-    if (empty($form_state['values']['web_server']) && !empty($project->settings->default_environment['web_server'])) {
-      $platform_node->web_server = $project->settings->default_environment['web_server'];
-    }
-    else {
-      $platform_node->web_server = $form_state['values']['web_server'];
-    }
-
-    // If drupal path, append to code path/environment name
-    if ($project->drupal_path) {
-      $platform_node->publish_path = $project->code_path . '/' . $element['#value'] . '/' . $project->drupal_path;
-    }
-    else {
-      $platform_node->publish_path = $project->code_path . '/' . $element['#value'];
-    }
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
@@ -1245,6 +1266,73 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['platform'], 0, $form_state);
 
   }
+}
+
+/**
+ * Helper to prepare the platform object to be attached to the site node.
+ *
+ * Example:
+ *
+ *   $platform = devshop_prepare_platform_node($project, $environment_name, $git_ref, $web_server, $prepare_node);
+ *   if ($platform = node_submit($platform)) {
+ *     node_save($platform);
+ *   }
+ *
+ * @param $project
+ *   A fully loaded project object.
+ *
+ * @param $environment_name
+ *   The name of the environment.
+ *
+ * @param $git_ref
+ *   The desired git reference for the environment.
+ *
+ * @param $web_server
+ *   The NID of a web server to use for this platform.
+ *
+ * @return stdClass
+ *   A populated object ready for node_submit and node_save.
+ */
+function devshop_prepare_platform_node($project, $environment_name, $git_ref, $web_server) {
+  $platform_node = new stdClass();
+  $platform_node->type = 'platform';
+  $platform_node->title = $project->name . '_' . $environment_name;
+  
+  // Specify GIT Url for hosting_git.module
+  $platform_node->git['repo_url'] = $project->git_url;
+  $platform_node->git['git_ref'] = $git_ref;
+  
+  // Enable git pull queue for this platform if chosen.
+  if ($project->settings->deploy['method'] == 'queue') {
+    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
+  }
+  // For devshop "webhook" and "manual" methods, disable git pull for now.
+  // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
+  else {
+    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
+  }
+  
+  
+  // Determine which web server to use.
+  // If no web server was set and project has a default, make sure we set it.
+  if (empty($web_server) && !empty($project->settings->default_environment['web_server'])) {
+    $platform_node->web_server = $project->settings->default_environment['web_server'];
+  }
+  else {
+    $platform_node->web_server = $web_server;
+  }
+
+  $platform_node->git['repo_path'] = $project->code_path . '/' . $environment_name;
+
+  // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
+  if ($project->drupal_path) {
+    $platform_node->publish_path = $platform_node->git['repo_path'] . '/' . $project->drupal_path;
+    $platform_node->git['repo_docroot'] = $project->drupal_path;
+  }
+  else {
+    $platform_node->publish_path = $platform_node->git['repo_path'];
+  }
+  return $platform_node;
 }
 
 /**
@@ -1351,8 +1439,9 @@ function devshop_environment_add_form_profile_options($project) {
 
     $packages = hosting_package_instances_load(array(
       'package_type' => 'profile',
-      'platform' => $environment->platform,
+      'rid' => $environment->platform,
     ));
+
     foreach ($packages as $instance) {
       $options[$instance->short_name] = $instance->title;
       $options[$instance->short_name] .= ' <small class="text-muted">' . $instance->description . '</small>';
@@ -1534,7 +1623,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   // Save environment record.
   // If environment already exists, set primary keys.
   $project = node_load($environment->project_nid);
-  if (isset($project->environments[$environment->name])) {
+  if (isset($project->project->environments[$environment->name])) {
     $primary_keys = array('project_nid', 'name');
   }
   else {
@@ -1548,7 +1637,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
 
     // Send our own message
     if (!empty($primary_keys)) {
-      drupal_set_message(t('Environment settings saved for %env in project %project.', array('%env' => $environment->name, '%project' => $project->project_name)));
+      drupal_set_message(t('Settings saved for environment !env.', array('!env' => l($environment->name, "node/{$environment->site}"))));
     }
     else {
       drupal_set_message(t('Environment !env created in project %project.', array(

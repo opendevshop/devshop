@@ -38,6 +38,9 @@ dependencies[] = hosting_tasks_extra
 dependencies[] = hosting_backup_queue
 dependencies[] = hosting_site_backup_manager
 
+;dependencies[] = fix_permissions
+;dependencies[] = fix_ownership
+
 ; Drupal contrib
 dependencies[] = admin_menu
 dependencies[] = admin_menu_toolbar
@@ -47,7 +50,6 @@ dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
 dependencies[] = r4032login
 dependencies[] = jquery_update
-dependencies[] = distro_update
 dependencies[] = module_filter
 
 ; This breaks hosting.install.  Removing it for now.

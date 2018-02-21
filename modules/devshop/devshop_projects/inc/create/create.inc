@@ -55,7 +55,7 @@ function devshop_projects_create_wizard($step = NULL) {
       $project->code_path = variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project->name;
     }
     if (!empty($project->name) && empty($project->base_url)) {
-      $project->base_url = devshop_projects_url($project->name);
+      $project->base_url = variable_get('devshop_project_environment_url_pattern', "@project.@environment.@hostname");
     }
 
     // Save the current step

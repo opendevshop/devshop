@@ -7,7 +7,6 @@
 require_once('vendor/autoload.php');
 
 use Symfony\Component\Process\Process;
-use Symfony\Component\ClassLoader\ClassLoader;
 
 /**
  * Implements hook_drush_init()
@@ -103,16 +102,16 @@ function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) 
   return <<<PHP
 
   # This site's devshop project name and environment name.
-  \$_SERVER['DEVSHOP_ENVIRONMENT'] = '{$environment->name}';
-  \$_SERVER['DEVSHOP_PROJECT'] = '{$project->name}';
+  \$_SERVER['DEVSHOP_ENVIRONMENT'] = '{$environment}';
+  \$_SERVER['DEVSHOP_PROJECT'] = '{$project}';
 
   # Include devshop environment configuration settings, if there is any.
   if (file_exists(__DIR__ . '/../all/settings.devshop.php')) {
-    include_once(__DIR__ . '/../all/settings.devshop.php');
+    include(__DIR__ . '/../all/settings.devshop.php');
   }
 
   if (file_exists(__DIR__ . '/../default/settings.devshop.php')) {
-    include_once(__DIR__ . '/../default/settings.devshop.php');
+    include(__DIR__ . '/../default/settings.devshop.php');
   }
 
 PHP;
@@ -237,7 +236,7 @@ function drush_devshop_provision_pre_updatedb() {
 /**
  * Run a Symfony Process saving to drush logs.
  */
-function devshop_drush_process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE, $error_message = 'Process Failed') {
+function devshop_process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE, $error_message = 'Process Failed') {
   drush_log("[$label] $command", 'devshop_command');
 
   // Merge in env vars, inheriting the CLI's
@@ -255,12 +254,18 @@ function devshop_drush_process($command, $cwd = null, $label = 'Process', $env =
   $process->setTimeout(NULL);
   if ($log_output) {
     $exit_code = $process->run(function ($type, $buffer) {
-      $is_devshop = drush_get_option('is-devshop', FALSE);
-      if (Process::ERR === $type) {
-        drush_log($buffer, $is_devshop? 'devshop_info': 'error');
-      } else {
-        drush_log($buffer, $is_devshop? 'devshop_info': 'ok');
+      if (drush_get_option('is-devshop', FALSE)) {
+        drush_log($buffer, 'devshop_info');
       }
+      else {
+        echo $buffer;
+      }
+      
+//      if (Process::ERR === $type) {
+//        drush_log($buffer, 'devshop_info');
+//      } else {
+//        drush_log($buffer, 'devshop_info');
+//      }
     });
   }
   else {
@@ -498,18 +503,7 @@ function drush_devshop_provision_pre_provision_deploy() {
  */
 function drush_devshop_provision_pre_provision_verify() {
   if (d()->type === 'project' || (!empty(d()->project) && d()->type === 'site' || d()->type === 'platform')) {
-    
-    if (d()->type == 'site' || d()->type == 'platform') {
-      $project_context = 'project_' . d()->project;
-      $drush_aliases = new Provision_Config_ProjectAliases(d($project_context)->name, d($project_context)->project);
-    }
-    else {
-      $drush_aliases = new Provision_Config_ProjectAliases(d()->name, d()->project);
-    }
-    
-    $drush_aliases->write();
 
-    drush_log(dt('Project Drush aliases written.'), 'devshop_log');
   }
 }
 
@@ -522,8 +516,8 @@ function drush_devshop_provision_post_provision_install() {
 
   // Install Method: Clone
   // Sync from a drush alias.
-  drush_log('Installing environment with method: ' . d()->environment_settings['install_method']['method'] , 'devshop_log');
-  if (d()->environment_settings['install_method']['method'] == 'clone') {
+  drush_log('Installing environment with method: ' . d()->install_method , 'devshop_log');
+  if (d()->install_method == 'clone') {
     drush_log(dt('Environment Clone initiated...'), 'devshop_log');
     $clone_source = d()->environment_settings['install_method']['clone_source'];
 
@@ -540,13 +534,13 @@ function drush_devshop_provision_post_provision_install() {
 
     $destination = d()->name;
     $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --updatedb --cache-clear --registry-rebuild";
-    devshop_drush_process($command, NULL, 'Cloning site from ' . d($source)->uri);
-    devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
+    devshop_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    devshop_process('drush cc drush', NULL, 'Clearing drush caches');
 //    devshop_drush_process_cache_clear($destination);
   }
 
   // Install Method: import
-  elseif (d()->environment_settings['install_method']['method'] == 'import') {
+  elseif (d()->install_method == 'import') {
 
 
     // If import source is a mysql URL:
@@ -558,7 +552,7 @@ function drush_devshop_provision_post_provision_install() {
       $temp_file_name = tempnam('/tmp', 'devshop_remote_db.sql.');
       $db_name = ltrim($url['path'], '/');
       $command = "mysqldump -u{$url['user']} -p{$url['pass']} -h{$url['host']} {$db_name}  --result-file={$temp_file_name}";
-      devshop_drush_process($command, NULL, dt('Saving database file...'));
+      devshop_process($command, NULL, dt('Saving database file...'));
 
       $file_to_import = $temp_file_name;
     }
@@ -576,10 +570,10 @@ function drush_devshop_provision_post_provision_install() {
     // Import the file
     $alias = d()->name;
     $command = "drush {$alias} sqlq 'SOURCE {$file_to_import}'";
-    devshop_drush_process($command, NULL, dt('Importing database file...'));
-    devshop_drush_process('drush cc drush', NULL, 'Clearing drush caches');
+    devshop_process($command, NULL, dt('Importing database file...'));
+    devshop_process('drush cc drush', NULL, 'Clearing drush caches');
     devshop_drush_process_cache_clear($alias);
-    devshop_drush_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
+    devshop_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
   }
 }
 
@@ -593,9 +587,9 @@ function devshop_drush_process_cache_clear($alias) {
 
   // Clear all caches.
   if (drush_drupal_major_version(d()->root) == 8) {
-    devshop_drush_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
+    devshop_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
   }
   else {
-    devshop_drush_process("drush {$alias} cache-clear all", NULL, dt('Clear all Caches'));
+    devshop_process("drush {$alias} cache-clear all", NULL, dt('Clear all Caches'));
   }
 }

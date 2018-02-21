@@ -18,7 +18,7 @@ class Provision_Config_ProjectAliases extends Provision_Config_Drushrc {
    */
   function __construct($context, $project = array()) {
 
-    parent::__construct($context, $project);
+    parent::__construct($context, (array) $project);
     $this->data = array(
       'name' => strtr($context, array('@project_' => '')),
       'project' => $project,
