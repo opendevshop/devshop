@@ -5,21 +5,36 @@
 #
 #  This script will install a full devshop server from scratch. 
 #  
-#  Please read the full "Installing DevShop" instructions at https://devshop.readthedocs.org/en/latest/install/
+#  Please read the full "Installing DevShop" instructions at https://docs.opendevshop.com/install.html
 #
 #  Before you start, please visit https://github.com/opendevshop/devshop/releases to be sure you have the latest version of this script,
-#  Or you may try the 0.x script with the URL https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
-# 
-#  Must run with root or sudo privileges:
+#
+#  DNS & Hostnames
+#  ---------------
+#  For devshop to work, the server's hostname must be a fullly qualified domain name that resolves to an accessible IP address.
+#
+#  Before you run this script, add DNS records for this server:
+#
+#    devshop.mydomain.com. 1800 IN A 1.2.3.4
+#    *.devshop.mydomain.com. 1800 IN A 1.2.3.4
+#
+#  This install script will attempt to set your hostname for you, if you use the --hostname option.
+#
+#
+#  Running Install.sh
+#  ==================
+#
+#   Must run as root:
 #  
-#    ubuntu@devshop:~$ wget https://raw.githubusercontent.com/opendevshop/devshop/0.x/install.sh
-#    ubuntu@devshop:~$ bash install.sh
+#    root@ubunu:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.0.0-rc3/install.sh
+#    root@ubunu:~# bash install.sh --hostname=devshop.mydomain.com
 #
 #  Options:
 #    --hostname           The desired fully qualified domain name to set as this machine's hostname
 #    --server-webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
 #    --makefile           The makefile to use to build the front-end site.
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
@@ -27,6 +42,9 @@ DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-1000}
+ANSIBLE_VERBOSITY="";
+
+export ANSIBLE_FORCE_COLOR=true
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
@@ -89,9 +107,21 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
+      -v|--verbose)
+      ANSIBLE_VERBOSITY="-v"
+      shift # past argument
+      ;;
+      -vvv|--very-verbose)
+      ANSIBLE_VERBOSITY="-vvv"
+      shift # past argument
+      ;;
+      -vvvv|--debug)
+      ANSIBLE_VERBOSITY="-vvvv"
+      shift # past argument
+      ;;
     *)
       echo $LINE
-      echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
+      echo ' Invalid option.'
       echo $LINE
       exit 1
   esac
@@ -251,7 +281,8 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     git checkout $DEVSHOP_VERSION
   else
     cd $PLAYBOOK_PATH
-    git pull
+    git fetch
+    git checkout $DEVSHOP_VERSION
   fi
   PLAYBOOK_PATH=/usr/share/devshop
 #  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
@@ -274,7 +305,7 @@ else
 fi
 
 echo " Installing ansible roles..."
-ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" --force
+ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
@@ -314,7 +345,7 @@ elif [ $SERVER_WEBSERVER == 'nginx' ]; then
   PLAYBOOK_FILE="playbook-nginx.yml"
 fi
 
-ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS"
+ansible-playbook -i inventory $PLAYBOOK_FILE --connection=local --extra-vars "$ANSIBLE_EXTRA_VARS" $ANSIBLE_VERBOSITY
 
 # @TODO: Remove. We should do this in the playbook, right?
 # Run Composer install to enable devshop cli

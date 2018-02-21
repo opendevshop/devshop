@@ -5,7 +5,7 @@ version: '2'
 services:
 
   devmaster:
-    image: aegir/hostmaster:xdebug
+    image: aegir/hostmaster:local
     ports:
       - 80:80
     hostname: devshop.local.computer
@@ -41,12 +41,12 @@ services:
 
     command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
 
-  admin:
-    image: phpmyadmin/phpmyadmin
-    links:
-      - database:db
-    ports:
-      - 8080:80
+#  admin:
+#    image: phpmyadmin/phpmyadmin
+#    links:
+#      - database:db
+#    ports:
+#      - 8080:80
 
 #  selenium:
 #    image: selenium/standalone-chrome-debug:3.4.0-dysprosium
