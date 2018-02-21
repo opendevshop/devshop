@@ -253,7 +253,8 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     git checkout $DEVSHOP_VERSION
   else
     cd $PLAYBOOK_PATH
-    git pull
+    git fetch
+    git checkout $DEVSHOP_VERSION
   fi
   PLAYBOOK_PATH=/usr/share/devshop
 #  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
