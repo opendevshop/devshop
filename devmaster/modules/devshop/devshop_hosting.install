@@ -100,3 +100,17 @@ function devshop_hosting_update_7006() {
 }
  */
 
+/**
+ * Disable and uninstall distro_update module.
+ */
+function devshop_hosting_update_7006() {
+  module_disable(array('distro_update'));
+  drupal_uninstall_modules(array('distro_update'));
+}
+
+/**
+ * Set the "Force removal of deleted sites, platforms, and servers" setting.
+ */
+function devshop_hosting_update_7007() {
+  variable_set('hosting_delete_force', 1);
+}

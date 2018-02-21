@@ -61,6 +61,10 @@
       <strong>Install Profile</strong>
       <small><?php print $project->install_profile ?></small>
     </li>
+    <li data-toggle="tooltip" data-placement="bottom" title="<?php print t('The source code for each environment will be placed into subfolders of this folder.');?>">
+      <strong>Base Path</strong>
+      <small><?php print $project->code_path ?></small>
+    </li>
 
     <!-- Drush Info -->
     <li class="pull-right">
@@ -173,7 +177,7 @@
 
     <?php endforeach; ?>
 
-  <?php if (drupal_valid_path("project/$project->name/add-environment")): ?>
+  <?php if (drupal_valid_path("node/add/site/$project->name")): ?>
   <div class="placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
     <a href="<?php print url("node/add/site/$project->name"); ?>" class="btn btn-lg btn-success">
       <i class="fa fa-plus-square"></i><br />

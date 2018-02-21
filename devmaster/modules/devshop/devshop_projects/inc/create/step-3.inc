@@ -56,10 +56,13 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
 
     // Environment properties
-  
     // Generate field prefix and suffix using domain name pattern.
-    // @TODO: When per-project patterns are added, look for that setting instead of the variable.
-    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+    if (variable_get('devshop_projects_allow_custom_base_url')) {
+      $pattern = $project->base_url;
+    }
+    else {
+      $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+    }
   
     $labels = explode('@environment', strtr($pattern, array(
       '@project' => $project->name,
@@ -150,7 +153,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     // Add Environment
     $form['add_environment'] = array(
       '#type' => 'submit',
-      '#value' => '<i class="fa fa-plus"></i> ' . t('Add environment'),
+      '#value' => t('Add environment'),
       '#name' => 'add_environment',
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',

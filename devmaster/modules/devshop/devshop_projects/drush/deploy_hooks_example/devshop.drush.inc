@@ -33,7 +33,7 @@ function drush_devshop_post_provision_devshop_deploy($branch) {
 
     drush_log("[CUSTOM] Successfully checked out $branch to environment $environment->name in project $project_name.", 'ok');
 
-    provision_backend_invoke(d()->name, 'status');
+//    provision_backend_invoke(d()->name, 'status');
 
   }
 }

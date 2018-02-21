@@ -90,7 +90,7 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
   }
   $form['project']['settings']['bitbucket']['pull_request_environments_method'] = array(
       '#type' => 'select',
-      '#title' => t('Pull Request Environment Deploy Method'),
+      '#title' => t('Pull Request Environment Creation Method'),
       '#default_value' => isset($node->project->settings->bitbucket) ?
           $node->project->settings->bitbucket['pull_request_environments_method'] : 'devshop__bitbucket__install',
       '#description' => t('Select the method for creating the pull request environments.'),
@@ -356,7 +356,7 @@ function devshop_bitbucket_webhook($project_node) {
 
   // @TODO: Handle form content from bitbucket as well.
   if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
-    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA']);
+    $data = json_decode(file_get_contents('php://input'));
 
 //    watchdog('debug', $GLOBALS['HTTP_RAW_POST_DATA']);
 //    watchdog('debug', print_r($data, 1));

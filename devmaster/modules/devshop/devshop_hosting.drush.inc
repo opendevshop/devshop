@@ -28,8 +28,9 @@ function drush_devshop_hosting_platform_delete($platform_path = NULL) {
     }
     drush_log('[DEVSHOP] Looking up platform at ' . $platform_path, 'ok');
 
-    $nid = db_query('SELECT nid FROM {hosting_platform} WHERE publish_path = :publish_path', array(
-      ':publish_path' => $platform_path
+    $nid = db_query('SELECT nid FROM {hosting_platform} WHERE publish_path = :publish_path AND status = :status' , array(
+      ':publish_path' => $platform_path,
+      ':status' => HOSTING_PLATFORM_ENABLED,
     ))->fetchField();
 
     if (empty($nid)) {
