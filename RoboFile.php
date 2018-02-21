@@ -142,7 +142,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Run drush make to build the devmaster stack.
-    $make_destination = "aegir-home/devmaster-" . $opts['devshop_version'];
+    $make_destination = "aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
 
     if (file_exists($make_destination)) {
