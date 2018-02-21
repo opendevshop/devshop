@@ -205,7 +205,7 @@ function devshop_environment_menu($environment) {
     $site = node_load($environment->site);
     if (node_access('update', $site)) {
       $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
-        "node/{$environment->project_nid}/edit/env/{$environment->name}",
+        "node/{$environment->site}/edit",
         array(
           'html' => TRUE,
         ));

@@ -214,7 +214,7 @@ function devmaster_bootstrap() {
   variable_set('hosting_backup_queue_default_enabled', 0);
 
   // Set hosting_logs default folder.
-  variable_set('provision_logs_file_path', '/var/aegir/logs');
+  variable_set('provision_logs_file_path', '/var/log/aegir');
 }
 
 function devmaster_task_finalize() {
@@ -259,6 +259,9 @@ function devmaster_task_finalize() {
 
   // Disable menu settings for projects
   variable_set('menu_options_project', '');
+
+  // Force things to delete even if things fail.
+  variable_set('hosting_delete_force', 1);
 
   // Make sure blocks are setup properly.
 //  _block_rehash();

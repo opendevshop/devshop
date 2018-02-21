@@ -6,7 +6,6 @@
  */
 
 include_once('projects.inc');
-include_once('inc/add-environment.inc');
 include_once('inc/drush.inc');
 include_once('inc/forms.inc');
 include_once('inc/nodes.inc');
@@ -49,10 +48,14 @@ function devshop_projects_init() {
           if (strpos($m, $message) !== FALSE) {
             $show_message = FALSE;
           }
+          else {
+            drupal_set_message($m);
+          }
         }
-        if ($show_message) {
-          drupal_set_message($message);
-        }
+      }
+
+      if ($show_message) {
+        drupal_set_message($message);
       }
     }
   }
@@ -170,10 +173,15 @@ function devshop_projects_devshop_environment_menu($environment) {
 
     $items[] = '<div class="divider"></div>';
 
-    // Add export and import config buttons.
-    if (module_exists('aegir_config')) {
+    // Add export and import config buttons to Drupal 8 sites.
+    if (module_exists('aegir_config') && strpos($environment->version, '8') === 0) {
       $items[] = 'config_export';
       $items[] = 'config_import';
+      $items[] = '<div class="divider"></div>';
+    }
+    elseif (module_exists('aegir_features') && strpos($environment->version, '7') === 0) {
+      $items[] = 'features_update';
+      $items[] = 'features_revert_all';
       $items[] = '<div class="divider"></div>';
     }
 
@@ -291,20 +299,6 @@ function devshop_projects_menu() {
     }
   }
 
-  // Environment settings pages
-  $items['node/%node/edit/env'] = array(
-    'title' => 'Edit',
-    'description' => '',
-    'page callback' => 'devshop_project_environment_settings_page',
-    'page arguments' => array(1),
-    'access callback' => 'node_access',
-    'access arguments' => array('update', 1),
-    'weight' => 1,
-    'file' => 'node.pages.inc',
-    'file path' => drupal_get_path('module', 'node'),
-    'type' => MENU_LOCAL_TASK,
-  );
-
   // Drush aliases download.
   $items['node/%node/aliases'] = array(
     'title' => 'Drush Aliases',
@@ -318,15 +312,15 @@ function devshop_projects_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  // Add Environment page
-  $items['project/%/add-environment'] = array(
-    'title' => 'Add Environment',
-    'type' => MENU_CALLBACK,
-    'page callback' => 'devshop_projects_environment_add_page',
-    'page arguments' => array(1),
-    'access callback' => 'devshop_projects_environment_add_access',
-    'access arguments' => array(1),
-  );
+//  // Add Environment page
+//  $items['project/%/add-environment'] = array(
+//    'title' => 'Add Environment',
+//    'type' => MENU_CALLBACK,
+//    'page callback' => 'devshop_projects_environment_add_page',
+//    'page arguments' => array(1),
+//    'access callback' => 'devshop_projects_environment_add_access',
+//    'access arguments' => array(1),
+//  );
 
   // Ajax endpoint for reloads
   $items['devshop/tasks'] = array(
@@ -454,20 +448,6 @@ function devshop_projects_block_view($delta) {
   if (isset($block)) {
     return $block;
   }
-}
-
-/**
- * Environment settings page menu callback.
- *
- * Pulls in the node edit form for the site of the project.
- */
-function devshop_project_environment_settings_page($project_node, $environment) {
-
-  $site_node = node_load($project_node->project->environments[$environment]->site);
-
-  drupal_set_title($project_node->title);
-  // TODO $site_node needs to have $form as its first parameter.
-  return drupal_get_form($site_node->type . '_node_form', $site_node);
 }
 
 /**
@@ -694,7 +674,6 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
     ))
     ->condition('project_nid', $project->nid)
     ->condition('name', $environment_name)
-    ->condition('last_task', current($tasks)->nid)
     ->execute();
 
   return $node;
@@ -765,34 +744,6 @@ function _devshop_projects_project_has_module($node, $module) {
 }
 
 /**
- * Helper function to generate the URL for an environment.
- * @param $name
- * @param $environment
- * @return string
- */
-function devshop_projects_url($name, $environment = NULL) {
-
-  // If we don't have a name yet, just return the server name.
-  if (empty($name)) {
-    return $_SERVER['SERVER_NAME'];
-  }
-  else {
-    $pattern = variable_get('devshop_project_environment_url_pattern', "@environment.@project.@hostname");
-
-    $replacements = array(
-      '@environment' => $environment,
-      '@project' => $name,
-      '@hostname' => $_SERVER['SERVER_NAME'],
-    );
-
-    if (is_null($environment)) {
-      $replacements['@environment.'] = '';
-    }
-    return strtr($pattern, $replacements);
-  }
-}
-
-/**
  * Reset all environment's "last task" to the NID.
  */
 function devshop_reset_last_tasks () {
@@ -836,7 +787,12 @@ function devshop_load_project_by_name($name) {
 function devshop_environment_url($project, $environment_name) {
 
   // Generate field prefix and suffix using domain name pattern.
-  $pattern = variable_get('devshop_project_environment_url_pattern', '@environment.@project.@hostname');
+  if (variable_get('devshop_projects_allow_custom_base_url')) {
+    $pattern = $project->base_url;
+  }
+  else {
+    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+  }
   $domain = strtr($pattern, array(
     '@environment' => $environment_name,
     '@project' => $project->name,
