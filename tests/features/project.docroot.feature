@@ -19,7 +19,7 @@ Feature: Create a project with Drupal in the docroot.
 
     # Step 2
     Then I should see "rootproject"
-    And I should not see "The name rootproject is in use.  Please try again."
+    And I should not see "The name rootproject is in use. Please try again."
     And I should see "http://github.com/opendevshop/drupal_docroot"
     When I fill in "docroot" for "Path to Drupal"
 
@@ -29,7 +29,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "Path to Drupal"
     And I should see "rootproject"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
     And I reload the page
@@ -43,7 +43,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "dev"
     And I should see "master"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     And I reload the page
 
@@ -51,7 +51,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
-    Then I should see "8.2.7"
+    Then I should see "8."
     Then I should not see "Platform verification failed"
     When I select "standard" from "install_profile"
     And I press "Create Project & Environments"
@@ -69,7 +69,7 @@ Feature: Create a project with Drupal in the docroot.
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
 
-    When I run drush "hosting-tasks --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 

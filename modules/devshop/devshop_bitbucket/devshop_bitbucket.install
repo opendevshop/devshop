@@ -57,7 +57,7 @@ function devshop_bitbucket_install() {
     // Push devshop_bitbucket's system weight to 1.
     db_update('system')
         ->fields(array(
-            'weight' => 1
+            'weight' => 2
         ))
         ->condition('name', 'devshop_bitbucket')
         ->execute();
@@ -79,4 +79,17 @@ function devshop_bitbucket_update_7000() {
       ))
       ->condition('name', 'devshop_bitbucket')
       ->execute();
+}
+
+/**
+ * Set a weight higher than devshop_project so our form doesn't get obliterated by
+ * devshop_projects_form_project_node_form_alter()
+ */
+function devshop_bitbucket_update_7001() {
+  db_update('system')
+    ->fields(array(
+      'weight' => 2
+    ))
+    ->condition('name', 'devshop_bitbucket')
+    ->execute();
 }

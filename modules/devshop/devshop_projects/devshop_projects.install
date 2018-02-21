@@ -415,14 +415,19 @@ function devshop_projects_update_7004 () {
 function devshop_projects_update_7005 () {
   $environments = db_query('SELECT * FROM {hosting_devshop_project_environment} e LEFT JOIN {hosting_devshop_project} p ON p.nid = e.project_nid');
   foreach ($environments as $environment) {
-    db_merge('hosting_git')
-      ->key(array('nid' => $environment->platform))
-      ->fields(array(
-        'repo_url' => $environment->git_url,
-        'git_ref' => $environment->git_ref,
-      ))
-      ->execute();
-    drupal_set_message(t("Updated Platform $environment->platform with $environment->git_url and $environment->git_ref"));
+    if ($environment->platform) {
+      db_merge('hosting_git')
+        ->key(array('nid' => $environment->platform))
+        ->fields(array(
+          'repo_url' => $environment->git_url,
+          'git_ref' => $environment->git_ref,
+        ))
+        ->execute();
+      drupal_set_message(t("Updated Platform $environment->platform with $environment->git_url and $environment->git_ref"));
+    }
+    else {
+      drupal_set_message(t("No Platform found for environment $environment->name for site $environment->site."), 'warning');
+    }
   }
 
   if (db_drop_field('hosting_devshop_project_environment', 'git_ref')) {
@@ -460,4 +465,14 @@ function devshop_projects_update_7008 () {
     ->condition('name', 'devshop_projects')
     ->execute();
 
+}
+
+/**
+ * Update hosting contexts for project node to ensure they all begin with "project_".
+ */
+function devshop_projects_update_7009 () {
+  $query = "UPDATE hosting_context c JOIN node n ON n.nid=c.nid  SET c.name = CONCAT('project_', name) WHERE n.type='project' AND c.name NOT LIKE 'project_'";
+  if (!db_query($query)) {
+    drupal_set_message(t('Something went wrong when running a query to update hosting_context table to ensure all projects are prefixed with "project_":') . $query);
+  }
 }

@@ -65,6 +65,23 @@ function drush_devshop_projects_pre_hosting_task()
 
   $task =& drush_get_context('HOSTING_TASK');
 
+  // For all tasks
+  if ($task->ref->type == 'site' || $task->ref->type == 'platform') {
+    $drush_aliases = new Provision_Config_ProjectAliases($task->ref->project->name, $task->ref->project);
+  }
+  else {
+    $drush_aliases = new Provision_Config_ProjectAliases(d($task->ref->hosting_name)->name, d($task->ref->hosting_name)->project);
+  }
+  
+  // Only write drush aliases if project name was found.
+  if (!empty($drush_aliases->data['name'])) {
+    $drush_aliases->write();
+    drush_log(dt('Drush aliases written for %name project.', [
+      '%name' => $drush_aliases->data['name'],
+    ]), 'devshop_log');
+  }
+  
+
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
   if ($task->task_type == 'download') {
     drush_log('[AEGIR DEVSHOP_PROJECTS] Download package enabled...', 'ok');
@@ -127,34 +144,32 @@ function devshop_projects_post_hosting_verify_task($task, $data) {
     // If this is the first verification, and branch needs to be created (for "fork environment")
     $platform = $task->ref;
     if (!$platform->verified && !empty($platform->environment->settings->branch_to_fork)) {
-      devshop_drush_process("git checkout -b {$platform->environment->git_ref}", $platform->repo_path, dt('Creating a new branch.'));
+      devshop_process("git checkout -b {$platform->environment->git_ref}", $platform->repo_path, dt('Creating a new branch.'));
 
       // Push the branch
-      devshop_drush_process("git push -u origin {$platform->environment->git_ref}", $platform->repo_path, dt('Pushing new branch.'));
+      devshop_process("git push -u origin {$platform->environment->git_ref}", $platform->repo_path, dt('Pushing new branch.'));
     }
-
-
-    // Run 'composer install' if configured to do so.
-    if ($platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
-
-      if (file_exists($platform->repo_path . '/composer.json')) {
-        $cwd = $platform->repo_path;
-      }
-      elseif (file_exists($platform->publish_path . '/composer.json')) {
-        $cwd = $platform->publish_path;
-      }
-      else {
-        // If composer.json was not found in the drupal root or repo root, do not run.
-        drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
-        return;
-      }
-
-      devshop_drush_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
-        '!folder' => $cwd,
-      )));
-
-      devshop_drush_process("git status", $platform->repo_path, dt('Running git status'));
-    }
+//    // Run 'composer install' if configured to do so.
+//    if ($platform->environment->settings->deploy['composer'] || $platform->project->settings->deploy['default_hooks']['composer']) {
+//
+//      if (file_exists($platform->git['repo_path'] . '/composer.json')) {
+//        $cwd = $platform->git['repo_path'];
+//      }
+//      elseif (file_exists($platform->publish_path . '/composer.json')) {
+//        $cwd = $platform->publish_path;
+//      }
+//      else {
+//        // If composer.json was not found in the drupal root or repo root, do not run.
+//        drush_log(dt('composer.json not found, even though "composer install" hook is enabled.'), 'warning');
+//        return;
+//      }
+////
+////      devshop_process("composer install", $cwd, dt('composer.json detected, running composer install in !folder', array(
+////        '!folder' => $cwd,
+////      )));
+//
+//      devshop_process("git status", $platform->git['repo_path'], dt('Running git status'));
+//    }
   }
 }
 
@@ -272,7 +287,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
       }
       // If platform exists, trigger deletion.
       elseif ($environment->platform) {
-        hosting_add_task($environment->platform, 'delete');
+        hosting_add_task($environment->platform, 'delete', array('force' => 1));
       }
     }
 
@@ -314,8 +329,17 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
   }
 }
 
-
 /**
+ * Implements hook_post_hosting_TASK_TYPE_task() for install.
+ */
+function devshop_projects_post_hosting_install_task($task, $data) {
+  
+  // Queue up a verification of the site.
+  hosting_add_task($task->ref->nid, 'verify');
+  
+}
+  
+  /**
  * Implements hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks().
  */
 function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
@@ -340,6 +364,9 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 
   // Queue up a verification of the platform.
   hosting_add_task($task->ref->environment->platform, 'verify');
+  
+  // Queue up a verification of the site.
+  hosting_add_task($task->ref->nid, 'verify');
 }
 
 // @TODO: Remove this function. This is not needed now that we create site nodes at environment create time.

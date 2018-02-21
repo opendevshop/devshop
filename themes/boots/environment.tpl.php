@@ -191,10 +191,6 @@
             <i class="fa fa-bolt" title="<?php print t('Primary Environment'); ?>"></i>
           <?php endif; ?>
 
-          <?php if ($environment->cloned): ?>
-            <i class="fa fa-clone" title="<?php print t('This is a cloned site.'); ?>"></i>
-          <?php endif; ?>
-
           <span><?php print $environment->name; ?></span>
         </a>
 
@@ -555,7 +551,7 @@
     $item_class = 'default';
     $icon = 'check';
     $label = t('Clean');
-    $node = '';
+    $note = '';
 
     if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
       $icon = 'arrow-right';

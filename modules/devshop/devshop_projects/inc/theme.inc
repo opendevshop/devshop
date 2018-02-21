@@ -465,7 +465,15 @@ function theme_devshop_ascii($vars) {
   drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
   $output = $converter->convert($string);
-
+  
+  // Make URLs clickable:
+  $filter = new stdClass();
+  $filter->settings = [
+    'filter_url_length' => 1000,
+  ];
+  $output = _filter_url($output, $filter);
+  
+  // Change linebreaks to <br> tags.
   $output = strtr($output, array(
     '\n' => '<br />',
   ));

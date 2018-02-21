@@ -208,17 +208,15 @@ HTML;
     $form['#no_finish'] = TRUE;
   }
 
-  // If no available profiles:
-  elseif (count($available_profiles) == 0) {
-    $project->no_finish = TRUE;
-    $note = '<p class="error">' . t('No common profile was found in all of your branches.  Please check your source code and try again.  You must !link to change what environment tracks each branch.', array('!link' => l(t('Go Back'), 'projects#/add/environments'))) . '</p>';
-
-    $form['error'] = array(
-      '#markup' => $note,
-    );
-    $form['#no_finish'] = TRUE;
-  }
+  // If ready...
   else {
+    
+    // If no common profiles found, just set to standard.
+    if (count($available_profiles) == 0) {
+      $available_profiles['standard'] = 'No default profile.';
+      $default_profile = 'standard';
+    }
+      
     $project->no_finish = FALSE;
 
     // Install Profile
