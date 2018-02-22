@@ -3,6 +3,7 @@
 ## 1.0.0-rc4 (February 22, 2018)
 
 60 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-rc3...1.0.0-rc4
+
 43 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-rc3...1.x
 
 - Drupal 7.57
