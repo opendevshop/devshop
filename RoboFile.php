@@ -437,8 +437,12 @@ class RoboFile extends \Robo\Tasks {
           $this->say('Unable to disable supervisor.');
           exit(1);
         }
-
-        # Run test script on the container.
+        
+        $this->taskDockerExec('devshop_container')
+          ->exec("php -i")
+          ->run()
+        
+          # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
           ->exec('su - aegir -c  - /usr/share/devshop/tests/devshop-tests.sh')
           ->run()
