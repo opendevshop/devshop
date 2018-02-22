@@ -2,8 +2,35 @@
 
 ## Next Release
 
-- Compatibility with Ubuntu 16.04 LTS Xenial
+- [DevShop Commits](https://github.com/opendevshop/devshop/compare/1.0.0-rc3...1.x)
+- [DevMaster Commits](https://github.com/opendevshop/devmaster/compare/1.0.0-rc3...1.x)
 
+- Drupal 7.57
+- Contrib updates.
+- Compatibility with Ubuntu 16.04 LTS Xenial. Added 16.04 install tests to Travis.
+- Fixes for PHP7: Mostly just removed a reference variable in foreach loops.
+- Default local docker-compose environment to use XDebug.
+- Update Ansible roles to work with latest Geerlingguy playbooks on any LTS Ubuntu by using Variable overrides.
+- Always force ansible run to output in color.
+- Improvements install.sh script:
+  - If installing a branch, but /usr/share/devshop already exists, pull and checkout that branch.
+  - Add -v -vv and -vvv options to install.sh, which pass to ansible.
+  - Fix issue when using alternative devshop versions when testing. Robofile now builds source in correct folder.
+- Small UI improvements:
+  - Site slogan now floats right.
+  - Help text on rename domain form.
+  - Fix double + icon in create project wizard.
+  - Remove warnings just in case profiles are not found.
+  - Fix incorrect environment save message: Properly says either "created" or "updated".
+- Write project drush aliases on every task run on sites associated with a project.
+- Force Delete! Platforms and sites are always forced now, so you will not get stuck with a "Failed Delete" task and a site that can't be removed cleanly!
+- Removed Aegir Ansible and Aegir Cloud from Devmaster core. Too much power. Too much responsibility.
+- Aegir Improvements: 
+  - Release notes for [3.13](http://docs.aegirproject.org/en/3.x/release-notes/3.13) and [3.14](http://docs.aegirproject.org/en/3.x/release-notes/3.14/) released.
+  - Platform verify tasks now always run `composer install` if a composer.json is found.
+  - Add "Edit Platform" tab to site node page.
+  - Improve settings.php includes: Platform-wide settings.php is not possible.
+  
 ## 1.0.0-rc3 (September 26 2017)
 
 10 Commits to DevShop https://github.com/opendevshop/devshop/compare/1.0.0-rc1...1.0.0-rc3
