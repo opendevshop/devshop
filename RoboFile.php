@@ -440,7 +440,7 @@ class RoboFile extends \Robo\Tasks {
         
         $this->taskDockerExec('devshop_container')
           ->exec("php -i")
-          ->run()
+          ->run();
         
           # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
