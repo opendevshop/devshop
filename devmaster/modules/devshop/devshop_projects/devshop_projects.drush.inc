@@ -69,7 +69,7 @@ function drush_devshop_projects_pre_hosting_task()
   if ($task->ref->type == 'site' || $task->ref->type == 'platform') {
     $drush_aliases = new Provision_Config_ProjectAliases($task->ref->project->name, $task->ref->project);
   }
-  else {
+  elseif ($task->ref->type == 'project') {
     $drush_aliases = new Provision_Config_ProjectAliases(d($task->ref->hosting_name)->name, d($task->ref->hosting_name)->project);
   }
   
