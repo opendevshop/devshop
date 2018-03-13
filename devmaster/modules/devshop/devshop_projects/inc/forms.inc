@@ -1527,12 +1527,6 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     '#description' => t('If features is enabled, revert all of them.'),
     '#default_value' => empty($environment->settings->deploy)? $project_revert : $environment_revert,
   );
-  $return['composer'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run composer install.'),
-      '#description' => t('If a composer.json file is found, run <code>composer install</code>. <em>WARNING:</em> this may result in your git working tree to become modified.'),
-      '#default_value' => empty($environment->settings->deploy)? $project_composer_install : $environment_composer_install,
-  );
   // Look for .hooks or .hooks.yml
   if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['dothooks'])) {
     $return['dothooks'] = array(
