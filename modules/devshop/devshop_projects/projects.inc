@@ -290,7 +290,7 @@ function devshop_project_load($node) {
     }
 
     // Look for non-80 ports.
-    if ($environment->servers['http']['server']->services['http']->port != '80') {
+    if ($environment->servers['http']['server']->services['http']->port != '80' && $environment->servers['http']['server']->services['http']->port != '0') {
       $environment->url .= ':' . $environment->servers['http']['server']->services['http']->port;
     }
 
