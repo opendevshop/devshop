@@ -202,6 +202,11 @@ class RoboFile extends \Robo\Tasks {
       ->option('file', 'aegir-dockerfiles/Dockerfile-web')
       ->tag('aegir/web')
       ->run();
+
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-privileged')
+      ->tag('aegir/hostmaster:privileged')
+      ->run();
   }
 
   /**
