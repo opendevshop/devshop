@@ -1,5 +1,22 @@
 # Change Log
 
+## 1.0.0-rc5 (March 27, 2018)
+
+8 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-rc4...1.0.0-rc5
+
+18 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-rc4...1.0.0-rc5
+
+- Bumped hosting module to 3.14.1.
+- Bumped ctools and bootstrap versions.
+- Removed accidental writing of drush aliases on server tasks.
+- In project creation form, if there is a problem with missing branch data, show a button to users to fix it.
+- Fix install tasks not getting set as the last task.
+- Removed composer install option. Provision now runs it automatically if there is a composer.json file present.
+- Removed redundant node_load() on web server.
+- Add port to links if not set to 80.
+- Enable awesome modules by default: Aegir Download (for adding modules), Aegir Commit (allows committing files), Aegir Update (allows drupal core and contrib updates), and Aegir Config/Features (allows config export/import and features update/revert).
+- Added a "Commit & Push" checkbox to the Update Drupal task form! Automatically runs `drush pm-update`, then creates a commit task to commit and push all the changes!
+
 ## 1.0.0-rc4 (February 22, 2018)
 
 60 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-rc3...1.0.0-rc4
