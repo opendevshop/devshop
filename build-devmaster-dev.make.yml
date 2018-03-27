@@ -18,7 +18,7 @@ projects:
     subdir: ''
     download:
       type: git
-      branch: 1.x
+      branch: 7.x-1.x
       url: http://github.com/opendevshop/devmaster.git
 
   devel:
