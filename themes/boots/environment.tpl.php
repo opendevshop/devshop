@@ -572,6 +572,7 @@
         $note .= '<pre>
 # Aegir files
 sites/sites.php
+sites/*/private
 sites/*/drushrc.php
 sites/*/local.settings.php
 sites/all/drush/drushrc.php
