@@ -118,6 +118,6 @@ function devshop_hosting_update_7007() {
 /**
  * Enable Aegir Download, Commit, Update, and Config modules.
  */
-function devshop_hosting_update_7008() {
-    module_enable(array('aegir_download', 'aegir_commit', 'aegir_update', 'aegir_config'));
+function devshop_hosting_update_7009() {
+    module_enable(array('aegir_download', 'aegir_commit', 'aegir_update', 'aegir_config', 'aegir_features'));
 }
