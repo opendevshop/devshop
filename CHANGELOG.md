@@ -1,10 +1,10 @@
 # Change Log
 
-## 1.0.0-rc5 (March 27, 2018)
+## 1.0.3-rc5 (March 27, 2018)
 
-8 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-rc4...1.0.0-rc5
+8 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.2-rc4...1.0.3-rc5
 
-18 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-rc4...1.0.0-rc5
+18 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.2-rc4...1.0.3-rc5
 
 - Bumped hosting module to 3.14.1.
 - Bumped ctools and bootstrap versions.
@@ -18,11 +18,11 @@
 - Added a "Commit & Push" checkbox to the Update Drupal task form! Automatically runs `drush pm-update`, then creates a commit task to commit and push all the changes!
 - Adjust Aegir Updates module to use composer update to run drupal-core updates.
 
-## 1.0.0-rc4 (February 22, 2018)
+## 1.0.2-rc4 (February 22, 2018)
 
-60 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-rc3...1.0.0-rc4
+60 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.0-rc3...1.0.2-rc4
 
-43 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-rc3...1.x
+43 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-rc3...1.0.2-rc4
 
 - Drupal 7.57
 - Contrib updates.
