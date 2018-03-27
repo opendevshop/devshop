@@ -5,7 +5,7 @@ sudo: required
 # Only run test when committing to 1.x branch.
 branches:
   only:
-    - 1.x
+    - 7.x-1.x
 
 env:
   global:
