@@ -57,7 +57,7 @@ projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha5"
 projects[views][version] = "3.18"
 projects[views_bulk_operations][version] = "3.4"
-projects[ctools][version] = "1.13"
+projects[ctools][version] = "1.14"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
@@ -87,4 +87,4 @@ libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.15
+projects[bootstrap][version] = 3.19
