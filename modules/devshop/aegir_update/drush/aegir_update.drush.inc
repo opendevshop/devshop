@@ -26,3 +26,14 @@ function drush_aegir_update_provision_update_drupal() {
   provision_backend_invoke(d()->name, 'pm-update');
   drush_log(dt('Drush pm-update task completed'));
 }
+
+/**
+ * Map values of site node into command line arguments.
+ */
+function drush_aegir_update_pre_hosting_task($task) {
+  $task = &drush_get_context('HOSTING_TASK');
+  if ($task->task_type == 'update_drupal' && !empty($task->task_args['commit'])) {
+    // Pass the argument provision_git expects.
+    $task->options['commit'] = $task->task_args['commit'];
+  }
+}
