@@ -3,6 +3,10 @@
 core: "7.x"
 api: "2"
 
+defaults:
+  projects:
+    subdir: "contrib"
+
 projects:
   drupal:
     type: core
@@ -11,6 +15,7 @@ projects:
   # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
   devmaster:
     type: profile
+    subdir: ''
     download:
       type: copy
       url: ../devmaster
