@@ -6,6 +6,7 @@
 
 18 commits to Devmaster: https://github.com/opendevshop/devmaster/compare/1.0.0-rc4...1.0.0-rc5
 
+- Pre-release before Drupal Core security update. https://www.drupal.org/psa-2018-001
 - Bumped hosting module to 3.14.1.
 - Bumped ctools and bootstrap versions.
 - Removed accidental writing of drush aliases on server tasks.
