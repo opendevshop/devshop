@@ -12,4 +12,4 @@ projects[drupal][version] = 7.57
 
 ; RELEASE
 ; Leave in place for replacement by release process.
-projects[devmaster][version] = 1.x
+projects[devmaster][version] = 1.00-rc5
