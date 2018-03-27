@@ -16,6 +16,7 @@
 - Add port to links if not set to 80.
 - Enable awesome modules by default: Aegir Download (for adding modules), Aegir Commit (allows committing files), Aegir Update (allows drupal core and contrib updates), and Aegir Config/Features (allows config export/import and features update/revert).
 - Added a "Commit & Push" checkbox to the Update Drupal task form! Automatically runs `drush pm-update`, then creates a commit task to commit and push all the changes!
+- Adjust Aegir Updates module to use composer update to run drupal-core updates.
 
 ## 1.0.0-rc4 (February 22, 2018)
 
