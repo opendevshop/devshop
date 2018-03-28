@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.0 (March 28, 2018)
+
+- Drupal 7.58: Security release. See https://www.drupal.org/sa-core-2018-002
+- Out of RC!
+
 ## 1.0.3-rc6 (March 28, 2018)
 
 - Adding Hosting Git Tag: Tag releases from web UI.
