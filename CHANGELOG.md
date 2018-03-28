@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.3-rc6 (March 28, 2018)
+
+- Adding Hosting Git Tag: Tag releases from web UI.
+
 ## 1.0.3-rc5 (March 27, 2018)
 
 8 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.0.2-rc4...1.0.3-rc5
