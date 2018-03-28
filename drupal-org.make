@@ -19,7 +19,8 @@ projects[eldir][type] = theme
 projects[eldir][version] = "3.140"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.140"
+projects[hosting_git][download][type] = git
+projects[hosting_git][download][branch] = 2949481-git-tag
 
 projects[hosting_remote_import][subdir] = aegir
 projects[hosting_remote_import][version] = "3.140"
