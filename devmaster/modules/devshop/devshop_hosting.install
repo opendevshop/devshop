@@ -121,3 +121,10 @@ function devshop_hosting_update_7007() {
 function devshop_hosting_update_7009() {
     module_enable(array('aegir_download', 'aegir_commit', 'aegir_update', 'aegir_config', 'aegir_features'));
 }
+
+/**
+ * Enable Hosting Git Tag module.
+ */
+function devshop_hosting_update_7010() {
+    module_enable(array('hosting_git_tag'));
+}
