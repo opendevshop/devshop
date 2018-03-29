@@ -208,7 +208,7 @@ function devshop_hosting_site_url($node) {
  * Provides some UI enhancements.
  */
 function devshop_hosting_form_user_login_alter(&$form) {
-  $form['pass']['#description'] .= '  ' . l(t('Forgot your Password?'), 'user/password');
+  $form['pass']['#description'] = l(t('Forgot your Password?'), 'user/password');
 
   // Add user register link
   if (user_register_access()) {
