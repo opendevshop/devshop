@@ -19,7 +19,6 @@ projects:
     download:
       type: git
       branch: 7.x-1.x
-      url: http://github.com/opendevshop/devmaster.git
 
   devel:
     version: 1
