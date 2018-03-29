@@ -102,7 +102,7 @@
           <?php if (!empty($primary_nav)): ?>
             <?php print render($primary_nav); ?>
           <?php endif; ?>
-          <?php print($tasks); ?>
+          <?php if (!empty($tasks)) print($tasks); ?>
           <?php if (!empty($secondary_nav)): ?>
             <?php print render($secondary_nav); ?>
           <?php endif; ?>
