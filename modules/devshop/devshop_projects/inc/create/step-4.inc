@@ -37,8 +37,8 @@ function devshop_project_create_step_sites($form, &$form_state) {
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
-    $tasks = devshop_get_tasks($environment, 'verify', 'type');
-    $task = current($tasks);
+    $tasks = devshop_get_tasks($environment, 'verify');
+    $task = current($tasks['verify']);
 
     if (empty($task)) {
       $row = array(
