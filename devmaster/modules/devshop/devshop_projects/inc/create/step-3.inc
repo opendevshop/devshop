@@ -9,6 +9,7 @@
  * STEP 3: Form
  */
 function devshop_project_create_step_environments($form, &$form_state) {
+  global $user;
   $project = &$form_state['project'];
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect to your repository and determine any branches.') . '</p>';
@@ -35,6 +36,23 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#prefix' => '<div id="environments-wrapper">',
     '#suffix' => '</div>',
   );
+
+  // If there was a problem with loading branches or tags, hide the form and show a link to re-verify.
+  if (empty($project->settings->git['branches']) && empty($project->settings->git['tags'])) {
+    $form['error'] = array(
+      '#markup' => t('Unable to read branches or tags. Please !verify.', array(
+          '!verify' => l(t('Re-verify the project'), "hosting_confirm/{$project->nid}/project_verify", array(
+            'query' => array('token' => drupal_get_token($user->uid)),
+            'attributes' => array(
+              'class' => array('btn btn-success'),
+            ),
+          ))
+        )),
+      '#prefix' => '<div class="jumbotron alert alert-danger">',
+      '#suffix' => '</div>',
+    );
+    return $form;
+  }
 
   // Ensure a blank row exists (happens when using 'Back' button).
   if (!isset($project->environments['NEW']) || !is_array($project->environments['NEW'])) {

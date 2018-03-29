@@ -602,7 +602,7 @@ function devshop_hosting_task_menu_access($node, $task) {
     $node = node_load($node);
   }
 
-  if ($task != 'delete' && !$node->status) {
+  if ($node->type != 'project' && $task != 'delete' && !$node->status) {
     return FALSE;
   }
 
