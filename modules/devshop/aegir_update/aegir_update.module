@@ -41,6 +41,12 @@ function hosting_task_update_drupal_form() {
       '#prefix' => '<div class="alert alert-warning"><i class="fa fa-warning"></i> ',
       '#suffix' => '</div>',
     );
+    $form['commit'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Commit & Push all changes'),
+      '#description' => t('After running the update, commit and push all changes.'),
+      '#default_value' => 1,
+    );
     return $form;
 }
 
@@ -50,6 +56,16 @@ function hosting_task_update_drupal_form() {
  * Trigger a verify task for the site and the platform.
  */
 function aegir_update_post_hosting_update_drupal_task($task, $data) {
+
+  $account = user_load($task->uid);
+  if (isset($task->task_args['commit']) && $task->task_args['commit']) {
+      hosting_add_task($task->ref->nid, 'commit', array(
+        'push' => 1,
+        'name' => $account->name,
+        'mail' => $account->mail,
+      ));
+  }
+
   hosting_add_task($task->ref->platform, 'verify');
   hosting_add_task($task->ref->nid, 'verify');
 }
