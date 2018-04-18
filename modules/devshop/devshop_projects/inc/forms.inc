@@ -60,10 +60,15 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'code_path',
     ),
   );
+
+  $items = [];
+  $items[] = t('Enter the relative path to the exposed document root within your repository. Leave blank if index.php is in the root. Common paths are docroot or web.');
+  $items[] = t('If you are using the drupal-composer project for Drupal 8, the default document root is "web".');
+
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
-    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
+    '#description' => theme('item_list', ['items' => $items]),
     '#size' => 40,
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
