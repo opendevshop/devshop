@@ -133,7 +133,17 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   }
 
   foreach ($commands as $command) {
-    devshop_process($command, d()->platform->repo_path, 'DevShop Deploy Hook');
+    $output = devshop_process($command, d()->platform->repo_path, 'DevShop Deploy Hook');
+
+    // Detect common errors and help the user.
+    // Composer install with incorrect PHP version.
+    if (strpos($command, 'composer install') !== FALSE && strpos($output, 'your PHP version') !== FALSE && strpos($output, 'does not satisfy that requirement') !== FALSE) {
+      drush_log(dt('Composer indicated that it could not install packages because the site codebase requires a higher version of PHP than what is running on the server.'), 'devshop_log');
+      drush_log(dt('You can either upgrade your version of PHP on this server or set the maximum PHP version in your composer.json file. See !link for instructions for how to modify your composer.json file, then make sure to run `composer update` on your codebase to pin your packages to a lower PHP version.', [
+        '!link' => '<a href="https://getcomposer.org/doc/06-config.md#platform">https://getcomposer.org/doc/06-config.md#platform</a>',
+      ]), 'devshop_log');
+    }
+
   }
 }
 
