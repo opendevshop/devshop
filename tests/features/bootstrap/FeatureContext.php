@@ -164,4 +164,21 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
     print "Deleting /var/aegir/projects/drpl8";
     print shell_exec('rm -rf /var/aegir/projects/drpl8');
   }
+
+    /**
+     *
+     * @When I submit a pull-request
+     */
+    public function iSubmitAPullRequest()
+    {
+        $url = $this->minkContext->getSession()->getPage()->findField('webhook-url')->getAttribute('value');
+        $postdata = file_get_contents(dirname(dirname(__FILE__)) . '/assets/pull-request-opened.json');
+
+        $this->getDriver('drush')->getClient()->request ('POST', $url, $postdata);
+
+//        $this->minkContext->getDriver()->getClient()->request ('POST', $url, $postdata);
+
+
+        throw new PendingException();
+    }
 }
