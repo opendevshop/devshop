@@ -914,7 +914,7 @@ data-target="#webhook-modal" title="Webhook URL">
                   <p>
                     $prefix
                   </p>
-                  <p><input class="form-control" value="$url" onclick="this.select()"></p>
+                  <p><input id="webhook-url" class="form-control" value="$url" onclick="this.select()"></p>
                   <p>
                     $suffix
                   </p>
