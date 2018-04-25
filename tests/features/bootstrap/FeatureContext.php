@@ -174,11 +174,13 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
         $url = $this->minkContext->getSession()->getPage()->findField('webhook-url')->getAttribute('value');
         $postdata = file_get_contents(dirname(dirname(__FILE__)) . '/assets/pull-request-opened.json');
 
-        $this->getDriver('drush')->getClient()->request ('POST', $url, $postdata);
+        print "Found WebHook URL: $url";
 
-//        $this->minkContext->getDriver()->getClient()->request ('POST', $url, $postdata);
+        // This one works, let's test for a URL first.
+//        $this->getDriver('drush')->getClient()->request ('POST', $url, $postdata);
 
-
-        throw new PendingException();
+        if (empty($url)) {
+            throw new \Exception('Unable to find webhook URL.');
+        }
     }
 }
