@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.2.0 (April 25, 2018)
+
+- Drupal 7.59: Security release. See https://www.drupal.org/sa-core-2018-004
+- Views 3.20 and Bootstrap 3.20.
+- Use the 'delegated' volume flag in the development docker-compose.yml file for optimal performance on Docker for Mac. See https://docs.docker.com/docker-for-mac/osxfs-caching/ for more information.
+- Renamed 'Tag a Release' to 'Create a tag' to be mote literal.
+- When composer install command mentions PHP version, offer a suggestion for how to fix it.
+- devshop_process() now returns the entire process class allowing implementors access to more information.
+- Better description of "Path to Drupal" field.
+- Adding better Behat feature context error handling. Now will save a file  with the page output and give you a link to it.
+- Began to add tests for PR environments.
+- Remove some warnings.
+
 ## 1.1.0 (March 28, 2018)
 
 - Drupal 7.58: Security release. See https://www.drupal.org/sa-core-2018-002
