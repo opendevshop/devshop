@@ -27,9 +27,9 @@ services:
 
     privileged: true
     volumes:
-      - ./aegir-home:/var/aegir:z
-      - ./:/usr/share/devshop:z
-      - ./provision:/usr/share/drush/commands/provision:z
+      - ./aegir-home:/var/aegir:delegated
+      - ./:/usr/share/devshop:delegated
+      - ./provision:/usr/share/drush/commands/provision:delegated
       - /var/run/docker.sock:/var/run/docker.sock
 
   database:
