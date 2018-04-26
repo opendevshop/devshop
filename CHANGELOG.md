@@ -1,6 +1,10 @@
 # Change Log
 
-## 1.2.0 (April 25, 2018)
+## 1.1.2 (April 26, 2018)
+
+- Fix to install script, making sure it uses Drupal 7.59 in build-devmaster.make
+
+## 1.1.1 (April 25, 2018)
 
 - Drupal 7.59: Security release. See https://www.drupal.org/sa-core-2018-004
 - Views 3.20 and Bootstrap 3.20.
