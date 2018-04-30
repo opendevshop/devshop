@@ -65,7 +65,7 @@ projects[intercomio][version] = "1"
 projects[libraries][version] = 2.3
 
 ; Hosting HTTPS with Let's Encrypt!
-projects[hosting_https][version] = "7.x-3.140"
+projects[hosting_https][version] = "3.140"
 
 ; Dehydrated for LetsEncrypt.org
 libraries[dehydrated][download][type] = git
