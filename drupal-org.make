@@ -63,6 +63,7 @@ projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
 projects[libraries][version] = 2.3
+projects[cas][version] = 1.7
 
 ; Hosting HTTPS with Let's Encrypt!
 ; @TODO: Update with a new alpha.
