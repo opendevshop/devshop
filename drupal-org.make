@@ -79,6 +79,12 @@ libraries[cas][download][type] = "git"
 libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
 libraries[cas][destination] = "libraries"
 
+; Hybrid Auth
+libraries[hybridauth][download][type] = "git"
+libraries[hybridauth][download][url] = "https://github.com/hybridauth/hybridauth"
+libraries[hybridauth][download][tag] = "v2.10.0"
+libraries[hybridauth][destination] = "libraries"
+
 ; Timeago module
 projects[timeago][version] = 2.3
 
