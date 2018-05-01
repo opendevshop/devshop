@@ -64,6 +64,7 @@ projects[module_filter][version] = "2"
 projects[intercomio][version] = "1"
 projects[libraries][version] = 2.3
 projects[cas][version] = 1.7
+projects[hybridauth][version] = 2.15
 
 ; Hosting HTTPS with Let's Encrypt!
 projects[hosting_https][version] = "3.140"
