@@ -73,6 +73,11 @@ libraries[dehydrated][download][type] = git
 libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
 libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
 
+; PHPCAS
+libraries[cas][download][type] = "git"
+libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
+libraries[cas][destination] = "libraries"
+
 ; Timeago module
 projects[timeago][version] = 2.3
 
