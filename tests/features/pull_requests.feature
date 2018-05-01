@@ -8,9 +8,6 @@
 #  Scenario: Create a new drupal 8 project
 #
 #    Given I am logged in as a user with the "administrator" role
-#    Given I am at "project/drupal"
-#    When I submit a pull-request
-#
 #    And I am on the homepage
 #    When I click "Projects"
 #    And I click "Start a new Project"
@@ -73,3 +70,4 @@
 #
 #
 #   # @TODO: Deliver demo PR payloads
+##    When I submit a pull-request
