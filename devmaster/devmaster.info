@@ -33,10 +33,10 @@ dependencies[] = hosting_sync
 
 dependencies[] = hosting_filemanager
 dependencies[] = hosting_logs
-dependencies[] = hosting_ssl
 dependencies[] = hosting_tasks_extra
 dependencies[] = hosting_backup_queue
 dependencies[] = hosting_site_backup_manager
+dependencies[] = hosting_https
 
 ;dependencies[] = fix_permissions
 ;dependencies[] = fix_ownership
