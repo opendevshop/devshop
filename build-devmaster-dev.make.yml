@@ -18,7 +18,7 @@ projects:
     subdir: ''
     download:
       type: git
-      branch: 7.x-1.x
+      branch: hosting_https
 
   devel:
     version: 1
@@ -52,6 +52,10 @@ projects:
       type: git
       branch: 7.x-1.x
   hosting_logs:
+    download:
+      type: git
+      branch: 7.x-3.x
+  hosting_https:
     download:
       type: git
       branch: 7.x-3.x
