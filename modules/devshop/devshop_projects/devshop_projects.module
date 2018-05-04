@@ -153,7 +153,7 @@ function devshop_environment_menu_first_items($environment, $tasks) {
 
     }
 
-    if (user_access('create git-tag task') && $environment->platform) {
+    if (user_access('create platform git-tag task') && $environment->platform) {
       $items[] = l('<i class="fa fa-tag"></i> '.t('Create a tag'),
         "hosting_confirm/{$environment->platform}/platform_git-tag",
         array(
