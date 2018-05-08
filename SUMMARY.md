@@ -4,6 +4,7 @@
   * [About DevShop](README.md)
   * [Roadmap](roadmap.md)
   * [Tour](./tour.md)
+  * [How it works](./how-it-works.md)
 
 ### Install & Upgrade
   * [Installing DevShop](install.md)
