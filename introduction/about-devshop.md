@@ -1,8 +1,8 @@
-# Introduction
+# About DevShop
 
 ## DevShop
 
-![A screenshot of the DevShop Project Dashboard](.gitbook/assets/devshop.png)
+![A screenshot of the DevShop Project Dashboard](../.gitbook/assets/devshop.png)
 
 ## Resources
 
@@ -29,7 +29,7 @@ Code is deployed on push to your git repo automatically. Deploy any branch or ta
 
 DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster), it's own installation profile, [Devmaster](http://github.com/opendevshop/devmaster). It does not use the theme, Eldir. The default devshop theme is called [boots](https://github.com/opendevshop/devmaster/tree/1.x/themes/boots) and is included in the Devmaster install profile.
 
-DevShop uses many additional [contributed modules](https://github.com/opendevshop/documentation/tree/4c1866b89e87467c5d6bad83343cb3e8de6230a5/drupal-contributions.md) that Aegir core does not.
+DevShop uses many additional [contributed modules](https://github.com/opendevshop/documentation/tree/533364047546c8a893bb1cb43640441dddce5adc/drupal-contributions.md) that Aegir core does not.
 
 ## Aegir Cooperative Founding Member
 
@@ -39,7 +39,7 @@ See [aegir.coop](http://aegir.coop) for more information.
 
 ## Tour
 
-See the [Tour](introduction/tour.md) section of the documentation for a quick walkthrough of the DevShop interface.
+See the [Tour](tour.md) section of the documentation for a quick walkthrough of the DevShop interface.
 
 ## Components
 
@@ -84,7 +84,7 @@ These roles extend the excellent [Ansible roles provided by Jeff Geerling](http:
 
 ### Installation
 
-See [the installation instructions](install-and-upgrade/installing-devshop.md) for detailed information on installing DevShop.
+See [the installation instructions](../install-and-upgrade/installing-devshop.md) for detailed information on installing DevShop.
 
 ### Usage
 

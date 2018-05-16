@@ -1,38 +1,46 @@
-# Summary
+# Table of contents
 
-### Introduction
-  * [About DevShop](README.md)
-  * [Roadmap](roadmap.md)
-  * [Tour](./tour.md)
-  * [How it works](./how-it-works.md)
+* [Introduction](README.md)
 
-### Install & Upgrade
-  * [Installing DevShop](install.md)
-  * [Upgrading DevShop](upgrading.md)
-  * [Changing Hostname](changing-hostname.md)
-  * [System Configuration with Ansible](system-configuration.md)
-  * [Setup Examples](examples.md)
+## Introduction
 
-### Using DevShop
-* [Deployment Hooks](deployment-hooks.md)
-* [Customizing settings.php](settings-php.md)
-* [Automated Testing](testing.md)
-* [Acquia Cloud Hooks Integration](deployment-hooks-acquia.md)
-* [Remote Servers](remotes.md)
-* [Going Live](going-live.md)
-* [Scaling](scaling.md)
-* [Deleting Projects & Environments](deleting.md)
-* [Using SSL](ssl.md)
-* [Password Protection](password-protect.md)
-* [Troubleshooting](troubleshooting.md)
+* [About DevShop](introduction/about-devshop.md)
+* [Roadmap](introduction/roadmap.md)
+* [Tour](introduction/tour.md)
+* [How it works](introduction/how-it-works.md)
 
-### Developing DevShop
-* [Developing DevShop](development.md)
+## Install & Upgrade
 
-### Learning DevShop
-* [The Complete DevShop Training](learn.md)
+* [Installing DevShop](install-and-upgrade/installing-devshop.md)
+* [Upgrading DevShop](install-and-upgrade/upgrading-devshop.md)
+* [Changing Hostname](install-and-upgrade/changing-hostname.md)
+* [System Configuration with Ansible](install-and-upgrade/system-configuration-with-ansible.md)
+* [Setup Examples](install-and-upgrade/setup-examples.md)
 
+## Using DevShop
 
-### Contributing
-* [How to contribute to DevShop](development.md)
-* [Release Process](release-process.md)
+* [Deployment Hooks](using-devshop/deployment-hooks.md)
+* [Customizing settings.php](using-devshop/customizing-settings.php.md)
+* [Automated Testing](using-devshop/automated-testing.md)
+* [Acquia Cloud Hooks Integration](using-devshop/acquia-cloud-hooks-integration.md)
+* [Remote Servers](using-devshop/remote-servers.md)
+* [Going Live](using-devshop/going-live.md)
+* [Scaling](using-devshop/scaling.md)
+* [Deleting Projects & Environments](using-devshop/deleting-projects-and-environments.md)
+* [Using SSL](using-devshop/using-ssl.md)
+* [Password Protection](using-devshop/password-protection.md)
+* [Troubleshooting](using-devshop/troubleshooting.md)
+
+## Developing DevShop
+
+* [Developing DevShop](developing-devshop/developing-devshop.md)
+
+## Learning DevShop
+
+* [The Complete DevShop Training](learning-devshop/the-complete-devshop-training.md)
+
+## Contributing
+
+* [How to contribute to DevShop](contributing/how-to-contribute-to-devshop.md)
+* [Release Process](contributing/release-process.md)
+
