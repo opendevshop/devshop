@@ -107,6 +107,9 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
+    --email=*)
+      DEVMASTER_ADMIN_EMAIL="${1#*=}"
+      ;;
       -v|--verbose)
       ANSIBLE_VERBOSITY="-v"
       shift # past argument
@@ -333,6 +336,10 @@ fi
 # If testing in travis, disable supervisor.
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
+fi
+
+if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_devmaster_email=$DEVMASTER_ADMIN_EMAIL"
 fi
 
 if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
