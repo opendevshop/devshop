@@ -111,15 +111,15 @@ while [ $# -gt 0 ]; do
     --email=*)
       DEVMASTER_ADMIN_EMAIL="${1#*=}"
       ;;
-      -v|--verbose)
+    -v|--verbose)
       ANSIBLE_VERBOSITY="-v"
       shift # past argument
       ;;
-      -vvv|--very-verbose)
+    -vvv|--very-verbose)
       ANSIBLE_VERBOSITY="-vvv"
       shift # past argument
       ;;
-      -vvvv|--debug)
+    -vvvv|--debug)
       ANSIBLE_VERBOSITY="-vvvv"
       shift # past argument
       ;;
