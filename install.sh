@@ -34,6 +34,7 @@
 #    --server-webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
 #    --makefile           The makefile to use to build the front-end site.
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
 #
 
 # Version used for cloning devshop playbooks
