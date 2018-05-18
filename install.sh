@@ -34,6 +34,7 @@
 #    --server-webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
 #    --makefile           The makefile to use to build the front-end site.
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
 #
 
 # Version used for cloning devshop playbooks
@@ -107,15 +108,18 @@ while [ $# -gt 0 ]; do
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
       ;;
-      -v|--verbose)
+    --email=*)
+      DEVMASTER_ADMIN_EMAIL="${1#*=}"
+      ;;
+    -v|--verbose)
       ANSIBLE_VERBOSITY="-v"
       shift # past argument
       ;;
-      -vvv|--very-verbose)
+    -vvv|--very-verbose)
       ANSIBLE_VERBOSITY="-vvv"
       shift # past argument
       ;;
-      -vvvv|--debug)
+    -vvvv|--debug)
       ANSIBLE_VERBOSITY="-vvvv"
       shift # past argument
       ;;
@@ -333,6 +337,10 @@ fi
 # If testing in travis, disable supervisor.
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
+fi
+
+if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_devmaster_email=$DEVMASTER_ADMIN_EMAIL"
 fi
 
 if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
