@@ -64,7 +64,7 @@ projects[module_filter][version] = "2"
 projects[libraries][version] = 2.3
 projects[cas][version] = 1.7
 projects[hybridauth][version] = 2.15
-projects[composer_autoload][version] = 1.3
+projects[composer_autoloader][version] = 1.3
 
 ; Hosting HTTPS with Let's Encrypt!
 projects[hosting_https][version] = "3.140"
