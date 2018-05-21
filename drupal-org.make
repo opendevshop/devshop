@@ -61,10 +61,10 @@ projects[ctools][version] = "1.14"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
-projects[intercomio][version] = "1"
 projects[libraries][version] = 2.3
 projects[cas][version] = 1.7
 projects[hybridauth][version] = 2.15
+projects[composer_autoload][version] = 1.3
 
 ; Hosting HTTPS with Let's Encrypt!
 projects[hosting_https][version] = "3.140"
@@ -96,3 +96,8 @@ libraries[timeago][destination] = libraries
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
 projects[bootstrap][version] = 3.20
+
+projects[intercomio][type] = module
+projects[intercomio][download][type] = git
+projects[intercomio][download][branch] = composer-autoload
+projects[intercomio][download][url] = "https://github.com/thinkdrop/drupal-intercomio.git"
