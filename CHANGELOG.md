@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.2.0 (May 21, 2018)
+
+- 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.1.2...1.x
+- 31 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/7.x-1.12...7.x-1.x
+
+- Added "Create a Tag" button.
+- Added LetsEncrypt.org support to enable automatic HTTPS certificate generation and renewal.
+- Added CAS and hybridAuth modules to allow remote authentication.
+- Added Composer Autoloader module..
+- Added Intercom module in preperation for DevShop support release.
+- Added "--email" option to install.sh to allow for automatic notification of your new DevShop via email.
+
+
 ## 1.1.2 (April 26, 2018)
 
 - Fix to install script, making sure it uses Drupal 7.59 in build-devmaster.make
