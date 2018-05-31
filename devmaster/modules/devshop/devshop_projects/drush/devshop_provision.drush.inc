@@ -254,18 +254,7 @@ function devshop_process($command, $cwd = null, $label = 'Process', $env = array
   $process->setTimeout(NULL);
   if ($log_output) {
     $exit_code = $process->run(function ($type, $buffer) {
-      if (drush_get_option('is-devshop', FALSE)) {
-        drush_log($buffer, 'devshop_info');
-      }
-      else {
-        echo $buffer;
-      }
-      
-//      if (Process::ERR === $type) {
-//        drush_log($buffer, 'devshop_info');
-//      } else {
-//        drush_log($buffer, 'devshop_info');
-//      }
+      drush_log($buffer, 'devshop_info');
     });
   }
   else {
