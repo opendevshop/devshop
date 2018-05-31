@@ -19,6 +19,7 @@ services:
       AEGIR_PROFILE: devmaster
       AEGIR_VERSION: 1.x
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
+      AEGIR_DATABASE_SERVER: 0.0.0.0
       XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
       PHP_IDE_CONFIG: "serverName=devshop.local.computer"
 
@@ -38,6 +39,8 @@ services:
       driver: none
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
+    ports:
+      - 3306:3306
 
     command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
 
