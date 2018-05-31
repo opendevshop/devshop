@@ -25,7 +25,7 @@ services:
 
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
-      AEGIR_DATABASE_SERVER: "0.0.0.0"
+      AEGIR_DATABASE_SERVER: "db"
 
     privileged: true
     volumes:
@@ -40,8 +40,7 @@ services:
       driver: none
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
-    ports:
-      - 3306:3306
+
     command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
 
 #  admin:
