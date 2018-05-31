@@ -70,3 +70,8 @@ script:
   # Launch devshop including preparing the source code.
   - echo "Running ${COMMAND} -n --xdebug=0 ..."
   - ${COMMAND} -n --disable-xdebug
+
+after_script:
+  - docker-compose ps
+  - docker-compose logs db
+  - docker-compose exec devmaster "cat /etc/hosts"
