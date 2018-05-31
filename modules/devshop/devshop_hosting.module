@@ -374,7 +374,7 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20)
       INNER JOIN {hosting_task} t ON tn.nid = t.nid
       WHERE
         $where
-      ORDER BY nid DESC
+      ORDER BY t.vid DESC
       LIMIT $limit
   ",
     $args

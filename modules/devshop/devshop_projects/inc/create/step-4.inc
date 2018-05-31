@@ -38,7 +38,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
     $tasks = devshop_get_tasks($environment, 'verify');
-    $task = current($tasks['verify']);
+    $task = array_shift($tasks['verify']);
 
     if (empty($task)) {
       $row = array(
