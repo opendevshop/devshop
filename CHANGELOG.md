@@ -11,6 +11,7 @@
 - Added Composer Autoloader module..
 - Added Intercom module in preperation for DevShop support release.
 - Added "--email" option to install.sh to allow for automatic notification of your new DevShop via email.
+- Not successfully released: HybridAuth and Intercom libraries are not whitelisted.
 
 
 ## 1.1.2 (April 26, 2018)
