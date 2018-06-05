@@ -13,13 +13,13 @@ env:
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 
   matrix:
-  - test="Upgrade"
-    COMMAND="robo up --test-upgrade"
-    UPGRADE_FROM_VERSION="1.0.0-beta10"
+#  - test="Upgrade"
+#    COMMAND="robo up --test-upgrade"
+#    UPGRADE_FROM_VERSION="1.0.0-beta10"
 
-  - test="Install with Docker"
-    COMMAND="robo up --test"
-
+#  - test="Install with Docker"
+#    COMMAND="robo up --test"
+#
   - test="Install with Ansible on Ubuntu 14.04 with Apache"
     COMMAND="robo up --mode=install.sh --test"
 
