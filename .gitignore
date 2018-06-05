@@ -15,7 +15,8 @@ provision
 devmaster_id_rsa.pub
 
 # Config
-/bin/*
+bin/*
+~bin/devshop
 
 # Symfony code
 vendor
