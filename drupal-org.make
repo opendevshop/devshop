@@ -71,9 +71,9 @@ projects[hybridauth][version] = 2.15
 projects[composer_autoloader][version] = 1.3
 
 ; Dehydrated for LetsEncrypt.org
-;libraries[dehydrated][download][type] = git
-;libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
-;libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
+libraries[dehydrated][download][type] = git
+libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
+libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
 
 ; PHPCAS
 ;libraries[cas][download][type] = "git"
