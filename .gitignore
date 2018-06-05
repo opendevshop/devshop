@@ -14,6 +14,10 @@ provision
 .vagrant
 devmaster_id_rsa.pub
 
+# Config
+bin/*
+~bin/devshop
+
 # Symfony code
 vendor
 
