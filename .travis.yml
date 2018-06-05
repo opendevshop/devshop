@@ -70,3 +70,6 @@ script:
   # Launch devshop including preparing the source code.
   - echo "Running ${COMMAND} -n --xdebug=0 ..."
   - ${COMMAND} -n --disable-xdebug
+  
+notifications:
+  slack: thinkdrop:pb05x3ZL3qumHs0RjqEXvYfA
