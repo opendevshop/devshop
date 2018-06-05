@@ -10,9 +10,9 @@ services:
       - 80:80
     hostname: devshop.local.computer
     links:
-      - db
+      - database
     depends_on:
-      - db
+      - database
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
       AEGIR_MAKEFILE: https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make
@@ -25,7 +25,6 @@ services:
 
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
-      AEGIR_DATABASE_SERVER: "db"
 
     privileged: true
     volumes:
@@ -34,7 +33,7 @@ services:
       - ./provision:/usr/share/drush/commands/provision:z
       - /var/run/docker.sock:/var/run/docker.sock
 
-  db:
+  database:
     image: mariadb
     logging:
       driver: none
