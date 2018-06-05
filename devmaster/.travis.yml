@@ -83,3 +83,6 @@ script:
 #
 #  # Stop container.
 #  - 'sudo docker stop devshop_container'
+
+notifications:
+  slack: thinkdrop:pb05x3ZL3qumHs0RjqEXvYfA
