@@ -76,15 +76,15 @@ libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated
 libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
 
 ; PHPCAS
-libraries[cas][download][type] = "git"
-libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
-libraries[cas][destination] = "libraries"
+;libraries[cas][download][type] = "git"
+;libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
+;libraries[cas][destination] = "libraries"
 
 ; Hybrid Auth
-libraries[hybridauth][download][type] = "git"
-libraries[hybridauth][download][url] = "https://github.com/hybridauth/hybridauth"
-libraries[hybridauth][download][tag] = "v2.10.0"
-libraries[hybridauth][destination] = "libraries"
+;libraries[hybridauth][download][type] = "git"
+;libraries[hybridauth][download][url] = "https://github.com/hybridauth/hybridauth"
+;libraries[hybridauth][download][tag] = "v2.10.0"
+;libraries[hybridauth][destination] = "libraries"
 
 ; Timeago module
 projects[timeago][version] = 2.3
@@ -98,7 +98,8 @@ libraries[timeago][destination] = libraries
 projects[bootstrap][type] = theme
 projects[bootstrap][version] = 3.20
 
-projects[intercomio][type] = module
-projects[intercomio][download][type] = git
-projects[intercomio][download][branch] = composer-autoload
-projects[intercomio][download][url] = "https://github.com/thinkdrop/drupal-intercomio.git"
+;projects[intercomio][type] = module
+;projects[intercomio][download][type] = git
+;projects[intercomio][download][branch] = composer-autoload
+;projects[intercomio][download][url] = "https://github.com/thinkdrop/drupal-intercomio.git"
+projects[intercomio][version] = 1.x
