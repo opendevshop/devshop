@@ -26,7 +26,7 @@
 #
 #   Must run as root:
 #  
-#    root@ubunu:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.0.0-rc3/install.sh
+#    root@ubunu:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
 #    root@ubunu:~# bash install.sh --hostname=devshop.mydomain.com
 #
 #  Options:
