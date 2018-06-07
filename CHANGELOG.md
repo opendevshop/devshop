@@ -11,6 +11,8 @@
 - Added LetsEncrypt.org support to enable automatic HTTPS certificate generation and renewal. Dehydrated client is added automatically.
 - Added "--email" option to install.sh to allow for automatic notification of your new DevShop via email.
 - Added robo as a dependency of the devshop CLI so we can run `bin/robo` without needing to install it as a separate CLI.
+- Fixed the bug during "Create Project" wizard that kept redirecting you back to step 1 with no indication why! The big warning messages about host key checking are back!
+- Fixed the bug during Step 4 of the "Create Project" wizard that kept loading the wrong task's status into the page.
 - Updating to Hosting modules version 7.x-3.150.
 
 ## 1.2.0 (May 21, 2018)
