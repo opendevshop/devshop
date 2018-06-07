@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.0 (pending)
+
+- Added a Footer menu with links to the Hostmaster dashboard, documentation, chat room, issue queue, and devshop.support!
+
 ## 1.2.0 (May 21, 2018)
 
 - 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.1.2...1.x
