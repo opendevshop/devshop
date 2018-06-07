@@ -1,22 +1,21 @@
 # Change Log
 
-## 1.3.0 (pending)
-
-- Added a Footer menu with links to the Hostmaster dashboard, documentation, chat room, issue queue, and devshop.support!
-
-## 1.2.0 (May 21, 2018)
+## 1.3.0 (June 7, 2018)
 
 - 11 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.1.2...1.x
 - 31 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/7.x-1.12...7.x-1.x
 
 - Added "Create a Tag" button.
-- Added LetsEncrypt.org support to enable automatic HTTPS certificate generation and renewal.
-- Added CAS and hybridAuth modules to allow remote authentication.
-- Added Composer Autoloader module..
-- Added Intercom module in preperation for DevShop support release.
+- Enabled Logo display in the theme settings, so the "Login" & "Forgot Password" page no longer shows a missing image!
+- Added a Footer menu with links to the Hostmaster dashboard, documentation, chat room, issue queue, and devshop.support!
+- Added LetsEncrypt.org support to enable automatic HTTPS certificate generation and renewal. Dehydrated client is added automatically.
 - Added "--email" option to install.sh to allow for automatic notification of your new DevShop via email.
-- Not successfully released: HybridAuth and Intercom libraries are not whitelisted.
+- Added robo as a dependency of the devshop CLI so we can run `bin/robo` without needing to install it as a separate CLI.
+- Updating to Hosting modules version 7.x-3.150.
 
+## 1.2.0 (May 21, 2018)
+
+- Failed release. Intercom, CAS, and HybridAuth libraries are not whitelisted.
 
 ## 1.1.2 (April 26, 2018)
 
