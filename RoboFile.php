@@ -633,7 +633,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($this->confirm("Tag release of devshop_stats module to 7.x-$drupal_org_version? ")) {
-      chdir('./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats');
+      chdir('./aegir-home/devmaster-1.x/sites/all/modules/aegir/devshop_stats');
 
       if (file_exists('.git/config')) {
         $this->taskGitStack()
