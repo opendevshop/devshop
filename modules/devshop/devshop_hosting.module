@@ -85,6 +85,18 @@ function devshop_hosting_menu() {
 }
 
 /**
+ * @param $blocks
+ * @param $theme
+ * @param $code_blocks
+ */
+function devshop_hosting_block_info_alter(&$blocks, $theme, $code_blocks) {
+
+    // Enable the links block and put it in the footer..
+    $blocks['menu']['devshop-footer-links']['status'] = 1;
+    $blocks['menu']['devshop-footer-links']['region'] = 'footer';
+}
+
+/**
  * Menu callback for path "devshop"
  *
  * Provides a login page or redirects to proejcts

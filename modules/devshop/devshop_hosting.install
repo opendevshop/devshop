@@ -21,6 +21,8 @@ function devshop_hosting_install() {
   ))
   ->condition('name', "devshop_hosting")
   ->execute();
+
+  devshop_hosting_install_footer_menu();
 }
 
 /**
@@ -44,6 +46,49 @@ function devshop_hosting_requirements($phase) {
   }
 
   return $requirements;
+}
+
+/**
+ * Install the footer menu block and links.
+ */
+function devshop_hosting_install_footer_menu() {
+    $t = get_t();
+    $menu = array(
+        'menu_name' => 'devshop-footer-links',
+        'title' => $t('DevShop Footer Links'),
+    );
+    menu_save($menu);
+
+    // Lookup hostmaster node.
+    $nid = db_select('hosting_context', 'hc')
+        ->fields('hc', ['nid'])
+        ->condition('name', 'hostmaster')
+        ->execute()
+        ->fetchField()
+    ;
+
+    // Add links.
+    $links["node/$nid"] = $t('Hostmaster Dashboard');
+    $links['https://docs.opendevshop.com'] = $t('Documentation');
+    $links['https://gitter.im/opendevshop/devshop'] = $t('Chat');
+    $links['https://github.com/opendevshop/devshop/issues'] = $t('Issue Queue');
+    $links['https://devshop.support'] = $t('Get DevShop.Support');
+
+    $number = 0;
+    foreach ($links as $url => $title) {
+        $menu_item = [
+            'link_title' => $title,
+            'link_path' => $url,
+            'menu_name' => 'devshop-footer-links',
+            'description' => $title,
+            'weight' => $number,
+        ];
+        menu_link_save($menu_item);
+        $number++;
+    }
+    menu_rebuild();
+
+    // Add alter to block to add CSS or classes.
 }
 
 /**
@@ -127,4 +172,13 @@ function devshop_hosting_update_7009() {
  */
 function devshop_hosting_update_7010() {
     module_enable(array('hosting_git_tag'));
+}
+
+//drupal_set_installed_schema_version('devshop_hosting', 7010);
+
+/**
+ * Enable the footer menu.
+ */
+function devshop_hosting_update_7011() {
+    devshop_hosting_install_footer_menu();
 }
