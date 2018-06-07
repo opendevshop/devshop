@@ -67,7 +67,7 @@ projects[module_filter][version] = "2"
 projects[libraries][version] = 2.3
 projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
-projects[hybridauth][version] = 2.15
+; projects[hybridauth][version] = 2.15
 projects[composer_autoloader][version] = 1.3
 
 ; Dehydrated for LetsEncrypt.org
