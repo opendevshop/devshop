@@ -13,7 +13,7 @@ scripts[] = js/jquery.timeago.js
 scripts[] = js/boots.js
 
 ; Settings
-settings[toggle_logo] = 0
+settings[toggle_logo] = 1
 settings[bootstrap_fluid_container] = 1
 settings[bootstrap_navbar_position] = 'static-top'
 settings[bootstrap_navbar_inverse] = 1
