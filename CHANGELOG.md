@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.3.0 (June 7, 2018)
+## 1.3.1 (June 7, 2018)
 
 - 33 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.1.2...1.x
 - 45 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/7.x-1.12...7.x-1.x
