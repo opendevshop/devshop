@@ -60,6 +60,6 @@ if `$RSYNC_COMMAND`; then
 fi
 
 
-echo "TODO: Export the tar on the remote and run drush importdb.
+echo "TODO: Export the tar on the remote and run drush importdb."
 
 
