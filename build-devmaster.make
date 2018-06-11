@@ -13,6 +13,3 @@ projects[drupal][version] = 7.59
 ; RELEASE
 ; Leave in place for replacement by release process.
 projects[devmaster][version] = 1.x
-projects[devmaster][type] = profile
-projects[devmaster][download][type] = git
-projects[devmaster][download][branch] = 7.x-1.x
