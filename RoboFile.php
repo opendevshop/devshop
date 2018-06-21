@@ -176,13 +176,13 @@ class RoboFile extends \Robo\Tasks {
 
     // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-php7')
       //      ->option('build-arg', "AEGIR_UID=$user_uid")
       ->tag('aegir/hostmaster:dev')
       ->run();
     // aegir/hostmaster:xdebug
     $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug-php7')
       ->tag('aegir/hostmaster:xdebug')
       ->run();
     //    // devshop/devmaster
@@ -198,15 +198,15 @@ class RoboFile extends \Robo\Tasks {
     //      ->run()
     //      ;
     // aegir/web
-    $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-web')
-      ->tag('aegir/web')
-      ->run();
-
-    $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-privileged')
-      ->tag('aegir/hostmaster:privileged')
-      ->run();
+//    $this->taskDockerBuild('aegir-dockerfiles')
+//      ->option('file', 'aegir-dockerfiles/Dockerfile-web')
+//      ->tag('aegir/web')
+//      ->run();
+//
+//    $this->taskDockerBuild('aegir-dockerfiles')
+//      ->option('file', 'aegir-dockerfiles/Dockerfile-privileged')
+//      ->tag('aegir/hostmaster:privileged')
+//      ->run();
   }
 
   /**
