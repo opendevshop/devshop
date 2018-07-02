@@ -1,6 +1,5 @@
 # DevShop
 
-
 ![DevShop Project Dashboard](https://github.com/opendevshop/documentation/raw/master/images/devshop.png "A screenshot of the DevShop Project Dashboard")
 
 # Resources

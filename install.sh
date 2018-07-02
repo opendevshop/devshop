@@ -35,6 +35,7 @@
 #    --makefile           The makefile to use to build the front-end site.
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
+#    --aegir-uid          The UID to use for creating the `aegir` user
 #
 
 # Version used for cloning devshop playbooks
@@ -42,7 +43,7 @@
 DEVSHOP_VERSION=1.x
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
-AEGIR_USER_UID=${AEGIR_USER_UID:-1000}
+AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
 
 export ANSIBLE_FORCE_COLOR=true
@@ -110,6 +111,9 @@ while [ $# -gt 0 ]; do
       ;;
     --email=*)
       DEVMASTER_ADMIN_EMAIL="${1#*=}"
+      ;;
+    --aegir-uid=*)
+      AEGIR_USER_UID="${1#*=}"
       ;;
     -v|--verbose)
       ANSIBLE_VERBOSITY="-v"
