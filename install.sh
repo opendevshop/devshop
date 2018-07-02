@@ -314,7 +314,7 @@ else
 fi
 
 echo " Installing ansible roles..."
-ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles --ignore-certs
+ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
