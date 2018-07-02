@@ -249,6 +249,7 @@ else
 fi
 
 ansible --version
+python --version
 
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
@@ -313,7 +314,7 @@ else
 fi
 
 echo " Installing ansible roles..."
-ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles
+ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles --ignore-certs
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
