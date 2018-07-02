@@ -171,7 +171,6 @@ class RoboFile extends \Robo\Tasks {
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
-    putenv('');
 
     $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
 
@@ -192,8 +191,7 @@ class RoboFile extends \Robo\Tasks {
     //      ->tag('devshop/devmaster')
     //      ->run()
     //      ;
-    //    // devshop/devmaster:xdebuggit push
-
+    //    // devshop/devmaster:xdebug
     //    $this->taskDockerBuild('dockerfiles')
     //      ->option('file', 'dockerfiles/Dockerfile-xdebug')
     //      ->tag('devshop/devmaster:xdebug')
