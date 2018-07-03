@@ -216,6 +216,7 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
   {
     print "Deleting /var/aegir/projects/drpl8";
     print shell_exec('rm -rf /var/aegir/projects/drpl8');
+    print shell_exec('rm -rf /var/aegir/config/server_master/apache/platform.d/platform_drpl8_*.conf');
   }
 
     /**
