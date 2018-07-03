@@ -161,9 +161,9 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
   }
 
   /**
-   * @Then then field :field should have the value :value
+   * @Then the field :field should have the value :value
    */
-  public function thenFieldShouldHaveTheValue($field, $value)
+  public function theFieldShouldHaveTheValue($field, $value)
   {
     $field = $this->fixStepArgument($field);
     $value = $this->fixStepArgument($value);
