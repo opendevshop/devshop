@@ -5,12 +5,12 @@ api: "2"
 
 defaults:
   projects:
-    subdir: "contrib"
+    subdir: "aegir"
 
 projects:
   drupal:
     type: core
-    version: 7.58
+    version: 7.59
 
   # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
   devmaster:
@@ -55,6 +55,10 @@ projects:
     download:
       type: git
       branch: 7.x-3.x
+  hosting_https:
+    download:
+      type: git
+      branch: 7.x-3.x
   aegir_ssh:
     download:
       type: git
@@ -76,3 +80,15 @@ projects:
     download:
       type: git
       branch: 7.x-1.x
+
+  devshop_support:
+    download:
+      type: git
+      branch: 7.x-1.x
+
+libraries:
+  dehydrated:
+    destination: modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
+    download:
+      type: git
+      url: https://github.com/lukas2511/dehydrated
