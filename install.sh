@@ -257,6 +257,7 @@ if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get install git -y -qq
 
   if [ $VERSION == '14.04' ]; then
+      apt-get install python-pip -y -qq
       pip install urllib3 pyOpenSSL ndg-httpsclient pyasn1
   fi
         
