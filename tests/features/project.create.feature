@@ -1,5 +1,5 @@
 @api
-Feature: Create a project
+Feature: Create a project and check settings
   In order to start developing a drupal site
   As a project admin
   I need to create a new project
@@ -43,7 +43,6 @@ Feature: Create a project
     # Step 4
     And I should see "dev"
     And I should see "live"
-    And I should see "master"
     And I should see "master"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
@@ -100,6 +99,10 @@ Feature: Create a project
 
     #@TODO: Check lots of settings
 
+    When I fill in "testuser" for "Username"
+    And I fill in "testpassword" for "Password"
+    And I fill in "What's the password?" for "Message"
+
     Then I press "Create New Environment"
     Then I should see "Environment testenv created in project drpl8."
 
@@ -118,6 +121,11 @@ Feature: Create a project
     Then I should see "Welcome to drpl8.testenv"
 
     Then I move backward one page
+    And I click "Environment Settings"
+    Then the field "Username" should have the value "testuser"
+    Then the field "Password" should have the value "testpassword"
+    Then the field "Message" should have the value "What's the password?"
+
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
     And I press "Save"
