@@ -45,6 +45,7 @@ SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
+ANSIBLE_GALAXY_OPTIONS=""
 
 export ANSIBLE_FORCE_COLOR=true
 
@@ -249,10 +250,16 @@ else
 fi
 
 ansible --version
+python --version
 
 # Install git.
 if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
+  apt-get update
   apt-get install git -y -qq
+
+  if [ $VERSION == '14.04' ]; then
+      ANSIBLE_GALAXY_OPTIONS=" --ignore-certs"
+  fi
         
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
     yum install epel-release -y
@@ -313,7 +320,7 @@ else
 fi
 
 echo " Installing ansible roles..."
-ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles
+ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
