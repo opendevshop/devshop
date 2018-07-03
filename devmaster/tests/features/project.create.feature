@@ -118,8 +118,8 @@ Feature: Create a project and check settings
     And I should see "Environment Settings"
 
     # When I click "Visit Site"
-    Given I am on "http://drpl8.testenv.devshop.local.computer"
-    Then the response status code should be 401
+#    Given I am on "http://drpl8.testenv.devshop.local.computer"
+#    Then the response status code should be 401
 
     Given I am on "http://testuser:testpassword@drpl8.testenv.devshop.local.computer"
     Then I should see "Welcome to drpl8.testenv"
