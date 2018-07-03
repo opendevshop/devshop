@@ -45,6 +45,7 @@ SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
+ANSIBLE_GALAXY_OPTIONS=""
 
 export ANSIBLE_FORCE_COLOR=true
 
@@ -257,8 +258,7 @@ if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get install git -y -qq
 
   if [ $VERSION == '14.04' ]; then
-      apt-get install python-pip -y -qq
-      pip install urllib3 pyOpenSSL ndg-httpsclient pyasn1
+      ANSIBLE_GALAXY_OPTIONS=" --ignore-certs"
   fi
         
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
@@ -320,7 +320,7 @@ else
 fi
 
 echo " Installing ansible roles..."
-ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles
+ansible-galaxy install -r "$PLAYBOOK_PATH/roles.yml" -p roles $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
