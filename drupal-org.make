@@ -31,7 +31,7 @@ projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_site_backup_manager][version] = "3.150"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.150"
+projects[hosting_tasks_extra][version] = "3.x"
 
 projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = "3.150"
