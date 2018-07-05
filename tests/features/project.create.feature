@@ -117,7 +117,7 @@ Feature: Create a project and check settings
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
-    When I run drush "php-eval 'print file_get_contents(\'/var/aegir/config/server_master/apache/vhost.d/drpl8.dev.devshop.local.computer\')'"
+    When I run drush "php-eval \"print file_get_contents('/var/aegir/config/server_master/apache/vhost.d/drpl8.dev.devshop.local.computer')\""
     Then print last drush output
 
     # When I click "Visit Site"
