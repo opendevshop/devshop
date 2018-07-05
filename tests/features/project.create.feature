@@ -117,9 +117,12 @@ Feature: Create a project and check settings
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
+    When I run drush "php-eval 'print file_get_contents(\'/var/aegir/config/server_master/apache/vhost.d/drpl8.dev.devshop.local.computer\')'"
+    Then print last drush output
+
     # When I click "Visit Site"
-#    Given I am on "http://drpl8.testenv.devshop.local.computer"
-#    Then the response status code should be 401
+    Given I am on "http://drpl8.testenv.devshop.local.computer"
+    Then the response status code should be 401
 
     Given I am on "http://testuser:testpassword@drpl8.testenv.devshop.local.computer"
     Then I should see "Welcome to drpl8.testenv"
