@@ -117,15 +117,6 @@ Feature: Create a project and check settings
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
-    # When I click "Visit Site"
-    Given I am on "http://drpl8.testenv.devshop.local.computer"
-# TODO: Figure out how to test this in travis!
-#    Then the response status code should be 401
-
-    Given I am on "http://testuser:testpassword@drpl8.testenv.devshop.local.computer"
-    Then I should see "Welcome to drpl8.testenv"
-
-    Then I move backward one page
     And I click "Environment Settings"
     Then the field "Username" should have the value "testuser"
     Then the field "Password" should have the value "testpassword"
@@ -137,3 +128,11 @@ Feature: Create a project and check settings
 
     Then I should see "DevShop Project drpl8 has been updated."
     And I should see an ".environment-link .fa-bolt" element
+
+    # When I click "Visit Site"
+    Given I am on "http://drpl8.testenv.devshop.local.computer"
+# TODO: Figure out how to test this in travis!
+#    Then the response status code should be 401
+
+    Given I am on "http://testuser:testpassword@drpl8.testenv.devshop.local.computer"
+    Then I should see "Welcome to drpl8.testenv"
