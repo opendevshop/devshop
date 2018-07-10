@@ -35,12 +35,12 @@ services:
 
   database:
     image: mariadb
-    logging:
-      driver: none
+#     logging:
+#       driver: none
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
-
-    command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
+# @TODO: Remove completely once tests pass.
+#    command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
 
 #  admin:
 #    image: phpmyadmin/phpmyadmin
