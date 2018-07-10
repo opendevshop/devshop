@@ -321,10 +321,10 @@ class RoboFile extends \Robo\Tasks {
 
       // Build a local container.
       if ($opts['user-uid'] != '1000') {
-        $dockerfile = $opts['xdebug'] ? 'aegir-dockerfiles/Dockerfile-local-xdebug' : 'aegir-dockerfiles/Dockerfile-local';
+        $dockerfile = $opts['disable-xdebug'] ? 'aegir-dockerfiles/Dockerfile-local' : 'aegir-dockerfiles/Dockerfile-local-xdebug';
         $this->taskDockerBuild('aegir-dockerfiles')
           ->option('file', $dockerfile)
-          ->tag('aegir/hostmaster:local')
+          ->tag('aegir/hostmaster:xdebug')
           ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
           ->run();
       }
