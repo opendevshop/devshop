@@ -326,6 +326,7 @@ class RoboFile extends \Robo\Tasks {
           ->option('file', $dockerfile)
           ->tag('aegir/hostmaster:xdebug')
           ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
+          ->option('no-cache')
           ->run();
       }
 
