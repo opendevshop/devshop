@@ -3,7 +3,7 @@ local_bin_path: /usr/local/sbin
 apache_user: apache
 
 # Used to inject date.timezone.
-php_cli_ini_path: /opt/rh/php55/root/etc/php.ini
+# ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
 supervisor_daemon: supervisord
 supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
@@ -16,7 +16,7 @@ extra_packages:
   - openssl
   - mod_ssl
 
-php_mysql_package: php55-php-mysqlnd
+# php_mysql_package: phpphp-mysqlnd
 
 #
 #php_packages:

@@ -21,3 +21,5 @@ drush_dl_method: wget
 devshop_drush_packages:
   provision: 7.x-3.x-devshop
   registry_rebuild: 7.x-2.2
+
+php_date_timezone: "America/New_York"
