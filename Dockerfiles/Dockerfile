@@ -99,11 +99,16 @@ ENV AEGIR_WORKING_COPY 0
 ENV AEGIR_HOSTMASTER_ROOT /var/aegir/devmaster
 
 WORKDIR /var/aegir
+VOLUME /var/aegir
+VOLUME /var/lib/mysql
+
+EXPOSE 80
+EXPOSE 443
+EXPOSE 3306
 
 # The Hostname of the database server to use
 ENV AEGIR_DATABASE_SERVER localhost
-
-VOLUME /var/aegir
+ENV HOME /var/aegir
 
 # docker-entrypoint.sh waits for mysql and runs hostmaster install
 ENTRYPOINT ["docker-entrypoint.sh"]
