@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 HOSTNAME=`hostname --fqdn`
 echo "   ____              ____  _                      "
 echo "  |  _ \  _____   __/ ___|| |__   ___  _ __       "
