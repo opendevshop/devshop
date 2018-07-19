@@ -1,0 +1,13 @@
+version: '2'
+services:
+  server:
+    image: devshop/server
+    ports:
+      - 80:80
+      - 443:443
+    hostname: devshop.local.computer
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
+      AEGIR_CLIENT_EMAIL: jon@thinkdrop.net
+    volumes:
+      - ./projects:/var/aegir/projects:delegated
