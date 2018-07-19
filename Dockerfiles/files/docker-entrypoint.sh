@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+#set -e
 
 HOSTNAME=`hostname --fqdn`
 echo "   ____              ____  _                      "
@@ -77,7 +77,7 @@ if [ mysql_server_password_is_blank ]; then
     exit 1
   else
     echo "DevShop | Resetting root password..."
-    mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'"
+    mysql --host=$AEGIR_DATABASE_SERVER --user=root --password='' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'"
   fi
 fi
 
