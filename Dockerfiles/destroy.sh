@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker-compose kill; docker-compose rm -v
+docker-compose kill; docker-compose rm -fv
