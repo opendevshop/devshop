@@ -58,6 +58,25 @@ mysql_ready() {
     mysqladmin ping --host=$AEGIR_DATABASE_SERVER --user=root --password=$MYSQL_ROOT_PASSWORD > /dev/null 2>&1
 }
 
+# Returns true if mysql can connect to root with an empty password.
+mysql_server_password_is_blank() {
+    mysqladmin ping --host=$AEGIR_DATABASE_SERVER --user=root --password='' > /dev/null 2>&1
+}
+
+# If the mysql password is blank, then this is a brand new container.
+if [ mysql_server_password_is_blank ]; then
+
+  # If the $MYSQL_ROOT_PASSWORD variable is blank, we cannot continue.
+  if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
+    echo "DevShop | ERROR: The environment variable MYSQL_ROOT_PASSWORD is blank. Please set a secure MYSQL_ROOT_PASSWORD environment variable."
+    echo "@TODO: Automatically generate a secure MYSQL password!"
+    exit 1
+  else
+    echo "DevShop | Resetting root password..."
+    mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'"
+  fi
+fi
+
 while !(mysql_ready)
 do
    sleep 3
