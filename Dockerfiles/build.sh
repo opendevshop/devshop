@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t devshop/server:local .
+docker build -t devshop/server .
