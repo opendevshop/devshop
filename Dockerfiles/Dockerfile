@@ -8,12 +8,6 @@ ENV AEGIR_MAKEFILE https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHO
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN { \
-		echo mysql-community-server mysql-community-server/root-pass password ''; \
-		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
-		echo mysql-community-server mysql-community-server/remove-test-db select false; \
-	} | debconf-set-selections
-
 RUN apt-get update -qq && apt-get install -y -qq\
   apache2 \
   cron \
@@ -21,8 +15,9 @@ RUN apt-get update -qq && apt-get install -y -qq\
   git-core \
   libapache2-mod-php \
   libpcre3-dev \
-  mariadb-client \
-  mariadb-server \
+  mysql-client \
+  mysql-server \
+  nano \
   php7.0-common \
   php7.0-curl \
   php7.0-cli \
@@ -41,7 +36,8 @@ RUN apt-get update -qq && apt-get install -y -qq\
   rsync \
   sudo \
   unzip \
-  wget
+  wget \
+  vim
 
 
 ENV AEGIR_UID 12345
