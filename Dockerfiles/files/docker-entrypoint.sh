@@ -74,8 +74,14 @@ if [ mysql_server_password_is_blank ]; then
   if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
     echo "DevShop | Generating new root password..."
 
-    export MYSQL_ROOT_PASSWORD="$(pwgen -1 32)"
-    echo "DevShop | Generating new root password: $MYSQL_ROOT_PASSWORD"
+    if [ -f '/var/aegir/.my.cnf' ]
+    then
+        echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
+        echo "DevShop | Password found at /root/.my.cnf, using  $MYSQL_ROOT_PASSWORD"
+    else
+       export MYSQL_ROOT_PASSWORD="$(pwgen -1 32)"
+       echo "DevShop | Generating new root password: $MYSQL_ROOT_PASSWORD"
+    fi
 
     echo "DevShop | Resetting root password..."
     mysql --host=$AEGIR_DATABASE_SERVER --user=root --password='' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'"
