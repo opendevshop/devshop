@@ -88,6 +88,7 @@ USER aegir
 
 RUN mkdir /var/aegir/config
 RUN mkdir /var/aegir/.drush
+RUN mkdir /var/aegir/projects
 
 # You may change this environment at run time. User UID 1 is created with this email address.
 ENV AEGIR_CLIENT_EMAIL aegir@aegir.local.computer
@@ -98,8 +99,10 @@ ENV AEGIR_WORKING_COPY 0
 # Must be fixed across versions so we can upgrade containers.
 ENV AEGIR_HOSTMASTER_ROOT /var/aegir/devmaster
 
+# Build the devmaster stack
+RUN drush make $AEGIR_MAKEFILE $AEGIR_HOSTMASTER_ROOT
+
 WORKDIR /var/aegir
-VOLUME /var/aegir
 VOLUME /var/lib/mysql
 
 EXPOSE 80
@@ -109,6 +112,9 @@ EXPOSE 3306
 # The Hostname of the database server to use
 ENV AEGIR_DATABASE_SERVER localhost
 ENV HOME /var/aegir
+
+VOLUME /var/aegir/devmaster
+VOLUME /var/aegir/projects
 
 # docker-entrypoint.sh waits for mysql and runs hostmaster install
 ENTRYPOINT ["docker-entrypoint.sh"]
