@@ -36,7 +36,9 @@ echo "DevShop | -------------------------"
 echo 'DevShop | Checking drush status...'
 drush status
 echo "DevShop | -------------------------"
+echo "DevShop | Starting apache..."
 
+sudo apache2ctl start
 
 # Use drush help to determnine if Provision is installed anywhere on the system.
 drush help provision-save > /dev/null 2>&1
