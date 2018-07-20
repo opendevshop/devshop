@@ -68,31 +68,33 @@ mysql_server_password_is_blank() {
 }
 
 # If the mysql password is blank, then this is a brand new container.
-if [ mysql_server_password_is_blank ]; then
+#if [ mysql_server_password_is_blank ]; then
 
-  # If the $MYSQL_ROOT_PASSWORD variable is blank, we cannot continue.
+  # If the $MYSQL_ROOT_PASSWORD variable is blank, we need to either generate or lookup the password.
   if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
-    echo "DevShop | Generating new root password..."
+    echo "DevShop | MYSQL_ROOT_PASSWORD variable is blank..."
 
     if [ -f '/var/aegir/.my.cnf' ]
     then
-        echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
-        echo "DevShop | Password found at /root/.my.cnf, using  $MYSQL_ROOT_PASSWORD"
+      MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /var/aegir/.my.cnf)
+      echo "DevShop | Password found at /var/aegir/.my.cnf, using  $MYSQL_ROOT_PASSWORD"
     else
-       export MYSQL_ROOT_PASSWORD="$(pwgen -1 32)"
-       echo "DevShop | Generating new root password: $MYSQL_ROOT_PASSWORD"
+        export MYSQL_ROOT_PASSWORD="$(pwgen -1 32)"
+        echo "DevShop | Generated new root password: $MYSQL_ROOT_PASSWORD"
+
+        echo "DevShop | Setting root password..."
+        mysql --host=$AEGIR_DATABASE_SERVER --user=root --password='' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'"
     fi
-
-    echo "DevShop | Resetting root password..."
-    mysql --host=$AEGIR_DATABASE_SERVER --user=root --password='' -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'"
-
-    echo "DevShop | Writing /var/aegir/.my.cnf..."
-    echo "[client]" > /var/aegir/.my.cnf
-    echo "user=root" >> /var/aegir/.my.cnf
-    echo "password=$MYSQL_ROOT_PASSWORD" >> /var/aegir/.my.cnf
-    echo "host=$AEGIR_DATABASE_SERVER" >> /var/aegir/.my.cnf
   fi
-fi
+#fi
+
+# Always write a .my.cnf, even if someone defines a root password.
+echo "DevShop | Writing /var/aegir/.my.cnf..."
+echo "[client]" > /var/aegir/.my.cnf
+echo "user=root" >> /var/aegir/.my.cnf
+echo "password=$MYSQL_ROOT_PASSWORD" >> /var/aegir/.my.cnf
+echo "host=$AEGIR_DATABASE_SERVER" >> /var/aegir/.my.cnf
+cat /var/aegir/.my.cnf
 
 while !(mysql_ready)
 do
