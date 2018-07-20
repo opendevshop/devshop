@@ -5,7 +5,7 @@ volumes:
   mysql:
 
 services:
-  server:
+  devshop:
     image: devshop/server
     ports:
       - 80:80
