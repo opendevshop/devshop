@@ -18,6 +18,7 @@ RUN apt-get update -qq && apt-get install -y -qq\
   mysql-client \
   mysql-server \
   nano \
+  openssh-server \
   php7.0-common \
   php7.0-curl \
   php7.0-cli \
@@ -83,6 +84,12 @@ RUN echo 'Hello, Aegir.' > /var/log/aegir/system.log
 RUN mkdir -p /usr/share/drush/commands
 RUN drush dl --destination=/usr/share/drush/commands provision-$PROVISION_VERSION -y
 RUN drush dl --destination=/usr/share/drush/commands registry_rebuild-$REGISTRY_REBUILD_VERSION -y
+
+# Setup SSH server.
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+EXPOSE 22
 
 USER aegir
 

@@ -7,3 +7,4 @@ service apache2 graceful
 service cron restart
 service mysql restart
 service postfix restart
+service ssh restart
