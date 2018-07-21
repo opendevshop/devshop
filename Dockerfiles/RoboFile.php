@@ -19,6 +19,7 @@ class RoboFile extends \Robo\Tasks
    */
   function build() {
     $this->_exec('docker build -t devshop/server .');
+    $this->_exec('docker build -t devshop/server:privileged -f Dockerfile.privileged .');
   }
 
   /**
