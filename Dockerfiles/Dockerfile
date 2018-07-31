@@ -74,6 +74,9 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 COPY files/services-start.sh /usr/local/bin/services-start
 RUN chmod +x /usr/local/bin/services-start
 
+COPY files/set-user-ids.sh /usr/local/bin/set-user-ids
+RUN chmod +x /usr/local/bin/set-user-ids
+
 # Prepare Aegir Logs folder.
 RUN mkdir /var/log/aegir
 RUN chown aegir:aegir /var/log/aegir
