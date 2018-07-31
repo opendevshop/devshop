@@ -244,7 +244,7 @@ function devshop_task_get_messages($task_node) {
       ORDER BY lid", array(
     ':nid' => $task_node->nid,
     ':vid' => $task_node->vid,
-    ':devshop' => 'devshop_%',
+    ':devshop' => 'p_%',
     ':error' => 'error',
     ':warning' => 'warning',
 //    ':success' => 'success',
@@ -253,7 +253,7 @@ function devshop_task_get_messages($task_node) {
 
   foreach ($result as $record) {
 
-    if ($record->type == 'devshop_command') {
+    if ($record->type == 'p_command') {
       if (empty($record->message)) {
         continue;
       }
@@ -268,15 +268,15 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
-    } elseif ($record->type == 'devshop_info') {
+    } elseif ($record->type == 'p_info') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
-    } elseif ($record->type == 'devshop_ok') {
+    } elseif ($record->type == 'p_ok') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
-    } elseif ($record->type == 'devshop_error') {
+    } elseif ($record->type == 'p_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
@@ -295,7 +295,7 @@ function devshop_task_get_messages($task_node) {
       // @TODO: Here, we can check for obscure aegir errors and write our own.
       // devshop_check_errors($outputs[$command]['output']);
       $outputs[$command]['command'] = 'error';
-    } elseif ($record->type == 'devshop_log') {
+    } elseif ($record->type == 'p_log') {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
