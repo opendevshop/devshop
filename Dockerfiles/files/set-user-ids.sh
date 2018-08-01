@@ -21,9 +21,10 @@ useradd --no-log-init --uid $USER_UID --gid $USER_UID --system --home-dir /var/$
 echo "$PREFIX Changing ownership of /var/aegir ... to $USER_UID:$USER_UID..."
 chown $USER_UID:$USER_UID /var/$USER_NAME -R
 
-echo "$PREFIX Changing user 'www-data' UID/GID to '$WEB_UID'...
-"
-
+set +e
 userdel www-data
+groupdel `getent group $WEB_UID | cut -d: -f1`
+
+set -e
 addgroup --gid $WEB_UID www-data
 useradd --no-log-init --uid $WEB_UID --gid $WEB_UID --system  www-data
