@@ -123,7 +123,6 @@ EXPOSE 3306
 ENV AEGIR_DATABASE_SERVER localhost
 ENV HOME /var/aegir
 
-VOLUME /var/aegir/devmaster
 VOLUME /var/aegir/projects
 
 # docker-entrypoint.sh waits for mysql and runs hostmaster install
