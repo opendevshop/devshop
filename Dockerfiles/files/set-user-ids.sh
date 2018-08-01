@@ -22,6 +22,8 @@ echo "$PREFIX Changing ownership of /var/aegir ... to $USER_UID:$USER_UID..."
 chown $USER_UID:$USER_UID /var/$USER_NAME -R
 chown $USER_UID:$USER_UID /var/$USER_NAME/devmaster -R
 
+ls -la /var/$USER_NAME
+
 set +e
 userdel www-data
 groupdel `getent group $WEB_UID | cut -d: -f1`
