@@ -236,7 +236,7 @@ function drush_devshop_provision_pre_updatedb() {
 /**
  * Run a Symfony Process saving to drush logs.
  */
-function devshop_process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE, $error_message = 'Process Failed') {
+function provision_process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE, $error_message = 'Process Failed') {
   drush_log("[$label] $command", 'devshop_command');
 
   // Merge in env vars, inheriting the CLI's
@@ -524,8 +524,8 @@ function drush_devshop_provision_post_provision_install() {
 
     $destination = d()->name;
     $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --updatedb --cache-clear --registry-rebuild";
-    devshop_process($command, NULL, 'Cloning site from ' . d($source)->uri);
-    devshop_process('drush cc drush', NULL, 'Clearing drush caches');
+    provision_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    provision_process('drush cc drush', NULL, 'Clearing drush caches');
 //    devshop_drush_process_cache_clear($destination);
   }
 
@@ -542,7 +542,7 @@ function drush_devshop_provision_post_provision_install() {
       $temp_file_name = tempnam('/tmp', 'devshop_remote_db.sql.');
       $db_name = ltrim($url['path'], '/');
       $command = "mysqldump -u{$url['user']} -p{$url['pass']} -h{$url['host']} {$db_name}  --result-file={$temp_file_name}";
-      devshop_process($command, NULL, dt('Saving database file...'));
+      provision_process($command, NULL, dt('Saving database file...'));
 
       $file_to_import = $temp_file_name;
     }
@@ -560,10 +560,10 @@ function drush_devshop_provision_post_provision_install() {
     // Import the file
     $alias = d()->name;
     $command = "drush {$alias} sqlq 'SOURCE {$file_to_import}'";
-    devshop_process($command, NULL, dt('Importing database file...'));
-    devshop_process('drush cc drush', NULL, 'Clearing drush caches');
+    provision_process($command, NULL, dt('Importing database file...'));
+    provision_process('drush cc drush', NULL, 'Clearing drush caches');
     devshop_drush_process_cache_clear($alias);
-    devshop_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
+    provision_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
   }
 }
 
@@ -577,9 +577,9 @@ function devshop_drush_process_cache_clear($alias) {
 
   // Clear all caches.
   if (drush_drupal_major_version(d()->root) == 8) {
-    devshop_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
+    provision_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
   }
   else {
-    devshop_process("drush {$alias} cache-clear all", NULL, dt('Clear all Caches'));
+    provision_process("drush {$alias} cache-clear all", NULL, dt('Clear all Caches'));
   }
 }
