@@ -154,7 +154,7 @@ class RoboFile extends \Robo\Tasks {
     }
     else {
 
-      $result = $this->_exec("drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
+      $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
         $this->say('Built devmaster from makefile.');
         return TRUE;
