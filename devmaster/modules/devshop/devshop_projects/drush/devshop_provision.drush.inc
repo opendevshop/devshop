@@ -234,46 +234,6 @@ function drush_devshop_provision_pre_updatedb() {
 }
 
 /**
- * Run a Symfony Process saving to drush logs.
- */
-function provision_process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE, $error_message = 'Process Failed') {
-  drush_log("[$label] $command", 'devshop_command');
-
-  // Merge in env vars, inheriting the CLI's
-  if (is_array($env)) {
-    $env = array_merge($_SERVER, $env);
-  }
-  else {
-    $env = $_SERVER;
-  }
-
-  // Make sure colors always come through
-  $env['TERM'] = 'xterm';
-
-  $process = new Process(escapeshellcmd($command), $cwd, $env);
-  $process->setTimeout(NULL);
-  if ($log_output) {
-    $exit_code = $process->run(function ($type, $buffer) {
-      drush_log($buffer, 'devshop_info');
-    });
-  }
-  else {
-    $exit_code = $process->run();
-  }
-
-  // check exit code
-  if ($exit_code === 0) {
-    drush_log('', 'devshop_ok');
-    return $process->getOutput();
-  }
-  else {
-    drush_log('', 'devshop_error');
-    drush_set_error('DEVSHOP_PROCESS_ERROR', dt($error_message));
-    return $process->getErrorOutput();
-  }
-}
-
-/**
  * Find the username of the current running procses
  *
  * This will return the username of the current running user (as seen
