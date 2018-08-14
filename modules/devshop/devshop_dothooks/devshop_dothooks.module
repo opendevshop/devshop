@@ -133,6 +133,10 @@ function devshop_dothooks_run_hook($hook, $environment) {
     $hooks = array_filter(explode("\n", $environment->dothooks[$hook]));
   }
 
+  $env = $_SERVER;
+  $env['DEVSHOP_PROJECT'] = $environment->project_name;
+  $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
+
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
     $hook_line = strtr($hook_line, array(
