@@ -111,6 +111,9 @@ HTML;
  */
 function devshop_dothooks_run_hook($hook, $environment) {
 
+  // Reload the alter hook in case there are new hooks.
+  devshop_dothooks_devshop_environment_alter($environment, $environment->project);
+
   // Respect drush option, but default to environment settings.
   if (!drush_get_option('dothooks', $environment->settings->deploy['dothooks'])) {
     drush_log('[.hooks] Environment not configured to run .hooks commands.', 'info');
