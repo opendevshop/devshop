@@ -608,7 +608,7 @@ function devshop_github_webhook($project_node) {
               $params->ref = $sha;
 
               // In GitHub's API, "environment" is just a small string it displays on the pull request:
-              $params->environment = $environment_name;
+              $params->environment = $project->name . '.' . $environment_name;
                 devshop_environment_url($project, $environment_name)
               ;
               $params->required_contexts = array();
