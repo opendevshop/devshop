@@ -58,7 +58,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
         else {
           $params->description = t('DevShop: Tests !status!', array('!status' => $state));
         }
-        $params->context = 'devshop/tests';
+        $params->context = "devshop/{$project->name}/tests";
 
         $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
         drush_log('Commit status created for devshop/tests!', 'success');
@@ -96,7 +96,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
           '!url' => $environment->url,
         ));
       }
-      $params->context = 'devshop/deploy';
+      $params->context = "devshop/{$project->name}/deploy";
 
       $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
       drush_log('Commit status created!', 'success');
@@ -107,7 +107,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
           $params = new stdClass();
           $params->state = $state;
             $params->description = t('DevShop: Tests not run due to Deploy Fail');
-          $params->context = 'devshop/tests';
+          $params->context = "devshop/{$project->name}/tests";
 
           $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
           drush_log('Commit status created for devshop/tests', 'success');
