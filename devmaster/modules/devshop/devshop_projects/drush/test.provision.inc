@@ -165,7 +165,7 @@ YML;
       $i++;
 
       // Check for path.
-      if (substr($feature, 0, 1) !== '/') {
+      if (!empty($feature) && substr($feature, 0, 1) !== '/') {
         $feature = '/'.$feature;
       }
       $feature_path = empty($feature) ? '' : "features{$feature}";
