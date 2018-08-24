@@ -438,7 +438,8 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
   if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
-    $vars['branches_items'][] = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+    $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+    array_unshift($vars['branches_items'], $link_refresh);
   }
 
   // Scrub git urls
