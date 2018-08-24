@@ -89,7 +89,7 @@ function getBranchesAndTags($git_url = NULL) {
     $git_url = drush_get_option('git_url');
   }
   $command = "git ls-remote {$git_url}";
-  $output = devshop_process($command);
+  $output = provision_process($command);
   $lines = explode("\n", $output);
 
   // Build tag and branch list
