@@ -106,6 +106,19 @@ class RoboFile extends \Robo\Tasks {
     'documentation' => 'http://github.com/opendevshop/documentation.git',
     'dockerfiles' => 'http://github.com/opendevshop/dockerfiles.git',
     'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
+
+    // Ansible roles
+    'roles/geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
+    'roles/geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
+    'roles/geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
+    'roles/geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
+    'roles/geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
+    'roles/geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
+    'roles/geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
+    'roles/opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+    'roles/opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
+    'roles/opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
+    'roles/opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
   ];
 
   /**
