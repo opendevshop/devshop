@@ -106,8 +106,10 @@ class RoboFile extends \Robo\Tasks {
     'documentation' => 'http://github.com/opendevshop/documentation.git',
     'dockerfiles' => 'http://github.com/opendevshop/dockerfiles.git',
     'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
+  ];
 
-    // Ansible roles
+  // Ansible roles
+  private $roles = [
     'roles/geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
     'roles/geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
     'roles/geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
@@ -153,6 +155,23 @@ class RoboFile extends \Robo\Tasks {
           ->cloneRepo($url, $path)
           ->run();
       }
+    }
+
+    // If not on travis, clone all ansible roles
+    if (!isset($_SERVER['TRAVIS_REPO_SLUG'])) {
+
+      // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
+      foreach ($this->roles as $path => $url) {
+        if (file_exists($path)) {
+          $this->say("$path already exists.");
+        }
+        else {
+          $this->taskGitStack()
+            ->cloneRepo($url, $path)
+            ->run();
+        }
+      }
+
     }
 
     // Run drush make to build the devmaster stack.
