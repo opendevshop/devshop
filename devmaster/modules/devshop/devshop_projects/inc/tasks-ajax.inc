@@ -14,7 +14,9 @@ function devshop_projects_tasks_status_json() {
             last_task
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {node} n ON e.project_nid = n.nid
+        LEFT JOIN {hosting_site} s ON e.site = s.nid
           WHERE n.status = 1
+          AND s.site_status != -2
         ';
 
   $results = db_query($sql);
