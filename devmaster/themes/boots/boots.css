@@ -1138,3 +1138,11 @@ li.text.code {
     display: inline-block;
     vertical-align: middle;
 }
+
+#block-menu-devshop-footer-links > ul > li {
+    display: inline-block;
+}
+
+#block-menu-devshop-footer-links > h2.block-title {
+    display: none;
+}

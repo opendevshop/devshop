@@ -28,10 +28,10 @@
 ##    Then I should see "Environment settings saved for dev in project drupal"
 #
 #    When I click "Environment Settings"
-#    Then then field "Username" should have the value "NewUsername"
+#    Then the field "Username" should have the value "NewUsername"
 #    When I fill in "" for "Username"
 #    And I fill in "" for "Password"
 #    Then I press "Save"
 #
 #    When I click "Environment Settings"
-#    Then then field "Username" should have the value ""
+#    Then the field "Username" should have the value ""

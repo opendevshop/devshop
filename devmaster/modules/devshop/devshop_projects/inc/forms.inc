@@ -60,10 +60,15 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'code_path',
     ),
   );
+
+  $items = [];
+  $items[] = t('Enter the relative path to the exposed document root within your repository. Leave blank if index.php is in the root. Common paths are docroot or web.');
+  $items[] = t('If you are using the drupal-composer project for Drupal 8, the default document root is "web".');
+
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
-    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
+    '#description' => theme('item_list', ['items' => $items]),
     '#size' => 40,
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
@@ -564,12 +569,24 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           if ($_GET['source'] == 'other') {
             $source = '';
           }
-          else {
+          elseif (is_int($_GET['source'])) {
             $source = node_load($_GET['source']);
             if (isset($source->nid) && $source->type != 'site') {
               break;
             }
+              $source_alias = $source->environment->system_alias;
           }
+          elseif (isset($node->project->settings->aliases[$_GET['source']])) {
+              $alias_name = $source = $_GET['source'];
+              $source_alias = "@{$node->project->name}.{$alias_name}";
+              $alias_data = $node->project->settings->aliases[$_GET['source']];
+          }
+          else {
+              return;
+          }
+
+//          print_r($source); die;
+//          print $source_alias ; die;
 
           drupal_set_title(t('Sync Data to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
           $environment = $node->environment;
@@ -590,10 +607,9 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           else {
 
             $source_environment = $source->environment;
-
             $form['parameters']['source'] = array(
               '#type' => 'value',
-              '#value' => $source->environment->system_alias,
+              '#value' => $source_alias,
             );
             $form['parameters']['destination'] = array(
               '#type' => 'value',
@@ -625,12 +641,14 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $destroyed = t('This environment will be destroyed.');
           $source = t('This environment will be copied.');
 
+          $source_environment_url = $source_environment->url? $source_environment->url: 'http://' . $alias_data['uri'];
+          $source_environment_name = $source_environment->name? $source_environment->name: $alias_name;
           $html = <<<HTML
           
 <div class="container no-wrap">
   <div class="inline">
-    <a href="$source_environment->url" target="_blank" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment->name} </span>
-      <br/>   <small>$source_environment->url</small>
+    <a href="$source_environment_url" target="_blank" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment_name} </span>
+      <br/>   <small>$source_environment_url</small>
     </a>
     <br/>   <em class="text-sm">$source</em>
 
@@ -1342,9 +1360,12 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
  * @param $form_state
  * @param $form
  */
-function devshop_projects_create_environment_form_validate_profile($element, &$form_state, $form) {
+function devshop_projects_create_environment_form_validate_profile($element, &$form_state, &$form) {
   if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other' && empty($element['#value'])) {
     form_set_error('install_method][profile_other', t('You must enter a profile name.'));
+  }
+  elseif ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other') {
+    form_set_value($form['install_method']['profile'], $element['#value'], $form_state);
   }
 }
 
@@ -1526,12 +1547,6 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     '#title' => t('Revert all features.'),
     '#description' => t('If features is enabled, revert all of them.'),
     '#default_value' => empty($environment->settings->deploy)? $project_revert : $environment_revert,
-  );
-  $return['composer'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run composer install.'),
-      '#description' => t('If a composer.json file is found, run <code>composer install</code>. <em>WARNING:</em> this may result in your git working tree to become modified.'),
-      '#default_value' => empty($environment->settings->deploy)? $project_composer_install : $environment_composer_install,
   );
   // Look for .hooks or .hooks.yml
   if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['dothooks'])) {

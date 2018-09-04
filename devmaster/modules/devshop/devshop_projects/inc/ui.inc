@@ -147,11 +147,16 @@ HTML;
     $welcome = t('Welcome to DevShop!');
     $text = t('Create your first project to get started.');
     $button = t('Start a Project');
+
+    if (module_exists('devshop_support') && drupal_valid_path('admin/devshop/support')) {
+        $activate_support = t('or') . ' <a class="btn btn-info btn-lg" href="' . url('admin/devshop/support'). '" role="button"><i class="fa fa-heart"></i> ' . t('Activate DevShop Support') . ' </a>';
+    }
+
     $output = <<<HTML
 <div class="jumbotron">
   <h1>$welcome</h1>
   <p>$text</p>
-  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a></p>
+  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a> $activate_support</p>
 </div>
 
 HTML;
@@ -193,101 +198,44 @@ function devshop_projects_node_view($node, $view_mode, $langcode) {
 function devshop_environment_menu($environment) {
   global $user;
   $tasks = hosting_available_tasks('site');
-  $actions = module_invoke_all('devshop_environment_menu', $environment);
+  $first_items = devshop_environment_menu_first_items($environment, $tasks);
+  $contrib_items = module_invoke_all('devshop_environment_menu', $environment, $tasks);
 
-  $site = null;
-  $platform = null;
-  $items = array();
-  $aegir_items = array();
+  $items = array_merge($first_items, $contrib_items);
 
-  // Add environment settings link (If there is one).
-  if ($environment->site) {
-    $site = node_load($environment->site);
-    if (node_access('update', $site)) {
-      $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
-        "node/{$environment->site}/edit",
-        array(
-          'html' => TRUE,
-        ));
+  // Last menu items
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+
+    if (!empty($contrib_items)) {
       $items[] = '<div class="divider"></div>';
-
     }
 
-    if (user_access('change site domain names') && user_access('create migrate task') ) {
-      $href = "hosting_confirm/{$environment->site}/site_migrate";
-      $items[] = l('<i class="fa fa-globe"></i> '.t('Change Domain Name'),
-        $href, array(
-          'query' => array(
-            'rename' => 1,
-            'token' => drupal_get_token($user->uid),
-          ),
-          'html' => TRUE,
-        ));
-    }
-    if (node_access('view', $site)) {
-      $aegir_items[] = l('<i class="fa fa-globe"></i> '.t('Aegir Site'),
-        "node/{$environment->site}",
-        array(
-          'html' => TRUE,
-        ));
-    }
-  }
-  if ($environment->platform) {
-    $platform = node_load($environment->platform);
-    if (node_access('view', $platform)) {
-      $aegir_items[] = l('<i class="fa fa-code"></i> '.t('Aegir Platform'),
-        "node/{$environment->platform}",
-        array(
-          'html' => TRUE,
-        ));
-    }
-  }
-
-  // Load test task, if it exists
-  if ($tasks['test']) {
-    $href = "hosting_confirm/{$environment->site}/site_test";
-    $url = url($href, array(
-      'query' => array(
-        'token' => drupal_get_token($user->uid),
-      )
-    ));
-    $title = $tasks['test']['title'];
-    if (isset($tasks['test']['icon'])) {
-      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
-    }
-    else {
-      $icon = '';
-    }
-    $items[] = <<<HTML
-      <a href="$url">
-            $icon $title
-      </a>
-HTML;
+    $items[] = 'verify';
+    $items[] = 'flush_cache';
+    $items[] = 'rebuild_registry';
+    $items[] = 'run_cron';
+    $items[] = 'update';
     $items[] = '<div class="divider"></div>';
-  }
 
-  // Add aegir items to items
-  if (!empty($aegir_items)) {
-    $items = array_merge($items, $aegir_items);
-
-    if (!empty($actions)) {
-      $items[] = '<div class="divider"></div>';
+    // Backup & Restore
+    if (drupal_valid_path("node/$environment->site/backups")) {
+      $items[] = l(t('Backups'), "node/$environment->site/backups");
     }
   }
 
   // Add all actions from hook_devshop_environment_menu()
-  foreach ($actions as $action) {
-    if (isset($tasks[$action])) {
+  foreach ($items as $item) {
+    if (isset($tasks[$item])) {
 
       // Special handling for delete/disable/enable
-      if ($action == 'disable' || $action == 'enable') {
-        $tasks[$action]['title'] = '<i class="fa fa-power-off"></i> ' . $tasks[$action]['title'] . ' ' . t('Environment');
+      if ($item == 'disable' || $item == 'enable') {
+        $tasks[$item]['title'] = '<i class="fa fa-power-off"></i> ' . $tasks[$item]['title'] . ' ' . t('Environment');
       }
-      elseif ($action == 'delete') {
-        $tasks[$action]['title'] = '<i class="fa fa-trash-o"></i> ' . t('Destroy Environment');
+      elseif ($item == 'delete') {
+        $tasks[$item]['title'] = '<i class="fa fa-trash-o"></i> ' . t('Destroy Environment');
       }
 
-      $href = "hosting_confirm/{$environment->site}/site_{$action}";
+      $href = "hosting_confirm/{$environment->site}/site_{$item}";
       $options = array(
           'query' => array(
               'token' => drupal_get_token($user->uid),
@@ -300,24 +248,24 @@ HTML;
       }
 
       $url = url($href, $options);
-      $title = $tasks[$action]['title'];
-      if (isset($tasks[$action]['icon'])) {
-        $icon = '<i class="fa fa-' . $tasks[$action]['icon'] . '""></i>';
+      $title = $tasks[$item]['title'];
+      if (isset($tasks[$item]['icon'])) {
+        $icon = '<i class="fa fa-' . $tasks[$item]['icon'] . '""></i>';
       }
       else {
         $icon = '';
       }
-      $items[] = <<<HTML
+      $output_items[] = <<<HTML
       <a href="$url">
             $icon $title
       </a>
 HTML;
     }
     else {
-      $items[] = $action;
+      $output_items[] = $item;
     }
   }
-  return $items;
+  return $output_items;
 }
 
 /**

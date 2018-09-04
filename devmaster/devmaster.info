@@ -33,10 +33,11 @@ dependencies[] = hosting_sync
 
 dependencies[] = hosting_filemanager
 dependencies[] = hosting_logs
-dependencies[] = hosting_ssl
 dependencies[] = hosting_tasks_extra
 dependencies[] = hosting_backup_queue
 dependencies[] = hosting_site_backup_manager
+dependencies[] = hosting_https
+dependencies[] = hosting_apache_https
 
 ;dependencies[] = fix_permissions
 ;dependencies[] = fix_ownership
@@ -51,6 +52,7 @@ dependencies[] = actions_permissions
 dependencies[] = r4032login
 dependencies[] = jquery_update
 dependencies[] = module_filter
+dependencies[] = hosting_letsencrypt
 
 ; This breaks hosting.install.  Removing it for now.
 ;dependencies[] = adminrole
@@ -63,8 +65,10 @@ dependencies[] = devshop_pull
 dependencies[] = devshop_github
 dependencies[] = devshop_testing
 dependencies[] = aegir_ssh
-; dependencies[] = aegir_download
-; dependencies[] = aegir_commit
-; dependencies[] = aegir_features
+dependencies[] = aegir_download
+dependencies[] = aegir_commit
+dependencies[] = aegir_update
+dependencies[] = aegir_config
 dependencies[] = devshop_stats
+dependencies[] = devshop_remotes
 
