@@ -4,16 +4,15 @@ apache_control: /usr/sbin/apachectl
 apache_user: apache
 
 php_packages:
-  - php55
-  - php55-php
-  - php55-php-mysqlnd
-  - php55-php-cli
-  - php55-php-gd
-  - php55-php-process
-  - php55-php-pear
-  - php55-php-xml
+  -php
+  -php-mysqlnd
+  -php-cli
+  -php-gd
+  -php-process
+  -php-pear
+  -php-xml
 #  - php-mcrypt
-  - php55-php-mbstring
+  - php-mbstring
 
 #  - php-common
 #  - php-devel
