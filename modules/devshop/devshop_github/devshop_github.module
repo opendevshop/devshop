@@ -324,12 +324,12 @@ function devshop_github_node_update($node) {
         array('absolute' => true)
       );
       $params->description = t('DevShop: Run Tests');
-      $params->context = 'devshop/tests';
+      $params->context = "devshop/{$project->name}/tests";
     }
     elseif ($node->task_type != 'deploy') {
       $params->target_url = $site->environment->url;
       $params->description = t('DevShop: Deploy');
-      $params->context = 'devshop/deploy';
+      $params->context = "devshop/{$project->name}/deploy";
     }
 
     // Post status to github
@@ -608,7 +608,7 @@ function devshop_github_webhook($project_node) {
               $params->ref = $sha;
 
               // In GitHub's API, "environment" is just a small string it displays on the pull request:
-              $params->environment = $environment_name;
+              $params->environment = $project->name . '.' . $environment_name;
                 devshop_environment_url($project, $environment_name)
               ;
               $params->required_contexts = array();
@@ -640,7 +640,7 @@ function devshop_github_webhook($project_node) {
               $params->state = 'pending';
               $params->target_url = url("node/$environment->site", array('absolute' => TRUE));
               $params->description = t('DevShop: Deploy');
-              $params->context = 'devshop/deploy';
+              $params->context = "devshop/{$project->name}/deploy";
 
               // Post status to github
               $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
@@ -682,7 +682,7 @@ function devshop_github_webhook($project_node) {
                 $params->state = 'failure';
                 $params->target_url = $project->git_repo_url;
                 $params->description = t('Branch is out of date! Merge from default branch.');
-                $params->context = 'devshop/merge';
+                $params->context = "devshop/{$project->name}/merge";
 
                 // Post status to github
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
@@ -789,7 +789,7 @@ function devshop_github_webhook($project_node) {
               $params->state = 'pending';
               $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
               $params->description = t('DevShop: Deploy');
-              $params->context = 'devshop/deploy';
+              $params->context = "devshop/{$project->name}/deploy";
 
               // Post status to github
               $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
@@ -804,7 +804,7 @@ function devshop_github_webhook($project_node) {
                 // @TODO: Add the link to the last "test" task here instead of the project.
                 $params->target_url = url("node/$project->nid", array('absolute' => TRUE));
                 $params->description = t('DevShop: Run Tests');
-                $params->context = 'devshop/tests';
+                $params->context = "devshop/{$project->name}/tests";
 
                 // Post status to github
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
@@ -824,7 +824,7 @@ function devshop_github_webhook($project_node) {
                 $params->state = 'failure';
                 $params->target_url = $project->git_repo_url;
                 $params->description = t('Branch is out of date! Merge from default branch.');
-                $params->context = 'devshop/merge';
+                $params->context = "devshop/{$project->name}/merge";
 
                 // Post status to github
                 $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));

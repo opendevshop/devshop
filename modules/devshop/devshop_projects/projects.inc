@@ -223,7 +223,9 @@ function devshop_project_load($node) {
     $environment->servers['http'] = array(
       'nid' => $environment->web_server_nid,
       'name' => $environment->web_server,
+      'server' => node_load($environment->web_server_nid),
     );
+    $environment->ip_addresses = $environment->servers['http']['server']->ip_addresses;
 
     // On project create, there is no site, so there is no db_server.
     if (empty($environment->db_server)) {
@@ -245,16 +247,8 @@ function devshop_project_load($node) {
     $environment->servers['db'] = array(
       'nid' => $environment->db_server_nid,
       'name' => $environment->db_server,
+      'server' => node_load($environment->db_server_nid),
     );
-
-    // Web Server IP
-    $server = node_load($environment->web_server_nid);
-    if (!empty($server)) {
-      $environment->ip_addresses = $server->ip_addresses;
-    }
-    else {
-      $environment->ip_addresses = array();
-    }
 
     // Load Solr if present
     if (module_exists('hosting_solr')) {
@@ -293,6 +287,11 @@ function devshop_project_load($node) {
     }
     else {
       $environment->url = $protocol . $environment->system_domain;
+    }
+
+    // Look for non-80 ports.
+    if ($environment->servers['http']['server']->services['http']->port != '80' && $environment->servers['http']['server']->services['http']->port != '0') {
+      $environment->url .= ':' . $environment->servers['http']['server']->services['http']->port;
     }
 
     // System Alias

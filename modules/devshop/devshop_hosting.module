@@ -85,6 +85,18 @@ function devshop_hosting_menu() {
 }
 
 /**
+ * @param $blocks
+ * @param $theme
+ * @param $code_blocks
+ */
+function devshop_hosting_block_info_alter(&$blocks, $theme, $code_blocks) {
+
+    // Enable the links block and put it in the footer..
+    $blocks['menu']['devshop-footer-links']['status'] = 1;
+    $blocks['menu']['devshop-footer-links']['region'] = 'footer';
+}
+
+/**
  * Menu callback for path "devshop"
  *
  * Provides a login page or redirects to proejcts
@@ -208,7 +220,7 @@ function devshop_hosting_site_url($node) {
  * Provides some UI enhancements.
  */
 function devshop_hosting_form_user_login_alter(&$form) {
-  $form['pass']['#description'] .= '  ' . l(t('Forgot your Password?'), 'user/password');
+  $form['pass']['#description'] = l(t('Forgot your Password?'), 'user/password');
 
   // Add user register link
   if (user_register_access()) {
@@ -374,7 +386,7 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20)
       INNER JOIN {hosting_task} t ON tn.nid = t.nid
       WHERE
         $where
-      ORDER BY nid DESC
+      ORDER BY t.vid DESC
       LIMIT $limit
   ",
     $args

@@ -17,10 +17,10 @@ class Provision_Service_Process_Process extends Provision_Service_Process {
   function process($command, $cwd = null, $label = 'Process', $env = array(), $log_output = TRUE) {
 
     if (provision_is_local_host($this->server->remote_host)) {
-      return devshop_process($command, $cwd, $label, $env, $log_output);
+      return provision_process($command, $cwd, $label, $env, $log_output);
     }
     else {
-      return devshop_process('ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' ' . $this->server->script_user . '@' . $this->server->remote_host . ' ' . $command, $cwd, $label, $env);
+      return provision_process('ssh ' . drush_get_option('ssh-options', '-o PasswordAuthentication=no') . ' ' . $this->server->script_user . '@' . $this->server->remote_host . ' ' . $command, $cwd, $label, $env);
     }
   }
 }

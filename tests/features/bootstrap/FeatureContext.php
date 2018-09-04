@@ -12,45 +12,98 @@ use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext extends DrushContext implements SnippetAcceptingContext {
-  
-  
-  /**
-   * Make MinkContext available.
-   * @var \Drupal\DrupalExtension\Context\MinkContext
-   */
-  private $minkContext;
-  
-  /**
-   * Prepare Contexts.
-   * @BeforeScenario
-   */
-  public function gatherContexts(BeforeScenarioScope $scope)
-  {
-    $environment = $scope->getEnvironment();
-    $this->minkContext = $environment->getContext('Drupal\DrupalExtension\Context\MinkContext');
-  }
-  
-  /**
-   * Log output and watchdog logs after any failed step.
-   * @AfterStep
-   */
-  public function logAfterFailedStep($event)
-  {
-    if ($event->getTestResult()->getResultCode() === \Behat\Testwork\Tester\Result\TestResult::FAILED) {
-      
-      // Print Current URL and Last reponse after any step failure.
-      echo "Step Failed.";
-      
-      echo "\nLasts Response:\n";
-      $this->minkContext->printLastResponse();
-      
-      echo "\nWatchdog Errors:\n";
-      $this->assertDrushCommand('wd-show');
-      $this->printLastDrushOutput();
-      
+class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implements SnippetAcceptingContext {
+
+    /**
+     * Make MinkContext available.
+     * @var \Drupal\DrupalExtension\Context\MinkContext
+     */
+    private $minkContext;
+
+    /**
+     * Make DrupalContext available.
+     * @var \Drupal\DrupalExtension\Context\DrupalContext
+     */
+    private $drupalContext;
+
+    /**
+     * Make MinkContext available.
+     * @var \Drupal\DrupalExtension\Context\DrushContext
+     */
+    private $drushContext;
+
+    /**
+     * Prepare Contexts.
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $environment = $scope->getEnvironment();
+        $this->minkContext = $environment->getContext('Drupal\DrupalExtension\Context\MinkContext');
+        $this->drupalContext = $environment->getContext('Drupal\DrupalExtension\Context\DrupalContext');
+        $this->drushContext = $environment->getContext('Drupal\DrupalExtension\Context\DrushContext');
     }
-  }
+
+    /**
+     * Log output and watchdog logs after any failed step.
+     * @AfterStep
+     */
+    public function logAfterFailedStep($event)
+    {
+        if ($event->getTestResult()->getResultCode() === \Behat\Testwork\Tester\Result\TestResult::FAILED) {
+
+            $base_url = $this->getMinkParameter('base_url');
+            $drush_config = $this->drupalContext->getDrupalParameter('drush');
+            $alias = $drush_config['alias'];
+
+            // Lookup file_directory_path
+            $cmd = "drush @$alias vget file_public_path --format=string";
+            $files_path = trim(shell_exec($cmd));
+
+            // Check for various problems.
+            if (empty($files_path)) {
+                throw new \Exception("Results of command '$cmd' was empty. Check your settings and try again.'");
+            }
+            elseif (!file_exists($files_path)) {
+                throw new \Exception("Unable to find directory at 'files_path' Drupal parameter '$files_path'");
+            }
+            elseif (!is_writable($files_path)) {
+                throw new \Exception("Files path '$files_path' is not writable. Check permissions and try again.");
+            }
+
+            $output_directory = $files_path .'/test_failures';
+            $output_path = $files_path .'/test_failures/failure-' . time() . '.html';
+
+            // Print Current URL and Last reponse after any step failure.
+            echo "Step Failed. \n";
+            echo "Site: $alias \n";
+            echo "Current URL: " . $this->getSession()->getCurrentUrl() . "\n";
+
+            if (!file_exists($output_directory)) {
+                mkdir($output_directory);
+            }
+            $wrote = file_put_contents($output_path, $this->getSession()->getPage()->getContent());
+
+
+            if (isset($_SERVER['TRAVIS'])) {
+                echo "\nLasts Response:\n";
+                $this->minkContext->printLastResponse();
+            }
+            else {
+
+                if ($wrote) {
+                    echo "Last Page Output: $base_url/$output_path \n";
+                }
+                else {
+                    throw new \Exception("Something failed when writing output to $base_url/$output_path ... \n");
+                }
+            }
+
+            echo "\nWatchdog Errors:\n";
+            $this->drushContext->assertDrushCommand('wd-show');
+            $this->drushContext->printLastDrushOutput();
+        }
+    }
   
   /**
    * Initializes context.
@@ -108,9 +161,9 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
   }
 
   /**
-   * @Then then field :field should have the value :value
+   * @Then the field :field should have the value :value
    */
-  public function thenFieldShouldHaveTheValue($field, $value)
+  public function theFieldShouldHaveTheValue($field, $value)
   {
     $field = $this->fixStepArgument($field);
     $value = $this->fixStepArgument($value);
@@ -163,5 +216,32 @@ class FeatureContext extends DrushContext implements SnippetAcceptingContext {
   {
     print "Deleting /var/aegir/projects/drpl8";
     print shell_exec('rm -rf /var/aegir/projects/drpl8');
+    print shell_exec('rm -rf /var/aegir/config/server_master/apache/platform.d/platform_drpl8_*.conf');
   }
+
+    /**
+     *
+     * @When I submit a pull-request
+     */
+    public function iSubmitAPullRequest()
+    {
+        $url = $this->minkContext->getSession()->getPage()->findField('webhook-url')->getAttribute('value');
+        $postdata = file_get_contents(dirname(dirname(__FILE__)) . '/assets/pull-request-opened.json');
+
+        if (empty($url)) {
+            throw new \Exception('Unable to find webhook URL.');
+        }
+
+        print "Found WebHook URL: $url";
+
+        // This one works, let's test for a URL first.
+        $client = $this->getSession()->getDriver('drush')->getClient();
+
+        /** @var Symfony\Component\DomCrawler\Crawler $response */
+        $response = $client->request('POST', $url, [], [], [], $postdata);
+
+        print_r($response->html());
+
+
+    }
 }

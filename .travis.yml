@@ -5,7 +5,6 @@ sudo: required
 # Only run test when committing to 1.x branch.
 branches:
   only:
-    - 1.x
     - 7.x-1.x
 
 env:
@@ -67,7 +66,7 @@ before_install:
   - composer install
 
 script:
-  - ${COMMAND} -n --no-dev
+  - ${COMMAND} -n --fork
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state
@@ -89,3 +88,6 @@ script:
 #
 #  # Stop container.
 #  - 'sudo docker stop devshop_container'
+
+notifications:
+  slack: thinkdrop:pb05x3ZL3qumHs0RjqEXvYfA

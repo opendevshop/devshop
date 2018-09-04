@@ -93,7 +93,7 @@ TXT;
     }
 
     // Run composer install.
-    devshop_process('composer install', $full_behat_folder_path, 'DevShop Testing');
+    provision_process('composer install', $full_behat_folder_path, 'DevShop Testing');
 
     // Write custom behat.yml to temporary folder.
     $environment_name = $environment->name;
@@ -165,7 +165,7 @@ YML;
       $i++;
 
       // Check for path.
-      if (substr($feature, 0, 1) !== '/') {
+      if (!empty($feature) && substr($feature, 0, 1) !== '/') {
         $feature = '/'.$feature;
       }
       $feature_path = empty($feature) ? '' : "features{$feature}";
@@ -177,7 +177,7 @@ YML;
       $cmd = "$full_behat_bin_path $feature_path --config $behat_yml_file --profile devshop --colors --strict --format-settings='{\"expand\": true}'";
 
       // Run behat command
-      devshop_process($cmd, $full_behat_folder_path, 'DevShop Testing', array(), TRUE, 'Test Run Failed');
+      provision_process($cmd, $full_behat_folder_path, 'DevShop Testing', array(), TRUE, 'Test Run Failed');
     }
   }
 }
