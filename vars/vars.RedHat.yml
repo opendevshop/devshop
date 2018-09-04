@@ -16,27 +16,4 @@ extra_packages:
   - openssl
   - mod_ssl
 
-# php_mysql_package: phpphp-mysqlnd
-
-#
-#php_packages:
-#  - php55
-##  - php55-php-mysqlnd
-#  - php55-php-cli
-#  - php55-php-gd
-#  - php55-php-process
-#  - php55-php-pear
-#  - php55-php-xml
-#  - php55-php-xmlrpc
-##  - php-mcrypt
-#  - php55-php-mbstring
-##  - postfix
-##  - cronie
-##  - mariadb
-##  - mariadb-server
-##  - MySQL-python
-## I think this needs to be installed before these packages.
-##  - epel-release
-#  - supervisor
-#  - openssl
-#  - mod_ssl
+php_mysql_package: php-mysqlnd
