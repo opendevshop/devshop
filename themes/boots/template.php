@@ -1,10 +1,5 @@
 <?php
 
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
-use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
-use SensioLabs\AnsiConverter\Theme\Theme;
-
 /**
  * Implements hook_theme()
  */
@@ -183,7 +178,7 @@ function boots_preprocess_environment(&$vars) {
 
   // Determine Environment State. Only one of these may be active at a time.
   // State: Site install failed.
-  if (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
+  if (isset($environment->tasks) && is_array($environment->tasks['install']) && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
     $install_task = current($environment->tasks['install']);
     $buttons = l(
       '<i class="fa fa-refresh"></i> ' . t('Retry'),
@@ -805,7 +800,8 @@ function boots_preprocess_node_project(&$vars){
     if ($node->verify->task_status == HOSTING_TASK_ERROR) {
       $vars['deploy_label'] = t('There was a problem refreshing branches and tags.');
       $vars['git_refs'][] = l(t('View task log'), 'node/' . $node->verify->nid);
-      $vars['git_refs'][] = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+      $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+      array_unshift($vars['git_refs'], $link_refresh);
     }
     elseif ($node->verify->task_status == HOSTING_TASK_QUEUED || $node->verify->task_status == HOSTING_TASK_PROCESSING) {
       $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
@@ -919,7 +915,7 @@ data-target="#webhook-modal" title="Webhook URL">
                   <p>
                     $prefix
                   </p>
-                  <p><input class="form-control" value="$url" onclick="this.select()"></p>
+                  <p><input id="webhook-url" class="form-control" value="$url" onclick="this.select()"></p>
                   <p>
                     $suffix
                   </p>

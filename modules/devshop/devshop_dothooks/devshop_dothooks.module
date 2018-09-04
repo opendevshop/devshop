@@ -111,6 +111,9 @@ HTML;
  */
 function devshop_dothooks_run_hook($hook, $environment) {
 
+  // Reload the alter hook in case there are new hooks.
+  devshop_dothooks_devshop_environment_alter($environment, $environment->project);
+
   // Respect drush option, but default to environment settings.
   if (!drush_get_option('dothooks', $environment->settings->deploy['dothooks'])) {
     drush_log('[.hooks] Environment not configured to run .hooks commands.', 'info');
@@ -133,12 +136,16 @@ function devshop_dothooks_run_hook($hook, $environment) {
     $hooks = array_filter(explode("\n", $environment->dothooks[$hook]));
   }
 
+  $env = $_SERVER;
+  $env['DEVSHOP_PROJECT'] = $environment->project_name;
+  $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
+
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
     $hook_line = strtr($hook_line, array(
       '{{alias}}' => $environment->system_alias,
     ));
-    devshop_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml');
+    provision_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml');
   }
 }
 

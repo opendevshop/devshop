@@ -2,4 +2,4 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = core
-projects[drupal][version] = 7.56
+projects[drupal][version] = 7.59

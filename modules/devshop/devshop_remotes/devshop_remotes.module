@@ -318,27 +318,27 @@ function devshop_remotes_form_hosting_task_confirm_form_alter(&$form, &$form_sta
     return;
   }
 
-  $site = $form_state['build_info']['args'][0];
-
-  if (isset($_GET['source']) && isset($site->project->settings->aliases[$_GET['source']])) {
-    $alias_name = $_GET['source'];
-    $alias_record = $site->project->settings->aliases[$alias_name];
-    $actual_alias = "@{$site->project->name}.{$alias_name}";
-
-    $form['parameters']['source']['#type'] = 'value';
-    $form['parameters']['source']['#value'] = $actual_alias;
-
-    $form['source_display'] = array(
-      '#type' => 'item',
-      '#title' => t('Source'),
-      '#markup' => l($alias_record['uri'], 'http://' . $alias_record['uri'], array(
-        'attributes' => array(
-          'target' => '_blank',
-        ),
-      )),
-      '#weight' => -10,
-    );
-  }
+//  $site = $form_state['build_info']['args'][0];
+//
+//  if (isset($_GET['source']) && isset($site->project->settings->aliases[$_GET['source']])) {
+//    $alias_name = $_GET['source'];
+//    $alias_record = $alias_name. $site->project->settings->aliases[$alias_name];
+//    $actual_alias = "@{$site->project->name}.{$alias_name}";
+//
+////    $form['parameters']['source']['custom_alias']['text']['#type'] = 'value';
+//    $form['parameters']['source']['#default_value'] = 'wtf';
+//
+//    $form['source_display'] = array(
+//      '#type' => 'item',
+//      '#title' => t('Source'),
+//      '#markup' => l($alias_record['uri'], 'http://' . $alias_record['uri'], array(
+//        'attributes' => array(
+//          'target' => '_blank',
+//        ),
+//      )),
+//      '#weight' => -10,
+//    );
+//  }
 }
 
 /**

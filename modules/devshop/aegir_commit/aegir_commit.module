@@ -81,8 +81,18 @@ function hosting_task_commit_form($node) {
     '#prefix' => '<div class="alert alert-info">',
       '#suffix' => t('It is recommended to read the git diff before you commit.') . '</div>',
   );
-  $environment->git_status = trim(shell_exec("cd $environment->repo_path; git -c color.ui=always  status"));
-  $environment->git_diff = trim(shell_exec("cd $environment->repo_path; git -c color.ui=always diff"));
+
+  // Limit status to 1000 lines
+  $lines = explode("\n", $environment->git_status);
+  $count = count($lines);
+  if ($count > 100) {
+    $lines = array_slice($lines, 0, 100);
+    $lines[] = "# STATUS TRUNCATED. SHOWING 100 of $count LINES.";
+  }
+  $environment->git_status  = implode("\n", $lines);
+
+  // Get git diff.
+  $environment->git_diff = trim(shell_exec("cd {$environment->repo_path}; git -c color.ui=always diff"));
 
   $form['git_info']['status'] = array(
     '#type' => 'markup',

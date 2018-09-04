@@ -132,8 +132,103 @@ function devshop_projects_permission() {
  *
  * Defines the list of tasks that appear under the gear icon.
  */
-function devshop_projects_devshop_environment_menu($environment) {
+function devshop_environment_menu_first_items($environment, $tasks) {
+  $site = null;
+  $platform = null;
   $items = array();
+  $aegir_items = array();
+
+  global $user;
+
+  // Show for every site, even disabled ones.
+  if ($environment->site) {
+    $site = node_load($environment->site);
+    if (node_access('update', $site)) {
+      $items[] = l('<i class="fa fa-sliders"></i> '.t('Environment Settings'),
+        "node/{$environment->site}/edit",
+        array(
+          'html' => TRUE,
+        ));
+      $items[] = '<div class="divider"></div>';
+
+    }
+
+    if (user_access('create platform git-tag task') && $environment->platform) {
+      $items[] = l('<i class="fa fa-tag"></i> '.t('Create a tag'),
+        "hosting_confirm/{$environment->platform}/platform_git-tag",
+        array(
+          'html' => TRUE,
+        ));
+      $items[] = '<div class="divider"></div>';
+    }
+
+    if (user_access('change site domain names') && user_access('create migrate task') ) {
+      $href = "hosting_confirm/{$environment->site}/site_migrate";
+      $items[] = l('<i class="fa fa-globe"></i> '.t('Change Domain Name'),
+        $href, array(
+          'query' => array(
+            'rename' => 1,
+            'token' => drupal_get_token($user->uid),
+          ),
+          'html' => TRUE,
+        ));
+    }
+    if (node_access('view', $site)) {
+      $aegir_items[] = l('<i class="fa fa-globe"></i> '.t('Aegir Site'),
+        "node/{$environment->site}",
+        array(
+          'html' => TRUE,
+        ));
+    }
+  }
+
+  // If platform exists
+  if ($environment->platform) {
+    $platform = node_load($environment->platform);
+    if (node_access('view', $platform)) {
+      $aegir_items[] = l('<i class="fa fa-code"></i> '.t('Aegir Platform'),
+        "node/{$environment->platform}",
+        array(
+          'query' => array(
+            'rename' => 1,
+            'token' => drupal_get_token($user->uid),
+          ),
+          'html' => TRUE,
+        ));
+    }
+  }
+
+  // Load test task, if it exists
+  if ($tasks['test']) {
+    $href = "hosting_confirm/{$environment->site}/site_test";
+    $url = url($href, array(
+      'query' => array(
+        'token' => drupal_get_token($user->uid),
+      )
+    ));
+    $title = $tasks['test']['title'];
+    if (isset($tasks['test']['icon'])) {
+      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
+    }
+    else {
+      $icon = '';
+    }
+    $items[] = <<<HTML
+      <a href="$url">
+            $icon $title
+      </a>
+HTML;
+    $items[] = '<div class="divider"></div>';
+  }
+
+  // Add aegir items to items
+  if (!empty($aegir_items)) {
+    $items = array_merge($items, $aegir_items);
+
+    if (!empty($actions)) {
+      $items[] = '<div class="divider"></div>';
+    }
+  }
 
   // Site specific actions.
   if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
@@ -183,18 +278,6 @@ function devshop_projects_devshop_environment_menu($environment) {
       $items[] = 'features_update';
       $items[] = 'features_revert_all';
       $items[] = '<div class="divider"></div>';
-    }
-
-    $items[] = 'verify';
-    $items[] = 'flush_cache';
-    $items[] = 'rebuild_registry';
-    $items[] = 'run_cron';
-    $items[] = 'update';
-    $items[] = '<div class="divider"></div>';
-
-    // Backup & Restore
-    if (drupal_valid_path("node/$environment->site/backups")) {
-      $items[] = l(t('Backups'), "node/$environment->site/backups");
     }
   }
   elseif ($environment->site && $environment->site_status == HOSTING_SITE_DISABLED)  {
@@ -602,7 +685,7 @@ function devshop_hosting_task_menu_access($node, $task) {
     $node = node_load($node);
   }
 
-  if ($task != 'delete' && !$node->status) {
+  if ($node->type != 'project' && $task != 'delete' && !$node->status) {
     return FALSE;
   }
 
