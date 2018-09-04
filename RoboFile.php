@@ -170,7 +170,7 @@ class RoboFile extends \Robo\Tasks {
       }
 
       foreach ($roles as $name => $role) {
-        $path = 'repos/' . $name;
+        $path = 'roles/' . $name;
         if (file_exists($path)) {
           $this->say("$path already exists.");
         }
