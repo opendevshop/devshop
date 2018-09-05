@@ -29,7 +29,7 @@ function drush_aegir_update_provision_update_drupal() {
 
     $path = d()->platform->repo_path? d()->platform->repo_path: d()->platform->root;
     if (file_exists($path . '/composer.json')) {
-      devshop_process('composer update drupal/core webflo/drupal-core-require-dev symfony/* --with-dependencies', $path);
+      provision_process('composer update drupal/core webflo/drupal-core-require-dev symfony/* --with-dependencies', $path);
     }
     else {
       drush_set_error('PROVISION_ERROR', dt('Drupal 8 was detected, but a composer.json file was not found in %path. Updating Drupal 8 automatically requires using a composer-based platform.  See https://github.com/drupal-composer/drupal-project for the starting template.', [
