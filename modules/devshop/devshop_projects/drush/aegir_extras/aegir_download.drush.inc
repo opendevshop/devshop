@@ -32,37 +32,65 @@ function aegir_download_drush_command()
 }
 
 /**
- * Implements the provision-git-pull command.
+ * Implements the provision-download command.
  */
 function drush_aegir_download_provision_download() {
     $packages = drush_get_option('packages');
 
-    if (is_array($packages)) {
+    // Use composer require if there is a composer.json file and packages.drupal.org is a repo...
+    if (file_exists(d()->platform->repo_path . '/composer.json')) {
+      $composer_json = json_decode(file_get_contents(d()->platform->repo_path . '/composer.json'));
+      $cmd = '';
+
+      if (is_string($packages)) {
+        $packages = explode(' ', $packages);
+      }
+
+      if (isset($composer_json->repositories)) {
+        foreach ($composer_json->repositories as $repo) {
+          if (strpos($repo->url, 'https://packages.drupal.org') === 0) {
+            $cmd = "composer require ";
+            foreach ($packages as $package) {
+              $cmd .= "drupal/$package ";
+            }
+            continue;
+          }
+        }
+      }
+
+      if (empty($cmd)) {
+        drush_log(dt('The Drupal packagist repository was not found: unable to use `composer require` to add modules. Please see https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#drupal-packagist'), 'warning');
+      }
+    }
+    else {
+
+      if (is_array($packages)) {
         $packages = implode($packages);
-    }
+      }
 
-    // No modules, no more.
-    if (empty($packages)) {
+      // No modules, no more.
+      if (empty($packages)) {
         return drush_set_error('No packages defined.');
+      }
+
+      // Run `drush dl $modules`
+      $target = d()->name;
+      $cmd = "drush $target dl $packages --yes --strict=0";
+
+      // Pass through options to the drush dl command.
+      if (drush_get_option('commit', FALSE)) {
+        $cmd .= ' --commit ';
+      }
+      if (drush_get_option('message', '')) {
+        $message = drush_get_option('message', '');
+        $cmd .= " --message='$message' ";
+      }
+      if (drush_get_option('update', FALSE)) {
+        $cmd .= " --update";
+      }
     }
 
-    // Run `drush dl $modules`
-    $target = d()->name;
-    $cmd = "drush $target dl $packages --yes --strict=0";
-
-    // Pass through options to the drush dl command.
-    if (drush_get_option('commit', FALSE)) {
-      $cmd .= ' --commit ';
-    }
-    if (drush_get_option('message', '')) {
-      $message = drush_get_option('message', '');
-      $cmd .= " --message='$message' ";
-    }
-    if (drush_get_option('update', FALSE)) {
-      $cmd .= " --update";
-    }
-
-    provision_process($cmd);
+    provision_process($cmd, d()->platform->repo_path);
 }
 
 /**
