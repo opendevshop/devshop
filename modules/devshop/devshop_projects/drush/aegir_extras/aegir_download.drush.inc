@@ -62,28 +62,7 @@ function drush_aegir_download_provision_download() {
       $cmd .= " --update";
     }
 
-    drush_log($cmd, 'devshop_command');
-
-    $process = new Process($cmd);
-    $process->setTimeout(null);
-    $exit_code = $process->run(
-      function ($type, $buffer) {
-        if (Process::ERR === $type) {
-          drush_log($buffer, 'devshop_ok');
-        } else {
-          drush_log($buffer, 'devshop_ok');
-        }
-      }
-    );
-
-    // check exit code
-    if ($exit_code === 0) {
-      drush_log("Aegir Download: OK", 'ok');
-    } else {
-      drush_log("Aegir Download Failed!", 'error');
-      drush_log(dt('Downloading modules failed. Check the logs and try again.'), 'devshop_error');
-      return;
-    }
+    provision_process($cmd);
 }
 
 /**
