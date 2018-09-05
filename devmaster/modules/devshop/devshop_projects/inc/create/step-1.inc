@@ -61,9 +61,11 @@ function devshop_project_create_step_git($form, $form_state) {
   
   $username = variable_get('aegir_user', 'aegir');
   
-  $tips[] = t('Use the "ssh" url whenever possible.');
-  $tips[] = t('Code will be cloned to the server using the <code>aegir</code> user. Check the "Repository Access" for SSH information.');
-  $tips[] = t('An entire Drupal codebase must be present in the repository, but does not have to be in the root. See <em>Path to Drupal</em> setting on the next page.');
+  $tips[] = t('Use the "ssh" url whenever possible. For example: <code>git@github.com:opendevshop/repo.git</code>');
+  $tips[] = t('You can use a repository with a full Drupal stack committed, but using composer is recommended.');
+  $tips[] = t('Use the !link project as a starting point for Composer based projects.', [
+    '!link' => l(t('DevShop Composer Template'), 'https://github.com/opendevshop/devshop-composer-template'),
+  ]);
   $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
   $tips = theme('item_list', array('items' => $tips));
   
@@ -75,6 +77,7 @@ function devshop_project_create_step_git($form, $form_state) {
     '#default_value' => $project->git_url,
     '#maxlength' => 1024,
   );
+
 //
 //  // Project code path.
 //  $form['code_path'] = array(
