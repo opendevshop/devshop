@@ -91,6 +91,28 @@ function drush_aegir_download_provision_download() {
     }
 
     provision_process($cmd, d()->platform->repo_path);
+
+    // Commit and push has to happen here when using composer, there are no post-composer hooks here.
+    if (file_exists(d()->platform->repo_path . '/composer.json') && drush_get_option('commit', FALSE)) {
+
+      $message = drush_get_option('message', dt('Committed by DevShop: ') . implode(" ", $packages));
+
+      $wrapper = new GitWrapper();
+      $wrapper->streamOutput();
+
+      try {
+        $git = $wrapper->workingCopy(d()->platform->repo_path);
+
+        $git
+          ->add(d()->platform->repo_path . '/composer.json')
+          ->add(d()->platform->repo_path . '/composer.lock')
+          ->commit($message)
+          ->push();
+      }
+      catch (GitException $e) {
+        return drush_set_error('DRUSH_ERROR', "Git Exception: " . $e->getMessage());
+      }
+    }
 }
 
 /**
