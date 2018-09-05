@@ -32,57 +32,84 @@ function aegir_download_drush_command()
 }
 
 /**
- * Implements the provision-git-pull command.
+ * Implements the provision-download command.
  */
 function drush_aegir_download_provision_download() {
     $packages = drush_get_option('packages');
+    $composer_build = false;
 
-    if (is_array($packages)) {
-        $packages = implode($packages);
-    }
+    // Use composer require if there is a composer.json file and packages.drupal.org is a repo...
+    if (file_exists(d()->platform->repo_path . '/composer.json')) {
+      $composer_json = json_decode(file_get_contents(d()->platform->repo_path . '/composer.json'));
+      $cmd = '';
 
-    // No modules, no more.
-    if (empty($packages)) {
-        return drush_set_error('No packages defined.');
-    }
+      if (is_string($packages)) {
+        $packages = explode(' ', $packages);
+      }
 
-    // Run `drush dl $modules`
-    $target = d()->name;
-    $cmd = "drush $target dl $packages --yes --strict=0";
-
-    // Pass through options to the drush dl command.
-    if (drush_get_option('commit', FALSE)) {
-      $cmd .= ' --commit ';
-    }
-    if (drush_get_option('message', '')) {
-      $message = drush_get_option('message', '');
-      $cmd .= " --message='$message' ";
-    }
-    if (drush_get_option('update', FALSE)) {
-      $cmd .= " --update";
-    }
-
-    drush_log($cmd, 'devshop_command');
-
-    $process = new Process($cmd);
-    $process->setTimeout(null);
-    $exit_code = $process->run(
-      function ($type, $buffer) {
-        if (Process::ERR === $type) {
-          drush_log($buffer, 'devshop_ok');
-        } else {
-          drush_log($buffer, 'devshop_ok');
+      if (isset($composer_json->repositories)) {
+        foreach ($composer_json->repositories as $repo) {
+          if (strpos($repo->url, 'https://packages.drupal.org') === 0) {
+            $cmd = "composer require ";
+            foreach ($packages as $package) {
+              $cmd .= "drupal/$package ";
+              $composer_build = true;
+            }
+            continue;
+          }
         }
       }
-    );
 
-    // check exit code
-    if ($exit_code === 0) {
-      drush_log("Aegir Download: OK", 'ok');
-    } else {
-      drush_log("Aegir Download Failed!", 'error');
-      drush_log(dt('Downloading modules failed. Check the logs and try again.'), 'devshop_error');
-      return;
+      if (empty($cmd)) {
+        drush_log(dt('The Drupal packagist repository was not found: unable to use `composer require` to add modules. Please see https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#drupal-packagist'), 'warning');
+      }
+    }
+    else {
+
+      if (is_array($packages)) {
+        $packages = implode($packages);
+      }
+
+      // No modules, no more.
+      if (empty($packages)) {
+        return drush_set_error('No packages defined.');
+      }
+
+      // Run `drush dl $modules`
+      $target = d()->name;
+      $cmd = "drush $target dl $packages --yes --strict=0";
+
+      // Pass through options to the drush dl command.
+      if (drush_get_option('commit', FALSE)) {
+        $cmd .= ' --commit ';
+      }
+      if (drush_get_option('message', '')) {
+        $message = escapeshellarg(drush_get_option('message', dt('Committed by DevShop: ') . $packages));
+        $cmd .= " --message='$message' ";
+      }
+      if (drush_get_option('update', FALSE)) {
+        $cmd .= " --update";
+      }
+    }
+
+    provision_process($cmd, d()->platform->repo_path);
+
+    // Commit and push has to happen here when using composer, there are no post-composer hooks here.
+    if ($composer_build && drush_get_option('commit', FALSE)) {
+      $message = escapeshellarg(drush_get_option('message', dt('Committed by DevShop: ') . implode(" ", $packages)));
+
+      $files = 'composer.json';
+      if (file_exists(d()->platform->repo_path . '/composer.lock')) {
+        $files .= ' composer.lock';
+      }
+
+      $cmd = "git commit $files --message=$message";
+      provision_process($cmd, d()->platform->repo_path);
+
+      $process = drush_get_context('provision_process_result');
+      if ($process->getExitCode() == 0) {
+        provision_process('git push', d()->platform->repo_path);
+      }
     }
 }
 
