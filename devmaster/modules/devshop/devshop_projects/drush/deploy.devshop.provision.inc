@@ -48,21 +48,21 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     // $git->command('stash');
 
     // Fetch
-    devshop_process("git fetch --all", d()->platform->repo_path, dt('DevShop Deploy'));
+    provision_process("git fetch --all", d()->platform->repo_path, dt('DevShop Deploy'));
 
     // Checkout the chosen ref
-    $git_checkout_output = devshop_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy'));
+    $git_checkout_output = provision_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
 
     // Run Git Pull, if on a branch.
     if ($desired_ref_type == 'branch') {
-      $git_pull_output = devshop_process("git pull", d()->platform->repo_path, dt('DevShop Deploy'));
+      $git_pull_output = provision_process("git pull", d()->platform->repo_path, dt('DevShop Deploy'));
     }
 
     // Run a submodule update and init.
-    devshop_process("git submodule update --init --recursive --force ", d()->platform->repo_path, dt('DevShop Deploy'));
+    provision_process("git submodule update --init --recursive --force ", d()->platform->repo_path, dt('DevShop Deploy'));
 
-    devshop_process("git status", d()->platform->repo_path, dt('DevShop Deploy'));
+    provision_process("git status", d()->platform->repo_path, dt('DevShop Deploy'));
 }
 
 /**
@@ -133,7 +133,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   }
 
   foreach ($commands as $command) {
-    $output = devshop_process($command, d()->platform->repo_path, 'DevShop Deploy Hook');
+    $output = provision_process($command, d()->platform->repo_path, 'DevShop Deploy Hook');
 
     // Detect common errors and help the user.
     // Composer install with incorrect PHP version.

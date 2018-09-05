@@ -800,7 +800,8 @@ function boots_preprocess_node_project(&$vars){
     if ($node->verify->task_status == HOSTING_TASK_ERROR) {
       $vars['deploy_label'] = t('There was a problem refreshing branches and tags.');
       $vars['git_refs'][] = l(t('View task log'), 'node/' . $node->verify->nid);
-      $vars['git_refs'][] = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+      $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+      array_unshift($vars['git_refs'], $link_refresh);
     }
     elseif ($node->verify->task_status == HOSTING_TASK_QUEUED || $node->verify->task_status == HOSTING_TASK_PROCESSING) {
       $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
