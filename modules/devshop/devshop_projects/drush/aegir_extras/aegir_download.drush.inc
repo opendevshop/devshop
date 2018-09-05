@@ -36,6 +36,7 @@ function aegir_download_drush_command()
  */
 function drush_aegir_download_provision_download() {
     $packages = drush_get_option('packages');
+    $composer_build = false;
 
     // Use composer require if there is a composer.json file and packages.drupal.org is a repo...
     if (file_exists(d()->platform->repo_path . '/composer.json')) {
@@ -52,6 +53,7 @@ function drush_aegir_download_provision_download() {
             $cmd = "composer require ";
             foreach ($packages as $package) {
               $cmd .= "drupal/$package ";
+              $composer_build = true;
             }
             continue;
           }
@@ -82,7 +84,7 @@ function drush_aegir_download_provision_download() {
         $cmd .= ' --commit ';
       }
       if (drush_get_option('message', '')) {
-        $message = drush_get_option('message', '');
+        $message = escapeshellarg(drush_get_option('message', dt('Committed by DevShop: ') . $packages));
         $cmd .= " --message='$message' ";
       }
       if (drush_get_option('update', FALSE)) {
@@ -93,24 +95,20 @@ function drush_aegir_download_provision_download() {
     provision_process($cmd, d()->platform->repo_path);
 
     // Commit and push has to happen here when using composer, there are no post-composer hooks here.
-    if (file_exists(d()->platform->repo_path . '/composer.json') && drush_get_option('commit', FALSE)) {
+    if ($composer_build && drush_get_option('commit', FALSE)) {
+      $message = escapeshellarg(drush_get_option('message', dt('Committed by DevShop: ') . implode(" ", $packages)));
 
-      $message = drush_get_option('message', dt('Committed by DevShop: ') . implode(" ", $packages));
-
-      $wrapper = new GitWrapper();
-      $wrapper->streamOutput();
-
-      try {
-        $git = $wrapper->workingCopy(d()->platform->repo_path);
-
-        $git
-          ->add(d()->platform->repo_path . '/composer.json')
-          ->add(d()->platform->repo_path . '/composer.lock')
-          ->commit($message)
-          ->push();
+      $files = 'composer.json';
+      if (file_exists(d()->platform->repo_path . '/composer.lock')) {
+        $files .= ' composer.lock';
       }
-      catch (GitException $e) {
-        return drush_set_error('DRUSH_ERROR', "Git Exception: " . $e->getMessage());
+
+      $cmd = "git commit $files --message=$message";
+      provision_process($cmd, d()->platform->repo_path);
+
+      $process = drush_get_context('provision_process_result');
+      if ($process->getExitCode() == 0) {
+        provision_process('git push', d()->platform->repo_path);
       }
     }
 }
