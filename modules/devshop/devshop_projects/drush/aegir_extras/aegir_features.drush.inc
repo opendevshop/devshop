@@ -38,22 +38,22 @@ function drush_aegir_features_provision_features_update() {
 
     // If features were specified...
     if (!empty($features)) {
-      devshop_process("drush {$environment->drush_alias} features-update {$features} -y", NULL, dt('Update Features'));
+      provision_process("drush {$environment->drush_alias} features-update {$features} -y", NULL, dt('Update Features'));
     }
     else {
-      devshop_process("drush {$environment->drush_alias} features-update-all -y", NULL, dt('Update All Features'));
+      provision_process("drush {$environment->drush_alias} features-update-all -y", NULL, dt('Update All Features'));
     }
 
     // Show git status
-    devshop_process("git status", $environment->repo_path, NULL, dt('Checking git status'));
+    provision_process("git status", $environment->repo_path, NULL, dt('Checking git status'));
 
     // Revert force revert the features if the user asked.
     if ($revert) {
       if (!empty($features)) {
-        devshop_process("drush {$environment->drush_alias} fr {$features} --force -y", NULL, dt('Revert Features'));
+        provision_process("drush {$environment->drush_alias} fr {$features} --force -y", NULL, dt('Revert Features'));
       }
       else {
-        devshop_process("drush {$environment->drush_alias} fra --force -y", NULL, dt('Revert Features'));
+        provision_process("drush {$environment->drush_alias} fra --force -y", NULL, dt('Revert Features'));
       }
     }
   }
