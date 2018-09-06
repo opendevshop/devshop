@@ -1,0 +1,16 @@
+<?php
+/**
+ * @file devmaster.install
+ *
+ * Global update hooks.
+ *
+ */
+
+/**
+ * Enable composer_autoloader and tell composer_autoloader.module where the
+ * vendor directory is.
+ */
+function devmaster_update_7004() {
+  module_enable(array('composer_autoloader'));
+  variable_set('composer_autoloader', __DIR__ . '/vendor/autoload.php');
+}
