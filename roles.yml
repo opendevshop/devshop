@@ -1,7 +1,7 @@
 # Aegir Roles
 
 - name: geerlingguy.php
-  version: 3.6.0
+  version: 3.5.0
 
 - name: geerlingguy.php-mysql
   version: 2.0.1
