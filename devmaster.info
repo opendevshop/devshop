@@ -24,6 +24,7 @@ dependencies[] = hosting_server
 dependencies[] = hosting_clone
 dependencies[] = hosting_cron
 dependencies[] = hosting_migrate
+dependencies[] = hosting_git_checkout
 
 ; DevShop Aegir
 dependencies[] = hosting_alias
@@ -69,6 +70,7 @@ dependencies[] = aegir_download
 dependencies[] = aegir_commit
 dependencies[] = aegir_update
 dependencies[] = aegir_config
+dependencies[] = aegir_features
 dependencies[] = devshop_stats
 dependencies[] = devshop_remotes
 
