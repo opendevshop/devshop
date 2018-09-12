@@ -19,7 +19,7 @@ projects:
     download:
       type: git
       branch: 7.x-1.x
-      url: git@github.com:opendevshop/devmaster.git
+      url: https://github.com/opendevshop/devmaster.git
 
   devel:
     version: 1
