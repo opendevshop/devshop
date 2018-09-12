@@ -189,3 +189,17 @@ function devshop_hosting_update_7011() {
 function devshop_hosting_update_7012() {
   module_enable(array('devshop_remotes'));
 }
+
+/**
+ * Enable Hosting Git Checkout module for creating branches.
+ */
+function devshop_hosting_update_7013() {
+  module_enable(array('hosting_git_checkout'));
+}
+
+/**
+ * Enable Aegir features module to allow one click feature updates and reverts.
+ */
+function devshop_hosting_update_7014() {
+  module_enable(array('aegir_features'));
+}
