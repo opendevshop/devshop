@@ -5,11 +5,11 @@
   action: yum name=centos-release-scl state=present
   when: ansible_distribution == 'CentOS'
 
-- name: Setup | REDHAT | Install SCL in RHEL
-  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
-  when: ansible_distribution == 'Red Hat Enterprise Linux'
+#- name: Setup | REDHAT | Install SCL in RHEL
+#  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
+#  when: ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Add EPEL
-  yum:
-    name: epel-release
-    state: present
+#- name: Add EPEL
+#  yum:
+#    name: epel-release
+##    state: present

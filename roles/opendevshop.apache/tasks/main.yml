@@ -24,6 +24,13 @@
     validate: 'visudo -cf %s'
     create: yes
 
+- name: Test sudo apache2ctl reload access.
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "sudo {{ apache_control }} -S"
+  warn: no
+
 - name: Add aegir to apache group.
   when: aegir_user_in_web_group == 'yes'
   user:
