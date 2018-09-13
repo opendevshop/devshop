@@ -419,10 +419,10 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
-                              <?php if (user_access('create git-checkout task')): ?>
+                              <?php if (user_access('create platform git-checkout task')): ?>
                               <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout"><i class="fa fa-code-fork"></i> <?php print t('Create a branch'); ?></a></label></li>
                               <?php endif;?>
- <?php if (user_access('create git-tag task')): ?>
+ <?php if (user_access('create platform git-tag task')): ?>
                               <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag"><i class="fa fa-tag"></i> <?php print t('Create a tag'); ?></a></label></li>
                               <?php endif;?>
 
