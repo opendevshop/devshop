@@ -11,4 +11,4 @@
   apt:
     name: 'libapache2-mod-php5'
     state: present
-  when: ansible_os_family == 'Debian' and ansible_distribution_major_version != '16'
+  when: ansible_os_family == 'Debian' and ansible_distribution_major_version > '14'
