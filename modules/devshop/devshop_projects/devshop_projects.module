@@ -265,8 +265,8 @@ HTML;
       $items[] = 'config_import';
       $items[] = '<div class="divider"></div>';
     }
-    elseif (module_exists('aegir_features') && strpos($environment->version, '7') === 0) {
-      $items[] = 'features_update';
+    elseif (module_exists('hosting_tasks_extra') && strpos($environment->version, '7') === 0) {
+      $items[] = 'features_update_all';
       $items[] = 'features_revert_all';
       $items[] = '<div class="divider"></div>';
     }
