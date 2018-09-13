@@ -14,13 +14,6 @@ env:
   - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer'
 
   matrix:
-  - test="Upgrade"
-    COMMAND="robo up --test-upgrade"
-    UPGRADE_FROM_VERSION="1.0.0-beta10"
-
-  - test="Docker Install"
-    COMMAND="bin/robo up --test"
-
   - test="Ansible on Ubuntu 14.04 Apache"
     COMMAND="bin/robo up --mode=install.sh --test"
 
@@ -66,6 +59,7 @@ script:
 
 # Run robo p:s to scaffold roles
 - bin/robo p:s -n
+- ls -la 
 - cp -rf $TRAVIS_BUILD_DIR roles/$ANSIBLE_ROLE_NAME
 
 # Copy this role into the /roles folder
