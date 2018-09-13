@@ -19,7 +19,7 @@ devmaster_install_command: "{{ local_bin_path }}/devshop devmaster:install --sit
 drush_dl_method: wget
 
 devshop_drush_packages:
-  provision: 7.x-3.x-devshop
+  provision: 7.x-3.160-beta2
   registry_rebuild: 7.x-2.2
 
 php_date_timezone: "America/New_York"
