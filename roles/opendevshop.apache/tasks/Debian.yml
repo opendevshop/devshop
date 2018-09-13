@@ -11,4 +11,7 @@
   apt:
     name: 'libapache2-mod-php5'
     state: present
-  when: ansible_os_family == 'Debian' and ansible_distribution_major_version > '14'
+  notify:
+    - restart webserver
+    - restart php-fpm
+  when: ansible_os_family == 'Ubuntu' and ansible_distribution_major_version == '14'
