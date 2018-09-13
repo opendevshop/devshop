@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * This file provides commands to the robo CLI for managing development and
  * testing of devshop.
@@ -142,6 +144,45 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+    // If not on travis, clone all ansible roles
+    if (!isset($_SERVER['TRAVIS'])) {
+      // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
+      // Ansible roles
+      $role_repos = [
+        'geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
+        'geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
+        'geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
+        'geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
+        'geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
+        'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
+        'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
+        'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+        'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
+        'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
+        'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
+      ];
+
+      foreach (Yaml::parse(file_get_contents(__DIR__ . '/roles.yml')) as $role) {
+        $roles[$role['name']] = [
+          'repo' => $role_repos[$role['name']],
+          'version' => $role['version'],
+        ];
+      }
+
+      foreach ($roles as $name => $role) {
+        $path = 'roles/' . $name;
+        if (file_exists($path)) {
+          $this->say("$path already exists.");
+        }
+        else {
+          $this->taskGitStack()
+            ->cloneRepo($role['repo'], $path, $role['version'])
+            ->run();
+        }
+      }
+
+    }
+
     // Run drush make to build the devmaster stack.
     $make_destination = "aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
@@ -247,6 +288,9 @@ class RoboFile extends \Robo\Tasks {
    * --install-sh-image=geerlingguy/docker-centos7-ansible Launch an OS
    * container, then install devshop using install.sh in a CentOS 7 image.
    *
+   *   robo up --mode=manual
+   *   Just launch the container. Allows you to manually run the install.sh script.
+   *
    * @option $test Run tests after containers are up and devshop is installed.
    * @option $test-upgrade Install an old version, upgrade it to this version,
    *   then run tests.
@@ -340,7 +384,7 @@ class RoboFile extends \Robo\Tasks {
         }
       }
     }
-    elseif ($opts['mode'] == 'install.sh') {
+    elseif ($opts['mode'] == 'install.sh' || $opts['mode'] == 'manual') {
 
       $init_map = [
         'centos:7' => '/usr/lib/systemd/systemd',
@@ -425,7 +469,7 @@ class RoboFile extends \Robo\Tasks {
       # Run install script on the container.
       # @TODO: Run the last version on the container, then upgrade.
       $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if (($this->input()
+      if ($opts['mode'] != 'manual' && ($this->input()
             ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
           ->exec($install_command)
           //        ->option('tty')
