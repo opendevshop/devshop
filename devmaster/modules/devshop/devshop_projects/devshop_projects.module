@@ -153,15 +153,6 @@ function devshop_environment_menu_first_items($environment, $tasks) {
 
     }
 
-    if (user_access('create platform git-tag task') && $environment->platform) {
-      $items[] = l('<i class="fa fa-tag"></i> '.t('Create a tag'),
-        "hosting_confirm/{$environment->platform}/platform_git-tag",
-        array(
-          'html' => TRUE,
-        ));
-      $items[] = '<div class="divider"></div>';
-    }
-
     if (user_access('change site domain names') && user_access('create migrate task') ) {
       $href = "hosting_confirm/{$environment->site}/site_migrate";
       $items[] = l('<i class="fa fa-globe"></i> '.t('Change Domain Name'),
