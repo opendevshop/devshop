@@ -419,6 +419,13 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
+                              <?php if (user_access('create git-checkout task')): ?>
+                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout"><i class="fa fa-code-fork"></i> <?php print t('Create a branch'); ?></a></label></li>
+                              <?php endif;?>
+ <?php if (user_access('create git-tag task')): ?>
+                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag"><i class="fa fa-tag"></i> <?php print t('Create a tag'); ?></a></label></li>
+                              <?php endif;?>
+
                                 <li><label><?php print t('Deploy branch or tag'); ?></label></li>
                                 <?php if (count($git_refs)): ?>
                                     <?php foreach ($git_refs as $ref => $item): ?>
