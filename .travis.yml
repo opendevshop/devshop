@@ -59,6 +59,7 @@ script:
 
 # Run robo p:s to scaffold roles
 - bin/robo p:s -n
+- ls -la 
 - cp -rf $TRAVIS_BUILD_DIR roles/$ANSIBLE_ROLE_NAME
 
 # Copy this role into the /roles folder
