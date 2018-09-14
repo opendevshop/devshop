@@ -73,7 +73,7 @@ Your project is not yet ready to run Behat tests. Please follow the following st
 TXT;
 
 
-      drush_log(dt($message, array('!path' => $behat_folder_path)), 'error');
+      drush_log(dt($message, array('!path' => $tests_folder)), 'error');
       return drush_set_error('DEVSHOP_MISSING_FILE', dt('Your project is not yet ready to run Behat tests. Please follow the instructions and try again.'));
     }
 
