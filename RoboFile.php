@@ -146,43 +146,39 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    // If not on travis, clone all ansible roles
-    if (!isset($_SERVER['TRAVIS'])) {
-      // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
-      // Ansible roles
-      $role_repos = [
-        'geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
-        'geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
-        'geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
-        'geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
-        'geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
-        'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
-        'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
-        'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
-        'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
-        'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
-        'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
+    // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
+    // Ansible roles
+    $role_repos = [
+      'geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
+      'geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
+      'geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
+      'geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
+      'geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
+      'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
+      'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
+      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
+      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
+      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
+    ];
+
+    foreach (Yaml::parse(file_get_contents(__DIR__ . '/roles.yml')) as $role) {
+      $roles[$role['name']] = [
+        'repo' => $role_repos[$role['name']],
+        'version' => $role['version'],
       ];
+    }
 
-      foreach (Yaml::parse(file_get_contents(__DIR__ . '/roles.yml')) as $role) {
-        $roles[$role['name']] = [
-          'repo' => $role_repos[$role['name']],
-          'version' => $role['version'],
-        ];
+    foreach ($roles as $name => $role) {
+      $path = 'roles/' . $name;
+      if (file_exists($path)) {
+        $this->say("$path already exists.");
       }
-
-      foreach ($roles as $name => $role) {
-        $path = 'roles/' . $name;
-        if (file_exists($path)) {
-          $this->say("$path already exists.");
-        }
-        else {
-          $this->taskGitStack()
-            ->cloneRepo($role['repo'], $path, $role['version'])
-            ->run();
-        }
+      else {
+        $this->taskGitStack()
+          ->cloneRepo($role['repo'], $path, $role['version'])
+          ->run();
       }
-
     }
 
     // Run drush make to build the devmaster stack.
