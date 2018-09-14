@@ -634,8 +634,11 @@ function boots_preprocess_page(&$vars){
 
       $vars['title2'] = $vars['title'];
 
-      if ($vars['node']->type == 'site') {
+      if ($vars['node']->type == 'site' || $vars['node']->type == 'platform') {
         $vars['subtitle2'] = t('Environment');
+        if ($vars['node']->type == 'platform') {
+          $vars['subtitle2'] = t('Environment') . ' ' . t('Platform');
+        }
       }
       else {
         $vars['subtitle2'] = ucfirst($vars['node']->type);
@@ -668,13 +671,15 @@ function boots_preprocess_page(&$vars){
 
     }
 
-
     // For node/%/* pages where node is site, use the environment name as title2
-    if ($vars['node']->type == 'site' && isset($vars['node']->environment)){
+    if (isset($vars['node']->environment)){
 
-      $vars['title2_url'] = 'node/' . $vars['node']->nid;
+      $vars['title2_url'] = url('node/' . ($vars['node']->type == 'site'? $vars['node']->nid: $vars['node']->environment->site));
       $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
 
+      if ($vars['subtitle2'] == 'Platform') {
+        $vars['subtitle2'] = t('Environment') . ' ' . t('Platform');
+      }
     }
 
     // On environment settings page...
