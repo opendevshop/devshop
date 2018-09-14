@@ -455,6 +455,10 @@ input.form-control.webhook-url {
   white-space: nowrap;
 }
 
+.btn-deploy-code li.create-git-ref a {
+  float: none;
+}
+
 .alert-spacing {
   margin-top: 15px;
 }
