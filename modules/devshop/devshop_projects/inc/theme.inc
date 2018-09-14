@@ -250,8 +250,13 @@ function devshop_task_get_messages($task_node) {
 //    ':success' => 'success',
 //    ':ok' => 'ok',
   ));
+  $process_logs = FALSE;
 
   foreach ($result as $record) {
+
+    if (strpos($record->type, 'p_') === 0) {
+      $process_logs = TRUE;
+    }
 
     if ($record->type == 'p_command') {
       if (empty($record->message)) {
@@ -286,6 +291,13 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = 'exclamation-triangle';
       $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'warning';
+
+    }
+
+    // If error is the one caused by "drush_set_error", don't bother displaying because the process one works well on it's own.
+    elseif ($process_logs && $record->type == 'error' && $record->message == 'PROVISION_PROCESS_ERROR') {
+      continue;
+
     } elseif ($record->type == 'error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';

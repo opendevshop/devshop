@@ -419,6 +419,13 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
+                              <?php if (user_access('create platform git-checkout task')): ?>
+                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout"><i class="fa fa-code-fork"></i> <?php print t('Create a branch'); ?></a></label></li>
+                              <?php endif;?>
+ <?php if (user_access('create platform git-tag task')): ?>
+                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag"><i class="fa fa-tag"></i> <?php print t('Create a tag'); ?></a></label></li>
+                              <?php endif;?>
+
                                 <li><label><?php print t('Deploy branch or tag'); ?></label></li>
                                 <?php if (count($git_refs)): ?>
                                     <?php foreach ($git_refs as $ref => $item): ?>
@@ -646,8 +653,8 @@ sites/all/drush/drushrc.php
                         <?php print t('View Commit on GitHub'); ?>
                       </a>
                     <?php endif; ?>
-                    <?php if (!empty($environment->git_status) && module_exists('aegir_commit') && user_access('create commit task')): ?>
-                    <a href="<?php print url("hosting_confirm/{$environment->site}/site_commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
+                    <?php if (!empty($environment->git_status) && module_exists('hosting_git_commit') && user_access('create git-commit task')): ?>
+                    <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_git-commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
                       <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
                     </a>
                     <?php endif; ?>
