@@ -183,6 +183,11 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
   exit 1
 fi
 
+# Required for key management when adding repositories
+if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
+  apt-get install dirmngr -y -qq
+fi
+
 # If ansible command is not available, install it.
 # Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
 # After testing this thoroughly on centOS and ubuntu, I think we should use command -v
@@ -205,8 +210,13 @@ if [ ! `command -v ansible` ]; then
         fi
 
         apt-get update -qq
-        apt-get install $PACKAGE -y -qq
-        apt-add-repository ppa:ansible/ansible -y
+        if [ $OS == 'ubuntu' ]; then
+            apt-get install $PACKAGE -y -qq
+            apt-add-repository ppa:ansible/ansible -y
+        else
+            echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" | tee /etc/apt/sources.list.d/debian-ansible-stable.list
+            apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+        fi
         apt-get update -qq
         apt-get install ansible -y -qq
 
