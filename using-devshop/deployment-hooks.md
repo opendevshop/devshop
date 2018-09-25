@@ -30,6 +30,8 @@ DevShop now supports placing your hook commands in a file called `.hooks`, `.hoo
 
 Create a file with the format below to give your developers more control over what happens when new code is deployed.
 
+System environment variables are available.
+
 ```text
 # Fires after an environment is installed.
 install: |
@@ -38,9 +40,12 @@ install: |
 # Fires after code is deployed. A "deployment" happens when you push to your
 # git repository or select a new branch or tag for your environment.
 deploy: |
+  echo "Running hooks in the $DEVSHOP_ENVIRONMENT environment for the $DEVSHOP_PROJECT..."
   drush {{alias}} updb -y
   drush {{alias}} cc all
-
+  echo "Environment Variables:"
+  env
+  
 # Fires after "verify" task.
 verify: |
   drush {{alias}} status
