@@ -22,7 +22,7 @@
   version: 2.6.0
 
 - name: opendevshop.aegir-apache
-  version: 1.x
+  version: master
 
 - name: opendevshop.aegir-nginx
   version: 1.0.5
