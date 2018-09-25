@@ -217,3 +217,10 @@ function devshop_hosting_update_7015 (){
     ->condition('type', 'module')
     ->execute();
 }
+
+/**
+ * Enable LetsEncrypt.org support for automatic free HTTPS certificates.
+ */
+function devshop_hosting_update_7016() {
+  module_enable(array('hosting_letsencrypt'));
+}
