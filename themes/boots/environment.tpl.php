@@ -419,14 +419,18 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
+                              <?php if (user_access('create platform git-checkout task') || user_access('create platform git-tag task')): ?>
+                                <li class="create-git-ref"><label><?php print t('Create'); ?>
                               <?php if (user_access('create platform git-checkout task')): ?>
-                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout"><i class="fa fa-code-fork"></i> <?php print t('Create a branch'); ?></a></label></li>
-                              <?php endif;?>
- <?php if (user_access('create platform git-tag task')): ?>
-                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag"><i class="fa fa-tag"></i> <?php print t('Create a tag'); ?></a></label></li>
-                              <?php endif;?>
+                                  <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout?create=1" class="btn btn-sm"><i class="fa fa-code-fork"></i> <?php print t('Branch'); ?></a>
+                              <?php endif; ?>
+                              <?php if (user_access('create platform git-tag task')): ?>
+                                <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag" class="btn btn-sm"><i class="fa fa-tag"></i> <?php print t('Tag'); ?></a>
+                              <?php endif; ?>
+                                  </label></li>
+                              <?php endif; ?>
 
-                                <li><label><?php print t('Deploy branch or tag'); ?></label></li>
+                              <li><label><?php print t('Deploy branch or tag'); ?></label></li>
                                 <?php if (count($git_refs)): ?>
                                     <?php foreach ($git_refs as $ref => $item): ?>
                                         <li>
