@@ -1,8 +1,74 @@
 # Change Log
 
+## 1.4.0 (?)
+
+- 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.x
+- 85 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.34...7.x-1.x
+
+- Added the Contributor Covenant Code of Conduct: 
+  > In the interest of fostering an open and welcoming environment, we as
+  contributors and maintainers pledge to making participation in our project and
+  our community a harassment-free experience for everyone, regardless of age, body
+  size, disability, ethnicity, sex characteristics, gender identity and expression,
+  level of experience, education, socio-economic status, nationality, personal
+  appearance, race, religion, or sexual identity and orientation.
+- Created a new DevShop Composer Template to make it as easy as possible to get a project running in devshop! See https://github.com/opendevshop/devshop-composer-template for more information.
+
+### UI Updates
+
+- Implemented "Create a Branch" button and made sure "Create a tag" is enabled by default. Add a display of the current git reference to the Git Checkout and Git Tag form. Cleanup ordering, form element titles and descriptions, and allow a ?create=1 URL parameter to the Checkout task to change the UI to specifically target "Creation". <br>![Create Branches and Tags](https://user-images.githubusercontent.com/106420/46040127-7d762400-c0dd-11e8-919f-c828ed0f55b0.png "A screenshot of the DevShop Environments new Create Branch and Tag buttons.")
+- Replace missing "Last Commit" timestamp. <br>![Last commit timestamp](https://user-images.githubusercontent.com/106420/46041552-0a6eac80-c0e1-11e8-942e-e1d32275b677.png "A screenshot of the DevShop Environments last commit timestamp.")
+- Fixed bug preventing HTTP Authentication passwords from being saved.
+- Enable LetsEncrypt.org support by default to provide free renewable HTTPS certficates.
+- Enable DevShop Remote Aliases by default.
+- Moved "Git Commit" interface out of devshop and into Hosting Git module.
+- Moved "Aegir Features" module out of devshop and into Hosting Tasks Extra. 
+- Moved `devshop_process()` to `provision_process()`, bringing another core feature of devshop to Provision/Aegir.
+- Make environment variables available in `.hooks.yml` files.
+- Change GitHub commit status name to `devshop/PROJECT/tests` and `devshop/PROJECT/deploy`. When the same project has the same Git URL, and you are PR driven development with automated testing, all projects were using the commit status name "devshop/tests". Now, the test results from every project is visible because they each get their own commit status.
+- Fix writing project aliases when project is verified.
+- Fixed the Download Modules task to work with composer-based projects! Now runs `composer require drupal/*` and commits in one shot!
+- Cleaned up the new project page, giving examples of a SSH git URL, mentioning the option to use a full drupal stack or composer, linking to the [DevShop Composer Template](https://github.com/opendevshop/devshop-composer-template).
+- Allow editing of platform if the platform has not been verified.
+- Fixed bug in ajax task loading that would load tasks for disabled sites.
+- Fixed awkward display of Project and Environment links on Platform nodes.
+- Moved the "Refresh Branches" button to the top of the Git Branches/Tags list dropdown.
+- Upgrading Hosting Tasks Extras "Features Update & Revert" tasks with: 
+    - Ability to specify which features to update or revert. 
+    - Add "Force" option to "revert" task. 
+    - Migrate all to provision_process(). 
+    - Creating a hosting_tasks_extra.drush.inc file because that is the only place drush_hook_pre_hosting_task() works. 
+    - Improving the form page: adding a form alter for easy page title renaming for other tasks.
+
+
+### System Updates
+
+- Hosting modules and Provision upgraded to 3.16. [Full release notes](http://docs.aegirproject.org/en/3.x/release-notes/3.16/)
+- Added "aegir-uid" as a command line option (a3cea24) and set the default to 12345.
+- Use PHP7 as the default for local devshop development.
+- Added upgrade tests back.
+- Install all Ansible roles during `robo prepare:sourcecode` command.
+- Added drush to composer and use devshop-local drush for building local devmaster.
+- Fixing the `robo prepare:containers` command.
+- Change robofile to use xdebug by default, unless option `--disable-xdebug` is used.
+- Created a `robo up --mode=manual` option to allow for instantiating a container without running install.sh.
+- Fixed the special makefile for travis forks.
+- Added CAS, HybridAuth, and Intercom modules to build-devmaster.make to get around drupal.org distribution publishing rules.
+- Fixed documentation block in istall.sh to show the right URL to wget.
+- Bumped geerlingguy.composer to 1.7.1, and geerlingguy.mysql to 2.9.1.
+- Added an alpha version of a script to clone a production site and push the data into a devshop server: https://github.com/opendevshop/devshop/blob/1.x/scripts/devshop-dump-sync.sh
+- Added test coverage for HTTP Basic Authentication settings.
+
+### New Contributors
+
+- Thanks to @kyletaylored for a documentation fix for install.sh. https://github.com/opendevshop/devshop/commit/6b8a32d76a1657763c3c7ac0c65ef1f799879c79
+- 
+
+
+
 ## 1.3.1 (June 7, 2018)
 
-- 33 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.1.2...1.x
+- 28 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.2.0...1.3.1
 - 45 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/7.x-1.12...7.x-1.x
 
 - Added "Create a Tag" button.
