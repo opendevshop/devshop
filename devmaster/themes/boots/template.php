@@ -321,8 +321,12 @@ function boots_preprocess_environment(&$vars) {
   if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
     
     // Timestamp of last commit.
-    $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ar' --max-count=1");
-    
+    $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ct' --max-count=1");
+    $environment->git_last_timestamp = date('N');
+    $environment->git_last_ago = t('!ago ago', array(
+      '!ago' => format_interval(time() - $environment->git_last , 1)
+    ));
+
     // The last commit.
     $environment->git_commit = shell_exec("cd {$environment->repo_path}; git -c color.ui=always log --max-count=1");
     
