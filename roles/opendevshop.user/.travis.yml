@@ -9,7 +9,7 @@ branches:
 
 env:
   global:
-  - ANSIBLE_ROLE_NAME=opendevshop.devmaster
+  - ANSIBLE_ROLE_NAME=opendevshop.aegir-user
   - DEVSHOP_VERSION=1.x
   - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer'
 
