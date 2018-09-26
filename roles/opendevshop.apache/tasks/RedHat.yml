@@ -6,7 +6,7 @@
   when: ansible_distribution == 'CentOS'
 
 - name: "Setup | REDHAT | Enable repo for PHP version {{ remi_php_repo_name }}"
-  shell: "yum-config-manager --enable {{ remi_php_repo_name }} && yum update"
+  shell: "yum-config-manager --enable {{ remi_php_repo_name }} && yum update -y"
 
 #- name: Setup | REDHAT | Install SCL in RHEL
 #  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
