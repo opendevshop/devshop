@@ -58,7 +58,8 @@ class DevmasterTest extends Command {
     }
     
     // Check behat path.
-    if (empty($input->getOption('behat-path'))) {
+    $behat_path = $input->getOption('behat-path');
+    if (empty($behat_path)) {
       
       // Use environment variable if one exists.
       if (!empty($_SERVER['BEHAT_PATH'])) {
