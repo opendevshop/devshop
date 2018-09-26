@@ -1,0 +1,24 @@
+---
+
+# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+
+# Variables from geerlingguy.php v2
+
+php_packages:
+- libpcre3-dev
+- php
+- php-apcu
+- php-common
+- php-cli
+- php-curl
+- php-dev
+- php-fpm
+- php-gd
+- php-imap
+- php-json
+- php-mbstring
+- php-mysqlnd
+- php-opcache
+- php-pear
+- php-sqlite3
+- php-xml
