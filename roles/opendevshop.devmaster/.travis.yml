@@ -54,6 +54,7 @@ before_install:
 - cd ..
 - git clone http://github.com/opendevshop/devshop
 - cd devshop
+- git checkout $DEVSHOP_VERSION
 
 # Prepare devshop CLI.
 - composer install
