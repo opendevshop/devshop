@@ -7,6 +7,14 @@
 - name: Include OS-specific tasks.
   include: "{{ ansible_os_family }}.yml"
 
+- name: Include Ubuntu 14 variables.
+  include_vars: "vars.Ubuntu14.yml"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
+
+- name: Include Ubuntu 16 variables.
+  include_vars: "vars.Ubuntu16.yml"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '16'
+
 - name: Create stub apache.conf file
   copy:
     dest: "{{ aegir_user_home }}/config/apache.conf"
