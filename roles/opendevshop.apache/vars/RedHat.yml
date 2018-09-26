@@ -8,6 +8,7 @@ php_packages:
   - php-mysqlnd
   - php-cli
   - php-gd
+  - php-opcache
   - php-process
   - php-pear
   - php-xml
