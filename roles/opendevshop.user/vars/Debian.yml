@@ -16,6 +16,5 @@ php_packages:
 - php-mysqlnd
 - php-opcache
 - php-pear
-- php-process
 - php-sqlite3
 - php-xml
