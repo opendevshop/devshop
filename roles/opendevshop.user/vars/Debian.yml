@@ -1,0 +1,22 @@
+---
+
+php_packages:
+
+- libpcre3-dev
+- php
+- php-apcu
+- php-common
+- php-cli
+- php-curl
+- php-dev
+- php-fpm
+- php-gd
+- php-imap
+- php-json
+- php-mbstring
+- php-mysqlnd
+- php-opcache
+- php-pear
+- php-process
+- php-sqlite3
+- php-xml
