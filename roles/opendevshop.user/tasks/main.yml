@@ -12,7 +12,7 @@
     when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
 
   - name: Include Ubuntu 16 variables.
-    include_vars: "vars.Ubuntu14.yml"
+    include_vars: "vars.Ubuntu16.yml"
     when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '16'
 
   - name: Ensure openssh-client is available (including ssh-keygen tool)
