@@ -18,3 +18,4 @@ php_packages:
 - php-pear
 - php-sqlite3
 - php-xml
+- libapache2-mod-php
