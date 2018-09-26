@@ -21,9 +21,6 @@
 - name: geerlingguy.nginx
   version: 2.6.0
 
-- name: geerlingguy.repo-remi
-  version: 1.2.0
-
 - name: opendevshop.aegir-apache
   version: ubuntu18
 #  version: 1.2.0

@@ -6,7 +6,6 @@
 - hosts: all
   user: root
   roles:
-    - geerlingguy.repo-remi
     - opendevshop.aegir-user
     - opendevshop.aegir-apache
     - geerlingguy.php
