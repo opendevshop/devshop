@@ -12,6 +12,7 @@ mysql_pid_file: /var/run/mariadb/mariadb.pid
 
 php_packages:
 - php
+- php-apcu
 - php-mysqlnd
 - php-cli
 - php-gd
@@ -20,4 +21,3 @@ php_packages:
 - php-pear
 - php-xml
 - php-mbstring
-- php-pecl-apcu
