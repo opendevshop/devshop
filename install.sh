@@ -278,7 +278,7 @@ fi
 
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
-  echo "TRAVIS DETECTED! Setting 'root' user password."
+  echo "TRAVIS DETECTED! Setting empty 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
   MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make"
@@ -296,6 +296,7 @@ fi
 
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
+echo " MySQL Root User: $MYSQL_ROOT_USER"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 
 # Clone the installer code if a playbook path was not set.
@@ -343,7 +344,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_username=$MYSQL_ROOT_USER  mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
@@ -353,11 +354,6 @@ fi
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
-fi
-
-# If testing in travis, disable supervisor.
-if [ "$TRAVIS" == "true" ]; then
-  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
 fi
 
 if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then
