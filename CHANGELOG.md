@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.4.0 (?)
+## 1.4.0 (September 27, 2018)
 
 - 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.x
 - 85 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.34...7.x-1.x
@@ -58,13 +58,12 @@
 - Bumped geerlingguy.composer to 1.7.1, and geerlingguy.mysql to 2.9.1.
 - Added an alpha version of a script to clone a production site and push the data into a devshop server: https://github.com/opendevshop/devshop/blob/1.x/scripts/devshop-dump-sync.sh
 - Added test coverage for HTTP Basic Authentication settings.
+- Fixed multiple issues with Ansible playbooks.
 
 ### New Contributors
 
 - Thanks to @kyletaylored for a documentation fix for install.sh. https://github.com/opendevshop/devshop/commit/6b8a32d76a1657763c3c7ac0c65ef1f799879c79
-- 
-
-
+- Thanks to @jacintocapote for returning to maintainers.
 
 ## 1.3.1 (June 7, 2018)
 
