@@ -5,10 +5,17 @@ apache_user: apache
 
 php_packages:
   - php
+  - php-apcu
   - php-mysqlnd
   - php-cli
   - php-gd
+  - php-opcache
   - php-process
   - php-pear
   - php-xml
   - php-mbstring
+
+# Change this from 10-opcache.ini so that it works on centOS. CentOS adds opcache.ini.
+# Use absolute path for opcache.so.
+php_opcache_conf_filename: opcache.ini
+php_opcache_zend_extension: /usr/lib64/php/modules/opcache.so
