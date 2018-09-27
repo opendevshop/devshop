@@ -12,3 +12,5 @@ php_packages:
 - php-apc
 - libpcre3-dev
 - libapache2-mod-php5
+
+php_mysql_package: php5-mysql

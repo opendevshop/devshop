@@ -22,3 +22,5 @@ php_packages:
 - php-sqlite3
 - php-xml
 - libapache2-mod-php
+
+php_mysql_package: php-mysql
