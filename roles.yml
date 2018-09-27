@@ -10,7 +10,7 @@
   version: 2.0.2
 
 - name: geerlingguy.composer
-  version: 1.7.2
+  version: 1.7.1
 
 - name: geerlingguy.mysql
   version: 2.9.1
