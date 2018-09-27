@@ -14,7 +14,7 @@ mysql_root_password_update: no
 
 supervisor_running: yes
 
-devmaster_install_command: "{{ local_bin_path }}/devshop devmaster:install --site={{ server_hostname }} --client_email={{ devshop_devmaster_email }} --devshop_version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user=root --makefile={{ devshop_makefile }} --profile={{ devshop_install_profile }} --aegir_host={{ server_hostname }} --http_service_type={{ aegir_server_webserver }} --root=/var/aegir/devmaster-{{ devshop_version }} --drush-path={{ local_bin_path }}/drush {{ devshop_working_copy }} -n"
+devmaster_install_command: "{{ local_bin_path }}/devshop devmaster:install --site={{ server_hostname }} --client_email={{ devshop_devmaster_email }} --devshop_version={{ devshop_version }} --aegir_db_pass={{ mysql_root_password }} --aegir_db_user={{ mysql_root_username }} --makefile={{ devshop_makefile }} --profile={{ devshop_install_profile }} --aegir_host={{ server_hostname }} --http_service_type={{ aegir_server_webserver }} --root=/var/aegir/devmaster-{{ devshop_version }} --drush-path={{ local_bin_path }}/drush {{ devshop_working_copy }} -n"
 
 drush_dl_method: wget
 
