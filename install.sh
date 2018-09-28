@@ -284,15 +284,38 @@ if [ "$TRAVIS" == "true" ]; then
   MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make"
 fi
 
-if [ -f '/root/.my.cnf' ]
-then
-  MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
-  echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
+# Determin if we create a db accoount or ask for it.
+# Starting from Debian 9 (MariaDB 10.1) there is passwordless login for root.
+# Therefore it needs special handling, Aegir does like to have an account with a password.
+# See https://www.drupal.org/node/2770819
+# TODO: Work with future versions
+if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
+  # Install MariaDB early to be able to create an account for Aegir.
+  apt install default-mysql-server --yes
+
+  # no password needed to login to the database ... MariaDB => 10.1 on Debian has this as default.
+  AEGIR_DB_USER="aegir_root"
+  MYSQL_ROOT_USER=$AEGIR_DB_USER;
+
+  # Random password, will be stored in /var/aegir/.drush/server_localhost.alias.drushrc.php
+  AEGIR_DB_PASS=$(openssl rand -base64 12)
+  MYSQL_ROOT_PASSWORD=$AEGIR_DB_PASS;
+
+  # TODO make idempotent... test if there already is a useraccount
+  /usr/bin/mysql -e "GRANT ALL ON *.* TO '$AEGIR_DB_USER'@'$AEGIR_DB_HOST' IDENTIFIED BY '$AEGIR_DB_PASS' WITH GRANT OPTION"
+
 else
-  MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
-  echo " Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
-  echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  if [ -f '/root/.my.cnf' ]
+  then
+    MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
+    echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
+  else
+    MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
+    echo " Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
+    echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  fi
 fi
+
 
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
