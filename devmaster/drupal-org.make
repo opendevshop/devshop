@@ -31,7 +31,7 @@ projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_site_backup_manager][version] = "3.160"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.x"
+projects[hosting_tasks_extra][version] = "3.160"
 
 projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = "3.160"
@@ -64,7 +64,7 @@ projects[ctools][version] = "1.14"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
-projects[libraries][version] = 2.3
+projects[libraries][version] = 2.4
 projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
 ; projects[hybridauth][version] = 2.15
