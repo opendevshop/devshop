@@ -483,7 +483,19 @@ function drush_devshop_provision_post_provision_install() {
     }
 
     $destination = d()->name;
-    $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --updatedb --cache-clear --registry-rebuild";
+    $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --registry-rebuild";
+
+    // Build command based on environment settings.
+    if (d()->environment_settings['deploy']['update']) {
+      $command .= " --updatedb";
+    }
+    if (d()->environment_settings['deploy']['cache']) {
+      $command .= " --cache-clear";
+    }
+    if (d()->environment_settings['deploy']['revert']) {
+      $command .= " --features-revert-all";
+    }
+
     provision_process($command, NULL, 'Cloning site from ' . d($source)->uri);
     provision_process('drush cc drush', NULL, 'Clearing drush caches');
 //    devshop_drush_process_cache_clear($destination);
