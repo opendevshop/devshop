@@ -295,6 +295,7 @@ if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
 
   # no password needed to login to the database ... MariaDB => 10.1 on Debian has this as default.
   AEGIR_DB_USER="aegir_root"
+  AEGIR_DB_HOST="localhost"
   MYSQL_ROOT_USER=$AEGIR_DB_USER;
 
   # Random password, will be stored in /var/aegir/.drush/server_localhost.alias.drushrc.php
