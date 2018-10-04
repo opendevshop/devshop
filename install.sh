@@ -311,6 +311,7 @@ if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
   /usr/bin/mysql -e "GRANT ALL ON *.* TO '$AEGIR_DB_USER'@'$AEGIR_DB_HOST' IDENTIFIED BY '$AEGIR_DB_PASS' WITH GRANT OPTION"
 
 else
+  MYSQL_ROOT_USER='root';
   if [ -f '/root/.my.cnf' ]
   then
     MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
