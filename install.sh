@@ -290,6 +290,7 @@ fi
 # See https://www.drupal.org/node/2770819
 # TODO: Work with future versions
 if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
+  set -x
   # Install MariaDB early to be able to create an account for Aegir.
   apt install default-mysql-server --yes
 
