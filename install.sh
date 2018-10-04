@@ -292,7 +292,7 @@ fi
 if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
   set -x
   cat /usr/sbin/policy-rc.d
-  if [ "$TRAVIS" == "true" ]; then
+  if [ "$TRAVIS" == "1" ]; then
     rm /usr/sbin/policy-rc.d
   fi
   # Install MariaDB early to be able to create an account for Aegir.
