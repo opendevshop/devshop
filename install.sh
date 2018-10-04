@@ -291,6 +291,10 @@ fi
 # TODO: Work with future versions
 if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
   set -x
+  cat /usr/sbin/policy-rc.d
+  if [ "$TRAVIS" == "true" ]; then
+    rm /usr/sbin/policy-rc.d
+  fi
   # Install MariaDB early to be able to create an account for Aegir.
   apt install default-mysql-server --yes
 
