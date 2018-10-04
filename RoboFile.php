@@ -389,6 +389,8 @@ class RoboFile extends \Robo\Tasks {
         'ubuntu:14.04' => '/sbin/init',
         'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
         'geerlingguy/docker-ubuntu1604-ansible' => '/lib/systemd/systemd',
+        'geerlingguy/docker-ubuntu1804-ansible' => '/lib/systemd/systemd',
+        'geerlingguy/docker-debian9-ansible' => '/lib/systemd/systemd',
         'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
 
