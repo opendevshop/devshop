@@ -351,3 +351,27 @@ function devshop_remotes_preprocess_environment(&$vars) {
   die;
 
 }
+
+/**
+ * When loading project node, lookup sql sources from composer.json!
+ *
+ * @param $nodes
+ * @param $types
+ */
+function devshop_remotes_node_load($nodes, $types) {
+  if (count(array_intersect(array('project'), $types))) {
+    foreach ($nodes as &$node) {
+      foreach ($node->project->environments as $env) {
+        if (file_exists($env->repo_path . '/composer.json')) {
+          $composer_data = json_decode(file_get_contents($env->repo_path . '/composer.json'), TRUE);
+          $sync_sources = $composer_data['config']['devshop']['sync_sources'];
+          foreach ($sync_sources as &$source) {
+            $source['loaded_from'] = $env->repo_path . '/composer.json';
+          }
+
+          $node->project->settings->aliases = array_merge($node->project->settings->aliases, $sync_sources);
+        }
+      }
+    }
+  }
+}
