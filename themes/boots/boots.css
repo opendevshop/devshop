@@ -1150,3 +1150,27 @@ li.text.code {
 #block-menu-devshop-footer-links > h2.block-title {
     display: none;
 }
+
+.devshop-support-block h3 {
+  font-size: 1.0em;
+  color: gray;
+  text-transform: uppercase;
+  padding: 1em;
+  padding-top:3em;
+}
+
+
+.region-footer .devshop-support-block h3 {
+  padding-top:1em;
+}
+
+.region-footer .devshop-support-block h3,
+.region-footer .devshop-support-block ul.nav,
+.region-footer .devshop-support-block ul.nav  li
+{
+  display: inline-block;
+}
+
+.table-responsive {
+  overflow: visible;
+}
