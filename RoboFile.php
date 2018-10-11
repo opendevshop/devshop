@@ -439,7 +439,8 @@ class RoboFile extends \Robo\Tasks {
           exit(1);
         }
       }
-      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible'
+              || $opts['install-sh-image'] == 'geerlingguy/docker-debian9-ansible') {
         // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
         if (!(
           $this->taskDockerExec('devshop_container')
