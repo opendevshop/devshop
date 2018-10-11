@@ -291,12 +291,12 @@ fi
 # TODO: Work with future versions
 if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
   set -x
-  cat /usr/sbin/policy-rc.d
   if [ "$TRAVIS" == "1" ]; then
+    # By default this policy file prevents starting daemons, which is useful during docker builds but not in this case.
     rm /usr/sbin/policy-rc.d
   fi
   # Install MariaDB early to be able to create an account for Aegir.
-  apt install default-mysql-server --yes
+  apt-get install default-mysql-server --yes
 
   # no password needed to login to the database ... MariaDB => 10.1 on Debian has this as default.
   AEGIR_DB_USER="aegir_root"
