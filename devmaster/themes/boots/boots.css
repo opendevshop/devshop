@@ -969,6 +969,10 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     padding: 0;
 }
 
+.panel-type-error pre {
+  white-space: normal;
+}
+
 .panel-ansii.panel-body pre {
     padding: 1.25em;
 }
