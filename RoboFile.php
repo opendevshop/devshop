@@ -444,6 +444,10 @@ class RoboFile extends \Robo\Tasks {
         // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
         if (!(
           $this->taskDockerExec('devshop_container')
+            ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
+            ->run()
+            ->wasSuccessful();
+          $this->taskDockerExec('devshop_container')
             ->exec("apt-get update")
             ->run()
             ->wasSuccessful() &&
