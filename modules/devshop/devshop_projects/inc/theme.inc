@@ -322,6 +322,7 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = 'check';
       $outputs[$command]['command'] = 'drush';
     }
+    $outputs[$command]['type'] = $record->type;
   }
 
   foreach ($outputs as $command => $data) {
@@ -345,7 +346,7 @@ function devshop_task_get_messages($task_node) {
     $output = theme('devshop_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
-      $body = "<div class='panel-body panel-ansii'>$output</div>";
+      $body = "<div class='panel-body panel-type-{$data['type']} panel-ansii'>$output</div>";
     }
     else {
       $body = '';
