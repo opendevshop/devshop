@@ -446,7 +446,7 @@ class RoboFile extends \Robo\Tasks {
           $this->taskDockerExec('devshop_container')
             ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
             ->run()
-            ->wasSuccessful();
+            ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
             ->exec("apt-get update")
             ->run()
