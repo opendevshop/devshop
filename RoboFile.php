@@ -454,6 +454,10 @@ class RoboFile extends \Robo\Tasks {
           $this->taskDockerExec('devshop_container')
             ->exec("apt-get install dbus -y")
             ->run()
+            ->wasSuccessful() &&
+          $this->taskDockerExec('devshop_container')
+            ->exec("service dbus start")
+            ->run()
             ->wasSuccessful()
         )) {
           $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
