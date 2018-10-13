@@ -18,6 +18,9 @@ use Drupal\DrupalExtension\Context\RawDrupalContext;
 //use Drupal\DrupalExtension\Hook\Scope\BeforeUserCreateScope;
 //use Drupal\DrupalExtension\Hook\Scope\BeforeTermCreateScope;
 
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Hook\Scope\AfterStepScope;
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
 
 /**
  * Provides the raw functionality for interacting with Drupal.
