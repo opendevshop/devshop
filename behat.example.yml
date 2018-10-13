@@ -11,8 +11,9 @@ default:
     Behat\MinkExtension:
       goutte: ~
 
-      # Once devshop is launching selenium and knows the URL, this will need to
-      # be commented out, too.
+      # Point this at your selenium container. The fastest way launch selenium
+      # is to launch a docker container: https://github.com/SeleniumHQ/docker-selenium#standalone-chrome-and-firefox
+      #   docker run -d -p 4444:4444 -v /dev/shm:/dev/shm selenium/standalone-chrome:3.14.0-helium
       selenium2:
         wd_host: http://localhost:4444/wd/hub
 
@@ -20,8 +21,18 @@ default:
       # it is overridable using BEHAT_PARAMS.
       # base_url: http://127.0.0.1:8888/
 
-      # @TODO: Find more reasonable default show_cmds and put them in here.
-      show_cmd: firefox %s
+      # The "show_cmd" option is used when you use the step "Then show last response".
+      # When using the step, a browser will be opened with the response.
+
+      # MacOS and Safari:
+      # show_cmd: open -a "Safari" %s
+
+      # MacOS and Google Chrome:
+      # show_cmd: open -a "Google Chrome" %s
+
+      # Others:
+      # show_cmd: firefox %s
+      # show_cmd: google-chrome %s
 
     Drupal\DrupalExtension:
       blackbox: ~
