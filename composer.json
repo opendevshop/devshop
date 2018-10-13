@@ -18,7 +18,7 @@
   },
   "autoload": {
     "psr-0": {
-      "DevShop\\DrupalExtension\\Context": "src/"
+      "DevShop\\Behat\\DrupalExtension\\Context": "src/"
     }
   }
 }

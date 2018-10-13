@@ -1,6 +1,6 @@
 <?php
 
-namespace DevShop\DrupalExtension\Context\DevShopDrupalContext;
+namespace DevShop\Behat\DrupalExtension\Context;
 
 use Drupal\DrupalExtension\Context\RawDrupalContext;
 //use Behat\MinkExtension\Context\RawMinkContext;
