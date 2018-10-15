@@ -147,15 +147,6 @@ class DevShopDrupalContext extends RawDrupalContext {
     public function __construct() {
     }
 
-
-    /**
-     * @Then I am in Montreal
-     */
-    public function iAmInMontreal()
-    {
-
-    }
-
     /**
      * @When I take a screenshot
      */
