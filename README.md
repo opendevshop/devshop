@@ -1,14 +1,34 @@
-# DevShop Behat Drupal Extension
+# DevShop Drupal Behat Extension
 
 This Behat extension simply extends the [Drupal Behat Extension](https://github.com/jhedstrom/drupalextension) to make it a bit more useful.
 
 It does not require DevShop, but some features are even better when using DevShop.
 
-## Features
+## New Steps
 
 ### Then I take a screenshot
 
 This step, when used with a Selenium server and the test has a "@javascript" tag, will save a screenshot to the active website's files folder and print a link.
+
+### When I run "command"
+
+This step simply runs `exec()` on any command and throws an exception if a non-zero exit code is thrown. 
+
+## Other Features 
+
+Simplified setup.
+
+This plugin is now included in the [DevShop Composer Template](https://github.com/opendevshop/devshop-composer-template), which is the easiest way to get a Drupal codebase running in DevShop.
+
+If you already have a project, you can copy the entire contents of [the `tests` folder](https://github.com/opendevshop/devshop-composer-template/tree/8.x/tests) into your project.
+
+To start a new project, use the command:
+
+```
+composer create-project devshop/composer-template:8.x-dev --stability dev --no-interaction mynewproject
+```
+
+
 
 ### Step Failure Information
 
