@@ -16,7 +16,7 @@ This step simply runs `exec()` on any command and throws an exception if a non-z
 
 ## Other Features 
 
-Simplified setup.
+### Simplified setup.
 
 This plugin is now included in the [DevShop Composer Template](https://github.com/opendevshop/devshop-composer-template), which is the easiest way to get a Drupal codebase running in DevShop.
 
