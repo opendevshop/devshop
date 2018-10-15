@@ -186,4 +186,15 @@ class DevShopDrupalContext extends RawDrupalContext {
         }
     }
 
+    /**
+     * @When I run :command
+     */
+    public function iRun($command)
+    {
+      exec($command, $output, $return_var);
+      print implode("\n", $output);
+      if ($return_var != 0) {
+        throw new \Exception("The command $command returned a non-zero exit code.");
+      }
+    }
 }
