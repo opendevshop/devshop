@@ -69,6 +69,12 @@ class DevShopDrupalContext extends RawDrupalContext {
             $drush_config = $this->drupalContext->getDrupalParameter('drush');
             $alias = ltrim($drush_config['alias'], '@');
 
+            // If there is no drush alias in the behat yml config, don't do anything special, but do show a message.
+            if (empty($alias)) {
+              print "DevShopDrupalContext Warning: No drush alias found in behat yml config.";
+              return;
+            }
+
             // Lookup file_directory_path
             $cmd = "drush @$alias vget file_public_path --format=string";
             $files_path = trim(shell_exec($cmd));
