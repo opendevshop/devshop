@@ -12,7 +12,7 @@ projects[drupal][version] = 7.59
 
 ; RELEASE
 ; Leave in place for replacement by release process.
-projects[devmaster][version] = 1.40
+projects[devmaster][version] = 1.x
 
 ; CAS
 libraries[cas][download][type] = "git"
