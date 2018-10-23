@@ -12,14 +12,14 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.160"
+projects[hosting][version] = "3.161"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
 projects[eldir][version] = "3.160"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.161"
+projects[hosting_git][version] = "3.162"
 
 projects[hosting_https][subdir] = aegir
 projects[hosting_https][version] = "3.160"
@@ -64,7 +64,7 @@ projects[ctools][version] = "1.14"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
-projects[libraries][version] = 2.4
+projects[libraries][version] = 2.5
 projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
 ; projects[hybridauth][version] = 2.15
