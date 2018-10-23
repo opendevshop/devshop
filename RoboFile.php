@@ -405,6 +405,7 @@ class RoboFile extends \Robo\Tasks {
         ->name('devshop_container')
         ->volume(__DIR__, '/usr/share/devshop')
         ->volume(__DIR__ . '/aegir-home', '/var/aegir')
+        ->volume(__DIR__ . '/provision', '/var/aegir/.drush/commands/provision')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
@@ -434,22 +435,6 @@ class RoboFile extends \Robo\Tasks {
           ->wasSuccessful()
         ) {
           $this->say('Set init policy failed.');
-          exit(1);
-        }
-      }
-      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
-        // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
-        if (!(
-          $this->taskDockerExec('devshop_container')
-            ->exec("apt-get update")
-            ->run()
-            ->wasSuccessful() &&
-          $this->taskDockerExec('devshop_container')
-            ->exec("apt-get install dbus -y")
-            ->run()
-            ->wasSuccessful()
-        )) {
-          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
           exit(1);
         }
       }
@@ -484,6 +469,9 @@ class RoboFile extends \Robo\Tasks {
           $service = 'supervisor';
         }
         elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+          $service = FALSE;
+        }
+        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
           $service = FALSE;
         }
         else {

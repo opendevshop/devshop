@@ -25,14 +25,14 @@ env:
   - test="Ansible on Ubuntu 16.04 Apache"
     COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
 
-#  - test="Ansible on Ubuntu 18.04 Apache"
-#    COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
+#   - test="Ansible on Ubuntu 18.04 Apache"
+#     COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
 
 #  - test="Install with Ansible on Ubuntu 14.04 with NGINX"
 #    COMMAND="robo up --mode=install.sh --test --install-sh-options='--server-webserver=nginx'"
 
-  - test="Ansible Install on CentOS 7"
-    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
+#  - test="Ansible Install on CentOS 7"
+#    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
 
 #  - test="Install with Ansible on Fedora 25"
 #    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
