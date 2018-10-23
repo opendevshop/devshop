@@ -2,8 +2,8 @@
 
 ## 1.4.0 (September 27, 2018)
 
-- 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.x
-- 85 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.34...7.x-1.x
+- 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.4.0
+- 85 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.34...7.x-1.40
 
 - Added the Contributor Covenant Code of Conduct: 
   > In the interest of fostering an open and welcoming environment, we as
@@ -68,7 +68,7 @@
 ## 1.3.1 (June 7, 2018)
 
 - 28 commits to DevShop: https://github.com/opendevshop/devshop/compare/1.2.0...1.3.1
-- 45 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/7.x-1.12...7.x-1.x
+- 45 commits to DevMaster: https://github.com/opendevshop/devmaster/compare/7.x-1.12...7.x-1.31
 
 - Added "Create a Tag" button.
 - Enabled Logo display in the theme settings, so the "Login" & "Forgot Password" page no longer shows a missing image!
