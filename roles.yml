@@ -16,7 +16,7 @@
   version: 2.9.1
 
 - name: geerlingguy.apache
-  version: 3.0.0
+  version: 3.0.3
 
 - name: geerlingguy.nginx
   version: 2.6.0
