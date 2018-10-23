@@ -4,7 +4,7 @@
   version: 3.6.3
 
 - name: geerlingguy.php-mysql
-  version: 2.0.1
+  version: 2.0.2
 
 - name: geerlingguy.git
   version: 2.0.3
