@@ -79,10 +79,10 @@ function devshop_projects_create_wizard($step = NULL) {
 
   // If project verification failed, we need to ask for a new git url.
   if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)) {
-    $messages = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND type LIKE :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'devshop%'));
+    $messages = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND type LIKE :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'p_%'));
 
     foreach ($messages as $message) {
-      if ($message->type == 'devshop_info') {
+      if ($message->type == 'p_info') {
         $messages_to_user[] = $message->message;
       }
     }
