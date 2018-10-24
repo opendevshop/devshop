@@ -36,12 +36,12 @@ class Provision_Service_http_ansible_haproxy extends Provision_Service_http_apac
 
     function verify_platform_cmd() {
         parent::verify_platform_cmd();
-        drush_log('Platform Verified', 'devshop_log');
+        drush_log('Platform Verified', 'p_log');
     }
 
     function verify_site_cmd() {
         parent::verify_site_cmd();
-        drush_log('Site Verified', 'devshop_log');
+        drush_log('Site Verified', 'p_log');
     }
 
 
