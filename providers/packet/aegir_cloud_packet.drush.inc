@@ -17,22 +17,22 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
 
             if (empty($task->ref->ip_addresses)) {
 
-                drush_log('Acquiring IP Addresses', 'devshop_command');
-                drush_log("Waiting for IP Address...\n", 'devshop_info');
+                drush_log('Acquiring IP Addresses', 'p_command');
+                drush_log("Waiting for IP Address...\n", 'p_command');
 
                 // Loop until we have an IP address.
                 while (empty($task->ref->ip_addresses)) {
                     sleep(3);
                     $device = $service->getApi()->device()->get($service->provider_options['project'], $service->provider_server_identifier);
 
-//                    drush_log('Device:', 'devshop_ok');
-//                    drush_log(print_r($device, 1), 'devshop_ok');
+//                    drush_log('Device:', 'p_ok');
+//                    drush_log(print_r($device, 1), 'p_ok');
 
                     if (!empty($device->ipAddresses)) {
 
                         // Save IP addresses
                         foreach ($device->ipAddresses as $ip) {
-                            drush_log('IP address found: ' . $ip->address . "\n", 'devshop_ok');
+                            drush_log('IP address found: ' . $ip->address . "\n", 'p_ok');
                             $task->ref->new_ip_addresses[] = $ip->address;
                         }
                         $task->ref->no_verify = TRUE;
@@ -49,7 +49,7 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
             }
 
             // Loop until we have completed all provisioning steps.
-            drush_log('Waiting for Server', 'devshop_command');
+            drush_log('Waiting for Server', 'p_command');
             $completed = FALSE;
             $completed_events = [];
             while (!$completed) {
@@ -63,7 +63,7 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
                 if (isset($device->provisioningEvents )) {
                     foreach ($device->provisioningEvents as $event) {
                         if (!empty($event->id) && empty($completed_events[$event->type])) {
-                            drush_log((int) $device->provisioningPercentage . "% | " . $event->body . "\n", 'devshop_info');
+                            drush_log((int) $device->provisioningPercentage . "% | " . $event->body . "\n", 'p_command');
 
                             // Save provider data
                             $task->ref->no_verify = TRUE;
@@ -79,7 +79,7 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
 
                 // When device is active, Stop holding up verification process.
                 if ($device->state == 'active') {
-                    drush_log('All events completed!', 'devshop_ok');
+                    drush_log('All events completed!', 'p_ok');
                     return;
                 }
             }
