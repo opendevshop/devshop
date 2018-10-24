@@ -183,6 +183,11 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
   exit 1
 fi
 
+# Required for key management when adding repositories
+if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
+  apt-get install dirmngr -y -qq
+fi
+
 # If ansible command is not available, install it.
 # Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
 # After testing this thoroughly on centOS and ubuntu, I think we should use command -v
@@ -205,8 +210,13 @@ if [ ! `command -v ansible` ]; then
         fi
 
         apt-get update -qq
-        apt-get install $PACKAGE -y -qq
-        apt-add-repository ppa:ansible/ansible -y
+        if [ $OS == 'ubuntu' ]; then
+            apt-get install $PACKAGE -y -qq
+            apt-add-repository ppa:ansible/ansible -y
+        else
+            echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" | tee /etc/apt/sources.list.d/debian-ansible-stable.list
+            apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+        fi
         apt-get update -qq
         apt-get install ansible -y -qq
 
@@ -268,24 +278,55 @@ fi
 
 # Generate MySQL Password
 if [ "$TRAVIS" == "true" ]; then
-  echo "TRAVIS DETECTED! Setting 'root' user password."
+  echo "TRAVIS DETECTED! Setting empty 'root' user password."
   MYSQL_ROOT_PASSWORD=''
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
   MAKEFILE_PATH="https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make"
 fi
 
-if [ -f '/root/.my.cnf' ]
-then
-  MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
-  echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
+# Determin if we create a db accoount or ask for it.
+# Starting from Debian 9 (MariaDB 10.1) there is passwordless login for root.
+# Therefore it needs special handling, Aegir does like to have an account with a password.
+# See https://www.drupal.org/node/2770819
+# TODO: Work with future versions
+if [ $OS == 'debian' ] && [ $VERSION == '9' ]; then
+  set -x
+  if [ "$TRAVIS" == "1" ]; then
+    # By default this policy file prevents starting daemons, which is useful during docker builds but not in this case.
+    rm /usr/sbin/policy-rc.d
+  fi
+  # Install MariaDB early to be able to create an account for Aegir.
+  apt-get install default-mysql-server --yes
+
+  # no password needed to login to the database ... MariaDB => 10.1 on Debian has this as default.
+  AEGIR_DB_USER="aegir_root"
+  AEGIR_DB_HOST="localhost"
+  MYSQL_ROOT_USER=$AEGIR_DB_USER;
+
+  # Random password, will be stored in /var/aegir/.drush/server_localhost.alias.drushrc.php
+  AEGIR_DB_PASS=$(openssl rand -base64 12)
+  MYSQL_ROOT_PASSWORD=$AEGIR_DB_PASS;
+
+  # TODO make idempotent... test if there already is a useraccount
+  /usr/bin/mysql -e "GRANT ALL ON *.* TO '$AEGIR_DB_USER'@'$AEGIR_DB_HOST' IDENTIFIED BY '$AEGIR_DB_PASS' WITH GRANT OPTION"
+
 else
-  MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
-  echo " Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
-  echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  MYSQL_ROOT_USER='root';
+  if [ -f '/root/.my.cnf' ]
+  then
+    MYSQL_ROOT_PASSWORD=$(awk -F "=" '/pass/ {print $2}' /root/.my.cnf)
+    echo " Password found at /root/.my.cnf, using $MYSQL_ROOT_PASSWORD"
+  else
+    MYSQL_ROOT_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${2:-32};echo;)
+    echo " Generating new MySQL root password... $MYSQL_ROOT_PASSWORD"
+    echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
+  fi
 fi
+
 
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
+echo " MySQL Root User: $MYSQL_ROOT_USER"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 
 # Clone the installer code if a playbook path was not set.
@@ -333,7 +374,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_username=$MYSQL_ROOT_USER  mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
 
 if [ "$TRAVIS" == "true" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
@@ -343,11 +384,6 @@ fi
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
-fi
-
-# If testing in travis, disable supervisor.
-if [ "$TRAVIS" == "true" ]; then
-  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS supervisor_running=false"
 fi
 
 if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then

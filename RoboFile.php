@@ -389,6 +389,8 @@ class RoboFile extends \Robo\Tasks {
         'ubuntu:14.04' => '/sbin/init',
         'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
         'geerlingguy/docker-ubuntu1604-ansible' => '/lib/systemd/systemd',
+        'geerlingguy/docker-ubuntu1804-ansible' => '/lib/systemd/systemd',
+        'geerlingguy/docker-debian9-ansible' => '/lib/systemd/systemd',
         'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
 
@@ -437,15 +439,24 @@ class RoboFile extends \Robo\Tasks {
           exit(1);
         }
       }
-      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible'
+              || $opts['install-sh-image'] == 'geerlingguy/docker-debian9-ansible') {
         // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
         if (!(
+          $this->taskDockerExec('devshop_container')
+            ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
+            ->run()
+            ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
             ->exec("apt-get update")
             ->run()
             ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
             ->exec("apt-get install dbus -y")
+            ->run()
+            ->wasSuccessful() &&
+          $this->taskDockerExec('devshop_container')
+            ->exec("service dbus start")
             ->run()
             ->wasSuccessful()
         )) {
