@@ -85,12 +85,6 @@ elif [ -f '/etc/redhat-release' ]; then
     HOSTNAME_FQDN=`hostname --fqdn`
 fi
 
-# If on travis, use localhost as the hostname
-if [ "$TRAVIS" == "true" ]; then
-  echo "TRAVIS DETECTED! Setting Hostname to 'localhost'."
-  HOSTNAME_FQDN="localhost"
-fi
-
 LINE=---------------------------------------------
 
 MAKEFILE_PATH="/usr/share/devshop/build-devmaster.make"
@@ -376,11 +370,7 @@ echo $LINE
 
 ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_username=$MYSQL_ROOT_USER  mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
 
-if [ "$TRAVIS" == "true" ]; then
-  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=true travis_repo_slug=$TRAVIS_REPO_SLUG travis_branch=$TRAVIS_BRANCH travis_commit=$TRAVIS_COMMIT supervisor_running=false"
-else
-  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=false supervisor_running=true"
-fi
+ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=false supervisor_running=true"
 
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
