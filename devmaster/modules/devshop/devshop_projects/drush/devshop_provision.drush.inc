@@ -466,9 +466,9 @@ function drush_devshop_provision_post_provision_install() {
 
   // Install Method: Clone
   // Sync from a drush alias.
-  drush_log('Installing environment with method: ' . d()->install_method , 'devshop_log');
+  drush_log('Installing environment with method: ' . d()->install_method , 'p_log');
   if (d()->install_method == 'clone') {
-    drush_log(dt('Environment Clone initiated...'), 'devshop_log');
+    drush_log(dt('Environment Clone initiated...'), 'p_log');
     $clone_source = d()->environment_settings['install_method']['clone_source'];
 
     // If "clone_source" is set to "_other", use the drush alias in "clone_source_drush".
