@@ -209,25 +209,32 @@ class RoboFile extends \Robo\Tasks {
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL) {
+  public function prepareContainers($user_uid = NULL, $docker_gid = NULL) {
 
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
 
-    $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
+//    $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
 
     // aegir/hostmaster
-    $this->taskDockerBuild('aegir-dockerfiles')
+//    $this->taskDockerBuild('aegir-dockerfiles')
 //      ->option('file', 'aegir-dockerfiles/Dockerfile-php7')
-      ->option('file', 'aegir-dockerfiles/Dockerfile')
-      //      ->option('build-arg', "AEGIR_UID=$user_uid")
-      ->tag('aegir/hostmaster:dev')
+//      ->option('file', 'aegir-dockerfiles/Dockerfile')
+//            ->option('build-arg', "AEGIR_UID=$user_uid")
+//      ->tag('aegir/hostmaster:dev')
+//      ->run();
+//
+//      $this->taskDockerBuild('aegir-dockerfiles')
+//        ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
+//        ->tag('aegir/hostmaster:xdebug')
+//        ->run();
+
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-privileged')
+      ->tag('aegir/hostmaster:privileged')
+      ->option('build-arg', "DOCKER_GID=$docker_gid")
       ->run();
-      $this->taskDockerBuild('aegir-dockerfiles')
-        ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
-        ->tag('aegir/hostmaster:xdebug')
-        ->run();
 
     // aegir/hostmaster:xdebug
 
