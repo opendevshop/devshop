@@ -29,8 +29,6 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                     sleep(3);
                   $device = $droplet->getById($service->provider_server_identifier);
 
-                  drush_log(print_r($device, 1), 'p_ok');
-
                     if (!empty($device->networks[0]->ipAddress)) {
 
                         // Save IP addresses
