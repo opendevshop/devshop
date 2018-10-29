@@ -7,6 +7,10 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
   public $type = 'digital_ocean';
   public $name = 'DigitalOcean';
 
+  function load_api() {
+    return aegir_digitalocean_load_api();
+  }
+
   function form(&$form) {
     parent::form($form);
 
@@ -70,11 +74,14 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
         '#title' => t('Setup as remote aegir server'),
         '#default_value' => $default_options['aegir_digital_ocean_default_remote_server'],
       );
-      //$form['provider_options']['cloud_config'] = array(
-      //  '#type' => 'textarea',
-      //  '#title' => t('Cloud Config'),
-      //  '#default_value' => $default_options['aegir_digital_ocean_default_cloud_config'],
-      //);
+      $form['provider_options']['user_data'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Cloud Init'),
+        '#default_value' => $default_options['aegir_digital_ocean_default_user_data'],
+        '#description' => t('Cloud Init (aka User Data) is a standardized way to pre-configure your server, supported by most cloud server providers. If this field is Bash, it is run as soon as the server is ready. If this field has YML, it can do many things. See !link for Cloud Init examples', array(
+          '!link' => l('cloudinit.readthedocs.io', 'https://cloudinit.readthedocs.io/en/latest/topics/examples.html')
+        )),
+      );
     }
   }
 
@@ -106,22 +113,22 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
       // We do this in the validation phase so that we can cause form errors if something goes wrong.
       else {
 
-        // Create the Softlayer "Virtual Guest"
+        // Get DigitalOcean Droplet API.
         $api = $this->load_api();
         $droplet = $api->droplet();
 
         $keys = array_filter($this->provider_options['keys']);
         $keys = array_values($keys);
 
-        $provider_data = $droplet->create($this->server->remote_host,
+        $provider_data = $droplet->create($node->title,
             $this->provider_options['region'],
             $this->provider_options['size'],
             $this->provider_options['image'],
             $this->provider_options['backups'],
             $this->provider_options['ipv6'],
             $this->provider_options['private_networking'],
-            $keys
-//            $user_data
+            $keys,
+            $this->provider_options['user_data']
         );
 
         form_set_value($form['services']['provider']['digital_ocean']['provider_data'], $provider_data, $form_state);

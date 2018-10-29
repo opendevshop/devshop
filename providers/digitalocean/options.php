@@ -81,11 +81,14 @@ function aegir_digital_ocean_options_form() {
         '#title' => t('Setup as remote aegir server'),
         '#default_value' => $default_options['aegir_digital_ocean_default_remote_server'],
       );
-      //$form['aegir_digital_ocean_default_cloud_config'] = array(
-      //  '#type' => 'textarea',
-      //  '#title' => t('Cloud Config'),
-      //  '#default_value' => $default_options['aegir_digital_ocean_default_cloud_config'],
-      //);
+      $form['aegir_digital_ocean_default_user_data'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Cloud Init'),
+        '#default_value' => $default_options['aegir_digital_ocean_default_user_data'],
+        '#description' => t('Cloud Init (aka User Data) is a standardized way to pre-configure your server, supported by most cloud server providers. If this field is Bash, it is run as soon as the server is ready. If this field has YML, it can do many things. See !link for Cloud Init examples', array(
+          '!link' => l('cloudinit.readthedocs.io', 'https://cloudinit.readthedocs.io/en/latest/topics/examples.html')
+        )),
+      );
     }
 
     $form['note'] = array(
