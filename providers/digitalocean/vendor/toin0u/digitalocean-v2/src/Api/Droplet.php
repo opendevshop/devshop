@@ -25,13 +25,21 @@ use DigitalOceanV2\Exception\HttpException;
 class Droplet extends AbstractApi
 {
     /**
+     * @param int $per_page
+     * @param int $page
+     * @param string|null $tag
+     *
      * @return DropletEntity[]
      */
-    public function getAll()
+    public function getAll($per_page = 200, $page = 1, $tag = null)
     {
-        $droplets = $this->adapter->get(sprintf('%s/droplets?per_page=%d', $this->endpoint, 200));
+        $url = sprintf('%s/droplets?per_page=%d&page=%d', $this->endpoint, $per_page, $page);
 
-        $droplets = json_decode($droplets);
+        if (null !== $tag) {
+            $url .= '&tag_name='.$tag;
+        }
+
+        $droplets = json_decode($this->adapter->get($url));
 
         $this->extractMeta($droplets);
 
@@ -110,12 +118,15 @@ class Droplet extends AbstractApi
      * @param bool         $privateNetworking
      * @param int[]        $sshKeys
      * @param string       $userData
+     * @param bool         $monitoring
+     * @param array        $volumes
+     * @param array        $tags
      *
      * @throws HttpException
      *
      * @return DropletEntity|null
      */
-    public function create($names, $region, $size, $image, $backups = false, $ipv6 = false, $privateNetworking = false, array $sshKeys = [], $userData = '')
+    public function create($names, $region, $size, $image, $backups = false, $ipv6 = false, $privateNetworking = false, array $sshKeys = [], $userData = '', $monitoring = true, array $volumes = [], array $tags = [])
     {
         $data = is_array($names) ? ['names' => $names] : ['name' => $names];
 
@@ -126,6 +137,7 @@ class Droplet extends AbstractApi
             'backups' => $backups ? 'true' : 'false',
             'ipv6' => $ipv6 ? 'true' : 'false',
             'private_networking' => $privateNetworking ? 'true' : 'false',
+            'monitoring' => $monitoring ? 'true' : 'false',
         ]);
 
         if (0 < count($sshKeys)) {
@@ -134,6 +146,14 @@ class Droplet extends AbstractApi
 
         if (!empty($userData)) {
             $data['user_data'] = $userData;
+        }
+
+        if (0 < count($volumes)) {
+            $data['volumes'] = $volumes;
+        }
+
+        if (0 < count($tags)) {
+            $data['tags'] = $tags;
         }
 
         $droplet = $this->adapter->post(sprintf('%s/droplets', $this->endpoint), $data);
