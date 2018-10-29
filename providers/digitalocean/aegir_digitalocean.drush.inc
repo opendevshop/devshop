@@ -15,20 +15,21 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             /** @var Provision_Service_provider_digital_ocean $service */
             $service = $task->ref->services['provider'];
 
+            $api = $service->load_api();
+            $droplet = $api->droplet();
 
             if (empty($task->ref->ip_addresses)) {
 
                 drush_log('Acquiring IP Addresses', 'p_command');
                 drush_log("Waiting for IP Address...\n", 'p_info');
 
-              $api = $service->load_api();
-              $droplet = $api->droplet();
 
                 // Loop until we have an IP address.
                 while (empty($task->ref->ip_addresses)) {
                     sleep(3);
                   $device = $droplet->getById($service->provider_server_identifier);
 
+                  $first_ip = $device->networks[0]->ipAddress;
                     if (!empty($device->networks[0]->ipAddress)) {
 
                         // Save IP addresses
@@ -49,8 +50,40 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                 }
             }
 
+            // Save a DNS record
+            $url_parts = explode('.', $service->getServer()->title);
+            $base_domain = implode('.', array_slice($url_parts, -2, 2));
+            $subdomain = str_replace('.' . $base_domain, '', $service->getServer()->title);
+
+            $domainRecord = $api->domainRecord();
+            $record_found = FALSE;
+
+            $domainRecords = $domainRecord->getAll($base_domain);
+            foreach ($domainRecords as $record) {
+              if ($record->name == $subdomain) {
+
+                // @TODO: If IP address changed, Update Record?
+                if ($record->data != $first_ip) {
+
+                }
+                $record_found = TRUE;
+              }
+            }
+
+            // Create domain record.
+            if (!$record_found) {
+              $created = $domainRecord->create($base_domain, 'A', $subdomain, current($task->ref->ip_addresses), 0);
+
+              //@TODO! This is devshop.cloud specific! Remove it!
+              $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, current($task->ref->ip_addresses), 0);
+              drush_log(dt('Domain Record created successfully!'), 'p_ok');
+            }
+
         } catch (Exception $e) {
             drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
+        }  catch (\DigitalOceanV2\Exception\HttpException $e) {
+          drupal_set_message($base_domain);
         }
+
     }
 }

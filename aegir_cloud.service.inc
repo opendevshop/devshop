@@ -29,6 +29,10 @@ class hostingService_provider extends hostingService {
    */
   public $provider_server_url = 'http://provider/server/%id%';
 
+  public function getServer() {
+    return $this->server;
+  }
+
   public function getProviderServerUrl() {
     return strtr($this->provider_server_url, array(
       '%id%' => $this->provider_server_identifier,
