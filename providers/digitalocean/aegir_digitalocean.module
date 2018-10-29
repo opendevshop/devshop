@@ -36,6 +36,9 @@ function aegir_digitalocean_form_aegir_cloud_settings_form_alter(&$form, &$form_
 
   $form['digital_ocean']['options'] = aegir_digital_ocean_options_form();
 
+  // Fire off our submit
+  $form['#submit'][] = 'aegir_digital_ocean_options_form_submit';
+
 }
 
 function aegir_digitalocean_load_api(){
