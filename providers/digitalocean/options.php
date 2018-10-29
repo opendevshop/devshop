@@ -8,9 +8,7 @@
  */
 function aegir_digital_ocean_options_form() {
   $form = array();
-  aegir_digital_ocean_load_api();
-  require_once dirname(__FILE__) . '/digital-ocean-master/vendor/autoload.php';
-  require_once dirname(__FILE__) . '/digital-ocean-master/src/DigitalOceanV2.php';
+  aegir_digitalocean_load_api();
   $token = variable_get('aegir_cloud_digital_ocean_api_token', array());
 
   if (empty($token)) {
@@ -127,7 +125,7 @@ function aegir_digital_ocean_options_form_submit($form, $form_state) {
 
     $options = array();
 
-    $digitalocean = aegir_digital_ocean_load_api();
+    $digitalocean = aegir_digitalocean_load_api();
 
     $image = $digitalocean->image();
     $images = $image->getAll();
