@@ -144,10 +144,26 @@ function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
       if (!empty($node->services['provider'])) {
         $id = $node->services['provider']->provider_server_identifier;
 
+        $form['warning'] = array(
+          '#type' => 'item',
+          '#prefix' => '<div class="alert alert-danger">',
+          '#markup' => t('This server will be completely destroyed, along with all of the sites, files, and databases on it. Are you sure you want to do this?'),
+          '#suffix' => '</div>',
+        );
         $form['provider'] = array(
           '#type' => 'item',
           '#title' => t('Server Provider'),
           '#markup' => $node->services['provider']->type,
+        );
+        $form['provider_server_name'] = array(
+          '#type' => 'item',
+          '#title' => t('Hostname'),
+          '#markup' => $node->title,
+        );
+        $form['provider_server_ips'] = array(
+          '#type' => 'item',
+          '#title' => t('IP Addresses'),
+          '#markup' => implode('  ', $node->ip_addresses),
         );
         $form['provider_server_identifier'] = array(
           '#type' => 'item',
@@ -157,7 +173,14 @@ function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
               'target' => '_blank',
             ),
           )),
-          '#description' => t('This server will be completely destroyed, along with all of the sites, files, and databases on it. Are you sure you want to do this?'),
+        );
+        $form['parameters']['#weight'] = 1;
+
+        $form['parameters']['delete_dns'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Delete DNS Records'),
+          '#description' => t('Check the box to delete any DNS records found in DigitalOcean for this servers IP or Hostname'),
+          '#default_value' => TRUE,
         );
 
         // Add a submit handler to trigger the server provider delete.
