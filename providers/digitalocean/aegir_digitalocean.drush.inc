@@ -27,10 +27,10 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                 // Loop until we have an IP address.
                 while (empty($task->ref->ip_addresses)) {
                     sleep(3);
-                  $device = $droplet->getById($service->provider_server_identifier);
+                    $device = $droplet->getById($service->provider_server_identifier);
 
-                  $first_ip = $device->networks[0]->ipAddress;
                     if (!empty($device->networks[0]->ipAddress)) {
+                        $first_ip = $device->networks[0]->ipAddress;
 
                         // Save IP addresses
                         foreach ($device->networks as $network) {
@@ -51,34 +51,36 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             }
 
             // Save a DNS record
-            $url_parts = explode('.', $service->getServer()->title);
-            $base_domain = implode('.', array_slice($url_parts, -2, 2));
-            $subdomain = str_replace('.' . $base_domain, '', $service->getServer()->title);
+            if (variable_get('aegir_cloud_digital_ocean_create_dns', FALSE)) {
+              $url_parts = explode('.', $service->getServer()->title);
+              $base_domain = implode('.', array_slice($url_parts, -2, 2));
+              $subdomain = str_replace('.' . $base_domain, '', $service->getServer()->title);
 
-            $domainRecord = $api->domainRecord();
-            $record_found = FALSE;
+              $domainRecord = $api->domainRecord();
+              $record_found = FALSE;
 
-            $domainRecords = $domainRecord->getAll($base_domain);
-            foreach ($domainRecords as $record) {
-              if ($record->name == $subdomain) {
+              $domainRecords = $domainRecord->getAll($base_domain);
+              foreach ($domainRecords as $record) {
+                if ($record->name == $subdomain) {
 
-                // @TODO: If IP address changed, Update Record?
-                if ($record->data != $first_ip) {
+                  // @TODO: If IP address changed, Update Record?
+                  if ($record->data != $first_ip) {
 
+                  }
+                  $record_found = TRUE;
                 }
-                $record_found = TRUE;
               }
+
+              // Create domain record.
+              if (!$record_found) {
+                $created = $domainRecord->create($base_domain, 'A', $subdomain, current($task->ref->ip_addresses), 0);
+
+                //@TODO! This is devshop.cloud specific! Remove it!
+                $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, current($task->ref->ip_addresses), 0);
+                drush_log(dt('Domain Record created successfully!'), 'p_ok');
+              }
+
             }
-
-            // Create domain record.
-            if (!$record_found) {
-              $created = $domainRecord->create($base_domain, 'A', $subdomain, current($task->ref->ip_addresses), 0);
-
-              //@TODO! This is devshop.cloud specific! Remove it!
-              $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, current($task->ref->ip_addresses), 0);
-              drush_log(dt('Domain Record created successfully!'), 'p_ok');
-            }
-
         } catch (Exception $e) {
             drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
         }  catch (\DigitalOceanV2\Exception\HttpException $e) {
