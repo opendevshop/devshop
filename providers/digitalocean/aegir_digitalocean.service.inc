@@ -154,4 +154,19 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
     parent::context_options($task_type, $ref_type, $task);
     $task->context_options['digital_ocean_token'] = variable_get('aegir_cloud_digital_ocean_api_token', NULL);
   }
+
+  /**
+   * Absolutely destroy this server using the packet API.
+   */
+  public function destroy() {
+    try {
+      $api = $this->load_api();
+      $droplet = $api->droplet();
+      $droplet->delete($this->provider_server_identifier);
+
+      drupal_set_message(t('The server was destroyed.'));
+    } catch(Exception $e) {
+      form_set_error('provider', 'API Error: ' . $e->getMessage());
+    }
+  }
 }
