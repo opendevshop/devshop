@@ -7,6 +7,8 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
   public $type = 'digital_ocean';
   public $name = 'DigitalOcean';
 
+  public $provider_server_url = 'https://cloud.digitalocean.com/droplets/%id%';
+
   function load_api() {
     return aegir_digitalocean_load_api();
   }

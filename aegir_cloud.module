@@ -152,7 +152,11 @@ function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
         $form['provider_server_identifier'] = array(
           '#type' => 'item',
           '#title' => t('Server ID'),
-          '#markup' => l($id, $node->services['provider']->getProviderServerUrl()),
+          '#markup' => l($id, $node->services['provider']->getProviderServerUrl(), array(
+            'attributes' => array(
+              'target' => '_blank',
+            ),
+          )),
           '#description' => t('This server will be completely destroyed, along with all of the sites, files, and databases on it. Are you sure you want to do this?'),
         );
 
