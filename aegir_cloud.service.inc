@@ -29,8 +29,41 @@ class hostingService_provider extends hostingService {
    */
   public $provider_server_url = 'http://provider/server/%id%';
 
+  public $subdomain;
+  public $basedomain;
+  public $ipAddress;
+  public $serverNode;
+
+  /**
+   * Load ipAddress, base domain, subdomain into the class.
+   *
+   * hostingService_provider constructor.
+   * @param $node
+   * @param null $values
+   */
+  function __construct($node, $values = NULL)
+  {
+    parent::__construct($node, $values);
+    $this->serverNode = $node;
+
+    if (isset($this->getServer()->ipAddresses)) {
+      $this->ipAddress = current($this->getServer()->ipAddresses);
+    }
+
+    $url_parts = explode('.', $this->getServer()->title);
+    $this->basedomain = implode('.', array_slice($url_parts, -2, 2));
+    $this->subdomain = str_replace('.' . $this->basedomain, '', $this->getServer()->title);
+  }
+
+  public function save($node) {
+    parent::save($node);
+    if (isset($node->nid)) {
+      $this->serverNode = $node;
+    }
+  }
+
   public function getServer() {
-    return $this->server;
+    return $this->serverNode;
   }
 
   public function getProviderServerUrl() {
