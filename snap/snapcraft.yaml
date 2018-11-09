@@ -1,7 +1,7 @@
  
 name: devshop
 version: 0.1
-summary: Drupal DevOps Platform: Develop, Test, & Deploy any Drupal site.
+summary: 'Drupal DevOps Platform: Develop, Test, & Deploy any Drupal site.'
 description: |
   DevShop automates Drupal hosting, testing, and deployment. 
   Submit a pull request, get a copy of your site. 
