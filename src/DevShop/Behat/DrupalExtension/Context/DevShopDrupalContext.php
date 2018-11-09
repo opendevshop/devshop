@@ -188,4 +188,23 @@ class DevShopDrupalContext extends RawDrupalContext {
         throw new \Exception("The command $command returned a non-zero exit code.");
       }
     }
+
+    /**
+     * @When I select the radio button with a label that contains the string :label with the id :id
+     * @When I select the radio button with a label that contains the string :label
+     */
+    public function assertSelectRadioByLabelString($label, $id = '') {
+        $element = $this->getSession()->getPage();
+        $radiobutton = $id ? $element->findById($id) : $element->find('named', array('radio', $this->getSession()->getSelectorsHandler()->xpathLiteral($label)));
+        if ($radiobutton === NULL) {
+           throw new \Exception(sprintf('The radio button with "%s" was not found on the page %s', $id ? $id : $label, $this->getSession()->getCurrentUrl()));
+        }
+        $value = $radiobutton->getAttribute('value');
+        $radio_id = $radiobutton->getAttribute('id');
+        $labelonpage = $element->find('css', "label[for='$radio_id']")->getText();
+        if (strpos($labelonpage, $label) === FALSE) {
+            throw new \Exception(sprintf("Label for button with id '%s' did not contain '%s' on the page %s.  Label: %s", $id, $$label, $this->getSession()->getCurrentUrl(), labelonpage));
+        }
+        $radiobutton->selectOption($value, FALSE);
+    }
 }

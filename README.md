@@ -14,6 +14,10 @@ This step, when used with a Selenium server and the test has a "@javascript" tag
 
 This step simply runs `exec()` on any command and throws an exception if a non-zero exit code is thrown. 
 
+### I select the radio button with a label that contains the string :label
+
+This is very helpful for radio buttons that have a long or dynamic Label. Searches for the string instead of doing an exact match.
+
 ## Other Features 
 
 ### Simplified setup.
