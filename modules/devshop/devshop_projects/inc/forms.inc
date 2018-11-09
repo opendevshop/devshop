@@ -1118,7 +1118,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
           ),
         )) . '</small>';
       $remote = t('Remote Site');
-      $environment_options["@{$project->name}.@{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
+      $environment_options["@{$project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
     }
   }
 
