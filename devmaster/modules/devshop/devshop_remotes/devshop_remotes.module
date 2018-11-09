@@ -369,6 +369,10 @@ function devshop_remotes_node_load($nodes, $types) {
             $source['loaded_from'] = $env->repo_path . '/composer.json';
           }
 
+          if (!is_array($node->project->settings->aliases)) {
+              $node->project->settings->aliases = array();
+          }
+
           $node->project->settings->aliases = array_merge($node->project->settings->aliases, $sync_sources);
         }
       }
