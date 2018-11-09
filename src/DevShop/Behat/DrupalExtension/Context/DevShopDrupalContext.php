@@ -2,6 +2,7 @@
 
 namespace DevShop\Behat\DrupalExtension\Context;
 
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\DrupalExtension\Context\RawDrupalContext;
 //use Behat\MinkExtension\Context\RawMinkContext;
 //use Behat\Testwork\Hook\HookDispatcher;
@@ -206,5 +207,25 @@ class DevShopDrupalContext extends RawDrupalContext {
             throw new \Exception(sprintf("Label for button with id '%s' did not contain '%s' on the page %s.  Label: %s", $id, $$label, $this->getSession()->getCurrentUrl(), labelonpage));
         }
         $radiobutton->selectOption($value, FALSE);
+    }
+
+    /**
+     * Visit a given path, and check for an arbitrary HTTP response code.
+     *
+     * @When I visit :path I should get the response code :response_code
+     *
+     * @throws UnsupportedDriverActionException
+     */
+    public function assertResponseAtPath($path, $response_code = 200) {
+        $this->getSession()->visit($this->locatePath($path));
+
+        // If available, add extra validation that this is a 200 response.
+        try {
+            $this->getSession()->getStatusCode();
+            $this->minkContext->assertHttpResponse($response_code);
+        }
+        catch (UnsupportedDriverActionException $e) {
+            // Simply continue on, as this driver doesn't support HTTP response codes.
+        }
     }
 }
