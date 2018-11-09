@@ -158,7 +158,10 @@ function devshop_projects_node_insert($node) {
     }
 
     // When a task is created or updated that has a project, redirect to the project.
-    if (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+    if (isset($_GET['redirect']) && $_GET['redirect'] == 'task-page') {
+      drupal_goto("node/{$node->nid}");
+    }
+    elseif (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
       drupal_goto("node/{$site->project->nid}");
     }
   }
