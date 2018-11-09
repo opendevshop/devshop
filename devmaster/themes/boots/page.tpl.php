@@ -123,6 +123,8 @@
         <p class="lead pull-right"><?php print $site_slogan; ?></p>
     <?php endif; ?>
 
+      <nav id="project-environment-links">
+
     <?php if (!empty($title)): ?>
       <h1 class="page-header">
         <?php print $title; ?>
@@ -141,6 +143,7 @@
         <?php endif; ?>
       </h3>
     <?php endif; ?>
+      </nav>
 
     <?php print render($page['header']); ?>
 
