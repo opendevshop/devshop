@@ -916,12 +916,6 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   word-wrap: normal;
 }
 
-.follow-checkbox {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    z-index: 10;
-}
 
 .task-details {
   margin-top: 3em;
@@ -1177,4 +1171,28 @@ li.text.code {
 
 .table-responsive {
   overflow: visible;
+}
+
+.task-info {
+    width: 100%;
+
+    position: relative;
+}
+
+.task-info-fixed {
+    width: 73%;
+    top: 20px;
+    position: fixed;
+}
+
+.project-environment-links-fixed {
+    position: fixed;
+    top: 40px;
+    z-index: 1;
+}
+
+.follow-checkbox {
+    position: absolute;
+    right: 10px;
+    z-index: 10;
 }
