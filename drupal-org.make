@@ -12,29 +12,29 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.150"
+projects[hosting][version] = "3.161"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
-projects[eldir][version] = "3.150"
+projects[eldir][version] = "3.160"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.150"
+projects[hosting_git][version] = "3.162"
 
 projects[hosting_https][subdir] = aegir
-projects[hosting_https][version] = "3.150"
+projects[hosting_https][version] = "3.160"
 
 projects[hosting_remote_import][subdir] = aegir
-projects[hosting_remote_import][version] = "3.150"
+projects[hosting_remote_import][version] = "3.160"
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.150"
+projects[hosting_site_backup_manager][version] = "3.160"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.x"
+projects[hosting_tasks_extra][version] = "3.160"
 
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = "3.150"
+projects[hosting_logs][version] = "3.160"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_filemanager][version] = "1.x"
@@ -64,7 +64,7 @@ projects[ctools][version] = "1.14"
 projects[features][version] = "2.10"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
-projects[libraries][version] = 2.3
+projects[libraries][version] = 2.5
 projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
 ; projects[hybridauth][version] = 2.15
@@ -96,7 +96,7 @@ libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.20
+projects[bootstrap][version] = 3.21
 
 ;projects[intercomio][type] = module
 ;projects[intercomio][download][type] = git
