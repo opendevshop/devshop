@@ -24,6 +24,7 @@ services:
 
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
+      AEGIR_HTTP_SERVICE_TYPE: https_apache
 
     privileged: true
     volumes:
