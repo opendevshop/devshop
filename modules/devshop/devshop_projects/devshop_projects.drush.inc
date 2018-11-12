@@ -75,7 +75,7 @@ function drush_devshop_projects_pre_hosting_task()
     $drush_aliases->write();
     drush_log(dt('Drush aliases written for %name project.', [
       '%name' => $drush_aliases->data['name'],
-    ]), 'devshop_log');
+    ]), 'p_log');
   }
   
 
@@ -377,7 +377,7 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 //
   // If this is a new platform created by a project, we will create a site here.
 //  if ($task->ref->type == 'platform') {
-//    drush_log('[DevShop] Codebase Clone Complete... Preparing next steps.', 'devshop_log');
+//    drush_log('[DevShop] Codebase Clone Complete... Preparing next steps.', 'p_log');
 
 //    // If this platform isn't in a project, bail.
 //    $platform = $task->ref;
@@ -431,7 +431,7 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 //        $task = hosting_add_task($platform->environment->settings->site_to_clone, 'clone', $args);
 //
 //        $link = l(t('View Logs'), "node/{$task->nid}");
-//        drush_log("[DevShop] Environment '{$site->environment->name}' is scheduled to be cloned to '{$platform->environment->name}'. $link", 'devshop_log');
+//        drush_log("[DevShop] Environment '{$site->environment->name}' is scheduled to be cloned to '{$platform->environment->name}'. $link", 'p_log');
 //      }
 //      else {
 //
@@ -498,7 +498,7 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 //    if (isset($platform->environment) && !empty($platform->environment->name)) {
 //
 //      // Save environment record.
-//      drush_log('[DevShop Environment] Saving environment data...', 'devshop_command');
+//      drush_log('[DevShop Environment] Saving environment data...', 'p_command');
 //      db_update('hosting_devshop_project_environment')
 //        ->fields(array(
 //          'site' => $site->nid,
@@ -506,14 +506,14 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 //        ->condition('project_nid', $platform->project->nid)
 //        ->condition('name', $platform->environment->name)
 //        ->execute();
-//      drush_log("Saved {$platform->environment->name} in project {$platform->project->name}.", 'devshop_ok');
+//      drush_log("Saved {$platform->environment->name} in project {$platform->project->name}.", 'p_ok');
 //
 //      // Save aliases if needed.
 //      if ($platform->project->settings->live['environment_aliases'] && !empty($platform->project->settings->live['live_domain'])) {
 //        $domain =  $platform->environment->name . '.' . $platform->project->settings->live['live_domain'];
 //
 //        $site->aliases[] = $domain;
-//        drush_log('[DevShop Environment] Saving environment data', 'devshop_command');
+//        drush_log('[DevShop Environment] Saving environment data', 'p_command');
 //        $site->no_verify = TRUE;
 //        node_save($site);
 //

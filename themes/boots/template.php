@@ -321,8 +321,12 @@ function boots_preprocess_environment(&$vars) {
   if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
     
     // Timestamp of last commit.
-    $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ar' --max-count=1");
-    
+    $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ct' --max-count=1");
+    $environment->git_last_timestamp = date('N');
+    $environment->git_last_ago = t('!ago ago', array(
+      '!ago' => format_interval(time() - $environment->git_last , 1)
+    ));
+
     // The last commit.
     $environment->git_commit = shell_exec("cd {$environment->repo_path}; git -c color.ui=always log --max-count=1");
     
@@ -634,8 +638,11 @@ function boots_preprocess_page(&$vars){
 
       $vars['title2'] = $vars['title'];
 
-      if ($vars['node']->type == 'site') {
+      if ($vars['node']->type == 'site' || $vars['node']->type == 'platform') {
         $vars['subtitle2'] = t('Environment');
+        if ($vars['node']->type == 'platform') {
+          $vars['subtitle2'] = t('Environment') . ' ' . t('Platform');
+        }
       }
       else {
         $vars['subtitle2'] = ucfirst($vars['node']->type);
@@ -668,13 +675,15 @@ function boots_preprocess_page(&$vars){
 
     }
 
-
     // For node/%/* pages where node is site, use the environment name as title2
-    if ($vars['node']->type == 'site' && isset($vars['node']->environment)){
+    if (isset($vars['node']->environment)){
 
-      $vars['title2_url'] = 'node/' . $vars['node']->nid;
+      $vars['title2_url'] = url('node/' . ($vars['node']->type == 'site'? $vars['node']->nid: $vars['node']->environment->site));
       $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
 
+      if ($vars['subtitle2'] == 'Platform') {
+        $vars['subtitle2'] = t('Environment') . ' ' . t('Platform');
+      }
     }
 
     // On environment settings page...

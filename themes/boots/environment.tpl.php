@@ -419,14 +419,18 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
+                              <?php if (user_access('create platform git-checkout task') || user_access('create platform git-tag task')): ?>
+                                <li class="create-git-ref"><label><?php print t('Create'); ?>
                               <?php if (user_access('create platform git-checkout task')): ?>
-                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout"><i class="fa fa-code-fork"></i> <?php print t('Create a branch'); ?></a></label></li>
-                              <?php endif;?>
- <?php if (user_access('create platform git-tag task')): ?>
-                              <li><label><a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag"><i class="fa fa-tag"></i> <?php print t('Create a tag'); ?></a></label></li>
-                              <?php endif;?>
+                                  <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout?create=1" class="btn btn-sm"><i class="fa fa-code-fork"></i> <?php print t('Branch'); ?></a>
+                              <?php endif; ?>
+                              <?php if (user_access('create platform git-tag task')): ?>
+                                <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag" class="btn btn-sm"><i class="fa fa-tag"></i> <?php print t('Tag'); ?></a>
+                              <?php endif; ?>
+                                  </label></li>
+                              <?php endif; ?>
 
-                                <li><label><?php print t('Deploy branch or tag'); ?></label></li>
+                              <li><label><?php print t('Deploy branch or tag'); ?></label></li>
                                 <?php if (count($git_refs)): ?>
                                     <?php foreach ($git_refs as $ref => $item): ?>
                                         <li>
@@ -631,7 +635,8 @@ sites/all/drush/drushrc.php
           <?php print $label ?>
         </button>
         <button type="button" class="btn btn-text" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>" title="<?php print t('Last Commit'); ?>">
-          <time class='timeago' datetime="<?php if (isset($environment->git_last)) print $environment->git_last ?>"><?php if (isset($environment->git_last_readable)) print $environment->git_last_readable ?>
+
+          <time class='timeago' datetime="<?php if (isset($environment->git_last)) print $environment->git_last ?>"><?php if (isset($environment->git_last_ago)) print $environment->git_last_ago ?>
         </button>
         <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
           <div class="modal-dialog modal-lg">
@@ -653,7 +658,7 @@ sites/all/drush/drushrc.php
                         <?php print t('View Commit on GitHub'); ?>
                       </a>
                     <?php endif; ?>
-                    <?php if (!empty($environment->git_status) && module_exists('hosting_git_commit') && user_access('create git-commit task')): ?>
+                    <?php if (!empty($environment->git_status) && module_exists('hosting_git_commit') && user_access('create platform git-commit task')): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_git-commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
                       <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
                     </a>
