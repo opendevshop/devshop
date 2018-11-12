@@ -1,8 +1,8 @@
 FROM ubuntu:16.04
 
-ENV AEGIR_VERSION 7.x-3.151
-ENV DEVSHOP_VERSION 1.3.4
-ENV PROVISION_VERSION 7.x-3.151
+ENV AEGIR_VERSION 7.x-3.x
+ENV DEVSHOP_VERSION 1.x
+ENV PROVISION_VERSION 7.x-3.x
 ENV REGISTRY_REBUILD_VERSION 7.x-2.5
 ENV AEGIR_MAKEFILE https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make
 
@@ -19,26 +19,84 @@ RUN apt-get update -qq && apt-get install -y -qq\
   mysql-server \
   nano \
   openssh-server \
-  php7.0-common \
-  php7.0-curl \
-  php7.0-cli \
-  php7.0-dev \
-  php7.0-fpm \
-  php7.0-gd \
-  php7.0-imap \
-  php7.0-json \
-  php7.0-opcache \
-  php7.0-xml \
-  php7.0-mbstring \
-  php7.0-mysql \
-  php-sqlite3 \
-  php-apcu \
+#  php7.0-common \
+#  php7.0-curl \
+#  php7.0-cli \
+#  php7.0-dev \
+#  php7.0-fpm \
+#  php7.0-gd \
+#  php7.0-imap \
+#  php7.0-json \
+#  php7.0-opcache \
+#  php7.0-xml \
+#  php7.0-mbstring \
+#  php7.0-mysql \
+#  php-sqlite3 \
+#  php-apcu \
   postfix \
   rsync \
   sudo \
   unzip \
   wget \
   vim
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=en_US.UTF-8
+RUN apt-get update -qq && apt-get install -y -qq\
+  software-properties-common
+
+RUN add-apt-repository ppa:ondrej/php && \
+    add-apt-repository ppa:ondrej/apache2 && \
+    apt-get update -qq
+
+# PHP 7.2
+RUN apt-get install -y -qq \
+  php7.2 \
+  php7.2-cli \
+  php7.2-curl \
+  php7.2-dev \
+  php7.2-fpm \
+  php7.2-gd \
+  php7.2-json \
+  php7.2-mbstring \
+  php7.2-mysql \
+  php7.2-xml
+
+# PHP 7.1
+RUN apt-get install -y -qq \
+  php7.1 \
+  php7.1-cli \
+  php7.1-curl \
+  php7.1-fpm \
+  php7.1-gd \
+  php7.1-mbstring \
+  php7.1-mysql \
+  php7.1-xml
+
+# PHP 7.0
+RUN apt-get install -y -qq \
+  php7.0 \
+  php7.0-cli \
+  php7.0-curl \
+  php7.0-fpm \
+  php7.0-gd \
+  php7.0-mbstring \
+  php7.0-mysql \
+  php7.0-xml
+
+# PHP 5.3
+RUN apt-get install -y -qq \
+  php5.6 \
+  php5.6-cli \
+  php5.6-curl \
+  php5.6-fpm \
+  php5.6-gd \
+  php5.6-mbstring \
+  php5.6-mysql \
+  php5.6-xml
+
+RUN apt-get install -y -qq \
+    apache2
 
 
 ENV AEGIR_UID 12345
