@@ -7,6 +7,13 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
   Scenario: Server node has Certificate and HTTPS services enabled.
 
     Given I am logged in as a user with the "administrator" role
+    When I am at "hosting/c/server_master"
+    And I click "Edit"
+    Then I select the radio button with the label "LetsEncrypt"
+    Then I select the radio button with the label "Staging"
+    And I press "Save"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output
     And I click "Servers"
     And I should see "Certificate"
     And I should see "LetsEncrypt"
