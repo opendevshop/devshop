@@ -16,4 +16,4 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
   Scenario: Server node has Certificate and HTTPS services enabled.
     Given I am logged in as a user with the "administrator" role
     When I am at "hosting/c/hostmaster"
-    Then I should see "Encryption Enabled"
+    Then I should see "Encryption Disabled"
