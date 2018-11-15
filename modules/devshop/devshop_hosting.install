@@ -218,9 +218,12 @@ function devshop_hosting_update_7015 (){
     ->execute();
 }
 
-/**
- * Enable LetsEncrypt.org support for automatic free HTTPS certificates.
- */
-function devshop_hosting_update_7016() {
-  module_enable(array('hosting_letsencrypt'));
-}
+// @TODO: Is this the cause of the failure?
+// https://travis-ci.org/opendevshop/devmaster/jobs/455564670
+
+///**
+// * Enable LetsEncrypt.org support for automatic free HTTPS certificates.
+// */
+//function devshop_hosting_update_7016() {
+//  module_enable(array('hosting_letsencrypt'));
+//}
