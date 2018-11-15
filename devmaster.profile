@@ -54,10 +54,18 @@ function devmaster_bootstrap() {
 
   /* Make it compatible with more than apache and nginx */
   $master_server = d()->platform->server;
-  hosting_services_add($node, 'http', $master_server->http_service_type, array(
+
+  // Force https_apache
+  hosting_services_add($node, 'http', 'https_apache', array(
     'restart_cmd' => $master_server->http_restart_cmd,
     'port' => 80,
+    'https_port' => 443,
     'available' => 1,
+  ));
+
+  // Add Certificate service.
+  hosting_services_add($node, 'Certificate', 'LetsEncrypt', array(
+    'letsencrypt_ca' => 'staging'
   ));
 
   /* examine the db server associated with the hostmaster site */
