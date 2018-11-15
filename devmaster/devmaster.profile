@@ -185,6 +185,19 @@ function devmaster_bootstrap() {
   $node->site_status = 1;
   $node->verified = 1;
   $node->status = 1;
+
+  // If this site's hostname has a public DNS record, then LetsEncrypt will
+  // work, so set the hostmaster site node https_enabled = HOSTING_HTTPS_REQUIRED
+  $records = dns_get_record(d()->uri);
+  foreach ($records as $record) {
+    if (
+      ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
+      $record['ip'] != '127.0.0.1' &&
+      $record['ip'] != '127.0.1.1') {
+      $node->https_enabled = HOSTING_HTTPS_REQUIRED;
+    }
+  }
+
   node_save($node);
 
   // Save the hostmaster site nid.
