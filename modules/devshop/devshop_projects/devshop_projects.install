@@ -22,6 +22,9 @@ function devshop_projects_update_dependencies() {
   $dependencies['devshop_projects'][7004] = array(
     'hosting_http_basic_auth' => 7300,
   );
+  $dependencies['devshop_hosting'][7016] = array(
+    'hosting_http_basic_auth' => 7300,
+  );
   return $dependencies;
 }
 
