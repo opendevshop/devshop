@@ -74,7 +74,10 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 function devshop_pull_default_webhook($project_node) {
   $project = $project_node->project;
 
-  // Check if body corresponds to a JSON object
+  // Check if body corresponds to a JSON object. 
+  // This is for GitLab Payloads.
+  // @TODO: We should move this to it's own module. There's more GitLab integration 
+  // that could be done.
   $headers = getallheaders();
   if ($headers['Content-Type'] == 'application/json') {
     $input = file_get_contents('php://input');
@@ -90,8 +93,8 @@ function devshop_pull_default_webhook($project_node) {
 
   foreach ($project->environments as $environment) {
 
-    // Respect pull disabled setting.
-    if ($environment->settings->pull_disabledi || $git_ref != $environment->git_ref) {
+    // If "pull disabled" is set, or if the git ref isn't for this environment, don't trigger a deploy.
+    if ($environment->settings->pull_disabled || (isset($git_ref) && $git_ref != $environment->git_ref)) {
       continue;
     }
 
