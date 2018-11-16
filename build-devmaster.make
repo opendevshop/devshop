@@ -17,10 +17,10 @@ projects[devmaster][version] = 1.x
 ; DEVELOPMENT & TESTING
 ; When you need to test or install devshop using a devmaster branch, uncomment this.
 ; BE SURE TO COMMENT THIS OUT FOR RELEASE.
-projects[devmaster][type] = "profile"
-projects[devmaster][download][type] = "git"
-projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster"
-projects[devmaster][download][branch] = "7.x-1.x"
+; projects[devmaster][type] = "profile"
+; projects[devmaster][download][type] = "git"
+; projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster"
+; projects[devmaster][download][branch] = "7.x-1.x"
 
 ; CAS
 libraries[cas][download][type] = "git"
