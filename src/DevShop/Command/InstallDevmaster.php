@@ -170,7 +170,7 @@ class InstallDevmaster extends Command
       ->addOption(
         'http_service_type', NULL, InputOption::VALUE_OPTIONAL,
         'The HTTP service to use: apache or nginx',
-        'apache'
+        'https_apache'
       )
 
       // http_port
