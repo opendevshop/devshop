@@ -9,7 +9,7 @@ devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
 devshop_install_profile: devmaster
 devshop_working_copy: --working-copy
 
-aegir_server_webserver: apache
+aegir_server_webserver: https_apache
 mysql_root_password_update: no
 
 supervisor_running: yes
