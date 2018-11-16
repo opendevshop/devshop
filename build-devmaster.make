@@ -14,12 +14,12 @@ projects[drupal][version] = 7.59
 ; Leave in place for replacement by release process.
 projects[devmaster][version] = 1.x
 
-; TESTING
+; DEVELOPMENT & TESTING
 ; When you need to test or install devshop using a devmaster branch, uncomment this.
-; BE SURE TO COMMENT THIS BACK OUT BEFORE RELEASE.
-;projects[devmaster][download][type] = "git"
-;projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster"
-;projects[devmaster][download][branch] = "7.x-1.x"
+; BE SURE TO COMMENT THIS OUT FOR RELEASE.
+projects[devmaster][download][type] = "git"
+projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster"
+projects[devmaster][download][branch] = "7.x-1.x"
 
 ; CAS
 libraries[cas][download][type] = "git"
