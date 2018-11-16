@@ -11,6 +11,7 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
     And I click "Edit"
     Then I select the radio button with the label "LetsEncrypt"
     Then I select the radio button with the label "Staging"
+    Then I select the radio button with the label "Apache HTTPS"
     And I press "Save"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
