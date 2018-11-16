@@ -310,7 +310,7 @@ class RoboFile extends \Robo\Tasks {
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
     'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
-    'install-sh-options' => '--server-webserver=apache',
+    'install-sh-options' => '--server-webserver=https_apache',
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
