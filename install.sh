@@ -41,7 +41,7 @@
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
-SERVER_WEBSERVER=https_apache
+SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
@@ -145,7 +145,7 @@ echo " Hostname: $HOSTNAME_FQDN"
 if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
   SERVER_WEBSERVER=nginx
 elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
-  SERVER_WEBSERVER=https_apache
+  SERVER_WEBSERVER=apache
 fi
 
 # Output Web Server
@@ -172,7 +172,7 @@ elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
 fi
 
 # Fail if server-webserver is not apache or nginx
-if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ] && [ $SERVER_WEBSERVER != 'https_apache' ]; then
+if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
   echo ' Invalid argument for --server-webserver. Must be nginx or apache.'
   exit 1
 fi
@@ -336,7 +336,7 @@ if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_makefile=$MAKEFILE_PATH"
 fi
 
-if [ $SERVER_WEBSERVER == 'apache' ] || [ $SERVER_WEBSERVER == 'https_apache' ]; then
+if [ $SERVER_WEBSERVER == 'apache' ]; then
   PLAYBOOK_FILE="playbook.yml"
 elif [ $SERVER_WEBSERVER == 'nginx' ]; then
   PLAYBOOK_FILE="playbook-nginx.yml"
