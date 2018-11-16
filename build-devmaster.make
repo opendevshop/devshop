@@ -20,6 +20,7 @@ projects[devmaster][version] = 1.x
 projects[devmaster][download][type] = "git"
 projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster"
 projects[devmaster][download][branch] = "7.x-1.x"
+projects[devmaster][destination] = "profiles"
 
 ; CAS
 libraries[cas][download][type] = "git"
