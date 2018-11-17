@@ -539,7 +539,7 @@ class InstallDevmaster extends Command
       'client_name' => $this->input->getOption('client_name'),
       'profile' => $this->input->getOption('profile'),
       'drush_aliases' => 'hm',
-      'https_enabled' => 2, // HOSTING_HTTPS_REQUIRED
+      'https_enabled' => 1, // HOSTING_HTTPS_ENABLED
     ), TRUE);
 
     // So... saveContext() saves the alias, then runs provision-verify.
