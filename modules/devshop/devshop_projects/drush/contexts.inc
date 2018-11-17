@@ -134,11 +134,11 @@ function getBranchesAndTags($git_url = NULL) {
   drush_log(dt('Found !count branches: !list', array(
     '!count' => count($branches),
     '!list' => implode(', ', $branches),
-  )), 'devshop_log');
+  )), 'p_log');
   drush_log(dt('Found !count tags: !list', array(
     '!count' => count($tags),
     '!list' => implode(', ', $tags),
-  )), 'devshop_log');
+  )), 'p_log');
 
   return array('branches' => $branches, 'tags' => $tags, 'refs' => $refs);
 }
