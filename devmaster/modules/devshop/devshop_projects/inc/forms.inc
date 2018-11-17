@@ -1106,6 +1106,22 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
     $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
+
+  // Add other aliases to the clone source.
+  if (isset($project->settings->aliases)) {
+    foreach ($project->settings->aliases as $alias => $data) {
+      $link = l(t('View') . ' <i class="fa fa-external-link"></i>', 'http://' . $data['uri'], array(
+          'html' => TRUE,
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn-text'),
+          ),
+        )) . '</small>';
+      $remote = t('Remote Site');
+      $environment_options["@{$project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
+    }
+  }
+
   $environment_options['_other'] = t('Other Drush Alias');
 
   if (count($environment_options)) {

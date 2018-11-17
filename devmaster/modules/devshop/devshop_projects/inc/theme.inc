@@ -302,7 +302,7 @@ function devshop_task_get_messages($task_node) {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = $record->message;
 
       // @TODO: Here, we can check for obscure aegir errors and write our own.
       // devshop_check_errors($outputs[$command]['output']);
@@ -311,7 +311,7 @@ function devshop_task_get_messages($task_node) {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
-      $outputs[$command]['command'] .= $record->message;
+      $outputs[$command]['command'] = $record->message;
       $outputs[$command]['output'] = '';
     }
     // Let's show some success messages. There are way too many for verify and install tasks.
@@ -322,6 +322,7 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = 'check';
       $outputs[$command]['command'] = 'drush';
     }
+    $outputs[$command]['type'] = $record->type;
   }
 
   foreach ($outputs as $command => $data) {
@@ -345,7 +346,7 @@ function devshop_task_get_messages($task_node) {
     $output = theme('devshop_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
-      $body = "<div class='panel-body panel-ansii'>$output</div>";
+      $body = "<div class='panel-body panel-type-{$data['type']} panel-ansii'>$output</div>";
     }
     else {
       $body = '';

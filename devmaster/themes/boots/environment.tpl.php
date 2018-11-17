@@ -635,7 +635,8 @@ sites/all/drush/drushrc.php
           <?php print $label ?>
         </button>
         <button type="button" class="btn btn-text" data-toggle="modal" data-target="#environment-git-status-<?php print $environment->name; ?>" title="<?php print t('Last Commit'); ?>">
-          <time class='timeago' datetime="<?php if (isset($environment->git_last)) print $environment->git_last ?>"><?php if (isset($environment->git_last_readable)) print $environment->git_last_readable ?>
+
+          <time class='timeago' datetime="<?php if (isset($environment->git_last)) print $environment->git_last ?>"><?php if (isset($environment->git_last_ago)) print $environment->git_last_ago ?>
         </button>
         <div class="modal fade" id="environment-git-status-<?php print $environment->name; ?>" tabindex="-1" role="dialog" aria-labelledby="git-status-modal" aria-hidden="true">
           <div class="modal-dialog modal-lg">
@@ -657,7 +658,7 @@ sites/all/drush/drushrc.php
                         <?php print t('View Commit on GitHub'); ?>
                       </a>
                     <?php endif; ?>
-                    <?php if (!empty($environment->git_status) && module_exists('hosting_git_commit') && user_access('create git-commit task')): ?>
+                    <?php if (!empty($environment->git_status) && module_exists('hosting_git_commit') && user_access('create platform git-commit task')): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_git-commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
                       <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
                     </a>
