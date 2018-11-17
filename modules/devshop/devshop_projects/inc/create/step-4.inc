@@ -100,7 +100,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $errors = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'devshop%', ':error' => 'error'));
 
       foreach ($errors as $error) {
-        if ($error->type == 'devshop_info' || $error->type == 'error') {
+        if ($error->type == 'p_command' || $error->type == 'error') {
           $messages_to_user[] = $error->message;
         }
         $messages[] = $error;

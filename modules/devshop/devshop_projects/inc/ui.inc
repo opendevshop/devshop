@@ -147,16 +147,11 @@ HTML;
     $welcome = t('Welcome to DevShop!');
     $text = t('Create your first project to get started.');
     $button = t('Start a Project');
-
-    if (module_exists('devshop_support') && drupal_valid_path('admin/devshop/support')) {
-        $activate_support = t('or') . ' <a class="btn btn-info btn-lg" href="' . url('admin/devshop/support'). '" role="button"><i class="fa fa-heart"></i> ' . t('Activate DevShop Support') . ' </a>';
-    }
-
     $output = <<<HTML
 <div class="jumbotron">
   <h1>$welcome</h1>
   <p>$text</p>
-  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a> $activate_support</p>
+  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a></p>
 </div>
 
 HTML;
