@@ -194,14 +194,14 @@ function devmaster_bootstrap() {
       ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
       $record['ip'] != '127.0.0.1' &&
       $record['ip'] != '127.0.1.1') {
-      $node->https_enabled = HOSTING_HTTPS_REQUIRED;
+      $node->https_enabled = HOSTING_HTTPS_ENABLED;
 
       drupal_set_message(t('Public DNS found for !url. Enabling HTTPS with LetsEncrypt.', array(
         '!url' => $node->title,
       )), 'success');
     }
   }
-  if ($node->https_enabled != HOSTING_HTTPS_REQUIRED) {
+  if ($node->https_enabled != HOSTING_HTTPS_ENABLED) {
     drupal_set_message(t('No public DNS record found for !url. Not enabling LetsEncrypt HTTPS for Hostmaster site.', array(
       '!url' => $node->title,
     )), 'warning');
