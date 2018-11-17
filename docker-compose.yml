@@ -25,6 +25,15 @@ services:
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
 
+      # @TODO: We can't define the service type here.
+      # The Provision classes for this service type MUST be available in
+      # provision project, because at this point, the devmaster site might not
+      # be there, and the .drushrc.php used to include Provision classes in
+      # Hosting modules doesn't exist. Until we add more services to provision
+      # itself, or include additional libraries, we can't use this.
+      # This would work for changing to nginx, once the container supports that.
+      # AEGIR_HTTP_SERVICE_TYPE: https_apache
+
     privileged: true
     volumes:
       - ./aegir-home:/var/aegir:delegated
