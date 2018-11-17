@@ -1,0 +1,19 @@
+version: '2'
+
+volumes:
+  aegir:
+  mysql:
+
+services:
+  devshop:
+    image: devshop/server
+    ports:
+      - "2222:22"
+      - 80:80
+      - 443:443
+    hostname: devshop.local.computer
+    environment:
+      AEGIR_CLIENT_EMAIL: jon@thinkdrop.net
+    volumes:
+      - aegir:/var/aegir
+      - mysql:/var/lib/mysql

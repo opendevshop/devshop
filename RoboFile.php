@@ -108,7 +108,6 @@ class RoboFile extends \Robo\Tasks {
     'provision' => 'http://git.drupal.org/project/provision.git',
     'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
     'documentation' => 'http://github.com/opendevshop/documentation.git',
-    'dockerfiles' => 'http://github.com/opendevshop/dockerfiles.git',
     'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
   ];
 
@@ -219,15 +218,15 @@ class RoboFile extends \Robo\Tasks {
 
     // aegir/hostmaster
     $this->taskDockerBuild('aegir-dockerfiles')
-//      ->option('file', 'aegir-dockerfiles/Dockerfile-php7')
-      ->option('file', 'aegir-dockerfiles/Dockerfile')
-      //      ->option('build-arg', "AEGIR_UID=$user_uid")
-      ->tag('aegir/hostmaster:dev')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-php7')
+      ->option('build-arg', "AEGIR_UID=$user_uid")
+      ->tag('aegir/hostmaster:php7')
       ->run();
-      $this->taskDockerBuild('aegir-dockerfiles')
-        ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
-        ->tag('aegir/hostmaster:xdebug')
-        ->run();
+
+//      $this->taskDockerBuild('aegir-dockerfiles')
+//        ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
+//        ->tag('aegir/hostmaster:xdebug')
+//        ->run();
 
     // aegir/hostmaster:xdebug
 
