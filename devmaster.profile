@@ -65,7 +65,7 @@ function devmaster_bootstrap() {
 
   // Add Certificate service.
   hosting_services_add($node, 'Certificate', 'LetsEncrypt', array(
-    'letsencrypt_ca' => 'staging'
+    'letsencrypt_ca' => 'production'
   ));
 
   /* examine the db server associated with the hostmaster site */
