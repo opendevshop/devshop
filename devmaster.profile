@@ -188,13 +188,18 @@ function devmaster_bootstrap() {
 
   // If this site's hostname has a public DNS record, then LetsEncrypt will
   // work, so set the hostmaster site node https_enabled = HOSTING_HTTPS_REQUIRED
-  $records = dns_get_record(d()->uri);
+  $node->https_enabled = HOSTING_HTTPS_ENABLED;
+  $records = dns_get_record($node->title);
   foreach ($records as $record) {
     if (
       ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
       $record['ip'] != '127.0.0.1' &&
       $record['ip'] != '127.0.1.1') {
       $node->https_enabled = HOSTING_HTTPS_REQUIRED;
+
+      drupal_set_message(t('Public DNS found for !url. Enabling HTTPS with LetsEncrypt.', array(
+        '!url' => $node->title,
+      )), 'success');
     }
   }
 
