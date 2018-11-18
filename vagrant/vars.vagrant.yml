@@ -16,7 +16,7 @@ vagrant_development: FALSE
 # The IP to use for the VM.
 vagrant_private_network_ip: 10.10.10.10
 vagrant_install_script: install.sh
-vagrant_install_script_args: [--server-webserver=nginx]
+vagrant_install_script_args: [--server-webserver=apache]
 
 # Defaults virtualbox vagrant machines to 2GB.
 vagrant_virtualbox_memory: 4096
