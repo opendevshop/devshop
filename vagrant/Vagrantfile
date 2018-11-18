@@ -17,7 +17,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   development_mode = settings["vagrant_development"] || File.exist?(File.dirname(__FILE__) + '/.development_mode')
 
   # Base Box & Config
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "generic/ubuntu1604"
 
   # Uncomment to test with other types of boxes.
   # config.vm.box = "hashicorp/precise64"
