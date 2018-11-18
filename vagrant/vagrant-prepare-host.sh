@@ -45,10 +45,10 @@ fi
 
 # Clone ansible roles.
 cd $VAGRANT_HOME
-if [ ! -d roles ]; then
-    mkdir roles
-    ansible-galaxy install -r ../roles.yml -p roles
-    cd roles
+if [ ! -d ../roles ]; then
+    mkdir ../roles
+    ansible-galaxy install -r ../roles.yml -p ../roles
+    cd ../roles
 
     # Overwrite the roles installed by galaxy with git clones of Our Roles
     rm -rf opendevshop.aegir-user opendevshop.aegir-apache opendevshop.aegir-nginx opendevshop.devmaster opendevshop.devshop
