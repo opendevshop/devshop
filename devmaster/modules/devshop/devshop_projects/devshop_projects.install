@@ -19,7 +19,7 @@ if (!defined('HOSTING_ADMIN_CLIENT')) {
  * Prevents breakage on upgrade from beta10 to HEAD: https://travis-ci.org/opendevshop/devmaster/jobs/233420027
  */
 function devshop_projects_update_dependencies() {
-  $dependencies['devshop_projects'][7004] = array(
+  $dependencies['devshop_hosting'][7010] = array(
     'hosting_http_basic_auth' => 7300,
   );
   return $dependencies;
