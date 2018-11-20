@@ -176,7 +176,7 @@ function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
         );
         $form['parameters']['#weight'] = 1;
 
-        $form['parameters']['delete_dns'] = array(
+        $form['delete_dns'] = array(
           '#type' => 'checkbox',
           '#title' => t('Delete DNS Records'),
           '#description' => t('Check the box to delete any DNS records found for this servers IP or Hostname'),
@@ -185,7 +185,7 @@ function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
 
         if (method_exists($node->services['provider'], 'dnsEntriesOptionsList')) {
           $items = $node->services['provider']->dnsEntriesOptionsList();
-          $form['parameters']['dns_records'] = array(
+          $form['dns_records'] = array(
             '#title' => t('DNS Records to delete'),
             '#type' => 'checkboxes',
             '#options' => $items,
@@ -208,8 +208,8 @@ function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
  */
 function aegir_cloud_delete_task_form_validate($form, &$form_state) {
   $service = $form_state['build_info']['args'][0]->services['provider'];
-  if (method_exists($service, 'destroyDnsRecords')) {
-    $service->destroyDnsRecords($form_state['values']['parameters']['dns_records']);
+  if ($form_state['values']['delete_dns'] && method_exists($service, 'destroyDnsRecords')) {
+    $service->destroyDnsRecords($form_state['values']['dns_records']);
   }
 
   if (method_exists($service, 'destroy')) {
