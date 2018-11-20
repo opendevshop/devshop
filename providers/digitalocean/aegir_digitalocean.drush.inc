@@ -112,7 +112,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                   ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
                   $record['ip'] != current($task->ref->ip_addresses)) {
 
-                  drush_log("DNS Record Found! " . print_r($record), 'p_info');
+                  drush_log("DNS Record Found! " . print_r($record, 1), 'p_ok');
                   $completed = TRUE;
                 }
               }
