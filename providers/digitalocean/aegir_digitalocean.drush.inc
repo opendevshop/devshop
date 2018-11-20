@@ -100,6 +100,24 @@ function drush_aegir_digitalocean_pre_hosting_task() {
               }
             }
 
+            // Loop until DNS resolves.
+            drush_log('Waiting for DNS...', 'p_command');
+            $completed = FALSE;
+            while (!$completed) {
+              sleep(3);
+
+              $records = dns_get_record($service->getServer()->title);
+              foreach ($records as $record) {
+                if (
+                  ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
+                  $record['ip'] != current($task->ref->ip_addresses)) {
+
+                  drush_log("DNS Record Found! " . print_r($record), 'p_info');
+                  $completed = TRUE;
+                }
+              }
+            }
+
         } catch (Exception $e) {
             drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
         }  catch (\DigitalOceanV2\Exception\HttpException $e) {
