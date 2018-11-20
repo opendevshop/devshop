@@ -74,7 +74,7 @@ function ansible_roles_node_load($nodes, $types)
     foreach ($nodes as $node) {
 
         // If node is server master, load all available roles.
-        if (isset($node->hosting_name) && $node->hosting_name == 'server_master') {
+        if (isset($node->hosting_name) && $node->hosting_name == 'hostmaster') {
 
             // Load all available custom roles
             $node->ansible_roles_available = array();
