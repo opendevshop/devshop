@@ -164,7 +164,7 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
     try {
       $domainRecords =  $this->load_api()->domainRecord()->getAll($this->basedomain);
       foreach ($domainRecords as $record) {
-        if ($record->name == $this->subdomain || $record->data == $this->ipAddress) {
+        if (strpos($record->name, $this->subdomain) !== FALSE || $record->data == $this->ipAddress) {
           $records[] = $record;
         }
       }
@@ -204,25 +204,12 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
   /**
    * Destroy DNS records for this service.
    */
-  public function destroyDns() {
+  public function destroyDnsRecords($records) {
+    $records = array_filter($records);
     try {
-//      $api = $this->load_api();
-//      $ipAddress = current($this->getServer()->ipAddresses);
-//      $url_parts = explode('.', $this->getServer()->title);
-//      $base_domain = implode('.', array_slice($url_parts, -2, 2));
-//      $subdomain = str_replace('.' . $base_domain, '', $this->getServer()->title);
-//
-//      $domainRecord = $api->domainRecord();
-//      $domainRecords = $domainRecord->getAll($base_domain);
-//      foreach ($domainRecords as $record) {
-//        if ($record->name == $subdomain || $record->data == $ipAddress) {
-//          $result = $domainRecord->delete($base_domain, $record->data);
-//          dsm($result, 'record deleted');
-//          drupal_set_message(t('Deleted DNS record !record', array(
-//            '!record' => "$record->id $record->type $record->name $record->data"
-//          )));
-//        }
-//      }
+      foreach ($records as $record_id) {
+        $this->load_api()->domainRecord()->delete($this->basedomain, $record_id);
+      }
     } catch(Exception $e) {
       form_set_error('provider', 'API Error: ' . $e->getMessage());
     }
