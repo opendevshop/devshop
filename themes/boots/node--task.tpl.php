@@ -51,8 +51,13 @@
 
   <?php print $user_picture ?>
 
-  <div class="well well-sm">
+  <div id="task-info" class="task-info well well-sm">
 
+    <?php  if (isset($follow_checkbox)): ?>
+        <div class="follow-logs-checkbox">
+          <?php print $follow_checkbox; ?>
+        </div>
+    <?php endif; ?>
     <h4>
 
       <div class="task-badge pull-left">
@@ -64,6 +69,10 @@
       <?php if (isset($retry)): ?>
         <div class="retry-button pull-right">
           <?php print render($retry); ?>
+        </div>
+      <?php elseif (isset($run_again)): ?>
+        <div class="retry-button pull-right">
+          <?php print render($run_again); ?>
         </div>
       <?php endif; ?>
 
@@ -128,11 +137,6 @@
     </div>
   <?php endif; ?>
 
-    <?php  if (isset($follow_checkbox)): ?>
-        <div class="follow-logs-checkbox">
-            <?php print $follow_checkbox; ?>
-        </div>
-    <?php endif; ?>
 
     <h3><?php print $type; ?></h3>
 
