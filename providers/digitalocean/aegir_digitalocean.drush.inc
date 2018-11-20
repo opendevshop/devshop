@@ -79,8 +79,27 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                 $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, current($task->ref->ip_addresses), 0);
                 drush_log(dt('Domain Record created successfully!'), 'p_ok');
               }
-
             }
+
+            // Loop until we have completed all provisioning steps.
+            drush_log('Waiting for Server', 'p_command');
+            $completed = FALSE;
+            while (!$completed) {
+              sleep(3);
+              $device = $droplet->getById($service->provider_server_identifier);
+              drush_log("Droplet status: $device->status \n", 'p_info');
+
+              // Save provider data
+              $task->ref->no_verify = TRUE;
+              $task->ref->services['provider']->provider_data = $device;
+              node_save($task->ref);
+
+              if ($device->status == 'active') {
+                drush_log('Device active!', 'p_ok');
+                return;
+              }
+            }
+
         } catch (Exception $e) {
             drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
         }  catch (\DigitalOceanV2\Exception\HttpException $e) {
