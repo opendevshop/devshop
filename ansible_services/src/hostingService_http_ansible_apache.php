@@ -46,11 +46,11 @@ class hostingService_http_ansible_apache extends hostingService_http_https_apach
             'opendevshop.aegir-apache',
             'geerlingguy.php' => array(
                 'name' => 'geerlingguy.php',
-                'version' => '2.0.3',
+                'version' => '3.5.0',
             ),
             'geerlingguy.php-mysql' => array(
               'name' => 'geerlingguy.php-mysql',
-              'version' => '1.2.0',
+              'version' => '2.0.1',
             ),
             'geerlingguy.composer'
         );
