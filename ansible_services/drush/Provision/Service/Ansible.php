@@ -66,7 +66,7 @@ class Provision_Service_Ansible extends Provision_Service {
     });
 
     if ($exit != 0) {
-      drush_log(dt('Ansible galaxy command failed to complete.'), 'devshop_error');
+      drush_log(dt('Ansible galaxy command failed to complete.'), 'p_error');
       drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
     }
     else {
@@ -169,7 +169,7 @@ class Provision_Service_Ansible extends Provision_Service {
     });
 
     if ($exit != 0) {
-      drush_log(dt('Ansible playbook failed to complete.'), 'devshop_error');
+      drush_log(dt('Ansible playbook failed to complete.'), 'p_error');
       drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
     }
     else {

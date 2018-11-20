@@ -99,7 +99,7 @@ function drush_playbooks_provision_playbook($playbook_file) {
   });
 
   if ($exit != 0) {
-    drush_log(dt('Ansible playbook failed to complete.'), 'devshop_error');
+    drush_log(dt('Ansible playbook failed to complete.'), 'p_error');
     drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
   }
   else {
