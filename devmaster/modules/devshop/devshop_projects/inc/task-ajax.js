@@ -190,5 +190,51 @@
               }
           });
       }
+  };
+
+  Drupal.behaviors.taskInfoScroll = {
+    attach: function (context, settings) {
+
+        var $task_info = $("#task-info");
+        if ($task_info.length == 0) {
+            return;
+        }
+        var task_info_top = $task_info.offset().top;
+        var $project_links = $("#project-environment-links");
+        var project_links_top = $project_links.offset().top;
+
+        // Check on first load.
+        if (window.pageYOffset >= task_info_top){
+            $task_info.addClass("task-info-fixed");
+        }
+        if (window.pageYOffset >= project_links_top){
+            $project_links.addClass("project-environment-links-fixed");
+        }
+
+        // On scroll, check.
+        window.onscroll = function() {
+            if (Drupal.settings.disableScrollCheck) {
+                return;
+            }
+
+            if (window.pageYOffset == 0) {
+                $task_info.removeClass("task-info-fixed");
+            }
+
+            if (window.pageYOffset >= task_info_top + 50){
+                $task_info.addClass("task-info-fixed");
+            }
+            else if ($('#follow').length && !$('#follow').prop('checked')) {
+                $task_info.removeClass("task-info-fixed");
+            }
+
+            if (window.pageYOffset >= project_links_top){
+                $project_links.addClass("project-environment-links-fixed");
+            }
+            else if (!$('#follow').prop('checked')) {
+                $project_links.removeClass("project-environment-links-fixed");
+            }
+        }
+    }
   }
 }(jQuery));

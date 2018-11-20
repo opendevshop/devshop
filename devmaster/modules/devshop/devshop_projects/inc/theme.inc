@@ -206,7 +206,7 @@ function devshop_projects_preprocess_node(&$vars) {
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#markup' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs',
+        '#markup' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow" checked="checked"> Follow Logs',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
@@ -224,6 +224,15 @@ function devshop_projects_preprocess_node(&$vars) {
         $vars['running_label'] = t('Queued');
       }
     }
+    $vars['run_again'] = l(t('Run Again'), "hosting_confirm/{$node->rid}/{$node->ref_type}_{$node->task_type}", array(
+      'query' => array(
+        'token' => drupal_get_token(),
+        'redirect' => 'task-page',
+      ),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      )
+    ));
   }
 }
 
