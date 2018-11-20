@@ -2,6 +2,7 @@ name = Aegir Ansible Services
 description = Provision Apache and MySQL with Ansible.
 package = Aegir Ansible
 dependencies[] = hosting_server
+dependencies[] = hosting_https
 
 core = 7.x
 
