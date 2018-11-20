@@ -22,5 +22,6 @@ galaxy_info:
 dependencies:
   - opendevshop.aegir-user
   - geerlingguy.mysql
+  - geerlingguy.composer
 
   
