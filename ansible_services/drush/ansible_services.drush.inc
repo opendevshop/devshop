@@ -67,6 +67,9 @@ function drush_ansible_services_pre_hosting_task()
     $playbook[] = array(
         'hosts' =>$task->ref->title,
         'roles' => $task->ref->roles,
+        'vars' => array(
+          'ansible_python_interpreter' => '/usr/bin/env python',
+        ),
     );
 
     // Save the object to YML
