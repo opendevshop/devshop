@@ -88,6 +88,11 @@ function ansible_roles_node_load($nodes, $types)
                         // @TODO: Probably a much classier way to do this...
                         if (method_exists($object, 'getRoles')) {
                             $roles = $object->getRoles();
+
+                            // @TODO: make sure getRoles() always returns an array.
+                            if (!is_array($roles)) {
+                              $roles = array();
+                            }
                             foreach ($roles as $role) {
                                 if (is_string($role)) {
                                     $role_data = array(
