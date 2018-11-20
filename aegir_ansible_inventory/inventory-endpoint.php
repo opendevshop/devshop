@@ -39,6 +39,15 @@ function aegir_ansible_inventory_data() {
         if (!empty($server_node->ansible_vars)) {
             $inventory->{$server_node->title}->vars = $server_node->ansible_vars;
         }
+        else {
+          $inventory->{$server_node->title}->vars = new stdClass();
+        }
+
+        // If we have an IP address, connect via that instead.
+        $ip_address = current($server_node->ip_addresses);
+        if (!empty($ip_address)) {
+          $inventory->{$server_node->title}->vars->ansible_host = $ip_address;
+        }
 
             // The variable 'ansible_user' maybe used to force ansible to connect via this user.
         // This is disabled so that our ansible runner can connect as root via the command line.
