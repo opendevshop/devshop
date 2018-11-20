@@ -234,16 +234,6 @@ class Application extends BaseApplication
         } catch (\InvalidArgumentException $e) {
         }
       }
-      if ($commandName !== 'self-update' && $commandName !== 'selfupdate') {
-        if (time() > $this->release_date + DEVSHOP_DEV_WARNING_DELAY) {
-          $output->writeln(
-            sprintf(
-              '<warning>Warning: This build of devshop is over 30 days old. It is recommended to update it by running "%s self-update" to get the latest version.</warning>',
-              $_SERVER['PHP_SELF']
-            )
-          );
-        }
-      }
     }
 
     if (getenv('COMPOSER_NO_INTERACTION')) {
