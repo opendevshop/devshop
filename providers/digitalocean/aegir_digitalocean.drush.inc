@@ -83,7 +83,8 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
             // Loop until we have completed all provisioning steps.
             drush_log('Waiting for Server', 'p_command');
-            while (TRUE) {
+            $completed = FALSE;
+            while (!$completed) {
               sleep(3);
               $device = $droplet->getById($service->provider_server_identifier);
               drush_log("Droplet status: $device->status \n", 'p_info');
@@ -95,13 +96,14 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
               if ($device->status == 'active') {
                 drush_log('Device active!', 'p_ok');
-                break;
+                $completed = TRUE;
               }
             }
 
             // Loop until DNS resolves.
             drush_log('Waiting for DNS...', 'p_command');
-            while (TRUE) {
+            $completed = FALSE;
+            while (!$completed) {
               sleep(3);
 
               $records = dns_get_record($service->getServer()->title);
@@ -110,8 +112,8 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                   ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
                   $record['ip'] != current($task->ref->ip_addresses)) {
 
-                  drush_log("DNS Record Found! " . print_r($record, 1), 'p_ok');
-                  break;
+                  drush_log("DNS Record Found! " . print_r($record), 'p_info');
+                  $completed = TRUE;
                 }
               }
             }
