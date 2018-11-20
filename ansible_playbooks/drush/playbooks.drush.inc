@@ -87,11 +87,11 @@ function drush_playbooks_provision_playbook($playbook_file) {
 
   $is_devshop = drush_get_option('is-devshop', FALSE);
 
-  drush_log("Running '$command'", $is_devshop? 'devshop_command': 'status');
+  drush_log("Running '$command'", $is_devshop? 'p_command': 'status');
 
   $exit = $ansible->execute(function ($type, $buffer) {
     if (drush_get_option('is-devshop', FALSE)) {
-      drush_log($buffer, 'devshop_info');
+      drush_log($buffer, 'p_info');
     }
     else {
       print $buffer;
@@ -103,7 +103,7 @@ function drush_playbooks_provision_playbook($playbook_file) {
     drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
   }
   else {
-    drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
+    drush_log(dt('Ansible playbook complete!'), 'p_ok');
   }
 }
 

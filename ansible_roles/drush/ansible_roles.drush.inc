@@ -56,8 +56,8 @@ function drush_ansible_roles_pre_hosting_task() {
     $real_file_path = file_unmanaged_save_data($task->ref->ansible_role_file, $filename);
 
     if (file_exists($real_file_path)) {
-      drush_log('Ansible roles file saved to ' . $real_file_path, 'devshop_log');
-      drush_log($task->ref->ansible_role_file, 'devshop_ok');
+      drush_log('Ansible roles file saved to ' . $real_file_path, 'p_log');
+      drush_log($task->ref->ansible_role_file, 'p_ok');
     }
     else {
       return drush_set_error('DRUSH_ERROR', dt('Unable to generate roles.yml file.'));
@@ -78,7 +78,7 @@ function drush_ansible_roles_pre_provision_verify () {
     // Write ansible.cfg file.
     $ansible_cfg = new Provision_Config_AnsibleConfig(d());
     $ansible_cfg->write();
-    drush_log('Ansible.cfg written to ' . $ansible_cfg->filename(), 'devshop_log');
+    drush_log('Ansible.cfg written to ' . $ansible_cfg->filename(), 'p_log');
 
     $ansible = new Provision_Service_Ansible(d());
     $ansible->runRolesInstall();

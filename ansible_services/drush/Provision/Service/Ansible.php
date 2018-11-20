@@ -54,11 +54,11 @@ class Provision_Service_Ansible extends Provision_Service {
     $ansible->force();
 
     $is_devshop = drush_get_option('is-devshop', FALSE);
-    drush_log("Running 'ansible-galaxy install'", $is_devshop? 'devshop_command': 'status');
+    drush_log("Running 'ansible-galaxy install'", $is_devshop? 'p_command': 'status');
 
     $exit = $ansible->execute(function ($type, $buffer) {
       if (drush_get_option('is-devshop', FALSE)) {
-        drush_log($buffer, 'devshop_info');
+        drush_log($buffer, 'p_info');
       }
       else {
         print $buffer;
@@ -70,7 +70,7 @@ class Provision_Service_Ansible extends Provision_Service {
       drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
     }
     else {
-      drush_log(dt('Ansible galaxy install complete!'), 'devshop_ok');
+      drush_log(dt('Ansible galaxy install complete!'), 'p_ok');
     }
   }
 
@@ -107,8 +107,8 @@ class Provision_Service_Ansible extends Provision_Service {
       $inventory_path = realpath(__DIR__ . '/../../../../inventory');
 
       drush_log("The Aegir dynamic inventory file is not present at the configured path {$this->inventory} Copy the file and make it executable: ", 'error');
-      drush_log("Run the following command to setup the dynamic inventory file, then retry this task:", 'devshop_log');
-      drush_log("cp -rf $inventory_path $this->inventory && chmod +x {$this->inventory}", 'devshop_log');
+      drush_log("Run the following command to setup the dynamic inventory file, then retry this task:", 'p_log');
+      drush_log("cp -rf $inventory_path $this->inventory && chmod +x {$this->inventory}", 'p_log');
 
       return drush_set_error('DRUSH_ERROR', "Dynamic inventory file not found.");
     }
@@ -157,11 +157,11 @@ class Provision_Service_Ansible extends Provision_Service {
 
     $is_devshop = drush_get_option('is-devshop', FALSE);
 
-    drush_log("Running '$command'", $is_devshop? 'devshop_command': 'status');
+    drush_log("Running '$command'", $is_devshop? 'p_command': 'status');
 
     $exit = $ansible->execute(function ($type, $buffer) {
       if (drush_get_option('is-devshop', FALSE)) {
-        drush_log($buffer, 'devshop_info');
+        drush_log($buffer, 'p_info');
       }
       else {
         print $buffer;
@@ -173,7 +173,7 @@ class Provision_Service_Ansible extends Provision_Service {
       drush_set_error('DRUSH_ERROR', 'Ansible command exited with non-zero code.');
     }
     else {
-      drush_log(dt('Ansible playbook complete!'), 'devshop_ok');
+      drush_log(dt('Ansible playbook complete!'), 'p_ok');
     }
 
   }
@@ -195,12 +195,12 @@ class Provision_Service_Ansible extends Provision_Service {
 
   function verify_platform_cmd() {
     parent::verify_platform_cmd();
-    drush_log('Platform Verified', 'devshop_log');
+    drush_log('Platform Verified', 'p_log');
   }
 
   function verify_site_cmd() {
     parent::verify_site_cmd();
-    drush_log('Site Verified', 'devshop_log');
+    drush_log('Site Verified', 'p_log');
   }
 
 
