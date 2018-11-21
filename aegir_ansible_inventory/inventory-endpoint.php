@@ -35,7 +35,7 @@ function aegir_ansible_inventory_data() {
     foreach ($server_nodes as $server_node) {
 
         // If server has no roles we assume it shouldn't be in the inventory.
-        if (!isset($server_node->roles)) {
+        if (!isset($server_node->roles) || empty($server_node->roles)) {
           continue;
         }
 
