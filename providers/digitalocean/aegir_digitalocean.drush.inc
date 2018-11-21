@@ -82,7 +82,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             }
 
             // Loop until we have completed all provisioning steps.
-            drush_log('Waiting for Server', 'p_command');
+            drush_log('Waiting for Server' . $service->getServer()->title, 'p_command');
             $completed = FALSE;
             while (!$completed) {
               sleep(3);
@@ -101,7 +101,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             }
 
             // Loop until DNS resolves.
-            drush_log('Waiting for DNS...', 'p_command');
+            drush_log('Waiting for DNS for ... ' . $service->getServer()->title, 'p_command');
             $completed = FALSE;
             while (!$completed) {
               sleep(3);
