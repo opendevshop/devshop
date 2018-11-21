@@ -24,6 +24,16 @@ class hostingService_ansible_roles extends hostingService {
   }
 
   /**
+   * Check if a server has a certain role.
+   *
+   * @param $name
+   * @return bool
+   */
+  function hasRole($name) {
+    return in_array($name, $this->roles);
+  }
+
+  /**
    * The list of ansible roles that this service depends on.
    *
    * @return array
