@@ -31,7 +31,7 @@ class VerifySystem extends Command
                 'p',
                 InputOption::VALUE_REQUIRED,
                 'The path to playbook.yml.',
-                __DIR__ . '/playbook.yml'
+                dirname(dirname(dirname(dirname(__DIR__)))). '/playbook.yml'
             )
             ->addOption(
                 'inventory-file',
