@@ -12,7 +12,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
         // Lookup and save IP addresses.
         try {
-            /** @var Provision_Service_provider_digital_ocean $service */
+            /** @var hostingService_provider_digital_ocean $service */
             $service = $task->ref->services['provider'];
 
             $api = $service->load_api();
@@ -110,7 +110,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
               foreach ($records as $record) {
                 if (
                   ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
-                  $record['ip'] != current($task->ref->ip_addresses)) {
+                  $record['ip'] == current($task->ref->ip_addresses)) {
 
                   drush_log("DNS Record Found! " . print_r($record, 1), 'p_ok');
                   $completed = TRUE;
