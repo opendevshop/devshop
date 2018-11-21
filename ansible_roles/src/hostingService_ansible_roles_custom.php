@@ -121,13 +121,6 @@ class hostingService_ansible_roles_custom extends hostingService_ansible_roles {
       ->execute()
       ->fetchCol()
     ;
-
-    // If the server is using the aegir-user role, override the paths.
-    if (in_array('opendevshop.aegir-user', $this->roles)) {
-      $this->ansible_vars['aegir_user_name'] = 'devshop';
-      $this->ansible_vars['aegir_user_home'] = '/home/devshop';
-      $this->ansible_vars['aegir_user_in_web_group'] = 'no';
-    }
   }
 
   public function view(&$render)
