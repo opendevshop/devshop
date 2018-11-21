@@ -23,12 +23,22 @@ function aegir_ansible_inventory_data() {
     $inventory->_meta->hostvars = new stdClass();
 
     // Get all server nodes.
-    $sql = "SELECT nid FROM node
-      WHERE type = 'server' AND status = 1";
-    $server_nids = db_query($sql)->fetchCol();
+    $sql = "SELECT nid FROM node n
+      LEFT JOIN hosting_server s ON n.nid = s.nid
+      WHERE type = 'server' AND n.status = :node_status AND s.status = :hosting_server_status";
+    $server_nids = db_query($sql, array(
+      ':node_status' => 1,
+      ':hosting_server_status' => HOSTING_SERVER_ENABLED,
+    ))->fetchCol();
     $server_nodes = node_load_multiple($server_nids);
 
     foreach ($server_nodes as $server_node) {
+
+        // If server has no roles we assume it shouldn't be in the inventory.
+        if (!isset($server_node->roles)) {
+          continue;
+        }
+
         // Add host to inventory.
         $inventory->aegir_servers->hosts[] = $server_node->title;
 
