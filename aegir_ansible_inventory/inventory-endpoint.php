@@ -23,7 +23,7 @@ function aegir_ansible_inventory_data() {
     $inventory->_meta->hostvars = new stdClass();
 
     // Get all server nodes.
-    $sql = "SELECT nid FROM node n
+    $sql = "SELECT n.nid FROM node n
       LEFT JOIN hosting_server s ON n.nid = s.nid
       WHERE type = 'server' AND n.status = :node_status AND s.status = :hosting_server_status";
     $server_nids = db_query($sql, array(
