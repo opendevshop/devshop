@@ -137,13 +137,13 @@ function ansible_roles_node_load($nodes, $types)
             if ($type == 'ansible_roles') {
                 continue;
             }
-            if (method_exists($service, 'getRoleNames')) {
-                $roles = array_merge($roles, $service->getRoleNames());
+            if (property_exists($service, 'roles')) {
+                $roles = array_merge($roles, $service->roles);
             }
         }
 
-        if (isset($services['ansible_roles'])) {
-            $roles = array_merge($roles, $node->services['ansible_roles']->getRoleNames());
+        if (isset($services['ansible_roles']) && property_exists($services['ansible_roles'], 'roles')) {
+            $roles = array_merge($roles, $services['ansible_roles']->roles);
         }
 
         $node->roles = $roles;
