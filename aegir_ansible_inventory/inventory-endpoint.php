@@ -25,10 +25,12 @@ function aegir_ansible_inventory_data() {
     // Get all server nodes.
     $sql = "SELECT n.nid FROM node n
       LEFT JOIN hosting_server s ON n.nid = s.nid
-      WHERE type = 'server' AND n.status = :node_status AND s.status = :hosting_server_status";
+      WHERE type = 'server' AND n.status = :node_status AND 
+        (s.status = :hosting_server_enabled OR s.status = :hosting_server_queued)";
     $server_nids = db_query($sql, array(
       ':node_status' => 1,
-      ':hosting_server_status' => HOSTING_SERVER_ENABLED,
+      ':hosting_server_enabled' => HOSTING_SERVER_ENABLED,
+      ':hosting_server_queued' => HOSTING_SERVER_QUEUED,
     ))->fetchCol();
     $server_nodes = node_load_multiple($server_nids);
 
