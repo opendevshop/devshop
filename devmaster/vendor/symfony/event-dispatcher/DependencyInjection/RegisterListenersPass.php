@@ -11,32 +11,19 @@
 
 namespace Symfony\Component\EventDispatcher\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Compiler pass to register tagged services for an event dispatcher.
  */
 class RegisterListenersPass implements CompilerPassInterface
 {
-    /**
-     * @var string
-     */
     protected $dispatcherService;
-
-    /**
-     * @var string
-     */
     protected $listenerTag;
-
-    /**
-     * @var string
-     */
     protected $subscriberTag;
 
     /**
-     * Constructor.
-     *
      * @param string $dispatcherService Service name of the event dispatcher in processed container
      * @param string $listenerTag       Tag name used for listener
      * @param string $subscriberTag     Tag name used for subscribers
@@ -97,10 +84,13 @@ class RegisterListenersPass implements CompilerPassInterface
 
             // We must assume that the class value has been correctly filled, even if the service is created by a factory
             $class = $container->getParameterBag()->resolveValue($def->getClass());
-
-            $refClass = new \ReflectionClass($class);
             $interface = 'Symfony\Component\EventDispatcher\EventSubscriberInterface';
-            if (!$refClass->implementsInterface($interface)) {
+
+            if (!is_subclass_of($class, $interface)) {
+                if (!class_exists($class, false)) {
+                    throw new \InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $id));
+                }
+
                 throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, $interface));
             }
 
