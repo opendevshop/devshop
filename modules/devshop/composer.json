@@ -1,9 +1,0 @@
-{
-  "require": {
-    "symfony/yaml": "^2.7",
-    "symfony/process": "^2.7",
-    "sensiolabs/ansi-to-html": "^1.1",
-    "knplabs/github-api": "~1.2",
-    "cpliakas/git-wrapper": "~1.0"
-  }
-}
