@@ -11,11 +11,12 @@
 
 namespace Symfony\Component\EventDispatcher\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-abstract class AbstractEventDispatcherTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractEventDispatcherTest extends TestCase
 {
     /* Some pseudo events */
     const preFoo = 'pre.foo';
@@ -55,6 +56,7 @@ abstract class AbstractEventDispatcherTest extends \PHPUnit_Framework_TestCase
     {
         $this->dispatcher->addListener('pre.foo', array($this->listener, 'preFoo'));
         $this->dispatcher->addListener('post.foo', array($this->listener, 'postFoo'));
+        $this->assertTrue($this->dispatcher->hasListeners());
         $this->assertTrue($this->dispatcher->hasListeners(self::preFoo));
         $this->assertTrue($this->dispatcher->hasListeners(self::postFoo));
         $this->assertCount(1, $this->dispatcher->getListeners(self::preFoo));
@@ -136,6 +138,16 @@ abstract class AbstractEventDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($event, $return);
     }
 
+    /**
+     * @group legacy
+     */
+    public function testLegacyDispatch()
+    {
+        $event = new Event();
+        $this->dispatcher->dispatch(self::preFoo, $event);
+        $this->assertEquals('pre.foo', $event->getName());
+    }
+
     public function testDispatchForClosure()
     {
         $invoked = 0;
@@ -156,7 +168,7 @@ abstract class AbstractEventDispatcherTest extends \PHPUnit_Framework_TestCase
         // be executed
         // Manually set priority to enforce $this->listener to be called first
         $this->dispatcher->addListener('post.foo', array($this->listener, 'postFoo'), 10);
-        $this->dispatcher->addListener('post.foo', array($otherListener, 'preFoo'));
+        $this->dispatcher->addListener('post.foo', array($otherListener, 'postFoo'));
         $this->dispatcher->dispatch(self::postFoo);
         $this->assertTrue($this->listener->postFooInvoked);
         $this->assertFalse($otherListener->postFooInvoked);
@@ -251,6 +263,19 @@ abstract class AbstractEventDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $this->dispatcher->getListeners(self::preFoo));
         $this->dispatcher->removeSubscriber($eventSubscriber);
         $this->assertFalse($this->dispatcher->hasListeners(self::preFoo));
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testLegacyEventReceivesTheDispatcherInstance()
+    {
+        $dispatcher = null;
+        $this->dispatcher->addListener('test', function ($event) use (&$dispatcher) {
+            $dispatcher = $event->getDispatcher();
+        });
+        $this->dispatcher->dispatch('test');
+        $this->assertSame($this->dispatcher, $dispatcher);
     }
 
     public function testEventReceivesTheDispatcherInstanceAsArgument()
@@ -357,7 +382,7 @@ class TestEventSubscriberWithPriorities implements EventSubscriberInterface
         return array(
             'pre.foo' => array('preFoo', 10),
             'post.foo' => array('postFoo'),
-            );
+        );
     }
 }
 
