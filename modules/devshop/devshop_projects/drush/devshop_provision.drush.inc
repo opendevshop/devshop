@@ -4,7 +4,7 @@
  * Drush commands for DevShop Provision
  */
 
-require_once('vendor/autoload.php');
+require_once(dirname(dirname(dirname(__dir__ ))). '/vendor/autoload.php');
 
 use Symfony\Component\Process\Process;
 
