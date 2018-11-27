@@ -969,6 +969,7 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 
 .panel-ansii.panel-body pre {
     padding: 1.25em;
+    white-space: pre-wrap;
 }
 
 .errors-table td > div {
