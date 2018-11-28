@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file node.tpl.php
  *
@@ -53,11 +52,24 @@
 
   <div id="task-info" class="task-info well well-sm">
 
-    <?php  if (isset($follow_checkbox)): ?>
-        <div class="follow-logs-checkbox">
-          <?php print $follow_checkbox; ?>
-        </div>
-    <?php endif; ?>
+      <div class="btn-group pull-right" role="group" aria-label="Actions">
+        <?php  if (isset($follow_checkbox)): ?>
+              <?php print $follow_checkbox; ?>
+        <?php endif; ?>
+        <?php if (isset($retry)): ?>
+              <?php print render($retry); ?>
+        <?php endif; ?>
+        <?php if (isset($cancel_button)): ?>
+          <?php print render($cancel_button); ?>
+        <?php endif; ?>
+        <?php if ($node->task_status != HOSTING_TASK_QUEUED && $node->task_status != HOSTING_TASK_PROCESSING && isset($run_again)): ?>
+          <?php print render($run_again); ?>
+        <?php endif; ?>
+        <?php if (isset($content['update-status'])): ?>
+          <?php print render($content['update-status']); ?>
+        <?php endif; ?>
+      </div>
+
     <h4>
 
       <div class="task-badge pull-left">
@@ -65,22 +77,6 @@
       </div>
 
       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
-
-      <?php if (isset($retry)): ?>
-        <div class="retry-button pull-right">
-          <?php print render($retry); ?>
-        </div>
-      <?php elseif (isset($run_again)): ?>
-        <div class="retry-button pull-right">
-          <?php print render($run_again); ?>
-        </div>
-      <?php endif; ?>
-
-      <?php if (isset($content['update-status'])): ?>
-        <div class="cancel-button pull-right">
-          <?php print render($content['update-status']); ?>
-        </div>
-      <?php endif; ?>
     </h4>
 
     <p>
