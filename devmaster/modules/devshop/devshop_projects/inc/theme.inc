@@ -224,9 +224,10 @@ function devshop_projects_preprocess_node(&$vars) {
         $vars['running_label'] = t('Queued');
       }
     }
+    global $user;
     $vars['run_again'] = l(t('Run Again'), "hosting_confirm/{$node->rid}/{$node->ref_type}_{$node->task_type}", array(
       'query' => array(
-        'token' => drupal_get_token(),
+        'token' => drupal_get_token($user->uid),
         'redirect' => 'task-page',
       ),
       'attributes' => array(
