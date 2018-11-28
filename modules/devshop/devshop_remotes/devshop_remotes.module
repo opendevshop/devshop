@@ -361,19 +361,54 @@ function devshop_remotes_preprocess_environment(&$vars) {
 function devshop_remotes_node_load($nodes, $types) {
   if (count(array_intersect(array('project'), $types))) {
     foreach ($nodes as &$node) {
+
+      if (!is_array($node->project->settings->aliases)) {
+        $node->project->settings->aliases = array();
+      }
+
+
+      // Load all composer.json files from all environments.
       foreach ($node->project->environments as $env) {
         if (file_exists($env->repo_path . '/composer.json')) {
           $composer_data = json_decode(file_get_contents($env->repo_path . '/composer.json'), TRUE);
           $sync_sources = $composer_data['config']['devshop']['sync_sources'];
-          foreach ($sync_sources as &$source) {
-            $source['loaded_from'] = $env->repo_path . '/composer.json';
-          }
 
-          if (!is_array($node->project->settings->aliases)) {
-              $node->project->settings->aliases = array();
-          }
+          foreach ($sync_sources as $name => $source) {
 
-          $node->project->settings->aliases = array_merge($node->project->settings->aliases, $sync_sources);
+            // If environment exists with this name and existing alias exists with this name, unset it.
+            if (isset($node->project->environments[$name]) && $node->project->environments[$name]->site_status == HOSTING_SITE_ENABLED && isset($node->project->settings->aliases[$name])) {
+              unset($node->project->settings->aliases[$name]);
+            }
+
+            // If environment does not exist with this name, load it.
+            if (!isset($node->project->environments[$name])) {
+              $source['loaded_from'] = $env->repo_path . '/composer.json';
+              $node->project->settings->aliases[$name] = $source;
+            }
+            else {
+              global $user;
+              if (variable_get('hosting_require_disable_before_delete', TRUE)) {
+                $delete_link = l(t('disable the @name environment', array('@name' => $name)), "hosting_confirm/{$node->project->environments[$name]->site}/site_disable", array('query' => array('token' => drupal_get_token($user->uid))));
+
+              }
+              else {
+                $delete_link = t('!disable or !delete the !name environment', array(
+                  '!name' => l($name, "node/{$node->project->environments[$name]->site}"),
+                  '!disable' => l(t('Disable'), "hosting_confirm/{$node->project->environments[$name]->site}/site_disable", array('query' => array('token' => drupal_get_token($user->uid)))),
+                  '!delete' => l(t('Delete'), "hosting_confirm/{$node->project->environments[$name]->site}/site_delete", array('query' => array('token' => drupal_get_token($user->uid))))
+                ));
+              }
+
+              $node->project->messages['remote_alias_conflict'] = array(
+                'message' => t('There is a remote alias sync source defined in composer.json with the name %name that has the same name as an environment. To remove this message, delete or rename the "config.devshop.sync_sources.%name" entry in all composer.json files in all environments, or !delete_link.', array(
+                  '%name' => $name,
+                  '!delete_link' => $delete_link,
+                )),
+                'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+                'type' => 'danger',
+              );
+            }
+          }
         }
       }
     }
