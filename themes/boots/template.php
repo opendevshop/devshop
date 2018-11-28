@@ -778,7 +778,21 @@ function boots_preprocess_node(&$vars) {
  * @param $vars
  */
 function boots_preprocess_node_task(&$vars) {
+  global $user;
+  $node = $vars['node'];
 
+  if ($node->task_status == HOSTING_TASK_QUEUED) {
+    $vars['cancel_button'] = l(t('Cancel'), "hosting/tasks/{$node->nid}/cancel", array(
+      'attributes' => array('class' => array('btn btn-default')),
+      'query' => array(
+          'token' => drupal_get_token($user->uid),
+        ),
+    ));
+  }
+
+  $vars['retry']['#attributes']['class'][] = 'retry btn btn-default';
+  $vars['retry']['#prefix'] = '';
+  $vars['retry']['#suffix'] = '';
 }
 
 /**
