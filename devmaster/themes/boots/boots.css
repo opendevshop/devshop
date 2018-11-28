@@ -820,8 +820,16 @@ html.js fieldset.collapsed {
     color: #333;
 }
 
+form.retry.btn.btn-default {
+    padding: 0;
+}
+form.retry.btn.btn-default > div > button.btn-default {
+    margin: 0;
+    border: none;
+}
+
 .hosting-task-retry, .hosting-task-retry div, .hosting-task-retry form {
-    display: inline;
+    display: block;
 }
 div.hosting-task-retry form, div.hosting-task-retry form input {
     padding: 0.25em 0.5em !important;
@@ -1176,7 +1184,7 @@ li.text.code {
 
 .task-info {
     width: 100%;
-
+    z-index: 100;
     position: relative;
 }
 
