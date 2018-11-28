@@ -1196,8 +1196,25 @@ li.text.code {
 
 .project-environment-links-fixed {
     position: fixed;
-    top: 40px;
+    top: 30px;
     z-index: 1;
+    background: white;
+    width: 25%;
+}
+
+
+
+@media (max-width: 767px) {
+
+    .task-info-fixed {
+        width: 96%;
+        top: 40px;
+    }
+
+    .project-environment-links-fixed {
+        top: 172px;
+        min-width: 50%;
+    }
 }
 
 .follow-checkbox {
