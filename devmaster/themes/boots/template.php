@@ -965,6 +965,10 @@ HTML;
   // Warnings & Errors
   // If environment-specific deploy hooks is not allowed and there are no default deploy hooks, warn the user
   // that they will have to manually run updates.
+  if (isset($project->messages)) {
+    $vars['project_messages'] = $project->messages;
+  }
+
   if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
     $vars['project_messages'][] = array(
       'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
