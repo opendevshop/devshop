@@ -55,7 +55,6 @@ function devshop_support_network_client_init()
   $conf['cas_logout_destination'] = 'https://devshop.support/user/logout';
   $conf['cas_registerURL'] = 'https://devshop.support/user/register';
   $conf['cas_changePasswordURL'] = 'https://devshop.support/user/password';
-  $conf['cas_login_form'] = 1;
   $conf['cas_login_invite'] = t('Log in using DevShop.Support');
   $conf['cas_login_redir_message'] = '';
   $conf['cas_login_drupal_invite'] = '';
@@ -67,6 +66,10 @@ function devshop_support_network_client_init()
   $conf['intercomio_app_id'] = 'ufeta82d';
   $conf['intercomio_api_key'] = 'dG9rOmFkM2I3NmFmXzg2OGRfNDZlNV84ZTE1XzQ1MzM3Mjc2YzgzNDoxOjA';
   $conf['intercomio_visibility_roles'] = array(1);
+
+  if (variable_get('devshop_support_license_key_status', 'none') != 'none') {
+    $conf['cas_login_form'] =  2;
+  }
 }
 
 
@@ -335,6 +338,11 @@ function devshop_support_network_client_post_data($license_key = NULL) {
  * Show a message on every page.
  */
 function devshop_support_network_client_page_alter(&$page) {
+
+  if (user_is_anonymous()) {
+    return;
+  }
+
   if ($message = variable_get('devshop_support_customer_message', NULL)) {
     drupal_set_message($message, variable_get('devshop_support_customer_message_type', 'status'));
   }
