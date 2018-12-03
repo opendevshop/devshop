@@ -663,3 +663,11 @@ function devshop_support_network_client_form_alter(&$form, &$form_state, $form_i
   }
 
 }
+
+/**
+ * Implements hook_cas_user_alter().
+ */
+function devshop_support_network_client_cas_user_alter(&$cas_user)
+{
+  devshop_support_network_client_post_data();
+}
