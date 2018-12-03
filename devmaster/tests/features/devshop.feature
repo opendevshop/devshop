@@ -19,7 +19,9 @@ Feature: Anonymous Homepage
 
   Scenario:   The homepage works when devshop support is enabled.
     When I run drush "vset devshop_support_license_key tests"
+    Then print last drush output
     When I run drush "vset devshop_support_license_key_status active"
+    Then print last drush output
 
     Given I am on the homepage
     Then I should see "Sign In"
