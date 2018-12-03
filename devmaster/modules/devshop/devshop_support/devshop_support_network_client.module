@@ -53,8 +53,6 @@ function devshop_support_network_client_init()
   $conf['cas_server'] = 'devshop.support';
   $conf['cas_uri'] = '/cas';
   $conf['cas_logout_destination'] = 'https://devshop.support/user/logout';
-  $conf['cas_registerURL'] = 'https://devshop.support/user/register';
-  $conf['cas_changePasswordURL'] = 'https://devshop.support/user/password';
   $conf['cas_login_invite'] = t('Log in using DevShop.Support');
   $conf['cas_login_redir_message'] = '';
   $conf['cas_login_drupal_invite'] = '';
@@ -69,6 +67,11 @@ function devshop_support_network_client_init()
 
   if (variable_get('devshop_support_license_key_status', 'none') != 'none') {
     $conf['cas_login_form'] =  2;
+    $conf['cas_registerURL'] = 'https://devshop.support/user/register';
+    $conf['cas_changePasswordURL'] = 'https://devshop.support/user/password';
+  }
+  else {
+    $conf['cas_login_form'] =  0;
   }
 }
 
