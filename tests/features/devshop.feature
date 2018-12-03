@@ -3,7 +3,7 @@ Feature: Anonymous Homepage
   Scenario: The homepage works
 
     Given I am on the homepage
-    Then I should see "Login"
+    Then I should see "Sign In"
     And I should see "Username"
     And I should see "Password"
     When I fill in "wrong" for "Username"
@@ -16,3 +16,16 @@ Feature: Anonymous Homepage
     And I fill in "wrong" for "Username or e-mail address"
     And I press "E-mail new password"
     Then I should see "Sorry, wrong is not recognized as a user name or an e-mail address."
+
+  Scenario:   The homepage works when devshop support is enabled.
+    When I run drush "vset devshop_support_license_key tests"
+    When I run drush "vset devshop_support_license_key_status active"
+
+    Given I am on the homepage
+    Then I should see "Sign In"
+    And I should see "Username"
+    And I should see "Password"
+    And I should see "This server is part of the DevShop.Support Network. Please sign in using one of the options below."
+
+    When I am logged in as a user with the "authenticated user" role
+    Then I should see "License Status: Enabled"
