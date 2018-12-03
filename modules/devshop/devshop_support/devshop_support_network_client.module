@@ -53,9 +53,9 @@ function devshop_support_network_client_init()
   $conf['cas_server'] = 'devshop.support';
   $conf['cas_uri'] = '/cas';
   $conf['cas_logout_destination'] = 'https://devshop.support/user/logout';
-  $conf['cas_login_invite'] = t('Log in using DevShop.Support');
+  $conf['cas_login_invite'] = '';
   $conf['cas_login_redir_message'] = '';
-  $conf['cas_login_drupal_invite'] = '';
+  $conf['cas_login_drupal_invite'] = 'Sign in with Drupal';
   $conf['cas_login_message'] = t('Logged in via DevShop.Support as %cas_username.');
   $conf['cas_user_register'] = 0;
   $conf['cas_domain'] = '';
@@ -592,7 +592,12 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
     );
 
     $form['note'] = array(
-      '#markup' => t('This server is part of the DevShop.Support Network. Please sign in using one of the options below.'),
+      '#markup' => t('Welcome to !link! Please sign in using one of the options below.',
+        array(
+          '!link' => l(variable_get('site_name', $_SERVER['HTTP_HOST'], '/')),
+          '!support_link' => l(t('DevShop.Support'), variable_get('devshop_support_url', 'devshop.support')),
+        )
+      ),
       '#prefix' => '<div class="alert ">',
       '#suffix' => '</div>',
     );
@@ -606,7 +611,54 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> Sign in with GitHub</a>',
     );
 
-    unset($form['actions']);
+    $text = t('Sign in with @local', array(
+      '@local' => variable_get('site_title', $_SERVER['HTTP_HOST']),
+    ));
+
+    if (variable_get('devshop_support_allow_local_login', TRUE)) {
+
+      $items[] = array(
+        'data' => '<a href="#" class="btn btn-link btn-group-justified">' . $text . '</a>',
+        'class' => 'uncas-link',
+      );
+
+      $text = t('Cancel');
+      $items[] = array(
+        'data' => '<a href="#" class="btn btn-text btn-group-justified">' . $text . '</a>',
+        'class' => 'cas-link',
+      );
+
+      $form['cas_links']['#items'] = $items;
+    }
+    else {
+      $form['cas_links']['#items'] = array();
+    }
+
+    $form['actions']['submit']['#states']['visible'] = array(
+      '#edit-name' => array('filled' => TRUE),
+    );
+
+    $form['name']['#weight'] = 1;
+    $form['pass']['#weight'] = 2;
+    $form['actions']['#weight'] = 3;
+    $form['cas_links']['#weight'] = 4;
+
+    $form['name']['#prefix'] = '<div>';
+    $form['pass']['#suffix'] = '</div>';
+
+//    unset($form['actions']);
   }
 }
 
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Overrides specific from settings based on user policy.
+ */
+function devshop_support_network_client_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'user_login') {
+  }
+
+}

@@ -1222,3 +1222,6 @@ li.text.code {
     right: 10px;
     z-index: 10;
 }
+ul.cas-links {
+    padding-left: 0;
+}

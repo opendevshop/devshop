@@ -4,4 +4,20 @@
  * Implements hook_install()
  */
 function devshop_support_network_client_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_support_network_client')
+    ->execute();
+
+}
+
+/**
+ *
+ */
+function devshop_support_network_client_update_7000() {
+  devshop_support_network_client_install();
 }
