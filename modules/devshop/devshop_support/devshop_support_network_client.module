@@ -588,25 +588,29 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
 
 
     $form['logo'] = array(
-      '#markup' => '<img src="https://devshop.support/sites/all/themes/custom/struts/devshop.support.png" class="img-responsive">',
+      '#markup' => '',
     );
 
     $form['note'] = array(
-      '#markup' => t('Welcome to !link! Please sign in using one of the following options:',
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+      '#markup' => t('Welcome to !link!',
         array(
           '!link' => l(variable_get('site_name', $_SERVER['HTTP_HOST'], '/')),
           '!support_link' => l(t('DevShop.Support'), variable_get('devshop_support_url', 'devshop.support')),
         )
       ),
-      '#prefix' => '<div class="alert ">',
-      '#suffix' => '</div>',
     );
-
+    $form['note2'] = array(
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+      '#markup' => t('Please sign in using one of the following options:'),
+    );
     $form['cloud_login'] = array(
       '#markup' => '<a href="/cas" class="btn btn-default btn-group-justified"><i class="fa fa-cloud"></i> Sign in with DevShop.Support</a>',
     );
 
-    $github_login_url = variable_get('devshop_support_url', 'https://devshop.support') . '/hybridauth/window/GitHub?destination=cas/login&destination_error=cas/login';
+    $github_login_url = variable_get('devshop_support_url', 'https://devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
     $form['github_login'] = array(
       '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> Sign in with GitHub</a>',
     );
@@ -647,7 +651,9 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
 
     // Turn off "CAS" on user form submit, so it will work with automated testing,
     // We actually don't need cas_identifier to be set to 1 because we used links instead of the form.
-    $form['cas_identifier']['#default_value'] = 0;
+    if ($_SERVER['HTTP_HOST'] == 'devshop.local.computer') {
+      $form['cas_identifier']['#default_value'] = 0;
+    }
   }
 }
 
