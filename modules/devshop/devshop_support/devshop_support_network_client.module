@@ -1,0 +1,538 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function devshop_support_network_client_menu() {
+
+    $items['admin/devshop/support'] = array(
+        'title' => 'DevShop Support',
+        'description' => 'Configure DevShop Support.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('devshop_support_network_client_settings'),
+        'access arguments' => array('administer devshop support'),
+        'type' => MENU_LOCAL_TASK,
+    );
+    return $items;
+
+}
+
+/**
+ * Implements hook_permission()
+ * @return array
+ */
+function devshop_support_network_client_permission() {
+  return array(
+    'administer devshop support' => array(
+      'title' => t('administer DevShop.Support'),
+      'description' => t("Configure this devshop\'s support configuration."),
+    )
+  );
+}
+/**
+ * Implements hook_intercomio_settings_alter().
+ *
+ * Loads CAS username into "name" field so intercom knows it's you!
+ *
+ * @TODO: Lock down CAS username! Local devshop can currently very easily edit
+ * their CAS username and impersonate anyone in our support widget!
+ */
+function devshop_support_network_client_intercomio_settings_alter(&$settings) {
+    $account = user_load($settings['user_id']);
+    unset($settings['user_id']);
+    $settings['name'] = $account->cas_name;
+}
+
+/**
+ * Implements hook_user_view_alter().
+ */
+function devshop_support_network_client_user_view_alter(&$build) {
+    // Show link to devshop.build account.
+    $build['devshop_support_network_client'] = array(
+        '#access' => variable_get('cas_server', '') && $build['#account']->cas_name,
+        '#type' => 'item',
+        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim(variable_get('devshop_support_url', 'https://devshop.support'), '/') . '/' . $build['#account']->cas_name, [
+            'html' => 1,
+            'attributes' => [
+                'class' => ['btn btn-info'],
+            ],
+        ]),
+        '#weight' => 10,
+    );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function devshop_support_network_client_settings() {
+    $node = hosting_context_load('hostmaster');
+    $license_key = variable_get('devshop_support_license_key', '');
+
+    $get_support_url = variable_get('devshop_support_url', 'https://devshop.support');
+    $devshop_hostname = $_SERVER['HTTP_HOST'];
+
+    $form['#prefix'] = <<<HTML
+<div class="jumbotron">
+    <h1>Welcome to <a href="https://devshop.support?ref=jumbotron" target="_blank">DevShop.Support</a>.</h1>
+    <h2>Support-Level-Agreements for your DevShop Server.</h2>
+
+    <p>With DevShop.Support, you can Host Your Own Drupal with confidence.</p>
+    <p>Enter your license key below or <a href="$get_support_url/server/$devshop_hostname" target="_blank" class="btn btn-info btn-lg">Get a License at DevShop.Support</a>
+
+
+HTML;
+    $form['#suffix'] = '</div>';
+
+    $form['devshop_support_server_hostname'] = [
+        '#type'  => 'item',
+        '#title' => t('DevShop Server Hostname'),
+        '#description' => t('The hostname registered to this license key.'),
+        '#markup' => $devshop_hostname,
+    ];
+
+    $form['devshop_support_url'] = [
+        '#type'  => 'textfield',
+        '#title' => t('DevShop.Support URL'),
+        '#description' => t('The URL for the devshop.support server. Should always be set to https://devshop.support'),
+        '#default_value' => variable_get('devshop_support_url', 'https://devshop.support'),
+    ];
+
+    $form['devshop_support_license_key'] = [
+        '#type' => 'textfield',
+        '#title' => t('DevShop Support License Key'),
+        '#description' => t('Enter the devshop.support license key for this devshop. If you are unsure visit !link to confirm your license.', [
+            '%site' => $node->title,
+            '!link' => l('devshop.support/server/' . $node->title, 'https://' . 'devshop.support/server/' . $node->title, [
+                'attributes' => ['target' => '_blank']
+            ]),
+        ]),
+        '#default_value' => variable_get('devshop_support_license_key', ''),
+        '#element_validate' => array(
+          'devshop_support_network_client_settings_validate_key',
+        ),
+    ];
+
+    return system_settings_form($form);
+}
+
+/**
+ * Element validation for License Key. Pings devshop.support
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_support_network_client_settings_validate_key($element, &$form_state, $form) {
+  $response = devshop_support_network_client_post_data($element['#value']);
+
+  if ($response->code != 200) {
+    form_error($element, $response->status_message . ' ' . $response->error);
+  }
+  else {
+    drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
+  }
+}
+
+/**
+ * Collect various stats to send to devshop.support.
+ */
+function devshop_support_network_client_client_data($devshop_hostname) {
+  $data['message'] = 'Hello from ' . $devshop_hostname;
+  $data['active_users'] = db_select('users', 'u')
+    ->fields('u')
+    ->condition('status', 1)
+    ->countQuery()
+    ->execute()
+    ->fetchField();
+
+  $data['active_projects'] = db_select('node', 'n')
+    ->fields('n')
+    ->condition('type', 'project')
+    ->condition('status', 1)
+    ->countQuery()
+    ->execute()
+    ->fetchField();
+
+  // STAT: Servers
+  $query = db_select('node', 'n')
+    ->fields('n')
+    ->condition('type', 'server')
+    ->condition('n.status', 1)
+    ;
+  $query->addExpression('COUNT(n.nid)', 'ncount');
+  $query->join('hosting_server', 'h', 'n.nid = h.nid');
+  $data['active_servers'] = $query->execute()->fetchField();
+
+  // STAT: Domain aliases
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid', 'title'))
+    ->condition('status', 1)
+    ->groupBy('n.nid');
+
+  // Add the COUNT expression
+  $query->addExpression('COUNT(n.title)', 'ncount');
+
+  // Add the JOIN
+  $query->join('hosting_site_alias', 'h', 'n.nid = h.nid');
+
+  $data['active_domains'] = (int) $query->execute()->fetchField();
+
+  return $data;
+}
+
+/**
+ * Post server data to devshop.support.
+ *
+ * @return object
+ */
+function devshop_support_network_client_post_data($license_key = NULL) {
+
+  if (!$license_key) {
+    $license_key = variable_get('devshop_support_license_key', NULL);
+    if (!$license_key) {
+      return;
+    }
+  }
+
+  $devshop_hostname = $_SERVER['HTTP_HOST'];
+  $get_support_url = variable_get('devshop_support_url', 'https://devshop.support');
+
+  $options = array('method' => 'POST');
+  $options['data'] = http_build_query(devshop_support_network_client_client_data($devshop_hostname));
+  $options['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
+
+  $response = drupal_http_request($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key, $options);
+//  drupal_set_message($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key);
+
+  watchdog('devshop_support_api', ($response->code == 200? 'Success: ': 'Failure: ') . print_r($response, 1 ));
+
+  $response_data = json_decode($response->data);
+
+  if (!empty($response_data->_CUSTOMER_MESSAGE)) {
+    variable_set('devshop_support_customer_message', $response_data->_CUSTOMER_MESSAGE);
+  }
+  else {
+    variable_set('devshop_support_customer_message', '');
+  }
+
+  if (!empty($response_data->_CUSTOMER_MESSAGE_TYPE)) {
+    variable_set('devshop_support_customer_message_type', $response_data->_CUSTOMER_MESSAGE_TYPE);
+  }
+  else {
+    variable_set('devshop_support_customer_message_type', 'status');
+
+  }
+
+  if (!empty($response_data->_LICENSE_STATUS)) {
+    variable_set('devshop_support_license_key_status', $response_data->_LICENSE_STATUS);
+  }
+  else {
+    variable_set('devshop_support_license_key_status', 'none');
+
+  }
+
+  // Create all CAS users.
+  module_load_include('batch.inc', 'cas');
+
+  // Always keep uid 1 active.
+  $active_local_uids = array(1);
+  $context = array();
+  $mapped_accounts = array();
+  $mapped_account_names = array();
+
+  // Payload comes back an array of CAS usernames.
+  // @TODO: We need to retrieve email here as well to ensure intercom sync.
+  // @TODO: Here's where we could sync SSH keys.
+  foreach ($response_data->_USERS as $cas_user) {
+
+    // Let's prevent admin from being set here.
+    if ($cas_user == 'admin') {
+      continue;
+    }
+
+    // Try to create a CAS account. Load if not created.
+    // @TODO: cas_batch_user_add() returns empty if user already exists.
+    $account = cas_batch_user_add($cas_user, $context);
+    if (empty($account)) {
+      $account = cas_user_load_by_name($cas_user);
+    }
+
+    // if there is an account found, with a UID, save to $active_local_uids.
+    if ($account && is_numeric($account->uid)){
+      $active_local_uids[] = $account->uid;
+      $mapped_accounts[] = $account;
+      $mapped_account_names[] = $account->name;
+    }
+  }
+
+  // Disable all users not included in the license payload.
+  db_update('users')
+    ->fields(array(
+      'status' => 0
+    ))
+    ->condition('uid', $active_local_uids, 'NOT IN')
+    ->execute();
+
+  // Disable all users not included in the license payload.
+  db_update('users')
+    ->fields(array(
+      'status' => 1
+    ))
+    ->condition('uid', $active_local_uids, 'IN')
+    ->execute();
+
+  watchdog('devshop_support_api', 'Loaded !count devshop.support users: !users', array(
+    '!count' => count($active_local_uids),
+    '!users' => implode(' ', $mapped_account_names),
+  ));
+
+  return $response;
+}
+
+
+/**
+ * Show a message on every page.
+ */
+function devshop_support_network_client_page_alter(&$page) {
+  if ($message = variable_get('devshop_support_customer_message', NULL)) {
+    drupal_set_message($message, variable_get('devshop_support_customer_message_type', 'status'));
+  }
+
+
+  // On the homepage, put the block on the left.
+  if (current_path() == 'projects' || current_path() == 'admin/devshop/support') {
+
+    if (empty($page['sidebar_first'])) {
+      $page['sidebar_first'] = array(
+        '#region' => 'sidebar_first',
+      );
+    }
+
+    $page['sidebar_first']['devshop_support'] = devshop_support_network_client_support_status();
+  }
+  else {
+    $page['footer']['devshop_support'] = devshop_support_network_client_support_status();
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function devshop_support_network_client_preprocess_page(&$variables) {
+
+  // On the homepage, put the block on the left.
+  if (current_path() == 'projects' || current_path() == 'admin/devshop/support') {
+//
+//    if (isset($variables['page']['sidebar_first'])) {
+//      $variables['page']['sidebar_first']['devshop_support_network_client_devshop_support_license_status'] = $variables['page']['footer']['devshop_network_client_support_devshop_support_license_status'];
+//    }
+//    else {
+//      $variables['page']['sidebar_first']['devshop_support_network_client_devshop_support_license_status'] = $variables['page']['footer']['devshop_network_client_support_devshop_support_license_status'];
+//      $variables['page']['sidebar_first']['#region'] =  'sidebar_first';
+//    }
+//    unset($variables['page']['footer']['devshop_support_network_client_devshop_support_license_status']);
+//
+//    dsm($variables);
+  }
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function devshop_support_network_client_support_status() {
+
+  if (!user_is_logged_in()){
+    return FALSE;
+  }
+
+  $license_key = variable_get('devshop_support_license_key', '');
+  $license_key_status = variable_get('devshop_support_license_key_status', 'none');
+
+  $status = empty($license_key)? t('Unsupported'): t('Active');
+
+  if (empty($license_key)) {
+    $inactive_support_license_links = [
+      '#type' => 'link',
+      '#title' => '<i class="fa fa-rocket"></i> ' . t('Activate DevShop Support', [
+          '@status' => $status,
+        ]),
+      '#href' => 'admin/devshop/support',
+      '#options' => [
+        'html' => TRUE,
+        'attributes' => [
+          'class' => ['text-muted'],
+        ],
+      ],
+    ];
+    $links[] = drupal_render($inactive_support_license_links);
+
+    $links[] = '<div class="alert text-warning small"><div class=" pull-left"><i class="fa fa-warning"></i></div> <p class="block" style="margin-left: 16px;">' . t('Your DevShop server is currently unsupported. Click "Activate DevShop Support" above to get started.') . '</p></div>';
+  }
+  else {
+
+    switch ($license_key_status) {
+      case 'active': $license_class = 'success'; break;
+      case 'none': $license_class = 'info'; break;
+      case 'suspended': $license_class = 'warning'; break;
+      case 'cancelled': $license_class = 'danger'; break;
+    }
+
+    $active_support_license_links['config'] = [
+      '#type' => 'link',
+      '#title' => '<i class="fa fa-rocket"></i> ' . t('License Status: <label class="label label-!label_class">@status</label>', [
+          '@status' => ucfirst($license_key_status),
+          '!label_class' => $license_class,
+        ]),
+      '#href' => 'admin/devshop/support',
+      '#options' => [
+        'html' => TRUE,
+        'attributes' => [
+          'class' => ['text-muted'],
+        ],
+      ],
+    ];
+
+    $devshop_hostname = $_SERVER['HTTP_HOST'];
+    $get_support_url = variable_get('devshop_support_url', 'https://devshop.support') . '/server/' .  $devshop_hostname;
+    $active_support_license_links['status'] = [
+      '#type' => 'link',
+      '#title' => '<i class="fa fa-life-ring"></i> ' . t('License Information'),
+      '#href' => $get_support_url,
+      '#options' => [
+        'html' => TRUE,
+        'attributes' => [
+          'class' => ['text-muted'],
+          'target' => '_blank',
+        ],
+      ],
+    ];
+    $links[] = drupal_render($active_support_license_links['config']);
+    $links[] = drupal_render($active_support_license_links['status']);
+  }
+
+    $blocks = [
+        'content' => [
+            'links' => [
+                '#theme' => 'item_list',
+                '#prefix' => '<div class="devshop-support-block">',
+                '#title' => t('DevShop.Support'),
+                '#items' => array_filter($links),
+                '#attributes' => [
+                    'class' => ['nav nav-pills nav-stacked'],
+                    'id' => ['devshop-support-status-block'],
+                ],
+                "#suffix" => "</div>",
+            ]
+        ],
+    ];
+    return $blocks;
+}
+
+
+/**
+ * Implements hook_hosting_queues().
+ *
+ * @todo: In Hosting 4.x change the type to HOSTING_QUEUE_TYPE_SPREAD.
+ */
+function devshop_support_network_client_hosting_queues() {
+    $items['devshop_support'] = array(
+        'name' => t('DevShop Support Agent'),
+        'description' => t('DevShop Support Agent: Connect your DevShop to the DevShop.Support network.'),
+        'frequency' => strtotime("1 minute", 0),
+        'items' => 1,
+        'enabled' => TRUE,
+        'singular' => t('License Status Check'),
+        'plural' => t('License Status Checks'),
+    );
+    return $items;
+}
+
+/**
+ * Alter the queues form to prevent editing of the devshop support license checker.
+ */
+function devshop_support_network_client_form_cas_admin_settings_alter(&$form, $form_state, $form_id)
+{
+  $read_only = array();
+
+  $read_only['server'][] = 'cas_server';
+  $read_only['server'][] = 'cas_port';
+  $read_only['server'][] = 'cas_uri';
+  $read_only['server'][] = 'cas_port';
+  $read_only['server'][] = 'cas_version';
+
+  $read_only['login'][] = 'cas_login_redir_message';
+  $read_only['login'][] = 'cas_login_form';
+  $read_only['login'][] = 'cas_login_invite';
+  $read_only['login'][] = 'cas_login_drupal_invite';
+  $read_only['login'][] = 'cas_login_message';
+
+  $read_only['account'][] = 'cas_user_register';
+//  $read_only['account'][] = 'cas_domain';
+  $read_only['account'][] = 'cas_auto_assigned_role';
+  $read_only['account'][] = 'cas_hide_email';
+  $read_only['account'][] = 'cas_hide_password';
+
+//  $read_only['pages'][] = 'cas_check_frequency';
+//  $read_only['pages'][] = 'cas_access';
+//  $read_only['pages'][] = 'cas_pages';
+//  $read_only['pages'][] = 'cas_exclude';
+
+  $read_only['misc'][] = 'cas_first_login_destination';
+//  $read_only['misc'][] = 'cas_logout_destination';
+//  $read_only['misc'][] = 'cas_changePasswordURL';
+//  $read_only['misc'][] = 'cas_registerURL';
+
+  $read_only['advanced'][] = 'cas_proxy';
+  $read_only['advanced'][] = 'cas_proxy_settings';
+  $read_only['advanced'][] = 'cas_proxy_list';
+  $read_only['advanced'][] = 'cas_debugfile';
+  $read_only['advanced'][] = 'cas_single_logout_session_lifetime';
+
+  foreach ($read_only as $group => $items) {
+    foreach ($items as $id) {
+      $form[$group][$id]['#type'] = 'value';
+      $form[$group][$id . '_display'] = $form[$group][$id];
+
+      $form[$group][$id . '_display']['#type'] = 'item';
+      $form[$group][$id . '_display']['#markup'] = $form[$group][$id]['#default_value'];
+    }
+  }
+}
+
+/**
+ * Alter the queues form to prevent editing of the devshop support license checker.
+ */
+function devshop_support_network_client_form_hosting_queues_configure_alter(&$form, $form_state, $form_id) {
+    $form['devshop_support']['enabled']['#type'] = 'value';
+    $form['devshop_support']['frequency']['items']['#type'] = 'value';
+    $form['devshop_support']['frequency']['items']['#suffix'] = t('License Status Checks every 1 minute.');
+    $form['devshop_support']['frequency']['ticks']['#type'] = 'value';
+    $form['devshop_support']['frequency']['unit']['#type'] = 'value';
+}
+
+/**
+ * Implements hosting_QUEUE_TYPE_queue().
+ */
+function hosting_devshop_support_queue() {
+  devshop_support_network_client_post_data();
+  watchdog('devshop_support_queue', 'Support License Queue Triggered');
+
+
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function devshop_support_network_client_node_view($node, $view_mode, $langcode) {
+    if ($node->type == 'server') {
+        if ($view_mode != 'teaser') {
+            // @todo : turn it into x minutes ago
+            $node->content['info']['last_cron'] = array(
+                '#type' => 'item',
+                '#title' => t('Cron run'),
+                '#weight' => 20,
+                '#markup' => hosting_format_interval($node->last_cron),
+            );
+        }
+    }
+}
