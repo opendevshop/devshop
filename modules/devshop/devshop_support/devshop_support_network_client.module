@@ -379,11 +379,11 @@ function devshop_support_network_client_support_status() {
 
     $active_support_license_links['config'] = [
       '#type' => 'link',
-      '#title' => '<i class="fa fa-rocket"></i> ' . t('License Status: <label class="label label-!label_class">@status</label>', [
+      '#title' => '<i class="fa fa-life-ring"></i> ' . t('License Status: <label class="label label-!label_class">@status</label>', [
           '@status' => ucfirst($license_key_status),
           '!label_class' => $license_class,
         ]),
-      '#href' => 'admin/devshop/support',
+      '#href' => variable_get('devshop_support_url', 'https://devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
       '#options' => [
         'html' => TRUE,
         'attributes' => [
@@ -392,22 +392,7 @@ function devshop_support_network_client_support_status() {
       ],
     ];
 
-    $devshop_hostname = $_SERVER['HTTP_HOST'];
-    $get_support_url = variable_get('devshop_support_url', 'https://devshop.support') . '/server/' .  $devshop_hostname;
-    $active_support_license_links['status'] = [
-      '#type' => 'link',
-      '#title' => '<i class="fa fa-life-ring"></i> ' . t('License Information'),
-      '#href' => $get_support_url,
-      '#options' => [
-        'html' => TRUE,
-        'attributes' => [
-          'class' => ['text-muted'],
-          'target' => '_blank',
-        ],
-      ],
-    ];
     $links[] = drupal_render($active_support_license_links['config']);
-    $links[] = drupal_render($active_support_license_links['status']);
   }
 
     $blocks = [
