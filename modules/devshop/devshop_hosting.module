@@ -106,8 +106,7 @@ function devshop_hosting_home() {
     drupal_goto(variable_get('devshop_frontpage', 'projects'));
   }
   else {
-    $output = '<p>' . t('Please log in.') . '</p>';
-    return drupal_get_form('user_login');
+    drupal_goto(variable_get('devshop_frontpage_anonymous', 'user/login'));
   }
 }
 
