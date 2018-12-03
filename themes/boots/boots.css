@@ -1225,3 +1225,13 @@ li.text.code {
 ul.cas-links {
     padding-left: 0;
 }
+
+img.login-images {
+    max-width:150px;
+}
+
+.row.logos {
+
+    width: 300px;
+    margin: 0px auto;
+}
