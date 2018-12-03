@@ -82,11 +82,6 @@ projects:
       type: git
       branch: 7.x-1.x
 
-  devshop_support:
-    download:
-      type: git
-      branch: 7.x-1.x
-
 libraries:
   dehydrated:
     destination: modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
