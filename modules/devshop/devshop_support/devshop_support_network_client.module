@@ -29,6 +29,47 @@ function devshop_support_network_client_permission() {
     )
   );
 }
+
+/**
+ * Implements hook_init().
+ */
+function devshop_support_network_client_init()
+{
+  global $conf;
+
+  if ( file_exists(DRUPAL_ROOT . '/profiles/devmaster/libraries/cas')) {
+    $cas_library_dir = 'profiles/devmaster/libraries/cas';
+  }
+  elseif (file_exists(DRUPAL_ROOT . '/sites/all/libraries/cas')) {
+    $cas_library_dir = 'sites/all/libraries/cas';
+  }
+  else {
+    $cas_library_dir = '';
+  }
+
+  $conf['cas_library_dir'] = $cas_library_dir;
+
+  $conf['cas_version'] = '2.0';
+  $conf['cas_server'] = 'devshop.support';
+  $conf['cas_uri'] = '/cas';
+  $conf['cas_logout_destination'] = 'https://devshop.support/user/logout';
+  $conf['cas_registerURL'] = 'https://devshop.support/user/register';
+  $conf['cas_changePasswordURL'] = 'https://devshop.support/user/password';
+  $conf['cas_login_form'] = 1;
+  $conf['cas_login_invite'] = t('Log in using DevShop.Support');
+  $conf['cas_login_redir_message'] = '';
+  $conf['cas_login_drupal_invite'] = '';
+  $conf['cas_login_message'] = t('Logged in via DevShop.Support as %cas_username.');
+  $conf['cas_user_register'] = 0;
+  $conf['cas_domain'] = '';
+  $conf['cas_hide_email'] = 1;
+  $conf['cas_hide_password'] = 1;
+  $conf['intercomio_app_id'] = 'ufeta82d';
+  $conf['intercomio_api_key'] = 'dG9rOmFkM2I3NmFmXzg2OGRfNDZlNV84ZTE1XzQ1MzM3Mjc2YzgzNDoxOjA';
+  $conf['intercomio_visibility_roles'] = array(1);
+}
+
+
 /**
  * Implements hook_intercomio_settings_alter().
  *
@@ -521,3 +562,40 @@ function devshop_support_network_client_node_view($node, $view_mode, $langcode) 
         }
     }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_support_network_client_form_user_login_alter(&$form, &$form_state, $form_id)
+{
+
+  if (variable_get('devshop_support_license_key_status', 'none') != 'none') {
+
+    drupal_set_title(t('Welcome to @hostname!', array(
+      '@hostname' => $_SERVER['HTTP_HOST'],
+    )));
+
+
+    $form['logo'] = array(
+      '#markup' => '<img src="https://devshop.support/sites/all/themes/custom/struts/devshop.support.png" class="img-responsive">',
+    );
+
+    $form['note'] = array(
+      '#markup' => t('This server is part of the DevShop.Support Network. Please sign in using one of the options below.'),
+      '#prefix' => '<div class="alert ">',
+      '#suffix' => '</div>',
+    );
+
+    $form['cloud_login'] = array(
+      '#markup' => '<a href="/cas" class="btn btn-default btn-group-justified"><i class="fa fa-cloud"></i> Sign in with DevShop.Support</a>',
+    );
+
+    $github_login_url = variable_get('devshop_support_url', 'https://devshop.support') . '/hybridauth/window/GitHub?destination=cas/login&destination_error=cas/login';
+    $form['github_login'] = array(
+      '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> Sign in with GitHub</a>',
+    );
+
+    unset($form['actions']);
+  }
+}
+
