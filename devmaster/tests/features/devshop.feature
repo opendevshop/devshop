@@ -19,7 +19,7 @@ Feature: Anonymous Homepage
 
   @api
   Scenario:   The homepage works when devshop support is enabled.
-    When I run drush "vset devshop_support_license_key tests"
+    When I run drush "vset devshop_support_license_key automated_testing_license_key"
     Then print last drush output
     When I run drush "vset devshop_support_license_key_status active"
     Then print last drush output
