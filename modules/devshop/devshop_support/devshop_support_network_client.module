@@ -592,7 +592,7 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
     );
 
     $form['note'] = array(
-      '#markup' => t('Welcome to !link! Please sign in using one of the options below.',
+      '#markup' => t('Welcome to !link! Please sign in using one of the following options:',
         array(
           '!link' => l(variable_get('site_name', $_SERVER['HTTP_HOST'], '/')),
           '!support_link' => l(t('DevShop.Support'), variable_get('devshop_support_url', 'devshop.support')),
