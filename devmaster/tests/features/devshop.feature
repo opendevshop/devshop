@@ -17,6 +17,7 @@ Feature: Anonymous Homepage
     And I press "E-mail new password"
     Then I should see "Sorry, wrong is not recognized as a user name or an e-mail address."
 
+  @api
   Scenario:   The homepage works when devshop support is enabled.
     When I run drush "vset devshop_support_license_key tests"
     Then print last drush output
