@@ -634,9 +634,8 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       $form['cas_links']['#items'] = array();
     }
 
-    $form['actions']['submit']['#states']['visible'] = array(
-      '#edit-name' => array('filled' => TRUE),
-    );
+    // Hack to get cas.module to hide the login button.
+    $form['actions']['#attributes']['class'][] = 'form-item-name';
 
     $form['name']['#weight'] = 1;
     $form['pass']['#weight'] = 2;
