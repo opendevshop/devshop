@@ -645,7 +645,9 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
     $form['name']['#prefix'] = '<div>';
     $form['pass']['#suffix'] = '</div>';
 
-//    unset($form['actions']);
+    // Turn off "CAS" on user form submit, so it will work with automated testing,
+    // We actually don't need cas_identifier to be set to 1 because we used links instead of the form.
+    $form['cas_identifier']['#default_value'] = 0;
   }
 }
 
