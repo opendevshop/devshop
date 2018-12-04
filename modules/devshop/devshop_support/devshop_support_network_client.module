@@ -600,7 +600,7 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       '#suffix' => '</p>',
       '#markup' => t('Welcome to !link!',
         array(
-          '!link' => l(variable_get('site_name', $_SERVER['HTTP_HOST'], '/')),
+          '!link' => l(variable_get('site_name', $_SERVER['HTTP_HOST']), '/'),
           '!support_link' => l(t('DevShop.Support'), variable_get('devshop_support_url', 'devshop.support')),
         )
       ),
