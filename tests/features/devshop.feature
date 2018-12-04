@@ -28,7 +28,7 @@ Feature: Anonymous Homepage
     Then I should see "Sign In"
     And I should see "Username"
     And I should see "Password"
-    And I should see "Welcome to devshop.local.computer! Please sign in using one of the following options:"
+    And I should see "Please sign in using one of the following options:"
     And I should see the link "Sign in with DevShop.Support"
 
     When I am logged in as a user with the "authenticated user" role
