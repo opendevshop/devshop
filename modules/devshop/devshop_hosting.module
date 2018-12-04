@@ -4,7 +4,6 @@
  *
  * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
  */
-require_once(dirname(dirname(__dir__ )) . '/vendor/autoload.php');
 
 /**
  * Implements hook_help()
