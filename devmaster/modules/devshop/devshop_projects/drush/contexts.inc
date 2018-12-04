@@ -164,6 +164,7 @@ function devshop_projects_drush_context_import($context, &$node) {
         }
       }
     }
+    devshop_reset_last_tasks();
   }
 
   // If importing a site that has environment and project assigned,
@@ -213,6 +214,8 @@ function devshop_projects_drush_context_import($context, &$node) {
         drush_log(dt('Site property "project" is set to "!project", but there is no project node or context by that name.'), 'warning');
       }
     }
+
+    devshop_reset_last_tasks();
   }
 }
 
