@@ -93,7 +93,7 @@ libraries[timeago][destination] = libraries
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = "3.22"
+projects[bootstrap][version] = 3.21
 
 ;projects[intercomio][type] = module
 ;projects[intercomio][download][type] = git
