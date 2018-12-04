@@ -37,3 +37,7 @@ $page['content']['system_main']['hybridauth']['#title'] = 'Sign Up with';
         </div>
     </div>
 </div>
+
+<footer class="anonymous-page">
+  <?php print render($page['footer']); ?>
+</footer>

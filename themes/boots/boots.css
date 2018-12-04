@@ -1,3 +1,8 @@
+html,
+body {
+    height: 100%;
+}
+
 body.admin-menu .navbar-static-top {
   margin-top: 20px !important;
   z-index: 3;
@@ -1234,4 +1239,8 @@ img.login-images {
 
     width: 300px;
     margin: 0px auto;
+}
+
+footer.anonymous-page {
+    padding-top: 5em;
 }
