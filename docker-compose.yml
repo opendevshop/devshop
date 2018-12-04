@@ -5,7 +5,7 @@ version: '2'
 services:
 
   devmaster:
-    image: aegir/hostmaster:php7
+    image: aegir/hostmaster:php7-xdebug
     ports:
       - 80:80
     hostname: devshop.local.computer
