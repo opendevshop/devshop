@@ -824,16 +824,16 @@ function _devshop_projects_project_has_module($node, $module) {
 function devshop_reset_last_tasks () {
 
   // Lookup all environments
-  $results = db_query('SELECT * FROM {hosting_devshop_project_environment}')->fetchAllAssoc('nid');
+  $results = db_query('SELECT * FROM {hosting_devshop_project_environment}')->fetchAllAssoc('site');
   foreach ($results as $result) {
-    $site = node_load($result->site);
-    $nid = db_query("SELECT t.nid FROM hosting_task t INNER JOIN node n ON n.nid = t.nid WHERE rid = :site", array(
-      ':site' => $site->nid
+    $nid = db_query("SELECT t.nid FROM hosting_task t WHERE rid = :platform OR rid = :site ORDER BY t.vid DESC", array(
+      ':site' => $result->site,
+      ':platform' => $result->platform,
     ))->fetchField();
 
-    if (!empty($site->environment)) {
-      $site->environment->last_task = $nid;
-      devshop_environment_save_last_task($site->environment);
+    if (!empty($result->name)) {
+      $result->last_task = $nid;
+      devshop_environment_save_last_task($result);
     }
   }
 }
