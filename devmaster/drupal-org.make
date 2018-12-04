@@ -52,6 +52,7 @@ projects[aegir_config][version] = 1.00-beta1
 ; Contrib Modules
 projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.5
+projects[composer_manager][version] = 1.8
 projects[entity][version] = 1.9
 projects[openidadmin][version] = 1.0
 projects[overlay_paths][version] = 1.3
