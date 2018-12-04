@@ -4,8 +4,6 @@
  * @file devshop_github.module
  */
 
-require_once 'vendor/autoload.php';
-
 /**
  * Implements hook_menu().
  */
