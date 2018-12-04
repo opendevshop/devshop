@@ -10,9 +10,6 @@
  */
 function devmaster_install() {
 
-  // Install composer dependencies
-  drush_composer_manager('install');
-
   // add support for nginx
   if (d()->platform->server->http_service_type === 'nginx') {
     module_enable(array('hosting_nginx'));
