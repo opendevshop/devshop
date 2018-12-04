@@ -1,3 +1,8 @@
+html,
+body {
+    height: 100%;
+}
+
 body.admin-menu .navbar-static-top {
   margin-top: 20px !important;
   z-index: 3;
@@ -1221,4 +1226,21 @@ li.text.code {
     position: absolute;
     right: 10px;
     z-index: 10;
+}
+ul.cas-links {
+    padding-left: 0;
+}
+
+img.login-images {
+    max-width:150px;
+}
+
+.row.logos {
+
+    width: 300px;
+    margin: 0px auto;
+}
+
+footer.anonymous-page {
+    padding-top: 5em;
 }
