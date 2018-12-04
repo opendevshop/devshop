@@ -327,8 +327,19 @@ function devshop_environment_save(stdClass &$environment) {
   $info->settings = serialize($environment->settings);
   $info->last_task = $environment->last_task;
 
+  // Check for existing records
+  $result = db_select('hosting_devshop_project_environment', 'e')
+    ->fields('e', array('project_nid'))
+    ->condition('e.name', $info->name)
+    ->condition('e.project_nid', $info->project_nid)
+    ->execute()
+    ->fetchField()
+  ;
+
+  $keys = $result? array('project_nid', 'name'): array();
+
   // Save environment record.
-  if (drupal_write_record('hosting_devshop_project_environment', $info, array('project_nid', 'name'))) {
+  if (drupal_write_record('hosting_devshop_project_environment', $info, $keys)) {
     watchdog('ok', 'Environment record saved: ' . print_r($info, 1));
     return TRUE;
   }
