@@ -18,6 +18,14 @@ function devshop_hosting_drush_command()
     return $items;
 }
 
+/**
+ * Drush hook; Called after a project is enabled.
+ *
+ * @see drush_composer_manager_write_if_changed()
+ */
+function drush_devshop_hosting_post_updatedb() {
+  provision_process('composer install', dirname(dirname(__DIR__)));
+}
 
 /**
  * Command function for platform-delete.
