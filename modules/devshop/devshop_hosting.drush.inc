@@ -19,12 +19,10 @@ function devshop_hosting_drush_command()
 }
 
 /**
- * Drush hook; Called after a project is enabled.
- *
- * @see drush_composer_manager_write_if_changed()
+ * Drush hook; Called after a `drush updb` call.
  */
 function drush_devshop_hosting_post_updatedb() {
-  provision_process('composer install', dirname(dirname(__DIR__)));
+  drush_composer_manager('install');
 }
 
 /**
