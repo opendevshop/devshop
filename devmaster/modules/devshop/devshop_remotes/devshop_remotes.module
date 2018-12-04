@@ -371,8 +371,10 @@ function devshop_remotes_node_load($nodes, $types) {
       foreach ($node->project->environments as $env) {
         if (file_exists($env->repo_path . '/composer.json')) {
           $composer_data = json_decode(file_get_contents($env->repo_path . '/composer.json'), TRUE);
+          if (!isset($composer_data['config']['devshop']['sync_sources']) || !is_array($composer_data['config']['devshop']['sync_sources'])) {
+            continue;
+          }
           $sync_sources = $composer_data['config']['devshop']['sync_sources'];
-
           foreach ($sync_sources as $name => $source) {
 
             // If environment exists with this name and existing alias exists with this name, unset it.

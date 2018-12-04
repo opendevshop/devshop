@@ -224,3 +224,10 @@ function devshop_hosting_update_7015 (){
 function devshop_hosting_update_7016() {
   module_enable(array('hosting_letsencrypt'));
 }
+
+/**
+ * Enable DevShop.Support Client!
+ */
+function devshop_hosting_update_7100() {
+  module_enable(array('devshop_support_network_client'));
+}
