@@ -282,6 +282,11 @@ function devshop_support_network_client_post_data($license_key = NULL) {
 
   }
 
+  // Don't do any more for certain hostnames.
+  if ($devshop_hostname == 'devshop.local.computer') {
+    return;
+  }
+
   // Create all CAS users.
   module_load_include('batch.inc', 'cas');
 
