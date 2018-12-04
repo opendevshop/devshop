@@ -72,12 +72,6 @@ projects[cas_attributes][version] = 1.x
 projects[composer_autoloader][version] = 1.3
 projects[statsd][version] = 1.1
 
-; Dehydrated for LetsEncrypt.org
-libraries[dehydrated][download][type] = git
-libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated.git
-libraries[dehydrated][download][tag] = "v0.6.2"
-libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
-
 ; PHPCAS
 ;libraries[cas][download][type] = "git"
 ;libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
