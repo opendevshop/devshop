@@ -123,9 +123,7 @@ function devshop_support_network_client_settings() {
     <h1>Welcome to <a href="https://devshop.support?ref=jumbotron" target="_blank">DevShop.Support</a>.</h1>
     <h2>Support-Level-Agreements for your DevShop Server.</h2>
 
-    <p>With DevShop.Support, you can Host Your Own Drupal with confidence.</p>
-    <p>Enter your license key below or <a href="$get_support_url/server/$devshop_hostname" target="_blank" class="btn btn-info btn-lg">Get a License at DevShop.Support</a>
-
+    <p>Get a DevShop.Support license for uptime monitoring, automatic updates, and white glove support for your development and production pipelines.</p>
 
 HTML;
     $form['#suffix'] = '</div>';
