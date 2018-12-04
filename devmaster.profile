@@ -294,9 +294,6 @@ function devmaster_task_finalize() {
   // Force things to delete even if things fail.
   variable_set('hosting_delete_force', 1);
 
-  // Tell the composer_autoloader where the vendor dir is.
-  variable_set('composer_autoloader', __DIR__ . '/vendor/autoload.php');
-
   // Make sure blocks are setup properly.
 //  _block_rehash();
 
