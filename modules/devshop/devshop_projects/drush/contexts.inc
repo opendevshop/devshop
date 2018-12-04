@@ -126,8 +126,8 @@ function devshop_projects_drush_context_import($context, &$node) {
         )), 'success');
         $environment_object = new stdClass();
         $environment_object->name = $name;
-        $environment_object->site = $environment->site;
-        $environment_object->platform = $environment->platform;
+        $environment_object->site = $site_node->nid;
+        $environment_object->platform = $platform_node->nid;
         $environment_object->settings = $environment->settings;
 
         // Project environments only get automatically added on project insert.
