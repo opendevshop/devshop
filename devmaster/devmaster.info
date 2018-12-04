@@ -49,6 +49,7 @@ dependencies[] = hosting_apache_https
 dependencies[] = admin_menu
 dependencies[] = admin_menu_toolbar
 dependencies[] = betterlogin
+dependencies[] = composer_manager
 dependencies[] = views
 dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
