@@ -118,7 +118,9 @@ function devshop_projects_drush_context_import($context, &$node) {
 
       // If both site and platform nodes were found, load them in.
       if ($site_node && $platform_node) {
-        drush_log(dt('Site and Environment nodes found. Saving environment data for site "!site_context" and platform "!platform_context"', array(
+        drush_log(dt('Site and Environment nodes found. Saving environment data for site "!site_context" (nid:!site) and platform "!platform_context" (nid:!platform)', array(
+          '!site' => $site_node->nid,
+          '!platform' => $platform_node->nid,
           '!site_context' => $environment->site_context,
           '!platform_context' => $environment->platform_context,
         )), 'success');
