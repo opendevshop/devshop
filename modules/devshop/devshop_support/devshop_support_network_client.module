@@ -172,8 +172,12 @@ HTML;
 function devshop_support_network_client_settings_validate_key($element, &$form_state, $form) {
   $response = devshop_support_network_client_post_data($element['#value']);
 
-  if ($response->code != 200) {
-    form_error($element, $response->status_message . ' ' . $response->error);
+  if ($response === TRUE) {
+    drupal_set_message(t('Test Key presumed valid. Enabling DevShop.Support.'));
+
+  }
+  elseif ($response->code != 200) {
+    form_error($element,  $response->status_message . ' ' . $response->error);
   }
   else {
     drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
