@@ -27,6 +27,8 @@ Feature: Create a project and check settings
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output
     And I reload the page
     And I reload the page
 
