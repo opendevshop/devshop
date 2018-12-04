@@ -27,7 +27,20 @@ function devshop_projects_hosting_project_context_options(&$task) {
   if (isset($task->ref->project)) {
     $task->context_options['server'] = '@server_master';
     $task->context_options['project_name'] = $task->ref->title;
-    $task->context_options['project'] = $task->ref->project;
+
+    // Clean up project and environment objects.
+    $project = $task->ref->project;
+    unset($project->tasks);
+    unset($project->verify);
+    unset($project->messages);
+
+    foreach ($project->environments as &$environment) {
+      unset($environment->tasks);
+      unset($environment->tasks_list);
+      unset($environment->last_task_node);
+    }
+
+    $task->context_options['project'] = $project;
   }
 }
 
