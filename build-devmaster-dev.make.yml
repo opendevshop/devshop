@@ -83,11 +83,6 @@ projects:
       branch: 7.x-1.x
 
 libraries:
-  dehydrated:
-    destination: modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
-    download:
-      type: git
-      url: https://github.com/lukas2511/dehydrated
 
   cas:
     destination: libraries
