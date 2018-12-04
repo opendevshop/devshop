@@ -31,3 +31,6 @@
         </div>
     </div>
 </div>
+<footer class="anonymous-page">
+  <?php print render($page['footer']); ?>
+</footer>
