@@ -113,7 +113,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
 
     // HTTP Server select.
-    $http_servers = hosting_get_servers('http');
+    $http_servers = hosting_get_servers('http', FALSE);
 
     // Determine default web server.
     $default_web_server = isset($environment->settings, $environment->settings->web_server) ?
@@ -141,7 +141,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     }
 
     // DB Server select.
-    $db_servers = hosting_get_servers('db');
+    $db_servers = hosting_get_servers('db', FALSE);
 
     // Determine default db server.
     $default_db_server = isset($environment->settings, $environment->settings->db_server) ?
