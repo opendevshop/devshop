@@ -26,11 +26,8 @@ function devshop_hosting_drush_command()
  */
 function devshop_hosting_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'site' && $task->ref->hosting_name == 'hostmaster') {
-    if (!drush_is_command('composer')) {
-      // Download the Drush extension.
-      provision_process('drush dl composer-8.x-1.x --destination=$HOME/.drush/commands -y', NULL, t('Downloading Drush Composer plugin'));
-    }
-    provision_process('drush @hostmaster composer-manager install -y', NULL, t('Installing Devmaster dependencies'));
+    provision_process('drush @hostmaster composer-json-rebuild -y');
+    provision_process('composer install', d()->root . '/' . variable_get('composer_manager_file_dir', 'sites/all/composer'), t('Installing Devmaster dependencies'));
   }
 }
 
