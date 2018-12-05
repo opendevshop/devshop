@@ -24,6 +24,15 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'node',
   );
 
+  // Exported permission: 'access content overview'.
+  $permissions['access content overview'] = array(
+    'name' => 'access content overview',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'access disabled sites'.
   $permissions['access disabled sites'] = array(
     'name' => 'access disabled sites',
@@ -80,6 +89,28 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_task',
   );
 
+  // Exported permission: 'access test results'.
+  $permissions['access test results'] = array(
+    'name' => 'access test results',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'devshop_testing',
+  );
+
+  // Exported permission: 'add remote aliases to projects'.
+  $permissions['add remote aliases to projects'] = array(
+    'name' => 'add remote aliases to projects',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'devshop_remotes',
+  );
+
   // Exported permission: 'administer SSH public keys'.
   $permissions['administer SSH public keys'] = array(
     'name' => 'administer SSH public keys',
@@ -99,6 +130,15 @@ function devshop_permissions_user_default_permissions() {
       'aegir platform manager' => 'aegir platform manager',
     ),
     'module' => 'hosting_client',
+  );
+
+  // Exported permission: 'administer content types'.
+  $permissions['administer content types'] = array(
+    'name' => 'administer content types',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
   );
 
   // Exported permission: 'administer hosting'.
@@ -175,6 +215,15 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_site_backup_manager',
   );
 
+  // Exported permission: 'administer nodes'.
+  $permissions['administer nodes'] = array(
+    'name' => 'administer nodes',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'administer platforms'.
   $permissions['administer platforms'] = array(
     'name' => 'administer platforms',
@@ -221,6 +270,15 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_task',
   );
 
+  // Exported permission: 'bypass node access'.
+  $permissions['bypass node access'] = array(
+    'name' => 'bypass node access',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'cancel own tasks'.
   $permissions['cancel own tasks'] = array(
     'name' => 'cancel own tasks',
@@ -232,6 +290,17 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'hosting_task',
+  );
+
+  // Exported permission: 'change site domain name'.
+  $permissions['change site domain name'] = array(
+    'name' => 'change site domain name',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'devshop_projects',
   );
 
   // Exported permission: 'configure devshop pull'.
@@ -296,6 +365,26 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'hosting_clone',
+  );
+
+  // Exported permission: 'create config_export task'.
+  $permissions['create config_export task'] = array(
+    'name' => 'create config_export task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+    ),
+    'module' => 'aegir_config',
+  );
+
+  // Exported permission: 'create config_import task'.
+  $permissions['create config_import task'] = array(
+    'name' => 'create config_import task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+    ),
+    'module' => 'aegir_config',
   );
 
   // Exported permission: 'create delete task'.
@@ -364,6 +453,28 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_task',
   );
 
+  // Exported permission: 'create features_revert_all task'.
+  $permissions['create features_revert_all task'] = array(
+    'name' => 'create features_revert_all task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_tasks_extra',
+  );
+
+  // Exported permission: 'create features_update_all task'.
+  $permissions['create features_update_all task'] = array(
+    'name' => 'create features_update_all task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_tasks_extra',
+  );
+
   // Exported permission: 'create flush_cache task'.
   $permissions['create flush_cache task'] = array(
     'name' => 'create flush_cache task',
@@ -382,6 +493,19 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'hosting_tasks_extra',
+  );
+
+  // Exported permission: 'create git-pull task'.
+  $permissions['create git-pull task'] = array(
+    'name' => 'create git-pull task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir account manager' => 'aegir account manager',
+      'aegir administrator' => 'aegir administrator',
+      'aegir client' => 'aegir client',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_pull',
   );
 
   // Exported permission: 'create lock task'.
@@ -440,6 +564,54 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_platform',
   );
 
+  // Exported permission: 'create platform git-checkout task'.
+  $permissions['create platform git-checkout task'] = array(
+    'name' => 'create platform git-checkout task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'aegir platform manager' => 'aegir platform manager',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_checkout',
+  );
+
+  // Exported permission: 'create platform git-commit task'.
+  $permissions['create platform git-commit task'] = array(
+    'name' => 'create platform git-commit task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'aegir platform manager' => 'aegir platform manager',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_commit',
+  );
+
+  // Exported permission: 'create platform git-pull task'.
+  $permissions['create platform git-pull task'] = array(
+    'name' => 'create platform git-pull task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'aegir platform manager' => 'aegir platform manager',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_pull',
+  );
+
+  // Exported permission: 'create platform git-tag task'.
+  $permissions['create platform git-tag task'] = array(
+    'name' => 'create platform git-tag task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'aegir platform manager' => 'aegir platform manager',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_tag',
+  );
+
   // Exported permission: 'create project'.
   $permissions['create project'] = array(
     'name' => 'create project',
@@ -448,6 +620,15 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'devshop_projects',
+  );
+
+  // Exported permission: 'create project content'.
+  $permissions['create project content'] = array(
+    'name' => 'create project content',
+    'roles' => array(
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'node',
   );
 
   // Exported permission: 'create rebuild_registry task'.
@@ -515,6 +696,45 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_alias',
   );
 
+  // Exported permission: 'create site git-checkout task'.
+  $permissions['create site git-checkout task'] = array(
+    'name' => 'create site git-checkout task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir account manager' => 'aegir account manager',
+      'aegir administrator' => 'aegir administrator',
+      'aegir client' => 'aegir client',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_checkout',
+  );
+
+  // Exported permission: 'create site git-commit task'.
+  $permissions['create site git-commit task'] = array(
+    'name' => 'create site git-commit task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir account manager' => 'aegir account manager',
+      'aegir administrator' => 'aegir administrator',
+      'aegir client' => 'aegir client',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_commit',
+  );
+
+  // Exported permission: 'create site git-tag task'.
+  $permissions['create site git-tag task'] = array(
+    'name' => 'create site git-tag task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir account manager' => 'aegir account manager',
+      'aegir administrator' => 'aegir administrator',
+      'aegir client' => 'aegir client',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_git_tag',
+  );
+
   // Exported permission: 'create sites on locked platforms'.
   $permissions['create sites on locked platforms'] = array(
     'name' => 'create sites on locked platforms',
@@ -535,6 +755,17 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'hosting_sync',
+  );
+
+  // Exported permission: 'create test task'.
+  $permissions['create test task'] = array(
+    'name' => 'create test task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'devshop_testing',
   );
 
   // Exported permission: 'create unlock task'.
@@ -559,6 +790,27 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_tasks_extra',
   );
 
+  // Exported permission: 'create update_drupal task'.
+  $permissions['create update_drupal task'] = array(
+    'name' => 'create update_drupal task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+    ),
+    'module' => 'aegir_update',
+  );
+
+  // Exported permission: 'create update_translations task'.
+  $permissions['create update_translations task'] = array(
+    'name' => 'create update_translations task',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'hosting_tasks_extra',
+  );
+
   // Exported permission: 'create verify task'.
   $permissions['create verify task'] = array(
     'name' => 'create verify task',
@@ -572,6 +824,13 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_task',
   );
 
+  // Exported permission: 'delete any project content'.
+  $permissions['delete any project content'] = array(
+    'name' => 'delete any project content',
+    'roles' => array(),
+    'module' => 'node',
+  );
+
   // Exported permission: 'delete own client'.
   $permissions['delete own client'] = array(
     'name' => 'delete own client',
@@ -580,6 +839,13 @@ function devshop_permissions_user_default_permissions() {
       'aegir administrator' => 'aegir administrator',
     ),
     'module' => 'hosting_client',
+  );
+
+  // Exported permission: 'delete own project content'.
+  $permissions['delete own project content'] = array(
+    'name' => 'delete own project content',
+    'roles' => array(),
+    'module' => 'node',
   );
 
   // Exported permission: 'delete package'.
@@ -614,6 +880,15 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'devshop_projects',
   );
 
+  // Exported permission: 'delete revisions'.
+  $permissions['delete revisions'] = array(
+    'name' => 'delete revisions',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'delete server'.
   $permissions['delete server'] = array(
     'name' => 'delete server',
@@ -635,6 +910,13 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'hosting_site',
+  );
+
+  // Exported permission: 'edit any project content'.
+  $permissions['edit any project content'] = array(
+    'name' => 'edit any project content',
+    'roles' => array(),
+    'module' => 'node',
   );
 
   // Exported permission: 'edit client uname'.
@@ -668,6 +950,15 @@ function devshop_permissions_user_default_permissions() {
       'aegir client' => 'aegir client',
     ),
     'module' => 'hosting_client',
+  );
+
+  // Exported permission: 'edit own project content'.
+  $permissions['edit own project content'] = array(
+    'name' => 'edit own project content',
+    'roles' => array(
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'node',
   );
 
   // Exported permission: 'edit package'.
@@ -744,6 +1035,28 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'sshkey',
   );
 
+  // Exported permission: 'manage site HTTPS settings'.
+  $permissions['manage site HTTPS settings'] = array(
+    'name' => 'manage site HTTPS settings',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'aegir client' => 'aegir client',
+    ),
+    'module' => 'hosting_https',
+  );
+
+  // Exported permission: 'remove remote aliases from projects'.
+  $permissions['remove remote aliases from projects'] = array(
+    'name' => 'remove remote aliases from projects',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'devshop_remotes',
+  );
+
   // Exported permission: 'retry failed tasks'.
   $permissions['retry failed tasks'] = array(
     'name' => 'retry failed tasks',
@@ -754,6 +1067,15 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'hosting_task',
+  );
+
+  // Exported permission: 'revert revisions'.
+  $permissions['revert revisions'] = array(
+    'name' => 'revert revisions',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
   );
 
   // Exported permission: 'update status of tasks'.
@@ -823,6 +1145,16 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'hosting_task',
   );
 
+  // Exported permission: 'view own unpublished content'.
+  $permissions['view own unpublished content'] = array(
+    'name' => 'view own unpublished content',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'authenticated user' => 'authenticated user',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'view package'.
   $permissions['view package'] = array(
     'name' => 'view package',
@@ -866,6 +1198,18 @@ function devshop_permissions_user_default_permissions() {
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'devshop_projects',
+  );
+
+  // Exported permission: 'view revisions'.
+  $permissions['view revisions'] = array(
+    'name' => 'view revisions',
+    'roles' => array(
+      'administrator' => 'administrator',
+      'aegir administrator' => 'aegir administrator',
+      'aegir client' => 'aegir client',
+      'aegir platform manager' => 'aegir platform manager',
+    ),
+    'module' => 'node',
   );
 
   // Exported permission: 'view server'.
