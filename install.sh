@@ -36,6 +36,7 @@
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
 #    --aegir-uid          The UID to use for creating the `aegir` user
+#    --license            The devshop.support license key for this server.
 #
 
 # Version used for cloning devshop playbooks
@@ -46,6 +47,7 @@ MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
 ANSIBLE_GALAXY_OPTIONS=""
+DEVSHOP_SUPPORT_LICENSE_KEY=""
 
 export ANSIBLE_FORCE_COLOR=true
 
@@ -121,6 +123,9 @@ while [ $# -gt 0 ]; do
     -vvvv|--debug)
       ANSIBLE_VERBOSITY="-vvvv"
       shift # past argument
+      ;;
+    --license=*)
+      DEVSHOP_SUPPORT_LICENSE_KEY="${1#*=}"
       ;;
     *)
       echo $LINE
@@ -330,6 +335,10 @@ fi
 
 if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then
   ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_devmaster_email=$DEVMASTER_ADMIN_EMAIL"
+fi
+
+if [ -n "$DEVSHOP_SUPPORT_LICENSE_KEY" ]; then
+  ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS devshop_support_license_key=$DEVSHOP_SUPPORT_LICENSE_KEY"
 fi
 
 if [ -n "$ANSIBLE_EXTRA_VARS" ]; then
