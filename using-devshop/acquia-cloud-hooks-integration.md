@@ -8,7 +8,6 @@ The code in acquia.drush.inc will detect an acquia repo and trigger your hooks t
 
 See the Acquia Cloud Hooks repository for more information and samples: [https://github.com/acquia/cloud-hooks](https://github.com/acquia/cloud-hooks)
 
-Currently, only the `post-code-update` hook is supported. More to come.
 
 ## Hooks
 
@@ -34,7 +33,7 @@ post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
 
 ### post-db-copy
 
-_\*Coming Soon..._
+Triggered after Sync task.
 
 ```text
 post-db-copy site target-env db-name source-env
@@ -42,7 +41,7 @@ post-db-copy site target-env db-name source-env
 
 ### post-files-copy
 
-_\*Coming Soon..._
+Triggered after Sync task.
 
 ```text
 post-files-copy mysite prod dev
