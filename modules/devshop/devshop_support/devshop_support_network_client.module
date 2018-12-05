@@ -220,6 +220,13 @@ function devshop_support_network_client_client_data($devshop_hostname) {
 }
 
 /**
+ * Wrapper for devshop_support_network_client_post_data();
+ */
+function devshop_support_check_license() {
+  devshop_support_network_client_post_data();
+}
+
+/**
  * Post server data to devshop.support.
  *
  * @return object
