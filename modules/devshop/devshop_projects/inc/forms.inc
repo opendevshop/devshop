@@ -1213,7 +1213,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['server_stack']['db_server']['#tree'] = FALSE;
   unset($form['db_server']);
 
-  $web_servers = hosting_get_servers('http');
+  $web_servers = hosting_get_servers('http', FALSE);
   $form['server_stack']['web_server'] = array(
     '#type' => 'radios',
     '#title' => t('Web server'),
@@ -1237,7 +1237,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       '#markup' => l($web_servers[$web_server_nid], "node/$web_server_nid", array('attributes' => array('target' => '_blank'))),
     );
 
-    $db_servers = hosting_get_servers('db');
+    $db_servers = hosting_get_servers('db', FALSE);
     $db_server_nid = $project->settings->default_environment['db_server'];
     $form['server_stack']['db_server']['#type'] = 'value';
     $form['server_stack']['db_server']['#value'] = $db_server_nid;
