@@ -75,21 +75,6 @@ function devshop_support_network_client_init()
   }
 }
 
-
-/**
- * Implements hook_intercomio_settings_alter().
- *
- * Loads CAS username into "name" field so intercom knows it's you!
- *
- * @TODO: Lock down CAS username! Local devshop can currently very easily edit
- * their CAS username and impersonate anyone in our support widget!
- */
-function devshop_support_network_client_intercomio_settings_alter(&$settings) {
-    $account = user_load($settings['user_id']);
-    unset($settings['user_id']);
-    $settings['name'] = $account->cas_name;
-}
-
 /**
  * Implements hook_user_view_alter().
  */
