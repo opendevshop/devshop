@@ -354,7 +354,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
 
   // HTTP Server select.
-  $http_servers = hosting_get_servers('http');
+  $http_servers = hosting_get_servers('http', FALSE);
   if (count($http_servers)) {
     $form['project']['settings']['default_environment']['web_server'] = array(
       '#title' => t('Web server'),
@@ -365,7 +365,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
 
   // DB Server select.
-  $db_servers = hosting_get_servers('db');
+  $db_servers = hosting_get_servers('db', FALSE);
   if (count($db_servers)) {
     $form['project']['settings']['default_environment']['db_server'] = array(
       '#title' => t('Database server'),
@@ -376,7 +376,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
 
   // Solr Server Select
-  $solr_servers = hosting_get_servers('solr');
+  $solr_servers = hosting_get_servers('solr', FALSE);
   if (count($solr_servers)) {
     $form['project']['settings']['default_environment']['solr_server'] = array(
       '#title' => t('Solr server'),
