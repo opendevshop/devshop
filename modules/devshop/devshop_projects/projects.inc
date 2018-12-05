@@ -233,7 +233,7 @@ function devshop_project_load($node) {
 
     // On project create, there is no site, so there is no db_server.
     if (empty($environment->db_server)) {
-      $db_servers = hosting_get_servers('db');
+      $db_servers = hosting_get_servers('db', FALSE);
       // Project wizard saves db_server to "settings". If that doesn't exist, just use the default db server.
       if (empty($environment->settings->db_server)) {
         $environment->settings->db_server = $environment->db_server_nid = key($db_servers);
@@ -258,7 +258,7 @@ function devshop_project_load($node) {
     if (module_exists('hosting_solr')) {
       $server_nid = db_query("SELECT server FROM {hosting_solr} WHERE nid = :nid", array(':nid' => $environment->site))->fetchField();
 
-      $servers = hosting_get_servers('solr');
+      $servers = hosting_get_servers('solr', FALSE);
       if ($server_nid && isset($servers[$server_nid])) {
         $environment->servers['solr'] = array(
           'nid' => $server_nid,
