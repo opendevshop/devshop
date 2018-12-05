@@ -21,7 +21,7 @@ projects[devmaster][download][type] = "git"
 ; This is so that different version of "devshop" (the branch) can install a different version of devmaster.
 projects[devmaster][type] = profile
 projects[devmaster][download][type] = git
-projects[devmaster][download][branch] = support-launch
+projects[devmaster][download][branch] = devshop-support
 projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
 
 ; CAS
