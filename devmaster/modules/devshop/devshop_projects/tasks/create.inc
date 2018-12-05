@@ -39,7 +39,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
   // If no db server is set and there is no default set.
   elseif (empty($settings->db_server)) {
-    $servers = hosting_get_servers('db');
+    $servers = hosting_get_servers('db', FALSE);
     reset($servers);
     $settings->db_server = key($servers);
   }

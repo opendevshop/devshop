@@ -716,7 +716,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   // Aegir properties
   // @TODO: better client & DB support
   $node->client = HOSTING_DEFAULT_CLIENT;
-  $servers = hosting_get_servers('db');
+  $servers = hosting_get_servers('db', FALSE);
   $server = $db_server ? $db_server : key($servers);
   $node->db_server = $server;
 
