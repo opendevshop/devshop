@@ -61,9 +61,6 @@ function devshop_support_network_client_init()
   $conf['cas_domain'] = '';
   $conf['cas_hide_email'] = 1;
   $conf['cas_hide_password'] = 1;
-  $conf['intercomio_app_id'] = 'ufeta82d';
-  $conf['intercomio_api_key'] = 'dG9rOmFkM2I3NmFmXzg2OGRfNDZlNV84ZTE1XzQ1MzM3Mjc2YzgzNDoxOjA';
-  $conf['intercomio_visibility_roles'] = array(1);
 
   if (variable_get('devshop_support_license_key_status', 'none') != 'none') {
     $conf['cas_login_form'] =  2;
@@ -254,29 +251,12 @@ function devshop_support_network_client_post_data($license_key = NULL) {
 
   $response_data = json_decode($response->data);
 
-  if (!empty($response_data->_CUSTOMER_MESSAGE)) {
-    variable_set('devshop_support_customer_message', $response_data->_CUSTOMER_MESSAGE);
+  // Set all arbitrary variables
+  if (!empty($response_data->_VARIABLES)) {
+    foreach ($response_data->_VARIABLES as $name => $value) {
+      variable_set($name, $value);
+    }
   }
-  else {
-    variable_set('devshop_support_customer_message', '');
-  }
-
-  if (!empty($response_data->_CUSTOMER_MESSAGE_TYPE)) {
-    variable_set('devshop_support_customer_message_type', $response_data->_CUSTOMER_MESSAGE_TYPE);
-  }
-  else {
-    variable_set('devshop_support_customer_message_type', 'status');
-
-  }
-
-  if (!empty($response_data->_LICENSE_STATUS)) {
-    variable_set('devshop_support_license_key_status', $response_data->_LICENSE_STATUS);
-  }
-  else {
-    variable_set('devshop_support_license_key_status', 'none');
-
-  }
-
   // Don't do any more for certain hostnames.
   if ($devshop_hostname == 'devshop.local.computer') {
     return;
