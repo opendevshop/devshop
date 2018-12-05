@@ -13,7 +13,7 @@ projects[devshop_stats][subdir] = "contrib"
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
 projects[hosting][version] = "3.x"
-projects[hosting_https][patch][] = "https://www.drupal.org/files/issues/2018-12-05/3018114-client-optional.patch"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-05/3018114-client-optional.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
@@ -24,7 +24,7 @@ projects[hosting_git][version] = "3.162"
 
 projects[hosting_https][subdir] = aegir
 projects[hosting_https][version] = "3.160"
-; projects[hosting_https][patch][] = "https://www.drupal.org/files/issues/2018-11-17/3014468-graceful-fail_0.patch"
+projects[hosting_https][patch][] = "https://www.drupal.org/files/issues/2018-11-17/3014468-graceful-fail_0.patch"
 
 projects[hosting_remote_import][subdir] = aegir
 projects[hosting_remote_import][version] = "3.160"
