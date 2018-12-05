@@ -16,6 +16,14 @@ projects[devmaster][version] = 1.x-dev
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 
+; DEVELOPMENT OVERRIDE
+; COMMENT OUT BEFORE RELEASE
+; This is so that different version of "devshop" (the branch) can install a different version of devmaster.
+projects[devmaster][type] = profile
+projects[devmaster][download][type] = git
+projects[devmaster][download][branch] = support-launch
+projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
+
 ; CAS
 libraries[cas][download][type] = "git"
 libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
