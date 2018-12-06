@@ -1244,3 +1244,8 @@ img.login-images {
 footer.anonymous-page {
     padding-top: 5em;
 }
+
+#hosting-site-edit-info label {
+    position: relative;
+    left: 0;
+}
