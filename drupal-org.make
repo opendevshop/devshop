@@ -71,7 +71,6 @@ projects[libraries][version] = 2.5
 projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
 ; projects[hybridauth][version] = 2.15
-projects[composer_autoloader][version] = 1.3
 projects[statsd][version] = 1.1
 
 ; PHPCAS
