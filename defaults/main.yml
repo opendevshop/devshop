@@ -14,7 +14,7 @@ devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
 # Must coincide with a drush release: https://github.com/drush-ops/drush/releases
-drush_release_version: 8.1.2
+drush_release_version: 8.1.18
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo
