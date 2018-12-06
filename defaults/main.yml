@@ -11,7 +11,7 @@ devshop_devmaster_email: admin@local.devshop.site
 # The version of devshop & devmaster to install.
 # Overridden by install.sh
 devshop_version: 1.x
-devshop_cli_version: 1.x
+devshop_cli_version: {{ devshop_version }}
 
 # Must coincide with a drush release: https://github.com/drush-ops/drush/releases
 drush_release_version: 8.1.2
