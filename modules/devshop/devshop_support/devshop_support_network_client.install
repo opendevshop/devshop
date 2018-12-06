@@ -16,7 +16,6 @@ function devshop_support_network_client_install() {
   module_enable(array('intercomio', 'devshop_permissions', 'composer_manager'));
 
   variable_set('composer_manager_vendor_dir', 'sites/all/composer/vendor');
-  variable_set('composer_manager_file_dir', 'sites/all/composer');
   variable_set('composer_manager_autobuild_file', 0);
 }
 
@@ -25,4 +24,11 @@ function devshop_support_network_client_install() {
  */
 function devshop_support_network_client_update_7000() {
   devshop_support_network_client_install();
+}
+
+/**
+ * Delete the composer_manager_file_dir so we just use the default.
+ */
+function devshop_support_network_client_update_7001() {
+  variable_del('composer_manager_file_dir');
 }
