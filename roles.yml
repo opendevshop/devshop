@@ -28,7 +28,7 @@
   version: 1.0.5
 
 - name: opendevshop.devmaster
-  version: 1.5.0-rc1
+  version: 1.5.0-rc2
 
 - name: opendevshop.aegir-user
   version: 1.4.0
