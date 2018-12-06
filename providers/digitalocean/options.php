@@ -134,7 +134,7 @@ function aegir_digital_ocean_options_form_submit($form, $form_state) {
     $images = $image->getAll();
     $image_options = array();
     foreach ($images as $image) {
-      $image_options[$image->slug] = $image->distribution . ' - ' . $image->name;
+      $image_options[$image->id] = $image->distribution . ' - ' . $image->name;
     }
     $options['images'] = $image_options;
 
