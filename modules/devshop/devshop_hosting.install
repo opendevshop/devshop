@@ -231,3 +231,10 @@ function devshop_hosting_update_7016() {
 function devshop_hosting_update_7100() {
   module_enable(array('devshop_support_network_client'));
 }
+
+/**
+ * Disable client requirement.
+ */
+function devshop_hosting_update_7101() {
+  variable_set('hosting_client_require_client_to_create_site', FALSE);
+}
