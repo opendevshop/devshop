@@ -25,6 +25,7 @@ projects[devmaster][download][branch] = devshop-support
 projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
 
 ; CAS
+; The CAS and HybridAuth libraries are not whitelisted by drupal.org, so we include them here.
 libraries[cas][download][type] = "git"
 libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
 libraries[cas][download][tag] = "1.3.5"
@@ -35,10 +36,3 @@ libraries[hybridauth][download][type] = "git"
 libraries[hybridauth][download][url] = "https://github.com/hybridauth/hybridauth"
 libraries[hybridauth][download][tag] = "v2.10.0"
 libraries[hybridauth][destination] = "libraries"
-
-; Intercom Module
-projects[intercomio][type] = module
-projects[intercomio][download][type] = git
-projects[intercomio][download][branch] = composer-autoload
-projects[intercomio][download][url] = "https://github.com/thinkdrop/drupal-intercomio.git"
-projects[intercomio][version] = 1.x
