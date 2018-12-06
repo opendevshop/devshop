@@ -41,9 +41,9 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                         node_save($task->ref);
 
                         // reload the node to check that IPs were saved.
-                        $server = $task->ref = node_load($task->ref->nid);
+                        $server = $task->ref = node_load($task->ref->nid, TRUE);
                         if (empty($server->ip_addresses)) {
-                            return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved!');
+                            return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved to the node!');
                         }
                         break;
                     }
