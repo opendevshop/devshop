@@ -37,18 +37,6 @@ function devshop_support_network_client_init()
 {
   global $conf;
 
-  if ( file_exists(DRUPAL_ROOT . '/profiles/devmaster/libraries/cas')) {
-    $cas_library_dir = 'profiles/devmaster/libraries/cas';
-  }
-  elseif (file_exists(DRUPAL_ROOT . '/sites/all/libraries/cas')) {
-    $cas_library_dir = 'sites/all/libraries/cas';
-  }
-  else {
-    $cas_library_dir = '';
-  }
-
-  $conf['cas_library_dir'] = $cas_library_dir;
-
   $conf['cas_version'] = '2.0';
   $conf['cas_server'] = 'devshop.support';
   $conf['cas_uri'] = '/cas';
@@ -62,7 +50,7 @@ function devshop_support_network_client_init()
   $conf['cas_hide_email'] = 1;
   $conf['cas_hide_password'] = 1;
 
-  if (variable_get('devshop_support_license_key_status', 'none') != 'none') {
+  if (variable_get('devshop_support_license_key_status', 'none') == 'active') {
     $conf['cas_login_form'] =  2;
     $conf['cas_registerURL'] = 'https://devshop.support/user/register';
     $conf['cas_changePasswordURL'] = 'https://devshop.support/user/password';
