@@ -9,7 +9,7 @@ function devshop_support_network_client_menu() {
         'title' => 'DevShop Support',
         'description' => 'Configure DevShop Support.',
         'page callback' => 'drupal_get_form',
-        'page arguments' => array('devshop_support_network_client_settings'),
+        'page arguments' => array('devshop_support_network_client_settings_form'),
         'access arguments' => array('administer devshop support'),
         'type' => MENU_LOCAL_TASK,
     );
@@ -89,7 +89,7 @@ function devshop_support_network_client_user_view_alter(&$build) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function devshop_support_network_client_settings() {
+function devshop_support_network_client_settings_form() {
     $node = hosting_context_load('hostmaster');
     $license_key = variable_get('devshop_support_license_key', '');
 
@@ -131,7 +131,7 @@ HTML;
         ]),
         '#default_value' => variable_get('devshop_support_license_key', ''),
         '#element_validate' => array(
-          'devshop_support_network_client_settings_validate_key',
+          'devshop_support_network_client_settings_form_validate_key',
         ),
     ];
 
@@ -145,7 +145,7 @@ HTML;
  * @param $form_state
  * @param $form
  */
-function devshop_support_network_client_settings_validate_key($element, &$form_state, $form) {
+function devshop_support_network_client_settings_form_validate_key($element, &$form_state, $form) {
   $response = devshop_support_network_client_post_data($element['#value']);
 
   if ($response === TRUE) {
@@ -153,7 +153,10 @@ function devshop_support_network_client_settings_validate_key($element, &$form_s
 
   }
   elseif ($response->code != 200) {
-    form_error($element,  $response->status_message . ' ' . $response->error);
+    dsm($response);
+    $message = trim($response->status_message . ' ' . $response->error);
+    $message = !empty($message)? $message: t('Something went wrong. No status message or error returned from server.');
+    form_error($element,  $message);
   }
   else {
     drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
@@ -242,13 +245,15 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   $response = drupal_http_request($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key, $options);
 //  drupal_set_message($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key);
 
-  watchdog('devshop_support_api', ($response->code == 200? 'Success: ': 'Failure: ') . print_r($response, 1 ));
+  watchdog('devshop_support_api', 'DevShop Support License Request' . ($response->code == 200? 'Success: ': 'Failure: ') . print_r($response, 1 ));
 
   $response_data = json_decode($response->data);
 
   // Set all arbitrary variables
   if (!empty($response_data->_VARIABLES)) {
     foreach ($response_data->_VARIABLES as $name => $value) {
+      watchdog('devshop_support_api', "Setting variable $name = $value");
+
       variable_set($name, $value);
     }
   }
