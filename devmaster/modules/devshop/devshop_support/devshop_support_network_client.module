@@ -37,7 +37,7 @@ function devshop_support_network_client_init()
 {
   global $conf;
 
-  $devshop_support_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
+  $devshop_support_url = variable_get('devshop_support_url', 'devshop.support');
 
   // cas_server variable is now passed from support license payload.
   // @see devshop_support_network_page_callback() in devshop_support_network.module.
