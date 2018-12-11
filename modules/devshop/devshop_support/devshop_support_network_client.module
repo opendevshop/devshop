@@ -434,6 +434,8 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     'hosting_statsd',
   ));
 
+  drupal_flush_all_caches();
+
   // Don't do any more for certain hostnames.
   if ($devshop_hostname == 'devshop.local.computer') {
     return $response;
