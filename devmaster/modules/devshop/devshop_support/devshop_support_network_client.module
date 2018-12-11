@@ -93,49 +93,181 @@ function devshop_support_network_client_settings_form() {
     $node = hosting_context_load('hostmaster');
     $license_key = variable_get('devshop_support_license_key', '');
 
-    $get_support_url = variable_get('devshop_support_url', 'https://devshop.support');
+    $service_url = variable_get('devshop_support_url', 'https://devshop.support');
     $devshop_hostname = $_SERVER['HTTP_HOST'];
+    $service_title = t('DevShop.Cloud');
 
-    $form['#prefix'] = <<<HTML
-<div class="jumbotron">
-    <h1>Welcome to <a href="https://devshop.support?ref=jumbotron" target="_blank">DevShop.Support</a>.</h1>
-    <h2>Support-Level-Agreements for your DevShop Server.</h2>
+    $data = variable_get('devshop_support_license_raw_data', NULL);
 
-    <p>Get a DevShop.Support license for uptime monitoring, automatic updates, and white glove support for your development and production pipelines.</p>
+    $title = t('Hi!');
+    $status_items = array();
 
-HTML;
-    $form['#suffix'] = '</div>';
+    $license_key_status = variable_get('devshop_support_license_key_status', 'none');
 
-    $form['devshop_support_server_hostname'] = [
-        '#type'  => 'item',
-        '#title' => t('DevShop Server Hostname'),
-        '#description' => t('The hostname registered to this license key.'),
-        '#markup' => $devshop_hostname,
-    ];
+    switch ($license_key_status) {
+      case 'active': $license_class = 'success'; break;
+      case 'none': $license_class = 'info'; break;
+      case 'suspended': $license_class = 'warning'; break;
+      case 'cancelled': $license_class = 'danger'; break;
+    }
 
-    $form['devshop_support_url'] = [
-        '#type'  => 'textfield',
-        '#title' => t('DevShop.Support URL'),
-        '#description' => t('The URL for the devshop.support server. Should always be set to https://devshop.support'),
-        '#default_value' => variable_get('devshop_support_url', 'https://devshop.support'),
-    ];
 
-    $form['devshop_support_license_key'] = [
+    if ($license_key_status == 'none') {
+      $message = 'There is no license for this server.  !get_one_link';
+    }
+    else {
+      $message = "Server license is !status.";
+    }
+    $status_items[] =  array(
+      'data' => t($message, array(
+        '!status' => "<strong>{$license_key_status}</strong>",
+        '!get_one_link' => l(t('Get One'), "{$service_url}/server/{$devshop_hostname}", array(
+          'attributes' => array('class' => array('btn btn-primary btn-sm'))
+        )),
+      )),
+      'class' => "list-group-item list-group-item-{$license_class}",
+    );
+
+    // Calculate user limit
+    if ($license_key_status != 'none') {
+      $limit_class = devshop_support_limit_class($data->_LIMITS->users->used, $data->_LIMITS->users->available, 1, 'success');
+      $status_items[] =  array(
+        'data' => t("Using !used of !available allowed users.", array(
+          '!used' => $data->_LIMITS->users->used,
+          '!available' => $data->_LIMITS->users->available,
+        )),
+        'class' => "list-group-item list-group-item-{$limit_class}",
+      );
+
+      // Calculate project limit
+      $limit_class = devshop_support_limit_class($data->_LIMITS->projects->used, $data->_LIMITS->projects->available, 1, 'success');
+      $status_items[] =  array(
+        'data' => t("Using !used of !available allowed projects.", array(
+          '!used' => $data->_LIMITS->projects->used,
+          '!available' => $data->_LIMITS->projects->available,
+        )),
+        'class' => "list-group-item list-group-item-{$limit_class}",
+      );
+    }
+
+    $form['status_display'] = array(
+      '#theme' => 'item_list',
+      '#items' => $status_items,
+      '#attributes' => array(
+        'class' => array('list-group')
+      )
+    );
+
+    if (devshop_cloud_hostname($devshop_hostname)) {
+      $subtitle = t('Welcome to !devshop_cloud_link: The Drupal DevOps Platform.', array(
+        '!devshop_cloud_link' => l($service_title, $service_url, array(
+          'attributes' => array('target' => '_blank')
+        )),
+      ));
+      $description = t('This server is owned and fully managed by the !devshop_cloud_link service.', array(
+        '!devshop_cloud_link' => l($service_title, $service_url, array(
+          'attributes' => array('target' => '_blank')
+        )),
+      ));
+      $button = l(t('Manage @server on @service', array(
+        '@server' => $devshop_hostname,
+        '@service' => $service_title,
+      )), "{$service_url}/server/{$devshop_hostname}", array(
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array('btn btn-primary btn-lg'),
+        )
+      ));
+    }
+    else {
+      $subtitle = t('Welcome to !devshop_support_link: Host Your Own Drupal', array(
+        '!devshop_support_link' => l(t('DevShop.Support'), $service_url, array(
+          'attributes' => array('target' => '_blank')
+        )),
+      ));
+      if (empty($data)) {
+        $description = '';
+      }
+      else {
+
+        $description = t('This server is owned by the !team_link Team and fully managed by the !devshop_cloud_link service.', array(
+          '!team_link' => l($data->_TEAM->name, $data->_TEAM->url),
+          '!devshop_cloud_link' => l($service_title, $service_url, array(
+              'attributes' => array('target' => '_blank')
+          ))
+        ));
+      }
+
+      if ($license_key_status != 'none') {
+        $button = l(t('Manage @server on @service', array(
+          '@server' => $devshop_hostname,
+          '@service' => $service_title,
+        )), "{$service_url}/server/{$devshop_hostname}", array(
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn btn-primary'),
+          )
+        ));
+      }
+      else {
+        $button = '';
+      }
+
+      $form['devshop_support_license_key'] = [
         '#type' => 'textfield',
         '#title' => t('DevShop Support License Key'),
         '#description' => t('Enter the devshop.support license key for this devshop. If you are unsure visit !link to confirm your license.', [
-            '%site' => $node->title,
-            '!link' => l('devshop.support/server/' . $node->title, 'https://' . 'devshop.support/server/' . $node->title, [
-                'attributes' => ['target' => '_blank']
-            ]),
+          '%site' => $node->title,
+          '!link' => l('devshop.support/server/' . $node->title, 'https://' . 'devshop.support/server/' . $node->title, [
+            'attributes' => ['target' => '_blank']
+          ]),
         ]),
         '#default_value' => variable_get('devshop_support_license_key', ''),
         '#element_validate' => array(
           'devshop_support_network_client_settings_form_validate_key',
         ),
-    ];
+        '#required' => 1,
+        '#weight' => 1,
+      ];
+      $form = system_settings_form($form);
 
-    return system_settings_form($form);
+      $form['actions']['submit']['#value'] = t('Verify License Key');
+      $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success';
+      $form['actions']['submit']['#icon'] = '<i class="fa fa-check"></i>';
+    }
+
+    $form['#prefix'] = <<<HTML
+<div class="jumbotron">
+  
+    <h1>$title</h1>
+    <h2>$subtitle</h2>
+
+    <p>$description</p>
+    <p>
+      $button
+    </p>
+HTML;
+    $form['#suffix'] = '</div>';
+    return $form;
+}
+
+/**
+ * Determine if this hostname is in the devshop.cloud network.
+ * @param $hostname
+ * @return bool
+ */
+function devshop_cloud_hostname($hostname) {
+  foreach (variable_get('devshop_cloud_hostnames', array(
+    'devshop.cloud',
+
+// Uncomment this for development.
+//    'devshop.local.computer'
+  )) as $supported_domain) {
+    $main_domain_of_hostname = substr($hostname, -strlen($supported_domain), strlen($supported_domain));
+    if ($main_domain_of_hostname == $supported_domain) {
+      return TRUE;
+    }
+  }
 }
 
 /**
@@ -247,6 +379,9 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   watchdog('devshop_support_api', 'DevShop Support License Request' . ($response->code == 200? 'Success: ': 'Failure: ') . print_r($response, 1 ));
 
   $response_data = json_decode($response->data);
+
+  // Save raw data to a variable.
+  variable_set('devshop_support_license_raw_data', $response_data);
 
   // Set all arbitrary variables
   if (!empty($response_data->_VARIABLES)) {
@@ -448,6 +583,41 @@ function devshop_support_network_client_support_status() {
     return $blocks;
 }
 
+
+/**
+ * @param $num
+ * @param $max
+ * @param int $warning_threshold
+ * @return string
+ */
+function devshop_support_limit_class($num, $max, $warning_threshold = 1, $default_class = 'default') {
+
+  if (strtolower($max) == 'unlimited') {
+    return 'success';
+  }
+
+  $num = (int) $num;
+  $max = (int) $max;
+
+  if ($max <= $warning_threshold) {
+    $warning_threshold = 0;
+  }
+
+  if ($num > $max) {
+    return 'danger';
+  }
+  if ($num == $max) {
+    return 'warning';
+  }
+  if ($num >= ($max - $warning_threshold)) {
+    return 'warning';
+  }
+  if ($num < $max) {
+    return $default_class;
+  }
+
+  return $default_class;
+}
 
 /**
  * Implements hook_hosting_queues().
