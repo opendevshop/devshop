@@ -37,6 +37,12 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#title' => t('URLs'),
   );
 
+  $form['urls']['devshop_projects_allow_changing_project_git_url'] = array(
+    '#title' => t("Allow changing a project's Default Git URL."),
+    '#description' => t("When editing a project, do not allow changes to the Git URL."),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_projects_allow_changing_project_git_url', TRUE),
+  );
   $form['urls']['devshop_projects_allow_custom_base_url'] = array(
     '#title' => t('Allow custom Environment Domain Name Pattern per project.'),
     '#description' => t('If enabled each project can set an Environment URL Pattern.'),
