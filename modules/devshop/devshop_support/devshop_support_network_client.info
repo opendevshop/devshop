@@ -4,4 +4,3 @@ package = DevShop
 core = 7.x
 configure = admin/devshop/support
 
-dependencies[] = cas
