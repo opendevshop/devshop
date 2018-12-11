@@ -417,11 +417,19 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   // Set all arbitrary variables
   if (!empty($response_data->_VARIABLES)) {
     foreach ($response_data->_VARIABLES as $name => $value) {
-      watchdog('devshop_support_api', "Setting variable $name = $value");
-
       variable_set($name, $value);
     }
   }
+
+  // Enable needed modules.
+  module_enable(array(
+    'cas',
+    'intercomio',
+    'devshop_permissions',
+    'composer_manager',
+    'hosting_statsd',
+  ));
+
   // Don't do any more for certain hostnames.
   if ($devshop_hostname == 'devshop.local.computer') {
     return $response;
