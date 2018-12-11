@@ -1,8 +1,0 @@
-#!/bin/bash
-
-function retval()
-{
-    return 1;
-}
-
-retval
