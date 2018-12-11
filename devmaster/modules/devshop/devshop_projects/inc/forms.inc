@@ -35,16 +35,22 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $node->title,
     '#maxlength' => 255,
   );
-  $form['project']['git_url'] = array(
-    '#type' => 'value',
-    '#value' => $project->git_url,
-  );
   $form['project']['codebase'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Settings'),
     '#group' => 'project_settings',
     '#tree' => FALSE,
     '#weight' => -11,
+  );
+  $form['project']['codebase']['git_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default Git Repository URL'),
+    '#description' => t('The SSH or HTTP url for the git repository to use for new environments. Changing this will not change the git remote for existing environments.'),
+    '#default_value' => $project->git_url,
+    '#parents' => array(
+      'project',
+      'git_url',
+    ),
   );
   $form['project']['codebase']['code_path'] = array(
     '#type' => 'textfield',
@@ -122,6 +128,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
     $form['project']['codebase']['code_path']['#type'] = 'value';
     $form['project']['codebase']['code_path']['#value'] = $form['project']['codebase']['code_path']['#default_value'];
+  }
+
+  // Prevent editing git url path unless allowed.
+  if (!variable_get('devshop_projects_allow_changing_project_git_url', TRUE)) {
+    $form['project']['codebase']['git_url']['#type'] = 'value';
+    $form['project']['codebase']['git_url']['#value'] = $form['project']['codebase']['git_url']['#default_value'];
   }
 
   // Project Settings
