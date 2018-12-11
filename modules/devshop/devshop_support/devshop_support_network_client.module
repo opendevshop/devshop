@@ -37,14 +37,18 @@ function devshop_support_network_client_init()
 {
   global $conf;
 
+  $devshop_support_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
+
+  // cas_server variable is now passed from support license payload.
+  // @see devshop_support_network_page_callback() in devshop_support_network.module.
+  // $conf['cas_server'] = variable_get('devshop_support_url', 'devshop.support');
+
   $conf['cas_version'] = '2.0';
-  $conf['cas_server'] = 'devshop.support';
   $conf['cas_uri'] = '/cas';
-  $conf['cas_logout_destination'] = 'https://devshop.support/user/logout';
+  $conf['cas_logout_destination'] = $devshop_support_url . '/user/logout';
   $conf['cas_login_invite'] = '';
   $conf['cas_login_redir_message'] = '';
   $conf['cas_login_drupal_invite'] = 'Sign in with Drupal';
-  $conf['cas_login_message'] = t('Logged in via DevShop.Support as %cas_username.');
   $conf['cas_user_register'] = 0;
   $conf['cas_domain'] = '';
   $conf['cas_hide_email'] = 1;
@@ -52,8 +56,8 @@ function devshop_support_network_client_init()
 
   if (variable_get('devshop_support_license_key_status', 'none') == 'active') {
     $conf['cas_login_form'] =  2;
-    $conf['cas_registerURL'] = 'https://devshop.support/user/register';
-    $conf['cas_changePasswordURL'] = 'https://devshop.support/user/password';
+    $conf['cas_registerURL'] = $devshop_support_url . '/user/register';
+    $conf['cas_changePasswordURL'] = $devshop_support_url . '/user/password';
   }
   else {
     $conf['cas_login_form'] =  0;
