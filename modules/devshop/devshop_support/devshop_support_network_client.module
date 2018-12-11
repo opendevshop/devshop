@@ -104,6 +104,9 @@ function devshop_support_network_client_settings_form() {
 
     $license_key_status = variable_get('devshop_support_license_key_status', 'none');
 
+    $key_to_submit = empty($license_key_status) && !empty($_GET['k'])? $_GET['k']: NULL;
+
+
     switch ($license_key_status) {
       case 'active': $license_class = 'success'; break;
       case 'none': $license_class = 'info'; break;
@@ -113,19 +116,28 @@ function devshop_support_network_client_settings_form() {
 
 
     if ($license_key_status == 'none') {
-      $message = 'There is no license for this server.  !get_one_link';
+      if (empty($key_to_submit)) {
+        $message = 'There is no license for this server.  !get_one_link';
+        $alert_class = 'primary';
+      }
+      else {
+        $message = 'License key is ready to validate! Press <em>Verify License Key</em> below to activate DevShop Support.';
+        $alert_class = 'success';
+      }
     }
     else {
       $message = "Server license is !status.";
+      $alert_class = $license_class;
+
     }
     $status_items[] =  array(
       'data' => t($message, array(
         '!status' => "<strong>{$license_key_status}</strong>",
         '!get_one_link' => l(t('Get One'), "{$service_url}/server/{$devshop_hostname}", array(
-          'attributes' => array('class' => array('btn btn-primary btn-sm'))
+          'attributes' => array('class' => array("btn btn-sm btn-{$alert_class}"))
         )),
       )),
-      'class' => "list-group-item list-group-item-{$license_class}",
+      'class' => "list-group-item list-group-item-{$alert_class}",
     );
 
     // Calculate user limit
@@ -229,6 +241,23 @@ function devshop_support_network_client_settings_form() {
         '#required' => 1,
         '#weight' => 1,
       ];
+
+
+      // If "key to submit" is set, we've been redirected from devshop.support.
+      if ($key_to_submit) {
+        $title = t('Almost There!');
+        $form['devshop_support_license_key']['#type'] = 'value';
+        $form['devshop_support_license_key']['#value'] = $key_to_submit;
+
+        $form['key_to_submit'] = array(
+          '#type' => 'item',
+          '#title' => t('DevShop License Key for @server', array(
+            '@server' => $devshop_hostname,
+          )),
+          '#markup' => "<div>{$key_to_submit}</div>",
+        );
+      }
+
       $form = system_settings_form($form);
 
       $form['actions']['submit']['#value'] = t('Verify License Key');
@@ -285,13 +314,15 @@ function devshop_support_network_client_settings_form_validate_key($element, &$f
 
   }
   elseif ($response->code != 200) {
-    $message = trim($response->status_message . ' ' . $response->error);
+    $message = trim($response->status_message);
+    $message .= empty($message)? trim($response->error): '';
     $message = !empty($message)? $message: t('Something went wrong. No status message or error returned from server.');
     form_error($element,  $message);
   }
   else {
     drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
   }
+  $form_state['redirect'] = 'admin/devshop/support';
 }
 
 /**
