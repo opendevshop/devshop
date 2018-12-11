@@ -2,6 +2,7 @@ name = Aegir Ansible Roles
 description = Manage your servers with Ansible Roles
 package = Aegir Ansible
 dependencies[] = hosting_server
+dependencies[] = composer_manager
 
 core = 7.x
 
