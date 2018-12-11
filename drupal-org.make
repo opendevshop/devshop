@@ -72,6 +72,7 @@ projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
 ; projects[hybridauth][version] = 2.15
 projects[statsd][version] = 1.1
+projects[hosting_statsd][version] = 1.x
 
 ; Timeago module
 projects[timeago][version] = 2.3
