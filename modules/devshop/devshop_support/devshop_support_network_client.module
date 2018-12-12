@@ -73,8 +73,14 @@ function devshop_support_network_client_init()
 
 /**
  * Implements hook_intercomio_settings_alter().
+ *
+ * Pass the account "cas_name" as the user_id
  */
-function devshop_support_network_client_intercomio_settings_alter(&$settings) {
+function devshop_support_network_client_intercomio_settings_alter(&$settings, $account) {
+
+  if (!empty($account->cas_user)) {
+    $settings['user_id'] = $account->name;
+  }
 }
 
 /**
