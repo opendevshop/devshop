@@ -17,6 +17,10 @@ function ansible_services_drush_init()
     require_once('Provision/Service/Ansible.php');
     require_once('Provision/Service/db/ansible_mysql.php');
     require_once('Provision/Service/http/ansible_apache.php');
+
+    if (file_exists(d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php')) {
+      require_once( d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php');
+    }
   }
 }
 

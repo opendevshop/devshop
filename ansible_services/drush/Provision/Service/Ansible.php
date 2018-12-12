@@ -1,9 +1,5 @@
 <?php
 
-if (file_exists(d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php')) {
-  require_once( d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php');
-}
-
 use Asm\Ansible\Ansible;
 
 
