@@ -13,7 +13,18 @@
  */
 function ansible_core_drush_init()
 {
-//  if (file_exists(d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php')) {
-//    require_once( d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php');
-//  }
+  $autoloader = drush_get_option('hostmaster_composer_autoload_path');
+  if (file_exists($autoloader . '/autoload.php')) {
+    require_once($autoloader . '/autoload.php');
+  }
+}
+
+/**
+ * Implements drush_hook_pre_hosting_task()
+ */
+function drush_ansible_core_pre_hosting_task() {
+
+  $task =& drush_get_context('HOSTING_TASK');
+  $task->options['hostmaster_composer_autoload_path'] = DRUPAL_ROOT . '/' . variable_get('composer_manager_vendor_dir');
+
 }
