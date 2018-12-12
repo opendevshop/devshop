@@ -73,7 +73,7 @@ projects[cas_attributes][version] = 1.0-rc3
 projects[token][version] = 1.7
 ; projects[hybridauth][version] = 2.15
 projects[statsd][version] = 1.1
-projects[hosting_statsd][version] = 1.x
+projects[hosting_statsd][version] = 1.0-beta1
 
 ; Timeago module
 projects[timeago][version] = 2.3
@@ -87,4 +87,4 @@ libraries[timeago][destination] = libraries
 projects[bootstrap][type] = theme
 projects[bootstrap][version] = "3.22"
 
-projects[intercomio][version] = 1.0-beta1
+projects[intercomio][version] = 1.0-beta2
