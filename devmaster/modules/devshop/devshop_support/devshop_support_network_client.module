@@ -814,6 +814,7 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
         )
       ),
     );
+    $license_active = variable_get('devshop_support_license_key_status', 'none') == 'active';
     $form['note2'] = array(
       '#prefix' => '<p>',
       '#suffix' => '</p>',
@@ -821,18 +822,20 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
     );
     $form['cloud_login'] = array(
       '#markup' => '<a href="/cas" class="btn btn-default btn-group-justified"><i class="fa fa-cloud"></i> Sign in with DevShop.Support</a>',
+      '#access' => $license_active,
     );
 
     $github_login_url = variable_get('devshop_support_url', 'https://devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
     $form['github_login'] = array(
       '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> Sign in with GitHub</a>',
+      '#access' => $license_active,
     );
 
     $text = t('Sign in with @local', array(
       '@local' => variable_get('site_title', $_SERVER['HTTP_HOST']),
     ));
 
-    if (variable_get('devshop_support_allow_local_login', TRUE)) {
+    if (variable_get('devshop_support_allow_local_login', TRUE) || variable_get('devshop_support_license_key_status', 'none') == 'none') {
 
       $items[] = array(
         'data' => '<a href="#" class="btn btn-link btn-group-justified">' . $text . '</a>',
