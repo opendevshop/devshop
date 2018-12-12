@@ -90,6 +90,11 @@ class Provision_Service_Ansible extends Provision_Service {
    */
   public function runPlaybook() {
 
+    // Handle pre-composer manager install.
+    if (!class_exists('Asm\Ansible\Ansible')) {
+      return;
+    }
+
     drush_log('Provision_Service_http_ansible_apache::init_server', 'status');
 
     // Check if ansible exists
