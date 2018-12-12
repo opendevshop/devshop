@@ -46,8 +46,7 @@ dependencies[] = hosting_apache_https
 ;dependencies[] = fix_ownership
 
 ; Drupal contrib
-dependencies[] = admin_menu
-dependencies[] = admin_menu_toolbar
+dependencies[] = navbar
 dependencies[] = betterlogin
 dependencies[] = composer_manager
 dependencies[] = views
