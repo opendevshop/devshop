@@ -86,4 +86,4 @@ libraries[timeago][destination] = libraries
 projects[bootstrap][type] = theme
 projects[bootstrap][version] = "3.22"
 
-projects[intercomio][version] = 1.x
+projects[intercomio][version] = 1.0-beta1
