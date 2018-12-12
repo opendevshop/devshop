@@ -27,6 +27,7 @@ function devshop_hosting_drush_command()
 function devshop_hosting_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'site' && $task->ref->hosting_name == 'hostmaster') {
     $working_dir = drupal_realpath(variable_get('composer_manager_file_dir', 'public://composer'));
+    provision_process('drush @hostmaster cc drush');
     provision_process('drush @hostmaster composer-json-rebuild -y');
     provision_process('composer install', $working_dir, t('Installing Devmaster dependencies'));
   }
