@@ -70,6 +70,7 @@ projects[module_filter][version] = "2"
 projects[libraries][version] = 2.5
 projects[cas][version] = 1.7
 projects[cas_attributes][version] = 1.x
+projects[token][version] = 1.7
 ; projects[hybridauth][version] = 2.15
 projects[statsd][version] = 1.1
 projects[hosting_statsd][version] = 1.x
