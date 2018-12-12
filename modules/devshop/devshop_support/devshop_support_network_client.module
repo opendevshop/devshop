@@ -91,7 +91,7 @@ function devshop_support_network_client_user_view_alter(&$build) {
     $build['devshop_support_network_client'] = array(
         '#access' => variable_get('cas_server', '') && $build['#account']->cas_name,
         '#type' => 'item',
-        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim(variable_get('devshop_support_url', 'https://devshop.support'), '/') . '/' . $build['#account']->cas_name, [
+        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim(variable_get('devshop_support_url', 'https://devshop.support'), '/'), [
             'html' => 1,
             'attributes' => [
                 'class' => ['btn btn-info'],
