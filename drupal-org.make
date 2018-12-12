@@ -75,7 +75,7 @@ projects[token][version] = 1.7
 projects[statsd][version] = 1.1
 projects[hosting_statsd][version] = 1.0-beta1
 projects[intercomio][version] = 1.0-beta2
-projects[navbar][version] = 1.0-beta2
+projects[navbar][version] = 1.7
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
