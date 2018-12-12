@@ -658,9 +658,14 @@ sites/all/drush/drushrc.php
                         <?php print t('View Commit on GitHub'); ?>
                       </a>
                     <?php endif; ?>
-                    <?php if (!empty($environment->git_status) && module_exists('hosting_git_commit') && user_access('create platform git-commit task')): ?>
+                    <?php if (drupal_valid_path("hosting_confirm/{$environment->platform}/platform_git-commit")): ?>
                     <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_git-commit", array('query' => array('token' => $token))); ?>" class="btn btn-primary">
-                      <i class="fa fa-code"></i> <?php print t('Commit & Push'); ?>
+                      <i class="fa fa-code"></i> <?php print t('Commit'); ?>
+                    </a>
+                    <?php endif; ?>
+                    <?php if (drupal_valid_path("hosting_confirm/{$environment->platform}/platform_git-reset")): ?>
+                    <a href="<?php print url("hosting_confirm/{$environment->platform}/platform_git-reset", array('query' => array('token' => $token))); ?>" class="btn btn-danger">
+                      <i class="fa fa-close"></i> <?php print t('Reset'); ?>
                     </a>
                     <?php endif; ?>
                   </div>
