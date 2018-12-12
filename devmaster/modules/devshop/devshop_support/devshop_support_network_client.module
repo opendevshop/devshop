@@ -54,6 +54,13 @@ function devshop_support_network_client_init()
   $conf['cas_hide_email'] = 1;
   $conf['cas_hide_password'] = 1;
 
+  $conf['cas_attributes_overwrite'] = 1;
+  $conf['cas_attributes_sync_every_login'] = 1;
+  $conf['cas_attributes_relations'] = array(
+    'name' => '[cas:attribute:name]',
+    'mail' => '[cas:attribute:mail]',
+  );
+
   if (variable_get('devshop_support_license_key_status', 'none') == 'active') {
     $conf['cas_login_form'] =  2;
     $conf['cas_registerURL'] = $devshop_support_url . '/user/register';
@@ -419,6 +426,10 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   // Set all arbitrary variables
   if (!empty($response_data->_VARIABLES)) {
     foreach ($response_data->_VARIABLES as $name => $value) {
+
+      if (is_object($value)) {
+        $value = (array) $value;
+      }
       variable_set($name, $value);
     }
   }
