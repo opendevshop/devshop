@@ -3,7 +3,7 @@
     "cpliakas/git-wrapper": "~1.0",
     "knplabs/github-api": "~1.2",
     "sensiolabs/ansi-to-html": "^1.1",
-    "symfony/yaml": "^2.7",
+    "symfony/yaml": "^3.0",
     "symfony/process": "^2.7"
   },
   "config": {
