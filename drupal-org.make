@@ -74,6 +74,12 @@ projects[token][version] = 1.7
 ; projects[hybridauth][version] = 2.15
 projects[statsd][version] = 1.1
 projects[hosting_statsd][version] = 1.0-beta1
+projects[intercomio][version] = 1.0-beta2
+projects[navbar][version] = 1.0-beta2
+
+; Bootstrap base theme
+projects[bootstrap][type] = theme
+projects[bootstrap][version] = "3.22"
 
 ; Timeago module
 projects[timeago][version] = 2.3
@@ -83,8 +89,17 @@ libraries[timeago][download][type] = get
 libraries[timeago][download][url] = https://raw.githubusercontent.com/rmm5t/jquery-timeago/v1.5.3/jquery.timeago.js
 libraries[timeago][destination] = libraries
 
-; Bootstrap base theme
-projects[bootstrap][type] = theme
-projects[bootstrap][version] = "3.22"
+; Library: Modernizr
+libraries[modernizr][download][type] = git
+libraries[modernizr][download][url] = https://github.com/BrianGilbert/modernizer-navbar.git
+libraries[modernizr][download][revision] = 5b89d9225320e88588f1cdc43b8b1e373fa4c60f
 
-projects[intercomio][version] = 1.0-beta2
+; Library: Backbone
+libraries[backbone][download][type] = git
+libraries[backbone][download][url] = https://github.com/jashkenas/backbone.git
+libraries[backbone][download][tag] = 1.0.0
+
+; Library: Underscore
+libraries[underscore][download][type] = git
+libraries[underscore][download][url] = https://github.com/jashkenas/underscore.git
+libraries[underscore][download][tag] = 1.5.0
