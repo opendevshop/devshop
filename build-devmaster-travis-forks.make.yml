@@ -26,7 +26,7 @@ projects:
   hosting:
     download:
       type: git
-      branch: 7.x-3.x
+      branch: 3020169-permission-check
 
   hosting_git:
     download:
