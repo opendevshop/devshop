@@ -16,6 +16,7 @@ projects[hosting][version] = "3.x"
 projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-05/3018114-client-optional.patch"
 projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-12/3020169-permission-check.patch"
 
+
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
 projects[eldir][version] = "3.160"
