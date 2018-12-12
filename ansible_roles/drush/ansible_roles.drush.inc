@@ -80,7 +80,9 @@ function drush_ansible_roles_pre_provision_verify () {
     $ansible_cfg->write();
     drush_log('Ansible.cfg written to ' . $ansible_cfg->filename(), 'p_log');
 
-    $ansible = new Provision_Service_Ansible(d());
-    $ansible->runRolesInstall();
+    if (is_a(d()->service('ansible_roles_available'), 'Provision_Service_ansible_roles_available')) {
+      $ansible = new Provision_Service_Ansible(d());
+      $ansible->runRolesInstall();
+    }
   }
 }
