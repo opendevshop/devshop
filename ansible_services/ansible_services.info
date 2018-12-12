@@ -3,6 +3,7 @@ description = Provision Apache and MySQL with Ansible.
 package = Aegir Ansible
 dependencies[] = hosting_server
 dependencies[] = hosting_https
+dependencies[] = aegir_ansible_core
 
 core = 7.x
 
