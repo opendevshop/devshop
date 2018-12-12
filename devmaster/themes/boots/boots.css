@@ -238,6 +238,13 @@ body.admin-menu .navbar-static-top {
 .navbar-nav {
     margin: 0;
 }
+.navbar-nav li {
+    text-align: right;
+}
+
+ul.secondary {
+    float: right;
+}
 
 .navbar-project > .container-fluid {
     padding-left: .5em;
