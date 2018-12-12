@@ -13,7 +13,7 @@
  */
 function ansible_core_drush_init()
 {
-  if (file_exists(d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php')) {
-    require_once( d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php');
-  }
+//  if (file_exists(d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php')) {
+//    require_once( d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php');
+//  }
 }
