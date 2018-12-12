@@ -239,10 +239,6 @@ body.admin-menu .navbar-static-top {
     margin: 0;
 }
 
-.navbar-left > li,
-.navbar-header {
-    float: left!important;
-}
 .navbar-project > .container-fluid {
     padding-left: .5em;
     padding-right: .5em;
