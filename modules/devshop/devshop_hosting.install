@@ -245,3 +245,12 @@ function devshop_hosting_update_7101() {
 function devshop_hosting_update_7102() {
   module_enable(array('composer_manager'));
 }
+
+/**
+ * Enable navbar, disable and uninstall admin_menu modules.
+ */
+function devshop_hosting_update_7103() {
+  module_disable(array('admin_menu'));
+  drupal_uninstall_modules(array('admin_menu', 'admin_menu_toolbar'));
+  module_enable(array('navbar'));
+}
