@@ -1,6 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../../../../vendor/autoload.php');
+if (file_exists(d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php')) {
+  require_once( d('@hostmaster')->root . '/sites/all/composer/vendor/autoload.php');
+}
 
 use Asm\Ansible\Ansible;
 
@@ -29,6 +31,11 @@ class Provision_Service_Ansible extends Provision_Service {
    * @return mixed
    */
   public function runRolesInstall() {
+
+    // Handle pre-composer manager install.
+    if (!class_exists('Asm\Ansible\Ansible')) {
+      return;
+    }
 
     // Look for playbook
     $this->rolesFilePath = drush_get_option('roles_file_path', '');
