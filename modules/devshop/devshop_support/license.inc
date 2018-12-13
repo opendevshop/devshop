@@ -97,6 +97,8 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     // Try to create a CAS account. Load if not created.
     // @TODO: cas_batch_user_add() returns empty if user already exists.
     $account = cas_batch_user_add($cas_user, $context);
+
+    watchdog('devshop_support_license_client', 'Batch User Add Context: ' . print_r($context, 1));
     if (empty($account)) {
       $account = cas_user_load_by_name($cas_user);
     }
