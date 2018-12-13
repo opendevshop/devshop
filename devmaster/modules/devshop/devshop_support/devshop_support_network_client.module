@@ -602,51 +602,51 @@ function devshop_support_network_client_hosting_queues() {
  */
 function devshop_support_network_client_form_cas_admin_settings_alter(&$form, $form_state, $form_id)
 {
-  $read_only = array();
-
-  $read_only['server'][] = 'cas_server';
-  $read_only['server'][] = 'cas_port';
-  $read_only['server'][] = 'cas_uri';
-  $read_only['server'][] = 'cas_port';
-  $read_only['server'][] = 'cas_version';
-
-  $read_only['login'][] = 'cas_login_redir_message';
-  $read_only['login'][] = 'cas_login_form';
-  $read_only['login'][] = 'cas_login_invite';
-  $read_only['login'][] = 'cas_login_drupal_invite';
-  $read_only['login'][] = 'cas_login_message';
-
-  $read_only['account'][] = 'cas_user_register';
-//  $read_only['account'][] = 'cas_domain';
-  $read_only['account'][] = 'cas_auto_assigned_role';
-  $read_only['account'][] = 'cas_hide_email';
-  $read_only['account'][] = 'cas_hide_password';
-
-//  $read_only['pages'][] = 'cas_check_frequency';
-//  $read_only['pages'][] = 'cas_access';
-//  $read_only['pages'][] = 'cas_pages';
-//  $read_only['pages'][] = 'cas_exclude';
-
-  $read_only['misc'][] = 'cas_first_login_destination';
-//  $read_only['misc'][] = 'cas_logout_destination';
-//  $read_only['misc'][] = 'cas_changePasswordURL';
-//  $read_only['misc'][] = 'cas_registerURL';
-
-  $read_only['advanced'][] = 'cas_proxy';
-  $read_only['advanced'][] = 'cas_proxy_settings';
-  $read_only['advanced'][] = 'cas_proxy_list';
-  $read_only['advanced'][] = 'cas_debugfile';
-  $read_only['advanced'][] = 'cas_single_logout_session_lifetime';
-
-  foreach ($read_only as $group => $items) {
-    foreach ($items as $id) {
-      $form[$group][$id]['#type'] = 'value';
-      $form[$group][$id . '_display'] = $form[$group][$id];
-
-      $form[$group][$id . '_display']['#type'] = 'item';
-      $form[$group][$id . '_display']['#markup'] = $form[$group][$id]['#default_value'];
-    }
-  }
+//  $read_only = array();
+//
+//  $read_only['server'][] = 'cas_server';
+//  $read_only['server'][] = 'cas_port';
+//  $read_only['server'][] = 'cas_uri';
+//  $read_only['server'][] = 'cas_port';
+//  $read_only['server'][] = 'cas_version';
+//
+//  $read_only['login'][] = 'cas_login_redir_message';
+//  $read_only['login'][] = 'cas_login_form';
+//  $read_only['login'][] = 'cas_login_invite';
+//  $read_only['login'][] = 'cas_login_drupal_invite';
+//  $read_only['login'][] = 'cas_login_message';
+//
+//  $read_only['account'][] = 'cas_user_register';
+////  $read_only['account'][] = 'cas_domain';
+//  $read_only['account'][] = 'cas_auto_assigned_role';
+//  $read_only['account'][] = 'cas_hide_email';
+//  $read_only['account'][] = 'cas_hide_password';
+//
+////  $read_only['pages'][] = 'cas_check_frequency';
+////  $read_only['pages'][] = 'cas_access';
+////  $read_only['pages'][] = 'cas_pages';
+////  $read_only['pages'][] = 'cas_exclude';
+//
+//  $read_only['misc'][] = 'cas_first_login_destination';
+////  $read_only['misc'][] = 'cas_logout_destination';
+////  $read_only['misc'][] = 'cas_changePasswordURL';
+////  $read_only['misc'][] = 'cas_registerURL';
+//
+//  $read_only['advanced'][] = 'cas_proxy';
+//  $read_only['advanced'][] = 'cas_proxy_settings';
+//  $read_only['advanced'][] = 'cas_proxy_list';
+//  $read_only['advanced'][] = 'cas_debugfile';
+//  $read_only['advanced'][] = 'cas_single_logout_session_lifetime';
+//
+//  foreach ($read_only as $group => $items) {
+//    foreach ($items as $id) {
+//      $form[$group][$id]['#type'] = 'value';
+//      $form[$group][$id . '_display'] = $form[$group][$id];
+//
+//      $form[$group][$id . '_display']['#type'] = 'item';
+//      $form[$group][$id . '_display']['#markup'] = $form[$group][$id]['#default_value'];
+//    }
+//  }
 }
 
 /**
