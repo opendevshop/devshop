@@ -84,7 +84,7 @@ projects:
 
 libraries:
 
-  cas:
+  CAS:
     destination: libraries
     download:
       type: git

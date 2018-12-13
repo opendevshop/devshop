@@ -82,6 +82,13 @@ projects:
       branch: 7.x-1.x
 
 libraries:
+  CAS:
+    destination: libraries
+    download:
+      type: git
+      url: https://github.com/apereo/phpCAS
+      tag: "1.3.5"
+
   dehydrated:
     destination: modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
     download:
