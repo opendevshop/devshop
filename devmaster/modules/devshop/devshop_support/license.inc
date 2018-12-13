@@ -45,8 +45,8 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   // Set all arbitrary variables
   $variables = devshop_support_network_default_variables();
 
-  if (is_array($response_data->_VARIABLES)) {
-    $variables = array_merge($variables, $response_data->_VARIABLES);
+  if (!empty($response_data->_VARIABLES)) {
+    $variables = array_merge($variables, (array) $response_data->_VARIABLES);
   }
 
   if (!empty($variables)) {
