@@ -87,7 +87,6 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   // @TODO: We need to retrieve email here as well to ensure intercom sync.
   // @TODO: Here's where we could sync SSH keys.
   foreach ($response_data->_USERS as $cas_user) {
-    $context = array();
 
     // Let's prevent admin from being set here.
     if ($cas_user == 'admin') {
@@ -101,7 +100,6 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     if (empty($account)) {
       $account = cas_user_load_by_name($cas_user, FALSE, TRUE);
     }
-    watchdog('devshop_support_license_client', 'Account to Activate: ' . print_r($account, 1));
 
     // if there is an account found, with a UID, save to $active_local_uids.
     if ($account && is_numeric($account->uid)){
