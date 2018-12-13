@@ -32,7 +32,7 @@ function devshop_support_network_client_menu_alter(&$items)
  * Replaces user/logout: if user is CAS, send to caslogout.
  */
 function devshop_support_network_client_logout_replacement() {
-  if (cas_user_is_logged_in()) {
+  if (!empty($_SESSION['phpCAS']['user'])) {
     drupal_goto('caslogout');
   }
   else {
