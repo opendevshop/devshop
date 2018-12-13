@@ -25,6 +25,7 @@
     url: "https://github.com/drush-ops/drush/releases/download/{{ drush_release_version }}/drush.phar"
     dest: "{{ local_bin_path }}/drush"
     mode: 0755
+    force: yes
 
 - name: Detect devshop CLI
   stat:
