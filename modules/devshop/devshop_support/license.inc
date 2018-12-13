@@ -33,14 +33,14 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   $options['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
 
   $response = drupal_http_request($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key, $options);
+  $response_data = json_decode($response->data);
 //  drupal_set_message($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key);
 
-  watchdog('devshop_support_api', 'DevShop Support License Request' . ($response->code == 200? 'Success: ': 'Failure: ') . print_r($response, 1 ));
+  watchdog('devshop_support_api', 'DevShop Support License Request ' . ($response->code == 200? 'Success: ': 'Failure: ') . print_r($response_data, 1 ));
 
-  $response_data = json_decode($response->data);
 
   // Save raw data to a variable.
-  variable_set('devshop_support_license_raw_data', $response_data);
+  variable_set('devshop_support_license_raw_data', (array) $response_data);
 
   // Set all arbitrary variables
   $variables = devshop_support_network_default_variables();

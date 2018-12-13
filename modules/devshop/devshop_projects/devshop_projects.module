@@ -734,10 +734,16 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   }
 
   // Save the site node
-  if ($node = node_submit($node)) {
-    node_save($node);
+  try {
+    if ($node = node_submit($node)) {
+      node_save($node);
+    }
+  } catch (PDOException $e) {
+    drupal_set_message(t('Unable to save environment: %message', array(
+      '%message' => $e->getMessage(),
+    )));
   }
-  
+
   // Lookup install task to use it for last task.
   $tasks = hosting_get_tasks('rid', $node->nid);
   
