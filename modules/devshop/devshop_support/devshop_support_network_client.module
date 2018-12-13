@@ -120,7 +120,7 @@ function devshop_support_network_client_user_view_alter(&$build) {
     $build['devshop_support_network_client'] = array(
         '#access' => variable_get('cas_server', '') && $build['#account']->cas_name,
         '#type' => 'item',
-        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim(variable_get('devshop_support_url', 'https://devshop.support'), '/'), [
+        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim('https://' . variable_get('devshop_support_url', 'devshop.support'), '/'), [
             'html' => 1,
             'attributes' => [
                 'class' => ['btn btn-info'],
@@ -137,7 +137,7 @@ function devshop_support_network_client_settings_form() {
     $node = hosting_context_load('hostmaster');
     $license_key = variable_get('devshop_support_license_key', '');
 
-    $service_url = variable_get('devshop_support_url', 'https://devshop.support');
+    $service_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
     $devshop_hostname = $_SERVER['HTTP_HOST'];
     $service_title = t('DevShop.Cloud');
 
@@ -515,7 +515,7 @@ function devshop_support_network_client_support_status() {
           '@status' => ucfirst($license_key_status),
           '!label_class' => $license_class,
         ]),
-      '#href' => variable_get('devshop_support_url', 'https://devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
+      '#href' => 'https://' . variable_get('devshop_support_url', 'devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
       '#options' => [
         'html' => TRUE,
         'attributes' => [
@@ -727,7 +727,7 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       '#access' => $license_active,
     );
 
-    $github_login_url = variable_get('devshop_support_url', 'https://devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
+    $github_login_url = 'https://' . variable_get('devshop_support_url', 'devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
     $form['github_login'] = array(
       '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> Sign in with GitHub</a>',
       '#access' => $license_active,

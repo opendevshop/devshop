@@ -26,7 +26,7 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   }
 
   $devshop_hostname = $_SERVER['HTTP_HOST'];
-  $get_support_url = variable_get('devshop_support_url', 'https://devshop.support');
+  $get_support_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
 
   $options = array('method' => 'POST');
   $options['data'] = http_build_query(devshop_support_network_client_client_data($devshop_hostname));
