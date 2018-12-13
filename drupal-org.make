@@ -71,14 +71,16 @@ projects[features][version] = "2.11"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[libraries][version] = 2.5
-projects[cas][version] = 1.7
-projects[cas_attributes][version] = 1.0-rc3
 projects[token][version] = 1.7
 ; projects[hybridauth][version] = 2.15
 projects[statsd][version] = 1.1
 projects[hosting_statsd][version] = 1.0-beta1
 projects[intercomio][version] = 1.0-beta2
 projects[navbar][version] = 1.7
+
+projects[cas][version] = 1.7
+projects[cas][patch][] = "https://www.drupal.org/files/issues/2018-12-13/3020349-cas-library-path.patch"
+projects[cas_attributes][version] = 1.0-rc3
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
