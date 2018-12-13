@@ -68,6 +68,14 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     'hosting_statsd',
   ));
 
+  // Enable HTTPS on the hostmaster site.
+  $node = hosting_context_load('hostmaster');
+  if (module_exists('hosting_https') && $node->https_enabled != HOSTING_HTTPS_REQUIRED) {
+    watchdog('devshop_support_api', 'Hostmaster HTTPS was not enabled. Enabling.');
+    $node->https_enabled = variable_get('DEVSHOP_SUPPORT_DEFAULT_HOSTING_HTTPS_ENABLED', HOSTING_HTTPS_REQUIRED);
+    node_save($node);
+  }
+
   drupal_flush_all_caches();
 //
 //  // Don't do any more for certain hostnames.
