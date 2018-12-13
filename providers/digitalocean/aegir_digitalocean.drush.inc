@@ -41,9 +41,8 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                         node_save($task->ref);
 
                         // reload the node to check that IPs were saved.
-                        // Maybe sleeping prevents missing IPs on node load?
-                        sleep(1);
-                        $server = $task->ref = node_load($task->ref->nid, TRUE);
+                        $server = node_load($task->ref->nid, TRUE);
+                        $task->ref = $server;
                         if (empty($server->ip_addresses)) {
                             return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved to the node!');
                         }
@@ -105,18 +104,11 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             // Loop until DNS resolves.
             drush_log('Waiting for DNS for ... ' . $service->getServer()->title, 'p_command');
             $completed = FALSE;
+            $ip = current($task->ref->ip_addresses);
             while (!$completed) {
               sleep(3);
-
-              $records = dns_get_record($service->getServer()->title);
-              foreach ($records as $record) {
-                if (
-                  ($record['type'] == 'A' || $record['type'] == 'CNAME') &&
-                  $record['ip'] == current($task->ref->ip_addresses)) {
-
-                  drush_log("DNS Record Found! " . print_r($record, 1), 'p_ok');
-                  $completed = TRUE;
-                }
+              if (gethostbyaddr($ip) == $task->ref->title) {
+                $completed = TRUE;
               }
             }
 
