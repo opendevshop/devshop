@@ -141,7 +141,7 @@ function devshop_support_network_client_settings_form() {
     $devshop_hostname = $_SERVER['HTTP_HOST'];
     $service_title = t('DevShop.Cloud');
 
-    $data = variable_get('devshop_support_license_raw_data', NULL);
+    $data = (object) variable_get('devshop_support_license_raw_data', NULL);
 
     $title = t('Hi!');
     $status_items = array();
@@ -246,6 +246,7 @@ function devshop_support_network_client_settings_form() {
       }
       else {
 
+        dsm($data);
         $description = t('This server is owned by the !team_link Team and fully managed by the !devshop_cloud_link service.', array(
           '!team_link' => l($data->_TEAM->name, $data->_TEAM->url),
           '!devshop_cloud_link' => l($service_title, $service_url, array(
