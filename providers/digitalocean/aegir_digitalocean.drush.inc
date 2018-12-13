@@ -46,7 +46,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                         $task->ref = $server;
                         if (empty($task->ref->ip_addresses)) {
                             drush_log('IP addresses were not found when reloading the node... not sure why.', 'warning');
-                          $task->ref->ip_addresses[] = $new_ips;
+                          $task->ref->ip_addresses = $new_ips;
                         }
                         break;
                     }
