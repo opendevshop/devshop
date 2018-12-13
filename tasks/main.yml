@@ -97,6 +97,13 @@
   command: "{{ local_bin_path }}/drush @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key != ""
 
+- name: DevShop.Support | Validate License Key to setup support modules.
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ local_bin_path }}/drush @hostmaster hosting-devshop_support -v"
+  when: devshop_support_license_key != ""
+
 - name: Save SSH key as variable
   shell: "{{ local_bin_path }}/drush @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
   become: yes
