@@ -43,8 +43,11 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   variable_set('devshop_support_license_raw_data', $response_data);
 
   // Set all arbitrary variables
-  if (!empty($response_data->_VARIABLES)) {
-    foreach ($response_data->_VARIABLES as $name => $value) {
+  $variables = devshop_support_network_default_variables();
+  $variables = array_merge($variables, $response_data->_VARIABLES);
+
+  if (!empty($variables)) {
+    foreach ($variables as $name => $value) {
 
       if (is_object($value)) {
         $value = (array) $value;
