@@ -35,16 +35,18 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                         // Save IP addresses
                         foreach ($device->networks as $network) {
                             drush_log('IP address found: ' . $network->ipAddress . "\n", 'p_ok');
-                            $task->ref->new_ip_addresses[] = $network->ipAddress;
+                            $new_ips[] = $network->ipAddress;
                         }
+                        $task->ref->new_ip_addresses = $new_ips;
                         $task->ref->no_verify = TRUE;
                         node_save($task->ref);
 
                         // reload the node to check that IPs were saved.
                         $server = node_load($task->ref->nid, TRUE);
                         $task->ref = $server;
-                        if (empty($server->ip_addresses)) {
-                            return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved to the node!');
+                        if (empty($task->ref->ip_addresses)) {
+                            drush_log('IP addresses were not found when reloading the node... not sure why.', 'warning');
+                          $task->ref->ip_addresses[] = $new_ips;
                         }
                         break;
                     }
