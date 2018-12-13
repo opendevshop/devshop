@@ -20,6 +20,27 @@ function devshop_support_network_client_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function devshop_support_network_client_menu_alter(&$items)
+{
+  $items['user/logout']['page callback'] = 'devshop_support_network_client_logout_replacement';
+}
+
+
+/**
+ * Replaces user/logout: if user is CAS, send to caslogout.
+ */
+function devshop_support_network_client_logout_replacement() {
+  if (cas_user_is_logged_in()) {
+    drupal_goto('caslogout');
+  }
+  else {
+    user_logout();
+  }
+}
+
+/**
  * Implements hook_permission()
  * @return array
  */
