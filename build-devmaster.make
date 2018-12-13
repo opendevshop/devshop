@@ -26,11 +26,10 @@ projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.g
 
 ; CAS
 ; The CAS and HybridAuth libraries are not whitelisted by drupal.org, so we include them here.
-libraries[CAS][download][type] = "git"
-libraries[CAS][download][url] = "https://github.com/apereo/phpCAS"
-libraries[CAS][download][tag] = "1.3.5"
-libraries[CAS][destination] = "libraries"
-libraries[CAS][] = "libraries"
+libraries[cas][download][type] = "git"
+libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
+libraries[cas][download][tag] = "1.3.5"
+libraries[cas][destination] = "libraries"
 
 ; Hybrid Auth
 libraries[hybridauth][download][type] = "git"
