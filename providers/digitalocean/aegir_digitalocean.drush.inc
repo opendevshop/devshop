@@ -42,12 +42,12 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                         node_save($task->ref);
 
                         // reload the node to check that IPs were saved.
-                        $server = node_load($task->ref->nid, TRUE);
-                        $task->ref = $server;
-                        if (empty($task->ref->ip_addresses)) {
-                            drush_log('IP addresses were not found when reloading the node... not sure why.', 'warning');
-                          $task->ref->ip_addresses = $new_ips;
-                        }
+//                        $server = node_load($task->ref->nid, TRUE);
+//                        $task->ref = $server;
+//                        if (empty($task->ref->ip_addresses)) {
+//                            drush_log('IP addresses were not found when reloading the node... not sure why.', 'warning');
+//                          $task->ref->ip_addresses = $new_ips;
+//                        }
                         break;
                     }
                 }
@@ -76,10 +76,10 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
               // Create domain record.
               if (!$record_found) {
-                $created = $domainRecord->create($base_domain, 'A', $subdomain, current($task->ref->ip_addresses), 0);
+                $created = $domainRecord->create($base_domain, 'A', $subdomain, $first_ip, 0);
 
                 //@TODO! This is devshop.cloud specific! Remove it!
-                $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, current($task->ref->ip_addresses), 0);
+                $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, $first_ip, 0);
                 drush_log(dt('Domain Record created successfully!'), 'p_ok');
               }
             }
@@ -106,10 +106,9 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             // Loop until DNS resolves.
             drush_log('Waiting for DNS for ... ' . $service->getServer()->title, 'p_command');
             $completed = FALSE;
-            $ip = current($task->ref->ip_addresses);
             while (!$completed) {
               sleep(3);
-              if (gethostbyaddr($ip) == $task->ref->title) {
+              if (gethostbyaddr($first_ip) == $task->ref->title) {
                 $completed = TRUE;
               }
             }
