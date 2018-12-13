@@ -72,6 +72,9 @@ function devshop_support_network_default_variables()
   // DOES NOT AFFECT cas.module when Libraries module is enabled, so I set it in build-devmaster.make.
   // $conf['cas_library_dir'] = 'sites/all/libraries/cas';
   $conf['cas_logout_destination'] = $devshop_support_url . '/bye?server=' . $_SERVER['HTTP_HOST'];
+  $conf['cas_login_message'] = t('Signed into !server as %cas_username via DevShop.Cloud.', array(
+    '!server' => $_SERVER['HTTP_HOST'],
+  ));
   $conf['cas_login_invite'] = '';
   $conf['cas_login_redir_message'] = '';
   $conf['cas_login_drupal_invite'] = 'Sign in with Drupal';
