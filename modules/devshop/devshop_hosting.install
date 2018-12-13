@@ -254,3 +254,10 @@ function devshop_hosting_update_7103() {
   drupal_uninstall_modules(array('admin_menu', 'admin_menu_toolbar'));
   module_enable(array('navbar'));
 }
+
+/**
+ * Don't automatically import sites on platform verify.
+ */
+function devshop_hosting_update_7104() {
+  variable_set('hosting_platform_automatic_site_import', FALSE);
+}
