@@ -69,11 +69,11 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   ));
 
   drupal_flush_all_caches();
-
-  // Don't do any more for certain hostnames.
-  if ($devshop_hostname == 'devshop.local.computer') {
-    return $response;
-  }
+//
+//  // Don't do any more for certain hostnames.
+//  if ($devshop_hostname == 'devshop.local.computer') {
+//    return $response;
+//  }
 
   // Create all CAS users.
   module_load_include('batch.inc', 'cas');
@@ -95,10 +95,9 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     }
 
     // Try to create a CAS account. Load if not created.
-    // @TODO: cas_batch_user_add() returns empty if user already exists.
-    $account = cas_batch_user_add($cas_user, $context);
+    // @TODO: cas_user_register() returns false if user already exists.
+    $account = cas_user_register($cas_user);
 
-    watchdog('devshop_support_license_client', 'Batch User Add Context: ' . print_r($context, 1));
     if (empty($account)) {
       $account = cas_user_load_by_name($cas_user, FALSE, TRUE);
     }
