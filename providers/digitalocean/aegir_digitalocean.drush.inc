@@ -52,6 +52,9 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                     }
                 }
             }
+            else {
+              $first_ip = current($task->ref->ip_addresses);
+            }
 
             // Save a DNS record
             if (variable_get('aegir_cloud_digital_ocean_create_dns', FALSE)) {
