@@ -18,6 +18,20 @@ function devshop_hosting_drush_command()
     return $items;
 }
 
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task()
+ * for Verify tasks.
+ *
+ * Installs the "composer" plugin if needed, and then runs composer-manager install command.
+ */
+function devshop_hosting_post_hosting_verify_task($task, $data) {
+  if ($task->ref->type == 'site' && $task->ref->hosting_name == 'hostmaster') {
+    $working_dir = drupal_realpath(variable_get('composer_manager_file_dir', 'public://composer'));
+    provision_process('drush @hostmaster cc drush');
+    provision_process('drush @hostmaster composer-json-rebuild -y');
+    provision_process('composer update', $working_dir, t('Installing Devmaster dependencies'));
+  }
+}
 
 /**
  * Command function for platform-delete.

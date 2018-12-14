@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Implements hook_install()
+ */
+function devshop_support_network_client_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_support_network_client')
+    ->execute();
+
+  variable_set('composer_manager_vendor_dir', 'sites/all/composer/vendor');
+  variable_set('composer_manager_autobuild_file', 0);
+
+}
+
+/**
+ *
+ */
+function devshop_support_network_client_update_7000() {
+  devshop_support_network_client_install();
+}
+
+/**
+ * Delete the composer_manager_file_dir so we just use the default.
+ */
+function devshop_support_network_client_update_7001() {
+  variable_del('composer_manager_file_dir');
+}
+
+/**
+ * Check for CAS library location and save it.
+ */
+function devshop_support_network_client_update_7002()
+{
+
+  if (file_exists(DRUPAL_ROOT . '/profiles/devmaster/libraries/cas')) {
+    $cas_library_dir = 'profiles/devmaster/libraries/cas';
+  } elseif (file_exists(DRUPAL_ROOT . '/sites/all/libraries/cas')) {
+    $cas_library_dir = 'sites/all/libraries/cas';
+  } else {
+    $cas_library_dir = '';
+  }
+  variable_set('cas_library_dir', $cas_library_dir);
+}

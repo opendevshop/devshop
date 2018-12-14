@@ -134,6 +134,8 @@ function devshop_project_load($node) {
           s.status as site_status,
           p.status as platform_status,
           p.nid as platform,
+          cp.name as platform_context,
+          cs.name as site_context,
           p.publish_path as root,
           p.publish_path as publish_path,
           g.git_ref as git_ref,
@@ -155,8 +157,10 @@ function devshop_project_load($node) {
           e.last_task as last_task_nid
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
+        LEFT JOIN {hosting_context} cs ON s.nid = cs.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
         LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
+        LEFT JOIN {hosting_context} cp ON p.nid = cp.nid
         LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
@@ -229,7 +233,7 @@ function devshop_project_load($node) {
 
     // On project create, there is no site, so there is no db_server.
     if (empty($environment->db_server)) {
-      $db_servers = hosting_get_servers('db');
+      $db_servers = hosting_get_servers('db', FALSE);
       // Project wizard saves db_server to "settings". If that doesn't exist, just use the default db server.
       if (empty($environment->settings->db_server)) {
         $environment->settings->db_server = $environment->db_server_nid = key($db_servers);
@@ -254,7 +258,7 @@ function devshop_project_load($node) {
     if (module_exists('hosting_solr')) {
       $server_nid = db_query("SELECT server FROM {hosting_solr} WHERE nid = :nid", array(':nid' => $environment->site))->fetchField();
 
-      $servers = hosting_get_servers('solr');
+      $servers = hosting_get_servers('solr', FALSE);
       if ($server_nid && isset($servers[$server_nid])) {
         $environment->servers['solr'] = array(
           'nid' => $server_nid,

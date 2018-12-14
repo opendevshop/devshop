@@ -849,8 +849,8 @@ function boots_preprocess_node_project(&$vars){
   }
 
   // Get available servers
-  $vars['web_servers'] = hosting_get_servers('http');
-  $vars['db_servers'] = hosting_get_servers('db');
+  $vars['web_servers'] = hosting_get_servers('http', FALSE);
+  $vars['db_servers'] = hosting_get_servers('db', FALSE);
 
   // React to git provider
   if ($project->git_provider == 'github') {

@@ -294,6 +294,12 @@ function devmaster_task_finalize() {
   // Force things to delete even if things fail.
   variable_set('hosting_delete_force', 1);
 
+  // Don't require users to have a client to create a site.
+  variable_set('hosting_client_require_client_to_create_site', 0);
+
+  // Don't automatically import sites.
+  variable_set('hosting_platform_automatic_site_import', 0);
+
   // Make sure blocks are setup properly.
 //  _block_rehash();
 

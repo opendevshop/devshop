@@ -1,3 +1,8 @@
+html,
+body {
+    height: 100%;
+}
+
 body.admin-menu .navbar-static-top {
   margin-top: 20px !important;
   z-index: 3;
@@ -233,11 +238,14 @@ body.admin-menu .navbar-static-top {
 .navbar-nav {
     margin: 0;
 }
-
-.navbar-left > li,
-.navbar-header {
-    float: left!important;
+.navbar-nav li {
+    text-align: right;
 }
+
+ul.secondary {
+    float: right;
+}
+
 .navbar-project > .container-fluid {
     padding-left: .5em;
     padding-right: .5em;
@@ -1222,3 +1230,26 @@ li.text.code {
     right: 10px;
     z-index: 10;
 }
+ul.cas-links {
+    padding-left: 0;
+}
+
+img.login-images {
+    max-width:150px;
+}
+
+.row.logos {
+
+    width: 300px;
+    margin: 0px auto;
+}
+
+footer.anonymous-page {
+    padding-top: 5em;
+}
+
+#hosting-site-edit-info label {
+    position: relative;
+    left: 0;
+}
+

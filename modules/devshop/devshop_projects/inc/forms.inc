@@ -35,16 +35,22 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $node->title,
     '#maxlength' => 255,
   );
-  $form['project']['git_url'] = array(
-    '#type' => 'value',
-    '#value' => $project->git_url,
-  );
   $form['project']['codebase'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Settings'),
     '#group' => 'project_settings',
     '#tree' => FALSE,
     '#weight' => -11,
+  );
+  $form['project']['codebase']['git_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default Git Repository URL'),
+    '#description' => t('The SSH or HTTP url for the git repository to use for new environments. Changing this will not change the git remote for existing environments.'),
+    '#default_value' => $project->git_url,
+    '#parents' => array(
+      'project',
+      'git_url',
+    ),
   );
   $form['project']['codebase']['code_path'] = array(
     '#type' => 'textfield',
@@ -122,6 +128,12 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
     $form['project']['codebase']['code_path']['#type'] = 'value';
     $form['project']['codebase']['code_path']['#value'] = $form['project']['codebase']['code_path']['#default_value'];
+  }
+
+  // Prevent editing git url path unless allowed.
+  if (!variable_get('devshop_projects_allow_changing_project_git_url', TRUE)) {
+    $form['project']['codebase']['git_url']['#type'] = 'value';
+    $form['project']['codebase']['git_url']['#value'] = $form['project']['codebase']['git_url']['#default_value'];
   }
 
   // Project Settings
@@ -354,7 +366,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
 
   // HTTP Server select.
-  $http_servers = hosting_get_servers('http');
+  $http_servers = hosting_get_servers('http', FALSE);
   if (count($http_servers)) {
     $form['project']['settings']['default_environment']['web_server'] = array(
       '#title' => t('Web server'),
@@ -365,7 +377,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
 
   // DB Server select.
-  $db_servers = hosting_get_servers('db');
+  $db_servers = hosting_get_servers('db', FALSE);
   if (count($db_servers)) {
     $form['project']['settings']['default_environment']['db_server'] = array(
       '#title' => t('Database server'),
@@ -376,7 +388,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
 
   // Solr Server Select
-  $solr_servers = hosting_get_servers('solr');
+  $solr_servers = hosting_get_servers('solr', FALSE);
   if (count($solr_servers)) {
     $form['project']['settings']['default_environment']['solr_server'] = array(
       '#title' => t('Solr server'),
@@ -1213,7 +1225,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['server_stack']['db_server']['#tree'] = FALSE;
   unset($form['db_server']);
 
-  $web_servers = hosting_get_servers('http');
+  $web_servers = hosting_get_servers('http', FALSE);
   $form['server_stack']['web_server'] = array(
     '#type' => 'radios',
     '#title' => t('Web server'),
@@ -1237,7 +1249,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       '#markup' => l($web_servers[$web_server_nid], "node/$web_server_nid", array('attributes' => array('target' => '_blank'))),
     );
 
-    $db_servers = hosting_get_servers('db');
+    $db_servers = hosting_get_servers('db', FALSE);
     $db_server_nid = $project->settings->default_environment['db_server'];
     $form['server_stack']['db_server']['#type'] = 'value';
     $form['server_stack']['db_server']['#value'] = $db_server_nid;
