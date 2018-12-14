@@ -50,7 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ]
       end
 
-      devmaster.vm.synced_folder "../aegir-home", "/var/aegir/",
+      devmaster.vm.synced_folder "aegir-home", "/var/aegir/",
           mount_options: ["uid=12345,gid=12345"]
 
       # devmaster.vm.synced_folder "source/drush", "/var/aegir/.drush/commands",

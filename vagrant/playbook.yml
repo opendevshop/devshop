@@ -5,6 +5,8 @@
 ---
 - hosts: all
   user: root
+  vars_files:
+    - vars.vagrant.yml
   roles:
     - opendevshop.aegir-user
     - opendevshop.aegir-apache

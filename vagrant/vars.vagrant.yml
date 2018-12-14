@@ -6,7 +6,7 @@ devshop_version:              1.x
 
 # The hostname of the server.  Must resolve to the IP address.
 # local.devshop.site resolves to 10.10.10.10
-server_hostname: local.devshop.site
+server_hostname: vagrant.devshop.local.computer
 
 # Set `vagrant_development` to TRUE if you wish to prepare a development environment.
 # You may also add a file to this folder called ".development_mode".  If this file is present, development mode will always be enabled.

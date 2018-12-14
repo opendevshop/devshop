@@ -9,8 +9,10 @@
 # Passed argument is Vagrant Home folder.
 VAGRANT_HOME=$1
 DEVMASTER_VERSION=$2
+VAGRANT_HOSTNAME="vagrant.devshop.local.computer"
+
 cd $1
-cd ..
+#cd ..
 
 if [ ! -d aegir-home ]; then
   echo "Æ | Creating aegir-home directory..."
@@ -21,9 +23,9 @@ cd aegir-home
 
 # Build a full devshop frontend on the host with drush make, with working-copy option.
 if [ ! -d devmaster-$DEVMASTER_VERSION ]; then
-   drush make $VAGRANT_HOME/build-devmaster.make devmaster-$DEVMASTER_VERSION --working-copy --no-gitinfofile
+   drush make $VAGRANT_HOME/../build-devmaster.make devmaster-$DEVMASTER_VERSION --working-copy --no-gitinfofile
    cp devmaster-$DEVMASTER_VERSION/sites/default/default.settings.php devmaster-$DEVMASTER_VERSION/sites/default/settings.php
-   mkdir devmaster-$DEVMASTER_VERSION/sites/devshop.site
+   mkdir devmaster-$DEVMASTER_VERSION/sites/$VAGRANT_HOSTNAME
    chmod 777 devmaster-$DEVMASTER_VERSION/sites -R
 fi
 
