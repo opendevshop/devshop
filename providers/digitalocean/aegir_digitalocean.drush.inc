@@ -116,6 +116,17 @@ function drush_aegir_digitalocean_pre_hosting_task() {
               }
             }
 
+            // Loop until SSH is available.
+            drush_log('Waiting for SSH ... ', 'p_command');
+            $completed = FALSE;
+            while (!$completed) {
+              sleep(1);
+              exec("ssh -q root@{$task->ref->title} exit", $out, $code);
+              if ($code == 0) {
+                $completed = TRUE;
+              }
+            }
+
         } catch (Exception $e) {
             drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
         }  catch (\DigitalOceanV2\Exception\HttpException $e) {
