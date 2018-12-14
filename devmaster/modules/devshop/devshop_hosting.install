@@ -224,3 +224,40 @@ function devshop_hosting_update_7015 (){
 function devshop_hosting_update_7016() {
   module_enable(array('hosting_letsencrypt'));
 }
+
+/**
+ * Enable DevShop.Support Client!
+ */
+function devshop_hosting_update_7100() {
+  module_enable(array('devshop_support_network_client'));
+}
+
+/**
+ * Disable client requirement.
+ */
+function devshop_hosting_update_7101() {
+  variable_set('hosting_client_require_client_to_create_site', FALSE);
+}
+
+/**
+ * Enable composer_manager module.
+ */
+function devshop_hosting_update_7102() {
+  module_enable(array('composer_manager'));
+}
+
+/**
+ * Enable navbar, disable and uninstall admin_menu modules.
+ */
+function devshop_hosting_update_7103() {
+  module_disable(array('admin_menu'));
+  drupal_uninstall_modules(array('admin_menu', 'admin_menu_toolbar'));
+  module_enable(array('navbar'));
+}
+
+/**
+ * Don't automatically import sites on platform verify.
+ */
+function devshop_hosting_update_7104() {
+  variable_set('hosting_platform_automatic_site_import', FALSE);
+}

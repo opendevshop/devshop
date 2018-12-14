@@ -1,8 +1,5 @@
 <?php
 
-// Include vendors
-require_once 'vendor/autoload.php';
-
 /**
  * Implements hook_hosting_task_update_status().
  */

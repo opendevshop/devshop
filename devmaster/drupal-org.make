@@ -12,7 +12,11 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.161"
+projects[hosting][version] = "3.x"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-05/3018114-client-optional.patch"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-12/3020169-permission-check.patch"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-10/3019462-administer-servers.patch"
+projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-13/3020317-optional-site-import.patch"
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
@@ -52,41 +56,35 @@ projects[aegir_config][version] = 1.00-beta1
 ; Contrib Modules
 projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.5
+projects[composer_manager][version] = 1.8
 projects[entity][version] = 1.9
 projects[openidadmin][version] = 1.0
 projects[overlay_paths][version] = 1.3
 projects[r4032login][version] = 1.8
-projects[admin_menu][version] = "3.0-rc5"
+projects[admin_menu][version] = "3.0-rc6"
 projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha5"
 projects[views][version] = "3.20"
 projects[views_bulk_operations][version] = "3.5"
 projects[ctools][version] = "1.14"
-projects[features][version] = "2.10"
+projects[features][version] = "2.11"
 projects[distro_update][version] = "1"
 projects[module_filter][version] = "2"
 projects[libraries][version] = 2.5
-projects[cas][version] = 1.7
-projects[cas_attributes][version] = 1.x
+projects[token][version] = 1.7
 ; projects[hybridauth][version] = 2.15
-projects[composer_autoloader][version] = 1.3
 projects[statsd][version] = 1.1
+projects[hosting_statsd][version] = 1.0-beta1
+projects[intercomio][version] = 1.0-beta2
+projects[navbar][version] = 1.7
 
-; Dehydrated for LetsEncrypt.org
-libraries[dehydrated][download][type] = git
-libraries[dehydrated][download][url] = https://github.com/lukas2511/dehydrated.git
-libraries[dehydrated][destination] = modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
+projects[cas][version] = 1.7
+projects[cas][patch][] = "https://www.drupal.org/files/issues/2018-12-13/3020349-cas-library-path.patch"
+projects[cas_attributes][version] = 1.0-rc3
 
-; PHPCAS
-;libraries[cas][download][type] = "git"
-;libraries[cas][download][url] = "https://github.com/apereo/phpCAS"
-;libraries[cas][destination] = "libraries"
-
-; Hybrid Auth
-;libraries[hybridauth][download][type] = "git"
-;libraries[hybridauth][download][url] = "https://github.com/hybridauth/hybridauth"
-;libraries[hybridauth][download][tag] = "v2.10.0"
-;libraries[hybridauth][destination] = "libraries"
+; Bootstrap base theme
+projects[bootstrap][type] = theme
+projects[bootstrap][version] = "3.22"
 
 ; Timeago module
 projects[timeago][version] = 2.3
@@ -96,12 +94,17 @@ libraries[timeago][download][type] = get
 libraries[timeago][download][url] = https://raw.githubusercontent.com/rmm5t/jquery-timeago/v1.5.3/jquery.timeago.js
 libraries[timeago][destination] = libraries
 
-; Bootstrap base theme
-projects[bootstrap][type] = theme
-projects[bootstrap][version] = 3.21
+; Library: Modernizr
+libraries[modernizr][download][type] = git
+libraries[modernizr][download][url] = https://github.com/BrianGilbert/modernizer-navbar.git
+libraries[modernizr][download][revision] = 5b89d9225320e88588f1cdc43b8b1e373fa4c60f
 
-;projects[intercomio][type] = module
-;projects[intercomio][download][type] = git
-;projects[intercomio][download][branch] = composer-autoload
-;projects[intercomio][download][url] = "https://github.com/thinkdrop/drupal-intercomio.git"
-projects[intercomio][version] = 1.x
+; Library: Backbone
+libraries[backbone][download][type] = git
+libraries[backbone][download][url] = https://github.com/jashkenas/backbone.git
+libraries[backbone][download][tag] = 1.0.0
+
+; Library: Underscore
+libraries[underscore][download][type] = git
+libraries[underscore][download][url] = https://github.com/jashkenas/underscore.git
+libraries[underscore][download][tag] = 1.5.0

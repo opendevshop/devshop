@@ -4,8 +4,6 @@
  * @file devshop_github.module
  */
 
-require_once 'vendor/autoload.php';
-
 /**
  * Implements hook_menu().
  */
@@ -459,9 +457,6 @@ function devshop_github_comment($task, $status) {
 function devshop_github_webhook($project_node) {
   $headers = getallheaders();
   $project = $project_node->project;
-
-  // Create a github deployment
-  require_once 'vendor/autoload.php';
 
   // @TODO: Handle form content from github as well.
   if ($headers['Content-Type'] == 'application/json' || $headers['content-type'] == 'application/json') {
