@@ -11,6 +11,7 @@ aegir_hosting_version: "7.x-3.160"
 
 # Be sure to match to opendevshop.aegir-devmaster role
 local_bin_path: /usr/local/bin
+sudoers_file_path: /etc/sudoers
 
 # Set to "no" to prevent playbook from creating a local user.
 aegir_create_user: 'yes'
