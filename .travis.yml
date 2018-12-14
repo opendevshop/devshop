@@ -9,7 +9,7 @@ branches:
 
 env:
   global:
-    - DEVSHOP_VERSION=devshop-support
+    - DEVSHOP_VERSION=1.x
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis'
 
   matrix:
