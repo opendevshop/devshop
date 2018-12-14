@@ -8,6 +8,9 @@ devshop_version:              1.x
 # local.devshop.site resolves to 10.10.10.10
 server_hostname: vagrant.devshop.local.computer
 
+# Needed on Ubuntu 16
+ansible_python_interpreter: /usr/bin/python3
+
 # Set `vagrant_development` to TRUE if you wish to prepare a development environment.
 # You may also add a file to this folder called ".development_mode".  If this file is present, development mode will always be enabled.
 # Then, "vagrant up" will run the "vagrant-prepare-guest.sh" scripts, and the source/drush and source/devmaster-1.x folders will be mapped into the VM.
