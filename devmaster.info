@@ -42,8 +42,8 @@ dependencies[] = hosting_site_backup_manager
 dependencies[] = hosting_https
 dependencies[] = hosting_apache_https
 
-dependencies[] = fix_permissions
-dependencies[] = fix_ownership
+;dependencies[] = fix_permissions
+;dependencies[] = fix_ownership
 
 ; Drupal contrib
 dependencies[] = navbar
