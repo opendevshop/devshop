@@ -82,6 +82,42 @@
       content: "{{ aegir_user_authorized_keys }}"
       mode: 0644
 
+
+  # We can't copy from the devmaster distro that gets created on the server because it isn't there yet.
+  - name: Install fix-drupal-*-ownership scripts.
+    with_items:
+      - "fix-drupal-site-ownership"
+      - "fix-drupal-platform-ownership"
+    get_url:
+      url: "https://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_ownership/scripts/{{ item }}.sh?id={{ aegir_hosting_version }}"
+      dest: "{{ local_bin_path }}/{{ item }}"
+      mode: 0755
+      force: yes
+
+  - name: Install fix-drupal-*-permissions scripts.
+    with_items:
+      - "fix-drupal-site-permissions"
+      - "fix-drupal-platform-permissions"
+    get_url:
+      url: "https://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_permissions/scripts/{{ item }}.sh?id={{ aegir_hosting_version }}"
+      dest: "{{ local_bin_path }}/{{ item }}"
+      mode: 0755
+      force: yes
+
+  - name: Allow aegir user to run fix-* scripts
+    with_items:
+      - 'fix-drupal-site-ownership'
+      - 'fix-drupal-site-permission'
+      - 'fix-drupal-platform-ownership'
+      - 'fix-drupal-platform-permission'
+    lineinfile:
+      dest: '{{ sudoers_file_path }}'
+      regexp: '^{{ aegir_user_name }}'
+      line: '{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}'
+      state: present
+      validate: 'visudo -cf %s'
+      create: yes
+
   - name: Install remi repo.
     when: ansible_os_family == 'RedHat'
     yum:
