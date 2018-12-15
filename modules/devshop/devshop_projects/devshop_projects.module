@@ -153,7 +153,7 @@ function devshop_environment_menu_first_items($environment, $tasks) {
 
     }
 
-    if (user_access('change site domain names') && user_access('create migrate task') ) {
+    if (drupal_valid_path("hosting_confirm/{$environment->site}/site_migrate") && user_access('change site domain names')) {
       $href = "hosting_confirm/{$environment->site}/site_migrate";
       $items[] = l('<i class="fa fa-globe"></i> '.t('Change Domain Name'),
         $href, array(
@@ -190,7 +190,7 @@ function devshop_environment_menu_first_items($environment, $tasks) {
   }
 
   // Load test task, if it exists
-  if ($tasks['test']) {
+  if (drupal_valid_path("hosting_confirm/{$environment->site}/site_test")) {
     $href = "hosting_confirm/{$environment->site}/site_test";
     $url = url($href, array(
       'query' => array(
