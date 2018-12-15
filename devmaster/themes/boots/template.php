@@ -177,8 +177,41 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Determine Environment State. Only one of these may be active at a time.
+  // State: Platform verify failed.
+  if (current($environment->tasks['verify'])->ref_type == 'platform' && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR) {
+    $verify_task = current($environment->tasks['verify']);
+    $buttons = l(
+      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      "node/{$verify_task->nid}",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-success'),
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-trash"></i> ' . t('Destroy'),
+      "hosting_confirm/{$environment->site}/site_delete",
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-danger'),
+        ),
+        'query' => array(
+          'token' => $vars['token'],
+        ),
+      )
+    );
+    $vars['warnings'][] = array(
+      'text' => t('Codebase verification failed.'),
+      'buttons' => $buttons,
+      'type' => 'error',
+    );
+  }
+
   // State: Site install failed.
-  if (isset($environment->tasks) && is_array($environment->tasks['install']) && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
+  elseif (isset($environment->tasks) && is_array($environment->tasks['install']) && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
     $install_task = current($environment->tasks['install']);
     $buttons = l(
       '<i class="fa fa-refresh"></i> ' . t('Retry'),
