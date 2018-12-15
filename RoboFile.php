@@ -478,15 +478,15 @@ class RoboFile extends \Robo\Tasks {
 
       if ($opts['test']) {
 
-        # Disable supervisor
+        # Disable hosting-queued
         if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
-          $service = 'supervisor';
+          $service = 'hosting-queued';
         }
         elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
           $service = FALSE;
         }
         else {
-          $service = 'supervisord';
+          $service = 'hosting-queued';
         }
 
         if ($service && !$this->taskDockerExec('devshop_container')
@@ -494,7 +494,7 @@ class RoboFile extends \Robo\Tasks {
           ->run()
           ->wasSuccessful()
         ) {
-          $this->say('Unable to disable supervisor.');
+          $this->say('Unable to disable hosting-queued.');
           exit(1);
         }
 
