@@ -28,7 +28,7 @@
   version: 1.5.0-rc1
 
 - name: opendevshop.devmaster
-  version: 1.5.0-rc4
+  version: hosting-queued-service
 
 - name: opendevshop.aegir-user
   version: 1.5.0-rc2
