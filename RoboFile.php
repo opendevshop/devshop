@@ -576,8 +576,14 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell() {
-    $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+  public function shell($user = NULL) {
+
+    if ($user) {
+      $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+    }
+    else {
+      $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+    }
     $process->setTty(TRUE);
     $process->run();
   }
