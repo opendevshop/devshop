@@ -22,7 +22,6 @@
 - name: Add aegir user to sudoers to reload apache
   lineinfile:
     dest: '{{ sudoers_file_path }}'
-    regexp: '^{{ apache_control }}'
     line: '{{ aegir_user_name }} ALL=NOPASSWD: {{ apache_control }}'
     state: present
     validate: 'visudo -cf %s'
