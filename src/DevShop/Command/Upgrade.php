@@ -128,9 +128,13 @@ class Upgrade extends Command
     $target_path = "/var/aegir/devmaster-{$target_version}";
 
     // Check for existing path.  If exists, append the date.
-    if ($target_version == '0.x' || file_exists($target_path)) {
+    if (file_exists($target_path) && $this->targetVersionRef == 'branch') {
       $variant = date('Y-m-d');
       $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+    }
+    elseif (file_exists($target_path) && $this->targetVersionRef == 'tag') {
+      $output->writeln("<comment>Version $target_version is already installed and is a tag. Nothing to do.</comment>");
+      return;
     }
 
     // If this path exists, add a number until we find one that doesn't exist.
