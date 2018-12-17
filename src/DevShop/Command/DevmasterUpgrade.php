@@ -206,10 +206,7 @@ class DevmasterUpgrade extends Command
 
     // Only continue on successfull hostmaster-migrate.
     if (!$process->isSuccessful()) {
-      $output->writeln("<fg=red>Upgrade failed.</>  The command failed:");
-      $output->writeln($cmd);
-      $output->writeln('');
-      return;
+      throw new \Exception("Upgrade failed. The command errored: $cmd");
     }
 
     // Announce devmaster upgrade.
