@@ -12,13 +12,13 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
 
-class Upgrade extends Command
+class DevmasterUpgrade extends Command
 {
   protected function configure()
   {
     $this
-      ->setName('upgrade')
-      ->setDescription('Upgrade devshop')
+      ->setName('devmaster:upgrade')
+      ->setDescription('Upgrade Devmaster: the Drupal front end.')
       ->addArgument(
         'devshop-version',
         InputArgument::OPTIONAL,
@@ -47,7 +47,7 @@ class Upgrade extends Command
     $this->announce('Upgrade');
 
     $output->writeln(
-      '<info>Welcome to the DevShop Upgrader!</info>'
+      '<info>Welcome to the DevShop Devmaster Upgrader!</info>'
     );
 
     // @TODO: Check the CLI for new releases.  If, we should tell the user to run "self-update" then "upgrade".
@@ -65,9 +65,9 @@ class Upgrade extends Command
 
     // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
-    if ($pwu_data['name'] != 'root') {
-      $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
-      $output->writeln('Run "sudo devshop upgrade" to run as root.');
+    if ($pwu_data['name'] != 'root' && $pwu_data['name'] != 'aegir') {
+      $output->writeln('<error>WARNING:</error> You must run this command root or aegir user.');
+      $output->writeln('Run "sudo -u aegir devshop upgrade" to run as aegir user.');
       $output->writeln('<fg=red>Installation aborted.</>');
       $output->writeln('');
       return;
@@ -128,9 +128,13 @@ class Upgrade extends Command
     $target_path = "/var/aegir/devmaster-{$target_version}";
 
     // Check for existing path.  If exists, append the date.
-    if ($target_version == '0.x' || file_exists($target_path)) {
+    if (file_exists($target_path) && $this->targetVersionRef == 'branch') {
       $variant = date('Y-m-d');
       $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+    }
+    elseif (file_exists($target_path) && $this->targetVersionRef == 'tag') {
+      $output->writeln("<comment>Version $target_version is already installed and is a tag. Nothing to do.</comment>");
+      return;
     }
 
     // If this path exists, add a number until we find one that doesn't exist.
@@ -178,13 +182,10 @@ class Upgrade extends Command
 
     // 3. Git checkout /usr/share/devshop to get the latest release.
 
-    // Announce devmaster upgrade.
-    $output->writeln('');
-    $output->writeln("<info>Devmaster Upgraded to {$target_version}.</info>");
-
-    // Run the ansible playbook.
-    $output->writeln('');
-    $question = new ConfirmationQuestion("Run playbook (y/n) ", false);
+    // Upgrade DevMaster
+    $output->writeln('STEP 1: Upgrade DevMaster');
+    $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
+    $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
     // If they say no, exit.
     if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
@@ -194,29 +195,31 @@ class Upgrade extends Command
     }
 
     // If they say yes, run the command.
-    // @TODO: can we remove "install"?? it just calls install.sh and is not used anywhere and is very confusing.
-    $output->writeln('');
-    $command = $this->getApplication()->find('install');
-
-    $arguments = array(
-        'command' => 'install',
-        'devshop-version' => $target_version,
-        '--yes' => 1,
-    );
-
-    $upgradeInput = new ArrayInput($arguments);
     $output->writeln('');
 
-    if ($command->run($upgradeInput, $output) != 0) {
-      $output->writeln("<fg=red>Playbook run failed!</>");
+    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'\"": $cmd;
+    $process = new Process($command);
+    $process->setTimeout(NULL);
+    $process->run(function ($type, $buffer) {
+      echo $buffer;
+    });
+
+    // Only continue on successfull hostmaster-migrate.
+    if (!$process->isSuccessful()) {
+      $output->writeln("<fg=red>Upgrade failed.</>  The command failed:");
+      $output->writeln($cmd);
       $output->writeln('');
+      return;
     }
+
+    // Announce devmaster upgrade.
+    $output->writeln('');
+    $output->writeln("<info>Devmaster Upgraded to {$target_version}.</info>");
 
     $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
 
-    // Schedule the command for deletion.
+    // Schedule the platform for deletion.
     $output->writeln('');
-    $question = new ConfirmationQuestion("STEP 3: Schedule deletion of old platform ($devmaster_root) ", false);
     $cmd = "drush @hostmaster platform-delete $devmaster_root -y";
 
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
@@ -229,7 +232,8 @@ class Upgrade extends Command
     }
 
     // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
-    $process = new Process("su aegir - -c '$cmd'");
+    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'\"": $cmd;
+    $process = new Process($command);
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
       echo $buffer;
