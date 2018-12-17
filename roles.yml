@@ -22,13 +22,13 @@
   version: 2.6.0
 
 - name: opendevshop.aegir-apache
-  version: 1.5.0-rc2
+  version: master
 
 - name: opendevshop.aegir-nginx
   version: 1.5.0-rc1
 
 - name: opendevshop.devmaster
-  version: 1.5.0-rc4
+  version: devshop-playbook-upgrade
 
 - name: opendevshop.aegir-user
-  version: 1.5.0-rc2
+  version: devshop-playbook-upgrade
