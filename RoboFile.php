@@ -464,8 +464,8 @@ class RoboFile extends \Robo\Tasks {
         ->exec("chown {$opts['user-uid']} /var/aegir -R")
         ->run();
 
-      # If upgrade-test requested, install older version first, then check branch back to original and run devashop devmaster upgrade command.
-      if ($opts['upgrade-test']) {
+      # If test-upgrade requested, install older version first, then check branch back to original and run modern install.sh script to kick off the ansible playbook.
+      if ($opts['test-upgrade']) {
         $this->taskDockerExec('devshop_container')
           ->exec('cd /usr/share/devshop && git checkout ' . self::UPGRADE_FROM_VERSION)
           ->run();
@@ -475,10 +475,9 @@ class RoboFile extends \Robo\Tasks {
         $this->taskDockerExec('devshop_container')
           ->exec('cd /usr/share/devshop && git checkout ' . $_SERVER['TRAVIS_BRANCH'])
           ->run();
-        exit($this->taskDockerExec('devshop_container')
-          ->exec('devshop devmaster:upgrade -n ' . $_SERVER['TRAVIS_BRANCH'])
-          ->run()
-          ->getExitCode());
+      $this->taskDockerExec('devshop_container')
+          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
+          ->run();
       }
       else {
         # Run install script on the container.
