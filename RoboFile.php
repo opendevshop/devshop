@@ -445,6 +445,7 @@ class RoboFile extends \Robo\Tasks {
             ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
             ->exec("apt-get install dbus -y")
+            ->env('DEBIAN_FRONTEND', 'noninteractive')
             ->run()
             ->wasSuccessful()
         )) {
