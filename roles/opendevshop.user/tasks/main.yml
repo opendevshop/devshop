@@ -112,7 +112,7 @@
       - 'fix-drupal-platform-permissions'
     lineinfile:
       dest: '{{ sudoers_file_path }}'
-      line: '{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}'
+      line: '{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}.sh'
       state: present
       validate: 'visudo -cf %s'
       create: yes
