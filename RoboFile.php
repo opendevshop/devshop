@@ -466,16 +466,12 @@ class RoboFile extends \Robo\Tasks {
 
       # If test-upgrade requested, install older version first, then check branch back to original and run modern install.sh script to kick off the ansible playbook.
       if ($opts['test-upgrade']) {
-        $this->taskDockerExec('devshop_container')
-          ->exec('cd /usr/share/devshop && git checkout ' . self::UPGRADE_FROM_VERSION)
-          ->run();
+        $this->_exec('git checkout ' . self::UPGRADE_FROM_VERSION);
         $this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
           ->run();
+        $this->_exec('git checkout ' . $_SERVER['TRAVIS_BRANCH']);
         $this->taskDockerExec('devshop_container')
-          ->exec('cd /usr/share/devshop && git checkout ' . $_SERVER['TRAVIS_BRANCH'])
-          ->run();
-      $this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
           ->run();
       }
