@@ -47,7 +47,7 @@ class Upgrade extends Command
     $this->announce('Upgrade');
 
     $output->writeln(
-      '<info>Welcome to the DevShop Devmaster Upgrader!</info>'
+      '<info>Welcome to the DevShop Upgrader!</info>'
     );
 
     // @TODO: Check the CLI for new releases.  If, we should tell the user to run "self-update" then "upgrade".
@@ -65,9 +65,9 @@ class Upgrade extends Command
 
     // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
-    if ($pwu_data['name'] != 'root' && $pwu_data['name'] != 'aegir') {
-      $output->writeln('<error>WARNING:</error> You must run this command root or aegir user.');
-      $output->writeln('Run "sudo -u aegir devshop upgrade" to run as aegir user.');
+    if ($pwu_data['name'] != 'root') {
+      $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
+      $output->writeln('Run "sudo devshop upgrade" to run as root.');
       $output->writeln('<fg=red>Installation aborted.</>');
       $output->writeln('');
       return;
@@ -193,8 +193,7 @@ class Upgrade extends Command
     // If they say yes, run the command.
     $output->writeln('');
 
-    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'\"": $cmd;
-    $process = new Process($command);
+    $process = new Process("su aegir - -c '$cmd'");
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
       echo $buffer;
@@ -212,10 +211,41 @@ class Upgrade extends Command
     $output->writeln('');
     $output->writeln("<info>Devmaster Upgraded to {$target_version}.</info>");
 
+    // Run the ansible playbook.
+    $output->writeln('');
+    $question = new ConfirmationQuestion("STEP 2: Run playbook (y/n) ", false);
+
+    // If they say no, exit.
+    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
+      $output->writeln("<fg=red>Upgrade cancelled.</>");
+      $output->writeln('');
+      return;
+    }
+
+    // If they say yes, run the command.
+    $output->writeln('');
+    $command = $this->getApplication()->find('install');
+
+    $arguments = array(
+        'command' => 'install',
+        'devshop-version' => $target_version,
+        '--yes' => 1,
+    );
+
+    $upgradeInput = new ArrayInput($arguments);
+    $output->writeln('');
+
+    if ($command->run($upgradeInput, $output) != 0) {
+      $output->writeln("<fg=red>Playbook run failed!</>");
+      $output->writeln('');
+    }
+
     $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
 
-    // Schedule the platform for deletion.
+
+    // Schedule the command for deletion.
     $output->writeln('');
+    $question = new ConfirmationQuestion("STEP 3: Schedule deletion of old platform ($devmaster_root) ", false);
     $cmd = "drush @hostmaster platform-delete $devmaster_root -y";
 
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
@@ -228,8 +258,7 @@ class Upgrade extends Command
     }
 
     // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
-    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'\"": $cmd;
-    $process = new Process($command);
+    $process = new Process("su aegir - -c '$cmd'");
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
       echo $buffer;
