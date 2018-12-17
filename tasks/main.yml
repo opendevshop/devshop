@@ -105,6 +105,12 @@
   command: "{{ local_bin_path }}/drush @hostmaster hosting-devshop_support -v"
   when: devshop_support_license_key != ""
 
+- name: Clear the drush cache.
+  command: "{{ local_bin_path }}/drush cc drush"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
 - name: Ensure hosting-dispatch crontab is setup
   become: yes
   become_user: "{{ aegir_user_name }}"
@@ -138,12 +144,6 @@
 
 - name: Set git user name and email
   shell: "git config --global push.default simple"
-  become: yes
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
-- name: Clear the drush cache.
-  command: "{{ local_bin_path }}/drush cc drush"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
