@@ -31,4 +31,4 @@
   version: devshop-playbook-upgrade
 
 - name: opendevshop.aegir-user
-  version: devshop-playbook-upgrade
+  version: 1.5.0-rc3
