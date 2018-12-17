@@ -197,7 +197,7 @@ class DevmasterUpgrade extends Command
     // If they say yes, run the command.
     $output->writeln('');
 
-    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'\"": $cmd;
+    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd;
     $process = new Process($command);
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
@@ -229,7 +229,7 @@ class DevmasterUpgrade extends Command
     }
 
     // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
-    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'\"": $cmd;
+    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd;
     $process = new Process($command);
     $process->setTimeout(NULL);
     $process->run(function ($type, $buffer) {
