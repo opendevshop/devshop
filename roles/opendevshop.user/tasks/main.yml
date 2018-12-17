@@ -90,7 +90,7 @@
       - "fix-drupal-platform-ownership"
     get_url:
       url: "https://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_ownership/scripts/{{ item }}.sh?id={{ aegir_hosting_version }}"
-      dest: "{{ local_bin_path }}/{{ item }}"
+      dest: "{{ local_bin_path }}/{{ item }}.sh"
       mode: 0755
       force: yes
 
@@ -100,7 +100,7 @@
       - "fix-drupal-platform-permissions"
     get_url:
       url: "https://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_permissions/scripts/{{ item }}.sh?id={{ aegir_hosting_version }}"
-      dest: "{{ local_bin_path }}/{{ item }}"
+      dest: "{{ local_bin_path }}/{{ item }}.sh"
       mode: 0755
       force: yes
 
