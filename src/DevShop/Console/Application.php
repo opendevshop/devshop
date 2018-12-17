@@ -94,6 +94,7 @@ class Application extends BaseApplication
     $commands[] = new Command\Install();
     $commands[] = new Command\InstallDevmaster();
     $commands[] = new Command\DevmasterTest();
+    $commands[] = new Command\DevmasterUpgrade();
     $commands[] = new Command\Upgrade();
     $commands[] = new Command\RemoteInstall();
     $commands[] = new Command\SelfUpdate();
