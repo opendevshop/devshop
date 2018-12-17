@@ -83,13 +83,46 @@
   debug:
     msg: "{{ devmaster_install_command }}"
 
+- name: Get Devmaster root
+  shell: 'drush @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  register: devmaster_site_root
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: True
+
+- name: Get Devmaster URI
+  shell: 'drush @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  register: devmaster_site_uri
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: True
+
+- set_fact:
+    devmaster_site_root: "{{ devmaster_site_root.stdout }}"
+    devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
+
+- name: Devmaster Root
+  debug:
+    msg: "{{ devmaster_site_root }}"
+- name: Devmaster URI
+  debug:
+    msg: "{{ devmaster_site_uri }}"
+
 - name: Install Devmaster
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_install_command }}"
-  args:
-    creates: "{{ aegir_user_home }}/.drush/hostmaster.alias.drushrc.php"
+  when: devmaster_site_uri == ""
+
+- name: Upgrade Devmaster
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_install_command }}"
+  when: devmaster_site_uri == ""
 
 - name: DevShop.Support | Save License Key
   become: yes
