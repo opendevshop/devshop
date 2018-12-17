@@ -57,11 +57,6 @@ abstract class Command extends BaseCommand
   protected $process = NULL;
 
   /**
-   * @var If target version is branch or tag.
-   */
-  protected $targetVersionRef;
-
-  /**
    * @param \Symfony\Component\Console\Input\InputInterface $input
    * @param \Symfony\Component\Console\Output\OutputInterface $output
    */
@@ -253,7 +248,6 @@ abstract class Command extends BaseCommand
     try {
       $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/heads/' . $version);
       $branch_found = TRUE;
-      $this->targetVersionRef = 'branch';
     }
     catch (RuntimeException $e) {
       $branch_found = FALSE;
@@ -262,7 +256,6 @@ abstract class Command extends BaseCommand
     try {
       $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/tags/' . $version);
       $tag_found = TRUE;
-      $this->targetVersionRef = 'tag';
     }
     catch (RuntimeException $e) {
       $tag_found = FALSE;
