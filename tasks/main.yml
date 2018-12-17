@@ -121,8 +121,8 @@
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_install_command }}"
-  when: devmaster_site_uri == ""
+  command: "{{ devmaster_upgrade_command }}"
+  when: devmaster_site_uri != ""
 
 - name: DevShop.Support | Save License Key
   become: yes
