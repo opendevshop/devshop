@@ -464,17 +464,35 @@ class RoboFile extends \Robo\Tasks {
         ->exec("chown {$opts['user-uid']} /var/aegir -R")
         ->run();
 
-      # Run install script on the container.
-      # @TODO: Run the last version on the container, then upgrade.
-      $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if ($opts['mode'] != 'manual' && ($this->input()
-            ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
-          ->exec($install_command)
-          //        ->option('tty')
+      # If upgrade-test requested, install older version first, then check branch back to original and run devashop devmaster upgrade command.
+      if ($opts['upgrade-test']) {
+        $this->taskDockerExec('devshop_container')
+          ->exec('cd /usr/share/devshop && git checkout ' . self::UPGRADE_FROM_VERSION)
+          ->run();
+        $this->taskDockerExec('devshop_container')
+          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
+          ->run();
+        $this->taskDockerExec('devshop_container')
+          ->exec('cd /usr/share/devshop && git checkout ' . $_SERVER['TRAVIS_BRANCH'])
+          ->run();
+        exit($this->taskDockerExec('devshop_container')
+          ->exec('devshop devmaster:upgrade -n ' . $_SERVER['TRAVIS_BRANCH'])
           ->run()
-          ->wasSuccessful()) {
-        $this->say('Docker Exec install.sh failed.');
-        exit(1);
+          ->getExitCode());
+      }
+      else {
+        # Run install script on the container.
+        # @TODO: Run the last version on the container, then upgrade.
+        $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
+        if ($opts['mode'] != 'manual' && ($this->input()
+              ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
+            ->exec($install_command)
+            //        ->option('tty')
+            ->run()
+            ->wasSuccessful()) {
+          $this->say('Docker Exec install.sh failed.');
+          exit(1);
+        }
       }
 
       if ($opts['test']) {
