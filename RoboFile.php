@@ -484,6 +484,11 @@ class RoboFile extends \Robo\Tasks {
           ->exec('echo "invalid_task_attribute_failed = false" >> /etc/ansible/ansible.cfg ')
           ->run();
 
+        // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
+        $this->taskDockerExec('devshop_container')
+          ->exec('ansible-galaxy install geerlingguy.git')
+          ->run();
+
         // Run install.sh old version.
         $this->taskDockerExec('devshop_container')
           // This is needed because the old playbook has an incompatibility with newer ansible.
