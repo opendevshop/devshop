@@ -64,7 +64,7 @@ class Upgrade extends Command
     // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
     if ($pwu_data['name'] != 'root') {
-      throw new \Exception('You must run this command as the root user. Run "sudo devshop upgrade" to run as root. Installation aborted.');
+      throw new \Exception('You must run this command as the root user. Run "sudo devshop upgrade" to run as root. Upgrade aborted.');
     }
     $output->writeln('');
     $current_version = $this->getApplication()->getVersion();

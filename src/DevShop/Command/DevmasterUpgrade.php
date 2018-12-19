@@ -44,7 +44,7 @@ class DevmasterUpgrade extends Command
 
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
-    $this->announce('Upgrade');
+    $this->announce('Devmaster Upgrade');
 
     $output->writeln(
       '<info>Welcome to the DevShop Devmaster Upgrader!</info>'
@@ -56,21 +56,15 @@ class DevmasterUpgrade extends Command
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
     if (strpos($users, 'aegir') === FALSE) {
-      $output->writeln('<error>WARNING:</error> aegir user does not exist! DevShop is not installed!');
-      $output->writeln('<fg=red>Installation aborted.');
-      $output->writeln('');
-      return;
+      throw new \Exception('aegir user does not exist! DevShop is not installed! Installation aborted.');
     }
     $output->writeln('');
 
     // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
     if ($pwu_data['name'] != 'root' && $pwu_data['name'] != 'aegir') {
-      $output->writeln('<error>WARNING:</error> You must run this command root or aegir user.');
-      $output->writeln('Run "sudo -u aegir devshop upgrade" to run as aegir user.');
-      $output->writeln('<fg=red>Installation aborted.</>');
-      $output->writeln('');
-      return;
+      throw new \Exception('You must run this command as the root or aegir user. Run "sudo devshop upgrade" to run as root. 
+       Devmaster upgrade aborted.');
     }
     $output->writeln('');
     $current_version = $this->getApplication()->getVersion();
