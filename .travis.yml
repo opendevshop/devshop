@@ -13,7 +13,7 @@ env:
 
   matrix:
   - test="Upgrade"
-    COMMAND="robo up --test-upgrade"
+    COMMAND="robo up --test-upgrade --no-dev"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
  
   - test="Docker Install"
