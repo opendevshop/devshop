@@ -56,21 +56,15 @@ class Upgrade extends Command
     // Look for aegir user
     $users = file_get_contents('/etc/passwd');
     if (strpos($users, 'aegir') === FALSE) {
-      $output->writeln('<error>WARNING:</error> aegir user does not exist! DevShop is not installed!');
-      $output->writeln('<fg=red>Installation aborted.');
-      $output->writeln('');
-      return;
+      throw new \Exception('aegir user does not exist! DevShop is not installed! Installation aborted.');
+
     }
     $output->writeln('');
 
     // Check current user is root
     $pwu_data = posix_getpwuid(posix_geteuid());
     if ($pwu_data['name'] != 'root') {
-      $output->writeln('<error>WARNING:</error> You must run this command as the root user.');
-      $output->writeln('Run "sudo devshop upgrade" to run as root.');
-      $output->writeln('<fg=red>Installation aborted.</>');
-      $output->writeln('');
-      return;
+      throw new \Exception('You must run this command as the root user. Run "sudo devshop upgrade" to run as root. Installation aborted.');
     }
     $output->writeln('');
     $current_version = $this->getApplication()->getVersion();
@@ -160,9 +154,7 @@ class Upgrade extends Command
 
     // Check for site in target path
     if (file_exists($target_path)) {
-      $output->writeln("<fg=red>WARNING:</> There is already a site located at <comment>$target_path</comment>. Please check your version and paths and try again.");
-      $output->writeln('');
-      return;
+      throw new \Exception("There is already a site located at <comment>$target_path</comment>. Please check your version and paths and try again.");
     }
 
     //@TODO: Finalize the upgrade process.
