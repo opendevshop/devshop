@@ -478,13 +478,17 @@ class RoboFile extends \Robo\Tasks {
       # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
       if ($opts['test-upgrade']) {
 
+        // This is needed because the old playbook has an incompatibility with newer ansible.
+        $this->taskDockerExec('devshop_container')
+          ->exec('echo "invalid_task_attribute_failed = false" >> /etc/ansible/ansible.cfg ')
+          ->run();
+
         // Run install.sh old version.
         $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
-
           // This is needed because the old playbook has an incompatibility with newer ansible.
-          ->env('INVALID_TASK_ATTRIBUTE_FAILED', FALSE)
+          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
           ->run();
+
 
         // Run devshop upgrade. This command runs:
         //  - self-update, which checks out the branch being tested and installs the roles.
