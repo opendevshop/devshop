@@ -18,7 +18,7 @@ class DevmasterUpgrade extends Command
   {
     $this
       ->setName('devmaster:upgrade')
-      ->setDescription('Upgrade Devmaster: the Drupal front end.')
+      ->setDescription('Upgrade Devmaster: the Drupal front end. This command should only be run by the Ansible playbooks, which is triggered by the `devshop verify:system` command.')
       ->addArgument(
         'devshop-version',
         InputArgument::OPTIONAL,
@@ -29,6 +29,11 @@ class DevmasterUpgrade extends Command
       ->addOption(
         'makefile', NULL, InputOption::VALUE_OPTIONAL,
         'The makefile to use to build the devmaster platform.'
+      )
+      // Option to allow ansible runs to tell this command that it is being run as part of the playbooks.
+      ->addOption(
+        'run-from-playbooks', NULL, InputOption::VALUE_OPTIONAL,
+        'A flag to indicate this command is being run from the playbooks. Dont use if manually running this command.'
       )
 
     ;
@@ -49,6 +54,10 @@ class DevmasterUpgrade extends Command
     $output->writeln(
       '<info>Welcome to the DevShop Devmaster Upgrader!</info>'
     );
+
+    if ($input->getOption('run-from-playbooks') == FALSE) {
+      $output->writeln('<error>This command should not be run manually unless you have a very specific reason. Please run the `devshop verify:system` command instead.</error>');
+    }
 
     // @TODO: Check the CLI for new releases.  If, we should tell the user to run "self-update" then "upgrade".
 
@@ -177,7 +186,7 @@ class DevmasterUpgrade extends Command
     // 3. Git checkout /usr/share/devshop to get the latest release.
 
     // Upgrade DevMaster
-    $output->writeln('STEP 1: Upgrade DevMaster');
+    $output->writeln('Running hostmaster-migrate command...');
     $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
