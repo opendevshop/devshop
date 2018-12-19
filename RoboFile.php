@@ -491,6 +491,10 @@ class RoboFile extends \Robo\Tasks {
         $this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_BRANCH'])
           ->run();
+
+        $this->taskDockerExec('devshop_container')
+          ->exec('/usr/share/devshop/bin/devshop status')
+          ->run();
       }
       else {
         # Run install script on the container.
