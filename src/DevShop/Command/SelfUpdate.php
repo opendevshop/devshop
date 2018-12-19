@@ -151,6 +151,17 @@ EOT
     // Output a message, telling the user they should now run `devshop upgrade`.
     $output->writeln('<info>DevShop CLI Updated.</info> You should now run the `devshop upgrade` command to upgrade your server.');
 
+    // Install latest ansible galaxy roles
+    if (`drush > /dev/null 2>&1`) {
+      $process = new Process('ansible-galaxy install -r roles.yml', dirname(dirname(dirname(__DIR__))));
+      $process->setTimeout(NULL);
+      $process->run(function ($type, $buffer) {
+        echo $buffer;
+      });
+    }
+    else {
+      $output->writeln('<error>Ansible galaxy not found. Not installing roles.</error>');
+    }
 //    }
   }
 }
