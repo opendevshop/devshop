@@ -476,8 +476,9 @@ class RoboFile extends \Robo\Tasks {
       if ($opts['test-upgrade']) {
 
         // Checkout upgrade from version.
-        $this->taskGitStack(self::UPGRADE_FROM_VERSION)
-          ->checkout()
+        $this->taskGitStack()
+          ->pull()
+          ->checkout(self::UPGRADE_FROM_VERSION)
           ->run();
 
         // Run install.sh old version.
