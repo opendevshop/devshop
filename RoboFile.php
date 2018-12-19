@@ -126,6 +126,7 @@ class RoboFile extends \Robo\Tasks {
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
       $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
+      $this->say('Current dir: ' . getcwd());
       $this->taskGitStack()
         ->exec('fetch')
         ->checkout(self::UPGRADE_FROM_VERSION)
