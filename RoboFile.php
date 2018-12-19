@@ -415,6 +415,7 @@ class RoboFile extends \Robo\Tasks {
         ->name('devshop_container')
         ->volume(__DIR__, '/usr/share/devshop')
         ->volume(__DIR__ . '/aegir-home', '/var/aegir')
+        ->volume(__DIR__ . '/roles', '/etc/ansible/roles')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
