@@ -486,7 +486,7 @@ class RoboFile extends \Robo\Tasks {
 
         // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
         $this->taskDockerExec('devshop_container')
-          ->exec('ansible-galaxy install geerlingguy.git')
+          ->exec('ansible-galaxy install geerlingguy.git geerlingguy.apache')
           ->run();
 
         // Run install.sh old version.
