@@ -1,7 +1,7 @@
 galaxy_info:
   author: Jon Pugh
   description: Makes an apache server accessible as an aegir remote.
-  company: OpenDevShop Inc
+  company: ThinkDrop Inc
   
   license: GPLv2
   
