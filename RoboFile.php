@@ -123,6 +123,14 @@ class RoboFile extends \Robo\Tasks {
     'test-upgrade' => FALSE
   ]) {
 
+    // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
+    if ($opts['test-upgrade']) {
+      $this->say('Upgrade request detected: Checking out' . $opts['']);
+      $this->taskGitStack()
+        ->pull()
+        ->checkout(self::UPGRADE_FROM_VERSION)
+        ->run();
+    }
 
     // Create the Aegir Home directory.
     if (file_exists("aegir-home/.drush/commands")) {
@@ -162,12 +170,6 @@ class RoboFile extends \Robo\Tasks {
       'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
-    // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
-    if ($opts['test-upgrade']) {
-      $this->taskGitStack()
-        ->checkout(self::UPGRADE_FROM_VERSION)
-        ->run();
-    }
     $roles_yml = Yaml::parse(file_get_contents(__DIR__ . '/roles.yml'));
     foreach ($roles_yml as $role) {
       $roles[$role['name']] = [
