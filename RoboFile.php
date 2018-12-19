@@ -119,7 +119,8 @@ class RoboFile extends \Robo\Tasks {
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'fork' => FALSE,
-    'devshop-version' =>'1.x'
+    'devshop-version' =>'1.x',
+    'test-upgrade' => FALSE
   ]) {
 
 
@@ -161,7 +162,14 @@ class RoboFile extends \Robo\Tasks {
       'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
-    foreach (Yaml::parse(file_get_contents(__DIR__ . '/roles.yml')) as $role) {
+    // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
+    if ($opts['test-upgrade']) {
+      $this->taskGitStack()
+        ->checkout(self::UPGRADE_FROM_VERSION)
+        ->run();
+    }
+    $roles_yml = Yaml::parse(file_get_contents(__DIR__ . '/roles.yml'));
+    foreach ($roles_yml as $role) {
       $roles[$role['name']] = [
         'repo' => $role_repos[$role['name']],
         'version' => $role['version'],
@@ -464,20 +472,28 @@ class RoboFile extends \Robo\Tasks {
         ->exec("chown {$opts['user-uid']} /var/aegir -R")
         ->run();
 
-      # If test-upgrade requested, install older version first, then check branch back to original and run modern install.sh script to kick off the ansible playbook.
+      # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
       if ($opts['test-upgrade']) {
-        $this->_exec('git checkout ' . self::UPGRADE_FROM_VERSION);
+
+        // Checkout upgrade from version.
+        $this->taskGitStack(self::UPGRADE_FROM_VERSION)
+          ->checkout()
+          ->run();
+
+        // Run install.sh old version.
         $this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
           ->run();
-        $this->_exec('git checkout ' . $_SERVER['TRAVIS_BRANCH']);
+
+        // Run devshop upgrade. This command runs:
+        //  - self-update, which checks out the branch being tested and installs the roles.
+        //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
         $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
+          ->exec('/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_BRANCH'])
           ->run();
       }
       else {
         # Run install script on the container.
-        # @TODO: Run the last version on the container, then upgrade.
         $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
         if ($opts['mode'] != 'manual' && ($this->input()
               ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
