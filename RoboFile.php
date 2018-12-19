@@ -125,9 +125,9 @@ class RoboFile extends \Robo\Tasks {
 
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
-      $this->say('Upgrade request detected: Checking out' . $opts['']);
+      $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
       $this->taskGitStack()
-        ->pull()
+        ->exec('fetch')
         ->checkout(self::UPGRADE_FROM_VERSION)
         ->run();
     }
@@ -476,12 +476,6 @@ class RoboFile extends \Robo\Tasks {
 
       # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
       if ($opts['test-upgrade']) {
-
-        // Checkout upgrade from version.
-        $this->taskGitStack()
-          ->pull()
-          ->checkout(self::UPGRADE_FROM_VERSION)
-          ->run();
 
         // Run install.sh old version.
         $this->taskDockerExec('devshop_container')
