@@ -1,7 +1,7 @@
 galaxy_info:
   author: Jon Pugh
   description: Aegir User
-  company: OpenDevShop Inc
+  company: ThinkDrop Inc
   license: GPLv2
   min_ansible_version: 1.2
   platforms:
