@@ -481,6 +481,9 @@ class RoboFile extends \Robo\Tasks {
         // Run install.sh old version.
         $this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
+
+          // This is needed because the old playbook has an incompatibility with newer ansible.
+          ->env('INVALID_TASK_ATTRIBUTE_FAILED', FALSE)
           ->run();
 
         // Run devshop upgrade. This command runs:
