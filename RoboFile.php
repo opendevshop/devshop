@@ -128,7 +128,7 @@ class RoboFile extends \Robo\Tasks {
       $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
       $this->say('Current dir: ' . getcwd());
       $this->taskGitStack()
-        ->exec('fetch --unshallow')
+        ->exec('fetch --unshallow --tags')
         ->checkout(self::UPGRADE_FROM_VERSION)
         ->run();
     }
