@@ -131,6 +131,7 @@ class RoboFile extends \Robo\Tasks {
         ->exec('fetch --unshallow --tags')
         ->checkout(self::UPGRADE_FROM_VERSION)
         ->run();
+      $this->_exec('composer install --no-plugins --no-scripts');
     }
 
     // Create the Aegir Home directory.
