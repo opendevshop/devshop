@@ -133,7 +133,7 @@ class RoboFile extends \Robo\Tasks {
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'fork' => FALSE,
-    'devshop-version' => NULL,
+    'devshop-version' => '1.x',
     'test-upgrade' => FALSE
   ]) {
 
@@ -358,7 +358,7 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'fork' => FALSE,
-    'devshop-version' => NULL,
+    'devshop-version' => '1.x',
   ]) {
 
     if (empty($this->devshop_root_path)) {
