@@ -130,7 +130,7 @@ class RoboFile extends \Robo\Tasks {
 
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
-      $this->devshop_root_path = dirname(__DIR__) . '/devshop-' . $opts['devshop-version'];
+      $this->devshop_root_path = dirname(__DIR__) . '/devshop-' . self::UPGRADE_FROM_VERSION;
       $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
       $this->say('Current dir: ' . getcwd());
       $this->taskGitStack()
@@ -512,12 +512,16 @@ class RoboFile extends \Robo\Tasks {
           ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
           ->run();
 
+        # Before DevShop 1.5.0, you had to run devshop self-update first.
+        $this->taskDockerExec('devshop_container')
+          ->exec('/usr/share/devshop/bin/devshop self-update -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+          ->run();
 
         // Run devshop upgrade. This command runs:
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
         $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_BRANCH'])
+          ->exec('/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
           ->run();
 
         $this->taskDockerExec('devshop_container')
