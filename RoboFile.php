@@ -49,6 +49,11 @@ class RoboFile extends \Robo\Tasks {
    */
   private $devshop_root_path;
 
+  public function  __construct()
+  {
+    $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+  }
+
   /**
    * Launch devshop after running prep:host and prep:source. Use --build to
    * build new local containers.
@@ -124,9 +129,20 @@ class RoboFile extends \Robo\Tasks {
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'fork' => FALSE,
-    'devshop-version' =>'1.x',
+    'devshop-version' => NULL,
     'test-upgrade' => FALSE
   ]) {
+
+    if (empty($this->git_ref)) {
+      parent::yell("Preparing Sourcecode: Branch Unknown.");
+    }
+    else {
+      parent::yell("Preparing Sourcecode: Branch $this->git_ref");
+    }
+
+    if ($opts['devshop-version'] == NULL) {
+      $opts['devshop-version'] = $this->git_ref;
+    }
 
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
@@ -338,11 +354,22 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'fork' => FALSE,
-    'devshop-version' => '1.x',
+    'devshop-version' => NULL,
   ]) {
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
+    }
+
+    if (empty($this->git_ref)) {
+      parent::yell("Launching DevShop: Branch Unknown.");
+    }
+    else {
+      parent::yell("Launching DevShop: Branch $this->git_ref");
+    }
+
+    if ($opts['devshop-version'] == NULL) {
+      $opts['devshop-version'] = $this->git_ref;
     }
 
     // Determine current UID.
