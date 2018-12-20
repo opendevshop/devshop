@@ -201,6 +201,8 @@ class RoboFile extends \Robo\Tasks {
       'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
+    $this->yell("Cloning Ansible Roles...");
+
     $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/roles.yml'));
     foreach ($roles_yml as $role) {
       $roles[$role['name']] = [
@@ -221,6 +223,7 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+
     // Run drush make to build the devmaster stack.
     $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
@@ -236,9 +239,10 @@ class RoboFile extends \Robo\Tasks {
     }
     else {
 
+      $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
+
       $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if ($result->wasSuccessful()) {
-        $this->say('Built devmaster from makefile.');
         return TRUE;
       }
       else {
@@ -540,6 +544,8 @@ class RoboFile extends \Robo\Tasks {
           ->exec('ansible-galaxy install geerlingguy.git geerlingguy.apache')
           ->run();
 
+        $this->yell("Running install.sh for old version...");
+
         // Run install.sh old version.
         $this->taskDockerExec('devshop_container')
           // This is needed because the old playbook has an incompatibility with newer ansible.
@@ -547,11 +553,13 @@ class RoboFile extends \Robo\Tasks {
           ->run();
 
         # Before DevShop 1.5.0, you had to run devshop self-update first.
+        $this->yell("Running devshop self-update...");
         $this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/bin/devshop self-update -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
           ->run();
 
         // Run devshop upgrade. This command runs:
+        $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
         $this->taskDockerExec('devshop_container')
@@ -564,6 +572,7 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
         # Run install script on the container.
+        $this->yell("Running install.sh ...");
         $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
         if ($opts['mode'] != 'manual' && ($this->input()
               ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
@@ -597,6 +606,8 @@ class RoboFile extends \Robo\Tasks {
           $this->say('Unable to disable supervisor.');
           exit(1);
         }
+
+        $this->yell("Running devshop-tests.sh ...");
 
         # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
