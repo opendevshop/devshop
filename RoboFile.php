@@ -32,7 +32,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks {
 
   // Install this version first when testing upgrades.
-  const UPGRADE_FROM_VERSION = '1.0.0-rc4';
+  const UPGRADE_FROM_VERSION = '1.0.0-rc4-test';
   const UPGRADE_FROM_PROVISION_VERSION = '7.x-3.10';
 
   // The version of docker-compose to suggest the user install.
