@@ -27,7 +27,7 @@ projects:
   hosting:
     download:
       type: git
-      branch: 3020169-permission-check
+      tag: 7.x-3.170-devshop
 
   hosting_git:
     download:
