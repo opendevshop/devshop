@@ -45,6 +45,11 @@ class RoboFile extends \Robo\Tasks {
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
   /**
+   * @var The path to devshop root. Used for upgrades.
+   */
+  private $devshop_root_path;
+
+  /**
    * Launch devshop after running prep:host and prep:source. Use --build to
    * build new local containers.
    *
@@ -125,33 +130,37 @@ class RoboFile extends \Robo\Tasks {
 
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
+      $this->devshop_root_path = dirname(__DIR__) . '/devshop-' . $opts['devshop-version'];
       $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
       $this->say('Current dir: ' . getcwd());
       $this->taskGitStack()
-        ->exec('fetch --unshallow --tags')
-        ->checkout(self::UPGRADE_FROM_VERSION)
+        ->cloneRepo('https://github.com/opendevshop/devshop', $this->devshop_root_path, self::UPGRADE_FROM_VERSION)
         ->run();
-      $this->_exec('composer install --no-plugins --no-scripts');
+      $this->taskExec('composer install --no-plugins --no-scripts')
+        ->dir($this->devshop_root_path);
+    }
+    else {
+      $this->devshop_root_path = __DIR__;
     }
 
     // Create the Aegir Home directory.
-    if (file_exists("aegir-home/.drush/commands")) {
-      $this->say("aegir-home/.drush/commands already exists.");
+    if (file_exists($this->devshop_root_path . "/aegir-home/.drush/commands")) {
+      $this->say($this->devshop_root_path . "/aegir-home/.drush/commands already exists.");
     }
     else {
-      $this->taskExecStack()
-        ->exec('mkdir -p aegir-home/.drush/commands')
+      $this->taskFilesystemStack()
+        ->mkdir($this->devshop_root_path . '/aegir-home/.drush/comman', 777)
         ->run();
     }
 
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
-      if (file_exists($path)) {
+      if (file_exists($this->devshop_root_path . '/' . $path)) {
         $this->say("$path already exists.");
       }
       else {
         $this->taskGitStack()
-          ->cloneRepo($url, $path)
+          ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
           ->run();
       }
     }
@@ -172,7 +181,7 @@ class RoboFile extends \Robo\Tasks {
       'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
-    $roles_yml = Yaml::parse(file_get_contents(__DIR__ . '/roles.yml'));
+    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/roles.yml'));
     foreach ($roles_yml as $role) {
       $roles[$role['name']] = [
         'repo' => $role_repos[$role['name']],
@@ -181,7 +190,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     foreach ($roles as $name => $role) {
-      $path = 'roles/' . $name;
+      $path = $this->devshop_root_path . '/roles/' . $name;
       if (file_exists($path)) {
         $this->say("$path already exists.");
       }
@@ -193,11 +202,14 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Run drush make to build the devmaster stack.
-    $make_destination = "aegir-home/devmaster-" . $opts['devshop-version'];
+    $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
 
     // If "fork" option is set, use travis forks makefile.
     $makefile_path = $opts['fork']? 'build-devmaster-travis-forks.make.yml': $makefile_path;
+
+    // Append the desired devshop root path.
+    $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
 
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
@@ -329,6 +341,10 @@ class RoboFile extends \Robo\Tasks {
     'devshop-version' => '1.x',
   ]) {
 
+    if (empty($this->devshop_root_path)) {
+      $this->devshop_root_path = __DIR__;
+    }
+
     // Determine current UID.
     if (is_null($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
@@ -414,9 +430,9 @@ class RoboFile extends \Robo\Tasks {
       # Launch Server container
       if (!$this->taskDockerRun($opts['install-sh-image'])
         ->name('devshop_container')
-        ->volume(__DIR__, '/usr/share/devshop')
-        ->volume(__DIR__ . '/aegir-home', '/var/aegir')
-        ->volume(__DIR__ . '/roles', '/etc/ansible/roles')
+        ->volume($this->devshop_root_path, '/usr/share/devshop')
+        ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
+        ->volume($this->devshop_root_path . '/roles', '/etc/ansible/roles')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
