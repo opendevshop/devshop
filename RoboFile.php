@@ -52,6 +52,10 @@ class RoboFile extends \Robo\Tasks {
   public function  __construct()
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+
+    if (empty($this->git_ref) && !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
+      $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+    }
   }
 
   /**
