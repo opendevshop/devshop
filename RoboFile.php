@@ -49,6 +49,11 @@ class RoboFile extends \Robo\Tasks {
    */
   private $devshop_root_path;
 
+  /**
+   * @var The path to upgraded devshop (ie the current branch, the one being tested.)
+   */
+  private $devshop_upgrade_destination_path;
+
   public function  __construct()
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
@@ -147,6 +152,7 @@ class RoboFile extends \Robo\Tasks {
 
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
+      $this->devshop_upgrade_destination_path = __DIR__;
       $this->devshop_root_path = dirname(__DIR__) . '/devshop-' . self::UPGRADE_FROM_VERSION;
       $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
       $this->say('Current dir: ' . getcwd());
@@ -155,9 +161,14 @@ class RoboFile extends \Robo\Tasks {
         ->run();
       $this->taskExec('composer install --no-plugins --no-scripts')
         ->dir($this->devshop_root_path);
+
+      // If this is an upgrade test, the initial pre-build is of the old version.
+      $build_version = self::UPGRADE_FROM_VERSION;
     }
     else {
+      // If this not an upgrade test, the initial pre-build is of the specified version.
       $this->devshop_root_path = __DIR__;
+      $build_version = $opts['devshop-version'];
     }
 
     // Create the Aegir Home directory.
@@ -220,25 +231,34 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-
     // Run drush make to build the devmaster stack.
-    $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
+    $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $build_version;
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
 
     // If "fork" option is set, use travis forks makefile.
     $makefile_path = $opts['fork']? 'build-devmaster-travis-forks.make.yml': $makefile_path;
 
     // Append the desired devshop root path.
-    $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
+    $full_makefile_path = $this->devshop_root_path . '/' . $makefile_path;
 
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
     }
     else {
 
-      $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
+      $this->yell("Building devmaster from makefile $full_makefile_path to $make_destination");
 
-      $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
+      $stack = $this->taskExecStack();
+      $stack->exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
+
+      // If upgrade test specified, prebuild the target platform as well.
+      if ($opts['test-upgrade']) {
+        $target_make_destinatio = $this->devshop_upgrade_destination_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
+        $target_makefile_path =  $this->devshop_upgrade_destination_path . '/' . $makefile_path;
+        $stack->exec("bin/drush make {$target_makefile_path} {$target_make_destinatio} --working-copy --no-gitinfofile");
+        $this->say('Current dir: ' . getcwd());
+      }
+      $result = $stack->run();
       if ($result->wasSuccessful()) {
         return TRUE;
       }
