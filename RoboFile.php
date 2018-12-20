@@ -144,9 +144,6 @@ class RoboFile extends \Robo\Tasks {
       parent::yell("Preparing Sourcecode: Branch $this->git_ref");
     }
 
-    if ($opts['devshop-version'] == NULL) {
-      $opts['devshop-version'] = $this->git_ref;
-    }
 
     // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
     if ($opts['test-upgrade']) {
@@ -378,6 +375,11 @@ class RoboFile extends \Robo\Tasks {
 
     if ($opts['devshop-version'] == NULL) {
       $opts['devshop-version'] = $this->git_ref;
+    }
+
+    // Override any options if it's a travis PR.
+    if (!empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
+      $opts['devshop-version'] = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
     }
 
     // Determine current UID.
