@@ -148,8 +148,8 @@ class RoboFile extends \Robo\Tasks {
       $this->say($this->devshop_root_path . "/aegir-home/.drush/commands already exists.");
     }
     else {
-      $this->taskFilesystemStack()
-        ->mkdir($this->devshop_root_path . '/aegir-home/.drush/comman', 777)
+      $this->taskExecStack()
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
     }
 
