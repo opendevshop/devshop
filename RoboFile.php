@@ -481,7 +481,7 @@ class RoboFile extends \Robo\Tasks {
 
         // This is needed because the old playbook has an incompatibility with newer ansible.
         $this->taskDockerExec('devshop_container')
-          ->exec('echo "invalid_task_attribute_failed = false" >> /etc/ansible/ansible.cfg ')
+          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
           ->run();
 
         // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
