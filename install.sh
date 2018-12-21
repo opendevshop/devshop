@@ -365,7 +365,6 @@ ANSIBLE_EXTRA_VARS+=("playbook_path: ${PLAYBOOK_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
 ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
-ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("travis: false")
 ANSIBLE_EXTRA_VARS+=("supervisor_running: true")
 
