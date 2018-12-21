@@ -553,11 +553,19 @@ class RoboFile extends \Robo\Tasks {
           ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
           ->run();
 
-        # Before DevShop 1.5.0, you had to run devshop self-update first.
-        $this->yell("Running devshop self-update...");
-        $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/bin/devshop self-update -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        # Old self update isn't working! Use git pull
+        $branch_to_test = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $this->git_ref;
+        $this->yell("Checking out branch $branch_to_test");
+        $this->taskGitStack()
+          ->checkout($branch_to_test)
           ->run();
+
+        $this->taskExec('composer install --no-plugins --no-scripts')
+          ->dir($this->devshop_root_path);
+
+//        $this->taskDockerExec('devshop_container')
+//          ->exec('/usr/share/devshop/bin/devshop self-update -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+//          ->run();
 
         // Run devshop upgrade. This command runs:
         $this->yell("Running devshop upgrade...");
