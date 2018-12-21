@@ -18,6 +18,8 @@
 namespace DevShop\Console;
 
 use DevShop\DevShop;
+use GitWrapper\GitWorkingCopy;
+use GitWrapper\GitWrapper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -51,6 +53,16 @@ abstract class Command extends BaseCommand
   public $output;
 
   /**
+   * @var GitWrapper
+   */
+  public $gitWrapper;
+
+  /**
+   * @var GitWorkingCopy
+   */
+  public $gitWorkingCopy;
+
+  /**
    * @var Process
    * Process
    */
@@ -69,6 +81,7 @@ abstract class Command extends BaseCommand
   {
     $this->input = $input;
     $this->output = $output;
+    $this->gitWrapper = new GitWrapper();
   }
 
   /**
@@ -280,5 +293,15 @@ abstract class Command extends BaseCommand
 
     // If no exceptions were thrown, return TRUE.
     return TRUE;
+  }
+
+  public function checkCliVersion() {
+    $path = realpath(__DIR__ . '/../../../');
+    $version = $this->getApplication()->getVersion();
+
+    $this->gitWorkingCopy = $this->gitWrapper->workingCopy($path);
+    $this->gitWorkingCopy->status();
+    $this->output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>.");
+
   }
 }

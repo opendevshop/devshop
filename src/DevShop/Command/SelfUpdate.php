@@ -66,6 +66,8 @@ EOT
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
+    parent::execute($input, $output);
+
 //    if (Phar::running()) {
 //
 //      $file = self::MANIFEST_FILE;
@@ -88,14 +90,11 @@ EOT
     try {
 
       // 1. Check if this script is a git repo.
-      $git_wrapper = new GitWrapper();
-      $path = realpath(__DIR__ . '/../../../');
+      $this->checkCliVersion();
+      $git = $this->gitWorkingCopy;
       $version = $this->getApplication()->getVersion();
-      $target_version = $input->getArgument('devshop-version');
-
-      $git = $git_wrapper->workingCopy($path);
-      $git->status();
-      $output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>.");
+      $target_version = $this->input->getArgument('devshop-version');
+      $path = realpath(__DIR__ . '/../../../');
 
       // If target version is missing, load the latest.
       if (empty($target_version)) {
@@ -167,6 +166,7 @@ EOT
       $output->writeln('<error>Ansible galaxy not found. Not installing roles.</error>');
     }
 
-    $output->writeln('<info>DevShop CLI Updated.</info>');
+    $output->writeln("<info>DevShop CLI Updated to version $target_version.</info>");
+
   }
 }

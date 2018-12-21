@@ -49,6 +49,7 @@ class Upgrade extends Command
     $output->writeln(
       '<info>Welcome to the DevShop Upgrader!</info>'
     );
+    $this->checkCliVersion();
 
     // @TODO: Check the CLI for new releases.  If, we should tell the user to run "self-update" then "upgrade".
 
