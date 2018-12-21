@@ -91,33 +91,40 @@ EOT
       $git_wrapper = new GitWrapper();
       $path = realpath(__DIR__ . '/../../../');
       $version = $this->getApplication()->getVersion();
+      $target_version = $input->getArgument('devshop-version');
 
       $git = $git_wrapper->workingCopy($path);
       $git->status();
       $output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>.");
 
-      $output->writeln('Checking for latest releases...');
-      $latest = $this->getLatestVersion();
+      // If target version is missing, load the latest.
+      if (empty($target_version)) {
+        $output->writeln('Checking for latest releases...');
+        $target_version = $this->getLatestVersion();
+      }
 
-      // Confirm version with GitHub
-      $target_version = '';
-      $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest;
-      $helper = $this->getHelper('question');
+      // Confirm version with GitHub if interactive.
+      if ($input->isInteractive()) {
+        $helper = $this->getHelper('question');
+        $version_found = FALSE;
+        while ($version_found == FALSE) {
+          $question = new Question("Target Version: (Default: $target_version) ", $target_version);
+          $target_version = $helper->ask($input, $output, $question);
 
-      while ($this->checkVersion($target_version) == FALSE) {
-        $question = new Question("Target Version: (Default: $default_version) ", $default_version);
-        $target_version = $helper->ask($input, $output, $question);
-
-        if (!$this->checkVersion($target_version)) {
-          $output->writeln("<fg=red>Version $target_version not found</>");
+          if (!$this->checkVersion($target_version)) {
+            $output->writeln("<fg=red>Version $target_version not found</>");
+          }
+          else {
+            $output->writeln("Version $target_version confirmed.");
+            $version_found = TRUE;
+          }
         }
       }
-      $output->writeln("Version $target_version confirmed.");
 
       // Bail if there are working copy changes, ignoring untracked files.
       // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
       if (!$input->getOption('ignore-working-copy-changes') && $git->getWrapper()->git('status -s --untracked-files=no', $git->getDirectory())) {
-        throw new \Exception("There are changes to your working copy at $path.  Please resolve this and try again.");
+        throw new \Exception("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check.");
       }
 
       // Checkout the desired version.
@@ -129,7 +136,7 @@ EOT
         $git->pull();
       }
 
-      $output->writeln("DevShop CLI version <info>{$version}</info> has been checked out.");
+      $output->writeln("DevShop CLI version <info>{$target_version}</info> has been checked out.");
 
       // Run 'composer install' in the directory.
       $output->writeln("Running <info>composer install</info> in <comment>{$git->getDirectory()}</comment>...");
@@ -143,16 +150,13 @@ EOT
         }
       });
     } catch (GitException $e) {
-      $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
+      throw new \Exception('Git failed: ' . $e->getMessage());
     } catch (ProcessFailedException $e) {
-      $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
+      throw new \Exception('Process Failed: ' . $e->getMessage());
     }
 
-    // Output a message, telling the user they should now run `devshop upgrade`.
-    $output->writeln('<info>DevShop CLI Updated.</info> You should now run the `devshop upgrade` command to upgrade your server.');
-
     // Install latest ansible galaxy roles
-    if (`drush > /dev/null 2>&1`) {
+    if (`ansible-galaxy > /dev/null 2>&1`) {
       $process = new Process('ansible-galaxy install -r roles.yml', dirname(dirname(dirname(__DIR__))));
       $process->setTimeout(NULL);
       $process->run(function ($type, $buffer) {
@@ -162,6 +166,7 @@ EOT
     else {
       $output->writeln('<error>Ansible galaxy not found. Not installing roles.</error>');
     }
-//    }
+
+    $output->writeln('<info>DevShop CLI Updated.</info>');
   }
 }
