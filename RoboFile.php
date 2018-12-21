@@ -536,7 +536,7 @@ class RoboFile extends \Robo\Tasks {
         // Run install.sh old version.
         $version = self::UPGRADE_FROM_VERSION;
         $this->taskDockerExec('devshop_container')
-          ->exec("wget https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -O install.{$version}.sh")
+          ->exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o install.{$version}.sh")
           ->run();
         $this->taskDockerExec('devshop_container')
           ->exec("bash install.{$version}.sh " . $opts['install-sh-options'])
