@@ -534,10 +534,11 @@ class RoboFile extends \Robo\Tasks {
       # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
       if ($opts['test-upgrade']) {
 
-        // This is needed because the old playbook has an incompatibility with newer ansible.
-        $this->taskDockerExec('devshop_container')
-          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
-          ->run();
+//        // This is needed because the old playbook has an incompatibility with newer ansible.
+        // UPDATE: Seems to be not needed now?? This was triggering sh: 1: cannot create /root/.ansible.cfg: Permission denied
+//        $this->taskDockerExec('devshop_container')
+//          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
+//          ->run();
 
         // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
         $this->taskDockerExec('devshop_container')
