@@ -32,7 +32,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks {
 
   // Install this version first when testing upgrades.
-  const UPGRADE_FROM_VERSION = '1.0.0-rc4-test1';
+  const UPGRADE_FROM_VERSION = '1.0.0-rc4-testing';
   const UPGRADE_FROM_PROVISION_VERSION = '7.x-3.10';
 
   // The version of docker-compose to suggest the user install.
@@ -147,21 +147,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['devshop-version'] == NULL) {
       $opts['devshop-version'] = $this->git_ref;
     }
-
-    // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
-    if ($opts['test-upgrade']) {
-      $this->devshop_root_path = dirname(__DIR__) . '/devshop-' . self::UPGRADE_FROM_VERSION;
-      $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
-      $this->say('Current dir: ' . getcwd());
-      $this->taskGitStack()
-        ->cloneRepo('https://github.com/opendevshop/devshop', $this->devshop_root_path, self::UPGRADE_FROM_VERSION)
-        ->run();
-      $this->taskExec('composer install --no-plugins --no-scripts')
-        ->dir($this->devshop_root_path);
-    }
-    else {
-      $this->devshop_root_path = __DIR__;
-    }
+    $this->devshop_root_path = __DIR__;
 
     // Create the Aegir Home directory.
     if (file_exists($this->devshop_root_path . "/aegir-home/.drush/commands")) {
@@ -548,18 +534,9 @@ class RoboFile extends \Robo\Tasks {
         $this->yell("Running install.sh for old version...");
 
         // Run install.sh old version.
-        $this->taskDockerExec('devshop_container')
-          // This is needed because the old playbook has an incompatibility with newer ansible.
-          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
-          ->run();
-
-        # Old self update isn't working! Use git pull
-        $ref_to_test = !empty($_SERVER['TRAVIS_COMMIT'])? $_SERVER['TRAVIS_COMMIT']: $this->git_ref;
-        $this->yell("Checking out $ref_to_test");
-        $this->taskGitStack()
-          ->exec('fetch')
-          ->checkout($ref_to_test)
-          ->run();
+        $version = self::UPGRADE_FROM_VERSION;
+        $this->_exec("wget https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh");
+        $this->_exec('bash install.sh ' . $opts['install-sh-options']);
 
         $this->taskExec('composer install --no-plugins --no-scripts')
           ->dir($this->devshop_root_path);
