@@ -66,7 +66,7 @@ echo "============================================="
 
 # Fail if not running as root (sudo)
 if [ $EUID -ne 0 ]; then
-    echo " This script must be run as root.  Try 'sudo bash install.sh'." 1>&2
+    echo " This script must be run as root.  Try 'sudo -H bash install.sh'." 1>&2
     exit 1
 fi
 
