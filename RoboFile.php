@@ -538,13 +538,6 @@ class RoboFile extends \Robo\Tasks {
         $this->_exec("wget https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh");
         $this->_exec('bash install.sh ' . $opts['install-sh-options']);
 
-        $this->taskExec('composer install --no-plugins --no-scripts')
-          ->dir($this->devshop_root_path);
-
-//        $this->taskDockerExec('devshop_container')
-//          ->exec('/usr/share/devshop/bin/devshop self-update -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
-//          ->run();
-
         // Run devshop upgrade. This command runs:
         $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
