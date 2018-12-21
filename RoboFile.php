@@ -554,10 +554,13 @@ class RoboFile extends \Robo\Tasks {
           ->run();
 
         # Old self update isn't working! Use git pull
-        $branch_to_test = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $this->git_ref;
-        $this->yell("Checking out branch $branch_to_test");
+        # Travis does:
+        #  - git fetch origin +refs/pull/331/merge:
+        #  - git checkout -qf FETCH_HEAD
+        $this->yell("Checking out FETCH_HEAD");
         $this->taskGitStack()
-          ->checkout($branch_to_test)
+          ->dir($this->devshop_root_path)
+          ->exec("checkout -f FETCH_HEAD")
           ->run();
 
         $this->taskExec('composer install --no-plugins --no-scripts')
