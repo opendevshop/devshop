@@ -302,7 +302,7 @@ echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo " Playbook: $DEVSHOP_INSTALL_PATH/playbook.yml "
-echo " Roles: $DEVSHOP_INSTALL_PATH/playbook.yml "
+echo " Roles: $DEVSHOP_INSTALL_PATH/roles.yml "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
