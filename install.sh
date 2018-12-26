@@ -179,6 +179,8 @@ echo " Web Server: $SERVER_WEBSERVER"
 if [ $PLAYBOOK_PATH ]; then
     :
 # Detect playbook next to the install script
+elif [ -z $DEVSHOP_INSTALL_PATH ]; then
+    PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
 elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
 else
@@ -403,7 +405,7 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
-echo " Installing ansible roles in the ansible-galaxy default location..."
+echo " Installing ansible roles from $PLAYBOOK_PATH/roles.yml in the ansible-galaxy default location..."
 ansible-galaxy install --force --ignore-errors --role-file "$PLAYBOOK_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
