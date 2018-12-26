@@ -270,6 +270,11 @@ abstract class Command extends BaseCommand
     }
     catch (RuntimeException $e) {
       $branch_found = FALSE;
+
+      // Detect GitHub limit issues and just pass.
+      if (isset($e) && strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
+        return TRUE;
+      }
     }
 
     try {
@@ -279,12 +284,13 @@ abstract class Command extends BaseCommand
     }
     catch (RuntimeException $e) {
       $tag_found = FALSE;
+
+      // Detect GitHub limit issues and just pass.
+      if (isset($e) && strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
+        return TRUE;
+      }
     }
 
-    // Detect GitHub limit issues and just pass.
-    if (strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
-      return TRUE;
-    }
 
     // If we don't find a branch or tag, throw an exception
     if (!$branch_found && !$tag_found) {
