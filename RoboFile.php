@@ -545,21 +545,31 @@ class RoboFile extends \Robo\Tasks {
         $opts['install-sh-options'] .= " --install-path={$install_path}";
         $opts['install-sh-options'] .= " --force-ansible-role-install";
 
-        $this->taskDockerExec('devshop_container')
+        if (!$this->taskDockerExec('devshop_container')
           ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
-          ->run();
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Installation of devshop $version failed.");
+        };
 
         // Run devshop upgrade. This command runs:
         $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
-        $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
-          ->run();
+        $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+        if ($this->taskDockerExec('devshop_container')
+          ->exec($upgrade_command)
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Command  devshop $version failed.");
+        };
 
-        $this->taskDockerExec('devshop_container')
+        if (!$this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/bin/devshop status')
-          ->run();
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Command 'devshop status' failed.");
+        };
       }
       else {
         # Run install script on the container.
