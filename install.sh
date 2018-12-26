@@ -40,7 +40,7 @@
 #    --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
 #    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
-#    --aegir-uid          The UID to use for creating the `aegir` user
+#    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
 #    --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
 #    --license            The devshop.support license key for this server.
 #
