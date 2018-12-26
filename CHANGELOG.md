@@ -1,5 +1,7 @@
 # Change Log
 
+## 1.5.0 (Coming Soon)
+
 ## 1.4.0 (September 27, 2018)
 
 - 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.4.0
