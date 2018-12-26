@@ -535,14 +535,15 @@ class RoboFile extends \Robo\Tasks {
 
         // Run install.sh old version.
         $version = self::UPGRADE_FROM_VERSION;
-        $this->_exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o {$this->devshop_root_path}/install.{$version}.sh");
+        $this->_exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o /tmp/install.{$version}.sh");
 
-        // @TODO: Set makefile and devshop install path options once available in install.sh.
-        // $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh ";
-        // $opts['install-sh-options'] .= " --install-path=/usr/share/devshop-{$version}";
+        // Set makefile and devshop install path options because they need to be different than the defaults for upgrading.
+        $install_path = "/usr/share/devshop-{$version}";
+        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh ";
+        $opts['install-sh-options'] .= " --install-path={$install_path}";
 
         $this->taskDockerExec('devshop_container')
-          ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
+          ->exec("bash /tmp/install.{$version}.sh " . $opts['install-sh-options'])
           ->run();
 
         // Run devshop upgrade. This command runs:
