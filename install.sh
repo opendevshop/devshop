@@ -399,7 +399,7 @@ done
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
 echo " Installing ansible roles in the ansible-galaxy default location..."
-ansible-galaxy install --ignore-errors --role-file "$PLAYBOOK_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
+ansible-galaxy install --force --ignore-errors --role-file "$PLAYBOOK_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # Run the playbook.
