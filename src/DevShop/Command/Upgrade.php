@@ -31,6 +31,10 @@ class Upgrade extends Command
         'The makefile to use to build the devmaster platform.'
       )
 
+      ->addOption(
+        'skip-self-update', NULL, InputOption::VALUE_OPTIONAL,
+        'Skip the invocation of self-update command. Used in CI.'
+      )
     ;
   }
 
