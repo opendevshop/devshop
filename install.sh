@@ -358,7 +358,7 @@ IFS=$'\n'
 ANSIBLE_EXTRA_VARS=()
 ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
-ANSIBLE_EXTRA_VARS+=("playbook_path: ${PLAYBOOK_PATH}")
+ANSIBLE_EXTRA_VARS+=("playbook_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
 ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
@@ -386,8 +386,8 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
-echo " Installing ansible roles from $PLAYBOOK_PATH/roles.yml in the ansible-galaxy default location..."
-ansible-galaxy install --force --ignore-errors --role-file "$PLAYBOOK_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
+echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/roles.yml in the ansible-galaxy default location..."
+ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # Run the playbook.
@@ -401,7 +401,7 @@ elif [ $SERVER_WEBSERVER == 'nginx' ]; then
 fi
 
 # If ansible playbook fails syntax check, report it and exit.
-PLAYBOOK_PATH="$PLAYBOOK_PATH/$PLAYBOOK_FILE"
+PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$PLAYBOOK_FILE"
 if [[ ! `ansible-playbook --syntax-check ${PLAYBOOK_PATH}` ]]; then
     echo " Ansible syntax check failed! Check ${PLAYBOOK_PATH} and try again."
     exit 1
