@@ -30,18 +30,21 @@
 #    root@ubunu:~# bash install.sh --hostname=devshop.mydomain.com
 #
 #  Options:
-#    --hostname           The desired fully qualified domain name to set as this machine's hostname
-#    --server-webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
-#    --makefile           The makefile to use to build the front-end site.
-#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#    --hostname           The desired fully qualified domain name to set as this machine's hostname (Default: Current hostname)
+#    --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
+#    --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
+#    --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
+#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
-#    --aegir-uid          The UID to use for creating the `aegir` user
+#    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
 #    --license            The devshop.support license key for this server.
 #
 
 # Version used for cloning devshop playbooks
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
+DEVSHOP_INSTALL_PATH=/usr/share/devshop
+MAKEFILE_PATH="$DEVSHOP_INSTALL_PATH/build-devmaster.make"
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
@@ -89,7 +92,6 @@ fi
 
 LINE=---------------------------------------------
 
-MAKEFILE_PATH="/usr/share/devshop/build-devmaster.make"
 
 # Detect playbook path option
 while [ $# -gt 0 ]; do
@@ -105,6 +107,9 @@ while [ $# -gt 0 ]; do
       ;;
     --hostname=*)
       HOSTNAME_FQDN="${1#*=}"
+      ;;
+    --install-path=*)
+      DEVSHOP_INSTALL_PATH="${1#*=}"
       ;;
     --email=*)
       DEVMASTER_ADMIN_EMAIL="${1#*=}"
@@ -162,7 +167,7 @@ if [ $PLAYBOOK_PATH ]; then
 elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
 else
-    PLAYBOOK_PATH=/usr/share/devshop
+    PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
 fi
 
 echo $LINE
@@ -290,8 +295,7 @@ if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
     git fetch
     git checkout $DEVSHOP_VERSION
   fi
-  PLAYBOOK_PATH=/usr/share/devshop
-#  MAKEFILE_PATH=/usr/share/devshop/build-devmaster.make
+  PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
   echo $LINE
 fi
 
@@ -324,7 +328,7 @@ fi
 echo " Installing with Ansible..."
 echo $LINE
 
-ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
+ANSIBLE_EXTRA_VARS="server_hostname=$HOSTNAME_FQDN devshop_cli_path=$DEVSHOP_INSTALL_PATH mysql_root_password=$MYSQL_ROOT_PASSWORD playbook_path=$PLAYBOOK_PATH aegir_server_webserver=$SERVER_WEBSERVER devshop_version=$DEVSHOP_VERSION aegir_user_uid=$AEGIR_USER_UID"
 
 ANSIBLE_EXTRA_VARS="$ANSIBLE_EXTRA_VARS travis=false supervisor_running=true"
 
