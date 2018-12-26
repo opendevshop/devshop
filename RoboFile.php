@@ -539,7 +539,9 @@ class RoboFile extends \Robo\Tasks {
 
         // Set makefile and devshop install path options because they need to be different than the defaults for upgrading.
         $install_path = "/usr/share/devshop-{$version}";
-        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh ";
+        $makefile_filename = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
+
+        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/{$makefile_filename}" ;
         $opts['install-sh-options'] .= " --install-path={$install_path}";
 
         $this->taskDockerExec('devshop_container')
