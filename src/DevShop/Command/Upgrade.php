@@ -150,8 +150,12 @@ class Upgrade extends Command
     $arguments = array(
       'command' => 'self-update',
       'devshop-version' => $target_version,
-      '--no-interaction' => $input->getOption('no-interaction'),
     );
+
+    if (!$input->isInteractive()) {
+      $arguments['--no-interaction'] = 1;
+    }
+
     $commandInput = new ArrayInput($arguments);
     $output->writeln('');
     if ($command->run($commandInput, $output) != 0) {
