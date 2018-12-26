@@ -51,7 +51,6 @@ set -e
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 DEVSHOP_INSTALL_PATH=/usr/share/devshop
-MAKEFILE_PATH="$DEVSHOP_INSTALL_PATH/build-devmaster.make"
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
@@ -179,6 +178,11 @@ elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
 else
     PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
+fi
+
+# If --makefile option is not set, use DEVSHOP_INSTALL_PATH/build-devmaster.make
+if [ -z $MAKEFILE_PATH ]; then
+  MAKEFILE_PATH="$DEVSHOP_INSTALL_PATH/build-devmaster.make"
 fi
 
 echo $LINE
