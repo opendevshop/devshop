@@ -42,6 +42,7 @@
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
 #    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
 #    --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
+#    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command.
 #    --license            The devshop.support license key for this server.
 #
 
@@ -134,6 +135,10 @@ while [ $# -gt 0 ]; do
       ;;
     -vvvv|--debug)
       ANSIBLE_VERBOSITY="-vvvv"
+      shift # past argument
+      ;;
+    --force-ansible-role-install)
+      ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --force"
       shift # past argument
       ;;
     --license=*)
@@ -277,7 +282,7 @@ if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get install git -y -qq
 
   if [ $VERSION == '14.04' ]; then
-      ANSIBLE_GALAXY_OPTIONS=" --ignore-certs"
+      ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --ignore-certs"
   fi
         
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
