@@ -30,12 +30,12 @@
 #    root@ubunu:~# bash install.sh --hostname=devshop.mydomain.com
 #
 #  Options:
-#    --hostname           The desired fully qualified domain name to set as this machine's hostname
-#    --server-webserver   Set to 'nginx' if you want to use that as your webserver instead of apache.
-#    --makefile           The makefile to use to build the front-end site.
-#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml.
+#    --hostname           The desired fully qualified domain name to set as this machine's hostname (Default: Current hostname)
+#    --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
+#    --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
+#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
-#    --aegir-uid          The UID to use for creating the `aegir` user
+#    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
 #    --license            The devshop.support license key for this server.
 #
 
