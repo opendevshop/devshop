@@ -38,7 +38,6 @@
 #    --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
 #    --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
 #    --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
-#    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
 #    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
 #    --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
@@ -104,9 +103,6 @@ LINE=---------------------------------------------
 # Detect playbook path option
 while [ $# -gt 0 ]; do
   case "$1" in
-    --playbook=*)
-      PLAYBOOK_PATH="${1#*=}"
-      ;;
     --makefile=*)
       MAKEFILE_PATH="${1#*=}"
       ;;
@@ -175,17 +171,6 @@ fi
 
 # Output Web Server
 echo " Web Server: $SERVER_WEBSERVER"
-
-if [ $PLAYBOOK_PATH ]; then
-    :
-# Detect playbook next to the install script
-elif [ -z $DEVSHOP_INSTALL_PATH ]; then
-    PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
-elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
-    PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
-else
-    PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
-fi
 
 # If --makefile option is not set, use DEVSHOP_INSTALL_PATH/build-devmaster.make
 if [ -z $MAKEFILE_PATH ]; then
@@ -302,31 +287,27 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
+# Clone the installer code if a playbook path was not set.
+if [ ! -d "$DEVSHOP_INSTALL_PATH" ]; then
+    git clone $DEVSHOP_GIT_REPO $DEVSHOP_INSTALL_PATH
+    cd $DEVSHOP_INSTALL_PATH
+    git checkout $DEVSHOP_VERSION
+else
+    cd $DEVSHOP_INSTALL_PATH
+    git fetch
+    git checkout $DEVSHOP_VERSION
+fi
+
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-
-# Clone the installer code if a playbook path was not set.
-if [ ! -f "$PLAYBOOK_PATH/playbook.yml" ]; then
-  if [ ! -d "$PLAYBOOK_PATH" ]; then
-    git clone $DEVSHOP_GIT_REPO $PLAYBOOK_PATH
-    cd $PLAYBOOK_PATH
-    git checkout $DEVSHOP_VERSION
-  else
-    cd $PLAYBOOK_PATH
-    git fetch
-    git checkout $DEVSHOP_VERSION
-  fi
-  PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
-  echo $LINE
-fi
-
-echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
+echo " Playbook: $DEVSHOP_INSTALL_PATH/playbook.yml "
+echo " Roles: $DEVSHOP_INSTALL_PATH/playbook.yml "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
 
-cd $PLAYBOOK_PATH
+cd $DEVSHOP_INSTALL_PATH
 
 # Check that DEFAULT_HOST_LIST ansible config matches ANSIBLE_DEFAULT_HOST_LIST
 if [[ `ansible-config dump | grep ${ANSIBLE_DEFAULT_HOST_LIST}` ]]; then
