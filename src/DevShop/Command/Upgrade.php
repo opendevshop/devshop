@@ -149,18 +149,20 @@ class Upgrade extends Command
      *
      *      Everything else is run by the playbooks, including `devshop devmaster:upgrade`
      */
-    $output->writeln('Running devshop self-update...');
-    $command = $this->getApplication()->find('self-update');
-    $arguments = array(
-      'command' => 'self-update',
-      'devshop-version' => $target_version,
-    );
+    if (!$input->getOption('skip-self-update')) {
+      $output->writeln('Running devshop self-update...');
+      $command = $this->getApplication()->find('self-update');
+      $arguments = array(
+        'command' => 'self-update',
+        'devshop-version' => $target_version,
+      );
 
-    $commandInput = new ArrayInput($arguments);
-    $commandInput->setInteractive($input->isInteractive());
-    $output->writeln('');
-    if ($command->run($commandInput, $output) != 0) {
-      throw new \Exception('The command self-update failed.');
+      $commandInput = new ArrayInput($arguments);
+      $commandInput->setInteractive($input->isInteractive());
+      $output->writeln('');
+      if ($command->run($commandInput, $output) != 0) {
+        throw new \Exception('The command self-update failed.');
+      }
     }
 
     // Run devshop verify:system in a new process so it picks up on the updated devshop CLI and ansible roles.
