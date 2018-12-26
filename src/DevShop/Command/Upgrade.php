@@ -152,11 +152,8 @@ class Upgrade extends Command
       'devshop-version' => $target_version,
     );
 
-    if (!$input->isInteractive()) {
-      $arguments['--no-interaction'] = 1;
-    }
-
     $commandInput = new ArrayInput($arguments);
+    $commandInput->setInteractive($input->isInteractive());
     $output->writeln('');
     if ($command->run($commandInput, $output) != 0) {
       throw new \Exception('The command self-update failed.');
