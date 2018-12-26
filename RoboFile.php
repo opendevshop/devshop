@@ -543,6 +543,7 @@ class RoboFile extends \Robo\Tasks {
 
         $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/{$makefile_filename}" ;
         $opts['install-sh-options'] .= " --install-path={$install_path}";
+        $opts['install-sh-options'] .= " --force-ansible-role-install";
 
         $this->taskDockerExec('devshop_container')
           ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])

@@ -42,7 +42,7 @@
 #    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
 #    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
 #    --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
-#    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command.
+#    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. (Default: False)
 #    --license            The devshop.support license key for this server.
 #
 
