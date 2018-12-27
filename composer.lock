@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f787e48716d7db45c7d2fd87413c45b0",
+    "content-hash": "aedab620e8d328fa62f507fc3857dc19",
     "packages": [
         {
             "name": "asm/php-ansible",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/maschmann/php-ansible.git",
-                "reference": "4b15b47c5a31c2b152324653723312edd466dbd1"
+                "url": "https://github.com/opendevshop/php-ansible.git",
+                "reference": "29a80ccd6f5dd71180d1e3d4110e5e3cc55cb8ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maschmann/php-ansible/zipball/4b15b47c5a31c2b152324653723312edd466dbd1",
-                "reference": "4b15b47c5a31c2b152324653723312edd466dbd1",
+                "url": "https://api.github.com/repos/opendevshop/php-ansible/zipball/29a80ccd6f5dd71180d1e3d4110e5e3cc55cb8ee",
+                "reference": "29a80ccd6f5dd71180d1e3d4110e5e3cc55cb8ee",
                 "shasum": ""
             },
             "require": {
@@ -34,7 +34,6 @@
                     "Asm\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -46,7 +45,10 @@
             ],
             "description": "php wrapper for ansible commands",
             "homepage": "https://github.com/maschmann/php-ansible",
-            "time": "2016-02-10T09:45:11+00:00"
+            "support": {
+                "source": "https://github.com/opendevshop/php-ansible/tree/v1.2.0"
+            },
+            "time": "2016-07-13T01:35:30+00:00"
         },
         {
             "name": "consolidation/annotated-command",
