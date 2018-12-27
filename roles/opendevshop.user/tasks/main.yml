@@ -29,9 +29,13 @@
         name: 'openssh'
         state: present
 
+  - name: Populate service facts
+    service_facts:
+
   - name: Stop Hosting Queued Services before altering aegir user.
+    when: "'{{ supervisor_daemon }}' in services"
     service:
-      name: supervisor
+      name: "{{ supervisor_daemon }}"
       state: stopped
 
   - name: Create Aegir Group (so we can set the GID)
