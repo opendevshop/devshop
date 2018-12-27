@@ -54,6 +54,8 @@ class VerifySystem extends Command
     private $config_file;
     private $config;
 
+    private $group_vars_file = '/etc/ansible/group_vars/devmaster';
+
     /**
      * @var bool Tell Command::execute() that we require ansible.
      */
@@ -94,7 +96,11 @@ class VerifySystem extends Command
 $hostname
 TXT;
             file_put_contents($input->getOption('inventory-file'), $inventory_contents);
-            $this->IO->success('Wrote inventory file for '.$hostname.' to ' . $input->getOption('inventory-file'));
+            $this->IO->success('Wrote inventory file for ' . $hostname . ' to ' . $input->getOption('inventory-file'));
+          }
+
+          // If inventory file does not exist, create it.
+          if (!file_exists($this->group_vars_file) || strpos(file_get_contents($this->group_vars_file), '[devmaster]') !== FALSE) {
 
             // Lookup necessary variables
             $vars['aegir_uid'] = trim(shell_exec('id aegir -u'));
@@ -126,16 +132,13 @@ TXT;
             }
 
             // Dump YML to group vars
-            if (!file_exists('/etc/ansible/group_vars/devmaster')) {
+            if (!file_exists($this->group_vars_file)) {
               if (!file_exists('/etc/ansible/group_vars')) {
                 mkdir('/etc/ansible/group_vars');
                 $this->IO->success('Created folder /etc/ansible/group_vars');
               }
-              file_put_contents('/etc/ansible/group_vars/devmaster', Yaml::dump($vars));
+              file_put_contents($this->group_vars_file, Yaml::dump($vars));
               $this->IO->success('Wrote variables file to /etc/ansible/group_vars/devmaster');
-            }
-            else {
-              $this->IO->writeln('Found Ansible vars file at /etc/ansible/group_vars/devmaster');
             }
           }
         }
@@ -154,7 +157,15 @@ TXT;
         else {
           throw new \Exception('No file was found at the path specified by the "playbook" option: ' . $input->getOption('playbook'));
         }
-    }
+
+        if (file_exists($this->group_vars_file)) {
+          $this->IO->writeln("Found Ansible vars file at $this->group_vars_file");
+          $this->IO->writeln(file_get_contents($this->group_vars_file));
+        }
+        else {
+          throw new \Exception("No vars file was found at the path /etc/ansible/group_vars/devmaster. This file is managed by this script, and should have been written automatically but wasn't.");
+        }
+      }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
