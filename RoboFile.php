@@ -561,7 +561,7 @@ class RoboFile extends \Robo\Tasks {
           ->exec($upgrade_command)
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Command  devshop $version failed.");
+          throw new \Exception("Command $upgrade_command failed.");
         };
 
         if (!$this->taskDockerExec('devshop_container')
