@@ -127,12 +127,16 @@ EOT
       }
 
       // Checkout the desired version.
-      $git->fetchAll();
-      $git->checkout($target_version);
-
-      // If we are on a branch, pull.
-      if ($git->isTracking()) {
-        $git->pull();
+      if (isset($_SERVER['TRAVIS_PULL_REQUEST_BRANCH']) && $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'] == $target_version) {
+        $output->writeln('<comment>Selected version is the current Travis PR Branch. Skipping git checkout.</comment>');
+      }
+      else {
+        $git->fetchAll();
+        $git->checkout($target_version);
+        // If we are on a branch, pull.
+        if ($git->isTracking()) {
+          $git->pull();
+        }
       }
 
       $output->writeln("DevShop CLI version <info>{$target_version}</info> has been checked out.");
