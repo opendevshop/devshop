@@ -13,6 +13,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 use Symfony\Component\Process\Process;
 use Asm\Ansible\Ansible;
+use Symfony\Component\Yaml\Yaml;
 
 class VerifySystem extends Command
 {
@@ -60,6 +61,8 @@ class VerifySystem extends Command
 
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
+        parent::initialize($input, $output);
+
         // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
         if ($this->getAnsibleInventory()) {
 
@@ -68,20 +71,91 @@ class VerifySystem extends Command
             $input->setOption('inventory-file', $this->getAnsibleInventory());
         }
 
-        // Last check: does the inventory file exist?
+        // If inventory file does not exist, create it.
         if (!file_exists($input->getOption('inventory-file'))) {
-            throw new \Exception('No file was found at the path specified by the "inventory-file" option: ' . $input->getOption('inventory-file'));
+          $this->IO->warning('Ansible inventory file does not exist at ' . $input->getOption('inventory-file'));
+          if (!$input->isInteractive() || $this->IO->confirm('Create a new inventory file at ' . $input->getOption('inventory-file'))) {
+
+            if (!file_exists(dirname($input->getOption('inventory-file')))) {
+              mkdir(dirname($input->getOption('inventory-file')));
+              $this->IO->success('Created folder ' . dirname($input->getOption('inventory-file')));
+            }
+
+            $vars['server_hostname'] = $hostname = trim(shell_exec('hostname -f'));
+
+            $inventory_contents = <<<TXT
+[devmaster]
+$hostname
+TXT;
+            file_put_contents($input->getOption('inventory-file'), $inventory_contents);
+            $this->IO->success('Wrote inventory file for '.$hostname.' to ' . $input->getOption('inventory-file'));
+
+            // Lookup necessary variables
+            $vars['aegir_uid'] = trim(shell_exec('id aegir -u'));
+
+            if (file_exists('/root/.my.cnf')) {
+              $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'));
+            }
+            else {
+              $vars['mysql_root_password'] = trim(shell_exec('echo $MYSQL_ROOT_PASSWORD'));
+            }
+
+            if (empty($vars['mysql_root_password'])) {
+              $this->IO->warning('Unable to determine MySQL root password from /root/.my.cnf or MYSQL_ROOT_PASSWORD environment variable.');
+              $vars['mysql_root_password'] = $this->IO->ask('Please provide the MySQL Root User Password');
+            }
+
+            if (file_exists('/var/aegir/config/server_master/nginx.conf')) {
+              $vars['aegir_server_webserver'] = 'nginx';
+            }
+            else {
+              $vars['aegir_server_webserver'] = 'apache';
+            }
+
+            if ($input->isInteractive()) {
+              $this->IO->writeln('Confirm Ansible Variables:');
+              foreach ($vars as $name => $value) {
+                $vars[$name] = $this->ask($name, $value);
+              }
+            }
+
+            // Dump YML to group vars
+            if (!file_exists('/etc/ansible/group_vars/devmaster')) {
+              if (!file_exists('/etc/ansible/group_vars')) {
+                mkdir('/etc/ansible/group_vars');
+                $this->IO->success('Created folder /etc/ansible/group_vars');
+              }
+              file_put_contents('/etc/ansible/group_vars/devmaster', Yaml::dump($vars));
+              $this->IO->success('Wrote variables file to /etc/ansible/group_vars/devmaster');
+            }
+            else {
+              $this->IO->writeln('Found Ansible vars file at /etc/ansible/group_vars/devmaster');
+            }
+          }
+        }
+
+        if (file_exists($input->getOption('inventory-file'))) {
+          $this->IO->writeln('Found Ansible inventory at ' . $input->getOption('inventory-file'));
+        }
+        else {
+          throw new \Exception('No file was found at the path specified by the "inventory-file" option: ' . $input->getOption('inventory-file'));
         }
 
         // Last check: does the playbook file exist?
-        if (!file_exists($input->getOption('playbook'))) {
-            throw new \Exception('No file was found at the path specified by the "playbook" option: ' . $input->getOption('playbook'));
+        if (file_exists($input->getOption('playbook'))) {
+          $this->IO->writeln('Found Ansible playbook at ' . $input->getOption('playbook'));
+        }
+        else {
+          throw new \Exception('No file was found at the path specified by the "playbook" option: ' . $input->getOption('playbook'));
         }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
+        if (!$this->ansible) {
+          throw new \Exception('Ansible not loaded. Unable to find ansible-galaxy or ansible-playbook in the PATH.');
+        }
         $ansible = $this->ansible->playbook();
 
         $ansible->play($input->getOption('playbook'));
