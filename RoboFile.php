@@ -557,7 +557,7 @@ class RoboFile extends \Robo\Tasks {
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
         $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
-        if ($this->taskDockerExec('devshop_container')
+        if (!$this->taskDockerExec('devshop_container')
           ->exec($upgrade_command)
           ->run()
           ->wasSuccessful()) {
