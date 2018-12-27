@@ -55,6 +55,16 @@ class Application extends BaseApplication
   protected $version;
 
   /**
+   * @var string The named branch or tag of the current application code.
+   */
+  public $versionRef;
+
+  /**
+   * @var string The short SHA of the current application code.
+   */
+  public $versionRefSha;
+
+  /**
    * @var string
    */
   protected $devmaster_version;
@@ -112,10 +122,10 @@ class Application extends BaseApplication
       $this->release_date = $release_date;
     }
     else {
-      $version = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
-      $version .= ' ' . $this->process('git log --pretty=format:"%h" -n 1');
+      $this->versionRef = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
+      $this->versionRefSha = $this->process('git log --pretty=format:"%h" -n 1');
 
-      parent::__construct('DevShop', $version);
+      parent::__construct('DevShop', $this->versionRef . ' ' . $this->versionRefSha);
 
       $this->release_date = $this->process('git log -1 --format=%ct');
     }
