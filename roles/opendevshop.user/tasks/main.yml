@@ -33,10 +33,13 @@
     service_facts:
 
   - name: Stop Hosting Queued Services before altering aegir user.
-    when: "'{{ supervisor_daemon }}' in services"
+    when: item in services
     service:
-      name: "{{ supervisor_daemon }}"
+      name: "{{ item }}"
       state: stopped
+    with_items:
+      - supervisor
+      - supervisord
 
   - name: Create Aegir Group (so we can set the GID)
     group:
