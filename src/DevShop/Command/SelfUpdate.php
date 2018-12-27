@@ -2,6 +2,7 @@
 
 namespace DevShop\Command;
 
+use Asm\Ansible\Command\AnsibleGalaxy;
 use DevShop\Console\Command;
 
 use Phar;
@@ -159,16 +160,16 @@ EOT
     }
 
     // Install latest ansible galaxy roles
-    if (`ansible-galaxy > /dev/null 2>&1`) {
-      $process = new Process('ansible-galaxy install -r roles.yml', dirname(dirname(dirname(__DIR__))));
-      $process->setTimeout(NULL);
-      $process->run(function ($type, $buffer) {
+    $roles_file_path = realpath(dirname(dirname(dirname(__DIR__))) . '/roles.yml');
+    $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' ...');
+    $this->ansible->galaxy()
+      ->roleFile($roles_file_path)
+      ->install()
+      ->execute(function ($type, $buffer) {
         echo $buffer;
       });
-    }
-    else {
-      $output->writeln('<error>Ansible galaxy not found. Not installing roles.</error>');
-    }
+
+    $this->output->writeln("<comment>Ansible Galaxy install complete.</comment>");
 
     $output->writeln("<info>DevShop CLI Updated to version $target_version.</info>");
 

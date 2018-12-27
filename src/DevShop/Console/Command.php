@@ -17,6 +17,7 @@
 
 namespace DevShop\Console;
 
+use Asm\Ansible\Ansible;
 use DevShop\DevShop;
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
@@ -69,6 +70,11 @@ abstract class Command extends BaseCommand
   protected $process = NULL;
 
   /**
+   * @var Ansible;
+   */
+  protected $ansible;
+
+  /**
    * @var If target version is branch or tag.
    */
   protected $targetVersionRef;
@@ -82,6 +88,11 @@ abstract class Command extends BaseCommand
     $this->input = $input;
     $this->output = $output;
     $this->gitWrapper = new GitWrapper();
+    $this->ansible = new Ansible(
+      getcwd(),
+      '/usr/bin/ansible-playbook',
+      '/usr/bin/ansible-galaxy'
+    );
   }
 
   /**

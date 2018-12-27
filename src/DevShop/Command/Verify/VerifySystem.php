@@ -49,10 +49,6 @@ class VerifySystem extends Command
         ;
     }
 
-    /**
-     * @var Ansible;
-     */
-    private $ansible;
     private $inventory;
     private $config_file;
     private $config;
@@ -76,17 +72,11 @@ class VerifySystem extends Command
         if (!file_exists($input->getOption('playbook'))) {
             throw new \Exception('No file was found at the path specified by the "playbook" option: ' . $input->getOption('playbook'));
         }
-
-        // Prepare the Ansible object.
-        $this->ansible = new Ansible(
-            getcwd(),
-            '/usr/bin/ansible-playbook',
-            '/usr/bin/ansible-galaxy'
-        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
         $ansible = $this->ansible->playbook();
 
         $ansible->play($input->getOption('playbook'));
