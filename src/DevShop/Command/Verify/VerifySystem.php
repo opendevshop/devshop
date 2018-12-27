@@ -97,10 +97,13 @@ class VerifySystem extends Command
             $ansible->inventoryFile($input->getOption('inventory-file'));
         }
 
-        $ansible->execute(function ($type, $buffer) {
+        $result = $ansible->execute(function ($type, $buffer) {
             print $buffer;
         });
 
+        if (!$result->wasSuccessful()) {
+          throw new \Exception('Ansible playbook run failed.');
+        }
     }
 
     /**
