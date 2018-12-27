@@ -41,6 +41,9 @@
       - supervisor
       - supervisord
 
+  - name: Stop all processes owned by Aegir user
+    command: "killall -u {{ aegir_user_uid }} -m ."
+
   - name: Create Aegir Group (so we can set the GID)
     group:
       name: "{{ aegir_user_name }}"
