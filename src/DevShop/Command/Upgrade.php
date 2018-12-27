@@ -170,6 +170,7 @@ class Upgrade extends Command
     $path_to_devshop_bin = dirname(dirname(dirname(__DIR__))) . '/bin/devshop';
     $process = new Process("$path_to_devshop_bin verify:system");
     $process->setTimeout(NULL);
+    $process->setEnv(getenv());
     $result = $process->run(function ($type, $buffer) {
       echo $buffer;
     });
