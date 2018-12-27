@@ -47,6 +47,13 @@ class VerifySystem extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Remote user: connect as this user. Defaults to currently acting user.'
             )
+            ->addOption(
+                'connection',
+                'c',
+                InputOption::VALUE_OPTIONAL,
+                'Connection: connection type to use.',
+                'local'
+            )
         ;
     }
 
@@ -202,6 +209,10 @@ TXT;
         if ($input->getOption('inventory-file')) {
             $ansible->inventoryFile($input->getOption('inventory-file'));
         }
+
+        // Set connection from option. Defaults to "local"
+        // @TODO: This command really can handle all servers, so might want to change the default.
+        $ansible->connection($input->getOption('connection'));
 
         $result = $ansible->execute(function ($type, $buffer) {
             print $buffer;
