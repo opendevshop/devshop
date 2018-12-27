@@ -156,6 +156,20 @@ TXT;
         if (!$this->ansible) {
           throw new \Exception('Ansible not loaded. Unable to find ansible-galaxy or ansible-playbook in the PATH.');
         }
+
+        // Install devshop roles
+        $roles_file_path = realpath(dirname(dirname(dirname(__DIR__))) . '/roles.yml');
+        $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' ...');
+        $this->ansible->galaxy()
+          ->roleFile($roles_file_path)
+          ->rolesPath('/etc/ansible/roles')
+          ->install()
+          ->execute(function ($type, $buffer) {
+            echo $buffer;
+          });
+
+        $this->output->writeln("<comment>Ansible Galaxy install complete.</comment>");
+
         $ansible = $this->ansible->playbook();
 
         $ansible->play($input->getOption('playbook'));
