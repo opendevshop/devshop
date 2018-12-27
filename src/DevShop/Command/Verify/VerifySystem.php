@@ -53,6 +53,11 @@ class VerifySystem extends Command
     private $config_file;
     private $config;
 
+    /**
+     * @var bool Tell Command::execute() that we require ansible.
+     */
+    protected $ansibleRequired = TRUE;
+
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
         // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'

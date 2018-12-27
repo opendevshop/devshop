@@ -18,6 +18,7 @@
 namespace DevShop\Console;
 
 use Asm\Ansible\Ansible;
+use Asm\Ansible\Exception\CommandException;
 use DevShop\DevShop;
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
@@ -72,7 +73,12 @@ abstract class Command extends BaseCommand
   /**
    * @var Ansible;
    */
-  protected $ansible;
+  protected $ansible = NULL;
+
+  /**
+   * @var bool Sub classes should define this to load $this->ansible;
+   */
+  protected $ansibleRequired = FALSE;
 
   /**
    * @var If target version is branch or tag.
@@ -88,9 +94,17 @@ abstract class Command extends BaseCommand
     $this->input = $input;
     $this->output = $output;
     $this->gitWrapper = new GitWrapper();
-    $this->ansible = new Ansible(
-      getcwd()
-    );
+
+    try {
+      $this->ansible = new Ansible(
+        getcwd()
+      );
+    } catch (CommandException $exception) {
+      if ($this->ansibleRequired) {
+        $commandName = $this->getName();
+        throw new \Exception("The command '$commandName' requires ansible to be installed. Please make sure 'ansible-galaxy' and 'ansible-playbook' are in the PATH and try again.");
+      }
+    }
   }
 
   /**

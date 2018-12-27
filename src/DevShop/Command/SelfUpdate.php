@@ -2,6 +2,7 @@
 
 namespace DevShop\Command;
 
+use Asm\Ansible\Ansible;
 use Asm\Ansible\Command\AnsibleGalaxy;
 use DevShop\Console\Command;
 
@@ -160,16 +161,18 @@ EOT
     }
 
     // Install latest ansible galaxy roles
-    $roles_file_path = realpath(dirname(dirname(dirname(__DIR__))) . '/roles.yml');
-    $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' ...');
-    $this->ansible->galaxy()
-      ->roleFile($roles_file_path)
-      ->install()
-      ->execute(function ($type, $buffer) {
-        echo $buffer;
+    if ($this->ansible) {
+      $roles_file_path = realpath(dirname(dirname(dirname(__DIR__))) . '/roles.yml');
+      $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' ...');
+      $this->ansible->galaxy()
+        ->roleFile($roles_file_path)
+        ->install()
+        ->execute(function ($type, $buffer) {
+          echo $buffer;
       });
 
-    $this->output->writeln("<comment>Ansible Galaxy install complete.</comment>");
+      $this->output->writeln("<comment>Ansible Galaxy install complete.</comment>");
+    }
 
     $output->writeln("<info>DevShop CLI Updated to version $target_version.</info>");
 
