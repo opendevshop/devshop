@@ -174,7 +174,7 @@ class Upgrade extends Command
       echo $buffer;
     });
 
-    if ($result->wasSuccessful()) {
+    if ($result === 0) {
       $this->IO->success("Command 'verify:system' ran successfully!");
     }
     else {
