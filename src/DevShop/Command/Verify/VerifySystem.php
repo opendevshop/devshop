@@ -74,7 +74,7 @@ class VerifySystem extends Command
         }
 
         // If inventory file does not exist, create it.
-        if (!file_exists($input->getOption('inventory-file')) || strpos(file_get_contents($input->getOption('inventory-file')), '[devmaster]') !== FALSE) {
+        if (!file_exists($input->getOption('inventory-file')) || strpos(file_get_contents($input->getOption('inventory-file')), '[devmaster]') === FALSE) {
 
           if (!file_exists($input->getOption('inventory-file'))) {
             $this->IO->warning('Ansible inventory file does not exist at ' . $input->getOption('inventory-file'));
