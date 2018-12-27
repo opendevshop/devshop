@@ -6,10 +6,9 @@
         "symfony/process": "^2.7",
         "knplabs/github-api": "^1.4",
         "symfony/filesystem": "^2.7",
-        "herrera-io/phar-update": "1.*",
         "cpliakas/git-wrapper": "1.*",
         "asm/php-ansible": "v1.2.0",
-        "consolidation/robo": "^1.3",
+        "consolidation/robo": "^1",
         "drush/drush": "~8"
     },
     "repositories": [
