@@ -175,7 +175,7 @@ TXT;
             print $buffer;
         });
 
-        if (!$result->wasSuccessful()) {
+        if ($result !== 0) {
           throw new \Exception('Ansible playbook run failed.');
         }
     }
