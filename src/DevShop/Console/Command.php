@@ -102,7 +102,7 @@ abstract class Command extends BaseCommand
     } catch (CommandException $exception) {
       if ($this->ansibleRequired) {
         $commandName = $this->getName();
-        throw new \Exception("The command '$commandName' requires ansible to be installed. Please make sure 'ansible-galaxy' and 'ansible-playbook' are in the PATH and try again.");
+        throw new \Exception("The command '$commandName' requires ansible to be installed. Please make sure 'ansible-galaxy' and 'ansible-playbook' are in the PATH and try again. The error was: " . $exception->getMessage());
       }
     }
   }

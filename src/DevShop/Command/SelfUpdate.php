@@ -173,6 +173,9 @@ EOT
 
       $this->output->writeln("<comment>Ansible Galaxy install complete.</comment>");
     }
+    else {
+      $this->output->writeln("<comment>Ansible Galaxy not found. Not installing roles.</comment>");
+    }
 
     $output->writeln("<info>DevShop CLI Updated to version $target_version.</info>");
 
