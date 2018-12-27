@@ -32,7 +32,7 @@ class Upgrade extends Command
       )
 
       ->addOption(
-        'skip-self-update', NULL, InputOption::VALUE_OPTIONAL,
+        'skip-self-update', NULL, InputOption::VALUE_NONE,
         'Skip the invocation of self-update command. Used in CI.'
       )
     ;
