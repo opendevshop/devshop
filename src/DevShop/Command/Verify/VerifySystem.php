@@ -175,7 +175,7 @@ TXT;
         }
 
         // Install devshop roles
-        $roles_file_path = realpath(dirname(dirname(dirname(__DIR__))) . '/roles.yml');
+        $roles_file_path = realpath(dirname(dirname(dirname(dirname(__DIR__)))) . '/roles.yml');
         $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' ...');
         $this->ansible->galaxy()
           ->roleFile($roles_file_path)
