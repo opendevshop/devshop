@@ -89,9 +89,7 @@ abstract class Command extends BaseCommand
     $this->output = $output;
     $this->gitWrapper = new GitWrapper();
     $this->ansible = new Ansible(
-      getcwd(),
-      '/usr/bin/ansible-playbook',
-      '/usr/bin/ansible-galaxy'
+      getcwd()
     );
   }
 
