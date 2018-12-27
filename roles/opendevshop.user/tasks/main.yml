@@ -29,6 +29,11 @@
         name: 'openssh'
         state: present
 
+  - name: Stop Hosting Queued Services before altering aegir user.
+    service:
+      name: supervisor
+      state: stopped
+
   - name: Create Aegir Group (so we can set the GID)
     group:
       name: "{{ aegir_user_name }}"
