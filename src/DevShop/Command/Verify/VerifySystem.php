@@ -180,6 +180,7 @@ TXT;
         $this->ansible->galaxy()
           ->roleFile($roles_file_path)
           ->rolesPath('/etc/ansible/roles')
+          ->force()
           ->install()
           ->execute(function ($type, $buffer) {
             echo $buffer;
