@@ -111,7 +111,7 @@ TXT;
         if (!file_exists($this->group_vars_file)) {
 
           // Lookup necessary variables
-          $vars['aegir_uid'] = trim(shell_exec('id aegir -u'));
+          $vars['aegir_user_uid'] = trim(shell_exec('id aegir -u'));
 
           if (file_exists('/root/.my.cnf')) {
             $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'));
