@@ -545,6 +545,10 @@ class RoboFile extends \Robo\Tasks {
         $opts['install-sh-options'] .= " --install-path={$install_path}";
         $opts['install-sh-options'] .= " --force-ansible-role-install";
 
+        if (!empty($opts['user-uid'])) {
+          $opts['install-sh-options'] .= " --aegir-uid={$opts['user-uid']}";
+        }
+
         if (!$this->taskDockerExec('devshop_container')
           ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
           ->run()
