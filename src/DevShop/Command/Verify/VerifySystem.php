@@ -98,48 +98,48 @@ TXT;
             file_put_contents($input->getOption('inventory-file'), $inventory_contents);
             $this->IO->success('Wrote inventory file for ' . $hostname . ' to ' . $input->getOption('inventory-file'));
           }
+        }
 
-          // If inventory file does not exist, create it.
-          if (!file_exists($this->group_vars_file) || strpos(file_get_contents($this->group_vars_file), '[devmaster]') !== FALSE) {
+        // If group_vars file does not exist, create it.
+        if (!file_exists($this->group_vars_file)) {
 
-            // Lookup necessary variables
-            $vars['aegir_uid'] = trim(shell_exec('id aegir -u'));
+          // Lookup necessary variables
+          $vars['aegir_uid'] = trim(shell_exec('id aegir -u'));
 
-            if (file_exists('/root/.my.cnf')) {
-              $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'));
-            }
-            else {
-              $vars['mysql_root_password'] = trim(shell_exec('echo $MYSQL_ROOT_PASSWORD'));
-            }
+          if (file_exists('/root/.my.cnf')) {
+            $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'));
+          }
+          else {
+            $vars['mysql_root_password'] = trim(shell_exec('echo $MYSQL_ROOT_PASSWORD'));
+          }
 
-            if (empty($vars['mysql_root_password'])) {
-              $this->IO->warning('Unable to determine MySQL root password from /root/.my.cnf or MYSQL_ROOT_PASSWORD environment variable.');
-              $vars['mysql_root_password'] = $this->IO->ask('Please provide the MySQL Root User Password');
-            }
+          if (empty($vars['mysql_root_password'])) {
+            $this->IO->warning('Unable to determine MySQL root password from /root/.my.cnf or MYSQL_ROOT_PASSWORD environment variable.');
+            $vars['mysql_root_password'] = $this->IO->ask('Please provide the MySQL Root User Password');
+          }
 
-            if (file_exists('/var/aegir/config/server_master/nginx.conf')) {
-              $vars['aegir_server_webserver'] = 'nginx';
-            }
-            else {
-              $vars['aegir_server_webserver'] = 'apache';
-            }
+          if (file_exists('/var/aegir/config/server_master/nginx.conf')) {
+            $vars['aegir_server_webserver'] = 'nginx';
+          }
+          else {
+            $vars['aegir_server_webserver'] = 'apache';
+          }
 
-            if ($input->isInteractive()) {
-              $this->IO->writeln('Confirm Ansible Variables:');
-              foreach ($vars as $name => $value) {
-                $vars[$name] = $this->ask($name, $value);
-              }
+          if ($input->isInteractive()) {
+            $this->IO->writeln('Confirm Ansible Variables:');
+            foreach ($vars as $name => $value) {
+              $vars[$name] = $this->ask($name, $value);
             }
+          }
 
-            // Dump YML to group vars
-            if (!file_exists($this->group_vars_file)) {
-              if (!file_exists('/etc/ansible/group_vars')) {
-                mkdir('/etc/ansible/group_vars');
-                $this->IO->success('Created folder /etc/ansible/group_vars');
-              }
-              file_put_contents($this->group_vars_file, Yaml::dump($vars));
-              $this->IO->success('Wrote variables file to /etc/ansible/group_vars/devmaster');
+          // Dump YML to group vars
+          if (!file_exists($this->group_vars_file)) {
+            if (!file_exists('/etc/ansible/group_vars')) {
+              mkdir('/etc/ansible/group_vars');
+              $this->IO->success('Created folder /etc/ansible/group_vars');
             }
+            file_put_contents($this->group_vars_file, Yaml::dump($vars));
+            $this->IO->success('Wrote variables file to /etc/ansible/group_vars/devmaster');
           }
         }
 
