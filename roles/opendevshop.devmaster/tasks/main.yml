@@ -39,12 +39,12 @@
   register: cliPath
 
 - name: Install devshop CLI if it is not present.
+  when: cliPath.stat.islnk is not defined
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
     update: "{{ devshop_cli_update }}"
     dest: "{{ devshop_cli_path }}"
-    force: yes
 
 - name: Setup devshop CLI
   command: "{{ composer_path }} install"
