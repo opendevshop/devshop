@@ -67,7 +67,7 @@ class VerifySystem extends Command
     /**
      * @var bool Tell Command::execute() that we require ansible.
      */
-//    protected $ansibleRequired = TRUE;
+    protected $ansibleRequired = TRUE;
 
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
@@ -92,9 +92,16 @@ class VerifySystem extends Command
 
         // If ansible.cfg file does not exist, create it.
         if (!file_exists($this->ansible_cfg_file)) {
+          $this->IO->note('Ansible config file does not exist at ' . $this->ansible_cfg_file);
+
           $source = dirname(dirname(dirname(dirname(__DIR__)))) . '/ansible.cfg';
           $destination = $this->ansible_cfg_file;
-          copy($source, $destination);
+
+          if (!$input->isInteractive() || $this->IO->confirm('Copy DevShop ansible.cfg to ' . $destination . '?')) {
+              $this->FS->copy($source, $destination);
+              $this->IO->success('Wrote ansible.cfg file to ' . $this->ansible_cfg_file);
+
+          }
         }
 
         // If inventory file does not exist, create it.
@@ -109,7 +116,7 @@ class VerifySystem extends Command
           if (!$input->isInteractive() || $this->IO->confirm('Create a new inventory file at ' . $input->getOption('inventory-file'))) {
 
             if (!file_exists(dirname($input->getOption('inventory-file')))) {
-              mkdir(dirname($input->getOption('inventory-file')));
+              $this->FS->mkdir(dirname($input->getOption('inventory-file')));
               $this->IO->success('Created folder ' . dirname($input->getOption('inventory-file')));
             }
 
@@ -119,7 +126,7 @@ class VerifySystem extends Command
 [devmaster]
 $hostname
 TXT;
-            file_put_contents($input->getOption('inventory-file'), $inventory_contents);
+            $this->FS->dumpFile($input->getOption('inventory-file'), $inventory_contents);
             $this->IO->success('Wrote inventory file for ' . $hostname . ' to ' . $input->getOption('inventory-file'));
           }
         }
@@ -175,7 +182,7 @@ If this is a new installation, you may select the default randomly generated pas
               mkdir('/etc/ansible/group_vars');
               $this->IO->success('Created folder /etc/ansible/group_vars');
             }
-            file_put_contents($this->group_vars_file, Yaml::dump($vars));
+            $this->FS->dumpFile($this->group_vars_file, Yaml::dump($vars));
             $this->IO->success('Wrote variables file to /etc/ansible/group_vars/devmaster');
           }
         }
