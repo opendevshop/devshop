@@ -150,6 +150,7 @@ class Application extends BaseApplication
           $this->devmaster_version = '0.5 or earlier';
         }
 
+        $this->devmaster_platform = $aliases['hostmaster']['platform'];
         $this->devmaster_root = $aliases['hostmaster']['root'];
         $this->devmaster_uri = $aliases['hostmaster']['uri'];
       }
