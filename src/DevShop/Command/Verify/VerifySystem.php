@@ -71,9 +71,18 @@ class VerifySystem extends Command
 
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
-        parent::initialize($input, $output);
+      parent::initialize($input, $output);
 
-        // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
+      // Announce ourselves.
+      $output->writeln($this->getApplication()->getLogo());
+      $this->announce('Verify System');
+      $this->checkCliVersion();
+
+      $output->writeln(
+        '<info>Confirming Ansible inventory and variables...</info>'
+      );
+
+      // If "inventory" exists in ansible configuration, use that instead of the default '/etc/ansible/hosts'
         if ($this->getAnsibleInventory()) {
 
             $output->writeln('<info>Ansible Config Loaded</info> from ' . $this->config_file);
@@ -92,10 +101,10 @@ class VerifySystem extends Command
         if (!file_exists($input->getOption('inventory-file')) || strpos(file_get_contents($input->getOption('inventory-file')), '[devmaster]') === FALSE) {
 
           if (!file_exists($input->getOption('inventory-file'))) {
-            $this->IO->warning('Ansible inventory file does not exist at ' . $input->getOption('inventory-file'));
+            $this->IO->note('Ansible inventory file does not exist at ' . $input->getOption('inventory-file'));
           }
           else {
-            $this->IO->warning('Ansible inventory file located at ' . $input->getOption('inventory-file') . ' does not contain [devmaster] group.');
+            $this->IO->note('Ansible inventory file located at ' . $input->getOption('inventory-file') . ' does not contain [devmaster] group.');
           }
           if (!$input->isInteractive() || $this->IO->confirm('Create a new inventory file at ' . $input->getOption('inventory-file'))) {
 
@@ -119,18 +128,31 @@ TXT;
         if (!file_exists($this->group_vars_file)) {
 
           // Lookup necessary variables
+          $vars['devshop_version'] = $this->getApplication()->getVersion();
           $vars['aegir_user_uid'] = trim(shell_exec('id aegir -u'));
+          if (empty($vars['aegir_user_uid'])) {
+            $this->IO->note('Unable to determine aegir user UID. Defaulting to 12345');
+            $vars['aegir_user_uid'] = 12345;
+          }
 
           if (file_exists('/root/.my.cnf')) {
             $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'));
           }
+
+          // @TODO: Detect existing installation and load mysql root user and pasword from there.
+          //          elseif (file_exists('/var/aegir/.drush/server_master.drushrc.php')) {
+          //
+          //          }
           else {
             $vars['mysql_root_password'] = trim(shell_exec('echo $MYSQL_ROOT_PASSWORD'));
           }
 
           if (empty($vars['mysql_root_password'])) {
-            $this->IO->warning('Unable to determine MySQL root password from /root/.my.cnf or MYSQL_ROOT_PASSWORD environment variable.');
-            $vars['mysql_root_password'] = $this->IO->ask('Please provide the MySQL Root User Password');
+            $this->IO->note("Unable to determine MySQL root password from /root/.my.cnf or MYSQL_ROOT_PASSWORD environment variable. 
+If this is an existing installation, you must enter the correct mysql root password.
+If this is a new installation, you may select the default randomly generated password.
+            ");
+            $vars['mysql_root_password'] = $this->user_password(32);
           }
 
           if (file_exists('/var/aegir/config/server_master/nginx.conf')) {
@@ -270,4 +292,108 @@ TXT;
         }
         return array();
     }
+
+  /**
+   * Generate a random alphanumeric password.
+   * Based on Drupal's user_password()
+   */
+  function user_password($length = 10) {
+    // This variable contains the list of allowable characters for the
+    // password. Note that the number 0 and the letter 'O' have been
+    // removed to avoid confusion between the two. The same is true
+    // of 'I', 1, and 'l'.
+    $allowable_characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+    // Zero-based count of characters in the allowable list:
+    $len = strlen($allowable_characters) - 1;
+
+    // Declare the password as a blank string.
+    $pass = '';
+
+    // Loop the number of times specified by $length.
+    for ($i = 0; $i < $length; $i++) {
+      do {
+        // Find a secure random number within the range needed.
+        $index = ord($this->drupal_random_bytes(1));
+      } while ($index > $len);
+
+      // Each iteration, pick a random character from the
+      // allowable string and append it to the password:
+      $pass .= $allowable_characters[$index];
+    }
+
+    return $pass;
+  }
+
+  /**
+   * Returns a string of highly randomized bytes (over the full 8-bit range).
+   *
+   * This function is better than simply calling mt_rand() or any other built-in
+   * PHP function because it can return a long string of bytes (compared to < 4
+   * bytes normally from mt_rand()) and uses the best available pseudo-random
+   * source.
+   *
+   * @param $count
+   *   The number of characters (bytes) to return in the string.
+   */
+  function drupal_random_bytes($count)  {
+    // $random_state does not use drupal_static as it stores random bytes.
+    static $random_state, $bytes, $has_openssl;
+
+    $missing_bytes = $count - strlen($bytes);
+
+    if ($missing_bytes > 0) {
+      // PHP versions prior 5.3.4 experienced openssl_random_pseudo_bytes()
+      // locking on Windows and rendered it unusable.
+      if (!isset($has_openssl)) {
+        $has_openssl = version_compare(PHP_VERSION, '5.3.4', '>=') && function_exists('openssl_random_pseudo_bytes');
+      }
+
+      // openssl_random_pseudo_bytes() will find entropy in a system-dependent
+      // way.
+      if ($has_openssl) {
+        $bytes .= openssl_random_pseudo_bytes($missing_bytes);
+      }
+
+      // Else, read directly from /dev/urandom, which is available on many *nix
+      // systems and is considered cryptographically secure.
+      elseif ($fh = @fopen('/dev/urandom', 'rb')) {
+        // PHP only performs buffered reads, so in reality it will always read
+        // at least 4096 bytes. Thus, it costs nothing extra to read and store
+        // that much so as to speed any additional invocations.
+        $bytes .= fread($fh, max(4096, $missing_bytes));
+        fclose($fh);
+      }
+
+      // If we couldn't get enough entropy, this simple hash-based PRNG will
+      // generate a good set of pseudo-random bytes on any system.
+      // Note that it may be important that our $random_state is passed
+      // through hash() prior to being rolled into $output, that the two hash()
+      // invocations are different, and that the extra input into the first one -
+      // the microtime() - is prepended rather than appended. This is to avoid
+      // directly leaking $random_state via the $output stream, which could
+      // allow for trivial prediction of further "random" numbers.
+      if (strlen($bytes) < $count) {
+        // Initialize on the first call. The contents of $_SERVER includes a mix of
+        // user-specific and system information that varies a little with each page.
+        if (!isset($random_state)) {
+          $random_state = print_r($_SERVER, TRUE);
+          if (function_exists('getmypid')) {
+            // Further initialize with the somewhat random PHP process ID.
+            $random_state .= getmypid();
+          }
+          $bytes = '';
+        }
+
+        do {
+          $random_state = hash('sha256', microtime() . mt_rand() . $random_state);
+          $bytes .= hash('sha256', mt_rand() . $random_state, TRUE);
+        }
+        while (strlen($bytes) < $count);
+      }
+    }
+    $output = substr($bytes, 0, $count);
+    $bytes = substr($bytes, $count);
+    return $output;
+  }
 }
