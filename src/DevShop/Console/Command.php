@@ -347,10 +347,10 @@ abstract class Command extends BaseCommand
   public function checkCliVersion() {
     $path = realpath(__DIR__ . '/../../../');
     $version = $this->getApplication()->getVersion();
-
+    $versionSha = $this->getApplication()->versionRefSha;
     $this->gitWorkingCopy = $this->gitWrapper->workingCopy($path);
     $this->gitWorkingCopy->status();
-    $this->output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>.");
+    $this->output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>#<comment>$versionSha</comment>.");
 
   }
 
