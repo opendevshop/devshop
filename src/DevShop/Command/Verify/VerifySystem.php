@@ -61,6 +61,7 @@ class VerifySystem extends Command
     private $config_file;
     private $config;
 
+    private $host_vars_path = '/etc/ansible/host_vars/';
     private $group_vars_file = '/etc/ansible/group_vars/devmaster';
     private $ansible_cfg_file = '/etc/ansible/ansible.cfg';
 
@@ -220,7 +221,7 @@ If this is a new installation, you may select the default randomly generated pas
 
         // Install devshop roles
         $roles_file_path = realpath(dirname(dirname(dirname(dirname(__DIR__)))) . '/roles.yml');
-        $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' ...');
+        $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' to /etc/ansible/roles ...');
         $this->ansible->galaxy()
           ->roleFile($roles_file_path)
           ->rolesPath('/etc/ansible/roles')
