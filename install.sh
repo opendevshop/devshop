@@ -294,8 +294,10 @@ if [ ! -d "$DEVSHOP_INSTALL_PATH" ]; then
     git checkout $DEVSHOP_VERSION
 else
     cd $DEVSHOP_INSTALL_PATH
-    git fetch
-    git checkout $DEVSHOP_VERSION
+# @TODO: This was needed when install.sh was the upgrade, but now it isn't. It breaks upgrade testing in PRs
+# unless DEVSHOP_VERSION is set to the branch being tested.
+#    git fetch
+#    git checkout $DEVSHOP_VERSION
 fi
 
 echo $LINE
