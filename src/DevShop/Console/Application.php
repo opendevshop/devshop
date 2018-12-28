@@ -55,6 +55,16 @@ class Application extends BaseApplication
   protected $version;
 
   /**
+   * @var string The named branch or tag of the current application code.
+   */
+  public $versionRef;
+
+  /**
+   * @var string The short SHA of the current application code.
+   */
+  public $versionRefSha;
+
+  /**
    * @var string
    */
   protected $devmaster_version;
@@ -94,6 +104,7 @@ class Application extends BaseApplication
     $commands[] = new Command\Install();
     $commands[] = new Command\InstallDevmaster();
     $commands[] = new Command\DevmasterTest();
+    $commands[] = new Command\DevmasterUpgrade();
     $commands[] = new Command\Upgrade();
     $commands[] = new Command\RemoteInstall();
     $commands[] = new Command\SelfUpdate();
@@ -111,10 +122,17 @@ class Application extends BaseApplication
       $this->release_date = $release_date;
     }
     else {
-      $version = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
-      $version .= ' ' . $this->process('git log --pretty=format:"%h" -n 1');
+      $this->versionRef = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
+      $this->versionRefSha = $this->process('git log --pretty=format:"%h" -n 1');
 
-      parent::__construct('DevShop', $version);
+      // One condition where versionRef is empty is on Travis Clones, because it only grabs refs/pull/PR#/merge
+      if (empty($this->versionRef)) {
+        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
+          $this->versionRef = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+        }
+      }
+
+      parent::__construct('DevShop', $this->versionRef);
 
       $this->release_date = $this->process('git log -1 --format=%ct');
     }
@@ -132,6 +150,7 @@ class Application extends BaseApplication
           $this->devmaster_version = '0.5 or earlier';
         }
 
+        $this->devmaster_platform = $aliases['hostmaster']['platform'];
         $this->devmaster_root = $aliases['hostmaster']['root'];
         $this->devmaster_uri = $aliases['hostmaster']['uri'];
       }

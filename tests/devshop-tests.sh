@@ -3,6 +3,11 @@
 set -e
 
 # Run remaining tasks from install process.
+
+echo ">> Verify hostmaster platform first."
+PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
+drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
+
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force"
 drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
 

@@ -49,8 +49,6 @@ services:
       driver: none
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
-# @TODO: Remove completely once tests pass.
-#    command: mysqld --innodb-large-prefix --innodb-file-format=barracuda --innodb-file-per-table
 
   admin:
     image: phpmyadmin/phpmyadmin

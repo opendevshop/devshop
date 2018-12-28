@@ -2,6 +2,8 @@
 
 namespace DevShop\Command;
 
+use Asm\Ansible\Ansible;
+use Asm\Ansible\Command\AnsibleGalaxy;
 use DevShop\Console\Command;
 
 use Phar;
@@ -56,83 +58,109 @@ EOT
         InputArgument::OPTIONAL,
         'The git tag or branch to install.'
       )
+      ->addOption('ignore-working-copy-changes',
+        'i',
+        InputOption::VALUE_NONE,
+        'Ignore working copy changes. Used during development.'
+      )
     ;
   }
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    if (Phar::running()) {
+    parent::execute($input, $output);
 
-      $file = self::MANIFEST_FILE;
-      $output->writeln("Loading <info>DevShop</info> release information from <comment>{$file}</comment>");
+//    if (Phar::running()) {
+//
+//      $file = self::MANIFEST_FILE;
+//      $output->writeln("Loading <info>DevShop</info> release information from <comment>{$file}</comment>");
+//
+//      try {
+//        $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
+//        $manager->update($this->getApplication()->getVersion(), true);
+//      } catch (JsonException $e) {
+//        $output->writeln('<error>'.$e->getMessage().'</error>');
+//        $output->writeln(
+//          'Contact the DevShop maintainers if the problem persists.'
+//        );
+//      }
+//      $output->writeln("<error>Self-update for Phar is not yet supported. If you installed this phar you are a developer anyway!</error>");
+//    }
+//    // When this is not a PHAR...
+//    else {
 
-      try {
-        $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
-        $manager->update($this->getApplication()->getVersion(), true);
-      } catch (JsonException $e) {
-        $output->writeln('<error>'.$e->getMessage().'</error>');
-        $output->writeln(
-          'Contact the DevShop maintainers if the problem persists.'
-        );
-      }
-      $output->writeln("<error>Self-update for Phar is not yet supported. If you installed this phar you are a developer anyway!</error>");
-    }
-    // When this is not a PHAR...
-    else {
+    try {
 
-      try {
+      // 1. Check if this script is a git repo.
+      $this->checkCliVersion();
+      $git = $this->gitWorkingCopy;
+      $version = $this->getApplication()->getVersion();
+      $target_version = $this->input->getArgument('devshop-version');
+      $path = realpath(__DIR__ . '/../../../');
 
-        // 1. Check if this script is a git repo.
-        $git_wrapper = new GitWrapper();
-        $path = realpath(__DIR__ . '/../../../');
-        $version = $this->getApplication()->getVersion();
-
-        $git = $git_wrapper->workingCopy($path);
-        $git->status();
-        $output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>.");
-
+      // If target version is missing, load the latest.
+      if (empty($target_version)) {
         $output->writeln('Checking for latest releases...');
-        $latest = $this->getLatestVersion();
-        $name_question = new Question("Version? [{$latest}] ", $latest);
-        $version = $this->getAnswer($input, $output, $name_question, 'devshop-version', TRUE);
+        $target_version = $this->getLatestVersion();
+      }
 
-        // Bail if there are working copy changes, ignoring untracked files.
-        // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
-        if ($git->getWrapper()->git('status -s --untracked-files=no', $git->getDirectory())) {
-          throw new \Exception("There are changes to your working copy at $path.  Please resolve this and try again.");
+      // Confirm version with GitHub if interactive.
+      if ($input->isInteractive()) {
+        $helper = $this->getHelper('question');
+        $version_found = FALSE;
+        while ($version_found == FALSE) {
+          $question = new Question("Target Version: (Default: $target_version) ", $target_version);
+          $target_version = $helper->ask($input, $output, $question);
+
+          if (!$this->checkVersion($target_version)) {
+            $output->writeln("<fg=red>Version $target_version not found</>");
+          }
+          else {
+            $output->writeln("Version $target_version confirmed.");
+            $version_found = TRUE;
+          }
         }
+      }
 
-        // Checkout the desired version.
+      // Bail if there are working copy changes, ignoring untracked files.
+      // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
+      if (!$input->getOption('ignore-working-copy-changes') && $git->getWrapper()->git('status -s --untracked-files=no', $git->getDirectory())) {
+        throw new \Exception("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check.");
+      }
+
+      // Checkout the desired version.
+      if (isset($_SERVER['TRAVIS_PULL_REQUEST_BRANCH']) && $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'] == $target_version) {
+        $output->writeln('<comment>Selected version is the current Travis PR Branch. Skipping git checkout.</comment>');
+      }
+      else {
         $git->fetchAll();
-        $git->checkout($version);
-
+        $git->checkout($target_version);
         // If we are on a branch, pull.
         if ($git->isTracking()) {
           $git->pull();
         }
-
-        $output->writeln("DevShop CLI version <info>{$version}</info> has been checked out.");
-
-        // Run 'composer install' in the directory.
-        $output->writeln("Running <info>composer install</info> in <comment>{$git->getDirectory()}</comment>...");
-        $process = new Process('composer install --ansi', $git->getDirectory());
-        $process->setTimeout(NULL);
-        $process->mustRun(function ($type, $buffer) {
-          if (Process::ERR === $type) {
-            echo $buffer;
-          } else {
-            echo $buffer;
-          }
-        });
-      } catch (GitException $e) {
-        $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
-      } catch (ProcessFailedException $e) {
-        $output->writeln('<error>ERROR: ' . $e->getMessage() . '</error>');
       }
 
-      // Output a message, telling the user they should now run `devshop upgrade`.
-      $output->writeln('<info>DevShop CLI Updated.</info> You should now run the `devshop upgrade` command to upgrade your server.');
+      $output->writeln("DevShop CLI version <info>{$target_version}</info> has been checked out.");
 
+      // Run 'composer install' in the directory.
+      $output->writeln("Running <info>composer install</info> in <comment>{$git->getDirectory()}</comment>...");
+      $process = new Process('composer install --no-plugins --no-scripts --ansi', $git->getDirectory());
+      $process->setTimeout(NULL);
+      $process->mustRun(function ($type, $buffer) {
+        if (Process::ERR === $type) {
+          echo $buffer;
+        } else {
+          echo $buffer;
+        }
+      });
+    } catch (GitException $e) {
+      throw new \Exception('Git failed: ' . $e->getMessage());
+    } catch (ProcessFailedException $e) {
+      throw new \Exception('Process Failed: ' . $e->getMessage());
     }
+
+    $output->writeln("<info>DevShop CLI Updated to version $target_version.</info>");
+
   }
 }
