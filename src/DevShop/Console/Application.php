@@ -125,6 +125,13 @@ class Application extends BaseApplication
       $this->versionRef = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
       $this->versionRefSha = $this->process('git log --pretty=format:"%h" -n 1');
 
+      // One condition where versionRef is empty is on Travis Clones, because it only grabs refs/pull/PR#/merge
+      if (empty($this->versionRef)) {
+        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
+          $this->versionRef = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+        }
+      }
+
       parent::__construct('DevShop', $this->versionRef);
 
       $this->release_date = $this->process('git log -1 --format=%ct');
