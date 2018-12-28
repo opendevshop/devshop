@@ -125,7 +125,7 @@ class Application extends BaseApplication
       $this->versionRef = str_replace('refs/heads/', '', $this->process('git describe --tags --exact-match || git symbolic-ref -q HEAD'));
       $this->versionRefSha = $this->process('git log --pretty=format:"%h" -n 1');
 
-      parent::__construct('DevShop', $this->versionRef . ' ' . $this->versionRefSha);
+      parent::__construct('DevShop', $this->versionRef);
 
       $this->release_date = $this->process('git log -1 --format=%ct');
     }
