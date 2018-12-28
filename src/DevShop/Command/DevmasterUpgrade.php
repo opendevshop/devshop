@@ -232,6 +232,7 @@ class DevmasterUpgrade extends Command
     }
 
     // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
+    $this->IO->note("Running $cmd");
     $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd;
     $process = new Process($command);
     $process->setTimeout(NULL);
@@ -242,6 +243,7 @@ class DevmasterUpgrade extends Command
     // Trigger a verify of the new platform to ensure it's ready
     $platform_alias = $this->getApplication()->devmaster_platform;
     $cmd = "drush @hostmaster hosting-task $platform_alias verify --force";
+    $this->IO->note("Running $cmd");
     $process = new Process($pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd);
     $process->run(function ($type, $buffer) {
       echo $buffer;
