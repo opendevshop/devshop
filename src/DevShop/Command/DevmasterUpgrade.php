@@ -242,7 +242,7 @@ class DevmasterUpgrade extends Command
     // Trigger a verify of the new platform to ensure it's ready
     $platform_alias = $this->getApplication()->devmaster_platform;
     $cmd = "drush @hostmaster hosting-task $platform_alias verify --force";
-    $process = new Process($cmd);
+    $process = new Process($pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd);
     $process->run(function ($type, $buffer) {
       echo $buffer;
     });
