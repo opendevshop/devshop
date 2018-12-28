@@ -20,19 +20,6 @@
 
 - hostname: name={{ server_hostname }}
 
-- name: Install Drush
-  get_url:
-    url: "https://github.com/drush-ops/drush/releases/download/{{ drush_release_version }}/drush.phar"
-    dest: "{{ local_bin_path }}/drush"
-    mode: 0755
-    force: yes
-
-- name: Clear drush caches
-  command: "{{ local_bin_path }}/drush cache-clear drush"
-  become: yes
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
 - name: Detect devshop CLI
   stat:
     path: "{{ devshop_cli_path }}"
@@ -55,6 +42,13 @@
   file:
     src: "{{ devshop_cli_path }}/bin/devshop"
     dest: "{{ local_bin_path }}/devshop"
+    state: link
+    force: yes
+
+- name: Setup drush CLI executable
+  file:
+    src: "{{ devshop_cli_path }}/bin/drush"
+    dest: "{{ local_bin_path }}/drush"
     state: link
     force: yes
 
