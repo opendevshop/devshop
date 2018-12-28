@@ -166,10 +166,11 @@ class Upgrade extends Command
     }
 
     // Run devshop verify:system in a new process so it picks up on the updated devshop CLI and ansible roles.
-    $output->writeln('Running devshop verify-system...');
+    $output->writeln('Running devshop verify:system...');
     $path_to_devshop_bin = dirname(dirname(dirname(__DIR__))) . '/bin/devshop';
     $process = new Process("$path_to_devshop_bin verify:system");
     $process->setTimeout(NULL);
+    $process->setTty(TRUE);
     $process->setEnv($_SERVER);
     $result = $process->run(function ($type, $buffer) {
       echo $buffer;
