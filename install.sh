@@ -352,6 +352,11 @@ if [ ! -d "$ANSIBLE_CONFIG_PATH/group_vars" ]; then
   mkdir "$ANSIBLE_CONFIG_PATH/group_vars"
 fi
 
+# If Ansible.cfg file does not exist, copy it in.
+if [ ! -f "$ANSIBLE_CONFIG_PATH/ansible.cfg" ]; then
+  cp $DEVSHOP_INSTALL_PATH/ansible.cfg $ANSIBLE_CONFIG_PATH/ansible.cfg
+fi
+
 # Write to our devmaster group file every time install.sh is run."
 # Strangest thing: if you leave a space after the variable "name:" the output will convert to a new line.
 IFS=$'\n'

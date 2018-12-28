@@ -62,11 +62,12 @@ class VerifySystem extends Command
     private $config;
 
     private $group_vars_file = '/etc/ansible/group_vars/devmaster';
+    private $ansible_cfg_file = '/etc/ansible/ansible.cfg';
 
     /**
      * @var bool Tell Command::execute() that we require ansible.
      */
-    protected $ansibleRequired = TRUE;
+//    protected $ansibleRequired = TRUE;
 
     protected function initialize(InputInterface $input, OutputInterface $output) {
 
@@ -78,6 +79,13 @@ class VerifySystem extends Command
             $output->writeln('<info>Ansible Config Loaded</info> from ' . $this->config_file);
 
             $input->setOption('inventory-file', $this->getAnsibleInventory());
+        }
+
+        // If ansible.cfg file does not exist, create it.
+        if (!file_exists($this->ansible_cfg_file)) {
+          $source = dirname(dirname(dirname(dirname(__DIR__)))) . '/ansible.cfg';
+          $destination = $this->ansible_cfg_file;
+          copy($source, $destination);
         }
 
         // If inventory file does not exist, create it.
