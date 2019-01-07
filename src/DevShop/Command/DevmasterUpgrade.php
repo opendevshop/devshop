@@ -32,7 +32,7 @@ class DevmasterUpgrade extends Command
       )
       // Option to allow ansible runs to tell this command that it is being run as part of the playbooks.
       ->addOption(
-        'run-from-playbooks', NULL, InputOption::VALUE_OPTIONAL,
+        'run-from-playbooks', NULL, InputOption::VALUE_NONE,
         'A flag to indicate this command is being run from the playbooks. Dont use if manually running this command.'
       )
 
