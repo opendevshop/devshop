@@ -10,8 +10,7 @@
 - Added our own Dockerfile for the devshop/server containeer: a single container with all services. See Dockerfiles/Dockerfile
   - This is awesome because it installs every version of PHP in a single container. This will soon become the default! Choose your PHP.
 - Improved the Robofile to be more visible about what it is doing. There is a lot of yelling now.
-- 
-
+- ...
 
 ## 1.4.0 (September 27, 2018)
 
@@ -21,7 +20,7 @@
 - Added the Contributor Covenant Code of Conduct: 
   > In the interest of fostering an open and welcoming environment, we as
   contributors and maintainers pledge to making participation in our project and
-  our community a harassment-free experie nce for everyone, regardless of age, body
+  our community a harassment-free experience for everyone, regardless of age, body
   size, disability, ethnicity, sex characteristics, gender identity and expression,
   level of experience, education, socio-economic status, nationality, personal
   appearance, race, religion, or sexual identity and orientation.
