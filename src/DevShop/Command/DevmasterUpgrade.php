@@ -232,6 +232,7 @@ class DevmasterUpgrade extends Command
     }
 
     // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
+    $this->IO->note("Running $cmd");
     $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd;
     $process = new Process($command);
     $process->setTimeout(NULL);

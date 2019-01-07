@@ -32,7 +32,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks {
 
   // Install this version first when testing upgrades.
-  const UPGRADE_FROM_VERSION = '1.0.0-rc4-test1';
+  const UPGRADE_FROM_VERSION = '1.0.0-rc4-testing';
   const UPGRADE_FROM_PROVISION_VERSION = '7.x-3.10';
 
   // The version of docker-compose to suggest the user install.
@@ -150,26 +150,10 @@ class RoboFile extends \Robo\Tasks {
     }
 
 
-    // If this is an upgrade test, we have to checkout the old version to install the old roles and makefile.
-    if ($opts['test-upgrade']) {
-      $this->devshop_upgrade_destination_path = __DIR__;
-      $this->devshop_root_path = dirname(__DIR__) . '/devshop-' . self::UPGRADE_FROM_VERSION;
-      $this->say('Upgrade request detected: Checking out ' . self::UPGRADE_FROM_VERSION);
-      $this->say('Current dir: ' . getcwd());
-      $this->taskGitStack()
-        ->cloneRepo('https://github.com/opendevshop/devshop', $this->devshop_root_path, self::UPGRADE_FROM_VERSION)
-        ->run();
-      $this->taskExec('composer install --no-plugins --no-scripts')
-        ->dir($this->devshop_root_path);
-
-      // If this is an upgrade test, the initial pre-build is of the old version.
-      $build_version = self::UPGRADE_FROM_VERSION;
+    if ($opts['devshop-version'] == NULL) {
+      $opts['devshop-version'] = $this->git_ref;
     }
-    else {
-      // If this not an upgrade test, the initial pre-build is of the specified version.
-      $this->devshop_root_path = __DIR__;
-      $build_version = $opts['devshop-version'];
-    }
+    $this->devshop_root_path = __DIR__;
 
     // Create the Aegir Home directory.
     if (file_exists($this->devshop_root_path . "/aegir-home/.drush/commands")) {
@@ -556,10 +540,11 @@ class RoboFile extends \Robo\Tasks {
       # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
       if ($opts['test-upgrade']) {
 
-        // This is needed because the old playbook has an incompatibility with newer ansible.
-        $this->taskDockerExec('devshop_container')
-          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
-          ->run();
+//        // This is needed because the old playbook has an incompatibility with newer ansible.
+        // UPDATE: Seems to be not needed now?? This was triggering sh: 1: cannot create /root/.ansible.cfg: Permission denied
+//        $this->taskDockerExec('devshop_container')
+//          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
+//          ->run();
 
         // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
         $this->taskDockerExec('devshop_container')
@@ -569,28 +554,47 @@ class RoboFile extends \Robo\Tasks {
         $this->yell("Running install.sh for old version...");
 
         // Run install.sh old version.
-        $this->taskDockerExec('devshop_container')
-          // This is needed because the old playbook has an incompatibility with newer ansible.
-          ->exec('/usr/share/devshop/install.sh ' . $opts['install-sh-options'])
-          ->run();
+        $version = self::UPGRADE_FROM_VERSION;
+        $this->_exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o {$this->devshop_root_path}/install.{$version}.sh");
 
-        # Before DevShop 1.5.0, you had to run devshop self-update first.
-        $this->yell("Running devshop self-update...");
-        $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/bin/devshop self-update -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
-          ->run();
+        // Set makefile and devshop install path options because they need to be different than the defaults for upgrading.
+        $install_path = "/usr/share/devshop-{$version}";
+        $makefile_filename = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
+
+        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/{$makefile_filename}" ;
+        $opts['install-sh-options'] .= " --install-path={$install_path}";
+        $opts['install-sh-options'] .= " --force-ansible-role-install";
+
+        if (!empty($opts['user-uid'])) {
+          $opts['install-sh-options'] .= " --aegir-uid={$opts['user-uid']}";
+        }
+
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Installation of devshop $version failed.");
+        };
 
         // Run devshop upgrade. This command runs:
         $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
-        $this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/bin/devshop upgrade -n ' . $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
-          ->run();
+        $upgrade_to_branch = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $_SERVER['TRAVIS_BRANCH'];
+        $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec($upgrade_command)
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Command $upgrade_command failed.");
+        };
 
-        $this->taskDockerExec('devshop_container')
+        if (!$this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/bin/devshop status')
-          ->run();
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Command 'devshop status' failed.");
+        };
       }
       else {
         # Run install script on the container.
