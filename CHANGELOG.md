@@ -2,6 +2,16 @@
 
 ## 1.5.0 (Coming Soon)
 
+- DevShop.Support Release!
+  - This release marks the launch of DevShop.Support. It includes an open source module, DevShop Support Network Client.
+- Better Ansible setup in install.sh: The install.sh script now prepares the server using Ansible's default locations for inventory and playbooks. A simple inventory file is created at /etc/ansible/hosts, and the Ansible galaxy roles are installed to /etc/ansible/roles.
+- Allow upgrading by running the playbook again. The playbook now detects an existing devmaster installation and runs the devmaster upgrade command automatically."
+- Add ansible-playbook upgrade testing to Travis.yml.
+- Added our own Dockerfile for the devshop/server containeer: a single container with all services. See Dockerfiles/Dockerfile
+  - This is awesome because it installs every version of PHP in a single container. This will soon become the default! Choose your PHP.
+- Improved the Robofile to be more visible about what it is doing. There is a lot of yelling now.
+- ...
+
 ## 1.4.0 (September 27, 2018)
 
 - 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.4.0
