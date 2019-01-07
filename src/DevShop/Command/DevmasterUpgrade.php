@@ -87,39 +87,47 @@ class DevmasterUpgrade extends Command
     }
 
     // Lookup latest version.
-    $output->writeln('Checking for latest releases...');
-    $client = new \Github\Client();
-    $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
-
-    // Make sure we got the release info
-    if (empty($release)) {
-      $output->writeln("<fg=red>Unable to retrieve releases from GitHub.  Try again later, or specify a release.</>");
-      $latest_release = '0.x';
-      $output->writeln("Assuming development version <info>$latest_release</info>.");
+    if ($input->getOption('run-from-playbooks')) {
+      $target_version = $input->getArgument('devshop-version');
+      $this->IO->note("Skipping GitHub version verification because --run-from-playbooks option was specified.");
     }
     else {
-      $latest_release = $release['tag_name'];
-      $output->writeln("<info>Latest Version</info> $latest_release");
-    }
+      $output->writeln('Checking for latest releases...');
+      $client = new \Github\Client();
+      $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
 
-    $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
-    $target_version = '';
-
-    // Warn if default is not latest
-    if ($latest_release != $default_version) {
-        $output->writeln("<fg=red>WARNING:</> You have specified a release that is not the latest.");
-    }
-
-    // Confirm version
-    while ($this->checkVersion($target_version) == FALSE) {
-      $question = new Question("Target Version: (Default: $default_version) ", $default_version);
-      $target_version = $helper->ask($input, $output, $question);
-
-      if (!$this->checkVersion($target_version)) {
-        $output->writeln("<fg=red>Version $target_version not found</>");
+      // Make sure we got the release info
+      if (empty($release)) {
+        $output->writeln("<fg=red>Unable to retrieve releases from GitHub.  Try again later, or specify a release.</>");
+        $latest_release = '0.x';
+        $output->writeln("Assuming development version <info>$latest_release</info>.");
       }
+      else {
+        $latest_release = $release['tag_name'];
+        $output->writeln("<info>Latest Version</info> $latest_release");
+      }
+
+      $default_version = $input->getArgument('devshop-version')? $input->getArgument('devshop-version'): $latest_release;
+      $target_version = '';
+
+      // Warn if default is not latest
+      if ($latest_release != $default_version) {
+        $output->writeln("<fg=red>WARNING:</> You have specified a release that is not the latest.");
+      }
+
+      // Confirm version
+      while ($this->checkVersion($target_version) == FALSE) {
+        $question = new Question("Target Version: (Default: $default_version) ", $default_version);
+        $target_version = $helper->ask($input, $output, $question);
+
+        if (!$this->checkVersion($target_version)) {
+          $output->writeln("<fg=red>Version $target_version not found</>");
+        }
+      }
+      $this->IO->note("Version $target_version confirmed.");
     }
-    $output->writeln("Version $target_version confirmed.");
+
+    $this->IO->success("Upgrading DevShop to version $target_version...");
 
     $devmaster_makefile = $input->getOption('makefile');
     if (empty($devmaster_makefile)) {
