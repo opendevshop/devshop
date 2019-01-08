@@ -5,6 +5,31 @@
 server_hostname: local.devshop.site
 devshop_devmaster_email: admin@local.devshop.site
 
+devshop_cli_repo: http://github.com/opendevshop/devshop.git
+devshop_cli_update: yes
+devshop_cli_path: /usr/share/devshop
+devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
+
+devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
+devshop_install_profile: devmaster
+devshop_working_copy: --working-copy
+
+aegir_server_webserver: apache
+mysql_root_password_update: no
+
+aegir_db_host: localhost
+aegir_client_name: admin
+
+supervisor_running: yes
+
+drush_dl_method: wget
+
+devshop_drush_packages:
+  provision: 7.x-3.160
+  registry_rebuild: 7.x-2.2
+
+php_date_timezone: "America/New_York"
+
 # You should specify your own random mysql_root_password in your own playbooks or inventory.
 # mysql_root_password: PleaseRandomizeOnPlaybookRun
 
