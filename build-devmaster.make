@@ -16,7 +16,7 @@ projects[devmaster][version] = 1.x-dev
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 
-###DEVELOPMENT###
+###DEVELOPMENTSTART###
 ; DEVELOPMENT OVERRIDE
 ; Removed during release process.
 ; This is so that different version of "devshop" (the branch) can install a different version of devmaster.
