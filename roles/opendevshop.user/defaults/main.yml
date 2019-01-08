@@ -7,7 +7,7 @@ aegir_user_authorized_keys: ReplaceAtRuntime
 aegir_logs_path: /var/log/aegir
 
 # Used for the secondary install scripts for fix-perms and fix-ownership so far
-aegir_hosting_version: "7.x-3.160"
+aegir_hosting_version: "7.x-3.170"
 
 # Be sure to match to opendevshop.aegir-devmaster role
 local_bin_path: /usr/local/bin
