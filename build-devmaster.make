@@ -16,14 +16,16 @@ projects[devmaster][version] = 1.x-dev
 projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 
+###DEVELOPMENT###
 ; DEVELOPMENT OVERRIDE
-; COMMENT OUT BEFORE RELEASE
+; Removed during release process.
 ; This is so that different version of "devshop" (the branch) can install a different version of devmaster.
 ; This ensures that people that install the latest 1.x devshop get the absolute latest from github.
 projects[devmaster][type] = profile
 projects[devmaster][download][type] = git
 projects[devmaster][download][branch] = 7.x-1.x
 projects[devmaster][download][url] = "https://github.com/opendevshop/devmaster.git"
+###DEVELOPMENTEND###
 
 ; CAS
 ; The CAS and HybridAuth libraries are not whitelisted by drupal.org, so we include them here.
