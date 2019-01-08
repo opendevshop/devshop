@@ -787,10 +787,11 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=$version/' ./install.sh");
     }
 
-    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make? ")) {
+    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make and remove development repos? ")) {
       $this->_exec("sed -i -e 's/projects\[devmaster\]\[version\] = 1.x-dev/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
       $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[branch\]/; projects[devmaster][download][branch]' build-devmaster.make");
       $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[url\]/; projects[devmaster][download][url]' build-devmaster.make");
+      $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
     }
 
     if ($this->confirm("Write '$drupal_org_version' to drupal-org.make for devshop_stats? ")) {
