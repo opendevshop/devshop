@@ -133,7 +133,7 @@ EOT
         $output->writeln('<comment>Selected version is the current Travis PR Branch. Skipping git checkout.</comment>');
       }
       else {
-        $git->fetchAll();
+        $git->fetchAll(array('--tags' => 1));
         $git->checkout($target_version);
         // If we are on a branch, pull.
         if ($git->isTracking()) {
