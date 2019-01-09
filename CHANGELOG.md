@@ -1,11 +1,11 @@
 # Change Log
 
-## 1.5.0-rc1 (Coming Soon)
+## 1.5.0-rc1 (January 9, 2019)
 
-- 281 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.4.0...1.x
-- 233 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.40...7.x-1.x
+- 281 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.4.0...1.5.0-rc1
+- 233 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.40...7.x-1.50-rc1
 
-- DevShop.Support Release!
+- DevShop.Support Release Candidate!
     - This release marks the launch of the DevShop.Support Network. It includes an open source module, DevShop Support Network Client, that enables monitoring & single-sign-on.
 - Major `install.sh` improvements:
     - Creates a simple inventory file at `/etc/ansible/hosts`.
