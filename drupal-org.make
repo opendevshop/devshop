@@ -90,10 +90,11 @@ libraries[timeago][download][type] = get
 libraries[timeago][download][url] = https://raw.githubusercontent.com/rmm5t/jquery-timeago/v1.5.3/jquery.timeago.js
 libraries[timeago][destination] = libraries
 
+; @TODO: Uncomment once it is in the whitelist: https://www.drupal.org/project/drupalorg_whitelist/issues/3024898
 ; Library: Modernizr
-libraries[modernizr][download][type] = git
-libraries[modernizr][download][url] = https://github.com/BrianGilbert/modernizer-navbar.git
-libraries[modernizr][download][revision] = 5b89d9225320e88588f1cdc43b8b1e373fa4c60f
+; libraries[modernizr][download][type] = git
+; libraries[modernizr][download][url] = https://github.com/BrianGilbert/modernizer-navbar.git
+; libraries[modernizr][download][revision] = 5b89d9225320e88588f1cdc43b8b1e373fa4c60f
 
 ; Library: Backbone
 libraries[backbone][download][type] = git
