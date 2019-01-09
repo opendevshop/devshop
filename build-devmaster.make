@@ -39,3 +39,9 @@ libraries[hybridauth][download][type] = "git"
 libraries[hybridauth][download][url] = "https://github.com/hybridauth/hybridauth"
 libraries[hybridauth][download][tag] = "v2.10.0"
 libraries[hybridauth][destination] = "libraries"
+
+; Library: Modernizr
+; @TODO: move to drupal-org-contrib.make in devmaster repo once it is whitelisted.
+libraries[modernizr][download][type] = git
+libraries[modernizr][download][url] = https://github.com/BrianGilbert/modernizer-navbar.git
+libraries[modernizr][download][revision] = 5b89d9225320e88588f1cdc43b8b1e373fa4c60f
