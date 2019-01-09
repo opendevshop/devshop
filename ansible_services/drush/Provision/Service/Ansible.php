@@ -114,11 +114,7 @@ class Provision_Service_Ansible extends Provision_Service {
     if (strpos(file_get_contents($this->inventory), 'AEGIR_HOSTMASTER_HOSTNAME') === FALSE) {
       $inventory_path = realpath(__DIR__ . '/../../../../inventory');
 
-      drush_log("The Aegir dynamic inventory file is not present at the configured path {$this->inventory} Copy the file and make it executable: ", 'error');
-      drush_log("Run the following command to setup the dynamic inventory file, then retry this task:", 'p_log');
-      drush_log("cp -rf $inventory_path $this->inventory && chmod +x {$this->inventory}", 'p_log');
-
-      return drush_set_error('DRUSH_ERROR', "Dynamic inventory file not found.");
+      return drush_set_error('DRUSH_ERROR', "The Aegir dynamic inventory file is not present at the configured path {$this->inventory} Copy the file and make it executable: cp -rf $inventory_path $this->inventory && chmod +x {$this->inventory}");
     }
 
 
