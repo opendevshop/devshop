@@ -105,6 +105,9 @@ class VerifySystem extends Command
           }
         }
 
+        // Set server_hostname variable.
+        $vars['server_hostname'] = $hostname = trim(shell_exec('hostname -f'));
+
         // If inventory file does not exist, create it.
         if (!file_exists($input->getOption('inventory-file')) || strpos(file_get_contents($input->getOption('inventory-file')), '[devmaster]') === FALSE) {
 
@@ -120,8 +123,6 @@ class VerifySystem extends Command
               $this->FS->mkdir(dirname($input->getOption('inventory-file')));
               $this->IO->success('Created folder ' . dirname($input->getOption('inventory-file')));
             }
-
-            $vars['server_hostname'] = $hostname = trim(shell_exec('hostname -f'));
 
             $inventory_contents = <<<TXT
 [devmaster]
