@@ -52,6 +52,10 @@ before_install:
   - sudo mv drush.phar /usr/local/bin/drush
   - sudo chmod +x /usr/local/bin/drush
 
+  # Install drupalorg_drush, for validating the makefile.
+  - drush dl drupalorg_drush
+  - drush verify-makefile
+
   # Clone devshop
   - cd ..
   - git clone http://github.com/opendevshop/devshop
