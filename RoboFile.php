@@ -264,6 +264,8 @@ class RoboFile extends \Robo\Tasks {
     else {
       $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
     }
+
+    return TRUE;
   }
 
   /**
