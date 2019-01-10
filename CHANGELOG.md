@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.5.0-rc2 (January 10, 2019)
+
+5 Commits to DevShop:  https://github.com/opendevshop/devshop/compare/1.5.0-rc1...1.5.0-rc2
+
+234 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc1...7.x-1.50-rc2
+
+- Make sure to fetch with --tags during self-update so we actually get the latest releases.
+- Moved modernizr-navbar library to build-devmaster.make since it is not in the drupal.org distro whitelist. See https://www.drupal.org/project/drupalorg_whitelist/issues/3024898
+- In the `devshop verify:system` command, move the setting of the `server_hostname` variable so it gets set everytime.
+
 ## 1.5.0-rc1 (January 9, 2019)
 
 - 290 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.4.0...1.5.0-rc1
