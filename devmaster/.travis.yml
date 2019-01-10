@@ -53,7 +53,7 @@ before_install:
   - sudo chmod +x /usr/local/bin/drush
 
   # Install drupalorg_drush, for validating the makefile.
-  - drush dl drupalorg_drush
+  - drush dl drupalorg_drush-7.x-1.x
   - drush verify-makefile
 
   # Clone devshop
