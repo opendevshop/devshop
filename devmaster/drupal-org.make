@@ -13,7 +13,7 @@ projects[devshop_stats][subdir] = "contrib"
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
 projects[hosting][download][type] = git
-projects[hosting][download][version] = 7.x-3.170-devshop
+projects[hosting][download][tag] = 7.x-3.170-devshop
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
