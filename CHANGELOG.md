@@ -1,12 +1,14 @@
 # Change Log
 
+## 1.5.0-rc5 (January 10, 2019)
+
+Triggering a new version because devshop_stats wasn't ready yet :(
+
 ## 1.5.0-rc4 (January 10, 2019)
 
 1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc3...7.x-1.50-rc4
 
 - Fix version of hostmaster used. Add patches, not git ref.
-
-- Add `drush verify-makefile` command to tests to ensure drupal.org packaging won't reject us again.
 
 ## 1.5.0-rc3 (January 10, 2019)
 
