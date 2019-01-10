@@ -238,13 +238,22 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Set git remote urls
+    $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
     $devmaster_ssh_git_url = "git@github.com:opendevshop/devmaster.git";
     $devmaster_drupal_git_url = "git@git.drupal.org:project/devmaster.git";
+
+    if ($this->_exec("git remote set-url origin $devshop_ssh_git_url")->wasSuccessful()) {
+      $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
+    }
+    else {
+      $this->say("<comment>Unable to set devshop git remote to $devshop_ssh_git_url !</comment>");
+    }
+
     if ($this->_exec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->wasSuccessful()) {
       $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
     }
     else {
-      $this->say("<comment>Unable to devmaster git remote to $devmaster_ssh_git_url !</comment>");
+      $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
     }
 
     // Check for drupal remote
