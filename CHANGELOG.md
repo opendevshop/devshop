@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.5.0-rc3 (January 10, 2019)
+
+1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc2...7.x-1.50-rc3
+
+- Add `drush verify-makefile` command to tests to ensure drupal.org packaging won't reject us again.
+
 ## 1.5.0-rc2 (January 10, 2019)
 
 5 Commits to DevShop:  https://github.com/opendevshop/devshop/compare/1.5.0-rc1...1.5.0-rc2
