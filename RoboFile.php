@@ -228,10 +228,7 @@ class RoboFile extends \Robo\Tasks {
       $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
 
       $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
-      if ($result->wasSuccessful()) {
-        return TRUE;
-      }
-      else {
+      if (!$result->wasSuccessful()) {
         $this->say("Drush make failed with the exit code " . $result->getExitCode());
         return FALSE;
       }
