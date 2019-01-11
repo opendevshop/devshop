@@ -139,8 +139,8 @@ class DevmasterUpgrade extends Command
     $target_path = "/var/aegir/devmaster-{$target_version}";
 
     // Check for existing path.  If exists, append the date.
+    $variant = date('Y-m-d');
     if (file_exists($target_path) && $this->targetVersionRef == 'branch') {
-      $variant = date('Y-m-d');
       $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
     }
     elseif (file_exists($target_path) && $this->targetVersionRef == 'tag') {
