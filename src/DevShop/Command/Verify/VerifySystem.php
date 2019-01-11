@@ -109,7 +109,7 @@ class VerifySystem extends Command
         $vars['server_hostname'] = $hostname = trim(shell_exec('hostname -f'));
 
         // If inventory file does not exist, or is not executable and does not contain [devmaster] create it.
-        if (!file_exists($input->getOption('inventory-file')) || !is_executable($input->getOption('inventory-file') && strpos(file_get_contents($input->getOption('inventory-file')), '[devmaster]') === FALSE)) {
+        if (!file_exists($input->getOption('inventory-file')) || strpos(file_get_contents($input->getOption('inventory-file')),'[devmaster]') === FALSE && !is_executable($input->getOption('inventory-file'))) {
 
           if (!file_exists($input->getOption('inventory-file'))) {
             $this->IO->note('Ansible inventory file does not exist at ' . $input->getOption('inventory-file'));
