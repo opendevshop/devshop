@@ -32,19 +32,6 @@
   - name: Populate service facts
     service_facts:
 
-  - name: Stop Hosting Queued Services before altering aegir user.
-    when: item in services
-    service:
-      name: "{{ item }}"
-      state: stopped
-    with_items:
-      - supervisor
-      - supervisord
-
-  - name: Stop all processes owned by Aegir user
-    command: "pkill -e -c -u {{ aegir_user_name }}"
-    ignore_errors: yes
-
   - name: Create Aegir Group (so we can set the GID)
     group:
       name: "{{ aegir_user_name }}"
@@ -53,6 +40,7 @@
 
   - name: Create Aegir user
     when: aegir_create_user == 'yes'
+    ignore_errors: yes
     user:
       name: "{{ aegir_user_name }}"
       shell: /bin/bash
