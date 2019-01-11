@@ -1,6 +1,7 @@
 ---
 # defaults file for aegir.user
 aegir_user_uid: 12345
+aegir_user_gid: 12345
 aegir_user_name: aegir
 aegir_user_home: /var/aegir
 aegir_user_authorized_keys: ReplaceAtRuntime

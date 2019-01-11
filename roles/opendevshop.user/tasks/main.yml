@@ -49,7 +49,7 @@
     group:
       name: "{{ aegir_user_name }}"
       state: present
-      gid: "{{ aegir_user_uid }}"
+      gid: "{{ aegir_user_gid }}"
 
   - name: Create Aegir user
     when: aegir_create_user == 'yes'
