@@ -145,7 +145,7 @@ TXT;
           }
 
           if (file_exists('/root/.my.cnf')) {
-            $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'));
+            $vars['mysql_root_password'] = trim(shell_exec('awk -F "=" \'/pass/ {print $2}\' /root/.my.cnf'), " \t\n\r\0\x0B\"'");
           }
 
           // @TODO: Detect existing installation and load mysql root user and pasword from there.
