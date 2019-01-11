@@ -33,18 +33,20 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
-- name: Detect devshop CLI
+- name: Detect DevShop CLI
   stat:
     path: "{{ devshop_cli_path }}"
   register: cliPath
 
-- name: Install devshop CLI if it is not present.
-  when: cliPath.stat.islnk is not defined
+- name: Install DevShop CLI
+  # This should always be set so the devshop cli is set to the latest version, in case this is being run just via playbooks and not the verify:system command.
+  # when: cliPath.stat.islnk is not defined
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
     update: "{{ devshop_cli_update }}"
     dest: "{{ devshop_cli_path }}"
+    force: "yes"
 
 - name: Setup devshop CLI
   command: "{{ composer_path }} install"
