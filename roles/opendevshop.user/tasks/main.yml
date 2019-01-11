@@ -42,7 +42,7 @@
       - supervisord
 
   - name: Stop all processes owned by Aegir user
-    command: "pkill -e -c -u $(id -u {{ aegir_user_name }})"
+    command: "pkill -e -c -u {{ aegir_user_name }}"
     ignore_errors: yes
 
   - name: Create Aegir Group (so we can set the GID)
