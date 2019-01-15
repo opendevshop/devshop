@@ -76,8 +76,17 @@ class DevShopDrupalContext extends RawDrupalContext {
               return;
             }
 
+            // Detect drupal version
+            $drupal_version = trim(shell_exec("drush @$alias status --fields=drupal-version"));
+            if (strpos($drupal_version, '8.') !== FALSE) {
+              $php_cmd = escapeshellarg('print \Drupal::service("file_system")->realpath(file_default_scheme() . "://")');
+              $cmd = "drush @$alias eval $php_cmd";
+            }
+            else {
+              $cmd = "drush @$alias vget file_public_path --format=string";
+            }
+
             // Lookup file_directory_path
-            $cmd = "drush @$alias vget file_public_path --format=string";
             $files_path = trim(shell_exec($cmd));
 
             // Check for various problems.
