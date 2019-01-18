@@ -78,7 +78,7 @@ before_install:
   # of the same name, the playbook works. See the failure here: https://travis-ci.org/opendevshop/devshop/jobs/480994423#L2622
   # If this is a PR, checkout a local branch with the same name as $TRAVIS_PULL_REQUEST_BRANCH.
   - if [ "$test" == "Ansible Upgrade" && ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
-      git checkout -b $TRAVIS_PULL_REQUEST_BRANCH;
+    git checkout -b $TRAVIS_PULL_REQUEST_BRANCH;
     fi
 
 script:
