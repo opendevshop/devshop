@@ -25,10 +25,8 @@ env:
   - test="Ansible on Ubuntu 16.04 Apache"
     COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
 
-  # During the upgrade, the playbooks try to checkout the PR branch, causing errors on travis. By checking out a branch
-  # of the same name, the playbook works. See the failure here: https://travis-ci.org/opendevshop/devshop/jobs/480994423#L2622
   - test="Ansible Upgrade"
-    COMMAND='git checkout -b $TRAVIS_PULL_REQUEST_BRANCH; robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test-upgrade --test --no-dev'
+    COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test-upgrade --test --no-dev'
 
 #  - test="Ansible on Ubuntu 18.04 Apache"
 #    COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
@@ -75,6 +73,11 @@ before_install:
 
   # Prepare devshop CLI.
   - composer install
+
+  # During the upgrade, the playbooks try to checkout the PR branch, causing errors on travis. By checking out a branch
+  # of the same name, the playbook works. See the failure here: https://travis-ci.org/opendevshop/devshop/jobs/480994423#L2622
+  # If this is a PR, checkout a local branch with the same name as $TRAVIS_PULL_REQUEST_BRANCH.
+  - [[ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]] && git checkout -b $TRAVIS_PULL_REQUEST_BRANCH
 
 script:
 
