@@ -8,7 +8,7 @@ core = 7.x
 api = 2
 
 projects[drupal][type] = core
-projects[drupal][version] = 7.61
+projects[drupal][version] = 7.64
 
 ; RELEASE
 ; Leave in place for replacement by release process.
