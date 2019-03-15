@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.5.0-rc5 (March 15, 2019)
+
+6 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc6...1.x
+11 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc6...7.x-1.x
+3 Commits to opendevshop/aegir-user role: https://github.com/opendevshop/ansible-role-aegir-user/compare/1.5.0-rc6...master
+
+- When creating a new project, if the user has to change "path to drupal", and platforms already exist, update the platforms to use the new path.
+- Automatically set "known_hosts" for GitHub, Bitbucket, Gitlab, and drupal.org so we don't have to manually authorize.
+- Bumping Drupal core to 7.64.
+- Update ctools, views, and bootstrap modules.
+- Fixed a bug in the DevShop Support form.
+- Set line-height in terminal output so we don't get gaps.
+- Add a Aegir user GID variable to playbooks.
+
 ## 1.5.0-rc4 (January 10, 2019)
 
 1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc3...7.x-1.50-rc4
