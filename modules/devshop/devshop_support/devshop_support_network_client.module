@@ -249,7 +249,7 @@ function devshop_support_network_client_settings_form() {
       }
       else {
 
-        $description = t('This server is owned by the !team_link Team and fully managed by the !devshop_cloud_link service.', array(
+        $description = t('This server is owned by !team_link and fully managed by the !devshop_cloud_link service.', array(
           '!team_link' => l($data->_TEAM->name, $data->_TEAM->url),
           '!devshop_cloud_link' => l($service_title, $service_url, array(
               'attributes' => array('target' => '_blank')
@@ -272,24 +272,6 @@ function devshop_support_network_client_settings_form() {
         $button = '';
       }
 
-      $form['devshop_support_license_key'] = [
-        '#type' => 'textfield',
-        '#title' => t('DevShop Support License Key'),
-        '#description' => t('Enter the devshop.support license key for this devshop. If you are unsure visit !link to confirm your license.', [
-          '%site' => $node->title,
-          '!link' => l('devshop.support/server/' . $node->title, 'https://' . 'devshop.support/server/' . $node->title, [
-            'attributes' => ['target' => '_blank']
-          ]),
-        ]),
-        '#default_value' => variable_get('devshop_support_license_key', ''),
-        '#element_validate' => array(
-          'devshop_support_network_client_settings_form_validate_key',
-        ),
-        '#required' => 1,
-        '#weight' => 1,
-      ];
-
-
       // If "key to submit" is set, we've been redirected from devshop.support.
       if ($key_to_submit) {
         $title = t('Almost There!');
@@ -304,15 +286,36 @@ function devshop_support_network_client_settings_form() {
           '#markup' => "<div>{$key_to_submit}</div>",
         );
       }
-
-      $form = system_settings_form($form);
-
-      $form['actions']['submit']['#value'] = t('Verify License Key');
-      $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success';
-      $form['actions']['submit']['#icon'] = '<i class="fa fa-check"></i>';
     }
 
-    $form['#prefix'] = <<<HTML
+    $form = system_settings_form($form);
+
+    $form['actions']['submit']['#value'] = t('Verify License Key');
+    $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success';
+    $form['actions']['submit']['#icon'] = '<i class="fa fa-check"></i>';
+
+    $form['devshop_support_license_key'] = [
+        '#type' => 'textfield',
+        '#title' => t('DevShop Support License Key'),
+        '#description' => t('Enter the devshop.support license key for this devshop. If you are unsure visit !link to confirm your license.', [
+            '%site' => $node->title,
+            '!link' => l('devshop.support/server/' . $node->title, 'https://' . 'devshop.support/server/' . $node->title, [
+                'attributes' => ['target' => '_blank']
+            ]),
+        ]),
+        '#default_value' => variable_get('devshop_support_license_key', ''),
+        '#element_validate' => array(
+            'devshop_support_network_client_settings_form_validate_key',
+        ),
+        '#required' => 1,
+        '#weight' => 1,
+    ];
+
+    if (!devshop_cloud_license_active()) {
+        $button = '';
+    }
+
+        $form['#prefix'] = <<<HTML
 <div class="jumbotron">
   
     <h1>$title</h1>
@@ -344,6 +347,14 @@ function devshop_cloud_hostname($hostname) {
       return TRUE;
     }
   }
+}
+
+/**
+ * Check the license status.
+ * @return bool
+ */
+function devshop_cloud_license_active() {
+    return variable_get('devshop_support_license_key_status', 'none') == 'active';
 }
 
 /**
