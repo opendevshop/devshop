@@ -19,3 +19,9 @@ aegir_create_user: 'yes'
 
 # Set to "no" to prevent playbook from trying to add aegir to web server group.
 aegir_user_in_web_group: 'yes'
+
+ssh_known_hosts:
+  - github.com
+  - bitbucket.org
+  - drupal.org
+  - gitlab.com
