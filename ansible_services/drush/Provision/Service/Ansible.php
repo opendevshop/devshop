@@ -254,7 +254,16 @@ class Provision_Service_Ansible extends Provision_Service {
     return array();
   }
 
+    /**
+     * If the server is using Docker (with hosting_docker) server->remote_host is overridden as "localhost".
+     * @TODO: figure out a better way for hosting_docker to handle this.
+     */
   function getHostname() {
-    return $this->server->remote_host;
+      if (!empty($this->server->hostname)) {
+          return $this->server->hostname;
+      }
+      else {
+          return $this->server->remote_host;
+      }
   }
 }
