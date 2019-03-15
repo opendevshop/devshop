@@ -82,7 +82,7 @@ projects[cas_attributes][version] = 1.0-rc3
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = "3.22"
+projects[bootstrap][version] = "3.23"
 
 ; Timeago module
 projects[timeago][version] = 2.3
