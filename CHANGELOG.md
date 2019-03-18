@@ -2,8 +2,10 @@
 
 ## 1.5.0-rc5 (March 15, 2019)
 
-6 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc6...1.x
-11 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc6...7.x-1.x
+6 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc6...1.5.0-rc5
+
+11 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc6...7.x-1.50-rc5
+
 3 Commits to opendevshop/aegir-user role: https://github.com/opendevshop/ansible-role-aegir-user/compare/1.5.0-rc6...master
 
 - When creating a new project, if the user has to change "path to drupal", and platforms already exist, update the platforms to use the new path.
