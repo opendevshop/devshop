@@ -277,7 +277,7 @@ function devshop_projects_add_status($type = 'platform') {
     }
     $return['tasks'][$nid] = array(
       'status' => $status,
-      'version' => $platform->release->version,
+      'version' => !empty($platform->release->version)? $platform->release->version: '',
       'profiles' => implode(', ', $install_profiles),
     );
     // If task is not completed, mark all tasks not complete.
