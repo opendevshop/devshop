@@ -25,11 +25,10 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     return TRUE;
   }
 
-  $devshop_hostname = $_SERVER['HTTP_HOST'];
   $get_support_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
 
   $options = array('method' => 'POST');
-  $options['data'] = http_build_query(devshop_support_network_client_client_data($devshop_hostname));
+  $options['data'] = http_build_query(devshop_support_network_client_client_data());
   $options['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
 
   $response = drupal_http_request($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key, $options);

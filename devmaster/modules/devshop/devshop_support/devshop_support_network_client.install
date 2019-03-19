@@ -1,6 +1,62 @@
 <?php
 
 /**
+ * Implements hook_requirements()
+ *
+ * Display the data payload the devshop server is sending back to devshop.support
+ *
+ * @param $phase
+ *
+ * @return array
+ */
+function devshop_support_network_client_requirements($phase) {
+
+  $requirements = array();
+
+  // Ensure translations don't break during installation.
+  $t = get_t();
+
+  // Report Drupal version
+  if ($phase == 'runtime') {
+    $requirements['devshop_support'] = array(
+      'title' => $t('DevShop License Payload'),
+      'value' => devshop_payload_to_table(),
+      'severity' => REQUIREMENT_INFO,
+    );
+  }
+  return $requirements;
+}
+
+/**
+ * Convert the devshop support client data payload to an HTML table.
+ * @param null $data
+ *
+ * @return string
+ * @throws \Exception
+ */
+function devshop_payload_to_table($data = NULL) {
+
+
+  if (!$data) {
+    $data = devshop_support_network_client_client_data();
+  }
+
+  $rows = array();
+  foreach ($data as $name => $value) {
+    if (is_array($value) and !empty($value)) {
+      $value = devshop_payload_to_table($value);
+    }
+    $rows[] = array(
+      "<strong>{$name}</strong>", $value
+    );
+  }
+
+  return theme('table', array(
+    'rows' => $rows,
+  ));
+}
+
+/**
  * Implements hook_install()
  */
 function devshop_support_network_client_install() {
