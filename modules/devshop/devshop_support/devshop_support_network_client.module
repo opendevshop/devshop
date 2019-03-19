@@ -386,7 +386,8 @@ function devshop_support_network_client_settings_form_validate_key($element, &$f
 /**
  * Collect various stats to send to devshop.support.
  */
-function devshop_support_network_client_client_data($devshop_hostname) {
+function devshop_support_network_client_client_data() {
+  $devshop_hostname = $_SERVER['HTTP_HOST'];
   $data['message'] = 'Hello from ' . $devshop_hostname;
   $data['active_users'] = db_select('users', 'u')
     ->fields('u')
@@ -426,6 +427,16 @@ function devshop_support_network_client_client_data($devshop_hostname) {
   $query->join('hosting_site_alias', 'h', 'n.nid = h.nid');
 
   $data['active_domains'] = (int) $query->execute()->fetchField();
+
+  // PROJECTS
+  $query = db_select('node', 'n')
+    ->fields('n', array('title'))
+    ->fields('p', array('git_url'))
+    ->condition('type', 'project')
+    ->condition('n.status', 1)
+  ;
+  $query->join('hosting_devshop_project', 'p', 'n.nid = p.nid');
+  $data['projects'] = $query->execute()->fetchAllKeyed();
 
   return $data;
 }
