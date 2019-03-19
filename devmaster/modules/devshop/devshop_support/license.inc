@@ -31,6 +31,7 @@ function devshop_support_network_client_post_data($license_key = NULL) {
   $options['data'] = http_build_query(devshop_support_network_client_client_data());
   $options['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
 
+  $devshop_hostname = $_SERVER['HTTP_HOST'];
   $response = drupal_http_request($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key, $options);
   $response_data = json_decode($response->data);
 //  drupal_set_message($get_support_url . '/network/server/' . $devshop_hostname . "/" . $license_key);
