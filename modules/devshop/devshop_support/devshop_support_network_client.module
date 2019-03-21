@@ -259,13 +259,18 @@ function devshop_support_network_client_settings_form() {
       if (empty($data)) {
         $description = '';
       }
-      else {
+      elseif (!empty($data->_TEAM->name)) {
 
         $description = t('This server is owned by !team_link and fully managed by the !devshop_cloud_link service.', array(
           '!team_link' => l($data->_TEAM->name, $data->_TEAM->url),
           '!devshop_cloud_link' => l($service_title, $service_url, array(
               'attributes' => array('target' => '_blank')
           ))
+        ));
+      }
+      elseif ($devshop_hostname == 'devshop.local.computer') {
+        $description = t('Hey there. This is !link. Thanks for launching!', array(
+          '!link' => l('devshop.local.computer', 'devshop.local.computer'),
         ));
       }
 
