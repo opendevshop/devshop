@@ -311,7 +311,7 @@ function devshop_support_network_client_settings_form() {
     $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success';
     $form['actions']['submit']['#icon'] = '<i class="fa fa-check"></i>';
 
-    $form['devshop_support_license_key'] = [
+    $form['devshop_support_license_key'] = array(
         '#type' => 'textfield',
         '#title' => t('DevShop Support License Key'),
         '#description' => t('Enter the devshop.support license key for this devshop. If you are unsure visit !link to confirm your license.', [
@@ -326,7 +326,17 @@ function devshop_support_network_client_settings_form() {
         ),
         '#required' => 1,
         '#weight' => 1,
-    ];
+    );
+
+    $form['reset'] = array(
+      '#type' => 'submit',
+      '#weight' => 100,
+      '#value' => t('Remove License Key'),
+      '#access' => !empty(variable_get('devshop_support_license_key', '')),
+      // @TODO: Can't override special classes added by bootstrap theme.
+      '#attributes' => array('class' => array('btn-text pull-right')),
+    );
+
 
     if (!devshop_cloud_license_active()) {
         $button = '';
@@ -384,6 +394,16 @@ function devshop_cloud_license_active() {
  * @param $form
  */
 function devshop_support_network_client_settings_form_validate_key($element, &$form_state, $form) {
+
+  // Respond to Remove License Key button.
+  if ($form_state['clicked_button']['#parents'][0] == 'reset') {
+    variable_del('devshop_support_license_key');
+    variable_del('devshop_support_license_key_status');
+    $form_state['values']['devshop_support_license_key'] = '';
+    drupal_set_message(t('Your DevShop Support license key was deleted.'));
+    return;
+  }
+
   $response = devshop_support_network_client_post_data($element['#value']);
 
   if ($response === TRUE) {
