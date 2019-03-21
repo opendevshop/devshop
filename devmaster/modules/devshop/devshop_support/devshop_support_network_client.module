@@ -187,26 +187,38 @@ function devshop_support_network_client_settings_form() {
       'class' => "list-group-item list-group-item-{$alert_class}",
     );
 
-    // Calculate user limit
+    // Calculate user limit (checking for empty data)
     if ($license_key_status != 'none') {
-      $limit_class = devshop_support_limit_class($data->_LIMITS->users->used, $data->_LIMITS->users->available, 1, 'success');
-      $status_items[] =  array(
-        'data' => t("Using !used of !available allowed users.", array(
-          '!used' => $data->_LIMITS->users->used,
-          '!available' => $data->_LIMITS->users->available,
-        )),
-        'class' => "list-group-item list-group-item-{$limit_class}",
-      );
+      if (!empty($data->_LIMITS->users->used) && !empty($data->_LIMITS->users->used)) {
+        $limit_class = devshop_support_limit_class($data->_LIMITS->users->used, $data->_LIMITS->users->available, 1, 'success');
+        $status_items[] =  array(
+          'data' => t("Using !used of !available allowed users.", array(
+            '!used' => $data->_LIMITS->users->used,
+            '!available' => $data->_LIMITS->users->available,
+          )),
+          'class' => "list-group-item list-group-item-{$limit_class}",
+        );
+      }
 
       // Calculate project limit
-      $limit_class = devshop_support_limit_class($data->_LIMITS->projects->used, $data->_LIMITS->projects->available, 1, 'success');
-      $status_items[] =  array(
-        'data' => t("Using !used of !available allowed projects.", array(
-          '!used' => $data->_LIMITS->projects->used,
-          '!available' => $data->_LIMITS->projects->available,
-        )),
-        'class' => "list-group-item list-group-item-{$limit_class}",
-      );
+      if (!empty($data->_LIMITS->users->used) && !empty($data->_LIMITS->users->used)) {
+        $limit_class = devshop_support_limit_class(
+          $data->_LIMITS->projects->used,
+          $data->_LIMITS->projects->available,
+          1,
+          'success'
+        );
+        $status_items[] = [
+          'data' => t(
+            "Using !used of !available allowed projects.",
+            [
+              '!used' => $data->_LIMITS->projects->used,
+              '!available' => $data->_LIMITS->projects->available,
+            ]
+          ),
+          'class' => "list-group-item list-group-item-{$limit_class}",
+        ];
+      }
     }
 
     $form['status_display'] = array(
@@ -431,14 +443,16 @@ function devshop_support_network_client_client_data() {
   $data['active_domains'] = (int) $query->execute()->fetchField();
 
   // PROJECTS
-  $query = db_select('node', 'n')
-    ->fields('n', array('title'))
-    ->fields('p', array('git_url'))
-    ->condition('type', 'project')
-    ->condition('n.status', 1)
-  ;
-  $query->join('hosting_devshop_project', 'p', 'n.nid = p.nid');
-  $data['projects'] = $query->execute()->fetchAllKeyed();
+  if (variable_get('devshop_cloud_data_projects', FALSE)) {
+    $query = db_select('node', 'n')
+      ->fields('n', array('title'))
+      ->fields('p', array('git_url'))
+      ->condition('type', 'project')
+      ->condition('n.status', 1)
+    ;
+    $query->join('hosting_devshop_project', 'p', 'n.nid = p.nid');
+    $data['projects'] = $query->execute()->fetchAllKeyed();
+  }
 
   return $data;
 }
