@@ -898,7 +898,11 @@ function devshop_github_webhook($project_node) {
  * @return bool
  */
 function devshop_github_check_key() {
-  $devshop_key = variable_get('devshop_public_key', '');
+
+  if (!devshop_public_key_valid_fingerprint()) {
+    return FALSE;
+  }
+
   $token = variable_get('devshop_github_token', '');
 
   $client = new \Github\Client();
@@ -907,17 +911,45 @@ function devshop_github_check_key() {
   try {
     $keys = $client->currentUser()->keys()->all();
   }
-    // Happens when user has no public keys.
-  catch (\GitHub\Exception\RuntimeException $e) {
+  catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
     return FALSE;
   }
-  $devshop_sshkey = sshkey_parse($devshop_key);
-  $devshop_fingerprint = theme('sshkey_fingerprint', $devshop_sshkey);
   foreach ($keys as $key) {
     $ssh_key = sshkey_parse($key['key']);
-    $fingerprint = theme('sshkey_fingerprint', $ssh_key);
-    if ($fingerprint == $devshop_fingerprint) {
+    if (!empty($ssh_key['fingerprint']) && $ssh_key['fingerprint'] == devshop_public_key_valid_fingerprint()) {
       return TRUE;
     }
   }
+  return FALSE;
+}
+
+/**
+ * Check that we are getting a fingerprint at all first.
+ * @return bool|string
+ * @throws \SSHKeyParseException
+ */
+function devshop_public_key_valid_fingerprint() {
+
+  $devshop_key = variable_get('devshop_public_key', '');
+  $command = '<code>drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes</code>';
+
+  if (empty($devshop_key)) {
+    drupal_set_message(t("DevShop does not know what the server's public SSH Key is. Run the command: !command", array(
+      '!command' => $command,
+    )), 'error');
+    return FALSE;
+  }
+
+  try {
+    $devshop_sshkey = sshkey_parse($devshop_key);
+  }
+  catch (Exception $e) {
+    drupal_set_message(t("The ssh key saved in DevShop was invalid. Run the command to re-import it: !command", array(
+      '!command' => $command,
+    )), 'error');
+    return FALSE;
+  }
+
+  return $devshop_sshkey['fingerprint'];
 }
