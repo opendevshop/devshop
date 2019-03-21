@@ -337,8 +337,24 @@ function devshop_support_network_client_settings_form() {
       '#attributes' => array('class' => array('btn-text pull-right')),
     );
 
+    $form['advanced'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Advanced Settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => 10,
+    );
 
-    if (!devshop_cloud_license_active()) {
+    $form['advanced']['devshop_cloud_license_send_project_data'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Send Project Data (ALPHA)'),
+      '#default_value' => variable_get('devshop_cloud_license_send_project_data'),
+      '#description' => t('Send the list of projects on this DevShop to DevShop.Cloud. New features coming soon depend on this feature. See !link to view the data payload.', array('!link' => l(t('Site Status Report'), 'admin/reports/status'))),
+    );
+
+
+
+  if (!devshop_cloud_license_active()) {
         $button = '';
     }
 
@@ -468,7 +484,7 @@ function devshop_support_network_client_client_data() {
   $data['active_domains'] = (int) $query->execute()->fetchField();
 
   // PROJECTS
-  if (variable_get('devshop_cloud_data_projects', FALSE)) {
+  if (variable_get('devshop_cloud_license_send_project_data', FALSE)) {
     $query = db_select('node', 'n')
       ->fields('n', array('title'))
       ->fields('p', array('git_url'))
