@@ -747,14 +747,16 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       '#suffix' => '</p>',
       '#markup' => t('Please sign in using one of the following options:'),
     );
+    $t_devshop = t('Sign in with DevShop.Cloud');
+    $t_github = t('Sign in with GitHub');
     $form['cloud_login'] = array(
-      '#markup' => '<a href="/cas" class="btn btn-default btn-group-justified"><i class="fa fa-cloud"></i> Sign in with DevShop.Support</a>',
+      '#markup' => '<a href="/cas" class="btn btn-default btn-group-justified"><i class="fa fa-cloud"></i> ' . $t_devshop . '</a>',
       '#access' => $license_active,
     );
 
     $github_login_url = 'https://' . variable_get('devshop_support_url', 'devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
     $form['github_login'] = array(
-      '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> Sign in with GitHub</a>',
+      '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> ' . $t_github . '</a>',
       '#access' => $license_active,
     );
 
