@@ -8,6 +8,17 @@
     attach: function (context, settings) {
 
       // Dynamically replace special and uppercase characters.
+      $( "#edit-git-url" ).keyup(function(event) {
+
+        if ($( "#edit-title" ).val() == '') {
+          var fixedProjectName = $(this).val().split("/").pop().replace(/[^a-z0-9]/gi, '').toLowerCase();
+          if (fixedProjectName != '') {
+            $('#edit-title').val(fixedProjectName);
+          }
+        }
+      });
+
+      // Dynamically replace special and uppercase characters.
       $( "#edit-title" ).keyup(function(event) {
         var fixedProjectName = $(this).val().replace(/[^a-z0-9]/gi, '').toLowerCase();
         $(this).val(fixedProjectName);
