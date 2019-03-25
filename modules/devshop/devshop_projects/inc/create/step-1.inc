@@ -42,9 +42,12 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'textfield',
       '#title' => t('Project Code Name'),
       '#required' => TRUE,
-      '#suffix' => '<p>' . t('Choose a unique name for your project. Only letters and numbers are allowed.') . '</p>',
+      '#suffix' => '<p>' . t('Choose a unique name for your project. Only lowercase letters and numbers are allowed. No punctuation, spaces or special characters.') . '</p>',
       '#size' => 40,
       '#maxlength' => 255,
+      '#attributes'=> array(
+        'placeholder' => t('myproject')
+      ),
     );
   }
   else {
@@ -138,25 +141,29 @@ HTML;
 }
 
 /**
+ * Force the project to be lowercase and remove any non numbers or letters.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_project_wizard_title_validate($element, &$form_state, $form) {
+  // No spaces or special characters allowed.
+  // Set the value to our trimmed and lowercased project name.
+  $project_name = strtolower(preg_replace('/[^a-z0-9]/gi', '', $element['value']));
+  form_set_value($form['title'], $project_name, $form_state);
+}
+
+/**
  * STEP 1: Validate
  */
 function devshop_project_create_step_git_validate(&$form, &$form_state) {
   $project = &$form_state['project'];
   
   if (empty($project->nid)) {
-    
-    // PROJECT NAME
-    // No spaces or special characters allowed.
-    $project_name = strtolower(trim($form_state['values']['title'])); // domain names are case-insensitive
-    
-    // Set the value to our trimmed and lowercased proejct name.
-    form_set_value($form['title'], $project_name, $form_state);
-    
-    // Check for bad characters.
-    if (!ctype_alnum($project_name)) {
-      form_set_error('title', t("You have not specified a valid project codename.  Only numbers and letters are allowed."));
-    }
-    
+
+    $project_name = $form_state['values']['title']; // domain names are case-insensitive
+
     // Check for duplicate project name here.
     // hosting_context_load() only works if a node exists with that ID.
     if (db_query("SELECT nid FROM {hosting_context} WHERE name = :name", array(':name' => 'project_' . $project_name))->fetch()) {
