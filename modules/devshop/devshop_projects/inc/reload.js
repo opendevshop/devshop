@@ -4,8 +4,8 @@
             setTimeout('Drupal.behaviors.devshopReload.checkProject()', Drupal.settings.devshopReload.delay);
         },
         checkProject: function() {
-            console.log('Checking...');
             var url = '/projects/add/status/' + Drupal.settings.devshopReload.type;
+            console.log('Checking Project Status...');
             $.getJSON(url, function (data) {
                 $.each(data, function (i, platform) {
                     if (platform.version) {
