@@ -127,7 +127,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   $token = variable_get('devshop_github_token', '');
 
   if (empty($token)) {
-    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('GitHub API Token was not found.') . ' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
+    $form['connect']['#markup'] = ' <div class="alert alert-danger">' . t('GitHub API Token was not found.') . ' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
     return;
   }
 
