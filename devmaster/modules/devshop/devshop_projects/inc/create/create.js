@@ -7,15 +7,10 @@
   Drupal.behaviors.createStep1 = {
     attach: function (context, settings) {
 
+      // Dynamically replace special and uppercase characters.
       $( "#edit-title" ).keyup(function(event) {
-
-        // Extract project name and base path and URL
-        var projectName = $(this).val();
-        var base_path = $('#edit-code-path').attr('data-base_path') + '/' + projectName;
-        var base_url = projectName + '.' + $('#edit-base-url').attr('data-base_url');
-
-        $('#edit-code-path').val(base_path);
-        $('#edit-base-url').val(base_url);
+        var fixedProjectName = $(this).val().replace(/[^a-z0-9]/gi, '').toLowerCase();
+        $(this).val(fixedProjectName);
 
       });
 
