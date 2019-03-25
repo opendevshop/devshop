@@ -57,7 +57,7 @@ function devshop_github_settings_form($form, &$form_state) {
       $form['github_add_key_button'] = array(
         '#markup' =>  l('<i class="fa fa-github"></i> ' . t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
           'attributes' => array(
-            'class' => 'btn btn-default btn-large text-muted pull-right'
+            'class' => 'btn btn-default btn-large text-muted'
           ),
           'html' => TRUE,
         )),
