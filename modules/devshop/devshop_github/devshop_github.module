@@ -132,20 +132,29 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   }
 
   if (devshop_github_check_key()) {
-    $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your GitHub account.') . '</div>';
+    $form['connect']['#type'] = 'markup';
+    $form['connect']['#markup'] = ' <div class="alert alert-success">' . t("This DevShop's public SSH Key has been found in your GitHub account.") . ' ' . l(t('DevShop GitHub Settings') , 'admin/devshop/github') . '</div>';
   }
   else {
-    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
+    $form['connect']['#markup'] = '<p>' . t('The DevShop Public SSH Key was not found in your account.') . '</p>';
 
-    $form['connect']['#description'] .= l(t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+    $form['connect']['#markup'] .= l(t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
             'query' => array(
               'destination' => $_GET['q'],
             ),
             'attributes' => array(
-                'class' => 'btn btn-success'
+                'class' => 'btn btn-default'
+            ),
+        ));
+    $form['connect']['#markup'] .= l(t('Edit devshop public key'), 'admin/devshop', array(
+            'query' => array(
+              'destination' => $_GET['q'],
+            ),
+            'attributes' => array(
+                'class' => 'btn btn-default'
             ),
         )) . '</div>';
-    $form['connect']['#prefix'] = '<div class="alert alert-danger">';
+    $form['connect']['#prefix'] = '<div class="alert alert-warning">';
     $form['connect']['#suffix'] = '</div>';
   }
 }
