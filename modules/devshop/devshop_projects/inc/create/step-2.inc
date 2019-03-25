@@ -12,6 +12,18 @@ function devshop_project_create_step_settings($form, &$form_state) {
 
   // Load project node and it's form
   $project = &$form_state['project'];
+  if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
+    $note = '<p class="wait">' . t('Please wait while we clone and analyze your repository.') . '</p>';
+    $form['note'] = array(
+      '#markup' => $note,
+    );
+    $form['#no_next'] = TRUE;
+
+    // Add code to reload the page when complete.
+    devshop_form_reloader($form, 'project');
+    return $form;
+  }
+
   $node = node_load($project->nid);
 
   $node_type = 'project';
