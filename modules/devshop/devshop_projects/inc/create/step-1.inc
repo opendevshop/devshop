@@ -142,13 +142,11 @@ HTML;
   // Add info about connecting to Repo
   $form['connect'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Repository Access'),
+    '#title' => '<i class="fa fa-chevron-right"></i> ' . t('Repository Access Information'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  $form['connect']['public_key'] = array(
-    '#markup' => $output,
-  );
+  $form['connect']['#description'] = $output;
   return $form;
 }
 
