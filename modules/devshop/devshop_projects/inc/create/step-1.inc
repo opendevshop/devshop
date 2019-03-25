@@ -20,9 +20,11 @@ function devshop_project_create_step_git($form, $form_state) {
       '#markup' => t('We were unable to connect to your git repository. Check the messages, edit your settings, and try again.'),
       '#prefix' => '<div class="alert alert-danger">',
       '#suffix' => '</div>',
+      '#weight' => -999,
     );
     $form['error'] = array(
       '#markup' => $project->verify_error,
+      '#weight' => -998,
     );
     
     // Check for "host key"
