@@ -251,6 +251,17 @@ function devshop_projects_add_status($type = 'platform') {
   // When checking project...
   if ($type == 'project') {
     $nids = array($project_node->nid);
+    $tasks = hosting_get_tasks(array('rid' => $project_node->nid));
+    $last_task = array_shift($tasks);
+    $status = _hosting_parse_error_code($last_task->task_status);
+
+    $return['tasks'][$last_task->nid] = array(
+      'status' => $last_task->task_status,
+    );
+
+    $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
+    drupal_json_output($return);
+    exit;
   }
 
   // When checking platforms...
