@@ -48,6 +48,7 @@ dependencies[] = hosting_apache_https
 ; Drupal contrib
 dependencies[] = navbar
 dependencies[] = betterlogin
+dependencies[] = chosen
 dependencies[] = composer_manager
 dependencies[] = views
 dependencies[] = views_bulk_operations

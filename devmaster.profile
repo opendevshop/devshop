@@ -300,6 +300,9 @@ function devmaster_task_finalize() {
   // Don't automatically import sites.
   variable_set('hosting_platform_automatic_site_import', 0);
 
+  // Make sure "chosen" widget allows "contains" string searching.
+  variable_set('chosen_search_contains', 1);
+
   // Make sure blocks are setup properly.
 //  _block_rehash();
 

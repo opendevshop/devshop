@@ -152,6 +152,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#default_value' => $form['git_url']['#default_value'],
     '#weight' => -999,
     '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos'),
+    '#bootstrap_ignore_pre_render' => TRUE,
   );
 
   $form['git_url']['#required'] = FALSE;
