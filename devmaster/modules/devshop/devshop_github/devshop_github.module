@@ -122,23 +122,30 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
  * Implements hook_form_alter().
  */
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
+  $form['connect'] = devshop_github_integration_status_widget();
+}
+
+/**
+ * Return a render array showing the state of github integration setup.
+ */
+function devshop_github_integration_status_widget() {
 
   // Look for Token
   $token = variable_get('devshop_github_token', '');
 
   if (empty($token)) {
-    $form['connect']['#markup'] = ' <div class="alert alert-danger">' . t('GitHub API Token was not found.') . ' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
-    return;
+    $build['#markup'] = ' <div class="alert alert-warning">' . t('GitHub API Token was not found.') . ' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
+    return $build;
   }
 
   if (devshop_github_check_key()) {
-    $form['connect']['#type'] = 'markup';
-    $form['connect']['#markup'] = ' <div class="alert alert-success">' . t("This DevShop's public SSH Key has been found in your GitHub account.") . ' ' . l(t('DevShop GitHub Settings') , 'admin/devshop/github') . '</div>';
+    $build['#prefix'] = ' <div class="alert alert-success">';
+    $build['#suffix'] = '</div>';
+    $build['#markup'] = t("This DevShop's public SSH Key is in your GitHub account, so it can clone your source code.");
   }
   else {
-    $form['connect']['#markup'] = '<p>' . t('The DevShop Public SSH Key was not found in your account.') . '</p>';
-
-    $form['connect']['#markup'] .= l(t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+    $build['#markup'] = '<h4>' . t("This DevShop's public SSH Key was not found in your GitHub account.") . '</h4>';
+    $build['#markup'] .= '<div class="btn-group" role="group">' . l(t('Add public key to your GitHub account'), 'admin/devshop/github/add-key', array(
             'query' => array(
               'destination' => $_GET['q'],
             ),
@@ -146,7 +153,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
                 'class' => 'btn btn-default'
             ),
         ));
-    $form['connect']['#markup'] .= l(t('Edit devshop public key'), 'admin/devshop', array(
+    $build['#markup'] .= l(t('DevShop Settings'), 'admin/devshop', array(
             'query' => array(
               'destination' => $_GET['q'],
             ),
@@ -154,9 +161,10 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
                 'class' => 'btn btn-default'
             ),
         )) . '</div>';
-    $form['connect']['#prefix'] = '<div class="alert alert-warning">';
-    $form['connect']['#suffix'] = '</div>';
+    $build['#prefix'] = '<div class="alert alert-warning">';
+    $build['#suffix'] = '</div>';
   }
+  return $build;
 }
 
 

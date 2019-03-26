@@ -30,40 +30,7 @@ function devshop_github_settings_form($form, &$form_state) {
   }
   else {
     $form['devshop_github_token']['#description'] = ' <em class="text-success">' . t('Your token is saved. Enter a new one if you wish to change it.') . '</em>';
-  }
-
-  // Test for public key access.
-  if (!empty($token)) {
-
-    $form['github_public_keys'] = array(
-        '#markup' => '',
-    );
-
-    if (devshop_github_check_key()) {
-        $form['github_public_keys']['#markup'] = ' <div class="alert alert-success">' . t("!key_link has been found in your GitHub account.", array(
-          '!key_link' => l(t("This DevShop's Public SSH Key"), 'admin/devshop')
-          )) . '</div>';
-    }
-    elseif (!devshop_public_key_valid_fingerprint()) {
-      $form['github_public_keys']['#markup'] = ' <div class="alert alert-danger">' . t("Invalid SSH key") . '</div>';
-    }
-    else {
-      $form['github_add_key_message'] = array(
-        '#prefix' => '<div class="alert alert-warning">',
-        '#markup' => t("!key_link was not found in your account.", array(
-          '!key_link' => l(t("This DevShop's Public SSH Key"), 'admin/devshop')
-        )),
-      );
-      $form['github_add_key_button'] = array(
-        '#markup' =>  l('<i class="fa fa-github"></i> ' . t('Add devshop public key to your GitHub account'), 'admin/devshop/github/add-key', array(
-          'attributes' => array(
-            'class' => 'btn btn-default btn-large text-muted'
-          ),
-          'html' => TRUE,
-        )),
-        '#suffix' => '</div>',
-      );
-    }
+    $form['connect'] = devshop_github_integration_status_widget();
   }
 
   $form = system_settings_form($form);
