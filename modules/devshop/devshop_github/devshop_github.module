@@ -29,6 +29,14 @@ function devshop_github_menu() {
     'file path' => drupal_get_path('module', 'devshop_github') . '/includes',
     'type' => MENU_CALLBACK,
   );
+  $items['admin/devshop/github/load-repos'] = array(
+    'title' => 'Load all repos that the user has access to.',
+    'page callback' => 'devshop_github_get_repositories_page',
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_github') . '/includes',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -123,6 +131,31 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
  */
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
   $form['connect'] = devshop_github_integration_status_widget();
+  $repos = variable_get('devshop_github_available_repositories', array());
+
+  $options = array(
+    t('To get started,') => array(
+      t('Choose a GitHub Repository or...'),
+      '_custom' => t('Use custom git URL'),
+    )
+  );
+  foreach ($repos as $repo_name => $repo) {
+    $options[$repo['org']][$repo_name] = $repo_name;
+  }
+
+  $form['git_url_select'] = array(
+    '#title' => t('Git Repository'),
+    '#type' => 'select',
+    '#options' => $options,
+    '#weight' => -999,
+    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos'),
+  );
+
+  $form['git_url']['#states'] = array(
+    'visible' => array(
+      'select[name="git_url_select"]' => array('value' => '_custom'),
+    ),
+  );
 }
 
 /**
