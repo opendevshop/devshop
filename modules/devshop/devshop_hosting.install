@@ -276,3 +276,11 @@ function devshop_hosting_update_7105() {
   );
   menu_link_save($menu_item);
 }
+
+/**
+ * Enable "chosen" module and make sure "chosen" widget allows "contains" string searching.
+ */
+function devshop_hosting_update_7106() {
+  module_enable(array('chosen'));
+  variable_set('chosen_search_contains', 1);
+}
