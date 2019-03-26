@@ -130,17 +130,19 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
  * Implements hook_form_alter().
  */
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
+  drupal_add_js(drupal_get_path('module', 'devshop_github') . '/create-github.js');
+
   $form['connect'] = devshop_github_integration_status_widget();
   $repos = variable_get('devshop_github_available_repositories', array());
 
   $options = array(
     t('To get started,') => array(
-      t('Choose a GitHub Repository or...'),
+      '_help' => t('Choose a GitHub Repository or...'),
       '_custom' => t('Use custom git URL'),
-    )
+    ),
   );
   foreach ($repos as $repo_name => $repo) {
-    $options[$repo['org']][$repo_name] = $repo_name;
+    $options[$repo['org']][$repo['url']] = $repo_name;
   }
 
   $form['git_url_select'] = array(
@@ -151,11 +153,27 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos'),
   );
 
+  $form['git_url']['#required'] = FALSE;
+  $form['git_url']['#element_validate'][] = 'devshop_github_create_project_form_set_values';
   $form['git_url']['#states'] = array(
     'visible' => array(
       'select[name="git_url_select"]' => array('value' => '_custom'),
     ),
   );
+}
+
+/**
+ * Element validation for License Key. Pings devshop.support
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_github_create_project_form_set_values($element, &$form_state, &$form) {
+
+  if ($form_state['values']['git_url_select'] != '_help' || $form_state['values']['git_url_select'] != '_custom') {
+    form_set_value($element, $form_state['values']['git_url_select'] , $form_state);
+  }
 }
 
 /**
