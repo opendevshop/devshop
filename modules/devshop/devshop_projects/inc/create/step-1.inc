@@ -66,33 +66,6 @@ function devshop_project_create_step_git($form, $form_state) {
   
   $username = variable_get('aegir_user', 'aegir');
 
-  $tips[] = t('For best results, use the !link project as a starting point for Composer based projects.', [
-    '!link' => l(t('DevShop Composer Template'), 'https://github.com/opendevshop/devshop-composer-template', array(
-      'attributes' => array(
-        'target' => '_blank',
-      )
-    )),
-  ]);
-
-  $tips[] = t('Use the "ssh" url whenever possible. For example: <code>git@github.com:opendevshop/repo.git</code>');
-  $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
-  $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
-  $tips[] = t('If your repository is not public, make sure your server has SSH access. Click the "Repository Access" button below to see the SSH key of this DevShop.');
-  $tips = theme('item_list', array('items' => $tips));
-  
-  $form['git_url'] = array(
-    '#type' => 'textfield',
-    '#required' => 1,
-    '#title' => t('Git URL'),
-    '#suffix' => '<p>' . t('Enter the Git URL for your project') . '</p><div class="alert alert-info">' . $tips . "</div>",
-    '#default_value' => $project->git_url,
-    '#maxlength' => 1024,
-    '#weight' => -1,
-    '#attributes' => array(
-      'placeholder' => 'git@githost.com:myteam/myproject.git'
-    ),
-  );
-
 //
 //  // Project code path.
 //  $form['code_path'] = array(
@@ -151,6 +124,40 @@ HTML;
   
   // Add info about connecting to Repo
   $form['connect']['#markup'] = $output;
+
+  $tips[] = t('For best results, use the !link project as a starting point for Composer based projects.', [
+    '!link' => l(t('DevShop Composer Template'), 'https://github.com/opendevshop/devshop-composer-template', array(
+      'attributes' => array(
+        'target' => '_blank',
+      )
+    )),
+  ]);
+
+  $tips[] = t('Use the "ssh" url whenever possible. For example: <code>git@github.com:opendevshop/repo.git</code>');
+  $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
+  $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
+  $tips[] = t("If your repository is not public, make sure your server has SSH access. Check the !link to see this server's public key.", array(
+    '!link' => l(t('DevShop Settings'), 'admin/devshop'),
+  ));
+  $tips = theme('item_list', array('items' => $tips));
+
+  $form['git_url'] = array(
+    '#type' => 'textfield',
+    '#required' => 1,
+    '#title' => t('Git URL'),
+    '#default_value' => $project->git_url,
+    '#maxlength' => 1024,
+    '#weight' => -1,
+    '#attributes' => array(
+      'placeholder' => 'git@githost.com:myteam/myproject.git'
+    ),
+  );
+
+  $form['tips'] = array(
+      '#markup' => $tips,
+      '#prefix' => '<div class="alert alert-info">',
+      '#suffix' => '</div>',
+  );
   return $form;
 }
 
