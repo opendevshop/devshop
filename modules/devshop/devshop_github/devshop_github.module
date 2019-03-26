@@ -141,7 +141,7 @@ function devshop_github_integration_status_widget() {
   if (devshop_github_check_key()) {
     $build['#prefix'] = ' <div class="alert alert-success">';
     $build['#suffix'] = '</div>';
-    $build['#markup'] = t("This DevShop's public SSH Key is in your GitHub account, so it can clone your source code.");
+    $build['#markup'] = t("This DevShop's public SSH Key is in your GitHub account.");
   }
   else {
     $build['#markup'] = '<h4>' . t("This DevShop's public SSH Key was not found in your GitHub account.") . '</h4>';
