@@ -1254,3 +1254,7 @@ footer.anonymous-page {
     left: 0;
 }
 
+.form-item-git-url-select > .chosen-container {
+  display: block !important;
+  width: 100% !important;
+}

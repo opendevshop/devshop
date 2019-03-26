@@ -75,6 +75,7 @@ projects[statsd][version] = 1.1
 projects[hosting_statsd][version] = 1.0-beta1
 projects[intercomio][version] = 1.0-beta2
 projects[navbar][version] = 1.7
+projects[chosen][version] = 1.7
 
 projects[cas][version] = 1.7
 projects[cas][patch][] = "https://www.drupal.org/files/issues/2018-12-13/3020349-cas-library-path.patch"
@@ -107,3 +108,9 @@ libraries[backbone][download][tag] = 1.0.0
 libraries[underscore][download][type] = git
 libraries[underscore][download][url] = https://github.com/jashkenas/underscore.git
 libraries[underscore][download][tag] = 1.5.0
+
+; Library: Chosen
+libraries[chosen][download][type] = "get"
+libraries[chosen][download][url] = "https://github.com/harvesthq/chosen/releases/download/v1.8.7/chosen_v1.8.7.zip"
+libraries[chosen][directory_name] = "chosen"
+libraries[chosen][destination] = "libraries"
