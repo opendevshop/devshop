@@ -75,7 +75,7 @@ projects[statsd][version] = 1.1
 projects[hosting_statsd][version] = 1.0-beta1
 projects[intercomio][version] = 1.0-beta2
 projects[navbar][version] = 1.7
-projects[chosen][version] = 1.7
+projects[chosen][version] = 2.1
 
 projects[cas][version] = 1.7
 projects[cas][patch][] = "https://www.drupal.org/files/issues/2018-12-13/3020349-cas-library-path.patch"
