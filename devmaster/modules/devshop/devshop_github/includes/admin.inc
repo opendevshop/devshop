@@ -31,6 +31,23 @@ function devshop_github_settings_form($form, &$form_state) {
   else {
     $form['devshop_github_token']['#description'] = ' <em class="text-success">' . t('Your token is saved. Enter a new one if you wish to change it.') . '</em>';
     $form['connect'] = devshop_github_integration_status_widget();
+
+    $repos = variable_get('devshop_github_available_repositories', array());
+    $count = count($repos);
+    $form['repos'] = array(
+      '#type' => 'container',
+      '#prefix' => "<div class='alert alert-info'>",
+      '#suffix' => '</div>',
+    );
+
+    $form['repos']['message'] = array(
+      '#markup' =>  t('@count_string associated with this GitHub token.', array(
+        '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
+    )));
+    $form['repos']['button'] = array(
+      '#markup' => l(t('Refresh repository list'),'admin/devshop/github/load-repos', array('attributes' => array(
+      'class' => array('btn btn-link'),
+    ))));
   }
 
   $form = system_settings_form($form);
@@ -52,6 +69,9 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
   if (is_subclass_of($e, 'Exception')) {
     form_error($element,  $e->getMessage());
   }
+  else {
+    devshop_github_refresh_repositories();
+  }
 }
 
 function devshop_github_token_is_valid($token = NULL) {
@@ -70,5 +90,78 @@ function devshop_github_token_is_valid($token = NULL) {
     // Happens when user has no public keys.
   catch (Exception $e) {
     return $e;
+  }
+}
+
+/**
+ * Grab an authenticated GitHub client.
+ *
+ * @return \Exception|\Github\Client
+ */
+function devshop_github_client() {
+
+  $client = new \Github\Client();
+  $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
+
+  try {
+    $show = $client->currentUser()->show();
+    return $client;
+  }
+  catch (Exception $e) {
+    return $e;
+  }
+}
+
+/**
+ * Page callback for "get all repos" link.
+ */
+function devshop_github_get_repositories_page() {
+  $token = variable_get('devshop_github_token', '');
+  if (empty($token)) {
+    drupal_set_message('GitHub API Token is not set.', 'error');
+    drupal_goto('admin/devshop/github');
+    return;
+  }
+
+  devshop_github_refresh_repositories();
+
+  drupal_goto('admin/devshop/github');
+  return;
+}
+
+/**
+ * Get a list of all repos a user can access.
+ */
+function devshop_github_refresh_repositories() {
+
+  try {
+    $client = devshop_github_client();
+    $userApi = $client->currentUser();
+    $paginator  = new Github\ResultPager($client);
+    $params = array(
+      'all'
+    );
+    $repos = $paginator->fetchAll($userApi, 'repositories', $params);
+
+    foreach ($repos as $repo) {
+      $available_repos[$repo['full_name']] = array(
+        'url'  => $repo['ssh_url'],
+        'org' => $repo['owner']['login'],
+      );
+    }
+    $count = count($repos);
+    $r = array(
+      '@count' => $count,
+    );
+
+    variable_set('devshop_github_available_repositories', $available_repos);
+
+    drupal_set_message(t('Found @count_string associated with that GitHub token.', array(
+      '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
+    )));
+  }
+  catch (\Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+    drupal_set_message('Code ' . $e->getCode(), 'error');
   }
 }
