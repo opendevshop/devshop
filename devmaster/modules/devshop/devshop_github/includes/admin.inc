@@ -5,53 +5,138 @@
  * @return array()
  */
 function devshop_github_settings_form($form, &$form_state) {
+  $token = variable_get('devshop_github_token', '');
+  $token_exists = !empty($token);
+
+  $ssh_key = variable_get('devshop_public_key', '');
+  $ssh_key_exists = !empty($ssh_key);
+
+  $form['#prefix'] = '<div class="jumbotron">';
+  $form['#suffix'] = '</div>';
+
+  $form['title'] = array(
+    '#markup' => t('GitHub Settings'),
+    '#prefix' => '<h3>',
+    '#suffix' => '</h3>',
+  );
+  $form['description'] = array(
+    '#prefix' => '<p class="text-muted">',
+    '#markup' => $token_exists?
+      '':
+      t('There is no GitHub token stored in this DevShop. Follow the steps below.'),
+    '#suffix' => '</p>',
+  );
+  $form['devshop_github_token_button'] = array(
+    '#type' => 'item',
+    '#prefix' => '<div class="">',
+    '#suffix' => '</div>',
+    '#title' => t('Step 1: Create a GitHub Token'),
+    '#markup' => '<div>' . l(t('Create a new token on GitHub.com'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array('attributes' => array(
+      'target' => '_blank',
+      'class' => array('btn btn-info form-submit'),
+    ))) . '</div>',
+    '#description' => t('Click this button to take you to GitHub.com and pre-set the required scopes for a new Personal Access Token.'),
+    '#weight' => 1,
+  );
+
+  $form['devshop_github_token_step'] = array(
+    '#title' => t('Step 2: Enter your GitHub Token'),
+    '#type' => 'item',
+    '#weight' => 2,
+  );
+
+  $form['devshop_github_token_step']['message'] = array(
+    '#markup' => $token_exists? '<i class="fa fa-check"></i> ' . t('The stored GitHub Token is valid.'): '',
+    '#prefix' => '<div class="alert alert-success">',
+    '#suffix' => '</div>',
+    '#access' => $token_exists
+  );
   $form['devshop_github_token'] = array(
-    '#title' => t('GitHub API Token'),
     '#type' => 'password',
-    '#description' => t('A GitHub API Token or Personal Access Token'),
+    '#description' => $token_exists?
+      t('If you wish to change it, enter a new one and press "Save Token".'):
+      t('Copy the token you created on GitHub.com and paste it here.'),
     '#default_value' => variable_get('devshop_github_token', ''),
     '#element_validate' => array(
       'devshop_github_settings_form_validate_token',
     ),
+    '#attributes' => array(
+      'placeholder' => $token_exists?
+        t('Token is saved.'):
+        t('Enter a new GitHub Token')
+    ),
+    '#weight' => 2,
   );
 
-  $form['actions']['devshop_github_token_button'] = array(
-    '#weight' => 10,
-    '#markup' => l(t('Create a new token on GitHub.com'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array('attributes' => array(
-      'target' => '_blank',
-      'class' => array('btn btn-primary  form-submit'),
-    )))
+  $form['devshop_github_ssh_key'] = array(
+    '#title' => t('Step 3: Add the DevShop SSH Key to your account'),
+    '#type' => 'item',
+    '#weight' => 4,
   );
 
-  // Warn the user if this is empty.
-  $token = variable_get('devshop_github_token', '');
-  if (empty($token)) {
-    $form['devshop_github_token']['#description'] = ' <em class="text-danger">' . t('No Token was found. Click the button below to create a new token on GitHuub.com') . '</em>';
+  $form['devshop_github_ssh_key']['ssh_key_status'] = array(
+
+  );
+
+  if (!$token_exists) {
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="text ">';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t('You must enter a GitHub token before SSH access can be setup and confirmed.');
+  }
+  elseif (!$ssh_key_exists) {
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-warning">';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t('DevShop does not know what this server\'s public SSH Key is. Run the following command on the server to import the aegir user\'s public key <textarea class="form-control" onclick="this.focus();this.select()" >drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes</textarea>');
+  }
+  elseif (devshop_github_check_key()) {
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-success">';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t("This DevShop's public SSH Key is in your GitHub account.");
   }
   else {
-    $form['devshop_github_token']['#description'] = ' <em class="text-success">' . t('Your token is saved. Enter a new one if you wish to change it.') . '</em>';
-    $form['connect'] = devshop_github_integration_status_widget();
-
-    $repos = variable_get('devshop_github_available_repositories', array());
-    $count = count($repos);
-    $form['repos'] = array(
-      '#type' => 'container',
-      '#prefix' => "<div class='alert alert-info'>",
-      '#suffix' => '</div>',
-    );
-
-    $form['repos']['message'] = array(
-      '#markup' =>  t('@count_string associated with this GitHub token.', array(
-        '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
-    )));
-    $form['repos']['button'] = array(
-      '#markup' => l(t('Refresh repository list'),'admin/devshop/github/load-repos', array('attributes' => array(
-      'class' => array('btn btn-link'),
-    ))));
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t("This DevShop's public SSH Key was not found in your GitHub account.");
+    $form['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= '<div class="btn-group" role="group">' . l(t('Add public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+        'query' => array(
+          'destination' => $_GET['q'],
+        ),
+        'attributes' => array(
+          'class' => 'btn btn-info'
+        ),
+      ));
+    $form['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= l(t('Configure Public Key'), 'admin/devshop', array(
+        'query' => array(
+          'destination' => $_GET['q'],
+        ),
+        'attributes' => array(
+          'class' => 'btn btn-default'
+        ),
+      )) . '</div>';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = '<div class="alert alert-warning">';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
   }
+
+  $repos = variable_get('devshop_github_available_repositories', array());
+  $count = count($repos);
+  $form['repos'] = array(
+    '#type' => 'container',
+    '#prefix' => "<div class='alert alert-info'>",
+    '#suffix' => '</div>',
+    '#weight' => 5,
+    '#access' => !empty(variable_get('devshop_github_token')),
+  );
+
+  $form['repos']['message'] = array(
+    '#markup' =>  t('@count_string associated with this GitHub token.', array(
+      '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
+  )));
+  $form['repos']['button'] = array(
+    '#markup' => l(t('Refresh repository list'),'admin/devshop/github/load-repos', array('attributes' => array(
+    'class' => array('btn btn-link'),
+  ))));
 
   $form = system_settings_form($form);
   $form['actions']['submit']['#value'] = t('Save Token');
+  $form['actions']['#weight'] = 3;
   return $form;
 }
 
@@ -70,6 +155,7 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
     form_error($element,  $e->getMessage());
   }
   else {
+    variable_set('devshop_github_token', $token);
     devshop_github_refresh_repositories();
   }
 }
@@ -108,7 +194,8 @@ function devshop_github_client() {
     return $client;
   }
   catch (Exception $e) {
-    return $e;
+    drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
+    throw $e;
   }
 }
 

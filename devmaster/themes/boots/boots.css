@@ -1258,3 +1258,11 @@ footer.anonymous-page {
   display: block !important;
   width: 100% !important;
 }
+
+#edit-devshop-github-token-button > a.btn {
+    clear: both;
+}
+
+#devshop-github-settings-form .form-item {
+  margin-top: 2em;
+}

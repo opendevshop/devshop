@@ -123,7 +123,9 @@ HTML;
   }
   
   // Add info about connecting to Repo
-  $form['connect']['#markup'] = $output;
+  $form['connect']  = array(
+    '#markup'=> $output,
+  );
 
   $tips[] = t('For best results, use the !link project as a starting point for Composer based projects.', [
     '!link' => l(t('DevShop Composer Template'), 'https://github.com/opendevshop/devshop-composer-template', array(

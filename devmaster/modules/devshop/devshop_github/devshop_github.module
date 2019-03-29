@@ -132,7 +132,32 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
   drupal_add_js(drupal_get_path('module', 'devshop_github') . '/create-github.js');
 
-  $form['connect'] = devshop_github_integration_status_widget();
+  module_load_include('inc', 'devshop_github', 'includes/admin');
+
+  if (!devshop_github_check_key(TRUE)) {
+    $form['connect'] = array(
+      '#type' => 'container',
+      '#markup' => t('DevShop Git Integration is not set up. Check settings and try again.'),
+      '#prefix' => "<div class='alert alert-danger'>",
+      '#suffix' => '</div>',
+      '#weight' => -1000,
+    );
+
+    $form['connect']['message'] = array(
+      '#markup' => '<i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.'),
+    );
+    $form['connect']['button'] = array(
+      '#markup' => l(t('DevShop GitHub Settings'),'admin/devshop/github', array('attributes' => array(
+        'class' => array('btn btn-link'),
+      ))));
+  }
+  else {
+    $form['connect'] = array(
+      '#markup' => t('DevShop GitHub Integration is active. The server has confirmed access to GitHub repositories.'),
+      '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
+      '#suffix' => '</div>',    );
+  }
+
   $repos = variable_get('devshop_github_available_repositories', array());
 
   $options = array(
@@ -177,49 +202,6 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
     form_set_value($element, $form_state['values']['git_url_select'] , $form_state);
   }
 }
-
-/**
- * Return a render array showing the state of github integration setup.
- */
-function devshop_github_integration_status_widget() {
-
-  // Look for Token
-  $token = variable_get('devshop_github_token', '');
-
-  if (empty($token)) {
-    $build['#markup'] = ' <div class="alert alert-warning">' . t('GitHub API Token was not found.') . ' ' . l(t('Configure DevShop GitHub Settings'), 'admin/devshop/github') . '</div>';
-    return $build;
-  }
-
-  if (devshop_github_check_key()) {
-    $build['#prefix'] = ' <div class="alert alert-success">';
-    $build['#suffix'] = '</div>';
-    $build['#markup'] = t("This DevShop's public SSH Key is in your GitHub account.");
-  }
-  else {
-    $build['#markup'] = '<h4>' . t("This DevShop's public SSH Key was not found in your GitHub account.") . '</h4>';
-    $build['#markup'] .= '<div class="btn-group" role="group">' . l(t('Add public key to your GitHub account'), 'admin/devshop/github/add-key', array(
-            'query' => array(
-              'destination' => $_GET['q'],
-            ),
-            'attributes' => array(
-                'class' => 'btn btn-default'
-            ),
-        ));
-    $build['#markup'] .= l(t('DevShop Settings'), 'admin/devshop', array(
-            'query' => array(
-              'destination' => $_GET['q'],
-            ),
-            'attributes' => array(
-                'class' => 'btn btn-default'
-            ),
-        )) . '</div>';
-    $build['#prefix'] = '<div class="alert alert-warning">';
-    $build['#suffix'] = '</div>';
-  }
-  return $build;
-}
-
 
 /**
  * Implements hook_form_FORM_ID_alter() for project_node_form().
@@ -967,7 +949,7 @@ function devshop_github_webhook($project_node) {
  *
  * @return bool
  */
-function devshop_github_check_key() {
+function devshop_github_check_key($silent = false) {
 
   if (!devshop_public_key_valid_fingerprint()) {
     return FALSE;
@@ -982,7 +964,9 @@ function devshop_github_check_key() {
     $keys = $client->currentUser()->keys()->all();
   }
   catch (Exception $e) {
-    drupal_set_message($e->getMessage(), 'error');
+    if (!$silent) {
+      drupal_set_message($e->getMessage(), 'error');
+    }
     return FALSE;
   }
   foreach ($keys as $key) {
