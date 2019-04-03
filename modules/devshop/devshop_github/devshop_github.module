@@ -162,7 +162,8 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   $options = array(
     t('To get started,') => array(
-      '_help' => t('Choose a GitHub Repository or...'),
+      '_create' => t('Create a new GitHub Repository'),
+      '_help' => t('or choose an existing GitHub Repository'),
       '_custom' => t('Use custom git URL'),
     ),
   );
@@ -187,6 +188,33 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       'select[name="git_url_select"]' => array('value' => '_custom'),
     ),
   );
+  $form['github_create'] = array(
+    '#type' => 'item',
+    '#title' => t('Repo Owner and Name'),
+    '#prefix' => '<div class="form-group">',
+    '#suffix' => '</div>',
+    '#weight' => -998,
+    '#states' => array(
+      'visible' => array(
+        'select[name="git_url_select"]' => array('value' => '_create'),
+      ),
+    ),
+  );
+  $form['github_create']['github_organization'] = array(
+    '#type' => 'select',
+    '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
+    '#bootstrap_ignore_pre_render' => TRUE,
+    '#field_suffix' => ' / ',
+  );
+  $form['github_create']['github_repository_name'] = array(
+    '#type' => 'textfield',
+    '#attributes' => array(
+      'placeholder' => t('repo_name')
+    ),
+    '#element_validate' => array(
+      'devshop_github_create_repository'
+    ),
+  );
 }
 
 /**
@@ -200,6 +228,22 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
 
   if ($form_state['values']['git_url_select'] != '_help' && $form_state['values']['git_url_select'] != '_custom') {
     form_set_value($element, $form_state['values']['git_url_select'] , $form_state);
+  }
+}
+
+/**
+ * Element validation for License Key. Pings devshop.support
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_github_create_repository($element, &$form_state, &$form) {
+
+  if ($form_state['values']['git_url_select'] == '_create') {
+
+    // TODO: CREATE NEW GITHUB REPO!
+
   }
 }
 

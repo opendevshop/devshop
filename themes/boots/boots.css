@@ -1266,3 +1266,8 @@ footer.anonymous-page {
 #devshop-github-settings-form .form-item {
   margin-top: 2em;
 }
+
+.form-item-github-organization,
+.form-item-github-repository-name  {
+    display: inline-block;
+}
