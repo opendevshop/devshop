@@ -18,12 +18,14 @@ Feature: Create a project and check settings
     # Step 2
     Then I should see "drpl8"
     And I should see "http://github.com/opendevshop/drupal_docroot.git"
-    When I fill in "docroot" for "Path to Drupal"
+    Then I should see "Please wait while we connect and analyze your repository."
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output
+    And I reload the page
 
-    # Step 3
+    Then I fill in "docroot" for "Path to Drupal"
     When I press "Next"
-    Then I should see "Please wait while we connect to your repository and determine any branches."
-#    And I should see "Path to Drupal: docroot"
+    And I should see "PATH TO DRUPAL docroot"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
