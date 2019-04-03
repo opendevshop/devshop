@@ -21,6 +21,11 @@ Feature: Create a project with Drupal in the docroot.
     Then I should see "rootproject"
     And I should not see "The name rootproject is in use. Please try again."
     And I should see "http://github.com/opendevshop/drupal_docroot"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output
+    And I reload the page
+
     When I fill in "docroot" for "Path to Drupal"
 
     # Step 3
