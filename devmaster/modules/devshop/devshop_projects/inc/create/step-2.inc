@@ -14,6 +14,7 @@ function devshop_project_create_step_settings($form, &$form_state) {
   $project = &$form_state['project'];
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect and analyze your repository.') . '</p>';
+    $note .= '<p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p>';
     $note .= '<p class="wait">' . l(t('View Logs'), "node/$project->verify_task_nid", array(
       'attributes' => array(
         'target' => '_blank',
