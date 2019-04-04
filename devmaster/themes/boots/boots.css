@@ -1289,9 +1289,8 @@ footer.anonymous-page {
     display: block;
 }
 
-
-
-input#edit-settings-github-repository-source-composer-project{
+#edit-settings-github-repository-source-composer-project-suggestions,
+#edit-settings-github-repository-source-composer-project {
     width: 20em;
 }
 
