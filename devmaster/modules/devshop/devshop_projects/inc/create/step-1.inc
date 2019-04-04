@@ -136,7 +136,7 @@ HTML;
   ]);
 
   $form['welcome'] = array(
-    '#markup' => '<h2 class="title">' . t("Welcome to DevShop! You are about to create a new Project.") . '</h2><p>' . t("A project represents your website. DevShop keeps track of the source code for your website so it can launch copies of it quickly.") . '</p>',
+    '#markup' => '<h2 class="title">' . t("Start a new DevShop Project.") . '</h2><p>' . t("A project represents your website. DevShop keeps track of the source code for your website so it can launch copies of it quickly.") . '</p>',
     '#prefix' => '<div class="alert alert-success alert-project-welcome">',
     '#suffix' => '</div>',
     '#weight' => -1000,
