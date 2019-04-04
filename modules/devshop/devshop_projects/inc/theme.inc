@@ -403,7 +403,7 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   if ($vars['branches_count'] == 0) {
     // If branches are 0 and last verifying is queued...
-    if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status == HOSTING_TASK_QUEUED) {
+    if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status === HOSTING_TASK_QUEUED) {
       $vars['branches_show_label'] = TRUE;
       $vars['branches_label'] = t('Refreshing...');
       $vars['branches_class'] = 'btn-warning';
