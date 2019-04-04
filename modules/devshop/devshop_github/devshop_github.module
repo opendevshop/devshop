@@ -251,12 +251,15 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   );
 
   $repos_to_import_from = variable_get('devshop_github_create_repo_templates', array());
-  $form['settings']['github_repository_source']['import'] = array(
-    '#type' => 'textfield',
+
+  $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
+    'git@github.com:aegir-project/example-drupal-composer.git',
+  ));
+  $suggested_repos['custom'] = t('Enter a custom URL');
+  $form['settings']['github_repository_source']['import_suggestions'] = array(
+    '#type' => 'select',
+    '#options' => $suggested_repos,
     '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.'),
-    '#attributes' => array(
-      'placeholder' => t('git@githost.com:example/repo.git'),
-    ),
     '#states' => array(
       'visible' => array(
         ':input[name="settings[github_repository_source][populate_choice]"]' => array(
@@ -266,18 +269,22 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
-    'git@github.com:aegir-project/example-drupal-composer.git',
-  ));
-
-  foreach ($suggested_repos as &$project_name) {
-    $project_name = l($project_name, current_path(), array(
-      'attributes' => array(
-        'class' => array('composer-repo-link'),
+  $form['settings']['github_repository_source']['import'] = array(
+    '#type' => 'textfield',
+    '#attributes' => array(
+      'placeholder' => t('git@githost.com:example/repo.git'),
+    ),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="settings[github_repository_source][populate_choice]"]' => array(
+          'value' => 'import'
+        ),
+        'select[name="settings[github_repository_source][import_suggestions]"]' => array(
+          'value' => 'custom'
+        ),
       ),
-    ));
-  }
-  $form['settings']['github_repository_source']['import']['#description'] .= theme('item_list', array('items' => $suggested_repos, 'title' => t('Suggested Repositories:')));
+    ),
+  );
 
   $form['settings']['github_repository_source']['composer_project'] = array(
     '#type' => 'textfield',
@@ -313,7 +320,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   foreach ($suggested_projects as &$project_name) {
     $project_name = l($project_name, current_path(), array(
       'attributes' => array(
-        'class' => array('composer-project-link'),
+        'class' => array('composer-project-link list-group-item'),
       ),
     ));
   }
