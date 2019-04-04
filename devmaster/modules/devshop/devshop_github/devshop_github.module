@@ -488,13 +488,15 @@ function devshop_github_project_create_webhook($form, $form_state) {
             'insecure_ssl' => '1',
         ),
     ));
+    dsm($hook);
   }
   catch (Github\Exception\ValidationFailedException $e) {
-    // For some reason, github always returns an exception here when there is already webhooks on the project.
     if ($e->getMessage() == 'Validation Failed: Hook already exists on this repository') {
-      drupal_set_message(t("GitHub webhook added, but there is already an existing webhook. Please check your repository's !link.", array(
-          '!link' => l(t('Webhook Settings'), $project->git_repo_url . '/settings/hooks'),
-      )), 'warning');
+      // For some reason, github always throws this exception on hooks()->create, but the webook still gets created!!
+
+      //      drupal_set_message(t("GitHub webhook added, but there is already an existing webhook. Please check your repository's !link.", array(
+//          '!link' => l(t('Webhook Settings'), $project->git_repo_url . '/settings/hooks'),
+//      )), 'warning');
     }
     else {
       drupal_set_message(t('GitHub Validation Exception: !exception', array('!exception' => $e->getMessage())), 'error');
