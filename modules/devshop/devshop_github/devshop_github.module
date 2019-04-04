@@ -130,7 +130,6 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
  * Implements hook_form_alter().
  */
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
-  drupal_add_js(drupal_get_path('module', 'devshop_github') . '/create-github.js');
 
   module_load_include('inc', 'devshop_github', 'includes/admin');
 
@@ -211,6 +210,17 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       'devshop_github_create_repository'
     ),
   );
+
+  // We have to tell the front-end what type of field so we can assign the right event.
+  drupal_add_js(array(
+    'devshop' => array(
+      'projectNameSourceElements' => array(
+        '#edit-github-repos',
+        '#edit-github-repository-name',
+      ),
+    ),
+  ), 'setting');
+
 }
 
 /**
