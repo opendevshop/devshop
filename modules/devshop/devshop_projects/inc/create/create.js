@@ -19,7 +19,6 @@
   Drupal.behaviors.devshopSourceSelect = {
     attach: function (context, settings) {
       Drupal.settings.devshop.projectNameSourceElements.forEach(function( selector ) {
-        console.log($(selector).prop("tagName"), selector);
 
         if ($(selector).prop("tagName") == 'SELECT') {
           var eventName = 'change';
@@ -35,19 +34,42 @@
     }
   };
 
-  Drupal.behaviors.devshopComposerProjects = {
+  Drupal.behaviors.devshopShowSelect = {
     attach: function (context, settings) {
-      $('a.composer-project-link').click(function(e) {
+      $('a.put-back-suggested-projects').click(function(e) {
         e.preventDefault();
-        $('#edit-settings-github-repository-source-composer-project').val($(this).html());
+        var optionVal = $('#edit-settings-github-repository-source-composer-project-suggestions option').val();
+        $('#edit-settings-github-repository-source-composer-project-suggestions').val(optionVal).change();
       });
-
-      $('a.composer-repo-link').click(function(e) {
-        e.preventDefault();
-        $('#edit-settings-github-repository-source-input').val($(this).html());
-      })
     }
   }
+  Drupal.behaviors.devshopShowSelectRepos = {
+    attach: function (context, settings) {
+      $('a.put-back-suggested-repos').click(function(e) {
+        e.preventDefault();
+        var optionVal = $('#edit-settings-github-repository-source-import-suggestions option').val();
+        $('#edit-settings-github-repository-source-import-suggestions').val(optionVal).change();
+      });
+    }
+  }
+
+  Drupal.behaviors.autoSelect = {
+    attach: function (context, settings) {
+      $('select#edit-settings-github-repository-source-composer-project-suggestions').change(function(e) {
+      if ($(this).val() == 'custom') {
+        $('#edit-settings-github-repository-source-composer-project').select();
+      }
+
+      });
+      $('select#edit-settings-github-repository-source-import-suggestions').change(function(e) {
+      if ($(this).val() == 'custom') {
+        $('#edit-settings-github-repository-source-import').select();
+      }
+
+      });
+    }
+  }
+
 }(jQuery));
 
 /**

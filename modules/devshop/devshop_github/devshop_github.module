@@ -274,6 +274,11 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#attributes' => array(
       'placeholder' => t('git@githost.com:example/repo.git'),
     ),
+    '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.') .' ' . l(t('Choose from suggested repos'), '', array(
+      'attributes' => array(
+        'class' => array('put-back-suggested-repos'),
+      ),
+    )),
     '#states' => array(
       'visible' => array(
         ':input[name="settings[github_repository_source][populate_choice]"]' => array(
@@ -286,45 +291,81 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $form['settings']['github_repository_source']['composer_project'] = array(
-    '#type' => 'textfield',
-    '#description' => t('Enter a composer project name into this field to populate your new repository.'),
-    '#attributes' => array(
-      'placeholder' => t('devshop/composer-template:8.x-dev'),
+  $form['settings']['github_repository_source']['import_suggestions'] = array(
+    '#type' => 'select',
+    '#options' => $suggested_repos,
+    '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="settings[github_repository_source][populate_choice]"]' => array(
+          'value' => 'import'
+        ),
+        'select[name="settings[github_repository_source][import_suggestions]"]' => array(
+          '!value' => 'custom'
+        ),
+      ),
     ),
-    '#default_value' => t('devshop/composer-template:8.x-dev'),
-    '#size' => 32,
-    '#maxlength' => 64,
-    '#field_prefix' => '<div class="input-group"><div class="input-group-addon">composer create-project </div>',
-    '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . t('projectname') .'</div>
+  );
+
+
+  $suggested_projects = variable_get('devshop_composer_project_suggestions', array(
+    'devshop/composer-template:8.x-dev',
+    'devshop/composer-template:7.x-dev',
+//    'acquia/lightning-project',
+  ));
+
+  $options = array_combine(array_values($suggested_projects),array_values($suggested_projects));
+  $options['custom'] = t('Enter custom project');
+
+  $form['settings']['github_repository_source']['composer_project_suggestions'] = array(
+    '#type' => 'select',
+    '#options' => $options,
+    '#description' => t('The command above will be run and all the resulting files will be committed to your repository.'),
+      '#field_prefix' => '<div class="input-group"><code class="input-group-addon">composer create-project </code>',
+    '#field_suffix' => '<code class="input-group-addon input-group-addon-url">' . t('--no-interaction projectname') .'</code>
         </div>',
     '#states' => array(
       'visible' => array(
         ':input[name="settings[github_repository_source][populate_choice]"]' => array(
           'value' => 'create'
         ),
+        'select[name="settings[github_repository_source][composer_project_suggestions]"]' => array(
+          '!value' => 'custom'
+        ),
       ),
     ),
   );
 
+  $form['settings']['github_repository_source']['composer_project'] = array(
+    '#type' => 'textfield',
+    '#description' => t('The command above will be run and all the resulting files will be committed to your repository.') . ' ' . l(t('Choose from suggested projects'), '', array(
+      'attributes' => array(
+        'class' => array('put-back-suggested-projects'),
+      ),
+    )),
+    '#field_prefix' => '<div class="input-group"><code class="input-group-addon">composer create-project </code>',
+    '#field_suffix' => '<code class="input-group-addon input-group-addon-url">' . t('--no-interaction projectname') .'</code>
+        </div>',
+//    '#default_value' => $suggested_projects[0],
+    '#attributes' => array(
+      'placeholder' => $suggested_projects[0],
+    ),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="settings[github_repository_source][populate_choice]"]' => array(
+          'value' => 'create'
+        ),
+        'select[name="settings[github_repository_source][composer_project_suggestions]"]' => array(
+          'value' => 'custom'
+        ),
+      ),
+    ),
+  );
+
+
   $form['settings']['github_repository_source']['wrapper'] = array(
     '#markup' => '</div>',
   );
-
-  $suggested_projects = variable_get('devshop_composer_project_suggestions', array(
-    'devshop/composer-template:7.x-dev',
-    'devshop/composer-template:8.x-dev',
-    'acquia/lightning-project',
-  ));
-
-  foreach ($suggested_projects as &$project_name) {
-    $project_name = l($project_name, current_path(), array(
-      'attributes' => array(
-        'class' => array('composer-project-link list-group-item'),
-      ),
-    ));
-  }
-  $form['settings']['github_repository_source']['composer_project']['#description'] .= theme('item_list', array('items' => $suggested_projects, 'title' => t('Suggested Projects:')));
 
   $form['git_url']['#required'] = FALSE;
   $form['git_url']['#element_validate'] = array(
