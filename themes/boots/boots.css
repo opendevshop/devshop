@@ -1292,6 +1292,16 @@ footer.anonymous-page {
 
 
 input#edit-composer-project {
-    width: 50%;
     width: 20em;
+}
+
+
+
+#edit-github-create #edit-populate-choice > div.form-type-radio,
+#edit-github-create #edit-populate-choice > div.form-type-radio > label {
+  display: inline-block;
+}
+
+#edit-github-create #edit-populate-choice > div.form-type-radio > label {
+    margin-right: 2em;
 }
