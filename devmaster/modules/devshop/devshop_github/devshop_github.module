@@ -219,6 +219,81 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#default_value' => 1,
   );
 
+
+  $form['github_create']['github_repository_source'] = array(
+    '#type' => 'container',
+    '#prefix' => '<div class="well">',
+    '#suffix' => '</div>',
+  );
+  $form['github_create']['github_repository_source']['help'] = array(
+    '#type' => 'item',
+    '#markup' => t('Choose what to put into your new Git repository. You can import code from an existing repo, or you can run a command like `composer create-project` to create your codebase.'),
+  );
+
+  $form['github_create']['github_repository_source']['import_radio'] = array(
+    '#type' => 'radio',
+    '#title' => t('Import from other GitHub repository'),
+    '#attributes' => array(
+      'name' => 'repo_source_populate_method',
+      'value' => 'import',
+    )
+  );
+  $form['github_create']['github_repository_source']['import'] = array(
+    '#type' => 'select',
+    '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.'),
+    '#options' => $options,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="repo_source_populate_method"]' => array(
+          'value' => 'import'
+        ),
+      ),
+    ),
+  );
+  $form['github_create']['github_repository_source']['composer_project_radio'] = array(
+    '#type' => 'radio',
+    '#title' => t('Enter a composer project name'),
+    '#attributes' => array(
+      'name' => 'repo_source_populate_method',
+      'value' => 'composer_project',
+    )
+  );
+  $form['github_create']['github_repository_source']['composer_project'] = array(
+    '#type' => 'textfield',
+    '#description' => t('Enter a composer project name into this field to populate your new repository.'),
+    '#options' => $options,
+    '#attributes' => array(
+      'placeholder' => t('drupal-composer/drupal-project:8.x-dev'),
+    ),
+    '#size' => 32,
+    '#maxlength' => 64,
+    '#field_prefix' => '<div class="input-group"><div class="input-group-addon">composer create-project </div>',
+    '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . t('projectname') .'</div>
+        </div>',
+    '#states' => array(
+      'visible' => array(
+        ':input[name="repo_source_populate_method"]' => array(
+          'value' => 'composer_project'
+        ),
+      ),
+    ),
+  );
+
+  $suggested_projects = variable_get('devshop_composer_project_suggestions', array(
+    'devshop/composer-template:7.x-dev',
+    'devshop/composer-template:8.x-dev',
+    'acquia/lightning-project',
+  ));
+
+  foreach ($suggested_projects as &$project_name) {
+    $project_name = l($project_name, current_path(), array(
+      'attributes' => array(
+        'class' => array('composer-project-link'),
+      ),
+    ));
+  }
+  $form['github_create']['github_repository_source']['composer_project']['#description'] .= theme('item_list', array('items' => $suggested_projects, 'title' => t('Suggested Projects:')));
+
   $form['git_url']['#required'] = FALSE;
   $form['git_url']['#element_validate'] = array(
     'devshop_github_create_project_form_set_values'
