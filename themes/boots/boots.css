@@ -1282,3 +1282,10 @@ footer.anonymous-page {
 .alert-project-welcome h2 {
     margin-top: 0px;
 }
+
+#edit-github-create label,
+.form-item-github-repos label
+{
+    display: block;
+}
+
