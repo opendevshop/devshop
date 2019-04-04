@@ -1273,3 +1273,12 @@ footer.anonymous-page {
 .form-item-github-repository-name  {
     display: inline-block;
 }
+
+
+.alert-project-welcome {
+    margin: 2em 0em;
+    padding: 1em 2em;
+}
+.alert-project-welcome h2 {
+    margin-top: 0px;
+}
