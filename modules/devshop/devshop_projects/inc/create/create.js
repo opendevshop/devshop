@@ -4,27 +4,34 @@
  * Step 1: Takes the entered name and creates a base url and code path from it.
  */
 (function ($) {
-  Drupal.behaviors.createStep1 = {
+
+  Drupal.devshopFilterProjectName = function (inputElement) {
+    return inputElement.val().split("/").pop().replace('.git', '').replace(/[^a-z0-9]/gi, '').toLowerCase()
+  }
+
+  Drupal.devshopSetProjectName = function (inputElement) {
+    var fixedProjectName =  Drupal.devshopFilterProjectName(inputElement);
+    if (fixedProjectName != '') {
+      $('#edit-title').val(fixedProjectName);
+    }
+  }
+
+  Drupal.behaviors.devshopSourceSelect = {
     attach: function (context, settings) {
+      Drupal.settings.devshop.projectNameSourceElements.forEach(function( selector ) {
+        console.log($(selector).prop("tagName"), selector);
 
-      // Dynamically replace special and uppercase characters.
-      $( "#edit-git-url" ).keyup(function(event) {
-
-        if ($( "#edit-title" ).val() == '') {
-          var fixedProjectName = $(this).val().split("/").pop().replace(/[^a-z0-9]/gi, '').toLowerCase();
-          if (fixedProjectName != '') {
-            $('#edit-title').val(fixedProjectName);
-          }
+        if ($(selector).prop("tagName") == 'SELECT') {
+          var eventName = 'change';
         }
+        else {
+          var eventName = 'keyup';
+        }
+
+        $(selector).bind(eventName, function(event) {
+          Drupal.devshopSetProjectName($(this));
+        });
       });
-
-      // Dynamically replace special and uppercase characters.
-      $( "#edit-title" ).keyup(function(event) {
-        var fixedProjectName = $(this).val().replace(/[^a-z0-9]/gi, '').toLowerCase();
-        $(this).val(fixedProjectName);
-
-      });
-
     }
   };
 }(jQuery));
