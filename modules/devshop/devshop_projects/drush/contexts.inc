@@ -22,6 +22,47 @@ function devshop_projects_hosting_project_context_options(&$task) {
     $task->ref->no_verify = TRUE;
     node_save($task->ref);
   }
+  elseif ($task->ref->project->settings->create_project_settings['github_repository_source']['populate_choice'] == 'create') {
+
+    $composer_project = $task->ref->project->settings->create_project_settings['github_repository_source']['composer_project'];
+    $composer_create_project_command = "composer create-project {$composer_project} {$task->ref->project->name} --no-interaction --ansi";
+
+    $home = variable_get('aegir_home', '/var/aegir');
+    $branch = 'master';
+
+    $git_url = $task->ref->project->git_url;
+    $clone_dir = "$home/repos/{$task->ref->project->name}";
+
+    $account = user_load($task->uid);
+    $name = $account->name;
+    $mail = $account->mail;
+    $env = array();
+
+    // Make commit using environment variables for NAME and EMAIL, if specified.
+    if (!empty($name)) {
+      $env['GIT_AUTHOR_NAME'] = $name;
+      $env['GIT_COMMITTER_NAME'] = $name;
+    }
+    if (!empty($mail)) {
+      $env['GIT_AUTHOR_MAIL'] = $mail;
+      $env['GIT_COMMITTER_MAIL'] = $mail;
+    }
+
+    $hostname = $_SERVER['HOSTNAME'];
+
+    if (!file_exists("$home/repos")) {
+      provision_process("mkdir -p $home/repos", null, t('Creating repos directory'));
+    }
+    provision_process($composer_create_project_command,"$home/repos", t('Creating composer project...'));
+    provision_process("git init", $clone_dir);
+    provision_process("git remote add origin $git_url", $clone_dir);
+    provision_process("git add .gitignore", $clone_dir);
+    provision_process("git add -A", $clone_dir);
+    provision_process("git status", $clone_dir);
+    provision_process("git commit -m 'Repo created by DevShop on $hostname using the command `$composer_create_project_command`'", $clone_dir, t('Committing codebase...'), $env);
+    provision_process("git push -u origin $branch", $clone_dir);
+
+  }
 
   // Save project object to drush alias (aegir context).
   if (isset($task->ref->project)) {
