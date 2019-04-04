@@ -302,7 +302,7 @@ function devmaster_task_finalize() {
 
   // Make sure "chosen" widget allows "contains" string searching.
   variable_set('chosen_search_contains', 1);
-  variable_set('chosen_jquery_selector', 'select');
+  variable_set('chosen_jquery_selector', 'select:visible');
   variable_set('chosen_minimum_single', 0);
   variable_set('chosen_minimum_multiple', 0);
 
