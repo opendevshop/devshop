@@ -159,7 +159,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     $options[$repo['org']][$repo['url']] = $repo_name;
   }
 
-  if (count($options)) {
+  if (count($options) && empty($form['git_url']['#default_value'])) {
     $form['git_source']['#default_value'] = 'github_existing';
   }
 
@@ -209,6 +209,14 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#element_validate' => array(
       'devshop_github_create_repository'
     ),
+  );
+  $form['github_create']['github_repository_public'] = array(
+    '#type' => 'radios',
+    '#options' => array(
+      1 => t('Public: Anyone can see this repository. You choose who can commit.'),
+      0 => t('Private: You choose who can see and commit to this repository.')
+    ),
+    '#default_value' => 1,
   );
 
   $form['git_url']['#required'] = FALSE;
@@ -260,7 +268,34 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
  */
 function devshop_github_create_repository($element, &$form_state, &$form) {
 
-  if ($form_state['values']['git_url_select'] == '_create') {
+  if ($form_state['values']['git_source'] == 'github_create') {
+
+    if (empty($element['#value'])) {
+      form_error($element, t('You must enter a repository name.'));
+    }
+    else {
+      $client = devshop_github_client();
+      $name = $element['#value'];
+      $organization = $form_state['values']['github_organization'];
+      $public = $form_state['values']['github_repository_public'];
+      $description = t('Created by DevShop on @date', array('@date' => format_date(time())));
+
+      try {
+        $repo = $client->repos()->create($name,
+          $description,
+          '',
+          $public,
+          $organization
+        );
+        form_set_value($form['git_url'], $repo['ssh_url'],$form_state);
+        drupal_set_message(t('New GitHub Repository was created! See !link.', array(
+          '!link' => l($repo['html_url'], $repo['html_url']),
+        )));
+      }
+      catch (\Exception $e) {
+        form_error($element, t('Error from GitHub: ') . $e->getMessage());
+      }
+    }
 
     // TODO: CREATE NEW GITHUB REPO!
 
