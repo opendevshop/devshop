@@ -289,6 +289,9 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
         ),
       ),
     ),
+    '#element_validate' => array(
+      'devshop_github_set_import_url'
+    ),
   );
 
   $form['settings']['github_repository_source']['import_suggestions'] = array(
@@ -360,6 +363,9 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
         ),
       ),
     ),
+    '#element_validate' => array(
+      'devshop_github_set_composer_project'
+    ),
   );
 
 
@@ -395,8 +401,6 @@ function devshop_github_devshop_project_git_repo_options() {
 }
 
 /**
- * Element validation for License Key. Pings devshop.support
- *
  * @param $element
  * @param $form_state
  * @param $form
@@ -404,6 +408,28 @@ function devshop_github_devshop_project_git_repo_options() {
 function devshop_github_create_project_form_set_values($element, &$form_state, &$form) {
   if ($form_state['values']['git_source'] == 'github_existing') {
     form_set_value($element, $form_state['values']['github_repos'] , $form_state);
+  }
+}
+
+/**
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_github_set_import_url($element, &$form_state, &$form) {
+  if ($form_state['values']['settings']['github_repository_source']['import_suggestions'] != 'custom') {
+    form_set_value($element, $form_state['values']['settings']['github_repository_source']['import_suggestions'], $form_state);
+  }
+}
+
+/**
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_github_set_composer_project($element, &$form_state, &$form) {
+  if ($form_state['values']['settings']['github_repository_source']['composer_project_suggestions'] != 'custom') {
+    form_set_value($element, $form_state['values']['settings']['github_repository_source']['composer_project_suggestions'], $form_state);
   }
 }
 
