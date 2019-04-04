@@ -174,6 +174,8 @@ HTML;
     ),
   );
 
+  $form['settings']['#tree'] = 1;
+
   // We have to tell the front-end what type of field so we can assign the right event.
   drupal_add_js(array(
     'devshop' => array(
@@ -299,7 +301,9 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $project->git_url = $form_state['values']['git_url'];
     $project->code_path = $form_state['values']['code_path'];
     $project->base_url = $form_state['values']['base_url'];
-    
+
+    $project->settings = $form_state['values']['settings'];
+
     // @TODO: We will clone the code for step 2 and look for drupal.
     $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
     
