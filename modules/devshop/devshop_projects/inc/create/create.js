@@ -34,6 +34,15 @@
       });
     }
   };
+
+  Drupal.behaviors.devshopComposerProjects = {
+    attach: function (context, settings) {
+      $('a.composer-project-link').click(function(e) {
+        e.preventDefault();
+        $('#edit-composer-project').val($(this).html());
+      })
+    }
+  }
 }(jQuery));
 
 /**

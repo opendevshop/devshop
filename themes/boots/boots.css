@@ -1289,3 +1289,9 @@ footer.anonymous-page {
     display: block;
 }
 
+
+
+input#edit-composer-project {
+    width: 50%;
+    width: 20em;
+}
