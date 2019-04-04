@@ -488,7 +488,6 @@ function devshop_github_project_create_webhook($form, $form_state) {
             'insecure_ssl' => '1',
         ),
     ));
-    dsm($hook);
   }
   catch (Github\Exception\ValidationFailedException $e) {
     if ($e->getMessage() == 'Validation Failed: Hook already exists on this repository') {
