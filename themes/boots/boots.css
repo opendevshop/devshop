@@ -411,9 +411,11 @@ input.form-control.webhook-url {
 }
 
 .dropdown-menu li label,
-.environment label,
+.environment label
+/* Keeping... not sure if this affects other UI elements.
 .well label,
 .well dt
+ */
 {
   font-size: .7em;
   text-transform: uppercase;

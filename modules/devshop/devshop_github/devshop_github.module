@@ -152,42 +152,35 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       ))));
   }
   else {
-    $form['connect'] = array(
-      '#markup' => t('DevShop GitHub Integration is active. The server has confirmed access to GitHub repositories.'),
-      '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
-      '#suffix' => '</div>',    );
+    $form['connect'] = array();
   }
 
   $repos = variable_get('devshop_github_available_repositories', array());
-
-  $options = array(
-    t('To get started,') => array(
-      '_create' => t('Create a new GitHub Repository'),
-      '_help' => t('or choose an existing GitHub Repository'),
-      '_custom' => t('Use custom git URL'),
-    ),
-  );
   foreach ($repos as $repo_name => $repo) {
     $options[$repo['org']][$repo['url']] = $repo_name;
   }
 
-  $form['git_url_select'] = array(
-    '#title' => t('Git Repository'),
+  if (count($options)) {
+    $form['git_source']['#default_value'] = 'github_existing';
+  }
+
+  $form['github_repos'] = array(
+    '#title' => t('GitHub Repos'),
     '#type' => 'select',
     '#options' => $options,
     '#default_value' => $form['git_url']['#default_value'],
     '#weight' => -999,
     '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos'),
     '#bootstrap_ignore_pre_render' => TRUE,
-  );
-
-  $form['git_url']['#required'] = FALSE;
-  $form['git_url']['#element_validate'][] = 'devshop_github_create_project_form_set_values';
-  $form['git_url']['#states'] = array(
-    'visible' => array(
-      'select[name="git_url_select"]' => array('value' => '_custom'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="git_source"]' => array(
+          'value' => 'github_existing'
+        ),
+      ),
     ),
   );
+
   $form['github_create'] = array(
     '#type' => 'item',
     '#title' => t('Repo Owner and Name'),
@@ -196,10 +189,13 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#weight' => -998,
     '#states' => array(
       'visible' => array(
-        'select[name="git_url_select"]' => array('value' => '_create'),
+        ':input[name="git_source"]' => array(
+          'value' => 'github_create'
+        ),
       ),
     ),
   );
+
   $form['github_create']['github_organization'] = array(
     '#type' => 'select',
     '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
@@ -214,6 +210,16 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#element_validate' => array(
       'devshop_github_create_repository'
     ),
+  );
+}
+
+/**
+ * Implements hook_devshop_project_git_repo_options().
+ */
+function devshop_github_devshop_project_git_repo_options() {
+  return array(
+    'github_create' => t('Create a new GitHub repository'),
+    'github_existing' => t('Use an existing GitHub repository'),
   );
 }
 
