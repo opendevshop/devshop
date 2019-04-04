@@ -283,9 +283,9 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#type' => 'textfield',
     '#description' => t('Enter a composer project name into this field to populate your new repository.'),
     '#attributes' => array(
-      'placeholder' => t('drupal-composer/drupal-project:8.x-dev'),
+      'placeholder' => t('devshop/composer-template:8.x-dev'),
     ),
-    '#default_value' => t('drupal-composer/drupal-project:8.x-dev'),
+    '#default_value' => t('devshop/composer-template:8.x-dev'),
     '#size' => 32,
     '#maxlength' => 64,
     '#field_prefix' => '<div class="input-group"><div class="input-group-addon">composer create-project </div>',
