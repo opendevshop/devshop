@@ -12,7 +12,7 @@ Feature: Create a project and check settings
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "drpl8" for "Project Code Name"
-    And I fill in "http://github.com/opendevshop/drupal_docroot.git" for "Git URL"
+    And I fill in "http://github.com/opendevshop/drupal_docroot.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2

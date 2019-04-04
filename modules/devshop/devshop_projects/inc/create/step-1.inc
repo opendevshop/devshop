@@ -159,7 +159,7 @@ HTML;
   $form['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
-    '#title' => t('Git URL'),
+    '#title' => t('Git Repository URL'),
     '#default_value' => $project->git_url,
     '#maxlength' => 1024,
     '#weight' => -1,
