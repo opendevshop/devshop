@@ -178,6 +178,15 @@ HTML;
     ),
   );
 
+  // We have to tell the front-end what type of field so we can assign the right event.
+  drupal_add_js(array(
+    'devshop' => array(
+      'projectNameSourceElements' => array(
+        '#edit-git-url'
+      ),
+    ),
+  ), 'setting');
+
   $tips[] = t('Use the "ssh" url whenever possible. For example: <code>git@github.com:opendevshop/repo.git</code>');
   $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
   $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
