@@ -1291,12 +1291,12 @@ footer.anonymous-page {
 
 
 
-input#edit-composer-project {
+input#edit-github-create-github-repository-source-composer-project {
     width: 20em;
 }
 
-
-
+.form-item-github-create-github-organization,
+.form-item-github-create-github-repository-name,
 #edit-github-create #edit-populate-choice > div.form-type-radio,
 #edit-github-create #edit-populate-choice > div.form-type-radio > label {
   display: inline-block;
@@ -1304,4 +1304,12 @@ input#edit-composer-project {
 
 #edit-github-create #edit-populate-choice > div.form-type-radio > label {
     margin-right: 2em;
+}
+
+#edit-github-create-github-organization {
+     min-width: 14em;
+}
+
+#edit-github-create-github-repository-public {
+    padding-bottom: 2em;
 }
