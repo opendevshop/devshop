@@ -181,8 +181,8 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   );
 
   $form['github_create'] = array(
-    '#type' => 'item',
-    '#title' => t('Create a new GitHub repository'),
+    '#type' => 'container',
+    '#tree' => TRUE,
     '#prefix' => '<div class="form-group">',
     '#suffix' => '</div>',
     '#weight' => -998,
@@ -197,6 +197,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   $form['github_create']['github_organization'] = array(
     '#type' => 'select',
+    '#title' => t('Create a new GitHub repository'),
     '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
     '#bootstrap_ignore_pre_render' => TRUE,
     '#field_suffix' => ' / ',
@@ -204,7 +205,8 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   $form['github_create']['github_repository_name'] = array(
     '#type' => 'textfield',
     '#attributes' => array(
-      'placeholder' => t('repo_name')
+      'placeholder' => t('repo_name'),
+      'class' => array('form-inline'),
     ),
     '#element_validate' => array(
       'devshop_github_create_repository'
@@ -225,31 +227,46 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#prefix' => '<div class="well">',
     '#suffix' => '</div>',
   );
-  $form['github_create']['github_repository_source']['help'] = array(
-    '#type' => 'item',
-    '#markup' => t('Choose what to put into your new Git repository. You can import code from an existing repo, or you can run a command like `composer create-project` to create your codebase.'),
-  );
 
   $form['github_create']['github_repository_source']['populate_choice'] = array(
     '#type' => 'radios',
     '#default_value' => 'create',
+    '#title' => t('Choose what to put into your new Git repository'),
     '#options' => array(
       'create' => t('Create project using composer'),
-      'import' => t('Import from other GitHub repository'),
+      'import' => t('Import from another Git URL'),
     ),
   );
+
+  $repos_to_import_from = variable_get('devshop_github_create_repo_templates', array());
   $form['github_create']['github_repository_source']['import'] = array(
-    '#type' => 'select',
+    '#type' => 'textfield',
     '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.'),
-    '#options' => $options,
+    '#attributes' => array(
+      'placeholder' => t('git@githost.com:example/repo.git'),
+    ),
     '#states' => array(
       'visible' => array(
-        ':input[name="populate_choice"]' => array(
+        ':input[name="github_create[github_repository_source][populate_choice]"]' => array(
           'value' => 'import'
         ),
       ),
     ),
   );
+
+  $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
+    'git@github.com:aegir-project/example-drupal-composer.git',
+  ));
+
+  foreach ($suggested_repos as &$project_name) {
+    $project_name = l($project_name, current_path(), array(
+      'attributes' => array(
+        'class' => array('composer-repo-link'),
+      ),
+    ));
+  }
+  $form['github_create']['github_repository_source']['import']['#description'] .= theme('item_list', array('items' => $suggested_repos, 'title' => t('Suggested Repositories:')));
+
   $form['github_create']['github_repository_source']['composer_project'] = array(
     '#type' => 'textfield',
     '#description' => t('Enter a composer project name into this field to populate your new repository.'),
@@ -263,7 +280,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
         </div>',
     '#states' => array(
       'visible' => array(
-        ':input[name="populate_choice"]' => array(
+        ':input[name="github_create[github_repository_source][populate_choice]"]' => array(
           'value' => 'create'
         ),
       ),
