@@ -39,12 +39,12 @@
     attach: function (context, settings) {
       $('a.composer-project-link').click(function(e) {
         e.preventDefault();
-        $('#edit-github-create-github-repository-source-composer-project').val($(this).html());
+        $('#edit-settings-github-repository-source-composer-project').val($(this).html());
       });
 
       $('a.composer-repo-link').click(function(e) {
         e.preventDefault();
-        $('#edit-github-create-github-repository-source-import').val($(this).html());
+        $('#edit-settings-github-repository-source-input').val($(this).html());
       })
     }
   }
