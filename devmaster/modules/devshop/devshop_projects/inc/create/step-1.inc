@@ -148,7 +148,6 @@ HTML;
     '#title' => t('Choose the source of your code'),
     '#type' => 'radios',
     '#options' => $options,
-    '#default_value' => $form['git_url']['#default_value'],
     '#weight' => -1000,
     '#description' => t(''),
     '#default_value'=> 'custom',
@@ -172,9 +171,6 @@ HTML;
           'value' => 'custom'
         ),
       ),
-    ),
-    '#element_validate' => array(
-      'devshop_create_project_form_set_values',
     ),
   );
 
