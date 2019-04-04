@@ -281,6 +281,9 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $node->project->git_url = $form_state['values']['git_url'];
     $node->project->code_path = $form_state['values']['code_path'];
     $node->project->base_url = $form_state['values']['base_url'];
+
+    $project->settings->create_project_settings = $form_state['values']['settings'];
+
     node_save($node);
   }
   // Create new project node
@@ -302,7 +305,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $project->code_path = $form_state['values']['code_path'];
     $project->base_url = $form_state['values']['base_url'];
 
-    $project->settings = $form_state['values']['settings'];
+    $project->settings->create_project_settings = $form_state['values']['settings'];
 
     // @TODO: We will clone the code for step 2 and look for drupal.
     $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
