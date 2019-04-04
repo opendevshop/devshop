@@ -230,13 +230,13 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#markup' => t('Choose what to put into your new Git repository. You can import code from an existing repo, or you can run a command like `composer create-project` to create your codebase.'),
   );
 
-  $form['github_create']['github_repository_source']['import_radio'] = array(
-    '#type' => 'radio',
-    '#title' => t('Import from other GitHub repository'),
-    '#attributes' => array(
-      'name' => 'repo_source_populate_method',
-      'value' => 'import',
-    )
+  $form['github_create']['github_repository_source']['populate_choice'] = array(
+    '#type' => 'radios',
+    '#default_value' => 'create',
+    '#options' => array(
+      'create' => t('Create project using composer'),
+      'import' => t('Import from other GitHub repository'),
+    ),
   );
   $form['github_create']['github_repository_source']['import'] = array(
     '#type' => 'select',
@@ -244,24 +244,15 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#options' => $options,
     '#states' => array(
       'visible' => array(
-        ':input[name="repo_source_populate_method"]' => array(
+        ':input[name="populate_choice"]' => array(
           'value' => 'import'
         ),
       ),
     ),
   );
-  $form['github_create']['github_repository_source']['composer_project_radio'] = array(
-    '#type' => 'radio',
-    '#title' => t('Enter a composer project name'),
-    '#attributes' => array(
-      'name' => 'repo_source_populate_method',
-      'value' => 'composer_project',
-    )
-  );
   $form['github_create']['github_repository_source']['composer_project'] = array(
     '#type' => 'textfield',
     '#description' => t('Enter a composer project name into this field to populate your new repository.'),
-    '#options' => $options,
     '#attributes' => array(
       'placeholder' => t('drupal-composer/drupal-project:8.x-dev'),
     ),
@@ -272,8 +263,8 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
         </div>',
     '#states' => array(
       'visible' => array(
-        ':input[name="repo_source_populate_method"]' => array(
-          'value' => 'composer_project'
+        ':input[name="populate_choice"]' => array(
+          'value' => 'create'
         ),
       ),
     ),
