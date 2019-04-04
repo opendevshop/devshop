@@ -183,6 +183,7 @@ HTML;
   if (!$completed) {
     $form['#no_finish'] = TRUE;
     $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
+    $note .= '<p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p>';
 
     $form['help'] = array(
       '#markup' => $note,
@@ -235,7 +236,7 @@ HTML;
       '#options' => $available_profiles,
       '#title' => t('Project Install Profile'),
       '#required' => 1,
-      '#description' => t('All sites in your project must use the same installation profile, and it must exist in all branches.  Choose the installation profile for this project.'),
+      '#description' => t('Choose the default installation profile for this project.'),
       '#default_value' => $default_profile,
     );
   }
