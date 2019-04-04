@@ -1313,3 +1313,18 @@ input#edit-settings-github-repository-source-composer-project{
 #edit-github-create-github-repository-public {
     padding-bottom: 2em;
 }
+
+.form-control.chosen-container {
+    padding: 0px;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+
+    height: 30px;
+}
+.form-control.chosen-container > a > span {
+  padding: 6px 0px;
+}
+.form-control.chosen-container.chosen-container-single .chosen-single {
+    height: 34px;
+}
