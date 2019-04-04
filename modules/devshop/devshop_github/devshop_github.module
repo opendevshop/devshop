@@ -165,7 +165,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   }
 
   $form['github_repos'] = array(
-    '#title' => t('GitHub Repos'),
+    '#title' => t('Use an existing GitHub repository'),
     '#type' => 'select',
     '#options' => $options,
     '#default_value' => $form['git_url']['#default_value'],
@@ -183,7 +183,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   $form['github_create'] = array(
     '#type' => 'item',
-    '#title' => t('Repo Owner and Name'),
+    '#title' => t('Create a new GitHub repository'),
     '#prefix' => '<div class="form-group">',
     '#suffix' => '</div>',
     '#weight' => -998,
