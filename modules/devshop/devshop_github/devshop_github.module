@@ -203,7 +203,11 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#title' => t('Create a new GitHub repository'),
     '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
     '#bootstrap_ignore_pre_render' => TRUE,
-    '#field_suffix' => ' / ',
+    '#attributes' => array(
+      'class' => array(
+        'form-control form-inline'
+      ),
+    ),
   );
   $form['github_create']['github_repository_name'] = array(
     '#type' => 'textfield',
@@ -251,7 +255,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   );
 
   $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
-    'git@github.com:aegir-project/example-drupal-composer.git',
+    'git@github.com:opendevshop/devshop-composer-template.git',
   ));
   $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
   $options['custom'] = t('Enter a custom Git URL');
