@@ -73,7 +73,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
-    '#title' => t('Path to Drupal'),
+    '#title' => t('Document Root'),
     '#description' => theme('item_list', ['items' => $items]),
     '#size' => 40,
     '#default_value' => $project->drupal_path,

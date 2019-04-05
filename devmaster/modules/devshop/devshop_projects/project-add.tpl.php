@@ -24,7 +24,7 @@
 
         <?php if ($project->drupal_path): ?>
         <li class="list-group-item" data-toggle="tooltip" data-placement="right" title="<?php print t('The relative path to the Drupal code within your repository.');?>">
-            <label><?php print t('Path to Drupal'); ?></label>
+            <label><?php print t('Document Root'); ?></label>
             <p><?php print $project->drupal_path; ?></p>
         </li>
         <?php endif; ?>
