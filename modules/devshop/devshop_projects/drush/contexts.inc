@@ -11,6 +11,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   $branches = getBranchesAndTags($task->ref->project->git_url);
 
+  $home = variable_get('aegir_home', '/var/aegir');
+  $clone_dir = "$home/repos/{$task->ref->project->name}";
+
   // If something went wrong connecting to the git repo, don't wipe out our branches.
   if (!empty($branches['branches'])) {
     $task->ref->project->settings->git['branches'] = $branches['branches'];
@@ -22,16 +25,11 @@ function devshop_projects_hosting_project_context_options(&$task) {
     $task->ref->no_verify = TRUE;
     node_save($task->ref);
   }
-  elseif ($task->ref->project->settings->create_project_settings['github_repository_source']['populate_choice'] == 'create') {
 
-    $composer_project = $task->ref->project->settings->create_project_settings['github_repository_source']['composer_project'];
-    $composer_create_project_command = "composer create-project {$composer_project} {$task->ref->project->name} --no-interaction --ansi";
-
-    $home = variable_get('aegir_home', '/var/aegir');
-    $branch = 'master';
+  // If branches are empty, and "github_create" was selected...
+  elseif (!file_exists($clone_dir) && $task->ref->project->settings->create_project_settings['git_source'] == 'github_create') {
 
     $git_url = $task->ref->project->git_url;
-    $clone_dir = "$home/repos/{$task->ref->project->name}";
 
     $account = user_load($task->uid);
     $name = $account->name;
@@ -53,13 +51,29 @@ function devshop_projects_hosting_project_context_options(&$task) {
     if (!file_exists("$home/repos")) {
       provision_process("mkdir -p $home/repos", null, t('Creating repos directory'));
     }
-    provision_process($composer_create_project_command,"$home/repos", t('Creating composer project...'));
-    provision_process("git init", $clone_dir);
-    provision_process("git remote add origin $git_url", $clone_dir);
-    provision_process("git add .gitignore", $clone_dir);
-    provision_process("git add -A", $clone_dir);
-    provision_process("git status", $clone_dir);
-    provision_process("git commit -m 'Repo created by DevShop on $hostname using the command `$composer_create_project_command`'", $clone_dir, t('Committing codebase...'), $env);
+
+    if ($task->ref->project->settings->create_project_settings['github_repository_source']['populate_choice'] == 'import') {
+      $source_url = $task->ref->project->settings->create_project_settings['github_repository_source']['import'];
+      provision_process("git clone $source_url $clone_dir");
+      provision_process("git remote set-url origin $git_url", $clone_dir);
+    }
+    else {
+
+      $composer_project = $task->ref->project->settings->create_project_settings['github_repository_source']['composer_project'];
+      $composer_create_project_command = "composer create-project {$composer_project} {$task->ref->project->name} --no-interaction --ansi";
+
+      provision_process($composer_create_project_command,"$home/repos", t('Creating composer project...'));
+      provision_process("git init", $clone_dir);
+
+      provision_process("git add .gitignore", $clone_dir);
+      provision_process("git add -A", $clone_dir);
+      provision_process("git status", $clone_dir);
+      provision_process("git commit -m 'Repo created by DevShop on $hostname using the command `$composer_create_project_command`'", $clone_dir, t('Committing codebase...'), $env);
+      provision_process("git remote add origin $git_url", $clone_dir);
+    }
+
+    $branch = trim(str_replace('refs/heads/', '', shell_exec("cd {$clone_dir}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+
     provision_process("git push -u origin $branch", $clone_dir);
 
   }
