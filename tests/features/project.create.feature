@@ -23,7 +23,7 @@ Feature: Create a project and check settings
     Then print last drush output
     And I reload the page
 
-    Then I fill in "docroot" for "Path to Drupal"
+    Then I fill in "docroot" for "Document Root"
     When I press "Next"
     And I should see "PATH TO DRUPAL docroot"
 
