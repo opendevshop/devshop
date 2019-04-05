@@ -330,8 +330,8 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
-    '#title' => t('Default Environment Settings'),
-    '#description' => t('These settings will be used when creating new environments.'),
+    '#title' => t('Server Stack'),
+    '#description' => t('The servers to use when creating new environments.'),
     '#group' => 'project_settings',
   );
 
