@@ -17,7 +17,7 @@ function devshop_project_create_step_git($form, $form_state) {
   
   if ($project->verify_error) {
     $form['note'] = array(
-      '#markup' => t('We were unable to connect to your git repository. Check the messages, edit your settings, and try again.'),
+      '#markup' => t('Something went wrong. Check the errors and settings and try again.'),
       '#prefix' => '<div class="alert alert-danger">',
       '#suffix' => '</div>',
       '#weight' => -999,
@@ -50,6 +50,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#attributes'=> array(
         'placeholder' => t('myproject')
       ),
+      '#weight' => 1,
     );
   }
   else {
@@ -61,6 +62,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'item',
       '#title' => t('Project Code Name'),
       '#markup' => $project->name,
+      '#weight' => 1,
     );
   }
   
@@ -143,25 +145,28 @@ HTML;
   );
 
   $options = module_invoke_all('devshop_project_git_repo_options');
-
-  $form['git_source'] = array(
+  $form['source'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'well'
+      ),
+    ),
+  );
+  $form['source']['git_source'] = array(
     '#title' => t('Choose the source of your code'),
     '#type' => 'radios',
     '#options' => $options,
-    '#weight' => -1000,
     '#description' => t(''),
     '#default_value'=> 'custom',
-    '#prefix' => '<div class="well">',
-    '#suffix' => '</div>',
   );
 
-  $form['git_url'] = array(
+  $form['source']['git_url'] = array(
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git Repository URL'),
     '#default_value' => $project->git_url,
     '#maxlength' => 1024,
-    '#weight' => -1,
     '#attributes' => array(
       'placeholder' => 'git@githost.com:myteam/myproject.git'
     ),
@@ -174,7 +179,6 @@ HTML;
     ),
   );
 
-  $form['settings']['#tree'] = 1;
 
   // We have to tell the front-end what type of field so we can assign the right event.
   drupal_add_js(array(
@@ -198,6 +202,7 @@ HTML;
       '#markup' => $tips,
       '#prefix' => '<div class="alert alert-info">',
       '#suffix' => '</div>',
+    '#weight' => 10,
   );
   return $form;
 }
