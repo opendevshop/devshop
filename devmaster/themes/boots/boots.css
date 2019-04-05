@@ -1301,6 +1301,10 @@ footer.anonymous-page {
   display: inline-block;
 }
 
+.form-item-github-create-github-repository-name {
+    width: 14em;
+}
+
 #edit-settings-github-repository-source-populate-choice > div.form-type-radio > label {
     margin-right: 2em;
 }
@@ -1310,7 +1314,7 @@ footer.anonymous-page {
 }
 
 #edit-github-create-github-repository-public {
-    padding-bottom: 2em;
+    padding-bottom: 1em;
 }
 
 .form-control.chosen-container {

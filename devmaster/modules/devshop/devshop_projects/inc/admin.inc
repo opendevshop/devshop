@@ -1,12 +1,52 @@
 <?php
 
 /**
+ * @param $element
+ */
+function devshop_element_validate_explode_array($element, &$form_state, &$form) {
+  $lines = explode(PHP_EOL, $element['#value']);
+  foreach ($lines as $line) {
+    $line = explode('|', $line);
+    if (count($line) > 1) {
+      $options[$line[0]] = $line[1];
+    }
+    else {
+      $options[] = $line[0];
+    }
+  }
+  form_set_value($element, array_filter($options),$form_state);
+}
+
+/**
  * Projects Settings Page
  *
  * All code for admin interface.
  */
 function devshop_projects_settings_form($form, &$form_state) {
   $form = array();
+
+  $form['projects'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Projects'),
+  );
+  $form['projects']['devshop_git_repo_suggestions'] = array(
+    '#title' => t('Suggested Git Repositories'),
+    '#description' => t('Enter Git URLs, one per line. When creating a new project, these Git Repositories will available to use as a starting codebase.'),
+    '#type' => 'textarea',
+    '#default_value' => implode(PHP_EOL, variable_get('devshop_git_repo_suggestions', array(
+      'git@github.com:opendevshop/devshop-composer-template.git'
+    ))),
+    '#element_validate' => array('devshop_element_validate_explode_array'),
+  );
+  $form['projects']['devshop_composer_project_suggestions'] = array(
+    '#title' => t('Suggested Composer Project'),
+    '#description' => t('Enter composer project names, one per line. These projects will be available to users creating new DevShop Project Git repositories.'),
+    '#type' => 'textarea',
+    '#default_value' => implode(PHP_EOL, variable_get('devshop_composer_project_suggestions', array(
+      'devshop/composer-template:8.x-dev'
+    ))),
+    '#element_validate' => array('devshop_element_validate_explode_array'),
+  );
 
   $form['paths'] = array(
     '#type' => 'fieldset',
