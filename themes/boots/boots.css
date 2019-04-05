@@ -1291,14 +1291,19 @@ footer.anonymous-page {
 
 #edit-settings-github-repository-source-composer-project-suggestions,
 #edit-settings-github-repository-source-composer-project {
-    width: 20em;
+    width: 25em;
 }
 
 .form-item-github-create-github-organization,
-.form-item-github-create-github-repository-name,
-#edit-settings-github-repository-source-populate-choice > div.form-type-radio,
-#edit-settings-github-repository-source-populate-choice > div.form-type-radio > label {
+.form-item-github-create-github-repository-name {
   display: inline-block;
+}
+
+form .well .form-type-radios label,
+form .well .form-type-radios .form-type-radio
+{
+    display: inline-block;
+    margin-right: 1em;
 }
 
 .form-item-github-create-github-repository-name {

@@ -159,19 +159,18 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     $options[$repo['org']][$repo['url']] = $repo_name;
   }
 
-  if (count($options) && empty($form['git_url']['#default_value'])) {
-    $form['git_source']['#default_value'] = 'github_existing';
+  if (count($options) && empty($form['source']['git_url']['#default_value'])) {
+    $form['source']['git_source']['#default_value'] = 'github_existing';
   }
 
-  unset($form['git_source']['#options']['custom']);
-  $form['git_source']['#options']['custom'] = t('Custom Git repository URL');
+  unset($form['source']['git_source']['#options']['custom']);
+  $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
 
-  $form['github_repos'] = array(
+  $form['source']['github_repos'] = array(
     '#title' => t('Use an existing GitHub repository'),
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => $form['git_url']['#default_value'],
-    '#weight' => -999,
+    '#default_value' => $form['source']['git_url']['#default_value'],
     '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos'),
     '#bootstrap_ignore_pre_render' => TRUE,
     '#states' => array(
@@ -183,12 +182,14 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $form['github_create'] = array(
+  $form['source']['github_create'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
-    '#prefix' => '<div class="form-group">',
-    '#suffix' => '</div>',
-    '#weight' => -998,
+    '#attributes' => array(
+      'class' => array(
+        'form-group'
+      ),
+    ),
     '#states' => array(
       'visible' => array(
         ':input[name="git_source"]' => array(
@@ -196,9 +197,13 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
         ),
       ),
     ),
+    '#parents' => array(
+      'github_create',
+    ),
+
   );
 
-  $form['github_create']['github_organization'] = array(
+  $form['source']['github_create']['github_organization'] = array(
     '#type' => 'select',
     '#title' => t('Create a new GitHub repository'),
     '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
@@ -209,7 +214,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       ),
     ),
   );
-  $form['github_create']['github_repository_name'] = array(
+  $form['source']['github_create']['github_repository_name'] = array(
     '#type' => 'textfield',
     '#attributes' => array(
       'placeholder' => t('repo_name'),
@@ -219,7 +224,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       'devshop_github_create_repository'
     ),
   );
-  $form['github_create']['github_repository_public'] = array(
+  $form['source']['github_create']['github_repository_public'] = array(
     '#type' => 'radios',
     '#options' => array(
       1 => t('Public: Anyone can see this repository. You choose who can commit.'),
@@ -228,9 +233,15 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#default_value' => 1,
   );
 
-  $form['settings']['#weight'] = -1;
-  $form['settings']['github_repository_source'] = array(
+  $form['source']['settings']['#weight'] = 1;
+  $form['source']['settings']['#tree'] = 1;
+  $form['github_repository_source'] = array(
     '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'well'
+      ),
+    ),
     '#states' => array(
       'visible' => array(
         ':input[name="git_source"]' => array(
@@ -239,18 +250,22 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       ),
     ),
     '#tree' => 1,
+    '#parents' => array(
+      'settings',
+      'github_repository_source',
+    ),
   );
 
 
-  $form['settings']['github_repository_source']['populate_choice'] = array(
-    '#prefix' => '<div class="well">',
+  $form['github_repository_source']['populate_choice'] = array(
+//    '#prefix' => '<div class="well">',
     '#type' => 'radios',
     '#default_value' => 'create',
     '#title' => t('Choose what to put into your new Git repository'),
     '#options' => array(
       'create' => t('Create project using composer'),
       'import' => t('Import from another Git URL'),
-    )
+    ),
   );
 
   $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
@@ -259,7 +274,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
   $options['custom'] = t('Enter a custom Git URL');
 
-  $form['settings']['github_repository_source']['import'] = array(
+  $form['github_repository_source']['import'] = array(
     '#type' => 'textfield',
     '#attributes' => array(
       'placeholder' => t('git@githost.com:example/repo.git'),
@@ -284,7 +299,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $form['settings']['github_repository_source']['import_suggestions'] = array(
+  $form['github_repository_source']['import_suggestions'] = array(
     '#type' => 'select',
     '#options' => $options,
     '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.'),
@@ -310,12 +325,12 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   $options = array_combine(array_values($suggested_projects),array_values($suggested_projects));
   $options['custom'] = t('Enter custom project');
 
-  $form['settings']['github_repository_source']['composer_project_suggestions'] = array(
+  $form['github_repository_source']['composer_project_suggestions'] = array(
     '#type' => 'select',
     '#options' => $options,
     '#description' => t('The command above will be run and all the resulting files will be committed to your repository.'),
-      '#field_prefix' => '<div class="input-group"><code class="input-group-addon">composer create-project </code>',
-    '#field_suffix' => '<code class="input-group-addon input-group-addon-url">' . t('--no-interaction projectname') .'</code>
+    '#field_prefix' => '<div class="input-group"><code class="input-group-addon">composer create-project </code>',
+    '#field_suffix' => '<code class="input-group-addon input-group-addon-url">' . t('projectname') .'</code>
         </div>',
     '#states' => array(
       'visible' => array(
@@ -329,7 +344,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $form['settings']['github_repository_source']['composer_project'] = array(
+  $form['github_repository_source']['composer_project'] = array(
     '#type' => 'textfield',
     '#description' => t('The command above will be run and all the resulting files will be committed to your repository.') . ' ' . l(t('Suggested Projects'), '', array(
       'attributes' => array(
@@ -337,7 +352,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       ),
     )),
     '#field_prefix' => '<div class="input-group"><code class="input-group-addon">composer create-project </code>',
-    '#field_suffix' => '<code class="input-group-addon input-group-addon-url">' . t('--no-interaction projectname') .'</code>
+    '#field_suffix' => '<code class="input-group-addon input-group-addon-url"> ' . t('projectname') .'</code>
         </div>',
 //    '#default_value' => $suggested_projects[0],
     '#attributes' => array(
@@ -358,13 +373,13 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $form['settings']['github_repository_source']['wrapper'] = array(
+  $form['github_repository_source']['wrapper'] = array(
     '#markup' => drupal_valid_path('admin/devshop')? l(t("Modify suggested projects in DevShop Settings"), 'admin/devshop'): '',
-    '#suffix' => '</div>',
+//    '#suffix' => '</div>',
   );
 
-  $form['git_url']['#required'] = FALSE;
-  $form['git_url']['#element_validate'] = array(
+  $form['source']['git_url']['#required'] = FALSE;
+  $form['source']['git_url']['#element_validate'] = array(
     'devshop_github_create_project_form_set_values'
   );
 
@@ -454,7 +469,7 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
           $public,
           $organization
         );
-        form_set_value($form['git_url'], $repo['ssh_url'],$form_state);
+        form_set_value($form['source']['git_url'], $repo['ssh_url'],$form_state);
         drupal_set_message(t('New GitHub Repository was created! See !link.', array(
           '!link' => l($repo['html_url'], $repo['html_url']),
         )));
