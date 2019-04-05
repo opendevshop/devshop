@@ -76,10 +76,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     provision_process("git push -u origin $branch", $clone_dir);
 
-  }
-  elseif (file_exists($clone_dir)) {
-    // Delete the clone dir if it still exists to reduce confusion.
-    shell_exec("rm -rf $clone_dir");
+    if (file_exists($clone_dir)) {
+      provision_process("rm -rf $clone_dir", null, t('Removing temporary git clone...'));
+    }
   }
 
   // Save project object to drush alias (aegir context).
