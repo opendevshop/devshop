@@ -63,6 +63,15 @@ function devshop_projects_hosting_project_context_options(&$task) {
       $composer_create_project_command = "composer create-project {$composer_project} {$task->ref->project->name} --no-interaction --ansi";
 
       provision_process($composer_create_project_command,"$home/repos", t('Creating composer project...'));
+      $result = drush_get_context('provision_process_result');
+      if (!$result->isSuccessful()) {
+        return drush_set_error('DEVSHOP_ERROR', 'Composer create-project failed.');
+      }
+
+      if (!file_exists($clone_dir)) {
+        return drush_set_error('DEVSHOP_ERROR', 'Unable to find codebase in ' . $clone_dir);
+      }
+
       provision_process("git init", $clone_dir);
 
       provision_process("git add .gitignore", $clone_dir);
