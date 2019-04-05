@@ -228,17 +228,16 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#default_value' => 1,
   );
 
-
+  $form['settings']['#weight'] = -1;
   $form['settings']['github_repository_source'] = array(
     '#type' => 'container',
     '#states' => array(
       'visible' => array(
-        ':input[name="github_create[github_repository_name]"]' => array(
-          '!value' => ''
+        ':input[name="git_source"]' => array(
+          'value' => 'github_create'
         ),
       ),
     ),
-    '#weight' => 10,
     '#tree' => 1,
   );
 
@@ -251,7 +250,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#options' => array(
       'create' => t('Create project using composer'),
       'import' => t('Import from another Git URL'),
-    ),
+    )
   );
 
   $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
@@ -265,7 +264,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#attributes' => array(
       'placeholder' => t('git@githost.com:example/repo.git'),
     ),
-    '#description' => t('Your new repo will be a direct clone of this repository. All commits will be loaded into the new repository.') .' ' . l(t('Choose from suggested repos'), '', array(
+    '#description' => t('Your new repo will be a clone of this repository on the default branch.') .' ' . l(t('Suggested Repos'), '', array(
       'attributes' => array(
         'class' => array('put-back-suggested-repos'),
       ),
@@ -332,7 +331,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   $form['settings']['github_repository_source']['composer_project'] = array(
     '#type' => 'textfield',
-    '#description' => t('The command above will be run and all the resulting files will be committed to your repository.') . ' ' . l(t('Choose from suggested projects'), '', array(
+    '#description' => t('The command above will be run and all the resulting files will be committed to your repository.') . ' ' . l(t('Suggested Projects'), '', array(
       'attributes' => array(
         'class' => array('put-back-suggested-projects'),
       ),
@@ -359,9 +358,9 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-
   $form['settings']['github_repository_source']['wrapper'] = array(
-    '#markup' => '</div>',
+    '#markup' => drupal_valid_path('admin/devshop')? l(t("Modify suggested projects in DevShop Settings"), 'admin/devshop'): '',
+    '#suffix' => '</div>',
   );
 
   $form['git_url']['#required'] = FALSE;
