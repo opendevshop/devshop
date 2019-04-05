@@ -25,7 +25,7 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#default_value' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
   );
   $form['paths']['devshop_project_default_drupal_path'] = array(
-    '#title' => t('Default path to Drupal'),
+    '#title' => t('Default Document Root'),
     '#type' => 'textfield',
     '#description' => t("If index.php isn't in the root of the git repo, you can edit the 'Path to Drupal' setting on each project.  Set a default 'Path to Drupal' here. (For example, an Acquia hosted repo uses 'docroot'.)"),
     '#default_value' => variable_get('devshop_project_default_drupal_path', ''),

@@ -26,13 +26,13 @@ Feature: Create a project with Drupal in the docroot.
     Then print last drush output
     And I reload the page
 
-    When I fill in "docroot" for "Path to Drupal"
+    When I fill in "docroot" for "Document Root"
 
     # Step 3
     When I press "Next"
     # Users no longer see this, we wait for verify before showing step 2.
 #    Then I should see "Please wait while we connect to your repository and determine any branches."
-    And I should see "Path to Drupal"
+    And I should see "Document Root"
     And I should see "rootproject"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
