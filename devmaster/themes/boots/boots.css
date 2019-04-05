@@ -985,7 +985,7 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   white-space: normal;
 }
 
-.panel-ansii.panel-body pre {
+pre.ansi_box {
     padding: 1.25em;
     white-space: pre-wrap;
     line-height: 120%;
