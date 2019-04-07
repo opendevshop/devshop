@@ -369,6 +369,7 @@ ANSIBLE_EXTRA_VARS+=("playbook_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
 ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
+ANSIBLE_EXTRA_VARS+=("mysql_root_password: ${MYSQL_ROOT_PASSWORD}")
 ANSIBLE_EXTRA_VARS+=("travis: false")
 ANSIBLE_EXTRA_VARS+=("supervisor_running: true")
 
