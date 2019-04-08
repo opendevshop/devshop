@@ -88,6 +88,17 @@ function devshop_projects_hosting_project_context_options(&$task) {
     if (file_exists($clone_dir)) {
       provision_process("rm -rf $clone_dir", null, t('Removing temporary git clone...'));
     }
+
+    $branches = getBranchesAndTags($task->ref->project->git_url);
+    $task->ref->project->settings->git['branches'] = $branches['branches'];
+    $task->ref->project->settings->git['tags'] = $branches['tags'];
+    $task->ref->project->settings->git['refs'] = $branches['refs'];
+
+    // Save the project node now that we have branches and tags.
+    // Don't verify again, this is the verification process.
+    $task->ref->no_verify = TRUE;
+    node_save($task->ref);
+
   }
 
   // Save project object to drush alias (aegir context).
