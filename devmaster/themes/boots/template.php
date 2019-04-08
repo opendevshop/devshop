@@ -706,19 +706,17 @@ function boots_preprocess_page(&$vars){
       $vars['title2_url'] = 'node/' . $object->nid;
       $vars['title2'] = l($vars['title2'], $vars['title2_url']);
 
-    }
-
-    // For node/%/* pages where node is site, use the environment name as title2
-    if (isset($vars['node']->environment)){
-
-      $vars['title2_url'] = url('node/' . ($vars['node']->type == 'site'? $vars['node']->nid: $vars['node']->environment->site));
-      $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
-
       if ($vars['subtitle2'] == 'Platform') {
         $vars['subtitle2'] = t('Environment') . ' ' . t('Platform');
       }
     }
 
+    // For node/%/* pages where node is site or platform, use the environment name as title2
+    if (($vars['node']->type == 'site' || $vars['node']->type == 'platform')&& isset($vars['node']->environment)){
+
+      $vars['title2_url'] = url('node/' . $vars['node']->nid);
+      $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
+    }
     // On environment settings page...
     if (arg(0) == 'node' && arg(3) == 'env') {
       $project_node = node_load(arg(1));
