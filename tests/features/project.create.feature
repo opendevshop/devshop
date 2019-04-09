@@ -25,7 +25,7 @@ Feature: Create a project and check settings
 
     Then I fill in "docroot" for "Document Root"
     When I press "Next"
-    And I should see "PATH TO DRUPAL docroot"
+    And I should see "DOCUMENT ROOT docroot"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
