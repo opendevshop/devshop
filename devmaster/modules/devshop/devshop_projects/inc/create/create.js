@@ -4,29 +4,72 @@
  * Step 1: Takes the entered name and creates a base url and code path from it.
  */
 (function ($) {
-  Drupal.behaviors.createStep1 = {
+
+  Drupal.devshopFilterProjectName = function (inputElement) {
+    return inputElement.val().split("/").pop().replace('.git', '').replace(/[^a-z0-9]/gi, '').toLowerCase()
+  }
+
+  Drupal.devshopSetProjectName = function (inputElement) {
+    var fixedProjectName =  Drupal.devshopFilterProjectName(inputElement);
+    if (fixedProjectName != '') {
+      $('#edit-title').val(fixedProjectName);
+    }
+  }
+
+  Drupal.behaviors.devshopSourceSelect = {
     attach: function (context, settings) {
+      Drupal.settings.devshop.projectNameSourceElements.forEach(function( selector ) {
 
-      // Dynamically replace special and uppercase characters.
-      $( "#edit-git-url" ).keyup(function(event) {
-
-        if ($( "#edit-title" ).val() == '') {
-          var fixedProjectName = $(this).val().split("/").pop().replace(/[^a-z0-9]/gi, '').toLowerCase();
-          if (fixedProjectName != '') {
-            $('#edit-title').val(fixedProjectName);
-          }
+        if ($(selector).prop("tagName") == 'SELECT') {
+          var eventName = 'change';
         }
+        else {
+          var eventName = 'keyup';
+        }
+
+        $(selector).bind(eventName, function(event) {
+          Drupal.devshopSetProjectName($(this));
+        });
       });
-
-      // Dynamically replace special and uppercase characters.
-      $( "#edit-title" ).keyup(function(event) {
-        var fixedProjectName = $(this).val().replace(/[^a-z0-9]/gi, '').toLowerCase();
-        $(this).val(fixedProjectName);
-
-      });
-
     }
   };
+
+  Drupal.behaviors.devshopShowSelect = {
+    attach: function (context, settings) {
+      $('a.put-back-suggested-projects').click(function(e) {
+        e.preventDefault();
+        var optionVal = $('#edit-settings-github-repository-source-composer-project-suggestions option').val();
+        $('#edit-settings-github-repository-source-composer-project-suggestions').val(optionVal).change();
+      });
+    }
+  }
+  Drupal.behaviors.devshopShowSelectRepos = {
+    attach: function (context, settings) {
+      $('a.put-back-suggested-repos').click(function(e) {
+        e.preventDefault();
+        var optionVal = $('#edit-settings-github-repository-source-import-suggestions option').val();
+        $('#edit-settings-github-repository-source-import-suggestions').val(optionVal).change();
+      });
+    }
+  }
+
+  Drupal.behaviors.autoSelect = {
+    attach: function (context, settings) {
+      $('select#edit-settings-github-repository-source-composer-project-suggestions').change(function(e) {
+      if ($(this).val() == 'custom') {
+        $('#edit-settings-github-repository-source-composer-project').select();
+      }
+
+      });
+      $('select#edit-settings-github-repository-source-import-suggestions').change(function(e) {
+      if ($(this).val() == 'custom') {
+        $('#edit-settings-github-repository-source-import').select();
+      }
+
+      });
+    }
+  }
+
 }(jQuery));
 
 /**

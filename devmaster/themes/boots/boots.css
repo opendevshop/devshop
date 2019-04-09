@@ -411,9 +411,11 @@ input.form-control.webhook-url {
 }
 
 .dropdown-menu li label,
-.environment label,
+.environment label
+/* Keeping... not sure if this affects other UI elements.
 .well label,
 .well dt
+ */
 {
   font-size: .7em;
   text-transform: uppercase;
@@ -983,7 +985,7 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   white-space: normal;
 }
 
-.panel-ansii.panel-body pre {
+pre.ansi_box {
     padding: 1.25em;
     white-space: pre-wrap;
     line-height: 120%;
@@ -1265,4 +1267,72 @@ footer.anonymous-page {
 
 #devshop-github-settings-form .form-item {
   margin-top: 2em;
+}
+
+.form-item-github-organization,
+.form-item-github-repository-name  {
+    display: inline-block;
+}
+
+
+.alert-project-welcome {
+    margin: 2em 0em;
+    padding: 1em 2em;
+}
+.alert-project-welcome h2 {
+    margin-top: 0px;
+}
+
+#edit-github-create label,
+.form-item-github-repos label
+{
+    display: block;
+}
+
+#edit-settings-github-repository-source-composer-project-suggestions,
+#edit-settings-github-repository-source-composer-project {
+    width: 25em;
+}
+
+.form-item-github-create-github-organization,
+.form-item-github-create-github-repository-name {
+  display: inline-block;
+}
+
+form .well .form-type-radios label,
+form .well .form-type-radios .form-type-radio
+{
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.form-item-github-create-github-repository-name {
+    width: 14em;
+}
+
+#edit-settings-github-repository-source-populate-choice > div.form-type-radio > label {
+    margin-right: 2em;
+}
+
+#edit-github-create-github-organization {
+     min-width: 14em;
+}
+
+#edit-github-create-github-repository-public {
+    padding-bottom: 1em;
+}
+
+.form-control.chosen-container {
+    padding: 0px;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+
+    height: 30px;
+}
+.form-control.chosen-container > a > span {
+  padding: 6px 0px;
+}
+.form-control.chosen-container.chosen-container-single .chosen-single {
+    height: 34px;
 }

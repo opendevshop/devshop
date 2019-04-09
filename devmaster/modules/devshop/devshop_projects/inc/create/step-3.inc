@@ -40,7 +40,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
   // If there was a problem with loading branches or tags, hide the form and show a link to re-verify.
   if (empty($project->settings->git['branches']) && empty($project->settings->git['tags'])) {
     $form['error'] = array(
-      '#markup' => t('Unable to read branches or tags. Please !verify.', array(
+      '#markup' => t('Unable to find any branches or tags. Please !verify.', array(
           '!verify' => l(t('Re-verify the project'), "hosting_confirm/{$project->nid}/project_verify", array(
             'query' => array('token' => drupal_get_token($user->uid)),
             'attributes' => array(

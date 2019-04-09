@@ -14,6 +14,7 @@ function devshop_project_create_step_settings($form, &$form_state) {
   $project = &$form_state['project'];
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
     $note = '<p class="wait">' . t('Please wait while we connect and analyze your repository.') . '</p>';
+    $note .= '<p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p>';
     $note .= '<p class="wait">' . l(t('View Logs'), "node/$project->verify_task_nid", array(
       'attributes' => array(
         'target' => '_blank',
@@ -84,16 +85,15 @@ function devshop_project_create_step_settings_submit(&$form, &$form_state) {
   if ($form['project']['codebase']['drupal_path']['#default_value'] != $form_state['values']['project']['drupal_path']) {
     $environments = db_query("
       SELECT
-          e.platform
+          e.platform, e.name
         FROM {hosting_devshop_project_environment} e
         WHERE project_nid = :nid
         ", array(
       ':nid' => $form_state['values']['nid']
-    ))->fetchCol();
-
-    foreach ($environments as $platform_nid) {
-      $platform = node_load($platform_nid);
-      $platform->publish_path = $form_state['values']['project']['code_path'] . DIRECTORY_SEPARATOR . $form_state['values']['name'] . DIRECTORY_SEPARATOR . $form_state['values']['project']['drupal_path'];
+    ))->fetchAll();
+    foreach ($environments as $environment) {
+      $platform = node_load($environment->platform);
+      $platform->publish_path = $form_state['values']['project']['code_path'] . DIRECTORY_SEPARATOR . $environment->name . DIRECTORY_SEPARATOR . $form_state['values']['project']['drupal_path'];
       node_save($platform);
     }
     $count = count($environments);

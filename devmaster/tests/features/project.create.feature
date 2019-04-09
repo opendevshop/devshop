@@ -12,7 +12,7 @@ Feature: Create a project and check settings
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "drpl8" for "Project Code Name"
-    And I fill in "http://github.com/opendevshop/drupal_docroot.git" for "Git URL"
+    And I fill in "http://github.com/opendevshop/drupal_docroot.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
@@ -23,9 +23,9 @@ Feature: Create a project and check settings
     Then print last drush output
     And I reload the page
 
-    Then I fill in "docroot" for "Path to Drupal"
+    Then I fill in "docroot" for "Document Root"
     When I press "Next"
-    And I should see "PATH TO DRUPAL docroot"
+    And I should see "DOCUMENT ROOT docroot"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output

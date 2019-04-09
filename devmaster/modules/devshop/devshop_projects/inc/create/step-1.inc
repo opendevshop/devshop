@@ -17,7 +17,7 @@ function devshop_project_create_step_git($form, $form_state) {
   
   if ($project->verify_error) {
     $form['note'] = array(
-      '#markup' => t('We were unable to connect to your git repository. Check the messages, edit your settings, and try again.'),
+      '#markup' => t('Something went wrong. Check the errors and settings and try again.'),
       '#prefix' => '<div class="alert alert-danger">',
       '#suffix' => '</div>',
       '#weight' => -999,
@@ -50,6 +50,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#attributes'=> array(
         'placeholder' => t('myproject')
       ),
+      '#weight' => 1,
     );
   }
   else {
@@ -61,6 +62,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#type' => 'item',
       '#title' => t('Project Code Name'),
       '#markup' => $project->name,
+      '#weight' => 1,
     );
   }
   
@@ -135,6 +137,58 @@ HTML;
     )),
   ]);
 
+  $form['welcome'] = array(
+    '#markup' => '<h2 class="title">' . t("Start a new DevShop Project.") . '</h2><p>' . t("A project represents your website. DevShop keeps track of the source code for your website so it can launch copies of it quickly.") . '</p>',
+    '#prefix' => '<div class="alert alert-success alert-project-welcome">',
+    '#suffix' => '</div>',
+    '#weight' => -1000,
+  );
+
+  $options = module_invoke_all('devshop_project_git_repo_options');
+  $form['source'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'well'
+      ),
+    ),
+  );
+  $form['source']['git_source'] = array(
+    '#title' => t('Choose the source of your code'),
+    '#type' => 'radios',
+    '#options' => $options,
+    '#description' => t(''),
+    '#default_value'=> 'custom',
+  );
+
+  $form['source']['git_url'] = array(
+    '#type' => 'textfield',
+    '#required' => 1,
+    '#title' => t('Git Repository URL'),
+    '#default_value' => $project->git_url,
+    '#maxlength' => 1024,
+    '#attributes' => array(
+      'placeholder' => 'git@githost.com:myteam/myproject.git'
+    ),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="git_source"]' => array(
+          'value' => 'custom'
+        ),
+      ),
+    ),
+  );
+
+
+  // We have to tell the front-end what type of field so we can assign the right event.
+  drupal_add_js(array(
+    'devshop' => array(
+      'projectNameSourceElements' => array(
+        '#edit-git-url'
+      ),
+    ),
+  ), 'setting');
+
   $tips[] = t('Use the "ssh" url whenever possible. For example: <code>git@github.com:opendevshop/repo.git</code>');
   $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
   $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
@@ -143,25 +197,25 @@ HTML;
   ));
   $tips = theme('item_list', array('items' => $tips));
 
-  $form['git_url'] = array(
-    '#type' => 'textfield',
-    '#required' => 1,
-    '#title' => t('Git URL'),
-    '#default_value' => $project->git_url,
-    '#maxlength' => 1024,
-    '#weight' => -1,
-    '#attributes' => array(
-      'placeholder' => 'git@githost.com:myteam/myproject.git'
-    ),
-  );
 
   $form['tips'] = array(
       '#markup' => $tips,
       '#prefix' => '<div class="alert alert-info">',
       '#suffix' => '</div>',
+    '#weight' => 10,
   );
   return $form;
 }
+
+/**
+ * Implements hook_devshop_project_git_repo_options().
+ */
+function devshop_projects_devshop_project_git_repo_options() {
+  return array(
+    'custom' => t('Git repository URL'),
+  );
+}
+
 
 /**
  * Force the project to be lowercase and remove any non numbers or letters.
@@ -232,6 +286,9 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $node->project->git_url = $form_state['values']['git_url'];
     $node->project->code_path = $form_state['values']['code_path'];
     $node->project->base_url = $form_state['values']['base_url'];
+
+    $project->settings->create_project_settings = $form_state['values']['settings'];
+
     node_save($node);
   }
   // Create new project node
@@ -252,7 +309,9 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $project->git_url = $form_state['values']['git_url'];
     $project->code_path = $form_state['values']['code_path'];
     $project->base_url = $form_state['values']['base_url'];
-    
+
+    $project->settings->create_project_settings = $form_state['values']['settings'];
+
     // @TODO: We will clone the code for step 2 and look for drupal.
     $project->drupal_path = variable_get('devshop_projects_default_drupal_path', '');
     
