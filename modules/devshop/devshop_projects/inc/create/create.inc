@@ -125,7 +125,7 @@ function devshop_projects_create_wizard_info() {
     'finish callback' => 'devshop_projects_create_wizard_finish',
     'cancel callback' => 'devshop_projects_create_wizard_cancel',
     'order' => array(
-      'git_url' => t('Step 1: Source'),
+      'git_url' => t('Step 1: Source Code'),
       'settings' => t('Step 2: Settings'),
       'environments' => t('Step 3: Environments'),
       'sites' => t('Step 4: Install Profile'),

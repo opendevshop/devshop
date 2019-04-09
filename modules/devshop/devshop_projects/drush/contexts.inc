@@ -11,6 +11,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
   $branches = getBranchesAndTags($task->ref->project->git_url);
 
+  $home = variable_get('aegir_home', '/var/aegir');
+  $clone_dir = "$home/repos/{$task->ref->project->name}";
+
   // If something went wrong connecting to the git repo, don't wipe out our branches.
   if (!empty($branches['branches'])) {
     $task->ref->project->settings->git['branches'] = $branches['branches'];
@@ -21,6 +24,81 @@ function devshop_projects_hosting_project_context_options(&$task) {
     // Don't verify again, this is the verification process.
     $task->ref->no_verify = TRUE;
     node_save($task->ref);
+  }
+
+  // If branches are empty, and "github_create" was selected...
+  elseif (!file_exists($clone_dir) && $task->ref->project->settings->create_project_settings['git_source'] == 'github_create') {
+
+    $git_url = $task->ref->project->git_url;
+
+    $account = user_load($task->uid);
+    $name = $account->name;
+    $mail = $account->mail;
+    $env = array();
+
+    // Make commit using environment variables for NAME and EMAIL, if specified.
+    if (!empty($name)) {
+      $env['GIT_AUTHOR_NAME'] = $name;
+      $env['GIT_COMMITTER_NAME'] = $name;
+    }
+    if (!empty($mail)) {
+      $env['GIT_AUTHOR_MAIL'] = $mail;
+      $env['GIT_COMMITTER_MAIL'] = $mail;
+    }
+
+    $hostname = $_SERVER['HOSTNAME'];
+
+    if (!file_exists("$home/repos")) {
+      provision_process("mkdir -p $home/repos", null, t('Creating repos directory'));
+    }
+
+    if ($task->ref->project->settings->create_project_settings['github_repository_source']['populate_choice'] == 'import') {
+      $source_url = $task->ref->project->settings->create_project_settings['github_repository_source']['import'];
+      provision_process("git clone $source_url $clone_dir");
+      provision_process("git remote set-url origin $git_url", $clone_dir);
+    }
+    else {
+
+      $composer_project = $task->ref->project->settings->create_project_settings['github_repository_source']['composer_project'];
+      $composer_create_project_command = "composer create-project {$composer_project} {$task->ref->project->name} --no-interaction --ansi";
+
+      provision_process($composer_create_project_command,"$home/repos", t('Creating composer project...'));
+      $result = drush_get_context('provision_process_result');
+      if (!$result->isSuccessful()) {
+        return drush_set_error('DEVSHOP_ERROR', 'Composer create-project failed.');
+      }
+
+      if (!file_exists($clone_dir)) {
+        return drush_set_error('DEVSHOP_ERROR', 'Unable to find codebase in ' . $clone_dir);
+      }
+
+      provision_process("git init", $clone_dir);
+
+      provision_process("git add .gitignore", $clone_dir);
+      provision_process("git add -A", $clone_dir);
+      provision_process("git status", $clone_dir);
+      provision_process("git commit -m 'Repo created by DevShop on $hostname using the command `$composer_create_project_command`'", $clone_dir, t('Committing codebase...'), $env);
+      provision_process("git remote add origin $git_url", $clone_dir);
+    }
+
+    $branch = trim(str_replace('refs/heads/', '', shell_exec("cd {$clone_dir}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+
+    provision_process("git push -u origin $branch", $clone_dir);
+
+    if (file_exists($clone_dir)) {
+      provision_process("rm -rf $clone_dir", null, t('Removing temporary git clone...'));
+    }
+
+    $branches = getBranchesAndTags($task->ref->project->git_url);
+    $task->ref->project->settings->git['branches'] = $branches['branches'];
+    $task->ref->project->settings->git['tags'] = $branches['tags'];
+    $task->ref->project->settings->git['refs'] = $branches['refs'];
+
+    // Save the project node now that we have branches and tags.
+    // Don't verify again, this is the verification process.
+    $task->ref->no_verify = TRUE;
+    node_save($task->ref);
+
   }
 
   // Save project object to drush alias (aegir context).

@@ -119,19 +119,28 @@ function devshop_github_settings_form($form, &$form_state) {
   $count = count($repos);
   $form['repos'] = array(
     '#type' => 'container',
-    '#prefix' => "<div class='alert alert-info'>",
-    '#suffix' => '</div>',
     '#weight' => 5,
     '#access' => !empty(variable_get('devshop_github_token')),
   );
 
   $form['repos']['message'] = array(
+    '#prefix' => "<div class='alert alert-info'>",
+    '#suffix' => '</div>',
     '#markup' =>  t('@count_string associated with this GitHub token.', array(
       '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
   )));
+
+  $orgs = variable_get('devshop_github_available_organizations', array());
+  $count = count($orgs);
+  $form['repos']['message_orgs'] = array(
+    '#prefix' => "<div class='alert alert-info'>",
+    '#suffix' => '</div>',
+    '#markup' =>  t('@count_string with create repo privileges.', array(
+      '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
+  )));
   $form['repos']['button'] = array(
-    '#markup' => l(t('Refresh repository list'),'admin/devshop/github/load-repos', array('attributes' => array(
-    'class' => array('btn btn-link'),
+    '#markup' => l(t('Refresh GitHub Data'),'admin/devshop/github/load-repos', array('attributes' => array(
+    'class' => array('btn btn-info'),
   ))));
 
   $form = system_settings_form($form);
@@ -224,6 +233,7 @@ function devshop_github_refresh_repositories() {
   try {
     $client = devshop_github_client();
     $userApi = $client->currentUser();
+    $orgsApi = $client->organizations();
     $paginator  = new Github\ResultPager($client);
     $params = array(
       'all'
@@ -242,10 +252,35 @@ function devshop_github_refresh_repositories() {
     );
 
     variable_set('devshop_github_available_repositories', $available_repos);
-
     drupal_set_message(t('Found @count_string associated with that GitHub token.', array(
       '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
     )));
+
+
+    ;
+    $params = array(
+      'all'
+    );
+    $orgs = $paginator->fetchAll($userApi, 'organizations', $params);
+    foreach ($orgs as $org) {
+
+      // If membership role is admin, or organization ''''
+      $membership = $userApi->memberships()->organization($org['login']);
+      if ($membership['role'] == 'admin' || $orgsApi->show($org['login'])['members_can_create_repositories']) {
+        $organizations[$org['login']] = $org['login'];
+      }
+    }
+    $count = count($organizations);
+    $r = array(
+      '@count' => $count,
+    );
+
+    variable_set('devshop_github_available_organizations', $organizations);
+    drupal_set_message(t('Found @count_string with create repo privileges.', array(
+      '@count_string' => format_plural($count, '1 organization', t('@count organizations', $r)),
+    )));
+
+
   }
   catch (\Exception $e) {
     drupal_set_message($e->getMessage(), 'error');
