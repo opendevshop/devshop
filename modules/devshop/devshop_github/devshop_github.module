@@ -171,7 +171,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     '#type' => 'select',
     '#options' => $options,
     '#default_value' => $form['source']['git_url']['#default_value'],
-    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos'),
+    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/devshop/github/load-repos', array('query' => drupal_get_destination())),
     '#bootstrap_ignore_pre_render' => TRUE,
     '#states' => array(
       'visible' => array(
