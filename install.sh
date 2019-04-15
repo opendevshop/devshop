@@ -7,8 +7,8 @@ usage() {
   DevShop Standalone Install Script
   =================================
 
-  This script will install a full devshop server from scratch. 
-  
+  This script will install a full devshop server from scratch.
+
   Please read the full "Installing DevShop" instructions at https://docs.opendevshop.com/install.html
 
   Before you start, please visit https://github.com/opendevshop/devshop/releases to be sure you have the latest version of this script,
@@ -29,7 +29,7 @@ usage() {
   ==================
 
    Must run as root or with sudo and -H option:
-  
+
     root@ubuntu:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
     root@ubuntu:~# bash install.sh --hostname=devshop.mydomain.com
 
@@ -42,6 +42,7 @@ usage() {
     --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
     --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
     --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
+    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
     --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
     --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
     --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
@@ -119,6 +120,9 @@ while [ $# -gt 0 ]; do
     --makefile=*)
       MAKEFILE_PATH="${1#*=}"
       ;;
+    --playbook=*)
+      PLAYBOOK_PATH="${1#*=}"
+      ;;
     --server-webserver=*)
       SERVER_WEBSERVER="${1#*=}"
       ;;
@@ -188,6 +192,15 @@ echo " Web Server: $SERVER_WEBSERVER"
 # If --makefile option is not set, use DEVSHOP_INSTALL_PATH/build-devmaster.make
 if [ -z $MAKEFILE_PATH ]; then
   MAKEFILE_PATH="$DEVSHOP_INSTALL_PATH/build-devmaster.make"
+fi
+
+if [ $PLAYBOOK_PATH ]; then
+   :
+# Detect playbook next to the install script
+elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
+    PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
+else
+    PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
 fi
 
 echo $LINE
@@ -319,6 +332,7 @@ echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo " Playbook: $DEVSHOP_INSTALL_PATH/playbook.yml "
 echo " Roles: $DEVSHOP_INSTALL_PATH/roles.yml "
 echo " Makefile: $MAKEFILE_PATH "
+echo " Playbook: $PLAYBOOK_PATH/playbook.yml "
 echo $LINE
 
 
