@@ -32,7 +32,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks {
 
   // Install this version first when testing upgrades.
-  const UPGRADE_FROM_VERSION = '1.0.0-beta10';
+  const UPGRADE_FROM_VERSION = '1.0.0-rc4-testing';
   const UPGRADE_FROM_PROVISION_VERSION = '7.x-3.10';
 
   // The version of docker-compose to suggest the user install.
@@ -43,6 +43,20 @@ class RoboFile extends \Robo\Tasks {
 
   // Defines the URI we will use for the devmaster site.
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
+
+  /**
+   * @var The path to devshop root. Used for upgrades.
+   */
+  private $devshop_root_path;
+
+  public function  __construct()
+  {
+    $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+
+    if (empty($this->git_ref) && !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
+      $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+    }
+  }
 
   /**
    * Launch devshop after running prep:host and prep:source. Use --build to
@@ -119,28 +133,40 @@ class RoboFile extends \Robo\Tasks {
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'fork' => FALSE,
-    'devshop-version' =>'1.x'
+    'devshop-version' => '1.x',
+    'test-upgrade' => FALSE
   ]) {
 
+    if (empty($this->git_ref)) {
+      parent::yell("Preparing Sourcecode: Branch Unknown.");
+    }
+    else {
+      parent::yell("Preparing Sourcecode: Branch $this->git_ref");
+    }
+
+    if ($opts['devshop-version'] == NULL) {
+      $opts['devshop-version'] = $this->git_ref;
+    }
+    $this->devshop_root_path = __DIR__;
 
     // Create the Aegir Home directory.
-    if (file_exists("aegir-home/.drush/commands")) {
-      $this->say("aegir-home/.drush/commands already exists.");
+    if (file_exists($this->devshop_root_path . "/aegir-home/.drush/commands")) {
+      $this->say($this->devshop_root_path . "/aegir-home/.drush/commands already exists.");
     }
     else {
       $this->taskExecStack()
-        ->exec('mkdir -p aegir-home/.drush/commands')
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
     }
 
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
-      if (file_exists($path)) {
+      if (file_exists($this->devshop_root_path . '/' . $path)) {
         $this->say("$path already exists.");
       }
       else {
         $this->taskGitStack()
-          ->cloneRepo($url, $path)
+          ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
           ->run();
       }
     }
@@ -161,7 +187,10 @@ class RoboFile extends \Robo\Tasks {
       'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
-    foreach (Yaml::parse(file_get_contents(__DIR__ . '/roles.yml')) as $role) {
+    $this->yell("Cloning Ansible Roles...");
+
+    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/roles.yml'));
+    foreach ($roles_yml as $role) {
       $roles[$role['name']] = [
         'repo' => $role_repos[$role['name']],
         'version' => $role['version'],
@@ -169,7 +198,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     foreach ($roles as $name => $role) {
-      $path = 'roles/' . $name;
+      $path = $this->devshop_root_path . '/roles/' . $name;
       if (file_exists($path)) {
         $this->say("$path already exists.");
       }
@@ -180,28 +209,65 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+
     // Run drush make to build the devmaster stack.
-    $make_destination = "aegir-home/devmaster-" . $opts['devshop-version'];
+    $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
 
     // If "fork" option is set, use travis forks makefile.
     $makefile_path = $opts['fork']? 'build-devmaster-travis-forks.make.yml': $makefile_path;
+
+    // Append the desired devshop root path.
+    $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
 
     if (file_exists($make_destination)) {
       $this->say("Path {$make_destination} already exists.");
     }
     else {
 
+      $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
+
       $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
-      if ($result->wasSuccessful()) {
-        $this->say('Built devmaster from makefile.');
-        return TRUE;
-      }
-      else {
+      if (!$result->wasSuccessful()) {
         $this->say("Drush make failed with the exit code " . $result->getExitCode());
         return FALSE;
       }
     }
+
+    // Set git remote urls
+    if ($opts['no-dev'] == FALSE) {
+      $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
+      $devmaster_ssh_git_url = "git@github.com:opendevshop/devmaster.git";
+      $devmaster_drupal_git_url = "git@git.drupal.org:project/devmaster.git";
+
+      if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
+        $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
+      }
+      else {
+        $this->say("<comment>Unable to set devshop git remote to $devshop_ssh_git_url !</comment>");
+      }
+
+      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
+        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
+      }
+      else {
+        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
+      }
+
+      // Check for drupal remote
+      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote get-url drupal")->run()->wasSuccessful()) {
+        $this->say('Git remote "drupal" already exists in devmaster.');
+      }
+      // If remote does not exist, add it.
+      elseif ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote add drupal $devmaster_drupal_git_url")->run()->wasSuccessful()) {
+        $this->yell("Added 'drupal' git remote and added git.drupal.org as a second push target on origin!");
+      }
+      else {
+        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
+      }
+    }
+
+    return TRUE;
   }
 
   /**
@@ -317,6 +383,21 @@ class RoboFile extends \Robo\Tasks {
     'devshop-version' => '1.x',
   ]) {
 
+    if (empty($this->devshop_root_path)) {
+      $this->devshop_root_path = __DIR__;
+    }
+
+    if (empty($this->git_ref)) {
+      parent::yell("Launching DevShop: Branch Unknown.");
+    }
+    else {
+      parent::yell("Launching DevShop: Branch $this->git_ref");
+    }
+
+    if ($opts['devshop-version'] == NULL) {
+      $opts['devshop-version'] = $this->git_ref;
+    }
+
     // Determine current UID.
     if (is_null($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
@@ -336,9 +417,12 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($opts['mode'] == 'docker-compose') {
+      $env = "-e TERM=xterm";
+      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
+
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd = "docker-compose -f docker-compose-tests.yml run -T -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm devmaster '$command'";
+        $cmd = "docker-compose -f docker-compose-tests.yml run -T $env devmaster '$command'";
       }
       elseif ($opts['test-upgrade']) {
         $version = self::UPGRADE_FROM_VERSION;
@@ -351,7 +435,7 @@ class RoboFile extends \Robo\Tasks {
         //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
 
         // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-        $cmd = "docker-compose -f docker-compose-tests.yml run -e BEHAT_PATH={$_SERVER['BEHAT_PATH']} -e TERM=xterm -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION={$provision_version} devmaster '$command'";
+        $cmd = "docker-compose -f {$this->devshop_root_path}/docker-compose-tests.yml run $env -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION={$provision_version} devmaster '$command'";
       }
       else {
         $cmd = "docker-compose up -d";
@@ -363,9 +447,9 @@ class RoboFile extends \Robo\Tasks {
       // Build a local container.
       if ($opts['user-uid'] != '1000') {
         $dockerfile = $opts['disable-xdebug'] ? 'aegir-dockerfiles/Dockerfile-local' : 'aegir-dockerfiles/Dockerfile-local-xdebug';
-        $this->taskDockerBuild('aegir-dockerfiles')
-          ->option('file', $dockerfile)
-          ->tag('aegir/hostmaster:xdebug')
+        $this->taskDockerBuild($this->devshop_root_path . '/aegir-dockerfiles')
+          ->option('file', $this->devshop_root_path . '/' . $dockerfile)
+          ->tag('aegir/hostmaster:local')
           ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
           ->option('no-cache')
           ->run();
@@ -404,8 +488,9 @@ class RoboFile extends \Robo\Tasks {
       # Launch Server container
       if (!$this->taskDockerRun($opts['install-sh-image'])
         ->name('devshop_container')
-        ->volume(__DIR__, '/usr/share/devshop')
-        ->volume(__DIR__ . '/aegir-home', '/var/aegir')
+        ->volume($this->devshop_root_path, '/usr/share/devshop')
+        ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
+        ->volume($this->devshop_root_path . '/roles', '/etc/ansible/roles')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
@@ -452,6 +537,7 @@ class RoboFile extends \Robo\Tasks {
             ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
             ->exec("apt-get install dbus -y")
+            ->env('DEBIAN_FRONTEND', 'noninteractive')
             ->run()
             ->wasSuccessful() &&
           $this->taskDockerExec('devshop_container')
@@ -474,17 +560,78 @@ class RoboFile extends \Robo\Tasks {
         ->exec("chown {$opts['user-uid']} /var/aegir -R")
         ->run();
 
-      # Run install script on the container.
-      # @TODO: Run the last version on the container, then upgrade.
-      $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-      if ($opts['mode'] != 'manual' && ($this->input()
-            ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
-          ->exec($install_command)
-          //        ->option('tty')
+      # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
+      if ($opts['test-upgrade']) {
+
+//        // This is needed because the old playbook has an incompatibility with newer ansible.
+        // UPDATE: Seems to be not needed now?? This was triggering sh: 1: cannot create /root/.ansible.cfg: Permission denied
+//        $this->taskDockerExec('devshop_container')
+//          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
+//          ->run();
+
+        // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
+        $this->taskDockerExec('devshop_container')
+          ->exec('ansible-galaxy install geerlingguy.git geerlingguy.apache')
+          ->run();
+
+        $this->yell("Running install.sh for old version...");
+
+        // Run install.sh old version.
+        $version = self::UPGRADE_FROM_VERSION;
+        $this->_exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o {$this->devshop_root_path}/install.{$version}.sh");
+
+        // Set makefile and devshop install path options because they need to be different than the defaults for upgrading.
+        $install_path = "/usr/share/devshop-{$version}";
+        $makefile_filename = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
+
+        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/{$makefile_filename}" ;
+        $opts['install-sh-options'] .= " --install-path={$install_path}";
+        $opts['install-sh-options'] .= " --force-ansible-role-install";
+
+        if (!empty($opts['user-uid'])) {
+          $opts['install-sh-options'] .= " --aegir-uid={$opts['user-uid']}";
+        }
+
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
           ->run()
           ->wasSuccessful()) {
-        $this->say('Docker Exec install.sh failed.');
-        exit(1);
+          throw new \Exception("Installation of devshop $version failed.");
+        };
+
+        // Run devshop upgrade. This command runs:
+        $this->yell("Running devshop upgrade...");
+        //  - self-update, which checks out the branch being tested and installs the roles.
+        //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
+        $upgrade_to_branch = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $_SERVER['TRAVIS_BRANCH'];
+        $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec($upgrade_command)
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Command $upgrade_command failed.");
+        };
+
+        if (!$this->taskDockerExec('devshop_container')
+          ->exec('/usr/share/devshop/bin/devshop status')
+          ->run()
+          ->wasSuccessful()) {
+          throw new \Exception("Command 'devshop status' failed.");
+        };
+      }
+      else {
+        # Run install script on the container.
+        $this->yell("Running install.sh ...");
+        $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
+        if ($opts['mode'] != 'manual' && ($this->input()
+              ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
+            ->exec($install_command)
+            //        ->option('tty')
+            ->run()
+            ->wasSuccessful()) {
+          $this->say('Docker Exec install.sh failed.');
+          exit(1);
+        }
       }
 
       if ($opts['test']) {
@@ -508,6 +655,8 @@ class RoboFile extends \Robo\Tasks {
           $this->say('Unable to disable supervisor.');
           exit(1);
         }
+
+        $this->yell("Running devshop-tests.sh ...");
 
         # Run test script on the container.
         if (!$this->taskDockerExec('devshop_container')
@@ -587,8 +736,14 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell() {
-    $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+  public function shell($user = NULL) {
+
+    if ($user) {
+      $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+    }
+    else {
+      $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+    }
     $process->setTty(TRUE);
     $process->run();
   }
@@ -675,8 +830,11 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=$version/' ./install.sh");
     }
 
-    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make? ")) {
-      $this->_exec("sed -i -e 's/projects\[devmaster\]\[version\] = 1.x/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
+    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make and remove development repos? ")) {
+      $this->_exec("sed -i -e 's/projects\[devmaster\]\[version\] = 1.x-dev/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
+      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[branch\]/; projects[devmaster][download][branch]' build-devmaster.make");
+      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[url\]/; projects[devmaster][download][url]' build-devmaster.make");
+      $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
     }
 
     if ($this->confirm("Write '$drupal_org_version' to drupal-org.make for devshop_stats? ")) {

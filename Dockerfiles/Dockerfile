@@ -3,6 +3,8 @@ FROM ubuntu:16.04
 ENV AEGIR_VERSION 7.x-3.x
 ENV DEVSHOP_VERSION 1.x
 ENV PROVISION_VERSION 7.x-3.x
+ENV COMPOSER_VERSION 1.8.4
+ENV DRUSH_VERSION 8.1.18
 ENV REGISTRY_REBUILD_VERSION 7.x-2.5
 ENV AEGIR_MAKEFILE https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make
 
@@ -111,10 +113,8 @@ RUN a2enmod ssl
 RUN ln -s /var/aegir/config/apache.conf /etc/apache2/conf-available/aegir.conf
 RUN ln -s /etc/apache2/conf-available/aegir.conf /etc/apache2/conf-enabled/aegir.conf
 
-RUN wget https://raw.githubusercontent.com/composer/getcomposer.org/1b137f8bf6db3e79a38a5bc45324414a6b1f9df2/web/installer -O - -q | php -- --quiet
-RUN cp composer.phar /usr/local/bin/composer
-
-RUN wget https://github.com/drush-ops/drush/releases/download/8.1.17/drush.phar -O - -q > /usr/local/bin/drush
+RUN wget https://github.com/composer/composer/releases/download/$COMPOSER_VERSION/composer.phar -O - -q > /usr/local/bin/composer
+RUN wget https://github.com/drush-ops/drush/releases/download/$DRUSH_VERSION/drush.phar -O - -q > /usr/local/bin/drush
 RUN chmod +x /usr/local/bin/composer
 RUN chmod +x /usr/local/bin/drush
 

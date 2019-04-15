@@ -1,5 +1,133 @@
 # Change Log
 
+## 1.5.0-rc5 (March 15, 2019)
+
+6 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc6...1.5.0-rc5
+
+11 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc6...7.x-1.50-rc5
+
+3 Commits to opendevshop/aegir-user role: https://github.com/opendevshop/ansible-role-aegir-user/compare/1.5.0-rc6...master
+
+- When creating a new project, if the user has to change "path to drupal", and platforms already exist, update the platforms to use the new path.
+- Automatically set "known_hosts" for GitHub, Bitbucket, Gitlab, and drupal.org so we don't have to manually authorize.
+- Bumping Drupal core to 7.64.
+- Update ctools, views, and bootstrap modules.
+- Fixed a bug in the DevShop Support form.
+- Set line-height in terminal output so we don't get gaps.
+- Add a Aegir user GID variable to playbooks.
+
+## 1.5.0-rc4 (January 10, 2019)
+
+1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc3...7.x-1.50-rc4
+
+- Fix version of hostmaster used. Add patches, not git ref.
+
+- Add `drush verify-makefile` command to tests to ensure drupal.org packaging won't reject us again.
+
+## 1.5.0-rc3 (January 10, 2019)
+
+1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc2...7.x-1.50-rc3
+
+- Add `drush verify-makefile` command to tests to ensure drupal.org packaging won't reject us again.
+
+## 1.5.0-rc2 (January 10, 2019)
+
+5 Commits to DevShop:  https://github.com/opendevshop/devshop/compare/1.5.0-rc1...1.5.0-rc2
+1 Commit to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc1...7.x-1.50-rc2
+
+- Make sure to fetch with --tags during self-update so we actually get the latest releases.
+- Moved modernizr-navbar library to build-devmaster.make since it is not in the drupal.org distro whitelist. See https://www.drupal.org/project/drupalorg_whitelist/issues/3024898
+- In the `devshop verify:system` command, move the setting of the `server_hostname` variable so it gets set everytime.
+- In the development environment (`robo up` command) automatically set the git URLs to the SSH version, and add the git.drupal.org remote to devmaster.
+
+## 1.5.0-rc1 (January 9, 2019)
+
+- 290 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.4.0...1.5.0-rc1
+- 234 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.40...7.x-1.50-rc1
+
+- DevShop.Support Release Candidate!
+    - This release marks the launch of the DevShop.Support Network. It includes an open source module, DevShop Support Network Client, that enables monitoring & single-sign-on.
+- Major `install.sh` improvements:
+    - Creates a simple inventory file at `/etc/ansible/hosts`.
+    - Ansible galaxy roles are installed to `/etc/ansible/roles`.
+    - Ansible vars are saved to `/etc/ansible/host_vars` and `/etc/ansible/group_vars/devmaster`
+    - Changed the ansible output to "unixy", it's now MUCH more clear what is happening behind the ansible curtain.
+    - New `--install-path` option to allow customizing the CLI destination (Defaults to `/usr/share/devshop`). This was needed for full install.sh/ansible upgrade testing.
+    - New `--ansible-default-host-list` option to define where to save the ansible inventory file. Defaults to `/etc/ansible/hosts`.
+    - New `--force-ansible-role-install` option adds the `--force` option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. Defaults to False.
+    - New `--license` option, used for immediate setup of DevShop Support network! See https://devshop.support for more information.
+    - Added `set -e` so it will actually fail if any line in the script fails.
+- Major DevShop CLI improvements.
+    - Added `devshop devmaster:upgrade` to specifically update the devmaster drupal site. This is a replacement for `drush hostmaster-migrate` that should not be run manually. It is triggered during the updated `devshop upgrade` command.
+    - Allow upgrading by running the playbook with the new version as the `devshop_version` variable. The playbook now detects an existing devmaster installation and runs the devmaster upgrade command automatically.
+    - Add the new ansible-playbook upgrade method Travis.yml for testing.
+    - Improve the `devshop self-update` command: add `--ignore-working-copy-changes` to make development easier and added `composer install` call after git checkout. 
+    - Change the devmaster folder variant to "date('Y-m-d-Hi');" to match what the provision debian package does.
+    - Change `devshop upgrade` command to run the entire upgrade process: self-update the CLI, then invoke a new process (so it uses the new code) for `devshop verify:system`.
+    - Improved `devshop verify:system` command. Added `--connection` option to allow customizing the ansible `--connection` option, automatically write `ansible.cfg` file, automatically create inventory and vars files, and automatically create the mysql root password if there isn't one.
+    - Improved the Application class, it now properly detects the version from the Git Reference, and displays the exact SHA.
+    - Removed the silly "over 30 days old" warning.
+    - Improved Command class, including ansible, IO, and FS properties.
+    - Reduced GitHub API calls when running automated tests.
+    - Added our fork of the asm/php-ansible packagist library so we can use the `devshop verify:system` command again.
+- Docker & Local Tools improvements:
+    - Added our own Dockerfile for the devshop/server container: a single container with all services. See Dockerfiles/Dockerfile.  This is awesome because it installs every version of PHP in a single container. This will soon become the default, and you will be able to choose the version of PHP you want from the Site Node form.
+    - Improved the Robofile to be more visible about what it is doing. There is a lot of yelling now.
+    - Got the vagrant environment working again! See `vagrant` folder. It should be ready for `vagrant up`.
+    - Added missing packages to the build-devmaster-dev.make.yml and build-devmaster-travis-forks.make.yml file (only used in development).
+    - In the docker-compose.yml file (for development), map $HOME/.ssh to /var/aegir/.ssh so the container inherits the users SSH folder.
+
+- Devmaster Improvements:
+    - Updating Drupal core to 7.61. Updated features, libraries, intercomio, and bootstrap theme.
+    - Added statsd.module and created Hosting StatsD module for sending statistics to a Graphite server. 
+    - Updated and released a new version of IntercomIO module.
+    - Default devmaster to enable HTTPS and LetsEncrypt.org! If DevShop is installed on a server with public DNS, it will have a valid HTTPS certificate out of the box! The devmaster.profile file automatically detects a public devshop and enables LetsEncrypt on the hostmaster site for you.
+    - Update Hosting modules to 3.17.0. See full release notes here: http://docs.aegirproject.org/en/3.x/release-notes/3.17/
+    - Centralize all composer libraries in the `devmaster/composer.json` file.
+    - Add `composer_manager` module to allow modules to define their own dependencies using composer. 
+    - Hook into hostmaster verify to trigger a `composer install` command to ensure the libraries are properly installed.
+    - Switch from Admin Menu to NavBar! 
+    - Fixed mobile breakpoint issues in the primary links! DevShop now works great on mobile screens.
+    - Enable DevShop Permissions module by default so authenticated users can do most things. Patched hosting module to allow users to create sites even if they don't have an associated.
+    - Disabled importing of "existing sites" when a platform is verified because this can be problematic. Some teams use `sites/something` for code but not site credentials.
+    - Enable devshop_support_network_client module by default.
+    - Fixed Devshop Acquia Hooks logging: needed to be updated to the latest p_log style instead of `devshop_log`.
+    - Removed composer.json and committed vendor code from all modules.
+    - Allow changing a project's default Git URL.
+    - Fix missing error logs on project create wizard.
+    - Fix errors on create project wizard and create environment form when logged in as a normal authenticated user: hosting_get_servers() uses node access checks unless extra parameter is set.
+    - Show extra project drush aliases on the "clone source" field in the add environment form.
+    - Add a _GET Parameter to allow links to decide whether or not to redirect to the task node when a task confirm form is fired.
+    - On task pages, fix the task info header block to the top of the page when scrolled down.
+    - Fix "Follow Logs" button, turn back into a button.
+    - Added a "Run Again" button to tasks to allow easy triggering of the same task from task node pages.
+    - Improve task logs pages in general: automatically enable "Follow Logs", improve button alignment.
+    - Load site and platform context names into environment objects.
+    - Added support for GitLab webhook payloads, so GitLab hosted environments only pull the environments for the branches that were pushed.
+    - New Feature: Add remote drush aliases to Composer.json!
+    - New Feature: Git Reset! Reset working copy changes from the web browser. 
+    - Remove old unused code from devshop_testing_menu_alter
+    - Totally new user login/password/register pages! 
+    - Display a more clear error message when platform verification fails: "Codebase verification failed."
+    - Add cancel button to task node page.
+    
+- Ansible Role improvements:
+    - Added real .travis.yml testing to all roles.
+    - https://github.com/opendevshop/ansible-role-aegir-apache/compare/1.1.0...master
+    - Added `remi_php_repo_name` variable so RedHat users can decide their PHP version and removed hard coded php55 stuff in RedHat roles.
+    - Fixed Ubuntu 16 installation, the `when` statements were incorrect. Added separate file for Ubuntu 14 variables.
+    - Added a test for sudo apache reload access to the roles so it will fail early if sudo was misconfigured.
+    - Moved `devmaster_install_command` and `devmaster_upgrade_command` to defaults/main.yml so they can be overridden.
+    - Added `devshop_support_license_key` ansible variable.
+    - Load `devmaster_site_root` and `devmaster_site_uri` as ansible facts, and use them to determine if we need to install or upgrade.
+    - Stop `hosting-queued` service and kill all processes owned by aegir user before trying to change aegir user.
+    - Fixed the Aegir sudo password prompt during install! Added `fix-drupal-*-ownership` and `fix-drupal-*-permissions` scripts. Somehow they are running even if module is not enabled.
+    - Fix sudo configuration in aegir-nginx role.
+    - Added behat tests for checking license key, HTTPS/LetsEncrypt servers, and the new homepage.
+    - Use drupal_valid_path when checking for git commit visibility. It's more consistent that looking for permissions.
+
+
+
 ## 1.4.0 (September 27, 2018)
 
 - 70 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.3.4...1.4.0

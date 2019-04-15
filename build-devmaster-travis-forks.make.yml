@@ -10,7 +10,7 @@ defaults:
 projects:
   drupal:
     type: core
-    version: 7.59
+    version: 7.65
 
   # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
   devmaster:
@@ -26,7 +26,7 @@ projects:
   hosting:
     download:
       type: git
-      branch: 7.x-3.x
+      branch: 7.x-3.x-devshop
 
   hosting_git:
     download:
@@ -81,12 +81,14 @@ projects:
       type: git
       branch: 7.x-1.x
 
-  devshop_support:
+libraries:
+  CAS:
+    destination: libraries
     download:
       type: git
-      branch: 7.x-1.x
+      url: https://github.com/apereo/phpCAS
+      tag: "1.3.5"
 
-libraries:
   dehydrated:
     destination: modules/aegir/hosting_https/submodules/letsencrypt/drush/bin
     download:
