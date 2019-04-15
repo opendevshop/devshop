@@ -188,6 +188,8 @@ elif [ -f "$DEVSHOP_SCRIPT_PATH/playbook.yml" ]; then
     PLAYBOOK_PATH=$DEVSHOP_SCRIPT_PATH
 else
     PLAYBOOK_PATH=$DEVSHOP_INSTALL_PATH
+fi
+
 echo $LINE
 
 # Notify user we are using the found webserver.
