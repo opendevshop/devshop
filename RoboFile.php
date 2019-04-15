@@ -72,7 +72,7 @@ class RoboFile extends \Robo\Tasks {
       $this->prepareContainers();
     }
 
-    $this->up(['follow' => TRUE]);
+    $this->up(['follow' => true]);
   }
 
   /**
@@ -83,7 +83,7 @@ class RoboFile extends \Robo\Tasks {
     // Check for docker
     $this->say('Checking for Docker...');
     if ($this->taskDockerRun('hello-world')
-      ->printed(FALSE)
+      ->printed(false)
       ->run()
       ->wasSuccessful()) {
       $this->_exec('docker -v');
@@ -131,10 +131,10 @@ class RoboFile extends \Robo\Tasks {
    * @option no-dev Use build-devmaster.make instead of the development makefile.
    */
   public function prepareSourcecode($opts = [
-    'no-dev' => FALSE,
-    'fork' => FALSE,
+    'no-dev' => false,
+    'fork' => false,
     'devshop-version' => '1.x',
-    'test-upgrade' => FALSE
+    'test-upgrade' => false
   ]) {
 
     if (empty($this->git_ref)) {
@@ -144,7 +144,7 @@ class RoboFile extends \Robo\Tasks {
       parent::yell("Preparing Sourcecode: Branch $this->git_ref");
     }
 
-    if ($opts['devshop-version'] == NULL) {
+    if ($opts['devshop-version'] == null) {
       $opts['devshop-version'] = $this->git_ref;
     }
     $this->devshop_root_path = __DIR__;
@@ -230,12 +230,12 @@ class RoboFile extends \Robo\Tasks {
       $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if (!$result->wasSuccessful()) {
         $this->say("Drush make failed with the exit code " . $result->getExitCode());
-        return FALSE;
+        return false;
       }
     }
 
     // Set git remote urls
-    if ($opts['no-dev'] == FALSE) {
+    if ($opts['no-dev'] == false) {
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
       $devmaster_ssh_git_url = "git@github.com:opendevshop/devmaster.git";
       $devmaster_drupal_git_url = "git@git.drupal.org:project/devmaster.git";
@@ -267,14 +267,14 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    return TRUE;
+    return true;
   }
 
   /**
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL) {
+  public function prepareContainers($user_uid = null) {
 
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
@@ -369,17 +369,17 @@ class RoboFile extends \Robo\Tasks {
    */
   public function up($opts = [
     'follow' => 1,
-    'test' => FALSE,
-    'test-upgrade' => FALSE,
+    'test' => false,
+    'test-upgrade' => false,
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
     'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
     'install-sh-options' => '--server-webserver=apache',
-    'user-uid' => NULL,
-    'disable-xdebug' => TRUE,
-    'no-dev' => FALSE,
-    'fork' => FALSE,
+    'user-uid' => null,
+    'disable-xdebug' => true,
+    'no-dev' => false,
+    'fork' => false,
     'devshop-version' => '1.x',
   ]) {
 
@@ -394,7 +394,7 @@ class RoboFile extends \Robo\Tasks {
       parent::yell("Launching DevShop: Branch $this->git_ref");
     }
 
-    if ($opts['devshop-version'] == NULL) {
+    if ($opts['devshop-version'] == null) {
       $opts['devshop-version'] = $this->git_ref;
     }
 
@@ -405,7 +405,7 @@ class RoboFile extends \Robo\Tasks {
 
     if (!file_exists('aegir-home')) {
       if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
-        if ($this->prepareSourcecode($opts) == FALSE) {
+        if ($this->prepareSourcecode($opts) == false) {
           $this->say('Prepare source code failed.');
           exit(1);
         }
@@ -497,7 +497,7 @@ class RoboFile extends \Robo\Tasks {
         ->detached()
         ->privileged()
         ->env('TERM', 'xterm')
-        ->env('TRAVIS', TRUE)
+        ->env('TRAVIS', true)
         ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
         ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
@@ -630,7 +630,7 @@ class RoboFile extends \Robo\Tasks {
           $service = 'supervisor';
         }
         elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
-          $service = FALSE;
+          $service = false;
         }
         else {
           $service = 'supervisord';
@@ -725,7 +725,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell($user = NULL) {
+  public function shell($user = null) {
 
     if ($user) {
       $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
@@ -733,7 +733,7 @@ class RoboFile extends \Robo\Tasks {
     else {
       $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
     }
-    $process->setTty(TRUE);
+    $process->setTty(true);
     $process->run();
   }
 
@@ -742,7 +742,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function test() {
     $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster /usr/share/devshop/tests/devshop-tests.sh");
-    $process->setTty(TRUE);
+    $process->setTty(true);
     $process->run();
   }
 
@@ -756,7 +756,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Create a new release of DevShop.
    */
-  public function release($version = NULL, $drupal_org_version = NULL) {
+  public function release($version = null, $drupal_org_version = null) {
 
     if (empty($version)) {
       // @TODO Verify version string.
@@ -787,12 +787,12 @@ class RoboFile extends \Robo\Tasks {
     $this->yell("The new version shall be $version!!!");
     $release_branch = "release-{$version}";
 
-    $not_ready = TRUE;
+    $not_ready = true;
     while ($not_ready) {
       $not_ready = !$this->confirm("Are you absolutely sure all contrib modules and drupal core are up to date in ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make?? Go check. I'll wait.");
     }
 
-    $not_ready = TRUE;
+    $not_ready = true;
     while ($not_ready) {
       $not_ready = !$this->confirm("Did you write a great CHANGELOG.md? Please make sure all (good) changes are included on the main branch (1.x) before continuing!");
     }
@@ -865,7 +865,7 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Now, go create a new release for devshop_stats, so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
     $this->say("Use the tag $drupal_org_tag");
 
-    $not_ready = TRUE;
+    $not_ready = true;
     while ($not_ready) {
       $not_ready = !$this->confirm("Is the release ready?");
     }

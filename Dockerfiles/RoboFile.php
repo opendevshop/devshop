@@ -42,7 +42,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function shell() {
     $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
-    $process->setTty(TRUE);
+    $process->setTty(true);
     $process->run();
   }
 
