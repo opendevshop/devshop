@@ -56,7 +56,11 @@ services:
   - docker
 
 before_install:
-  - git fetch
+
+  # If TRAVIS_PULL_REQUEST_BRANCH variable is not empty, create a branch with the same name so the upgrade tests do not fail.
+  # See https://github.com/opendevshop/devshop/issues/356
+  - [[ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]] && git checkout -b $TRAVIS_PULL_REQUEST_BRANCH
+
   - env
   - id -u
   - docker --version
