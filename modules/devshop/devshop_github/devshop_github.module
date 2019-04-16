@@ -166,6 +166,28 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   unset($form['source']['git_source']['#options']['custom']);
   $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
 
+  if (empty($options)) {
+    $form['source']['github_repos'] = array(
+      '#title' => t('Use an existing GitHub repository'),
+      '#description' => t('No GitHub repositories found. !link', array(
+        '!link' => l(t('Refresh GitHub Repos'), 'admin/devshop/github/load-repos', array(
+          'query' => drupal_get_destination(),
+          'attributes' => array(
+            'class' => array('btn btn-primary'),
+          ),
+        )))),
+      '#type' => 'item',
+      '#states' => array(
+        'visible' => array(
+          ':input[name="git_source"]' => array(
+            'value' => 'github_existing'
+          ),
+        ),
+      ),
+    );
+  }
+  else {
+
   $form['source']['github_repos'] = array(
     '#title' => t('Use an existing GitHub repository'),
     '#type' => 'select',
@@ -182,6 +204,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
+  }
   $form['source']['github_create'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
