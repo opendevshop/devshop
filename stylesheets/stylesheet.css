@@ -537,3 +537,12 @@ Small Device Styles
 h3, h4, h5 {
   font-weight: normal;
 }
+
+#backers {
+  background: white;
+}
+
+img.oc-loading {
+  border: none;
+  -webkit-box-shadow: none;
+}
