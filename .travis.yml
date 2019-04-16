@@ -1,6 +1,8 @@
 language: php
 
 sudo: required
+git:
+  depth: false
 
 # Only run tests when committing to our primary branch and pull requests.
 branches:
