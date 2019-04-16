@@ -49,14 +49,69 @@
       </p>
       
       <section id="installer" class="inner">
-        <blockquote>
-          <h5>tl;dr:</h5>
-          <pre>          sudo su -
-          wget https://raw.githubusercontent.com/opendevshop/devshop/1.5.0-rc7/install.sh
-            bash install.sh</pre>
-          <p>Or <a href="https://docs.opendevshop.com/install.html">Read Install Documentation</a>.</p>
-          <p>NOTE: Run as root to ensure database configuration at /root/.my.cnf is loaded.</p>
-        </blockquote>
+        <h3>Installation</h3>
+          <h4>Ubuntu or RedHat/CentOS Server:</h4>
+          <pre>sudo su -
+wget https://raw.githubusercontent.com/opendevshop/devshop/1.5.0-rc7/install.sh
+bash install.sh</pre>
+              <p>NOTE: Run as root to ensure database configuration at /root/.my.cnf is loaded.</p>
+
+              <h4>Docker: Single Container</h4>
+              <pre>docker run -d -h devshop.local.computer -v "$PWD/projects:/var/aegir/projects" -n devshop-server -p 80:80 devshop/server</pre>
+
+              <p>If you already have something running on Port 80, change the <code>-p</code> option to an available port, such as <code>-p 88:80</code></p>
+
+              <h4>Docker: Multiple Containers</h4>
+
+              <p>You can use <a href="https://docs.docker.com/compose/">Docker Compose</a> to launch a multi-container cluster on Docker.</p>
+              <em>docker-compose.yml</em>
+
+              <pre>
+version: '2'
+services:
+  devmaster:
+    image: aegir/hostmaster
+    ports:
+      - 80:80
+    hostname: devshop.local.computer
+    links:
+      - database
+    depends_on:
+      - database
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
+      AEGIR_MAKEFILE: https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make
+      AEGIR_PROFILE: devmaster
+      AEGIR_VERSION: 1.x
+      PROVISION_VERSION: 7.x-3.x
+    volumes:
+      - ./aegir-home:/var/aegir:delegated
+      - $HOME/.ssh:/var/aegir/.ssh
+
+  database:
+    image: mariadb
+    logging:
+      driver: none
+    environment:
+      MYSQL_ROOT_PASSWORD: strongpassword
+
+  admin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - database:db
+    ports:
+      - 8080:80
+              </pre>
+
+
+              <h4>Ansible Galaxy</h4>
+              <p>There are Ansible roles for DevShop and Aegir available at <a href="https://galaxy.ansible.com/opendevshop/devmaster">https://galaxy.ansible.com/opendevshop/devmaster</a></p>
+
+              <pre>ansible-galaxy install opendevshop/devmaster</pre>
+
+
+
+          <p>Or <a href="https://docs.opendevshop.com/install.html" class="btn btn-default">Read Install Documentation</a>.</p>
       </section>
       <section id="main_content" class="inner">
           <img src="https://raw.githubusercontent.com/opendevshop/devshop/0.x/docs/images/devshop-projects.png" width="50%" class="img-right">
