@@ -564,23 +564,39 @@ function devshop_support_network_client_support_status() {
 
   $status = empty($license_key)? t('Unsupported'): t('Active');
 
+  $support_link = [
+    '#type' => 'link',
+    '#title' => '<i class="fa fa-heart text-danger"></i> ' . t('Support the Collective'),
+    '#href' => 'https://opencollective.com/devshop',
+    '#options' => [
+      'html' => TRUE,
+      'attributes' => [
+        'class' => ['text-muted'],
+        'target' => '_blank',
+        'alt' => t('Support DevShop on OpenCollective'),
+      ],
+    ],
+  ];
+
   if (empty($license_key)) {
-    $inactive_support_license_links = [
+    $inactive_support_license_links[] = [
       '#type' => 'link',
-      '#title' => '<i class="fa fa-rocket"></i> ' . t('Activate DevShop Support', [
+      '#title' => '<i class="fa fa-rocket"></i> ' . t('Activate Support', [
           '@status' => $status,
         ]),
       '#href' => 'admin/devshop/support',
       '#options' => [
         'html' => TRUE,
         'attributes' => [
-          'class' => ['text-muted'],
+          'class' => ['text-success'],
         ],
       ],
     ];
+
+    $inactive_support_license_links[] = $support_link;
     $links[] = drupal_render($inactive_support_license_links);
 
-    $links[] = '<div class="alert text-warning small"><div class=" pull-left"><i class="fa fa-warning"></i></div> <p class="block" style="margin-left: 16px;">' . t('Your DevShop server is currently unsupported. Click "Activate DevShop Support" above to get started.') . '</p></div>';
+    $links[] = '<div class="alert text-warning small"><div class=" pull-left"><i class="fa fa-warning"></i></div> <p class="block" style="margin-left: 16px;">' . t('Your DevShop server is currently unsupported.') . '</p></div>';
   }
   else {
 
@@ -605,8 +621,8 @@ function devshop_support_network_client_support_status() {
         ],
       ],
     ];
-
-    $links[] = drupal_render($active_support_license_links['config']);
+    $active_support_license_links[] = $support_link;
+    $links[] = drupal_render($active_support_license_links);
   }
 
     $blocks = [
