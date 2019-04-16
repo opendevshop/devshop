@@ -11,12 +11,12 @@ Funds donated via Patreon go directly to support Jon Pugh's full-time work on De
 
 ## Platinum Sponsors
 
-[![](https://github.com/opendevshop/devmaster/raw/7.x-1.x/themes/boots/devshop.support.png)](https://opencollective.com/opendevshop#backers)
+[![DevShop.Support](https://github.com/opendevshop/devmaster/raw/7.x-1.x/themes/boots/devshop.support.png)](https://devshop.support)
 
 
 ## Backers
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/devshop#backer)]
 
-<a href="https://opencollective.com/devshop#backers" target="_blank"><img src="https://opencollective.com/devshop/backers.svg?width=890"></a>
+[![DevShop.Support](https://opencollective.com/devshop/backers.svg?width=890)](https://opencollective.com/devshop#backers)
 
