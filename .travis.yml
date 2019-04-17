@@ -69,7 +69,10 @@ before_install:
   #
   #  If this is a PR, the $TRAVIS_PULL_REQUEST_BRANCH is set, and we must recreate the PR branch locally.
   #  Otherwise, the upgrade test fails because `devshop self-update` tries to checkout the branch but there's no commits.
-  - if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then git fetch origin $TRAVIS_PULL_REQUEST_BRANCH; git checkout -b $TRAVIS_PULL_REQUEST_BRANCH -t origin/$TRAVIS_PULL_REQUEST_BRANCH; fi
+  - if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
+      git remote add fork -f https://github.com/$TRAVIS_PULL_REQUEST_SLUG;
+      git checkout -b $TRAVIS_PULL_REQUEST_BRANCH -t fork/$TRAVIS_PULL_REQUEST_BRANCH;
+    fi
   - env
   - id -u
   - docker --version
