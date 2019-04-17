@@ -251,6 +251,7 @@ function devshop_support_network_client_settings_form() {
       ));
     }
     else {
+      $service_title = t('DevShop.Support');
       $subtitle = t('Welcome to !devshop_support_link: Host Your Own Drupal', array(
         '!devshop_support_link' => l(t('DevShop.Support'), $service_url, array(
           'attributes' => array('target' => '_blank')
@@ -266,7 +267,7 @@ function devshop_support_network_client_settings_form() {
       }
       elseif (!empty($data->_TEAM->name)) {
 
-        $description = t('This server is owned by !team_link and fully managed by the !devshop_cloud_link service.', array(
+        $description = t('This server is managed by !devshop_cloud_link.', array(
           '!team_link' => l($data->_TEAM->name, $data->_TEAM->url),
           '!devshop_cloud_link' => l($service_title, $service_url, array(
               'attributes' => array('target' => '_blank')
