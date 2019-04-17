@@ -68,7 +68,7 @@ function devshop_hosting_install_footer_menu() {
     ;
 
     // Add links.
-    $links["admin/settings"] = $t('DevShop Settings');
+    $links["admin/devshop"] = $t('DevShop Settings');
     $links["node/$nid"] = $t('Hostmaster Dashboard');
     $links['https://docs.opendevshop.com'] = $t('Documentation');
     $links['https://gitter.im/opendevshop/devshop'] = $t('Chat');
