@@ -1042,11 +1042,12 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
+      'clone' => t('Clone Environment'),
       'profile' => t('Drupal Profile'),
       'manual' => t('Empty Database'),
-      'clone' => t('Clone Environment'),
       'import' => t('Import Database'),
     ),
+    '#default_value' => 'clone',
   );
 
   $form['install_method']['none'] = array(
