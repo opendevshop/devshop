@@ -1,6 +1,8 @@
 language: php
 
 sudo: required
+git:
+  depth: false
 
 # Only run tests when committing to our primary branch and pull requests.
 branches:
@@ -56,6 +58,21 @@ services:
   - docker
 
 before_install:
+
+  # If TRAVIS_PULL_REQUEST_BRANCH variable is not empty, create a branch with the same name so the upgrade tests do not fail.
+  # See https://github.com/opendevshop/devshop/issues/356
+  # This is how Travis clones the codebase:
+  #    git clone --depth=50 https://github.com/opendevshop/devshop.git opendevshop/devshop
+  #    cd opendevshop/devshop
+  #    git fetch origin +refs/pull/355/merge:
+  #    git checkout -qf FETCH_HEAD
+  #
+  #  If this is a PR, the $TRAVIS_PULL_REQUEST_BRANCH is set, and we must recreate the PR branch locally.
+  #  Otherwise, the upgrade test fails because `devshop self-update` tries to checkout the branch but there's no commits.
+  - if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
+      git remote add fork -f https://github.com/$TRAVIS_PULL_REQUEST_SLUG;
+      git checkout -b $TRAVIS_PULL_REQUEST_BRANCH -t fork/$TRAVIS_PULL_REQUEST_BRANCH;
+    fi
   - env
   - id -u
   - docker --version
