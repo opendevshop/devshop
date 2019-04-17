@@ -108,6 +108,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
     $form['project']['environments'][$name]['git_ref'] = array(
       '#type' => 'select',
+      '#bootstrap_ignore_pre_render' => TRUE,
       '#options' => devshop_projects_git_ref_options($project),
       '#default_value' => isset($environment->git_ref) ? $environment->git_ref : 'HEAD',
     );
