@@ -226,10 +226,16 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   );
 
+  $client = devshop_github_client();
+  $account = $client->currentUser()->show();
+  $repo_owners = variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.')));
+  $repo_owners[$account['login']] = $account['login'];
+
+  asort($repo_owners);
   $form['source']['github_create']['github_organization'] = array(
     '#type' => 'select',
     '#title' => t('Create a new GitHub repository'),
-    '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
+    '#options' => $repo_owners,
     '#bootstrap_ignore_pre_render' => TRUE,
     '#attributes' => array(
       'class' => array(
@@ -481,7 +487,8 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
     else {
       $client = devshop_github_client();
       $name = $element['#value'];
-      $organization = $form_state['values']['github_create']['github_organization'];
+      // Must be NULL if org is username.
+      $organization = $form_state['values']['github_create']['github_organization'] == $client->currentUser()->show()['login']? NULL: $form_state['values']['github_create']['github_organization'];
       $public = $form_state['values']['github_create']['github_repository_public'];
       $description = t('Created by DevShop on @date', array('@date' => format_date(time())));
 
@@ -498,12 +505,9 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
         )));
       }
       catch (\Exception $e) {
-        form_error($element, t('Error from GitHub: ') . $e->getMessage());
+        form_error($element, t('Unable to create repo. Error from GitHub: ') . $e->getMessage());
       }
     }
-
-    // TODO: CREATE NEW GITHUB REPO!
-
   }
 }
 
