@@ -46,7 +46,7 @@ This release was brought to you buy our new generous backers:
 
 - [Ryan Price @liberatr](https://opencollective.com/liberatr)
 - [Paulius Pazdrazdys @paulius](https://opencollective.com/paulius-pazdrazdys)
-- [Ho-Ling Poon @holing](https://www.patreon.com/user/creators?u=7959245)
+- [Ho-Ling Poon @holingpoon](https://www.patreon.com/user/creators?u=7959245)
 
 And our newest code contributors:
 
