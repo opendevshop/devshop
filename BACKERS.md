@@ -16,7 +16,10 @@ Funds donated via Patreon go directly to support Jon Pugh's full-time work on De
 
 ## Backers
 
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/devshop#backer)]
+- [Ryan Price @liberatr](https://opencollective.com/liberatr)
+- [Paulius Pazdrazdys @paulius](https://opencollective.com/paulius-pazdrazdys)
+- [Ho-Ling Poon @holingpoon](https://www.patreon.com/user/creators?u=7959245)
 
-[![DevShop.Support](https://opencollective.com/devshop/backers.svg?width=890)](https://opencollective.com/devshop#backers)
-
+Thank you to all our backers! 
+[Become a backer on OpenCollective](https://opencollective.com/devshop#backer)
+[Become a patron on Patreon](https://patreon.com/devshop)
