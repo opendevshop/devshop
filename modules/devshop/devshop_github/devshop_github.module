@@ -226,41 +226,46 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   );
 
-  $client = devshop_github_client();
-  $account = $client->currentUser()->show();
-  $repo_owners = variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.')));
-  $repo_owners[$account['login']] = $account['login'];
+  try {
+    $client = devshop_github_client();
+    $account = $client->currentUser()->show();
+    $repo_owners = variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.')));
+    $repo_owners[$account['login']] = $account['login'];
 
-  asort($repo_owners);
-  $form['source']['github_create']['github_organization'] = array(
-    '#type' => 'select',
-    '#title' => t('Create a new GitHub repository'),
-    '#options' => $repo_owners,
-    '#bootstrap_ignore_pre_render' => TRUE,
-    '#attributes' => array(
-      'class' => array(
-        'form-control form-inline'
+    asort($repo_owners);
+    $form['source']['github_create']['github_organization'] = array(
+      '#type' => 'select',
+      '#title' => t('Create a new GitHub repository'),
+      '#options' => $repo_owners,
+      '#bootstrap_ignore_pre_render' => TRUE,
+      '#attributes' => array(
+        'class' => array(
+          'form-control form-inline'
+        ),
       ),
-    ),
-  );
-  $form['source']['github_create']['github_repository_name'] = array(
-    '#type' => 'textfield',
-    '#attributes' => array(
-      'placeholder' => t('repo_name'),
-      'class' => array('form-inline'),
-    ),
-    '#element_validate' => array(
-      'devshop_github_create_repository'
-    ),
-  );
-  $form['source']['github_create']['github_repository_public'] = array(
-    '#type' => 'radios',
-    '#options' => array(
-      1 => t('Public: Anyone can see this repository. You choose who can commit.'),
-      0 => t('Private: You choose who can see and commit to this repository.')
-    ),
-    '#default_value' => 1,
-  );
+    );
+    $form['source']['github_create']['github_repository_name'] = array(
+      '#type' => 'textfield',
+      '#attributes' => array(
+        'placeholder' => t('repo_name'),
+        'class' => array('form-inline'),
+      ),
+      '#element_validate' => array(
+        'devshop_github_create_repository'
+      ),
+    );
+    $form['source']['github_create']['github_repository_public'] = array(
+      '#type' => 'radios',
+      '#options' => array(
+        1 => t('Public: Anyone can see this repository. You choose who can commit.'),
+        0 => t('Private: You choose who can see and commit to this repository.')
+      ),
+      '#default_value' => 1,
+    );
+  }
+  catch (\Exception $e) {
+    drupal_set_message($e->getMessage(), 'warning');
+  }
 
   $form['source']['settings']['#weight'] = 1;
   $form['source']['settings']['#tree'] = 1;
