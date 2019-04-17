@@ -264,6 +264,9 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     );
   }
   catch (\Exception $e) {
+    $form['source']['github_create'] = array(
+      '#markup' => t('GitHub token not found. Unable to create new repositories.'),
+    );
     drupal_set_message($e->getMessage(), 'warning');
   }
 
