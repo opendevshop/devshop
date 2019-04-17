@@ -61,7 +61,10 @@ bash install.sh</pre>
               <p>NOTE: Run as root to ensure database configuration at /root/.my.cnf is loaded.</p>
 
               <h4>Docker: Single Container</h4>
-              <pre>docker run -d -h devshop.local.computer -v "$PWD/projects:/var/aegir/projects" -n devshop-server -p 80:80 devshop/server</pre>
+              <p>
+                The container <pre>devshop/server</pre> is available on <a href="https://hub.docker.com/r/devshop/server" target="_blank">Docker Hub. Run it with the following command:
+              </p>
+              <pre>docker run -d -h devshop.local.computer -v "$PWD/projects:/var/aegir/projects" --name devshop-server -p 80:80 devshop/server</pre>
 
               <p>If you already have something running on Port 80, change the <code>-p</code> option to an available port, such as <code>-p 88:80</code></p>
 
