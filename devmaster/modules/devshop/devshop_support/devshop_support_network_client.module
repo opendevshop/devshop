@@ -577,6 +577,7 @@ function devshop_support_network_client_support_status() {
       ],
     ],
   ];
+  $links[] = drupal_render($support_link);
 
   if (empty($license_key)) {
     $inactive_support_license_links[] = [
@@ -593,7 +594,6 @@ function devshop_support_network_client_support_status() {
       ],
     ];
 
-    $inactive_support_license_links[] = $support_link;
     $links[] = drupal_render($inactive_support_license_links);
 
     $links[] = '<div class="alert text-warning small"><div class=" pull-left"><i class="fa fa-warning"></i></div> <p class="block" style="margin-left: 16px;">' . t('Your DevShop server is currently unsupported.') . '</p></div>';
@@ -621,7 +621,6 @@ function devshop_support_network_client_support_status() {
         ],
       ],
     ];
-    $active_support_license_links[] = $support_link;
     $links[] = drupal_render($active_support_license_links);
   }
 
