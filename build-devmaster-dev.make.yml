@@ -10,7 +10,7 @@ defaults:
 projects:
   drupal:
     type: core
-    version: 7.66
+    version: 7.65
 
   # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
   devmaster:
@@ -27,7 +27,7 @@ projects:
   hosting:
     download:
       type: git
-      branch: 7.x-3.x
+      branch: 7.x-3.x-devshop
 
   hosting_git:
     download:
