@@ -64,7 +64,7 @@ bash install.sh</pre>
               <p>
                 The container <code>devshop/server</code> is available on <a href="https://hub.docker.com/r/devshop/server" target="_blank">Docker Hub</a>. Run it with the following command:
               </p>
-              <pre>docker run -d -h devshop.local.computer -v "$PWD/projects:/var/aegir/projects" --name devshop-server -p 80:80 devshop/server</pre>
+              <pre>docker run -d -h devshop.local.computer --name devshop-server -p 80:80 devshop/server</pre>
 
               <p>If you already have something running on Port 80, change the <code>-p</code> option to an available port, such as <code>-p 88:80</code></p>
 
