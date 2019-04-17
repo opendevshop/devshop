@@ -49,6 +49,14 @@ usage() {
     --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. (Default: False)
     --license            The devshop.support license key for this server.
     --help               Displays this help message and exits
+
+  Supporting DevShop
+  ==================
+
+  Your contributions make DevShop possible. Please consider becoming a patron of open source!
+
+      https://opencollective.com/devshop
+      https://www.patreon.com/devshop
 '
 
   exit 1
@@ -73,6 +81,12 @@ Thanks!
 Issues: https://github.com/opendevshop/devshop/issues
 Chat: https://gitter.im/opendevshop/devshop 
 Code: https://github.com/opendevshop/devshop
+
+Your contributions make DevShop possible. Please consider becoming a patron of open source!
+
+  https://opencollective.com/devshop
+  https://www.patreon.com/devshop
+
 "
 
 determine_os() {
