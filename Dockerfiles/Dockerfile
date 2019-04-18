@@ -158,6 +158,9 @@ RUN mkdir /var/aegir/config
 RUN mkdir /var/aegir/.drush
 RUN mkdir /var/aegir/projects
 
+RUN mkdir /var/aegir/.ssh
+RUN chmod 700 /var/aegir/.ssh
+
 # You may change this environment at run time. User UID 1 is created with this email address.
 ENV AEGIR_CLIENT_EMAIL aegir@aegir.local.computer
 ENV AEGIR_CLIENT_NAME admin
