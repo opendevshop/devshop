@@ -1042,11 +1042,12 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
+      'clone' => t('Clone Environment'),
       'profile' => t('Drupal Profile'),
       'manual' => t('Empty Database'),
-      'clone' => t('Clone Environment'),
       'import' => t('Import Database'),
     ),
+    '#default_value' => 'clone',
   );
 
   $form['install_method']['none'] = array(
@@ -1107,7 +1108,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
 
   // Generate environments options.
   foreach ($project->environments as $e => $environment) {
-    $link = l(t('View') . ' <i class="fa fa-external-link"></i>', $environment->url, array(
+    $link = l(' <i class="fa fa-external-link"></i> ' . $environment->uri,  $environment->url, array(
       'html' => TRUE,
       'attributes' => array(
         'target' => '_blank',
@@ -1122,14 +1123,14 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   // Add other aliases to the clone source.
   if (isset($project->settings->aliases)) {
     foreach ($project->settings->aliases as $alias => $data) {
-      $link = l(t('View') . ' <i class="fa fa-external-link"></i>', 'http://' . $data['uri'], array(
+      $link = l('<i class="fa fa-external-link"></i> ' . $data['uri'], 'http://' . $data['uri'], array(
           'html' => TRUE,
           'attributes' => array(
             'target' => '_blank',
             'class' => array('btn-text'),
           ),
         )) . '</small>';
-      $remote = t('Remote Site');
+      $remote = t('Unknown');
       $environment_options["@{$project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
     }
   }

@@ -26,6 +26,18 @@ function devshop_hosting_drush_command()
  */
 function devshop_hosting_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'site' && $task->ref->hosting_name == 'hostmaster') {
+
+    // Import SSH key,
+    $stored_devshop_ssh_key = variable_get('devshop_public_key');
+    if (empty(trim($stored_devshop_ssh_key))) {
+      $server_public_key = file_get_contents($_SERVER['HOME'] . '/.ssh/id_rsa.pub');
+      if (!empty($server_public_key)) {
+        variable_set('devshop_public_key', $server_public_key);
+        drush_log(dt('Loaded public key into DevShop.'), 'p_log');
+      }
+    }
+
+    // Rebuild composer.json and run composer install
     $working_dir = drupal_realpath(variable_get('composer_manager_file_dir', 'public://composer'));
     provision_process('drush @hostmaster cc drush');
     provision_process('drush @hostmaster composer-json-rebuild -y');
