@@ -15,36 +15,6 @@ function devshop_projects_hosting_task_update_status($task, $status) {
   $ref = $task->ref;
   if (($ref->type == 'site' || $ref->type == 'platform') && isset($ref->environment)) {
     $ref->environment->last_task = $task->nid;
-
-    // @TODO: Look for environment_target on clone task, so we can update that environment's last task as well.
-
-    // Prevent "Verify" and "reset password" tasks from cluttering up the environment status indicator.
-    // If last task is a successful verify or reset password, load the task before that as the "last task".
-    if (($task->task_type == 'verify' || $task->task_type == 'login-reset') && $status == HOSTING_TASK_SUCCESS) {
-
-      // If this object is a platform, lookup the latest tasks from the site node.
-      $tasks_list = hosting_get_tasks('rid', $ref->nid);
-
-      // The first item in $tasks should be this task.
-      // If so, use the next task as the "last_task", because verify and reset password tasks are not important.
-      foreach ($tasks_list as &$task_list_item) {
-        // If the first task is this task, we want to skip it.
-        if ($task_list_item->nid == $task->nid && $task_list_item->vid == $task->vid) {
-          continue;
-        }
-        // If the next task is also a login-reset or verify, skip it.
-        if ($task_list_item->task_type == 'verify' || $task_list_item->task_type == 'login-reset') {
-          continue;
-        }
-
-        // Grab the first task that isn't this one or another skippable task
-        $ref->environment->last_task = $task_list_item->nid;
-
-        // Stop the loop through the tasks.
-        break;
-      }
-    }
-
     devshop_environment_save_last_task($ref->environment);
   }
 }

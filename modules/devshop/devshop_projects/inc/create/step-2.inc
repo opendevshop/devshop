@@ -97,9 +97,11 @@ function devshop_project_create_step_settings_submit(&$form, &$form_state) {
       node_save($platform);
     }
     $count = count($environments);
-    drupal_set_message(t('You changed the web document root to %root. %count updated with the new information.', array(
-      '%root' => $form_state['values']['project']['drupal_path'],
-      '%count' => format_plural($count, t('1 site was'), t( '@count sites were', array('@count' => $count))),
-    )), 'warning');
+    if ($count) {
+      drupal_set_message(t('You changed the web document root to %root. @count updated with the new information.', array(
+        '%root' => $form_state['values']['project']['drupal_path'],
+        '@count' => format_plural($count, t('1 site was'), t( '@count sites were', array('@count' => $count))),
+      )), 'success');
+    }
   }
 }
