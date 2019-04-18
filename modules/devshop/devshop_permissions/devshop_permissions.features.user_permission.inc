@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * devshop_permissions.features.user_permission.inc
