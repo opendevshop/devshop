@@ -27,7 +27,7 @@ projects:
   hosting:
     download:
       type: git
-      branch: 7.x-3.x
+      branch: 7.x-3.x-devshop
 
   hosting_git:
     download:
