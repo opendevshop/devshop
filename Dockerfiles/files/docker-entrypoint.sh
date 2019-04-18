@@ -14,7 +14,7 @@ echo ""
 echo "              Docker Entrypoint                   "
 echo "__________________________________________________"
 echo 'DevShop | Welcome to DevShop'
-echo 'DevShop | When the database is ready, we will install Aegir with the following options:'
+echo 'DevShop | When the database is ready, we will install DevShop with the following options:'
 echo "DevShop | -------------------------"
 echo "DevShop | Hostname: $HOSTNAME"
 echo "DevShop | Version: $AEGIR_VERSION"
