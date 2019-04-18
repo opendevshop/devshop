@@ -166,6 +166,28 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   unset($form['source']['git_source']['#options']['custom']);
   $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
 
+  if (empty($options)) {
+    $form['source']['github_repos'] = array(
+      '#title' => t('Use an existing GitHub repository'),
+      '#description' => t('No GitHub repositories found. !link', array(
+        '!link' => l(t('Refresh GitHub Repos'), 'admin/devshop/github/load-repos', array(
+          'query' => drupal_get_destination(),
+          'attributes' => array(
+            'class' => array('btn btn-primary'),
+          ),
+        )))),
+      '#type' => 'item',
+      '#states' => array(
+        'visible' => array(
+          ':input[name="git_source"]' => array(
+            'value' => 'github_existing'
+          ),
+        ),
+      ),
+    );
+  }
+  else {
+
   $form['source']['github_repos'] = array(
     '#title' => t('Use an existing GitHub repository'),
     '#type' => 'select',
@@ -182,6 +204,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
+  }
   $form['source']['github_create'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
@@ -203,35 +226,49 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   );
 
-  $form['source']['github_create']['github_organization'] = array(
-    '#type' => 'select',
-    '#title' => t('Create a new GitHub repository'),
-    '#options' => variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.'))),
-    '#bootstrap_ignore_pre_render' => TRUE,
-    '#attributes' => array(
-      'class' => array(
-        'form-control form-inline'
+  try {
+    $client = devshop_github_client();
+    $account = $client->currentUser()->show();
+    $repo_owners = variable_get('devshop_github_available_organizations', array('' => t('You do not have repository create permissions for any organizations.')));
+    $repo_owners[$account['login']] = $account['login'];
+
+    asort($repo_owners);
+    $form['source']['github_create']['github_organization'] = array(
+      '#type' => 'select',
+      '#title' => t('Create a new GitHub repository'),
+      '#options' => $repo_owners,
+      '#bootstrap_ignore_pre_render' => TRUE,
+      '#attributes' => array(
+        'class' => array(
+          'form-control form-inline'
+        ),
       ),
-    ),
-  );
-  $form['source']['github_create']['github_repository_name'] = array(
-    '#type' => 'textfield',
-    '#attributes' => array(
-      'placeholder' => t('repo_name'),
-      'class' => array('form-inline'),
-    ),
-    '#element_validate' => array(
-      'devshop_github_create_repository'
-    ),
-  );
-  $form['source']['github_create']['github_repository_public'] = array(
-    '#type' => 'radios',
-    '#options' => array(
-      1 => t('Public: Anyone can see this repository. You choose who can commit.'),
-      0 => t('Private: You choose who can see and commit to this repository.')
-    ),
-    '#default_value' => 1,
-  );
+    );
+    $form['source']['github_create']['github_repository_name'] = array(
+      '#type' => 'textfield',
+      '#attributes' => array(
+        'placeholder' => t('repo_name'),
+        'class' => array('form-inline'),
+      ),
+      '#element_validate' => array(
+        'devshop_github_create_repository'
+      ),
+    );
+    $form['source']['github_create']['github_repository_public'] = array(
+      '#type' => 'radios',
+      '#options' => array(
+        1 => t('Public: Anyone can see this repository. You choose who can commit.'),
+        0 => t('Private: You choose who can see and commit to this repository.')
+      ),
+      '#default_value' => 1,
+    );
+  }
+  catch (\Exception $e) {
+    $form['source']['github_create'] = array(
+      '#markup' => t('GitHub token not found. Unable to create new repositories.'),
+    );
+    drupal_set_message($e->getMessage(), 'warning');
+  }
 
   $form['source']['settings']['#weight'] = 1;
   $form['source']['settings']['#tree'] = 1;
@@ -458,7 +495,8 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
     else {
       $client = devshop_github_client();
       $name = $element['#value'];
-      $organization = $form_state['values']['github_create']['github_organization'];
+      // Must be NULL if org is username.
+      $organization = $form_state['values']['github_create']['github_organization'] == $client->currentUser()->show()['login']? NULL: $form_state['values']['github_create']['github_organization'];
       $public = $form_state['values']['github_create']['github_repository_public'];
       $description = t('Created by DevShop on @date', array('@date' => format_date(time())));
 
@@ -475,12 +513,9 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
         )));
       }
       catch (\Exception $e) {
-        form_error($element, t('Error from GitHub: ') . $e->getMessage());
+        form_error($element, t('Unable to create repo. Error from GitHub: ') . $e->getMessage());
       }
     }
-
-    // TODO: CREATE NEW GITHUB REPO!
-
   }
 }
 

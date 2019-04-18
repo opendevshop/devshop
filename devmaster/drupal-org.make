@@ -111,7 +111,4 @@ libraries[underscore][download][tag] = 1.5.0
 
 ; Library: Chosen
 libraries[chosen][download][type] = "git"
-libraries[chosen][download][url] = "https://github.com/koenpunt/chosen.git"
-libraries[chosen][download][tag] = "v1.8.3"
-libraries[chosen][directory_name] = "chosen"
-libraries[chosen][destination] = "libraries"
+libraries[chosen][download][url] = "https://github.com/harvesthq/chosen-package.git"

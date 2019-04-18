@@ -251,6 +251,7 @@ function devshop_support_network_client_settings_form() {
       ));
     }
     else {
+      $service_title = t('DevShop.Support');
       $subtitle = t('Welcome to !devshop_support_link: Host Your Own Drupal', array(
         '!devshop_support_link' => l(t('DevShop.Support'), $service_url, array(
           'attributes' => array('target' => '_blank')
@@ -259,18 +260,18 @@ function devshop_support_network_client_settings_form() {
       if (empty($data)) {
         $description = '';
       }
+      elseif ($devshop_hostname == 'devshop.local.computer') {
+        $description = t('Hey there. This is !link. Thanks for launching!', array(
+          '!link' => l('devshop.local.computer', 'devshop.local.computer'),
+        ));
+      }
       elseif (!empty($data->_TEAM->name)) {
 
-        $description = t('This server is owned by !team_link and fully managed by the !devshop_cloud_link service.', array(
+        $description = t('This server is managed by !devshop_cloud_link.', array(
           '!team_link' => l($data->_TEAM->name, $data->_TEAM->url),
           '!devshop_cloud_link' => l($service_title, $service_url, array(
               'attributes' => array('target' => '_blank')
           ))
-        ));
-      }
-      elseif ($devshop_hostname == 'devshop.local.computer') {
-        $description = t('Hey there. This is !link. Thanks for launching!', array(
-          '!link' => l('devshop.local.computer', 'devshop.local.computer'),
         ));
       }
 
@@ -577,6 +578,7 @@ function devshop_support_network_client_support_status() {
       ],
     ],
   ];
+  $links[] = drupal_render($support_link);
 
   if (empty($license_key)) {
     $inactive_support_license_links[] = [
@@ -593,7 +595,6 @@ function devshop_support_network_client_support_status() {
       ],
     ];
 
-    $inactive_support_license_links[] = $support_link;
     $links[] = drupal_render($inactive_support_license_links);
 
     $links[] = '<div class="alert text-warning small"><div class=" pull-left"><i class="fa fa-warning"></i></div> <p class="block" style="margin-left: 16px;">' . t('Your DevShop server is currently unsupported.') . '</p></div>';
@@ -621,7 +622,6 @@ function devshop_support_network_client_support_status() {
         ],
       ],
     ];
-    $active_support_license_links[] = $support_link;
     $links[] = drupal_render($active_support_license_links);
   }
 
