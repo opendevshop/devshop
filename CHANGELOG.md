@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.5.0 (April 17, 2019)
+## 1.5.0 (April 18, 2019)
 
 ### DevShop.Support Launch!
 
@@ -14,15 +14,19 @@ Click "Activate Support" or visit https://devshop.support to get started!
 
 - 45 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.x
 - 105 Commits to Devmaster: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.x 
-- Fix bug in travis tests for forked repos.
 - Created OpenCollective and Patreon pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
   - Your support makes DevShop possible. Please become a backer or a sponsor today! 
   - https://opencollective.com/devshop or https://patreon.com/devshop
+  - New widget in DevShop to encourage contributors and Activate Support.
+  ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
+
 - Create Project page overhaul:
+  ![Create new repos right in devshop from composer or other repos.](https://user-images.githubusercontent.com/106420/56436137-d8a17b00-62a8-11e9-8167-a68f39e62ac3.gif)
   - Add ability to start a project by choosing from existing GitHub repos!
   - Add ability to create new GitHub repos from Composer projects or cloned from other git repositories!!!
   - Added "Chosen" widget to allow quick searching of large lists of repos and branches/tags. (Environment deploy widget coming soon!)
   - Maintain the list of suggested composer projects or git repos on the settings page. This serves as a git repo template system for new projects.
+  ![Configure git repo or composer project templates](https://raw.githubusercontent.com/opendevshop/documentation/master/images/Suggested-projects-repos.png)
   - Added a welcome message explaining what a project is.
   - Moved the Git Repo URL to first, and automatically create a project code name from that.
   - Dynamically force project codenames to be lowercase and not have punctuation.
@@ -38,21 +42,23 @@ Click "Activate Support" or visit https://devshop.support to get started!
 - Stop hiding successful verify and login tasks from the UI so it doesn't look broken!
 - Added "DevShop Settings" link to footer so users without admin menu permission can access it.
 - On "Create Environment" form, default to "Clone Environment" and show the full URL instead of a "View" text. Much better for remote aliases.
+- Fix bug in travis tests for forked repos.
 - Bumping Drupal core to 7.66
 
 ### Contributors
 
-This release was brought to you buy our new generous backers:
+This release was brought to you buy our new backers:
 
-- [Ryan Price @liberatr](https://opencollective.com/liberatr)
-- [Paulius Pazdrazdys @paulius](https://opencollective.com/paulius-pazdrazdys)
-- [Ho-Ling Poon @holingpoon](https://www.patreon.com/user/creators?u=7959245)
+- [Ryan Price](https://opencollective.com/liberatr) @liberatr
+- [Paulius Pazdrazdys](https://opencollective.com/paulius-pazdrazdys) @paulius
+- [Ho-Ling Poon](https://www.patreon.com/user/creators?u=7959245) @holingpoon
+- [Jeff Markel](https://opencollective.com/jeff-markel) @jmarkel
 
 And our newest code contributors:
 
-- [Vinicius Mello @vmmello](https://github.com/vmmello)
-- [Jess Chandler @monkeywithacupcake](https://github.com/monkeywithacupcake)
-- [Jan Adam @janadam](https://github.com/janadam-hbf)
+- [Vinicius Mello](https://github.com/vmmello) @vmmello
+- [Jess Chandler](https://github.com/monkeywithacupcake) @monkeywithacupcake
+- [Jan Adam](https://github.com/janadam-hbf) @janadam
 
 Thank you so much!
 
