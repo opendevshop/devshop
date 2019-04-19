@@ -57,7 +57,7 @@ devmaster_install_command: "{{ local_bin_path }}/drush hostmaster-install -y --s
 devmaster_upgrade_command: "{{ local_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
 
 # Must coincide with a drush release: https://github.com/drush-ops/drush/releases
-drush_release_version: 8.2.1
+drush_release_version: 8.2.3
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo
