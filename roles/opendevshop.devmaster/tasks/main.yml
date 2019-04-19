@@ -27,6 +27,12 @@
     mode: 0755
     force: yes
 
+- name: Check drush status
+  command: "{{ local_bin_path }}/drush status"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
 - name: Clear drush caches
   command: "{{ local_bin_path }}/drush cache-clear drush"
   become: yes
