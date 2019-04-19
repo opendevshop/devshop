@@ -195,6 +195,10 @@ function devshop_github_token_is_valid($token = NULL) {
  */
 function devshop_github_client() {
 
+  if (empty(variable_get('devshop_github_token'))) {
+    throw new \Exception(t('GitHub Token has not been saved yet.'));
+  }
+
   $client = new \Github\Client();
   $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
 
