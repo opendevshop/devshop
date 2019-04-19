@@ -1,5 +1,78 @@
 # Change Log
 
+## 1.5.0 (April 18, 2019)
+
+### DevShop.Support Launch!
+
+This release signifies the initial stable launch of the DevShop Support Network Client module. 
+
+You can now connect your DevShop to the https://devshop.support service. 
+
+Click "Activate Support" or visit https://devshop.support to get started!
+
+### Release Notes
+
+- 56 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.5.0-rc8
+- 113 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
+- Created [OpenCollective](https://opencollective.com/devshop) and [Patreon](https://www.patreon.com/devshop) pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
+  - Your support makes DevShop possible. Please become a backer or a sponsor today! 
+  - https://opencollective.com/devshop or https://patreon.com/devshop
+  - New widget in DevShop to encourage contributors and Activate Support.
+  
+  ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
+
+- Create Project page overhaul:
+  
+  ![Create new repos right in devshop from composer or other repos.](https://user-images.githubusercontent.com/106420/56436137-d8a17b00-62a8-11e9-8167-a68f39e62ac3.gif)
+  - Add ability to start a project by choosing from existing GitHub repos!
+  - Add ability to create new GitHub repos from Composer projects or cloned from other git repositories!!!
+  - Added "Chosen" widget to allow quick searching of large lists of repos and branches/tags. (Environment deploy widget coming soon!)
+  - Maintain the list of suggested composer projects or git repos on the settings page. This serves as a git repo template system for new projects.
+  
+  ![Configure git repo or composer project templates](https://raw.githubusercontent.com/opendevshop/documentation/master/images/Suggested-projects-repos.png)
+  - Added a welcome message explaining what a project is.
+  - Moved the Git Repo URL to first, and automatically create a project code name from that.
+  - Dynamically force project codenames to be lowercase and not have punctuation.
+  - Rewrite and redesign of DevShop GitHub settings page. Fixed bug blocking SSH key from being detected and added properly. - Cleaned up tips, standardized the SSH key check UX.
+  
+  ![New GitHub Settings Page](https://raw.githubusercontent.com/opendevshop/documentation/master/images/github-settings.png)
+  
+  - Automatically load servers SSH Public Key and save it into the Devmaster front end.
+  - Add spinner graphics to the two "Create Project" steps that need it!
+  - Fixed "Refreshing..." branches UI that would only show if you viewed the project node before the git references were loaded.
+  - Changed "Path to Drupal" setting to "Document Root". Much more clear and accurate.
+- Total rewrite of `install.sh` by @vmmello to add a `--help` option and break everything into bash functions. Thanks Vinicius!
+- Added ability to remove devshop.support license key.
+- Fixed bad project/platform links on Platform node pages.
+- Stop hiding successful verify and login tasks from the UI so it doesn't look broken!
+- Added "DevShop Settings" link to footer so users without admin menu permission can access it.
+- On "Create Environment" form, default to "Clone Environment" and show the full URL instead of a "View" text. Much better for remote aliases.
+- Fix bug in travis tests for forked repos.
+- Bumping Drupal core to 7.66
+
+### Contributors
+
+This release was brought to you buy our new backers:
+
+- [Ryan Price](https://opencollective.com/liberatr) @liberatr
+- [Paulius Pazdrazdys](https://opencollective.com/paulius-pazdrazdys) @paulius
+- [Ho-Ling Poon](https://www.patreon.com/user/creators?u=7959245) @holingpoon
+- [Jeff Markel](https://opencollective.com/jeff-markel) @jmarkel
+
+And our newest code contributors:
+
+- [Vinicius Mello](https://github.com/vmmello) @vmmello
+- [Jess Chandler](https://github.com/monkeywithacupcake) @monkeywithacupcake
+- [Jan Adam](https://github.com/janadam-hbf) @janadam
+
+Thank you so much!
+
+Your contributions make DevShop possible. Please consider becoming a patron of open source!
+
+- https://opencollective.com/devshop
+- https://www.patreon.com/devshop
+
+
 ## 1.5.0-rc5 (March 15, 2019)
 
 6 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc6...1.5.0-rc5

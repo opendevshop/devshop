@@ -296,12 +296,12 @@ class RoboFile extends \Robo\Tasks {
 
     // aegir/hostmaster:xdebug
 
-      // @TODO: Put this dockerfile back
-      //    $this->taskDockerBuild('aegir-dockerfiles')
-//      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug-php7')
-//      ->tag('aegir/hostmaster:xdebug')
-//      ->run();
-    //    // devshop/devmaster
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug-php7')
+      ->tag('aegir/hostmaster:php7-xdebug')
+      ->run();
+
+//    // devshop/devmaster
     //    $this->taskDockerBuild('dockerfiles')
     //      ->option('file', 'dockerfiles/Dockerfile')
     //      ->tag('devshop/devmaster')
