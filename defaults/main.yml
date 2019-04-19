@@ -25,7 +25,7 @@ supervisor_running: yes
 drush_dl_method: wget
 
 devshop_drush_packages:
-  provision: 7.x-3.170
+  provision: 7.x-3.174
   registry_rebuild: 7.x-2.2
 
 php_date_timezone: "America/New_York"
