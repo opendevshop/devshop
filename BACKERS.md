@@ -13,12 +13,19 @@ Funds donated via Patreon go directly to support Jon Pugh's full-time work on De
 
 [![DevShop.Support](https://github.com/opendevshop/devmaster/raw/7.x-1.x/themes/boots/devshop.support.png)](https://devshop.support)
 
+## Generous Backers
+
+Donating $50 / month or more:
+
+- [Jeff Markel](https://opencollective.com/jeff-markel) @jmarkel
 
 ## Backers
 
-- [Ryan Price @liberatr](https://opencollective.com/liberatr)
-- [Paulius Pazdrazdys @paulius](https://opencollective.com/paulius-pazdrazdys)
-- [Ho-Ling Poon @holingpoon](https://www.patreon.com/user/creators?u=7959245)
+Donating $10 / month or more:
+
+- [Ryan Price](https://opencollective.com/liberatr)  @liberatr
+- [Paulius Pazdrazdys](https://opencollective.com/paulius-pazdrazdys) @paulius
+- [Ho-Ling Poon](https://www.patreon.com/user/creators?u=7959245) @holingpoon
 
 Thank you to all of our backers and sponsors! 
 
