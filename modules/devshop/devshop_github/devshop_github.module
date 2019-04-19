@@ -134,21 +134,12 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   module_load_include('inc', 'devshop_github', 'includes/admin');
 
   if (!devshop_github_check_key(TRUE)) {
-    $form['connect'] = array(
-      '#type' => 'container',
-      '#markup' => t('DevShop Git Integration is not set up. Check settings and try again.'),
-      '#prefix' => "<div class='alert alert-danger'>",
-      '#suffix' => '</div>',
-      '#weight' => -1000,
-    );
 
-    $form['connect']['message'] = array(
-      '#markup' => '<i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.'),
-    );
-    $form['connect']['button'] = array(
-      '#markup' => l(t('DevShop GitHub Settings'),'admin/devshop/github', array('attributes' => array(
-        'class' => array('btn btn-link'),
-      ))));
+    drupal_set_message( '<p class="alert text-center"><i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.') . '</p><p class="alert text-center">' .  l( '<i class="fa fa-github"></i> ' . t('DevShop GitHub Settings'),'admin/devshop/github', array(
+      'html' => TRUE,
+      'attributes' => array(
+        'class' => array('btn btn-default text-center'),
+      ))) .'</p>' , 'warning');
   }
   else {
     $form['connect'] = array();
@@ -264,10 +255,8 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     );
   }
   catch (\Exception $e) {
-    $form['source']['github_create'] = array(
-      '#markup' => t('GitHub token not found. Unable to create new repositories.'),
-    );
-    drupal_set_message($e->getMessage(), 'warning');
+    // We've already got a message.
+    //    drupal_set_message($e->getMessage(), 'warning');
   }
 
   $form['source']['settings']['#weight'] = 1;
@@ -1273,6 +1262,9 @@ function devshop_github_check_key($silent = false) {
   }
 
   $token = variable_get('devshop_github_token', '');
+  if (empty($token)) {
+    return FALSE;
+  }
 
   $client = new \Github\Client();
   $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
