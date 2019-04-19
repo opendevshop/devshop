@@ -12,9 +12,9 @@ Click "Activate Support" or visit https://devshop.support to get started!
 
 ### Release Notes
 
-- 45 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.x
-- 105 Commits to Devmaster: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.x 
-- Created OpenCollective and Patreon pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
+- 56 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.5.0-rc8
+- 113 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
+- Created [OpenCollective](https://opencollective.com/devshop) and [Patreon](https://www.patreon.com/devshop) pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
   - Your support makes DevShop possible. Please become a backer or a sponsor today! 
   - https://opencollective.com/devshop or https://patreon.com/devshop
   - New widget in DevShop to encourage contributors and Activate Support.
