@@ -18,20 +18,25 @@ Click "Activate Support" or visit https://devshop.support to get started!
   - Your support makes DevShop possible. Please become a backer or a sponsor today! 
   - https://opencollective.com/devshop or https://patreon.com/devshop
   - New widget in DevShop to encourage contributors and Activate Support.
+  
   ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
 
 - Create Project page overhaul:
+  
   ![Create new repos right in devshop from composer or other repos.](https://user-images.githubusercontent.com/106420/56436137-d8a17b00-62a8-11e9-8167-a68f39e62ac3.gif)
   - Add ability to start a project by choosing from existing GitHub repos!
   - Add ability to create new GitHub repos from Composer projects or cloned from other git repositories!!!
   - Added "Chosen" widget to allow quick searching of large lists of repos and branches/tags. (Environment deploy widget coming soon!)
   - Maintain the list of suggested composer projects or git repos on the settings page. This serves as a git repo template system for new projects.
+  
   ![Configure git repo or composer project templates](https://raw.githubusercontent.com/opendevshop/documentation/master/images/Suggested-projects-repos.png)
   - Added a welcome message explaining what a project is.
   - Moved the Git Repo URL to first, and automatically create a project code name from that.
   - Dynamically force project codenames to be lowercase and not have punctuation.
-  - Rewrite and redesign of DevShop GitHub settings page. Fixed bug blocking SSH key from being detected and added properly.
-  - Cleaned up tips, standardized the SSH key check UX.
+  - Rewrite and redesign of DevShop GitHub settings page. Fixed bug blocking SSH key from being detected and added properly. - Cleaned up tips, standardized the SSH key check UX.
+  
+  ![New GitHub Settings Page](https://raw.githubusercontent.com/opendevshop/documentation/master/images/github-settings.png)
+  
   - Automatically load servers SSH Public Key and save it into the Devmaster front end.
   - Add spinner graphics to the two "Create Project" steps that need it!
   - Fixed "Refreshing..." branches UI that would only show if you viewed the project node before the git references were loaded.
