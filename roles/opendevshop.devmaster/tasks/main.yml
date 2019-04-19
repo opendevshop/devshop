@@ -20,7 +20,7 @@
 
 - hostname: name={{ server_hostname }}
 
-- name: Install Drush
+- name: "Install Drush {{ drush_release_version }}"
   get_url:
     url: "https://github.com/drush-ops/drush/releases/download/{{ drush_release_version }}/drush.phar"
     dest: "{{ local_bin_path }}/drush"
