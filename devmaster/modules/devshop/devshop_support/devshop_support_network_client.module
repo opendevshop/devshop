@@ -353,7 +353,14 @@ function devshop_support_network_client_settings_form() {
       '#description' => t('Send the list of projects on this DevShop to DevShop.Cloud. New features coming soon depend on this feature. See !link to view the data payload.', array('!link' => l(t('Site Status Report'), 'admin/reports/status'))),
     );
 
-
+    $form['advanced']['devshop_support_url'] = array(
+      '#type' => 'textfield',
+      '#title' => t('DevShop.Support API URL'),
+      '#description' => t('The DevShop Support URL to connect to for service.'),
+      '#default_value' => variable_get('devshop_support_url', 'devshop.support'),
+      '#field_prefix' => '<div class="input-group"><div class="input-group-addon">https://</div>',
+      '#field_suffix' => '</div>',
+    );
 
   if (!devshop_cloud_license_active()) {
         $button = '';
