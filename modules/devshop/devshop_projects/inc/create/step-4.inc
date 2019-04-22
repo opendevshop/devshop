@@ -182,7 +182,7 @@ HTML;
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
     $form['#no_finish'] = TRUE;
-    $note = '<p class="wait">' . t('Please wait while we clone your repo and verify your drupal code.') . '</p>';
+    $note = '<p class="wait">' . t('Please wait while we clone your repo and install your Drupal code. This may take a while depending on the size of your repo and the number of Composer dependencies.') . '</p>';
     $note .= '<p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p>';
 
     $form['help'] = array(
