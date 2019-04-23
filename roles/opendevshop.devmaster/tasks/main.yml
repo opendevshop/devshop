@@ -5,14 +5,14 @@
 
 - name: Install extra packages
   apt:
-    pkg: u'{{ extra_packages }}'
+    pkg: '{{ extra_packages }}'
     state: installed
     update_cache: yes
   when: ansible_os_family == "Debian"
 
 - name: Install extra packages
   yum:
-    name: u'{{ extra_packages }}'
+    name: '{{ extra_packages }}'
     state: present
   when: ansible_os_family == "RedHat"
 
