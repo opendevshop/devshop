@@ -54,18 +54,26 @@ function devshop_support_network_client_permission() {
 }
 
 /**
+ * Return just the host of the DevShop Support API URL.
+ * @return mixed
+ */
+function devshop_support_get_url_host() {
+  return parse_url(variable_get('devshop_support_api_url', 'https://devshop.support'), PHP_URL_HOST);
+}
+
+/**
  * Return default set of variables to set when activating a license.
  */
 function devshop_support_network_default_variables()
 {
-  $devshop_support_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
+  $devshop_support_url = variable_get('devshop_support_api_url', 'https://devshop.support');
 
   // cas_server variable is now passed from support license payload.
   // @see devshop_support_network_page_callback() in devshop_support_network.module.
   // $conf['cas_server'] = variable_get('devshop_support_url', 'devshop.support');
 
   $conf['cas_version'] = '2.0';
-  $conf['cas_server'] = variable_get('devshop_support_url', 'devshop.support');
+  $conf['cas_server'] = devshop_support_get_url_host();
   $conf['cas_uri'] = '/cas';
   $conf['cas_port'] = '443';
 
@@ -356,7 +364,7 @@ function devshop_support_network_client_settings_form() {
       '#type' => 'textfield',
       '#title' => t('DevShop.Support API URL'),
       '#description' => t('The DevShop Support URL to connect to for service.'),
-      '#default_value' =>variable_get('devshop_support_api_url', 'https://devshop.support'),
+      '#default_value' => variable_get('devshop_support_api_url', 'https://devshop.support'),
     );
 
   if (!devshop_cloud_license_active()) {
