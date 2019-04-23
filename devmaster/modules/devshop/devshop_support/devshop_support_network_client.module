@@ -188,8 +188,9 @@ function devshop_support_network_client_settings_form() {
     $status_items[] =  array(
       'data' => t($message, array(
         '!status' => "<strong>{$license_key_status}</strong>",
-        '!get_one_link' => l(t('Activate Support'), "{$service_url}/node/add/server/{$devshop_hostname}", array(
-          'attributes' => array('class' => array("btn btn-sm btn-{$alert_class}"))
+        '!get_one_link' => l('<i class="fa fa-rocket"></i> ' . t('Activate Support'), "{$service_url}/node/add/server/{$devshop_hostname}", array(
+          'html' => true,
+          'attributes' => array('class' => array("btn btn-sm btn-success"))
         )),
       )),
       'class' => "list-group-item list-group-item-{$alert_class}",
