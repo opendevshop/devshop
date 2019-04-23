@@ -325,7 +325,6 @@ function devshop_support_network_client_settings_form() {
         '#element_validate' => array(
             'devshop_support_network_client_settings_form_validate_key',
         ),
-        '#required' => 1,
         '#weight' => 1,
     );
 
@@ -353,13 +352,11 @@ function devshop_support_network_client_settings_form() {
       '#description' => t('Send the list of projects on this DevShop to DevShop.Cloud. New features coming soon depend on this feature. See !link to view the data payload.', array('!link' => l(t('Site Status Report'), 'admin/reports/status'))),
     );
 
-    $form['advanced']['devshop_support_url'] = array(
+    $form['advanced']['devshop_support_api_url'] = array(
       '#type' => 'textfield',
       '#title' => t('DevShop.Support API URL'),
       '#description' => t('The DevShop Support URL to connect to for service.'),
-      '#default_value' => variable_get('devshop_support_url', 'devshop.support'),
-      '#field_prefix' => '<div class="input-group"><div class="input-group-addon">https://</div>',
-      '#field_suffix' => '</div>',
+      '#default_value' =>variable_get('devshop_support_api_url', 'https://devshop.support'),
     );
 
   if (!devshop_cloud_license_active()) {
@@ -428,6 +425,9 @@ function devshop_support_network_client_settings_form_validate_key($element, &$f
     return;
   }
 
+  if (empty($element['#value'])) {
+    return;
+  }
   $response = devshop_support_network_client_post_data($element['#value']);
 
   if ($response === TRUE) {
@@ -593,7 +593,8 @@ function devshop_support_network_client_support_status() {
       '#title' => '<i class="fa fa-rocket"></i> ' . t('Activate Support', [
           '@status' => $status,
         ]),
-      '#href' => 'admin/devshop/support',
+      '#href' => variable_get('devshop_support_api_url', 'https://devshop.support') . '/node/add/server/' . $_SERVER['HTTP_HOST']
+    ,
       '#options' => [
         'html' => TRUE,
         'attributes' => [
