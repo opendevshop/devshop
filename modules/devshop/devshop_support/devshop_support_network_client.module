@@ -66,7 +66,7 @@ function devshop_support_get_url_host() {
  */
 function devshop_support_network_default_variables()
 {
-  $devshop_support_url = variable_get('devshop_support_api_url', 'https://devshop.support');
+  $devshop_support_api_url = variable_get('devshop_support_api_url', 'https://devshop.support');
 
   // cas_server variable is now passed from support license payload.
   // @see devshop_support_network_page_callback() in devshop_support_network.module.
@@ -79,7 +79,7 @@ function devshop_support_network_default_variables()
 
   // DOES NOT AFFECT cas.module when Libraries module is enabled, so I set it in build-devmaster.make.
   // $conf['cas_library_dir'] = 'sites/all/libraries/cas';
-  $conf['cas_logout_destination'] = $devshop_support_url . '/bye?server=' . $_SERVER['HTTP_HOST'];
+  $conf['cas_logout_destination'] = $devshop_support_api_url . '/bye?server=' . $_SERVER['HTTP_HOST'];
   $conf['cas_login_message'] = t('Signed into !server as %cas_username via DevShop.Cloud.', array(
     '!server' => $_SERVER['HTTP_HOST'],
   ));
@@ -102,8 +102,8 @@ function devshop_support_network_default_variables()
 
   if (devshop_cloud_license_active()) {
     $conf['cas_login_form'] =  2;
-    $conf['cas_registerURL'] = $devshop_support_url . '/user/register';
-    $conf['cas_changePasswordURL'] = $devshop_support_url . '/user/password';
+    $conf['cas_registerURL'] = $devshop_support_api_url . '/user/register';
+    $conf['cas_changePasswordURL'] = $devshop_support_api_url . '/user/password';
   }
   else {
     $conf['cas_login_form'] =  0;
@@ -131,7 +131,7 @@ function devshop_support_network_client_user_view_alter(&$build) {
     $build['devshop_support_network_client'] = array(
         '#access' => variable_get('cas_server', '') && $build['#account']->cas_name,
         '#type' => 'item',
-        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim('https://' . variable_get('devshop_support_url', 'devshop.support'), '/'), [
+        '#markup' => l('<i class="fa fa-user"></i> devshop.support/' . $build['#account']->cas_name, rtrim(variable_get('devshop_support_api_url', 'https://devshop.support'), '/'), [
             'html' => 1,
             'attributes' => [
                 'class' => ['btn btn-info'],
@@ -148,7 +148,7 @@ function devshop_support_network_client_settings_form() {
     $node = hosting_context_load('hostmaster');
     $license_key = variable_get('devshop_support_license_key', '');
 
-    $service_url = 'https://' . variable_get('devshop_support_url', 'devshop.support');
+    $service_url = variable_get('devshop_support_api_url', 'https://devshop.support');
     $devshop_hostname = $_SERVER['HTTP_HOST'];
     $service_title = t('DevShop.Cloud');
 
@@ -188,7 +188,7 @@ function devshop_support_network_client_settings_form() {
     $status_items[] =  array(
       'data' => t($message, array(
         '!status' => "<strong>{$license_key_status}</strong>",
-        '!get_one_link' => l(t('Get One'), "{$service_url}/server/{$devshop_hostname}", array(
+        '!get_one_link' => l(t('Activate Support'), "{$service_url}/node/add/server/{$devshop_hostname}", array(
           'attributes' => array('class' => array("btn btn-sm btn-{$alert_class}"))
         )),
       )),
@@ -630,7 +630,7 @@ function devshop_support_network_client_support_status() {
           '@status' => ucfirst($license_key_status),
           '!label_class' => $license_class,
         ]),
-      '#href' => 'https://' . variable_get('devshop_support_url', 'devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
+      '#href' => variable_get('devshop_support_api_url', 'https://devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
       '#options' => [
         'html' => TRUE,
         'attributes' => [
@@ -826,7 +826,7 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       '#markup' => t('Welcome to !link!',
         array(
           '!link' => l(variable_get('site_name', $_SERVER['HTTP_HOST']), '/'),
-          '!support_link' => l(t('DevShop.Support'), variable_get('devshop_support_url', 'devshop.support')),
+          '!support_link' => l(t('DevShop.Support'), variable_get('devshop_support_api_url', 'https://devshop.support')),
         )
       ),
     );
@@ -841,7 +841,7 @@ function devshop_support_network_client_form_user_login_alter(&$form, &$form_sta
       '#markup' => '<a href="/cas" class="btn btn-default btn-group-justified"><i class="fa fa-cloud"></i> ' . $t_devshop . '</a>',
     );
 
-    $github_login_url = 'https://' . variable_get('devshop_support_url', 'devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
+    $github_login_url = variable_get('devshop_support_api_url', 'https://devshop.support') . '/hybridauth/window/GitHub?destination=server/' . $_SERVER['HTTP_HOST'] . '/go&destination_error=cas/login';
     $form['github_login'] = array(
       '#markup' => '<a href="' . $github_login_url . '" class="btn btn-default  btn-group-justified"><i class="fa fa-github-alt"></i> ' . $t_github . '</a>',
     );
