@@ -2,18 +2,14 @@
 
 # This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
 
+php_default_version_debian: "5"
+
 # Variables from geerlingguy.php v2
-php_packages:
-  - php5
+php_packages_extra:
   - php5-mcrypt
-  - php5-cli
-  - php5-common
-  - php5-curl
-  - php5-dev
-  - php5-fpm
-  - php5-gd
   - php-pear
-  - php-apc
+#  
+#   - php-apc
   - libpcre3-dev
   - libapache2-mod-php5
 
