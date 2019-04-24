@@ -133,6 +133,8 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     ->condition('uid', $active_local_uids, 'IN')
     ->execute();
 
+  variable_set('devshop_support_license_key', $license_key);
+
   watchdog('devshop_support_api', 'Loaded !count devshop.support users: !users', array(
     '!count' => count($active_local_uids),
     '!users' => implode(' ', $mapped_account_names),
