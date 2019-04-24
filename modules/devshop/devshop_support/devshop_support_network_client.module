@@ -157,6 +157,7 @@ function devshop_support_network_client_settings_form() {
     $title = t('Hi!');
     $status_items = array();
 
+    $license_key = variable_get('devshop_support_license_key', '');
     $license_key_status = variable_get('devshop_support_license_key_status', 'none');
 
     $key_to_submit = empty($license_key_status) && !empty($_GET['k'])? $_GET['k']: NULL;
@@ -170,7 +171,7 @@ function devshop_support_network_client_settings_form() {
     }
 
 
-    if ($license_key_status == 'none') {
+    if ($license_key_status == 'none' || empty($license_key)) {
       if (empty($key_to_submit)) {
         $message = 'There is no license for this server.  !get_one_link';
         $alert_class = 'primary';
