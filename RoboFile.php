@@ -632,6 +632,9 @@ class RoboFile extends \Robo\Tasks {
         elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
           $service = FALSE;
         }
+        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
+          $service = 'supervisor';
+        }
         else {
           $service = 'supervisord';
         }
