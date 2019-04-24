@@ -354,7 +354,7 @@ function devshop_support_network_client_settings_form() {
         '#title' => t('DevShop Support License Key'),
         '#description' => t('Enter the devshop.support license key for this devshop. If you are unsure visit !link to confirm your license.', [
             '%site' => $node->title,
-            '!link' => l('devshop.support/server/' . $node->title, 'https://' . 'devshop.support/server/' . $node->title, [
+            '!link' => l(devshop_support_get_url_host() . '/server/' . $node->title, variable_get('devshop_support_api_url') . '/server/' . $node->title, [
                 'attributes' => ['target' => '_blank']
             ]),
         ]),
