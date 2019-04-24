@@ -15,8 +15,14 @@ function devshop_support_network_client_menu() {
         'access arguments' => array('administer devshop support'),
         'type' => MENU_LOCAL_TASK,
     );
+    $items['admin/devshop/support/activate/%'] = array(
+        'title' => 'DevShop Support Activate License',
+        'page callback' => 'devshop_support_network_client_activate_support_callback',
+        'page arguments' => array(4),
+        'access arguments' => array('administer devshop support'),
+        'type' => MENU_CALLBACK,
+    );
     return $items;
-
 }
 
 /**
@@ -25,6 +31,24 @@ function devshop_support_network_client_menu() {
 function devshop_support_network_client_menu_alter(&$items)
 {
   $items['user/logout']['page callback'] = 'devshop_support_network_client_logout_replacement';
+}
+
+/**
+ * Attempt to set the license key and redirect to devshop support admin page.
+ */
+function devshop_support_network_client_activate_support_callback($license) {
+  $response = devshop_support_network_client_post_data($license);
+  if ($response->code != 200) {
+    $message = trim($response->status_message);
+    $message .= empty($message)? trim($response->error): '';
+    $message = !empty($message)? $message: t('Something went wrong. No status message or error returned from server.');
+    drupal_set_message($message, 'error');
+  }
+  else {
+    drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
+  }
+
+  drupal_goto('admin/devshop/support');
 }
 
 
@@ -160,6 +184,9 @@ function devshop_support_network_client_settings_form() {
     $license_key = variable_get('devshop_support_license_key', '');
     $license_key_status = variable_get('devshop_support_license_key_status', 'none');
 
+    $devshop_support_is_inactive = $license_key_status == 'none' || empty($license_key);
+    $devshop_support_is_active = $license_key_status != 'none' && !empty($license_key);
+
     $key_to_submit = empty($license_key_status) && !empty($_GET['k'])? $_GET['k']: NULL;
 
 
@@ -171,7 +198,7 @@ function devshop_support_network_client_settings_form() {
     }
 
 
-    if ($license_key_status == 'none' || empty($license_key)) {
+    if ($devshop_support_is_inactive) {
       if (empty($key_to_submit)) {
         $message = 'There is no license for this server.  !get_one_link';
         $alert_class = 'primary';
@@ -198,7 +225,7 @@ function devshop_support_network_client_settings_form() {
     );
 
     // Calculate user limit (checking for empty data)
-    if ($license_key_status != 'none') {
+    if ($devshop_support_is_active) {
       if (!empty($data->_LIMITS->users->used) && !empty($data->_LIMITS->users->used)) {
         $limit_class = devshop_support_limit_class($data->_LIMITS->users->used, $data->_LIMITS->users->available, 1, 'success');
         $status_items[] =  array(
@@ -239,7 +266,7 @@ function devshop_support_network_client_settings_form() {
       )
     );
 
-    if (devshop_cloud_hostname($devshop_hostname)) {
+    if ($devshop_support_is_active && devshop_cloud_hostname($devshop_hostname)) {
       $subtitle = t('Welcome to !devshop_cloud_link: The Drupal DevOps Platform.', array(
         '!devshop_cloud_link' => l($service_title, $service_url, array(
           'attributes' => array('target' => '_blank')
@@ -285,7 +312,7 @@ function devshop_support_network_client_settings_form() {
         ));
       }
 
-      if ($license_key_status != 'none') {
+      if ($devshop_support_is_active) {
         $button = l(t('Manage @server on @service', array(
           '@server' => $devshop_hostname,
           '@service' => $service_title,
@@ -342,8 +369,7 @@ function devshop_support_network_client_settings_form() {
       '#type' => 'submit',
       '#weight' => 100,
       '#value' => t('Remove License Key'),
-      '#access' => !empty(variable_get('devshop_support_license_key', '')),
-      // @TODO: Can't override special classes added by bootstrap theme.
+      '#access' => $devshop_support_is_active,
       '#attributes' => array('class' => array('btn-text pull-right')),
     );
 
