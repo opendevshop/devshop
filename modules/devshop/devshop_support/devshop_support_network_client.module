@@ -229,9 +229,9 @@ function devshop_support_network_client_settings_form() {
       if (!empty($data->_LIMITS->users->used) && !empty($data->_LIMITS->users->used)) {
         $limit_class = devshop_support_limit_class($data->_LIMITS->users->used, $data->_LIMITS->users->available, 1, 'success');
         $status_items[] =  array(
-          'data' => t("Using !used of !available allowed users.", array(
+          'data' => t("!used of !available users.", array(
             '!used' => $data->_LIMITS->users->used,
-            '!available' => $data->_LIMITS->users->available,
+            '!available' => $data->_LIMITS->users->available == 0? t('Unlimited'): $data->_LIMITS->users->available,
           )),
           'class' => "list-group-item list-group-item-{$limit_class}",
         );
@@ -247,10 +247,10 @@ function devshop_support_network_client_settings_form() {
         );
         $status_items[] = [
           'data' => t(
-            "Using !used of !available allowed projects.",
+            "!used of !available projects.",
             [
               '!used' => $data->_LIMITS->projects->used,
-              '!available' => $data->_LIMITS->projects->available,
+              '!available' => $data->_LIMITS->projects->available == 0? t('Unlimited'): $data->_LIMITS->projects->available,
             ]
           ),
           'class' => "list-group-item list-group-item-{$limit_class}",
@@ -277,7 +277,7 @@ function devshop_support_network_client_settings_form() {
           'attributes' => array('target' => '_blank')
         )),
       ));
-      $button = l(t('Manage @server on @service', array(
+      $button = l(t('Manage License on @service', array(
         '@server' => $devshop_hostname,
         '@service' => $service_title,
       )), "{$service_url}/server/{$devshop_hostname}", array(
@@ -313,7 +313,7 @@ function devshop_support_network_client_settings_form() {
       }
 
       if ($devshop_support_is_active) {
-        $button = l(t('Manage @server on @service', array(
+        $button = l(t('Manage License on @service', array(
           '@server' => $devshop_hostname,
           '@service' => $service_title,
         )), "{$service_url}/server/{$devshop_hostname}", array(
@@ -696,7 +696,7 @@ function devshop_support_network_client_support_status() {
  */
 function devshop_support_limit_class($num, $max, $warning_threshold = 1, $default_class = 'default') {
 
-  if (strtolower($max) == 'unlimited') {
+  if (strtolower($max) == 0) {
     return 'success';
   }
 
