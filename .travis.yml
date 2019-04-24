@@ -21,8 +21,8 @@ env:
   - test="Docker Install"
     COMMAND="robo up --test"
 
-  - test="Ansible on Ubuntu 14.04 Apache"
-    COMMAND="robo up --mode=install.sh --test"
+#  - test="Ansible on Ubuntu 14.04 Apache"
+#    COMMAND="robo up --mode=install.sh --test"
 
   - test="Ansible on Ubuntu 16.04 Apache"
     COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
