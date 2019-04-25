@@ -18,11 +18,11 @@
 
 - hostname: name={{ server_hostname }}
 
-- name: "Install Drush {{ drush_release_version }}"
-  get_url:
-    url: "https://github.com/drush-ops/drush/releases/download/{{ drush_release_version }}/drush.phar"
+- name: Setup drush CLI executable
+  file:
+    src: "{{ devshop_cli_path }}/bin/drush"
     dest: "{{ local_bin_path }}/drush"
-    mode: 0755
+    state: link
     force: yes
 
 - name: Check drush status
@@ -61,13 +61,6 @@
   file:
     src: "{{ devshop_cli_path }}/bin/devshop"
     dest: "{{ local_bin_path }}/devshop"
-    state: link
-    force: yes
-
-- name: Setup drush CLI executable
-  file:
-    src: "{{ devshop_cli_path }}/bin/drush"
-    dest: "{{ local_bin_path }}/drush"
     state: link
     force: yes
 
