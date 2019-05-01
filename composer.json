@@ -9,7 +9,8 @@
         "cpliakas/git-wrapper": "1.*",
         "asm/php-ansible": "v1.2.0",
         "consolidation/robo": "^1",
-        "drush/drush": "~8.1"
+        "drush/drush": "~8.1",
+        "mouf/nodejs-installer": "^1.0"
     },
     "repositories": [
         {
