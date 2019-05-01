@@ -22,6 +22,6 @@ class Provision_Config_AnsibleConfig extends Provision_Config {
    * relative to this class, and does not use drush_get_option or the d() accessor.
    */
   function filename() {
-    return $this->context->aegir_root . '/.ansible.cfg';
+    return  $_SERVER['HOME'] . '/.ansible.cfg';
   }
 }
