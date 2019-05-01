@@ -18,12 +18,10 @@
 
 - hostname: name={{ server_hostname }}
 
-- name: Setup drush CLI executable
-  file:
-    src: "{{ devshop_cli_path }}/bin/drush"
-    dest: "{{ local_bin_path }}/drush"
-    state: link
-    force: yes
+- name: Add DevShop bin directory to Path
+    copy:
+      dest: /etc/profile.d/custom-path.sh
+      content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
 
 - name: Check drush status
   command: "{{ local_bin_path }}/drush status"
