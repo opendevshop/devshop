@@ -24,13 +24,13 @@
     content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
 
 - name: Check drush status
-  command: "{{ local_bin_path }}/drush status"
+  command: "{{ drush_bin_path }} status"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear drush caches
-  command: "{{ local_bin_path }}/drush cache-clear drush"
+  command: "{{ drush_bin_path }} cache-clear drush"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -55,13 +55,6 @@
   args:
     chdir: "{{ devshop_cli_path }}"
 
-- name: Setup devshop CLI executable
-  file:
-    src: "{{ devshop_cli_path }}/bin/devshop"
-    dest: "{{ local_bin_path }}/devshop"
-    state: link
-    force: yes
-
 - name: Create /var/aegir/.drush
   file:
     path: "{{ aegir_user_home }}/.drush"
@@ -71,20 +64,20 @@
     state: directory
 
 - name: Install required drush packages.
-  command: "{{ local_bin_path }}/drush dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
+  command: "{{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
   with_dict: "{{ devshop_drush_packages }}"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Setup Drush Bash Enhancements
-  command: "{{ local_bin_path }}/drush init --yes"
+  command: "{{ drush_bin_path }} init --yes"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear the drush cache.
-  command: "{{ local_bin_path }}/drush cc drush"
+  command: "{{ drush_bin_path }} cc drush"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -139,24 +132,24 @@
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ local_bin_path }}/drush @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
+  command: "{{ drush_bin_path }} @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key != ""
 
 - name: DevShop.Support | Validate License Key to setup support modules.
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ local_bin_path }}/drush @hostmaster hosting-devshop_support -v"
+  command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support -v"
   when: devshop_support_license_key != ""
 
 - name: Ensure hosting-dispatch crontab is setup
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ local_bin_path }}/drush @hostmaster hosting-setup -y"
+  command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
 
 - name: Save SSH key as variable
-  shell: "{{ local_bin_path }}/drush @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
   become: yes
   become_user: aegir
   become_method: "{{ ansible_become_method_aegir }}"
@@ -187,7 +180,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear the drush cache.
-  command: "{{ local_bin_path }}/drush cc drush"
+  command: "{{ drush_bin_path }} cc drush"
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
