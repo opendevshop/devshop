@@ -2,14 +2,6 @@
 
 set -e
 
-# confirm devshop, drush, npm and node are executable.
-set +x
-devshop --version
-drush --version
-node --version
-npm --version
-set -x
-
 # Run remaining tasks from install process.
 
 echo ">> Verify hostmaster platform first."
