@@ -41,7 +41,7 @@ php_date_timezone: "America/New_York"
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
-devmaster_install_command: "{{ local_bin_path }}/drush hostmaster-install -y --strict=0 {{ server_hostname }} \
+devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=0 {{ server_hostname }} \
                                 --aegir_db_host={{ aegir_db_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_port=3306 \
