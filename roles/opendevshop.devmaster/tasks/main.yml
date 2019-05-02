@@ -19,9 +19,9 @@
 - hostname: name={{ server_hostname }}
 
 - name: Add DevShop bin directory to Path
-    copy:
-      dest: /etc/profile.d/custom-path.sh
-      content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
+  copy:
+    dest: /etc/profile.d/devshop-cli-path.sh
+    content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
 
 - name: Check drush status
   command: "{{ local_bin_path }}/drush status"
