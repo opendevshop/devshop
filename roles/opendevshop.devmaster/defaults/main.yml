@@ -8,6 +8,9 @@ devshop_devmaster_email: admin@local.devshop.site
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_update: yes
 devshop_cli_path: /usr/share/devshop
+devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
+
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 
 devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
