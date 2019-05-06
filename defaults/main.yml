@@ -57,7 +57,7 @@ devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=
                                 {{ devshop_working_copy }} \
 "
 
-devmaster_upgrade_command: "{{ local_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
+devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo
