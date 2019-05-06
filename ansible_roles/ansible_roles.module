@@ -120,7 +120,7 @@ function ansible_roles_node_load($nodes, $types)
 
             }
             $yml = new \Symfony\Component\Yaml\Dumper();
-            $node->ansible_role_file = $yml->dump($node->ansible_roles_available, 10);
+            $node->ansible_role_file = $yml->dump(array_values($node->ansible_roles_available), 10);
         }
 
         // Only act on server nodes with services.
