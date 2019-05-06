@@ -152,10 +152,11 @@ class DevmasterUpgrade extends Command
     if (file_exists($target_path)) {
       $number = 1;
       while (file_exists($target_path . '-' . $number)) {
+        $output->writeln("File exists at " . $target_path . '-' . $number);
         $number++;
       }
-      $variant .= '-' . $number;
-      $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+      $output->writeln("File DOES NOT exists at " . $target_path . '-' . $number);
+      $target_path = $target_path . '-' . $number;
     }
 
     $output->writeln('');
