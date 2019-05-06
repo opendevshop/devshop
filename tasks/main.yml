@@ -83,7 +83,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Get Devmaster root
-  shell: 'drush @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
   register: devmaster_site_root
   become: yes
   become_user: "{{ aegir_user_name }}"
@@ -91,7 +91,7 @@
   ignore_errors: True
 
 - name: Get Devmaster URI
-  shell: 'drush @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
   register: devmaster_site_uri
   become: yes
   become_user: "{{ aegir_user_name }}"
