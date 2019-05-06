@@ -3,12 +3,10 @@
 set -e
 
 # Print the lines and exit if a failure happens.
-set -x
 /usr/share/devshop/bin/devshop --version
 /usr/share/devshop/bin/drush --version
 /usr/share/devshop/bin/node --version
 /usr/share/devshop/bin/npm --version
-set +x
 
 # Run remaining tasks from install process.
 
