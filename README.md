@@ -20,15 +20,15 @@ Version | Status | Aegir | Hosts | DevMaster | Install & CLI
 [![Backers on Open Collective](https://opencollective.com/devshop/backers/badge.svg)](#backers)
  [![Sponsors on Open Collective](https://opencollective.com/devshop/sponsors/badge.svg)](#sponsors) 
 
-DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://github.com/devshop/devmaster)) and a back-end built with drush, Symfony, and Ansible.
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test, and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://github.com/opendevshop/devmaster)) and a back-end built with Drush, Symfony, and Ansible.
 
 DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
-Code is deployed on push to your git repo automatically.  Deploy any branch or tag to any environment. Data (the database and files) can be deployed between environments.  Run the built-in hooks whenever code or data is deployed, or write your own.
+Code is deployed on push to your git repo automatically.  Data (the database and files) can be deployed between environments.  Run the built-in hooks whenever code or data is deployed, or write your own.
 
 # Built on Aegir
 
-DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster), it's own installation profile, [Devmaster](http://github.com/opendevshop/devmaster).  It does not use the theme, Eldir.  The default devshop theme is called [boots](https://github.com/opendevshop/devmaster/tree/1.x/themes/boots) and is included in the Devmaster install profile.
+DevShop utilizes the main components of the Aegir Hosting System: [Hosting](http://drupal.org/project/hosting) and [Provision](http://drupal.org/project/provision). It does not use [Hostmaster](http://drupal.org/project/hostmaster); it uses its own installation profile, [Devmaster](http://github.com/opendevshop/devmaster).  It does not use the theme, Eldir.  The default DevShop theme is called [boots](https://github.com/opendevshop/devmaster/tree/7.x-1.x/themes/boots) and is included in the Devmaster install profile.
 
 DevShop uses many additional contributed modules that Aegir core does not.
 
@@ -46,7 +46,6 @@ See the [Tour](http://docs.opendevshop.com/tour.html) section of the documentati
 
 * Bug reports and feature requests should be reported in the [DevShop Issue Queue](https://www.github.com/opendevshop/devshop/issues).
 * Ask for help in the [Chat Room](http://gitter.im/opendevshop/devshop).
-* Contact OpenDevShop Inc at [www.opendevshop.com/contact](http://www.opendevshop.com/contact)
 
 ## Contributors
 
