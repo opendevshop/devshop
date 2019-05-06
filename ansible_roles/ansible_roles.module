@@ -111,7 +111,7 @@ function ansible_roles_node_load($nodes, $types)
                                         $role_data['version'] = $role->version;
                                     }
                                 }
-                                $node->ansible_roles_available[] = $role_data;
+                                $node->ansible_roles_available[$role->name] = $role_data;
                             }
                         }
                     }
