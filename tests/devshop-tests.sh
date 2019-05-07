@@ -9,8 +9,8 @@ env
 echo ">> Checking versions of devshop, drush, node, npm..."
 /usr/share/devshop/bin/devshop --version
 /usr/share/devshop/bin/drush --version
-/usr/share/devshop/bin/node --version
-/usr/share/devshop/bin/npm --version
+node --version
+npm --version
 
 # Run remaining tasks from install process.
 
