@@ -2,6 +2,9 @@
 
 set -e
 
+echo ">> ENV on devshop-tests.sh:"
+env
+
 # Print the lines and exit if a failure happens.
 echo ">> Checking versions of devshop, drush, node, npm..."
 /usr/share/devshop/bin/devshop --version
