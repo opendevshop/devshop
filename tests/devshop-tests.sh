@@ -3,6 +3,7 @@
 set -e
 
 # Print the lines and exit if a failure happens.
+echo ">> Checking versions of devshop, drush, node, npm..."
 /usr/share/devshop/bin/devshop --version
 /usr/share/devshop/bin/drush --version
 /usr/share/devshop/bin/node --version
