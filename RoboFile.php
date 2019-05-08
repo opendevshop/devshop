@@ -421,13 +421,13 @@ class RoboFile extends \Robo\Tasks {
       $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
 
       if ($opts['test']) {
-        $command = "/bin/bash /usr/share/devshop/tests/devshop-tests.sh";
+        $command = "/usr/bin/env bash /usr/share/devshop/tests/devshop-tests.sh";
         $cmd = "docker-compose -f docker-compose-tests.yml run $env devmaster '$command'";
       }
       elseif ($opts['test-upgrade']) {
         $version = self::UPGRADE_FROM_VERSION;
         $provision_version = self::UPGRADE_FROM_PROVISION_VERSION;
-        $command = "/bin/bash /usr/share/devshop/tests/devshop-tests-upgrade.sh";
+        $command = "/usr/bin/env bash /usr/share/devshop/tests/devshop-tests-upgrade.sh";
 
         // @TODO: Have this detect the branch and use that for the version.
         $root_target = '/var/aegir/devmaster-' . $opts['devshop-version'];
