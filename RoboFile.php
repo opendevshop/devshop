@@ -422,7 +422,7 @@ class RoboFile extends \Robo\Tasks {
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd = "docker-compose -f docker-compose-tests.yml run -T $env devmaster '$command'";
+        $cmd = "docker-compose -f docker-compose-tests.yml run $env devmaster '$command'";
       }
       elseif ($opts['test-upgrade']) {
         $version = self::UPGRADE_FROM_VERSION;
