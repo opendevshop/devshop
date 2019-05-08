@@ -27,7 +27,7 @@ services:
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
 
       # Make sure devshop CLI is in the PATH.
-      PATH: "/usr/share/devshop/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin"
 
     privileged: true
     volumes:

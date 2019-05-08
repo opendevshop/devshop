@@ -502,7 +502,7 @@ class RoboFile extends \Robo\Tasks {
         ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
         ->env('AEGIR_USER_UID', $opts['user-uid'])
-        ->env('PATH', "/usr/share/devshop/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+        ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
         ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init)
         ->run()
