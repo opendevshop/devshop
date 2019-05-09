@@ -9,8 +9,13 @@ env
 echo ">> Checking versions of devshop, drush, node, npm..."
 /usr/share/devshop/bin/devshop --version
 /usr/share/devshop/bin/drush --version
-node --version
-npm --version
+
+# @TODO: These commands fail when using the docker-compose based test suites.
+# See https://travis-ci.org/opendevshop/devshop/jobs/529898435#L2196
+if [ -v $TRAVIS ]; then
+    node --version
+    npm --version
+fi
 
 # Run remaining tasks from install process.
 
