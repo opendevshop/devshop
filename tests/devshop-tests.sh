@@ -3,11 +3,6 @@
 set -e
 
 echo ">> ENV on devshop-tests.sh:"
-
-export SHELL=/bin/bash
-export USER=aegir
-export LOGNAME=aegir
-export NVM_BIN=""
 env
 
 # Print the lines and exit if a failure happens.
