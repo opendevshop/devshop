@@ -2,6 +2,21 @@
 
 set -e
 
+echo ">> ENV on devshop-tests.sh:"
+env
+
+# Print the lines and exit if a failure happens.
+echo ">> Checking versions of devshop, drush, node, npm..."
+/usr/share/devshop/bin/devshop --version
+/usr/share/devshop/bin/drush --version
+
+# @TODO: These commands fail when using the docker-compose based test suites.
+# See https://travis-ci.org/opendevshop/devshop/jobs/529898435#L2196
+if [ -v $TRAVIS ]; then
+    node --version
+    npm --version
+fi
+
 # Run remaining tasks from install process.
 
 echo ">> Verify hostmaster platform first."
