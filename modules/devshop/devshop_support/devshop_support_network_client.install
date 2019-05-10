@@ -69,7 +69,7 @@ function devshop_support_network_client_install() {
     ->condition('name', 'devshop_support_network_client')
     ->execute();
 
-  variable_set('composer_manager_vendor_dir', 'sites/all/composer/vendor');
+  variable_set('composer_manager_vendor_dir', 'sites/all/vendor');
   variable_set('composer_manager_autobuild_file', 0);
 
 }
