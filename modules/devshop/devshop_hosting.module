@@ -48,6 +48,9 @@ function devshop_hosting_init() {
 
   drupal_add_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
 
+  // Ensure devshop CLI bin dir is in the path
+  $path = variable_get('devshop_cli_dir', '/usr/share/devshop') . '/bin';
+  $_SERVER['PATH'] .= ':' . $path;
 
 }
 
