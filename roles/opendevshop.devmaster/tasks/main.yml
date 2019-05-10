@@ -18,23 +18,6 @@
 
 - hostname: name={{ server_hostname }}
 
-- name: Add DevShop bin directory to Path
-  copy:
-    dest: /etc/profile.d/devshop-cli-path.sh
-    content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
-
-- name: Check drush status
-  command: "{{ drush_bin_path }} status"
-  become: yes
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
-- name: Clear drush caches
-  command: "{{ drush_bin_path }} cache-clear drush"
-  become: yes
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
 - name: Detect DevShop CLI
   stat:
     path: "{{ devshop_cli_path }}"
@@ -54,6 +37,23 @@
   command: "{{ composer_path }} install"
   args:
     chdir: "{{ devshop_cli_path }}"
+
+- name: Add DevShop bin directory to Path
+  copy:
+    dest: /etc/profile.d/devshop-cli-path.sh
+    content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
+
+- name: Check drush status
+  command: "{{ drush_bin_path }} status"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Clear drush caches
+  command: "{{ drush_bin_path }} cache-clear drush"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Create /var/aegir/.drush
   file:
