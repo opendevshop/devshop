@@ -196,7 +196,7 @@ class DevmasterUpgrade extends Command
 
     // Upgrade DevMaster
     $output->writeln('Running hostmaster-migrate command...');
-    $drush = dirname(dirname(dirname(__DIR__))) . '/drush';
+    $drush = dirname(dirname(dirname(__DIR__))) . '/bin/drush';
     $cmd = "$drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
