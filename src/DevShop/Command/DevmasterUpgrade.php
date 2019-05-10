@@ -196,7 +196,8 @@ class DevmasterUpgrade extends Command
 
     // Upgrade DevMaster
     $output->writeln('Running hostmaster-migrate command...');
-    $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
+    $drush = dirname(dirname(dirname(__DIR__))) . '/drush';
+    $cmd = "$drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
     // If they say no, exit.
@@ -229,7 +230,6 @@ class DevmasterUpgrade extends Command
 
     // Schedule the platform for deletion.
     $output->writeln('');
-    $drush = dirname(dirname(dirname(__DIR__))) . '/drush';
     $cmd = "$drush @hostmaster platform-delete $devmaster_root -y";
 
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
