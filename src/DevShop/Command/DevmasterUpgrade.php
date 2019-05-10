@@ -229,7 +229,8 @@ class DevmasterUpgrade extends Command
 
     // Schedule the platform for deletion.
     $output->writeln('');
-    $cmd = "drush @hostmaster platform-delete $devmaster_root -y";
+    $drush = dirname(dirname(dirname(__DIR__))) . '/drush';
+    $cmd = "$drush @hostmaster platform-delete $devmaster_root -y";
 
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
 
