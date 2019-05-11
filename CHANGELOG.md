@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.5.0 (April 18, 2019)
+## 1.5.0 (pending)
 
 ### DevShop.Support Launch!
 
@@ -64,6 +64,7 @@ And our newest code contributors:
 - [Vinicius Mello](https://github.com/vmmello) @vmmello
 - [Jess Chandler](https://github.com/monkeywithacupcake) @monkeywithacupcake
 - [Jan Adam](https://github.com/janadam-hbf) @janadam
+- [Sara Cartee-Kennedy](https://github.com/capysara) @capysara
 
 Thank you so much!
 
