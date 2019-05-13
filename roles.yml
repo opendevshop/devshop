@@ -1,34 +1,34 @@
 # Aegir Roles
 
 - name: geerlingguy.php
-  version: 3.5.0
+  version: 3.7.0
 
 - name: geerlingguy.php-mysql
-  version: 2.0.1
-
-- name: geerlingguy.git
   version: 2.0.2
 
+- name: geerlingguy.git
+  version: 2.0.4
+
 - name: geerlingguy.composer
-  version: 1.7.1
+  version: 1.7.3
 
 - name: geerlingguy.mysql
-  version: 2.9.1
+  version: 2.9.4
 
 - name: geerlingguy.apache
-  version: 3.0.0
+  version: 3.0.3
 
 - name: geerlingguy.nginx
-  version: 2.6.0
+  version: 2.6.2
 
 - name: opendevshop.aegir-apache
-  version: 1.5.0-rc3
+  version: 1.5.0
 
 - name: opendevshop.aegir-nginx
   version: 1.5.0-rc1
 
 - name: opendevshop.devmaster
-  version: devshop-bin
+  version: master
 
 - name: opendevshop.aegir-user
-  version: 1.5.0-rc7
+  version: 1.5.0
