@@ -19,6 +19,11 @@ fi
 
 # Run remaining tasks from install process.
 
+# Pause the task queue.
+echo ">> Disabling hosting queue..."
+drush @hostmaster dis hosting_queued -y
+drush @hostmaster vset hosting_queued_paused 1
+
 echo ">> Verify hostmaster platform first."
 PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
@@ -27,10 +32,6 @@ echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --str
 drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
 
 echo ">> Running remaining tasks: Complete!"
-
-# Pause the task queue.
-drush @hostmaster dis hosting_queued -y
-drush @hostmaster vset hosting_queued_paused 1
 
 # Enable watchdog
 drush @hostmaster en dblog -y
