@@ -1,10 +1,10 @@
 # Change Log
 
-## 1.5.0 (pending)
+## DevShop 1.x, xxxx-xx-xx (development version)
 
-### DevShop.Support Launch!
+## DevShop 1.5.0-rc8, 2019-05-13 
 
-This release signifies the initial stable launch of the DevShop Support Network Client module. 
+**DevShop.Support Alpha Launch!**
 
 You can now connect your DevShop to the https://devshop.support service. 
 
@@ -12,9 +12,11 @@ Click "Activate Support" or visit https://devshop.support to get started!
 
 ### Release Notes
 
-- 56 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.5.0-rc8
-- 113 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
-- Created [OpenCollective](https://opencollective.com/devshop) and [Patreon](https://www.patreon.com/devshop) pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
+- 111 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.5.0-rc8
+- 129 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
+
+- Community
+  - Created [OpenCollective](https://opencollective.com/devshop) and [Patreon](https://www.patreon.com/devshop) pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
   - Your support makes DevShop possible. Please become a backer or a sponsor today! 
   - https://opencollective.com/devshop or https://patreon.com/devshop
   - New widget in DevShop to encourage contributors and Activate Support.
@@ -48,7 +50,7 @@ Click "Activate Support" or visit https://devshop.support to get started!
 - Added "DevShop Settings" link to footer so users without admin menu permission can access it.
 - On "Create Environment" form, default to "Clone Environment" and show the full URL instead of a "View" text. Much better for remote aliases.
 - Fix bug in travis tests for forked repos.
-- Bumping Drupal core to 7.66
+- Bumping Drupal core to 7.67
 
 ### Contributors
 
@@ -74,7 +76,7 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
 - https://www.patreon.com/devshop
 
 
-## 1.5.0-rc5 (March 15, 2019)
+## 1.5.0-rc7 (March 15, 2019)
 
 6 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc6...1.5.0-rc5
 
