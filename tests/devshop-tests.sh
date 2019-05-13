@@ -24,7 +24,10 @@ PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
 
 echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force"
+# Sometimes the task isn't queued and the command throws an error. Continue if this happens.
+set +e
 drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
+set -e
 
 echo ">> Running remaining tasks: Complete!"
 
