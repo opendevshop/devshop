@@ -15,6 +15,10 @@
     include_vars: "vars.Ubuntu16.yml"
     when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '16'
 
+  - name: Include Ubuntu 18 variables.
+    include_vars: "vars.Ubuntu18.yml"
+    when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '18'
+
   - name: Ensure openssh-client is available (including ssh-keygen tool)
     when: ansible_os_family == 'Debian'
     apt:
