@@ -23,6 +23,11 @@ Click "Activate Support" or visit https://devshop.support to get started!
   
   ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
 
+- Features
+  - NodeJS and NPM now come pre-installed! We now install Node and NPM by default on all devshop servers, but we do it 
+    in a slightly different way: The DevShop CLI "bin" path is now added across environments, and drush, node, and 
+    npm are all installed there, managed by composer.json, using the "nodejs-installer" package! If you need a different
+    version, you can include it in your own project. [More information on nodejs-installer for composer](https://packagist.org/packages/mouf/nodejs-installer)
 - Create Project page overhaul:
   
   ![Create new repos right in devshop from composer or other repos.](https://user-images.githubusercontent.com/106420/56436137-d8a17b00-62a8-11e9-8167-a68f39e62ac3.gif)
@@ -39,7 +44,7 @@ Click "Activate Support" or visit https://devshop.support to get started!
   
   ![New GitHub Settings Page](https://raw.githubusercontent.com/opendevshop/documentation/master/images/github-settings.png)
   
-  - Automatically load servers SSH Public Key and save it into the Devmaster front end.
+  - Automatically load servers SSH Public Key and save it into the Devmaster front end: the user no longer has to do this manually, it happens on hostmaster verify.
   - Add spinner graphics to the two "Create Project" steps that need it!
   - Fixed "Refreshing..." branches UI that would only show if you viewed the project node before the git references were loaded.
   - Changed "Path to Drupal" setting to "Document Root". Much more clear and accurate.
