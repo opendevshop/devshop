@@ -2,11 +2,11 @@
 
 set -e
 
-echo ">> ENV on devshop-tests.sh:"
+echo "DevShop | devshop-tests.sh | environment"
 env
 
 # Print the lines and exit if a failure happens.
-echo ">> Checking versions of devshop, drush, node, npm..."
+echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
 /usr/share/devshop/bin/devshop --version
 /usr/share/devshop/bin/drush --version
 
@@ -20,18 +20,18 @@ fi
 # Run remaining tasks from install process.
 
 # Pause the task queue.
-echo ">> Disabling hosting queue..."
+echo "DevShop | devshop-tests.sh | Disabling hosting queue..."
 drush @hostmaster dis hosting_queued -y
 drush @hostmaster vset hosting_queued_paused 1
 
-echo ">> Verify hostmaster platform first."
+echo "DevShop | devshop-tests.sh | Verify hostmaster platform first..."
 PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
 
-echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force"
+echo "DevShop | devshop-tests.sh |  Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true"
 drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
 
-echo ">> Running remaining tasks: Complete!"
+echo "DevShop | devshop-tests.sh | Running remaining tasks: Complete!"
 
 # Enable watchdog
 drush @hostmaster en dblog -y
