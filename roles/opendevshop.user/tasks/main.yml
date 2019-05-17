@@ -91,7 +91,7 @@
       mode: 0644
 
   - name: Pre-authorize known hosts.
-    shell: "ssh-keyscan {{ item }} >> {{ aegir_user_home }}/.ssh/known_hosts"
+    shell: "ssh-keyscan {{ item }} >> {{ aegir_user_home }}/.ssh/known_hosts && chown {{ aegir_user_name }}:{{ aegir_user_name }} {{ aegir_user_home }}/.ssh/known_hosts"
     with_items: "{{ ssh_known_hosts }}"
 
   # We can't copy from the devmaster distro that gets created on the server because it isn't there yet.
