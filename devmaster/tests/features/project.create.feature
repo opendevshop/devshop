@@ -20,7 +20,7 @@ Feature: Create a project and check settings
     And I should see "http://github.com/opendevshop/drupal_docroot.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     And I reload the page
 
     Then I fill in "docroot" for "Document Root"
@@ -28,9 +28,9 @@ Feature: Create a project and check settings
     And I should see "DOCUMENT ROOT docroot"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     And I reload the page
     And I reload the page
 
@@ -50,7 +50,7 @@ Feature: Create a project and check settings
     And I should see "master"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     And I reload the page
 
     Then I should see "dev"
@@ -83,7 +83,7 @@ Feature: Create a project and check settings
     And I should see the link "Aegir Site"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
     And I reload the page
@@ -111,11 +111,11 @@ Feature: Create a project and check settings
     Then I should see "Environment testenv created in project drpl8."
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
 
     When I click "testenv" in the "main" region
     Then I should see "Environment Dashboard"
