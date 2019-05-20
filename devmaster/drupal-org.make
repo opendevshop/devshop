@@ -22,7 +22,7 @@ projects[eldir][type] = theme
 projects[eldir][version] = "3.170"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.171"
+projects[hosting_git][version] = "3.171-devshop"
 
 projects[hosting_https][subdir] = aegir
 projects[hosting_https][version] = "3.171"
