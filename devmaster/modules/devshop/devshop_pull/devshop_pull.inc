@@ -5,13 +5,12 @@
  */
 function devshop_pull_callback($project_hosting_context, $hash) {
 
+  module_load_include('inc', 'hosting_git_pull', 'hosting_git_pull.webhook');
+
   // Load the project node & list of allowed IPs
   $project_node = hosting_context_load("project_{$project_hosting_context}");
   $project = $project_node->project;
   $deploy_settings = $project_node->project->settings->deploy;
-
-  $allowed_ips  = explode("\n", trim(variable_get('devshop_pull_ip_acl', DEVSHOP_PULL_DEFAULT_ALLOWED_IPS)));
-  array_filter(array_map('trim', $allowed_ips));
 
   // Make sure we got the project.
   if (!$project_node) {
@@ -27,7 +26,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
     $message = "Project not configured to use webhook deployment.";
   }
   // Make sure the client's IP address is on the list
-  else if (!devshop_pull_ip_match(ip_address(), $allowed_ips)) {
+  else if (!hosting_git_pull_webhook_ip_access()) {
     $message = ip_address() . " is not authorized to invoke a webhook request.";
     $status = DEVSHOP_PULL_STATUS_ACCESS_DENIED;
   }
@@ -74,9 +73,9 @@ function devshop_pull_callback($project_hosting_context, $hash) {
 function devshop_pull_default_webhook($project_node) {
   $project = $project_node->project;
 
-  // Check if body corresponds to a JSON object. 
+  // Check if body corresponds to a JSON object.
   // This is for GitLab Payloads.
-  // @TODO: We should move this to it's own module. There's more GitLab integration 
+  // @TODO: We should move this to it's own module. There's more GitLab integration
   // that could be done.
   $headers = getallheaders();
   if ($headers['Content-Type'] == 'application/json') {
@@ -110,7 +109,7 @@ function devshop_pull_default_webhook($project_node) {
     }
   }
 
-  return "Commit notification received! Running 'Deploy' on $project->title environments " . implode(', ', $environments_to_pull);
+  return "Commit notification received! Running 'Deploy' on '$project->name' environments: " . implode(', ', $environments_to_pull);
 }
 
 /**
