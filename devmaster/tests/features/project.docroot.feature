@@ -23,7 +23,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "http://github.com/opendevshop/drupal_docroot"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     And I reload the page
 
     When I fill in "docroot" for "Document Root"
@@ -36,7 +36,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "rootproject"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     And I reload the page
     And I reload the page
 
@@ -50,7 +50,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see "master"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     And I reload the page
 
     Then I should see "dev"
@@ -65,7 +65,7 @@ Feature: Create a project with Drupal in the docroot.
     # FINISH!
     Then print current URL
     When I run drush "wd-show"
-    Then print last drush output
+    # Then print last drush output
 
     Then I should see "Your project has been created. Your sites are being installed."
     And I should see "Dashboard"
@@ -76,7 +76,7 @@ Feature: Create a project with Drupal in the docroot.
     And I should see the link "dev"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
+    # Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
     And I reload the page

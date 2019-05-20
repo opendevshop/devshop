@@ -30,9 +30,9 @@ Feature: Anonymous Homepage
     Then I should see "Your DevShop server is currently unsupported."
 
     When I run drush "vset devshop_support_license_key automated_testing_license_key"
-    Then print last drush output
+    # Then print last drush output
     When I run drush "vset devshop_support_license_key_status active"
-    Then print last drush output
+    # Then print last drush output
 
     Then I am on the homepage
     Then I should not see "Your DevShop server is currently unsupported."
