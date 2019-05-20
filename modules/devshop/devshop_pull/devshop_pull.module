@@ -9,22 +9,9 @@
  *
  */
 
-define('DEVSHOP_PULL_DISABLED', 0);
-define('DEVSHOP_PULL_QUEUE', 1);
-define('DEVSHOP_PULL_CALLBACK', 2);
-
 define('DEVSHOP_PULL_STATUS_OK', 1);
 define('DEVSHOP_PULL_STATUS_ACCESS_DENIED', 2);
 define('DEVSHOP_PULL_STATUS_INVALID_CODE', 3);
-
-// These are github's Webhook callback IPs.
-// This list grows occaisonally, update it as needed.
-define('DEVSHOP_PULL_DEFAULT_ALLOWED_IPS', "
-204.232.175.64/27
-192.30.252.0/22
-104.192.143.192/28
-104.192.143.208/28
-");
 
 // The base URL to use for the Post Commit callback.
 define('DEVSHOP_PULL_CALLBACK_URL', 'webhook');
@@ -45,15 +32,6 @@ function devshop_pull_permission() {
  * Implements hook_menu().
  */
 function devshop_pull_menu() {
-  $items['admin/devshop/pull'] = array(
-    'title' => 'Git Webhooks',
-    'description' => 'Configure Git Webhooks',
-    'page callback' => 'devshop_pull_settings_page',
-    'access arguments' => array('administer hosting settings'),
-    'file' => 'devshop_pull.settings.inc',
-    'tab_parent' => 'admin/devshop',
-    'type' => MENU_LOCAL_TASK,
-  );
   $items[DEVSHOP_PULL_CALLBACK_URL] = array(
     'page callback' => 'devshop_pull_callback',
     'access callback' => TRUE,
