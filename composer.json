@@ -1,0 +1,19 @@
+{
+    "name": "provision-ops/yaml-tests",
+    "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
+    "type": "composer-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "composer-plugin-api": "^1.1"
+    },
+    "extra": {
+        "class": "ProvisionOps\\YamlTests\\YamlTestsPlugin"
+    }
+}
