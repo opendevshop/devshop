@@ -13,6 +13,11 @@
     "require": {
         "composer-plugin-api": "^1.1"
     },
+    "autoload": {
+        "psr-4": {
+            "ProvisionOps\\YamlTests\\": "src/"
+        }
+    },
     "extra": {
         "class": "ProvisionOps\\YamlTests\\YamlTestsPlugin"
     }
