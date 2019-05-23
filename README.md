@@ -41,5 +41,5 @@ The output will look something like this:
 
 And you will get a nice summary at the end like this:
 
-![Test Run](https://github.com/provision-ops/yaml-tests/blob/master/assets/test-results.png?raw=true)
+![Test Run](https://github.com/provision-ops/yaml-tests/blob/master/assets/test-result.png?raw=true)
 
