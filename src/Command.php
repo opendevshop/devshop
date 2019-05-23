@@ -18,6 +18,7 @@ use TQ\Git\Repository\Repository;
 
 
 use GuzzleHttp;
+
 /**
  * Class Command
  *
@@ -32,18 +33,18 @@ class Command extends BaseCommand
     protected $branchName;
     protected $commitMessage;
     protected $excludeFileTemp;
-    
+
     /**
      * @var SymfonyStyle
      */
     protected $io;
-    
+
     /**
      * The directory containing composer.json. Loaded from composer option --working-dir.
      * @var String
      */
     protected $workingDir;
-    
+
     /**
      * The directory at the root of the git repository.
      * @var String
@@ -99,12 +100,13 @@ class Command extends BaseCommand
             'Run tests but do not post to GitHub.'
         );
     }
-    
+
     /**
      *
      */
-    public function initialize(InputInterface $input, OutputInterface $output) {
-    
+    public function initialize(InputInterface $input, OutputInterface $output)
+    {
+
         $this->io = new Style($input, $output);
         $this->input = $input;
         $this->output = $input;
@@ -131,14 +133,14 @@ class Command extends BaseCommand
         // Validate YML
         $this->loadTestsYml();
 
-        foreach ($this->yamlTests as $name => $value){
+        foreach ($this->yamlTests as $name => $value) {
 
         }
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
 
     }
-    
+
     /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
@@ -168,71 +170,68 @@ class Command extends BaseCommand
             $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
 
 
-        foreach ($this->yamlTests as $test_name => $test) {
-            // Set a commit status for this REF
-            $params = new \stdClass();
-            $params->state = 'pending';
-            $params->target_url = 'https:///path/to/file';
-            $params->description = $test_name;
-            $params->context = $test_name;
+            foreach ($this->yamlTests as $test_name => $test) {
+                // Set a commit status for this REF
+                $params = new \stdClass();
+                $params->state = 'pending';
+                $params->target_url = 'https:///path/to/file';
+                $params->description = $test_name;
+                $params->context = $test_name;
 
-            // Post status to github
-            $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
-        }
-
-        foreach ($this->yamlTests as $test_name => $test) {
-            if (is_array($test) && isset($test['command'])) {
-                $command = $test['command'];
-            }
-            else {
-                $command = $test;
+                // Post status to github
+                $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
             }
 
-            $results_row = array(
-                $test_name,
-                $command,
-            );
+            foreach ($this->yamlTests as $test_name => $test) {
+                if (is_array($test) && isset($test['command'])) {
+                    $command = $test['command'];
+                } else {
+                    $command = $test;
+                }
 
-            $this->io->writeln("<fg=cyan>{$command}</>");
-            $this->io->writeln('<fg=cyan>╔══════════════════════════════════════</>');
-            $process = new Process($command);
+                $results_row = array(
+                    $test_name,
+                    $command,
+                );
 
-            $process->setEnv($_SERVER);
+                $this->io->writeln("<fg=cyan>{$command}</>");
+                $this->io->writeln('<fg=cyan>╔══════════════════════════════════════</>');
+                $process = new Process($command);
 
-            /** @var  $result */
-            $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
+                $process->setEnv($_SERVER);
+
+                /** @var  $result */
+                $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
                     $output->write(' ' . $buffer);
-            });
-            $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
+                });
+                $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
 
-            // Set a commit status for this REF
-            $params = new \stdClass();
-            $params->state = 'pending';
-            $params->target_url = 'https:///path/to/file';
-            $params->description = $test_name;
-            $params->context = $test_name;
+                // Set a commit status for this REF
+                $params = new \stdClass();
+                $params->state = 'pending';
+                $params->target_url = 'https:///path/to/file';
+                $params->description = $test_name;
+                $params->context = $test_name;
 
-            if ($exit == 0) {
-                $this->successLite('Passed');
-                $results_row[] = '<info>✔</info> Passed';
-                $params->state = 'success';
+                if ($exit == 0) {
+                    $this->successLite('Passed');
+                    $results_row[] = '<info>✔</info> Passed';
+                    $params->state = 'success';
+                } else {
+                    $this->errorLite('Failed');
+                    $results_row[] = '<fg=red>✘</> Failed';
+                    $tests_failed = TRUE;
+                    $params->state = 'failure';
+                }
+                $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+                $this->io->newLine();
+
+                $rows[] = $results_row;
             }
-            else {
-                $this->errorLite('Failed');
-                $results_row[] = '<fg=red>✘</> Failed';
-                $tests_failed = TRUE;
-                $params->state = 'failure';
-            }
-            $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
-            $this->io->newLine();
-
-            $rows[] = $results_row;
-        }
         } catch (\Github\Exception\RuntimeException $e) {
-            if ($e->getCode() == 404){
+            if ($e->getCode() == 404) {
                 throw new \Exception('Something went wrong: ' . $e->getMessage());
-            }
-            else {
+            } else {
                 throw new \Exception('Bad token. Set with --github-token option or GITHUB_TOKEN environment variable. Create a new token at https://github.com/settings/tokens/new?scopes=repo:status Message:' . $e->getMessage());
             }
         }
@@ -246,11 +245,13 @@ class Command extends BaseCommand
         }
     }
 
-    private function loadTestsYml() {
+    private function loadTestsYml()
+    {
         $this->yamlTests = Yaml::parseFile($this->testsFilePath);
     }
 
-    private function testsToTableRows() {
+    private function testsToTableRows()
+    {
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
                 $command = $test['command'];
@@ -266,23 +267,26 @@ class Command extends BaseCommand
      * Wrapper for $this->io->comment().
      * @param $message
      */
-    protected function say($message) {
+    protected function say($message)
+    {
         $this->io->text($message);
     }
-    
+
     /**
      * Wrapper for $this->io->ask().
      * @param $message
      */
-    protected function ask($question) {
+    protected function ask($question)
+    {
         return $this->io->ask($question);
     }
-    
+
     /**
      * Wrapper for $this->io->ask().
      * @param $message
      */
-    protected function askDefault($question, $default) {
+    protected function askDefault($question, $default)
+    {
         return $this->io->ask($question, $default);
     }
 
@@ -294,6 +298,7 @@ class Command extends BaseCommand
             $this->io->newLine();
         }
     }
+
     public function errorLite($message, $newLine = false)
     {
         $message = sprintf('<fg=red>✘</> %s', $message);
@@ -302,6 +307,7 @@ class Command extends BaseCommand
             $this->io->newLine();
         }
     }
+
     public function warningLite($message, $newLine = false)
     {
         $message = sprintf('<comment>!</comment> %s', $message);
@@ -310,6 +316,7 @@ class Command extends BaseCommand
             $this->io->newLine();
         }
     }
+
     public function customLite($message, $prefix = '*', $style = '', $newLine = false)
     {
         if ($style) {
