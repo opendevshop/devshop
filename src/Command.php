@@ -100,6 +100,13 @@ class Command extends BaseCommand
             InputOption::VALUE_NONE,
             'Run tests but do not post to GitHub.'
         );
+        $this->addOption(
+            'hostname',
+            NULL,
+            InputOption::VALUE_OPTIONAL,
+            'The hostname to use in the status description. Use if automatically detected hostname is not desired.',
+            gethostname()
+        );
     }
 
     /**
@@ -191,7 +198,10 @@ class Command extends BaseCommand
                     $params = new \stdClass();
                     $params->state = 'pending';
                     $params->target_url = 'https:///path/to/file';
-                    $params->description = !empty($test['description'])? $test['description']: $test_name;
+                    $params->description = implode(' — ', array(
+                        $input->getOption('hostname'),
+                        !empty($test['description'])? $test['description']: $test_name
+                    ));
                     $params->context = $test_name;
 
                     // Post status to github
@@ -199,7 +209,7 @@ class Command extends BaseCommand
                     $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
                     $message = implode(': ', array(
                         'Commit Status',
-                        $response->getReasonPhrase() . ' ' . $response->getStatusCode(),
+                        $response->getReasonPhrase() . ' for ' . $test_name,
                     ));
 
                     if (strpos((string) $response->getStatusCode(), '2') === 0) {
@@ -212,7 +222,6 @@ class Command extends BaseCommand
                 }
 
                 $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-                $this->successLite("Set Commit Status to pending for tests: <info>" . implode(', ', $tests) . '</info>');
                 $this->io->writeln("<fg=yellow>See " . $commit['html_url'] . "</>");
             }
             else {
@@ -252,7 +261,10 @@ class Command extends BaseCommand
                 $params = new \stdClass();
                 $params->state = 'pending';
                 $params->target_url = 'https:///path/to/file';
-                $params->description = !empty($test['description'])? $test['description']: $test_name;
+                $params->description = implode(' — ', array(
+                    $input->getOption('hostname'),
+                    !empty($test['description'])? $test['description']: $test_name
+                ));
                 $params->context = $test_name;
 
                 if ($exit == 0) {
