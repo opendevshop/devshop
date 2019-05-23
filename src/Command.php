@@ -239,7 +239,7 @@ class Command extends BaseCommand
                 $params = new \stdClass();
                 $params->state = 'pending';
                 $params->target_url = 'https:///path/to/file';
-                $params->description = $test_name;
+                $params->description = !empty($test['description'])? $test['description']: $test_name;
                 $params->context = $test_name;
 
                 if ($exit == 0) {
