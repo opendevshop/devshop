@@ -145,7 +145,7 @@ class Command extends BaseCommand
             'git@' => 'https://',
             'git://' => 'https://',
             '.git' => '',
-            ':' => '/'
+            'github.com:' => 'github.com/',
         ));
 
         $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
