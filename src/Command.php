@@ -137,6 +137,7 @@ class Command extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $tests_failed = FALSE;
 
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
@@ -145,6 +146,11 @@ class Command extends BaseCommand
             else {
                 $command = $test;
             }
+
+            $results_row = array(
+                $test_name,
+                $command,
+            );
 
             $this->io->writeln("<fg=cyan>{$command}</>");
             $this->io->writeln('<fg=cyan>╔══════════════════════════════════════</>');
@@ -160,14 +166,24 @@ class Command extends BaseCommand
 
             if ($exit == 0) {
                 $this->successLite('Passed');
+                $results_row[] = '<info>✔</info> Passed';
             }
             else {
                 $this->errorLite('Failed');
+                $results_row[] = '<fg=red>✘</> Failed';
+                $tests_failed = TRUE;
             }
             $this->io->newLine();
+
+            $rows[] = $results_row;
         }
 
-        $this->io->title("Executed");
+        $this->io->title("Executed all tests");
+        $this->io->table(array('Test Results'), $rows);
+
+        if ($tests_failed) {
+            exit(1);
+        }
     }
 
     private function loadTestsYml() {
