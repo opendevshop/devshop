@@ -137,7 +137,22 @@ class Command extends BaseCommand
 
         }
 
+        $this->repoSha = $this->gitRepo->getCurrentCommit();
+        $remotes = $this->gitRepo->getCurrentRemote();
+        $remote_url = current($remotes)['push'];
 
+        $remote_url = strtr($remote_url, array(
+            'git@' => 'https://',
+            'git://' => 'https://',
+            '.git' => '',
+            ':' => '/'
+        ));
+
+        $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
+        $this->repoOwner = $parts[1];
+        $this->repoName = $parts[2];
+
+        $this->say("Git Repository: <comment>{$remote_url}</comment>");
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
 
@@ -162,21 +177,6 @@ class Command extends BaseCommand
             throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
         }
 
-        $sha = $this->gitRepo->getCurrentCommit();
-        $remotes = $this->gitRepo->getCurrentRemote();
-        $remote_url = current($remotes)['push'];
-
-        $remote_url = strtr($remote_url, array(
-            'git@' => 'https://',
-            'git://' => 'https://',
-            '.git' => '',
-            ':' => '/'
-        ));
-
-        $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
-        $github_owner = $parts[1];
-        $github_repo = $parts[2];
-
         try {
 
             if (!$input->getOption('dry-run')) {
@@ -194,11 +194,11 @@ class Command extends BaseCommand
                     $params->context = $test_name;
 
                     // Post status to github
-                    $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+                    $status = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
                     $tests[] = $test_name;
                 }
 
-                $commit = $client->repository()->commits()->show($github_owner, $github_repo, $sha);
+                $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
                 $this->successLite("Set Commit Status to pending for tests: <info>" . implode(', ', $tests) . '</info>');
                 $this->io->writeln("<fg=yellow>See " . $commit['html_url'] . "</>");
             }
@@ -254,7 +254,7 @@ class Command extends BaseCommand
                 }
 
                 if (!$input->getOption('dry-run')) {
-                    $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+                    $status = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
                 }
                 $this->io->newLine();
                 $rows[] = $results_row;
