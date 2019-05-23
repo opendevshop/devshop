@@ -50,6 +50,5 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
      */
     public function pluginDemoMethod(Event $event)
     {
-        $this->io->write('YAML TEST PLUGIN WORKS</>'.PHP_EOL);
     }
 }
