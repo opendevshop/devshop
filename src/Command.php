@@ -40,7 +40,13 @@ class Command extends BaseCommand
      * @var String
      */
     protected $gitDir;
-    
+
+    /**
+     * The current git commit SHA.
+     * @var String
+     */
+    protected $gitSha;
+
     /**
      * The directory containing the git repository.
      * @var String
@@ -104,6 +110,7 @@ class Command extends BaseCommand
         $this->logger = $this->io;
 
         $this->gitDir = $this->getGitDir();
+        $this->gitSha = $this->getGitSha();
         $this->workingDir = getcwd();
 
         $config_defaults = [
@@ -132,17 +139,6 @@ class Command extends BaseCommand
             $this->io->warning("This will be a dry run, the results will not be posted.");
         }
         $this->checkDirty($options);
-        
-
-        // Get and Check Current git reference.
-        if ($this->getCurrentBranchName()) {
-            $this->initialGitRef = $this->getCurrentBranchName();
-            $this->say("Current git reference: <comment>{$this->initialGitRef}</comment>");
-        }
-        else {
-            $this->io->error('No git reference detected in ' . $this->workingDir. '. You must have at least one commit. ');
-            exit(1);
-        }
 
         $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->io->title("Executed");
@@ -179,7 +175,8 @@ class Command extends BaseCommand
     protected function getCurrentBranchName() {
 
         try{
-            return $this->shell_exec("git rev-parse --abbrev-ref HEAD", $this->workingDir, false, true);
+            $output = $this->shell_exec("git rev-parse --abbrev-ref HEAD", $this->workingDir, false, true);
+            print $output; die;
         } catch (\Exception $e) {
             throw new \ErrorException('No commits detected. You must have at least one commit.');
         }
@@ -197,6 +194,19 @@ class Command extends BaseCommand
      * @return string
      */
     private function getGitDir()
+    {
+        try{
+            return $this->shell_exec('git rev-parse --show-toplevel', $this->workingDir, false, true);
+        } catch (\ErrorException $e) {
+            throw new \ErrorException('Working directory is not a git repository.');
+        }
+    }
+
+    /**
+     * Find the git repo directory that contains the workingDir.
+     * @return string
+     */
+    private function getGitSha()
     {
         try{
             return $this->shell_exec('git rev-parse --show-toplevel', $this->workingDir, false, true);
@@ -265,7 +275,7 @@ class Command extends BaseCommand
         $dirty = (bool) $result;
         if ($dirty) {
             if ($options['ignore-dirty']) {
-                $this->io->warning("There are uncommitted changes in your repository.");
+                $this->io->caution("Ignoring working copy changes...");
             }
             else {
                 throw new \Exception("There are uncommitted changes. Commit or stash these changes before running yaml-tests, or pass the option --ignore-dirty.");
