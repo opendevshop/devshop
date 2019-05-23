@@ -150,6 +150,20 @@ class Command extends BaseCommand
         $tests_failed = FALSE;
 
         $token = $input->getOption('github-token');
+        $sha = $this->gitRepo->getCurrentCommit();
+        $remotes = $this->gitRepo->getCurrentRemote();
+        $remote_url = current($remotes)['push'];
+
+        $remote_url = strtr($remote_url, array(
+            'git@' => 'http://github.com',
+            'git://' => 'https://',
+            '.git' => '',
+            ':' => '/'
+        ));
+
+        $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
+        $github_owner = $parts[1];
+        $github_repo = $parts[2];
 
         try {
             $client = new \Github\Client();
@@ -181,24 +195,8 @@ class Command extends BaseCommand
             $params->description = $test_name;
             $params->context = $test_name;
 
-            $sha = $this->gitRepo->getCurrentCommit();
-            $remotes = $this->gitRepo->getCurrentRemote();
-            $remote_url = current($remotes)['push'];
-
-            $remote_url = strtr($remote_url, array(
-                'git@' => 'http://github.com',
-                'git://' => 'https://',
-                '.git' => '',
-                ':' => '/'
-            ));
-
-            $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
-            $github_owner = $parts[1];
-            $github_repo = $parts[2];
-
             // Post status to github
             $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
-
 
             /** @var  $result */
             $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
@@ -209,12 +207,15 @@ class Command extends BaseCommand
             if ($exit == 0) {
                 $this->successLite('Passed');
                 $results_row[] = '<info>✔</info> Passed';
+                $params->state = 'success';
             }
             else {
                 $this->errorLite('Failed');
                 $results_row[] = '<fg=red>✘</> Failed';
                 $tests_failed = TRUE;
+                $params->state = 'failure';
             }
+            $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
             $this->io->newLine();
 
             $rows[] = $results_row;
