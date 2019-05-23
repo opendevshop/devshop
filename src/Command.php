@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Command\BaseCommand;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
 
 /**
@@ -106,8 +108,8 @@ class Command extends BaseCommand
         $this->config = $this->getComposer()->getPackage()->getConfig();
 
         $this->testsFile = $input->getOption('tests-file');
-        $yaml_tests_file = realpath($input->getOption('tests-file'));
-        if (!file_exists($yaml_tests_file) || empty($yaml_tests_file)) {
+        $this->testsFilePath = realpath($this->testsFile);
+        if (!file_exists($this->testsFilePath) || empty($this->testsFilePath)) {
             throw new \Exception("Specified tests file does not exist at {$this->workingDir}/{$this->testsFile}");
         }
 
@@ -115,7 +117,10 @@ class Command extends BaseCommand
         $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
-        $this->say("Tests File: <comment>{$yaml_tests_file}</comment>");
+        $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
+
+        // Validate YML
+        $this->loadTestsYml();
     }
     
     /**
@@ -126,7 +131,13 @@ class Command extends BaseCommand
     {
         $this->io->title("Executed");
     }
-    
+
+    private function loadTestsYml() {
+
+        $yml = Yaml::parseFile($this->testsFilePath);
+        print_r($yml);
+    }
+
     /**
      * Wrapper for $this->io->comment().
      * @param $message

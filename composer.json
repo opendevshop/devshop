@@ -4,7 +4,8 @@
     "type": "composer-plugin",
     "require": {
         "composer-plugin-api": "^1.1",
-        "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
+        "teqneers/php-stream-wrapper-for-git": "^2.0@dev",
+        "symfony/yaml": "^4.4@dev"
     },
     "autoload": {
         "psr-4": {
