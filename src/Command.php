@@ -2,6 +2,7 @@
 
 namespace ProvisionOps\YamlTests;
 
+use Guzzle\Http\Message\Response;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -194,7 +195,19 @@ class Command extends BaseCommand
                     $params->context = $test_name;
 
                     // Post status to github
-                    $status = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                    /** @var Response $response */
+                    $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                    $message = implode(': ', array(
+                        'Commit Status',
+                        $response->getReasonPhrase() . ' ' . $response->getStatusCode(),
+                    ));
+
+                    if (strpos((string) $response->getStatusCode(), '2') === 0) {
+                        $this->successLite($message);
+                    }
+                    else {
+                        $this->warningLite($message);
+                    }
                     $tests[] = $test_name;
                 }
 
