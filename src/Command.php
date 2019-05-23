@@ -153,7 +153,7 @@ class Command extends BaseCommand
             $token = $_SERVER['GITHUB_TOKEN'];
         }
         else {
-            $token = $input->getOption('github_token');
+            $token = $input->getOption('github-token');
         }
 
         if (empty($token)) {
@@ -190,7 +190,13 @@ class Command extends BaseCommand
 
                 // Post status to github
                 $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+                $tests[] = $test_name;
             }
+
+            $commit = $client->repository()->commits()->show($github_owner, $github_repo, $sha);
+            $this->successLite("Set Commit Status to pending for tests: <info>" . implode(', ', $tests) . '</info>');
+            $this->io->writeln("<fg=yellow>See " . $commit['html_url'] . "</>");
+            $this->io->newLine();
 
             foreach ($this->yamlTests as $test_name => $test) {
                 if (is_array($test) && isset($test['command'])) {
