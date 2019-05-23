@@ -169,6 +169,19 @@ class Command extends BaseCommand
             $client = new \Github\Client();
             $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
 
+
+        foreach ($this->yamlTests as $test_name => $test) {
+            // Set a commit status for this REF
+            $params = new \stdClass();
+            $params->state = 'pending';
+            $params->target_url = 'https:///path/to/file';
+            $params->description = $test_name;
+            $params->context = $test_name;
+
+            // Post status to github
+            $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+        }
+
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
                 $command = $test['command'];
@@ -188,21 +201,18 @@ class Command extends BaseCommand
 
             $process->setEnv($_SERVER);
 
+            /** @var  $result */
+            $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
+                    $output->write(' ' . $buffer);
+            });
+            $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
+
             // Set a commit status for this REF
             $params = new \stdClass();
             $params->state = 'pending';
             $params->target_url = 'https:///path/to/file';
             $params->description = $test_name;
             $params->context = $test_name;
-
-            // Post status to github
-            $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
-
-            /** @var  $result */
-            $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
-                    $output->write(' ' . $buffer);
-            });
-            $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
 
             if ($exit == 0) {
                 $this->successLite('Passed');
