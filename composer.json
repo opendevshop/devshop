@@ -7,7 +7,7 @@
     },
     "autoload": {
         "psr-4": {
-            "jonpugh\\ComposerGitBuild\\": "src/"
+            "ProvisionOps\\YamlTests\\": "src/"
         }
     },
     "authors": [
@@ -18,7 +18,7 @@
     ],
     "minimum-stability": "dev",
     "extra": {
-        "class": "jonpugh\\ComposerGitBuild\\Plugin"
+        "class": "ProvisionOps\\YamlTests\\Plugin"
     },
     "require-dev": {
         "composer/composer": "^1.9@dev"

@@ -1,6 +1,6 @@
 <?php
 
-namespace jonpugh\ComposerGitBuild;
+namespace ProvisionOps\YamlTests;
 
 use Composer\Composer;
 use Composer\EventDispatcher\Event;
