@@ -16,6 +16,8 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
 
+
+use GuzzleHttp;
 /**
  * Class Command
  *
@@ -79,6 +81,14 @@ class Command extends BaseCommand
             'tests.yml'
         );
         $this->addOption(
+            'github-token',
+            NULL,
+            InputOption::VALUE_REQUIRED,
+            'An active github token. Create one at https://github.com/////',
+            isset($_SERVER['GITHUB_TOKEN'])?:''
+
+        );
+        $this->addOption(
             'ignore-dirty',
             NULL,
             InputOption::VALUE_NONE,
@@ -139,6 +149,12 @@ class Command extends BaseCommand
     {
         $tests_failed = FALSE;
 
+        $token = $input->getOption('github-token');
+
+        try {
+            $client = new \Github\Client();
+            $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
                 $command = $test['command'];
@@ -157,6 +173,32 @@ class Command extends BaseCommand
             $process = new Process($command);
 
             $process->setEnv($_SERVER);
+
+            // Set a commit status for this REF
+            $params = new \stdClass();
+            $params->state = 'pending';
+            $params->target_url = 'https:///path/to/file';
+            $params->description = $test_name;
+            $params->context = $test_name;
+
+            $sha = $this->gitRepo->getCurrentCommit();
+            $remotes = $this->gitRepo->getCurrentRemote();
+            $remote_url = current($remotes)['push'];
+
+            $remote_url = strtr($remote_url, array(
+                'git@' => 'http://github.com',
+                'git://' => 'https://',
+                '.git' => '',
+                ':' => '/'
+            ));
+
+            $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
+            $github_owner = $parts[1];
+            $github_repo = $parts[2];
+
+            // Post status to github
+            $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+
 
             /** @var  $result */
             $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
@@ -177,6 +219,15 @@ class Command extends BaseCommand
 
             $rows[] = $results_row;
         }
+        } catch (\Github\Exception\RuntimeException $e) {
+            if ($e->getCode() == 404){
+                throw new \Exception('Something went wrong: ' . $e->getMessage());
+            }
+            else {
+                throw new \Exception('Bad token. Set with --github-token option or GITHUB_TOKEN environment variable. Create a new token at https://github.com/settings/tokens/new?scopes=repo:status Message:' . $e->getMessage());
+            }
+        }
+
 
         $this->io->title("Executed all tests");
         $this->io->table(array('Test Results'), $rows);
