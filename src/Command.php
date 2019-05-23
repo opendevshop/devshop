@@ -176,26 +176,34 @@ class Command extends BaseCommand
         $github_repo = $parts[2];
 
         try {
-            $client = new \Github\Client();
-            $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+
+            if (!$input->getOption('dry-run')) {
+
+                $client = new \Github\Client();
+                $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
 
 
-            foreach ($this->yamlTests as $test_name => $test) {
-                // Set a commit status for this REF
-                $params = new \stdClass();
-                $params->state = 'pending';
-                $params->target_url = 'https:///path/to/file';
-                $params->description = $test_name;
-                $params->context = $test_name;
+                foreach ($this->yamlTests as $test_name => $test) {
+                    // Set a commit status for this REF
+                    $params = new \stdClass();
+                    $params->state = 'pending';
+                    $params->target_url = 'https:///path/to/file';
+                    $params->description = $test_name;
+                    $params->context = $test_name;
 
-                // Post status to github
-                $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
-                $tests[] = $test_name;
+                    // Post status to github
+                    $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+                    $tests[] = $test_name;
+                }
+
+                $commit = $client->repository()->commits()->show($github_owner, $github_repo, $sha);
+                $this->successLite("Set Commit Status to pending for tests: <info>" . implode(', ', $tests) . '</info>');
+                $this->io->writeln("<fg=yellow>See " . $commit['html_url'] . "</>");
+            }
+            else {
+                $this->warningLite('Skipping commit status posting, dry-run enabled.');
             }
 
-            $commit = $client->repository()->commits()->show($github_owner, $github_repo, $sha);
-            $this->successLite("Set Commit Status to pending for tests: <info>" . implode(', ', $tests) . '</info>');
-            $this->io->writeln("<fg=yellow>See " . $commit['html_url'] . "</>");
             $this->io->newLine();
 
             foreach ($this->yamlTests as $test_name => $test) {
@@ -222,6 +230,7 @@ class Command extends BaseCommand
                 });
                 $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
 
+
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'pending';
@@ -239,9 +248,11 @@ class Command extends BaseCommand
                     $tests_failed = TRUE;
                     $params->state = 'failure';
                 }
-                $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
-                $this->io->newLine();
 
+                if (!$input->getOption('dry-run')) {
+                    $status = $client->getHttpClient()->post("/repos/$github_owner/$github_repo/statuses/$sha", json_encode($params));
+                }
+                $this->io->newLine();
                 $rows[] = $results_row;
             }
         } catch (\Github\Exception\RuntimeException $e) {
