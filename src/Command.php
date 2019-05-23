@@ -1,6 +1,6 @@
 <?php
 
-namespace jonpugh\ComposerGitBuild;
+namespace ProvisionOps\YamlTests;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -76,8 +76,8 @@ class Command extends BaseCommand
     
     protected function configure()
     {
-        $this->setName('git-build');
-        $this->setDescription('Add all vendor code and ignored dependencies to git.');
+        $this->setName('yaml-tests');
+        $this->setDescription('Read tests.yml and runs all commands in it, passing results to GitHub Commit Status API.');
         
         $this->addOption(
             'build-dir',

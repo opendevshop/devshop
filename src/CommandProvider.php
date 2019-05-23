@@ -1,6 +1,6 @@
 <?php
 
-namespace jonpugh\ComposerGitBuild;
+namespace ProvisionOps\YamlTests;
 
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
 

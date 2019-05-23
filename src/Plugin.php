@@ -41,7 +41,7 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
     public function getCapabilities()
     {
         return array(
-            'Composer\Plugin\Capability\CommandProvider' => 'jonpugh\ComposerGitBuild\CommandProvider',
+            'Composer\Plugin\Capability\CommandProvider' => 'ProvisionOps\YamlTests\CommandProvider',
         );
     }
 
