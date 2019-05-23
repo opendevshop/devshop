@@ -37,6 +37,9 @@ Once you have added the plugin and created a tests.yml file, do a `dry-run`:
 
 The output will look something like this:
 
-... 
+![Test Run](https://github.com/provision-ops/yaml-tests/blob/master/assets/test-run.png?raw=true)
 
+And you will get a nice summary at the end like this:
+
+![Test Run](https://github.com/provision-ops/yaml-tests/blob/master/assets/test-results.png?raw=true)
 
