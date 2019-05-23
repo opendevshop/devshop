@@ -165,7 +165,7 @@ class Command extends BaseCommand
         $remote_url = current($remotes)['push'];
 
         $remote_url = strtr($remote_url, array(
-            'git@' => 'http://github.com',
+            'git@' => 'https://',
             'git://' => 'https://',
             '.git' => '',
             ':' => '/'
