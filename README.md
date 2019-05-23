@@ -11,9 +11,32 @@ A composer plugin to make it as simple as possible to define a list of commands 
 
 # test.yml
 
+The `composer yaml-tests` command will look for a `tests.yml` file in your project.
+
+Each item in your `tests.yml` file can be either a string, an object with a `command` and optionally, a `description` property, or it can be a list of commands.
+
+See this example:
+
 ```yml
-test-group/composer: 
+code/phpunit: phpunit --color=always
+code/phpcs: phpcs --standard=PSR2 -n src
+build/composer: 
   command: composer install --ansi
-test-group/unit: phpunit --color=always
-test-group/cs: phpcs --standard=PSR2 -n src
+  description: Make sure composer doesn't fail
+ACoolTest:
+  - cat /etc/os-release
+  - cd /var
+  - ls -la
 ```
+
+# Run the tests
+
+Once you have added the plugin and created a tests.yml file, do a `dry-run`:
+
+`composer yaml-tests --dry-run`
+
+The output will look something like this:
+
+... 
+
+
