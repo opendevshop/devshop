@@ -104,7 +104,8 @@ class Command extends BaseCommand
         $this->logger = $this->io;
 
         $this->gitDir = $this->getGitDir();
-        
+        $this->workingDir = getcwd();
+
         $config_defaults = [
             'repo.root' => $this->gitDir,
         ];
@@ -132,7 +133,6 @@ class Command extends BaseCommand
         }
         $this->checkDirty($options);
         
-        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
 
         // Get and Check Current git reference.
         if ($this->getCurrentBranchName()) {
@@ -140,10 +140,11 @@ class Command extends BaseCommand
             $this->say("Current git reference: <comment>{$this->initialGitRef}</comment>");
         }
         else {
-            $this->io->error('No git reference detected in ' . $this->workingDir);
+            $this->io->error('No git reference detected in ' . $this->workingDir. '. You must have at least one commit. ');
             exit(1);
         }
 
+        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->io->title("Executed");
 
     }
@@ -176,14 +177,19 @@ class Command extends BaseCommand
      * Gets the default branch name for the deployment artifact.
      */
     protected function getCurrentBranchName() {
-        return $this->shell_exec("git rev-parse --abbrev-ref HEAD", $this->workingDir);
+
+        try{
+            return $this->shell_exec("git rev-parse --abbrev-ref HEAD", $this->workingDir, false, true);
+        } catch (\Exception $e) {
+            throw new \ErrorException('No commits detected. You must have at least one commit.');
+        }
     }
 
     /**
      * Gets the default remote URL from the source repo.
      */
     protected function getCurrentRemoteUrl() {
-        return $this->shell_exec("git remote get-url origin", $this->workingDir);
+        return $this->shell_exec("git remote get-url origin", $this->workingDir, false, true);;
     }
     
     /**
@@ -192,7 +198,11 @@ class Command extends BaseCommand
      */
     private function getGitDir()
     {
-        return $this->shell_exec('git rev-parse --show-toplevel', $this->workingDir);
+        try{
+            return $this->shell_exec('git rev-parse --show-toplevel', $this->workingDir, false, true);
+        } catch (\ErrorException $e) {
+            throw new \ErrorException('Working directory is not a git repository.');
+        }
     }
 
     /**
@@ -204,12 +214,16 @@ class Command extends BaseCommand
      * @return string
      * @throws \ErrorException
      */
-    protected function shell_exec($cmd, $dir = '', $stop_on_fail = TRUE) {
+    protected function shell_exec($cmd, $dir = '', $stop_on_fail = TRUE, $quiet = FALSE) {
         if ($dir && !file_exists($dir)) {
             throw new \Exception("Directory $dir does not exist in " . getcwd());
         }
         $oldWorkingDir = getcwd();
         chdir($dir? $dir: getcwd());
+
+        if ($quiet) {
+            $cmd .= "> /dev/null 2>&1";
+        }
         exec($cmd, $output, $return);
         $output = trim(implode("\n", $output));
         chdir($oldWorkingDir);
@@ -251,10 +265,10 @@ class Command extends BaseCommand
         $dirty = (bool) $result;
         if ($dirty) {
             if ($options['ignore-dirty']) {
-                $this->io->warning("There are uncommitted changes on the source repository.");
+                $this->io->warning("There are uncommitted changes in your repository.");
             }
             else {
-                throw new \Exception("There are uncommitted changes, commit or stash these changes before running git-build.");
+                throw new \Exception("There are uncommitted changes. Commit or stash these changes before running yaml-tests, or pass the option --ignore-dirty.");
             }
         }
     }
