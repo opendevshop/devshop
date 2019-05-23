@@ -156,7 +156,7 @@ class Command extends BaseCommand
             $token = $input->getOption('github-token');
         }
 
-        if (empty($token)) {
+        if (!$input->getOption('dry-run') && empty($token)) {
             throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable.');
         }
 
