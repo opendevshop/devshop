@@ -1,6 +1,6 @@
 <?php
 
-namespace jonpugh\ComposerGitBuild;
+namespace ProvisionOps\YamlTests;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 
