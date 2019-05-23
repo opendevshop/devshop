@@ -137,6 +137,8 @@ class Command extends BaseCommand
 
         }
 
+
+
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
 
     }
@@ -157,7 +159,7 @@ class Command extends BaseCommand
         }
 
         if (!$input->getOption('dry-run') && empty($token)) {
-            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable.');
+            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
         }
 
         $sha = $this->gitRepo->getCurrentCommit();
@@ -209,6 +211,8 @@ class Command extends BaseCommand
             foreach ($this->yamlTests as $test_name => $test) {
                 if (is_array($test) && isset($test['command'])) {
                     $command = $test['command'];
+                } elseif (is_array($test)) {
+                    $command = implode(' && ', $test);
                 } else {
                     $command = $test;
                 }
@@ -282,6 +286,8 @@ class Command extends BaseCommand
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
                 $command = $test['command'];
+            } elseif (is_array($test)) {
+                $command = implode("\n", $test);
             } else {
                 $command = $test;
             }
