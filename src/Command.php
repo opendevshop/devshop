@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Command\BaseCommand;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
@@ -121,6 +122,13 @@ class Command extends BaseCommand
 
         // Validate YML
         $this->loadTestsYml();
+
+        foreach ($this->yamlTests as $name => $value){
+
+        }
+
+        $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
+
     }
     
     /**
@@ -129,13 +137,53 @@ class Command extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+        foreach ($this->yamlTests as $test_name => $test) {
+            if (is_array($test) && isset($test['command'])) {
+                $command = $test['command'];
+            }
+            else {
+                $command = $test;
+            }
+
+            $this->io->writeln("<fg=cyan>{$command}</>");
+            $this->io->writeln('<fg=cyan>╔══════════════════════════════════════</>');
+            $process = new Process($command);
+
+            $process->setEnv($_SERVER);
+
+            /** @var  $result */
+            $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
+                    $output->write(' ' . $buffer);
+            });
+            $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
+
+            if ($exit == 0) {
+                $this->successLite('Passed');
+            }
+            else {
+                $this->errorLite('Failed');
+            }
+            $this->io->newLine();
+        }
+
         $this->io->title("Executed");
     }
 
     private function loadTestsYml() {
+        $this->yamlTests = Yaml::parseFile($this->testsFilePath);
+    }
 
-        $yml = Yaml::parseFile($this->testsFilePath);
-        print_r($yml);
+    private function testsToTableRows() {
+        foreach ($this->yamlTests as $test_name => $test) {
+            if (is_array($test) && isset($test['command'])) {
+                $command = $test['command'];
+            } else {
+                $command = $test;
+            }
+            $rows[] = array($test_name, $command);
+        }
+        return $rows;
     }
 
     /**
@@ -161,4 +209,52 @@ class Command extends BaseCommand
     protected function askDefault($question, $default) {
         return $this->io->ask($question, $default);
     }
+
+    public function successLite($message, $newLine = false)
+    {
+        $message = sprintf('<info>✔</info> %s', $message);
+        $this->io->text($message);
+        if ($newLine) {
+            $this->io->newLine();
+        }
+    }
+    public function errorLite($message, $newLine = false)
+    {
+        $message = sprintf('<fg=red>✘</> %s', $message);
+        $this->io->text($message);
+        if ($newLine) {
+            $this->io->newLine();
+        }
+    }
+    public function warningLite($message, $newLine = false)
+    {
+        $message = sprintf('<comment>!</comment> %s', $message);
+        $this->io->text($message);
+        if ($newLine) {
+            $this->io->newLine();
+        }
+    }
+    public function customLite($message, $prefix = '*', $style = '', $newLine = false)
+    {
+        if ($style) {
+            $message = sprintf(
+                '<%s>%s</%s> %s',
+                $style,
+                $prefix,
+                $style,
+                $message
+            );
+        } else {
+            $message = sprintf(
+                '%s %s',
+                $prefix,
+                $message
+            );
+        }
+        $this->io->text($message);
+        if ($newLine) {
+            $this->io->newLine();
+        }
+    }
+
 }
