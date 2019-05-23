@@ -2,6 +2,9 @@
 
 namespace ProvisionOps\YamlTests;
 
+use Symfony\Component\Console\Exception\InvalidOptionException;
+use Symfony\Component\Console\Exception\LogicException;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,6 +69,13 @@ class Command extends BaseCommand
         $this->setDescription('Read tests.yml and runs all commands in it, passing results to GitHub Commit Status API.');
 
         $this->addOption(
+            'tests-file',
+            NULL,
+            InputOption::VALUE_OPTIONAL,
+            'Relative path to a yml file to run.',
+            'tests.yml'
+        );
+        $this->addOption(
             'ignore-dirty',
             NULL,
             InputOption::VALUE_NONE,
@@ -95,11 +105,17 @@ class Command extends BaseCommand
 
         $this->config = $this->getComposer()->getPackage()->getConfig();
 
+        $this->testsFile = $input->getOption('tests-file');
+        $yaml_tests_file = realpath($input->getOption('tests-file'));
+        if (!file_exists($yaml_tests_file) || empty($yaml_tests_file)) {
+            throw new \Exception("Specified tests file does not exist at {$this->workingDir}/{$this->testsFile}");
+        }
+
         $this->io->title("Yaml Tests Initialized");
         $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
-
+        $this->say("Tests File: <comment>{$yaml_tests_file}</comment>");
     }
     
     /**
