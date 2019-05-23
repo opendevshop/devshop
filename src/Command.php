@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Command\BaseCommand;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use TQ\Git\Repository\Repository;
 
 /**
  * Class Command
@@ -42,22 +43,15 @@ class Command extends BaseCommand
     protected $gitDir;
 
     /**
+     * @var Repository
+     */
+    protected $gitRepo;
+
+    /**
      * The current git commit SHA.
      * @var String
      */
     protected $gitSha;
-
-    /**
-     * The directory containing the git repository.
-     * @var String
-     */
-    protected $buildDir;
-    
-    /**
-     * The git reference of this project before any changes are made.
-     * @var String
-     */
-    protected $initialGitRef;
 
     /**
      * The options from the project's composer.json "config" section.
@@ -66,20 +60,6 @@ class Command extends BaseCommand
      */
     protected $config = [];
 
-    /**
-     * List of git remotes to push the artifact to.
-     * @var string[]
-     */
-    protected $git_remotes = [];
-
-    /**
-     * Relative path to exposed document root.
-     * @var string
-     */
-    protected $documentRoot;
-    
-    protected $ignoreDelimeter = "## IGNORED IN GIT BUILD ARTIFACTS: ##";
-    
     protected function configure()
     {
         $this->setName('yaml-tests');
@@ -108,18 +88,18 @@ class Command extends BaseCommand
         $this->input = $input;
         $this->output = $input;
         $this->logger = $this->io;
-
-        $this->gitDir = $this->getGitDir();
-        $this->gitSha = $this->getGitSha();
         $this->workingDir = getcwd();
 
-        $config_defaults = [
-            'repo.root' => $this->gitDir,
-        ];
+        $this->gitRepo = Repository::open($this->workingDir);
+        $this->gitRepo->getCurrentCommit();
 
-        $this->config = array_merge($config_defaults, $this->getComposer()->getPackage()->getConfig());
+        $this->config = $this->getComposer()->getPackage()->getConfig();
 
         $this->io->title("Yaml Tests Initialized");
+        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
+
     }
     
     /**
@@ -140,7 +120,6 @@ class Command extends BaseCommand
         }
         $this->checkDirty($options);
 
-        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->io->title("Executed");
 
     }
