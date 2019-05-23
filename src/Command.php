@@ -84,9 +84,7 @@ class Command extends BaseCommand
             'github-token',
             NULL,
             InputOption::VALUE_REQUIRED,
-            'An active github token. Create one at https://github.com/////',
-            isset($_SERVER['GITHUB_TOKEN'])?:''
-
+            'An active github token.'
         );
         $this->addOption(
             'ignore-dirty',
