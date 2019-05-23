@@ -2,10 +2,11 @@
     "name": "provision-ops/yaml-tests",
     "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
     "type": "composer-plugin",
+    "license": "MIT",
     "require": {
         "composer-plugin-api": "^1.1",
-        "teqneers/php-stream-wrapper-for-git": "^2.0@dev",
-        "symfony/yaml": "^4.4@dev"
+        "teqneers/php-stream-wrapper-for-git": "^2.0",
+        "symfony/yaml": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -18,7 +19,6 @@
             "email": "jon@thinkdrop.net"
         }
     ],
-    "minimum-stability": "dev",
     "extra": {
         "class": "ProvisionOps\\YamlTests\\Plugin"
     },
