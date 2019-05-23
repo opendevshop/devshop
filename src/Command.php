@@ -85,7 +85,7 @@ class Command extends BaseCommand
             'github-token',
             NULL,
             InputOption::VALUE_REQUIRED,
-            'An active github token.'
+            'An active github token with access to the repo:status scope.'
         );
         $this->addOption(
             'ignore-dirty',
@@ -149,7 +149,17 @@ class Command extends BaseCommand
     {
         $tests_failed = FALSE;
 
-        $token = $input->getOption('github-token');
+        if (!empty($_SERVER['GITHUB_TOKEN'])) {
+            $token = $_SERVER['GITHUB_TOKEN'];
+        }
+        else {
+            $token = $input->getOption('github_token');
+        }
+
+        if (empty($token)) {
+            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable.');
+        }
+
         $sha = $this->gitRepo->getCurrentCommit();
         $remotes = $this->gitRepo->getCurrentRemote();
         $remote_url = current($remotes)['push'];
