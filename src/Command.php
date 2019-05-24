@@ -295,18 +295,29 @@ class Command extends BaseCommand
 
                         try {
                             $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            $comment = json_decode($comment_response->getBody());
+                            $this->successLite("Comment Created: {$comment->html_url}");
+
+                        } catch (\Github\Exception\RuntimeException $e) {
+                            $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                         }
-                        catch (\Exception $e) {
-                            $this->errorLite($e->getMessage() . ': ' . $e->getCode());
-                            exit(1);
-                        }
-                        $comment = json_decode($response->getBody());
-                        $this->successLite("Comment Created: {$comment->html_url}");
                     }
                 }
 
                 if (!$input->getOption('dry-run')) {
-                    $status = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
+                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
+                    $message = implode(': ', array(
+                        'Commit Status',
+                        $response->getReasonPhrase() . ' for ' . $test_name,
+                        $params->state
+                    ));
+
+                    if (strpos((string) $response->getStatusCode(), '2') === 0) {
+                        $this->successLite($message);
+                    }
+                    else {
+                        $this->errorLite($message);
+                    }
                 }
                 $this->io->newLine();
                 $rows[] = $results_row;
