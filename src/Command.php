@@ -160,6 +160,26 @@ class Command extends BaseCommand
         $this->repoOwner = $parts[1];
         $this->repoName = $parts[2];
 
+        if (!empty($_SERVER['GITHUB_TOKEN'])) {
+            $token = $_SERVER['GITHUB_TOKEN'];
+        }
+        else {
+            $token = $input->getOption('github-token');
+        }
+
+        if (!$input->getOption('dry-run') && empty($token)) {
+            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
+        }
+
+        if (!$input->getOption('dry-run')) {
+
+            $client = $this->githubClient = new \Github\Client();
+            $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+        }
+
+        $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
+        $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
+
         $this->say("Git Repository: <comment>{$remote_url}</comment>");
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
@@ -174,24 +194,12 @@ class Command extends BaseCommand
     {
         $tests_failed = FALSE;
 
-        if (!empty($_SERVER['GITHUB_TOKEN'])) {
-            $token = $_SERVER['GITHUB_TOKEN'];
-        }
-        else {
-            $token = $input->getOption('github-token');
-        }
-
-        if (!$input->getOption('dry-run') && empty($token)) {
-            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
-        }
 
         try {
 
             if (!$input->getOption('dry-run')) {
 
-                $client = new \Github\Client();
-                $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
-
+                $client = $this->githubClient;
 
                 foreach ($this->yamlTests as $test_name => $test) {
                     // Set a commit status for this REF
@@ -207,22 +215,10 @@ class Command extends BaseCommand
                     // Post status to github
                     /** @var Response $response */
                     $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
-                    $message = implode(': ', array(
-                        'Commit Status',
-                        $response->getReasonPhrase() . ' for ' . $test_name,
-                    ));
 
-                    if (strpos((string) $response->getStatusCode(), '2') === 0) {
-                        $this->successLite($message);
-                    }
-                    else {
-                        $this->warningLite($message);
-                    }
+                    $this->commitStatusMessage($response, $test_name, $test, $params->state);
                     $tests[] = $test_name;
                 }
-
-                $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-                $this->io->writeln("<fg=yellow>See " . $commit['html_url'] . "</>");
             }
             else {
                 $this->warningLite('Skipping commit status posting, dry-run enabled.');
@@ -306,19 +302,9 @@ class Command extends BaseCommand
 
                 if (!$input->getOption('dry-run')) {
                     $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
-                    $message = implode(': ', array(
-                        'Commit Status',
-                        $response->getReasonPhrase() . ' for ' . $test_name,
-                        $params->state
-                    ));
-
-                    if (strpos((string) $response->getStatusCode(), '2') === 0) {
-                        $this->successLite($message);
-                    }
-                    else {
-                        $this->errorLite($message);
-                    }
+                    $this->commitStatusMessage($response, $test_name, $test, $params->state);
                 }
+
                 $this->io->newLine();
                 $rows[] = $results_row;
             }
@@ -357,6 +343,30 @@ class Command extends BaseCommand
             $rows[] = array($test_name, $command);
         }
         return $rows;
+    }
+
+    protected function commitStatusMessage(Response $response, $test_name, $test, $state) {
+        $message = implode(': ', array(
+            'GitHub Status',
+            $test_name,
+            $state
+        ));
+
+        if (strpos((string) $response->getStatusCode(), '2') === 0) {
+            if ($state == 'pending') {
+                $this->customLite($message, "⏺", "fg=yellow");
+            }
+            elseif ($state == 'error' || $state == 'failure') {
+                $this->errorLite($message);
+            }
+            elseif ($state == 'success') {
+                $this->successLite($message);
+            }
+        }
+        else {
+            // Big error for actual API error.
+            $this->io->error($message);
+        }
     }
 
     /**
