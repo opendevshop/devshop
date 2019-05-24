@@ -276,6 +276,33 @@ class Command extends BaseCommand
                     $results_row[] = '<fg=red>✘</> Failed';
                     $tests_failed = TRUE;
                     $params->state = 'failure';
+
+                    if (!$input->getOption('dry-run')) {
+                        // Write a comment on the commit with the results
+                        // @see https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+                        $comment['body'] = implode(
+                            "\n", array(
+                                '## Standard Output',
+                                '```',
+                                $process->getErrorOutput(),
+                                '```',
+                                '## Error Output',
+                                $process->getErrorOutput(),
+                                '```',
+                                $process->getErrorOutput(),
+                                '```',
+                        ));
+
+                        try {
+                            $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                        }
+                        catch (\Exception $e) {
+                            $this->errorLite($e->getMessage() . ': ' . $e->getCode());
+                            exit(1);
+                        }
+                        $comment = json_decode($response->getBody());
+                        $this->successLite("Comment Created: {$comment->html_url}");
+                    }
                 }
 
                 if (!$input->getOption('dry-run')) {
