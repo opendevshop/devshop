@@ -181,6 +181,12 @@ class Command extends BaseCommand
             $token = $input->getOption('github-token');
         }
 
+        // Force dry run if there is no token set.
+        if (empty($token)) {
+          $input->setOption('dry-run', true);
+          $this->warningLite('No GitHub token found. forcing --dry-run');
+        }
+
         if (!$input->getOption('dry-run') && empty($token)) {
             throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
         }
@@ -303,7 +309,7 @@ class Command extends BaseCommand
 
     private function loadTestsYml()
     {
-        $this->yamlTests = Yaml::parseFile($this->testsFilePath);
+        $this->yamlTests = Yaml::parse(file_get_contents($this->testsFilePath));
     }
 
     private function testsToTableRows()
