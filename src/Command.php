@@ -194,6 +194,18 @@ class Command extends BaseCommand
     {
         $tests_failed = FALSE;
 
+        if (!empty($_SERVER['GITHUB_TOKEN'])) {
+            $token = $_SERVER['GITHUB_TOKEN'];
+        }
+        else {
+            $token = $input->getOption('github-token');
+        }
+
+        // Force dry run if there is no token set.
+        if (empty($token)) {
+          $input->setOption('dry-run', true);
+          $this->warningLite('No GitHub token found. forcing --dry-run');
+        }
 
         try {
 
@@ -327,7 +339,7 @@ class Command extends BaseCommand
 
     private function loadTestsYml()
     {
-        $this->yamlTests = Yaml::parseFile($this->testsFilePath);
+        $this->yamlTests = Yaml::parse(file_get_contents($this->testsFilePath));
     }
 
     private function testsToTableRows()
