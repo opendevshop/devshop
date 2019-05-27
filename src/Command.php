@@ -70,6 +70,8 @@ class Command extends BaseCommand
      */
     protected $config = [];
 
+    private $addTokenUrl = "https://github.com/settings/tokens/new?description=yaml-tests&scopes=repo:status,public_repo";
+
     protected function configure()
     {
         $this->setName('yaml-tests');
@@ -86,7 +88,7 @@ class Command extends BaseCommand
             'github-token',
             NULL,
             InputOption::VALUE_REQUIRED,
-            'An active github token with access to the repo:status scope.'
+            'An active github token. Create a new token at ' . $this->addTokenUrl
         );
         $this->addOption(
             'ignore-dirty',
@@ -324,7 +326,7 @@ class Command extends BaseCommand
             if ($e->getCode() == 404) {
                 throw new \Exception('Something went wrong: ' . $e->getMessage());
             } else {
-                throw new \Exception('Bad token. Set with --github-token option or GITHUB_TOKEN environment variable. Create a new token at https://github.com/settings/tokens/new?scopes=repo:status Message:' . $e->getMessage());
+                throw new \Exception("Bad token. Set with --github-token option or GITHUB_TOKEN environment variable. Create a new token at {$this->addTokenUrl} Message: " . $e->getMessage());
             }
         }
 
