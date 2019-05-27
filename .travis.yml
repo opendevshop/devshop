@@ -1,0 +1,38 @@
+
+branches:
+  # Only test the master branch and SemVer tags.
+  only:
+    - master
+    - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
+
+env:
+  - TESTING_BRANCH: master
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.2
+      env: 'DEPENDENCIES=highest'
+    - php: 7.2
+    - php: 7.1
+    - php: 7.1
+      env: DEPENDENCIES=lowest'
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+install:
+  - composer install
+
+script:
+  - composer yaml-tests
+
+#after_success:
+#  - travis_retry php vendor/bin/php-coveralls -v
+
+before_deploy:
+  - composer global-install provision-ops/yaml-tests:dev-${TESTING_BRANCH}
+  - composer install --prefer-dist --no-dev --no-interaction
