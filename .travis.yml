@@ -23,7 +23,7 @@ cache:
 
 install:
   - composer install
-  - composer global-install provision-ops/yaml-tests:dev-${TRAVIS_BRANCH}
+  - composer global install provision-ops/yaml-tests:dev-${TRAVIS_BRANCH}
 
 script:
   - composer yaml-tests
