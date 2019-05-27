@@ -147,7 +147,6 @@ class Command extends BaseCommand
         $this->loadTestsYml();
 
         foreach ($this->yamlTests as $name => $value) {
-
         }
 
         $this->repoSha = $this->gitRepo->getCurrentCommit();
@@ -155,7 +154,8 @@ class Command extends BaseCommand
         $remote_url = current($remotes)['push'];
 
         $remote_url = strtr(
-            $remote_url, array(
+            $remote_url,
+            array(
             'git@' => 'https://',
             'git://' => 'https://',
             '.git' => '',
@@ -169,8 +169,7 @@ class Command extends BaseCommand
 
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
             $token = $_SERVER['GITHUB_TOKEN'];
-        }
-        else {
+        } else {
             $token = $input->getOption('github-token');
         }
 
@@ -179,7 +178,6 @@ class Command extends BaseCommand
         }
 
         if (!$input->getOption('dry-run')) {
-
             $client = $this->githubClient = new \Github\Client();
             $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
         }
@@ -190,7 +188,6 @@ class Command extends BaseCommand
         $this->say("Git Repository: <comment>{$remote_url}</comment>");
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
-
     }
 
     /**
@@ -203,8 +200,7 @@ class Command extends BaseCommand
 
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
             $token = $_SERVER['GITHUB_TOKEN'];
-        }
-        else {
+        } else {
             $token = $input->getOption('github-token');
         }
 
@@ -215,9 +211,7 @@ class Command extends BaseCommand
         }
 
         try {
-
             if (!$input->getOption('dry-run')) {
-
                 $client = $this->githubClient;
 
                 foreach ($this->yamlTests as $test_name => $test) {
@@ -226,7 +220,8 @@ class Command extends BaseCommand
                     $params->state = 'pending';
                     $params->target_url = 'https:///path/to/file';
                     $params->description = implode(
-                        ' — ', array(
+                        ' — ',
+                        array(
                         $input->getOption('hostname'),
                         !empty($test['description'])? $test['description']: $test_name
                         )
@@ -235,15 +230,14 @@ class Command extends BaseCommand
 
                     // Post status to github
                     /**
- * @var Response $response 
+ * @var Response $response
 */
                     $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
 
                     $this->commitStatusMessage($response, $test_name, $test, $params->state);
                     $tests[] = $test_name;
                 }
-            }
-            else {
+            } else {
                 $this->warningLite('Skipping commit status posting, dry-run enabled.');
             }
 
@@ -270,7 +264,7 @@ class Command extends BaseCommand
                 $process->setEnv($_SERVER);
 
                 /**
- * @var $result 
+ * @var $result
 */
                 $exit = $process->run(
                     function ($type, $buffer) use ($test_name, $output) {
@@ -285,7 +279,8 @@ class Command extends BaseCommand
                 $params->state = 'pending';
                 $params->target_url = 'https:///path/to/file';
                 $params->description = implode(
-                    ' — ', array(
+                    ' — ',
+                    array(
                     $input->getOption('hostname'),
                     !empty($test['description'])? $test['description']: $test_name
                     )
@@ -307,7 +302,8 @@ class Command extends BaseCommand
                         // @see https://developer.github.com/v3/repos/comments/#create-a-commit-comment
                         $comment = array();
                         $comment['body'] = implode(
-                            "\n", array(
+                            "\n",
+                            array(
                                 '`AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '`',
                                 '### :x: Test Failed: ',
                                 '  ```sh',
@@ -321,7 +317,6 @@ class Command extends BaseCommand
                         try {
                             $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
-
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                         }
@@ -376,7 +371,8 @@ class Command extends BaseCommand
     protected function commitStatusMessage(Response $response, $test_name, $test, $state)
     {
         $message = implode(
-            ': ', array(
+            ': ',
+            array(
             'GitHub Status',
             $test_name,
             $state
@@ -386,15 +382,12 @@ class Command extends BaseCommand
         if (strpos((string) $response->getStatusCode(), '2') === 0) {
             if ($state == 'pending') {
                 $this->customLite($message, "⏺", "fg=yellow");
-            }
-            elseif ($state == 'error' || $state == 'failure') {
+            } elseif ($state == 'error' || $state == 'failure') {
                 $this->errorLite($message);
-            }
-            elseif ($state == 'success') {
+            } elseif ($state == 'success') {
                 $this->successLite($message);
             }
-        }
-        else {
+        } else {
             // Big error for actual API error.
             $this->io->error($message);
         }
@@ -479,5 +472,4 @@ class Command extends BaseCommand
             $this->io->newLine();
         }
     }
-
 }

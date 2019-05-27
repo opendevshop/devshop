@@ -12,7 +12,6 @@ use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PreFileDownloadEvent;
 use Composer\Script\ScriptEvents;
 
-
 class Plugin implements PluginInterface, Capable, EventSubscriberInterface
 {
     protected $composer;
