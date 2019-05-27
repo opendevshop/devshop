@@ -4,7 +4,8 @@ namespace ProvisionOps\YamlTests;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class Style extends SymfonyStyle {
+class Style extends SymfonyStyle
+{
     
     /**
      * @param array|string $message
