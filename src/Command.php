@@ -290,23 +290,21 @@ class Command extends BaseCommand
                     if (!$input->getOption('dry-run')) {
                         // Write a comment on the commit with the results
                         // @see https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+                        $comment = array();
                         $comment['body'] = implode(
                             "\n", array(
-                                '## Standard Output',
-                                '```',
-                                $process->getErrorOutput(),
-                                '```',
-                                '## Error Output',
-                                $process->getErrorOutput(),
-                                '```',
-                                $process->getErrorOutput(),
-                                '```',
+                                '`AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '`',
+                                '### :x: Test Failed: ',
+                                '  ```sh',
+                                '  $ ' . $command,
+                                '  ' . $process->getOutput(),
+                                '  ' . $process->getErrorOutput(),
+                                '  ```',
                         ));
 
                         try {
                             $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
-                            $comment = json_decode($comment_response->getBody());
-                            $this->successLite("Comment Created: {$comment->html_url}");
+                            $this->successLite("Comment Created: {$comment_response['html_url']}");
 
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
