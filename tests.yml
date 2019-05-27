@@ -1,0 +1,3 @@
+# tests/phpunit: phpunit
+tests/composer-install: "composer install --ansi"
+tests/phpcs: phpcs --standard=PSR2 -n src --colors
