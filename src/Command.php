@@ -29,8 +29,8 @@ use GuzzleHttp;
  */
 class Command extends BaseCommand
 {
-    protected $createTag = FALSE;
-    protected $tagName = NULL;
+    protected $createTag = false;
+    protected $tagName = null;
     protected $branchName;
     protected $commitMessage;
     protected $excludeFileTemp;
@@ -42,12 +42,14 @@ class Command extends BaseCommand
 
     /**
      * The directory containing composer.json. Loaded from composer option --working-dir.
+     *
      * @var String
      */
     protected $workingDir;
 
     /**
      * The directory at the root of the git repository.
+     *
      * @var String
      */
     protected $gitDir;
@@ -59,6 +61,7 @@ class Command extends BaseCommand
 
     /**
      * The current git commit SHA.
+     *
      * @var String
      */
     protected $gitSha;
@@ -79,32 +82,32 @@ class Command extends BaseCommand
 
         $this->addOption(
             'tests-file',
-            NULL,
+            null,
             InputOption::VALUE_OPTIONAL,
             'Relative path to a yml file to run.',
             'tests.yml'
         );
         $this->addOption(
             'github-token',
-            NULL,
+            null,
             InputOption::VALUE_REQUIRED,
             'An active github token. Create a new token at ' . $this->addTokenUrl
         );
         $this->addOption(
             'ignore-dirty',
-            NULL,
+            null,
             InputOption::VALUE_NONE,
             'Allow testing even if git working copy is dirty (has modified files).'
         );
         $this->addOption(
             'dry-run',
-            NULL,
+            null,
             InputOption::VALUE_NONE,
             'Run tests but do not post to GitHub.'
         );
         $this->addOption(
             'hostname',
-            NULL,
+            null,
             InputOption::VALUE_OPTIONAL,
             'The hostname to use in the status description. Use if automatically detected hostname is not desired.',
             gethostname()
@@ -151,12 +154,14 @@ class Command extends BaseCommand
         $remotes = $this->gitRepo->getCurrentRemote();
         $remote_url = current($remotes)['push'];
 
-        $remote_url = strtr($remote_url, array(
+        $remote_url = strtr(
+            $remote_url, array(
             'git@' => 'https://',
             'git://' => 'https://',
             '.git' => '',
             'github.com:' => 'github.com/',
-        ));
+            )
+        );
 
         $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
         $this->repoOwner = $parts[1];
@@ -189,12 +194,12 @@ class Command extends BaseCommand
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Input\InputInterface   $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $tests_failed = FALSE;
+        $tests_failed = false;
 
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
             $token = $_SERVER['GITHUB_TOKEN'];
@@ -205,8 +210,8 @@ class Command extends BaseCommand
 
         // Force dry run if there is no token set.
         if (empty($token)) {
-          $input->setOption('dry-run', true);
-          $this->warningLite('No GitHub token found. forcing --dry-run');
+            $input->setOption('dry-run', true);
+            $this->warningLite('No GitHub token found. forcing --dry-run');
         }
 
         try {
@@ -220,14 +225,18 @@ class Command extends BaseCommand
                     $params = new \stdClass();
                     $params->state = 'pending';
                     $params->target_url = 'https:///path/to/file';
-                    $params->description = implode(' — ', array(
+                    $params->description = implode(
+                        ' — ', array(
                         $input->getOption('hostname'),
                         !empty($test['description'])? $test['description']: $test_name
-                    ));
+                        )
+                    );
                     $params->context = $test_name;
 
                     // Post status to github
-                    /** @var Response $response */
+                    /**
+ * @var Response $response 
+*/
                     $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
 
                     $this->commitStatusMessage($response, $test_name, $test, $params->state);
@@ -260,10 +269,14 @@ class Command extends BaseCommand
 
                 $process->setEnv($_SERVER);
 
-                /** @var  $result */
-                $exit = $process->run(function ($type, $buffer) use ($test_name, $output) {
-                    $output->write(' ' . $buffer);
-                });
+                /**
+ * @var $result 
+*/
+                $exit = $process->run(
+                    function ($type, $buffer) use ($test_name, $output) {
+                        $output->write(' ' . $buffer);
+                    }
+                );
                 $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
 
 
@@ -271,10 +284,12 @@ class Command extends BaseCommand
                 $params = new \stdClass();
                 $params->state = 'pending';
                 $params->target_url = 'https:///path/to/file';
-                $params->description = implode(' — ', array(
+                $params->description = implode(
+                    ' — ', array(
                     $input->getOption('hostname'),
                     !empty($test['description'])? $test['description']: $test_name
-                ));
+                    )
+                );
                 $params->context = $test_name;
 
                 if ($exit == 0) {
@@ -284,7 +299,7 @@ class Command extends BaseCommand
                 } else {
                     $this->errorLite('Failed');
                     $results_row[] = '<fg=red>✘</> Failed';
-                    $tests_failed = TRUE;
+                    $tests_failed = true;
                     $params->state = 'failure';
 
                     if (!$input->getOption('dry-run')) {
@@ -300,7 +315,8 @@ class Command extends BaseCommand
                                 '  ' . $process->getOutput(),
                                 '  ' . $process->getErrorOutput(),
                                 '  ```',
-                        ));
+                            )
+                        );
 
                         try {
                             $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
@@ -357,12 +373,15 @@ class Command extends BaseCommand
         return $rows;
     }
 
-    protected function commitStatusMessage(Response $response, $test_name, $test, $state) {
-        $message = implode(': ', array(
+    protected function commitStatusMessage(Response $response, $test_name, $test, $state)
+    {
+        $message = implode(
+            ': ', array(
             'GitHub Status',
             $test_name,
             $state
-        ));
+            )
+        );
 
         if (strpos((string) $response->getStatusCode(), '2') === 0) {
             if ($state == 'pending') {
@@ -383,6 +402,7 @@ class Command extends BaseCommand
 
     /**
      * Wrapper for $this->io->comment().
+     *
      * @param $message
      */
     protected function say($message)
@@ -392,6 +412,7 @@ class Command extends BaseCommand
 
     /**
      * Wrapper for $this->io->ask().
+     *
      * @param $message
      */
     protected function ask($question)
@@ -401,6 +422,7 @@ class Command extends BaseCommand
 
     /**
      * Wrapper for $this->io->ask().
+     *
      * @param $message
      */
     protected function askDefault($question, $default)

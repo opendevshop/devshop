@@ -24,8 +24,8 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
         $this->io = $io;
 
 
-//        print_r($this->composer->getPackage()->getConfig());
-//        die;
+        //        print_r($this->composer->getPackage()->getConfig());
+        //        die;
     }
 
     /**
