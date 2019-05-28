@@ -1,15 +1,16 @@
 # Yaml Tests
 
-A composer plugin to make it as simple as possible to define a list of commands that get passed to GitHub Commit Status API
+Yaml Tests is a simple composer plugin tthat make it as simple as possible to define and run a set of tests.
 
-The plugin provides a composer command that simply reads a YML file and runs the lines as a process. 
+The plugin provides a composer command that simply reads a YML file and runs the lines as a process.
+
+The output is rendered in a way to be easier to read, and proper exit code returns if a single process fails. 
 
 It can be installed "locally" (included in your composer.json file) or "globally" (installed into the global "composer" command.
 
-
 ## Installation
 
-Keeping `yaml-tests` in your `composer.json` is the most stable way to operate, since the version is pinned.
+Keeping `yaml-tests` in your `composer.json` (local install) is the most stable way to operate, since the version is pinned.
 
 ### Local Install
 
@@ -81,14 +82,14 @@ For example, you can include PHPUnit and call it without specifying the full pat
 }
 ```
 
+Having the `scripts.test` section in `composer.json` creates a composer command called `composer test`.
+
 `tests.yml`:
 ```yml
 test/debug: 
   - which phpunit
   - phpunit --version
 ```
-
-Having the "test" script in composer.json creates a composer command called "composer test".
 
 If you want to only maintain one set of scripts, you can reference composer scripts in `tests.yml`:
 
@@ -97,30 +98,17 @@ If you want to only maintain one set of scripts, you can reference composer scri
 test/debug: composer test 
 ```
 
-
-### Example tests.yml
-
-As an example, most PHP projects include PHPUnit, PHPCS, and a PHP Linter:
-
-```yml
-code/phpunit: phpunit --color=always
-code/phpcs: phpcs --standard=PSR2 -n src
-build/composer: 
-  command: composer diagnose --ansi
-  description: Composer Diagnose
-```
-
 ## Running tests
 
 Once the `tests.yml` file is in place, and the `composer yaml-tests` command is available, you can trigger test runs.
 
-### Dry Runs
+### Dry Runs vs Normal
 
 This plugin was also designed to pass these tests as "Commit Statuses" on GitHub. This allows us to tag the results to the specific commit, pass or fail.
  
 If the environment variable `GITHUB_TOKEN` or the command line option `--github-token` is NOT set, the `--dry-run` option will be forced.
  
-Use the `--dy-run` option if you have a token set but do not want to post test results to GitHub.
+Use the `--dry-run` option if you have a token set but do not want to post test results to GitHub.
  
 
 Run `composer yaml-tests` or, just like all composer commands, you can use shortcuts like `compose y`.
@@ -136,4 +124,3 @@ The output will look something like this:
 And you will get a nice summary at the end like this:
 
 ![Test Run](https://github.com/provision-ops/yaml-tests/blob/master/assets/test-result.png?raw=true)
-
