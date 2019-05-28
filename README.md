@@ -57,7 +57,7 @@ debug:
   description: Current Environment
 ```
 
-#### Commands in tests.yml
+### Commands in tests.yml
 
 Yaml Tests work like [Composer Scripts](https://getcomposer.org/doc/articles/scripts.md#writing-custom-commands): If your project has the `config.bin-dir` set in `composer.json`, Composer will automatically add that directory to the PATH when scripts or other commands are run.
 
