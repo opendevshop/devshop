@@ -1,0 +1,32 @@
+dist: trusty
+language: php
+
+branches:
+  # Only test the master branch and SemVer tags.
+  only:
+    - master
+    - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.3
+    - php: 7.2
+    - php: 7.1
+    - php: 7.0
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+install:
+  - env
+  - composer install --ansi
+
+script:
+  - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+
+#after_success:
+#  - travis_retry php vendor/bin/php-coveralls -v

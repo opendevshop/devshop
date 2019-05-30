@@ -124,3 +124,9 @@ The output will look something like this:
 And you will get a nice summary at the end like this:
 
 ![Test Run](https://github.com/provision-ops/yaml-tests/blob/master/assets/test-result.png?raw=true)
+
+## Yaml-Tests executable
+
+There is now a "bin" for yaml-tests, allowing the command to be run by itself. 
+
+If you require provision-ops/yaml-tests, you will see a link to `yaml-tests` in your `bin-dir`.
