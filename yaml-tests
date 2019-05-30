@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * This file is a standalone command that allows the "yaml-tests" script to be
+ * run where composer may not be installed. For example, if an artifact is built
+ * from your application and vendor directories, the artifact could be deployed
+ * to a server that does not have global composer installed, and you would still
+ * be able to run `./bin/yaml-tests`.
+ */
+
+$autoloader = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($autoloader)) {
+  echo 'Directory "vendor" does not exist. Run "composer install".';
+  exit(1);
+}
+
+require $autoloader;
+
+use ProvisionOps\YamlTests\Command as YamlTestsCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+$version = 'dev';
+$application = new Application('yaml-tests', $version);
+
+$command = new YamlTestsCommand();
+$composer = new \Composer\Composer();
+
+$package = new \Composer\Package\RootPackage("provision-ops/yaml-tests", $version, "Development");
+$composer->setPackage($package);
+
+$command->setComposer($composer);
+
+$application->add($command);
+$application->setDefaultCommand($command->getName(), true);
+
+$application->run();
