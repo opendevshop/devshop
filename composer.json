@@ -1,0 +1,14 @@
+{
+    "name": "provision-ops/power-process",
+    "description": "A more powerful Process component.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
