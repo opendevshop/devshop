@@ -137,16 +137,14 @@ class Command extends BaseCommand
             throw new \Exception("Specified tests file does not exist at {$this->workingDir}/{$this->testsFile}");
         }
 
-        $this->io->title("Yaml Tests Initialized");
-        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
-        $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
-
         // Validate YML
         $this->loadTestsYml();
 
-        foreach ($this->yamlTests as $name => $value) {
+        // Look for token.
+        if (!empty($_SERVER['GITHUB_TOKEN'])) {
+            $token = $_SERVER['GITHUB_TOKEN'];
+        } else {
+            $token = $input->getOption('github-token');
         }
 
         $this->repoSha = $this->gitRepo->getCurrentCommit();
@@ -167,25 +165,27 @@ class Command extends BaseCommand
         $this->repoOwner = $parts[1];
         $this->repoName = $parts[2];
 
-        if (!empty($_SERVER['GITHUB_TOKEN'])) {
-            $token = $_SERVER['GITHUB_TOKEN'];
-        } else {
-            $token = $input->getOption('github-token');
+        $this->io->title("Yaml Tests Initialized");
+
+        // Force dry run if there is no token set.
+        if (empty($token)) {
+            $input->setOption('dry-run', true);
+            $this->warningLite('No GitHub token found. forcing --dry-run');
+            $this->io->writeln('');
         }
 
-        if (!$input->getOption('dry-run') && empty($token)) {
-            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
-        }
+        $this->say("Git Remote: <comment>{$remote_url}</comment>");
+        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
+        $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
         if (!$input->getOption('dry-run')) {
             $client = $this->githubClient = new \Github\Client();
             $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+            $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
+            $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
         }
-
-        $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-        $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
-
-        $this->say("Git Repository: <comment>{$remote_url}</comment>");
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
     }
@@ -197,18 +197,6 @@ class Command extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $tests_failed = false;
-
-        if (!empty($_SERVER['GITHUB_TOKEN'])) {
-            $token = $_SERVER['GITHUB_TOKEN'];
-        } else {
-            $token = $input->getOption('github-token');
-        }
-
-        // Force dry run if there is no token set.
-        if (empty($token)) {
-            $input->setOption('dry-run', true);
-            $this->warningLite('No GitHub token found. forcing --dry-run');
-        }
 
         try {
             if (!$input->getOption('dry-run')) {
