@@ -12,7 +12,7 @@
         "provision-ops/power-process": "dev-master"
     },
     "autoload": {
-        "psr-4": {  
+        "psr-4": {
             "ProvisionOps\\YamlTests\\": "src/"
         }
     },
