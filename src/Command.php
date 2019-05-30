@@ -227,12 +227,18 @@ class Command extends BaseCommand
                     $params->context = $test_name;
 
                     // Post status to github
-                    /**
- * @var Response $response
-*/
-                    $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                    try {
+                        /**
+                         * @var Response $response
+                         */
+                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                        $this->commitStatusMessage($response, $test_name, $test, $params->state);
 
-                    $this->commitStatusMessage($response, $test_name, $test, $params->state);
+                    } catch (\Exception $e) {
+                        if ($e->getCode() == 404) {
+                            throw new \Exception('Unable to reach commit status API. Check the allowed scopes of your GitHub Token. Skip github interaction with --dry-run, or create a new token with the right scopes at ' . $this->addTokenUrl);
+                        }
+                    }
                     $tests[] = $test_name;
                 }
             } else {
