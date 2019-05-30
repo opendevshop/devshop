@@ -280,7 +280,7 @@ class Command extends BaseCommand
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'pending';
-                $params->target_url = 'https:///path/to/file';
+                $params->target_url = 'https:///';
                 $params->description = implode(
                     ' — ',
                     array(
@@ -326,6 +326,11 @@ class Command extends BaseCommand
                             $params->target_url = $comment_response['html_url'];
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
+                        }
+
+                        // If TRAVIS_JOB_WEB_URL is present and the target_url was not changed, use that as the target_url.
+                        if ($params->target_url == 'https:///' && !empty($_SERVER['TRAVIS_JOB_WEB_URL'])) {
+                            $params->target_url = $_SERVER['TRAVIS_JOB_WEB_URL'];
                         }
                     }
                 }
