@@ -22,11 +22,10 @@ cache:
     - $HOME/.composer/cache
 
 install:
-  - composer install
-  - composer global require provision-ops/yaml-tests:dev-${TRAVIS_PULL_REQUEST_BRANCH}
+  - composer install --ansi
 
 script:
-  - composer yaml-tests
+  - ./yaml-tests --ansi
 
 #after_success:
 #  - travis_retry php vendor/bin/php-coveralls -v
