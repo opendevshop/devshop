@@ -10,5 +10,12 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "symfony/process": "~2"
+    },
+    "autoload": {
+        "psr-4": {
+            "ProvisionOps\\Tools\\": "src/"
+        }
+    }
 }
