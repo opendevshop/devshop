@@ -9,7 +9,6 @@
         "symfony/yaml": "^3.0",
         "ext-json": "*",
         "knplabs/github-api": "~1.2",
-        "phpunit/phpunit": "^8.1",
         "squizlabs/php_codesniffer": "^3.4"
     },
     "autoload": {
@@ -30,6 +29,12 @@
         "composer/composer": "^1.9@dev"
     },
     "config": {
-        "bin-dir": "bin"
-    }
+        "bin-dir": "bin",
+        "platform": {
+            "php":"7.0.0"
+        }
+    },
+    "bin": [
+        "yaml-tests"
+    ]
 }

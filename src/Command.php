@@ -137,19 +137,27 @@ class Command extends BaseCommand
             throw new \Exception("Specified tests file does not exist at {$this->workingDir}/{$this->testsFile}");
         }
 
-        $this->io->title("Yaml Tests Initialized");
-        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
-        $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
-
         // Validate YML
         $this->loadTestsYml();
 
-        foreach ($this->yamlTests as $name => $value) {
+        // Look for token.
+        if (!empty($_SERVER['GITHUB_TOKEN'])) {
+            $token = $_SERVER['GITHUB_TOKEN'];
+        } else {
+            $token = $input->getOption('github-token');
         }
 
+        // This is the actual SHA of the working copy clone.
         $this->repoSha = $this->gitRepo->getCurrentCommit();
+
+        // Detect a TRAVIS_PULL_REQUEST_SHA
+        // Travis tests from a commit created from master and our commit.
+        // It's not the same commit as the pull request branch.
+        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA'])) {
+            $this->repoSha = $_SERVER['TRAVIS_PULL_REQUEST_SHA'];
+            $this->warningLite("Travis PR detected. Using PR SHA: " . $this->repoSha);
+        }
+
         $remotes = $this->gitRepo->getCurrentRemote();
         $remote_url = current($remotes)['push'];
 
@@ -167,25 +175,27 @@ class Command extends BaseCommand
         $this->repoOwner = $parts[1];
         $this->repoName = $parts[2];
 
-        if (!empty($_SERVER['GITHUB_TOKEN'])) {
-            $token = $_SERVER['GITHUB_TOKEN'];
-        } else {
-            $token = $input->getOption('github-token');
+        $this->io->title("Yaml Tests Initialized");
+
+        // Force dry run if there is no token set.
+        if (empty($token)) {
+            $input->setOption('dry-run', true);
+            $this->warningLite('No GitHub token found. forcing --dry-run');
+            $this->io->writeln('');
         }
 
-        if (!$input->getOption('dry-run') && empty($token)) {
-            throw new \Exception('GitHub token is empty. Please specify the --github-token option or the GITHUB_TOKEN environment variable. You can also use the --dry-run option to skip posting to GitHub.');
-        }
+        $this->say("Git Remote: <comment>{$remote_url}</comment>");
+        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
+        $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
         if (!$input->getOption('dry-run')) {
             $client = $this->githubClient = new \Github\Client();
             $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+            $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
+            $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
         }
-
-        $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-        $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
-
-        $this->say("Git Repository: <comment>{$remote_url}</comment>");
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
     }
@@ -197,18 +207,6 @@ class Command extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $tests_failed = false;
-
-        if (!empty($_SERVER['GITHUB_TOKEN'])) {
-            $token = $_SERVER['GITHUB_TOKEN'];
-        } else {
-            $token = $input->getOption('github-token');
-        }
-
-        // Force dry run if there is no token set.
-        if (empty($token)) {
-            $input->setOption('dry-run', true);
-            $this->warningLite('No GitHub token found. forcing --dry-run');
-        }
 
         try {
             if (!$input->getOption('dry-run')) {
@@ -229,12 +227,17 @@ class Command extends BaseCommand
                     $params->context = $test_name;
 
                     // Post status to github
-                    /**
- * @var Response $response
-*/
-                    $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
-
-                    $this->commitStatusMessage($response, $test_name, $test, $params->state);
+                    try {
+                        /**
+                         * @var Response $response
+                         */
+                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                        $this->commitStatusMessage($response, $test_name, $test, $params->state);
+                    } catch (\Exception $e) {
+                        if ($e->getCode() == 404) {
+                            throw new \Exception('Unable to reach commit status API. Check the allowed scopes of your GitHub Token. Skip github interaction with --dry-run, or create a new token with the right scopes at ' . $this->addTokenUrl);
+                        }
+                    }
                     $tests[] = $test_name;
                 }
             } else {
@@ -277,7 +280,7 @@ class Command extends BaseCommand
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'pending';
-                $params->target_url = 'https:///path/to/file';
+                $params->target_url = 'https:///';
                 $params->description = implode(
                     ' — ',
                     array(
@@ -298,29 +301,38 @@ class Command extends BaseCommand
                     $params->state = 'failure';
 
                     if (!$input->getOption('dry-run')) {
+                        // @TODO: Make the commenting optional/configurable
                         // Write a comment on the commit with the results
                         // @see https://developer.github.com/v3/repos/comments/#create-a-commit-comment
                         $comment = array();
                         $comment['body'] = implode(
                             "\n",
                             array(
-                                '`AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '`',
-                                '### :x: Test Failed: ',
-                                '  ```sh',
-                                '  $ ' . $command,
+                                "###### :x: Test Failed: `$test_name`",
+                                '  ```bash',
+                                '  ' . $command,
+                                '  ```',
+                                '  ```bash',
                                 '  ' . $process->getOutput(),
                                 '  ' . $process->getErrorOutput(),
                                 '  ```',
+                                '*AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '*',
                             )
                         );
 
                         try {
                             $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
+                            $params->target_url = $comment_response['html_url'];
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                         }
                     }
+                }
+
+                // If TRAVIS_JOB_WEB_URL is present and the target_url was not changed, use that as the target_url.
+                if ($params->target_url == 'https:///' && !empty($_SERVER['TRAVIS_JOB_WEB_URL'])) {
+                    $params->target_url = $_SERVER['TRAVIS_JOB_WEB_URL'];
                 }
 
                 if (!$input->getOption('dry-run')) {
@@ -332,6 +344,9 @@ class Command extends BaseCommand
                 $rows[] = $results_row;
             }
         } catch (\Github\Exception\RuntimeException $e) {
+            if ($output->isVerbose()) {
+                $output->writeln($e->getTraceAsString());
+            }
             if ($e->getCode() == 404) {
                 throw new \Exception('Something went wrong: ' . $e->getMessage());
             } else {
