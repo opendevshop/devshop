@@ -147,7 +147,16 @@ class Command extends BaseCommand
             $token = $input->getOption('github-token');
         }
 
+        // This is the actual SHA of the working copy clone.
         $this->repoSha = $this->gitRepo->getCurrentCommit();
+
+        // Detect a TRAVIS_PULL_REQUEST_SHA
+        // Travis tests from a commit created from master and our commit.
+        // It's not the same commit as the pull request branch.
+        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA'])) {
+            $this->repoSha = $_SERVER['TRAVIS_PULL_REQUEST_SHA'];
+        }
+
         $remotes = $this->gitRepo->getCurrentRemote();
         $remote_url = current($remotes)['push'];
 
