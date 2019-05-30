@@ -1,3 +1,6 @@
 # tests/phpunit: phpunit
+yaml-tests/fun:
+  command: env
+  description: Print the environment
 yaml-tests/composer-install: "composer install --ansi"
 yaml-tests/phpcs: bin/phpcs --standard=PSR2 -n src --colors
