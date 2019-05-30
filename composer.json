@@ -18,5 +18,11 @@
         "psr-4": {
             "ProvisionOps\\Tools\\": "src/"
         }
+    },
+    "config": {
+        "bin-dir": "bin",
+        "platform": {
+            "php":"7.0.0"
+        }
     }
 }
