@@ -311,7 +311,7 @@ class Command extends BaseCommand
                             array(
                                 "###### :x: Test Failed: `$test_name`",
                                 '  ```bash',
-                                '  $ ' . $command,
+                                '  ' . $command,
                                 '  ```',
                                 '  ```bash',
                                 '  ' . $process->getOutput(),
