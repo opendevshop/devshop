@@ -6,6 +6,7 @@ use Psr\Log\LoggerAwareTrait;
 use Robo\Common\OutputAwareTrait;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process as BaseProcess;
 
 class PowerProcess extends BaseProcess {
@@ -20,7 +21,7 @@ class PowerProcess extends BaseProcess {
     /**
      * @param $io Style
      */
-    public function setIo(Style $io) {
+    public function setIo(SymfonyStyle $io) {
         $this->io = $io;
     }
 
@@ -54,7 +55,6 @@ class PowerProcess extends BaseProcess {
         $exit = parent::run(function ($type, $buffer) {
             $lines = explode("\n", $buffer);
             foreach ($lines as $line) {
-
                 $this->io->outputBlock(trim($line), false, false);
             }
         });
