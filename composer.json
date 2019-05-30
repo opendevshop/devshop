@@ -12,7 +12,7 @@
     "minimum-stability": "dev",
     "require": {
         "symfony/process": "~2",
-        "consolidation/robo": "^2.0@dev"
+        "consolidation/robo": "^1.4"
     },
     "autoload": {
         "psr-4": {
