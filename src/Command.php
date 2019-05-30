@@ -309,13 +309,15 @@ class Command extends BaseCommand
                         $comment['body'] = implode(
                             "\n",
                             array(
-                                ":x: **$test_name**",
+                                "###### :x: Test Failed: `$test_name`",
                                 '  ```bash',
                                 '  $ ' . $command,
+                                '  ```',
+                                '  ```bash',
                                 '  ' . $process->getOutput(),
                                 '  ' . $process->getErrorOutput(),
                                 '  ```',
-                                '`AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '`',
+                                '*AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '*',
                             )
                         );
 
