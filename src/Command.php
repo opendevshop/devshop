@@ -330,6 +330,9 @@ class Command extends BaseCommand
                 $rows[] = $results_row;
             }
         } catch (\Github\Exception\RuntimeException $e) {
+            if ($output->isVerbose()) {
+                $output->writeln($e->getTraceAsString());
+            }
             if ($e->getCode() == 404) {
                 throw new \Exception('Something went wrong: ' . $e->getMessage());
             } else {
