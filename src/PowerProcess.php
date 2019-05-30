@@ -24,6 +24,22 @@ class PowerProcess extends BaseProcess {
         $this->io = $io;
     }
 
+    /**
+     * PowerProcess constructor.
+     * @param $commandline
+     * @param Style $io
+     * @param null $cwd
+     * @param array|null $env
+     * @param null $input
+     * @param int $timeout
+     * @param array $options
+     */
+    public function __construct($commandline, $io, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
+    {
+        $this->setIo($io);
+        parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
+    }
+
 
     /**
      * @param null $callback
