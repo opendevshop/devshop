@@ -327,12 +327,12 @@ class Command extends BaseCommand
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                         }
-
-                        // If TRAVIS_JOB_WEB_URL is present and the target_url was not changed, use that as the target_url.
-                        if ($params->target_url == 'https:///' && !empty($_SERVER['TRAVIS_JOB_WEB_URL'])) {
-                            $params->target_url = $_SERVER['TRAVIS_JOB_WEB_URL'];
-                        }
                     }
+                }
+
+                // If TRAVIS_JOB_WEB_URL is present and the target_url was not changed, use that as the target_url.
+                if ($params->target_url == 'https:///' && !empty($_SERVER['TRAVIS_JOB_WEB_URL'])) {
+                    $params->target_url = $_SERVER['TRAVIS_JOB_WEB_URL'];
                 }
 
                 if (!$input->getOption('dry-run')) {
