@@ -233,7 +233,6 @@ class Command extends BaseCommand
                          */
                         $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
                         $this->commitStatusMessage($response, $test_name, $test, $params->state);
-
                     } catch (\Exception $e) {
                         if ($e->getCode() == 404) {
                             throw new \Exception('Unable to reach commit status API. Check the allowed scopes of your GitHub Token. Skip github interaction with --dry-run, or create a new token with the right scopes at ' . $this->addTokenUrl);
@@ -325,7 +324,6 @@ class Command extends BaseCommand
                             $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
                             $params->target_url = $comment_response['html_url'];
-
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                         }
