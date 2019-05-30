@@ -155,7 +155,7 @@ class Command extends BaseCommand
         // It's not the same commit as the pull request branch.
         if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA'])) {
             $this->repoSha = $_SERVER['TRAVIS_PULL_REQUEST_SHA'];
-            $this->warningLite("Travis PR detected. Forcing PR SHA: " . $this->repoSha);
+            $this->warningLite("Travis PR detected. Using PR SHA: " . $this->repoSha);
         }
 
         $remotes = $this->gitRepo->getCurrentRemote();
