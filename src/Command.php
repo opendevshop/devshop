@@ -2,23 +2,16 @@
 
 namespace ProvisionOps\YamlTests;
 
+use ProvisionOps\Tools\PowerProcess as Process;
+use ProvisionOps\Tools\Style;
+
 use Guzzle\Http\Message\Response;
-use Symfony\Component\Console\Exception\InvalidOptionException;
-use Symfony\Component\Console\Exception\LogicException;
-use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Command\BaseCommand;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
-
-
-use GuzzleHttp;
 
 /**
  * Class Command
@@ -260,22 +253,20 @@ class Command extends BaseCommand
                     $command,
                 );
 
-                $this->io->writeln("<fg=cyan>{$command}</>");
-                $this->io->writeln('<fg=cyan>╔══════════════════════════════════════</>');
-                $process = new Process($command);
+                $process = new Process($command, $this->io);
+                $process->setIo($this->io);
 
                 $process->setEnv($_SERVER);
 
-                /**
- * @var $result
-*/
-                $exit = $process->run(
-                    function ($type, $buffer) use ($test_name, $output) {
-                        $output->write(' ' . $buffer);
-                    }
-                );
-                $this->io->writeln('<fg=cyan>╚══════════════════════════════════════</>');
+                $title = "Running test <fg=white>$test_name</>";
 
+                if (!empty($test['description'])) {
+                    $title .= ": <fg=white>{$test['description']}</>";
+                }
+
+                $this->io->section($title);
+
+                $exit = $process->run();
 
                 // Set a commit status for this REF
                 $params = new \stdClass();
@@ -291,11 +282,9 @@ class Command extends BaseCommand
                 $params->context = $test_name;
 
                 if ($exit == 0) {
-                    $this->successLite('Passed');
                     $results_row[] = '<info>✔</info> Passed';
                     $params->state = 'success';
                 } else {
-                    $this->errorLite('Failed');
                     $results_row[] = '<fg=red>✘</> Failed';
                     $tests_failed = true;
                     $params->state = 'failure';
