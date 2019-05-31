@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * This script is an example of how you can use PowerProcess.
+ *
+ * Run this file followed by any command, and it will be executed via Power Process.
+ *
+ * Examples:
+ *
+ *    ./run git status
+ *    ./run ping packagist.org -c 10
+ *    ./run cat /etc/os-release
+ */
+
+// Include autoloader
+include('vendor/autoload.php');
+
+// PowerProcess needs IO.
+$input = new \Symfony\Component\Console\Input\ArgvInput($argv);
+$output = new \Symfony\Component\Console\Output\ConsoleOutput();
+
+// Replace Style with your own to change the output style.
+$io = new ProvisionOps\Tools\Style($input, $output);
+
+// Load command from everything after the filename.
+$command = array_slice($argv, 1);
+$process = new ProvisionOps\Tools\PowerProcess($command, $io);
+$process->run();
