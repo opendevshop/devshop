@@ -39,6 +39,20 @@ You will see the commands running like so:
 
 ![Demo.php Output](assets/demo.png)
 
+## Another Example
+
+The file [`run'](run) is a wrapper for any command. 
+
+Try:
+
+```bash
+./run ping packagist.org -c 5
+./run git status
+./run rm -rf /
+```
+
+Simple.
+
 ## Functionality
 
 This project is being extracted from Provision CLI. It will grow and change rapidly.
