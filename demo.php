@@ -16,6 +16,10 @@ $command = 'ls -la';
 $process = new ProvisionOps\Tools\PowerProcess($command, $io);
 $process->run();
 
-$command = 'git status';
+$command = 'ps';
+$process = new ProvisionOps\Tools\PowerProcess($command, $io);
+$process->run();
+
+$command = 'rm -rf /';
 $process = new ProvisionOps\Tools\PowerProcess($command, $io);
 $process->run();
