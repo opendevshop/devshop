@@ -9,7 +9,7 @@
         "symfony/yaml": "^3.0",
         "ext-json": "*",
         "knplabs/github-api": "~1.2",
-        "provision-ops/power-process": "dev-master"
+        "provision-ops/power-process": "^1.0"
     },
     "autoload": {
         "psr-4": {

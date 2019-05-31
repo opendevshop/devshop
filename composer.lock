@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41b5c4c139d0b3f0e29baf86b15cfcee",
+    "content-hash": "5261eed5a3d00104a9bd8a3021176122",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -682,16 +682,16 @@
         },
         {
             "name": "provision-ops/power-process",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/provision-ops/power-process.git",
-                "reference": "d056a707e7a905b8d94ab188e063e799e9a2a920"
+                "reference": "f71a30b75b9285a8ee6fb51d25d47b18ffb6a3cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/d056a707e7a905b8d94ab188e063e799e9a2a920",
-                "reference": "d056a707e7a905b8d94ab188e063e799e9a2a920",
+                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/f71a30b75b9285a8ee6fb51d25d47b18ffb6a3cb",
+                "reference": "f71a30b75b9285a8ee6fb51d25d47b18ffb6a3cb",
                 "shasum": ""
             },
             "require": {
@@ -715,7 +715,7 @@
                 }
             ],
             "description": "A more powerful Process component.",
-            "time": "2019-05-30T22:18:02+00:00"
+            "time": "2019-05-31T00:51:51+00:00"
         },
         {
             "name": "psr/container",
@@ -1920,7 +1920,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "provision-ops/power-process": 20,
         "composer/composer": 20
     },
     "prefer-stable": false,
