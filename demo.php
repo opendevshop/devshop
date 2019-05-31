@@ -16,7 +16,8 @@ $command = 'ls -la';
 $process = new ProvisionOps\Tools\PowerProcess($command, $io);
 $process->run();
 
-$command = 'ps';
+// Output comes back in real-time.
+$command = 'ping packagist.org -c 5';
 $process = new ProvisionOps\Tools\PowerProcess($command, $io);
 $process->run();
 
