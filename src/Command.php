@@ -196,7 +196,7 @@ class Command extends BaseCommand
             $this->githubClient = new \Github\Client();
 
             if ($input->getOption('ignore-ssl')) {
-              $this->githubClient->setOption('verify', false);
+              $this->githubClient->getHttpClient()->client->setDefaultOption('verify', false);
             }
 
           $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
