@@ -66,6 +66,9 @@ class Command extends BaseCommand
      */
     protected $config = [];
 
+    /** @var \Github\Client */
+    protected $githubClient;
+
     private $addTokenUrl = "https://github.com/settings/tokens/new?description=yaml-tests&scopes=repo:status,public_repo";
 
     protected function configure()
@@ -97,6 +100,12 @@ class Command extends BaseCommand
             null,
             InputOption::VALUE_NONE,
             'Run tests but do not post to GitHub.'
+        );
+        $this->addOption(
+            'ignore-ssl',
+            null,
+            InputOption::VALUE_NONE,
+            'Ignore SSL certificate validation errors. Use only if you receive errors trying to reach the GitHub API with this tool.'
         );
         $this->addOption(
             'hostname',
@@ -184,9 +193,14 @@ class Command extends BaseCommand
         $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
         if (!$input->getOption('dry-run')) {
-            $client = $this->githubClient = new \Github\Client();
-            $client->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
-            $commit = $client->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
+            $this->githubClient = new \Github\Client();
+
+            if ($input->getOption('ignore-ssl')) {
+              $this->githubClient->setOption('verify', false);
+            }
+
+          $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+            $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
         }
 
