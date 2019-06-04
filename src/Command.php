@@ -268,6 +268,7 @@ class Command extends BaseCommand
                 );
 
                 $process = new Process($command, $this->io);
+                $process->setTimeout(null);
                 $process->setIo($this->io);
 
                 $process->setEnv($_SERVER);
