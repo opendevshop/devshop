@@ -196,10 +196,10 @@ class Command extends BaseCommand
             $this->githubClient = new \Github\Client();
 
             if ($input->getOption('ignore-ssl')) {
-              $this->githubClient->getHttpClient()->client->setDefaultOption('verify', false);
+                $this->githubClient->getHttpClient()->client->setDefaultOption('verify', false);
             }
 
-          $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+            $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
             $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
         }
