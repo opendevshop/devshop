@@ -15,6 +15,6 @@ Thanks!
 
 | URL(s)         | Description |  Since   |
 | -------------- | ----------- | -------- |
-| [thinkdrop.net](https://thinkdrop.net)  | Homepage of the creator, Jon Pugh | 2012 |
-| [ryanpricemedia.com](http://ryanpricemedia.com) | Homepage of Ryan Price, co-host of the DrupalEasy Podcast | 2016 |
+| [thinkdrop.net](https://thinkdrop.net)  | Homepage of the creator, Jon Pugh | 2012
+| [ryanpricemedia.com](http://ryanpricemedia.com) | Homepage of Ryan Price, co-host of the DrupalEasy Podcast | 2016
 | [Your Site Here](https://yoururl)  |  A brief description of the owner or purpose of the site.      | The approximate date launched.  |
