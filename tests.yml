@@ -1,3 +1,7 @@
 # tests/phpunit: phpunit
 yaml-tests/lint: find src -name '*.php' -print0 | xargs -0 -n1 php -l
 yaml-tests/phpcs: bin/phpcs --standard=PSR2 -n src --colors
+
+yaml-tess/ignore-failure:
+  command: thisisnotaworkingcommand
+  ignore-failure: yes
