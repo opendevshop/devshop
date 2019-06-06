@@ -2,7 +2,7 @@
 
 This is a list of sites or organizations that currently use or have used OpenDevShop in the past.
 
-Please feel free to click the "Edit" link at the top right of the page to fork this repo and add your organization. Links or descriptions appreciated.
+Please feel free to click the [Edit](https://github.com/opendevshop/devshop/edit/1.x/USERS.md) link at the top right of the page to fork this repo and add your organization. Links or descriptions appreciated.
 
 ## Community Recognition
 
@@ -11,7 +11,7 @@ who has successfully used it in past. Thank you for using our tool, and thank yo
 putting your site in this list.
 
 Thanks!
-Jon & the OpenDevShop team.
+  Jon & the OpenDevShop team.
 
 | URL(s)         | Description |  Since   |
 | -------------- | ----------- | -------- |
