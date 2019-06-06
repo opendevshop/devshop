@@ -16,4 +16,4 @@ Jon & the OpenDevShop team.
 | URL(s)         | Description |  Since   |
 | -------------- | ----------- | -------- |
 | [thinkdrop.net](https://thinkdrop.net)  | Homepage of the creator, Jon Pugh | 2012
-| [Your Site Here] (https://yoururl)  |  A brief description of the owner or purpose of the site.      | The approximate date launched.  |
+| [Your Site Here](https://yoururl)  |  A brief description of the owner or purpose of the site.      | The approximate date launched.  |
