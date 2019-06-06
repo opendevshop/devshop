@@ -299,16 +299,13 @@ class Command extends BaseCommand
                 if ($exit == 0) {
                     $results_row[] = '<info>✔</info> Passed';
                     $params->state = 'success';
-                }
-                else {
-
+                } else {
                     // If the test has the ignore failure flag, ignore it.
                     if (!empty($test['ignore-failure'])) {
                         $results_row[] = '<fg=red>✘</> Failed (Ignoring)';
                         $params->state = 'success';
                         $params->description .= ' | TEST FAILED but is set to ignore.';
-                    }
-                    else {
+                    } else {
                         $results_row[] = '<fg=red>✘</> Failed';
                         $tests_failed = true;
                         $params->state = 'failure';
