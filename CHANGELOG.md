@@ -60,6 +60,8 @@ Click "Activate Support" or visit https://devshop.support to get started!
     - Fixed bad project/platform links on Platform node pages.
     - Stop hiding successful verify and login tasks from the UI so it doesn't look broken!
     - Fix bug in travis tests for forked repos.
+    - Removed deprecation notices for "Install extra packages" in devmaster ansible role.
+    - 
 - Bumping Drupal core to 7.67
 
 ### Contributors
