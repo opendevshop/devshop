@@ -24,8 +24,11 @@ Click "Activate Support" or visit https://devshop.support to get started!
   ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
 
 - Features
-  - NodeJS and NPM now come pre-installed! We now install Node and NPM by default on all devshop servers, but we do it 
-    in a slightly different way: The DevShop CLI "bin" path is now added across environments, and drush, node, and 
+  - Global "drush" is now loaded from the DevShop `bin` directory! This means the drush version is defined in 
+    `composer.json` and no longer needs to be installed or maintained separately.
+  - NodeJS and NPM now come pre-installed in the same way! We now install Node and NPM by default on all devshop servers 
+    using composer.
+  - The DevShop CLI "bin" path is now added across environments, and drush, node, and 
     npm are all installed there, managed by composer.json, using the "nodejs-installer" package! If you need a different
     version, you can include it in your own project. [More information on nodejs-installer for composer](https://packagist.org/packages/mouf/nodejs-installer)
   - Added "DevShop Settings" link to footer so users without admin menu permission can access it.
