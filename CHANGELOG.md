@@ -2,7 +2,7 @@
 
 ## DevShop 1.x, xxxx-xx-xx (development version)
 
-## DevShop 1.5.0-rc8, 2019-05-13 
+## DevShop 1.5.0-rc8, 2019-06-12
 
 **DevShop.Support Alpha Launch!**
 
@@ -12,8 +12,8 @@ Click "Activate Support" or visit https://devshop.support to get started!
 
 ### Release Notes
 
-- 111 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.5.0-rc8
-- 129 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
+- 127 Commits to DevShop: https://github.com/opendevshop/devshop/compare/1.5.0-rc7...1.5.0-rc8
+- 139 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
 
 - Community
   - Created [OpenCollective](https://opencollective.com/devshop) and [Patreon](https://www.patreon.com/devshop) pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
@@ -24,10 +24,15 @@ Click "Activate Support" or visit https://devshop.support to get started!
   ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
 
 - Features
-  - NodeJS and NPM now come pre-installed! We now install Node and NPM by default on all devshop servers, but we do it 
-    in a slightly different way: The DevShop CLI "bin" path is now added across environments, and drush, node, and 
+  - Global "drush" is now loaded from the DevShop `bin` directory! This means the drush version is defined in 
+    `composer.json` and no longer needs to be installed or maintained separately.
+  - NodeJS and NPM now come pre-installed in the same way! We now install Node and NPM by default on all devshop servers 
+    using composer.
+  - The DevShop CLI "bin" path is now added across environments, and drush, node, and 
     npm are all installed there, managed by composer.json, using the "nodejs-installer" package! If you need a different
     version, you can include it in your own project. [More information on nodejs-installer for composer](https://packagist.org/packages/mouf/nodejs-installer)
+  - Added "DevShop Settings" link to footer so users without admin menu permission can access it.
+  - On "Create Environment" form, default to "Clone Environment" and show the full URL instead of a "View" text. Much better for remote aliases.
 - Create Project page overhaul:
   
   ![Create new repos right in devshop from composer or other repos.](https://user-images.githubusercontent.com/106420/56436137-d8a17b00-62a8-11e9-8167-a68f39e62ac3.gif)
@@ -48,13 +53,15 @@ Click "Activate Support" or visit https://devshop.support to get started!
   - Add spinner graphics to the two "Create Project" steps that need it!
   - Fixed "Refreshing..." branches UI that would only show if you viewed the project node before the git references were loaded.
   - Changed "Path to Drupal" setting to "Document Root". Much more clear and accurate.
-- Total rewrite of `install.sh` by @vmmello to add a `--help` option and break everything into bash functions. Thanks Vinicius!
-- Added ability to remove devshop.support license key.
-- Fixed bad project/platform links on Platform node pages.
-- Stop hiding successful verify and login tasks from the UI so it doesn't look broken!
-- Added "DevShop Settings" link to footer so users without admin menu permission can access it.
-- On "Create Environment" form, default to "Clone Environment" and show the full URL instead of a "View" text. Much better for remote aliases.
-- Fix bug in travis tests for forked repos.
+  - Total rewrite of `install.sh` by @vmmello to add a `--help` option and break everything into bash functions. Thanks Vinicius!
+
+- Bug Fixes:
+    - Added ability to remove devshop.support license key.
+    - Fixed bad project/platform links on Platform node pages.
+    - Stop hiding successful verify and login tasks from the UI so it doesn't look broken!
+    - Fix bug in travis tests for forked repos.
+    - Removed deprecation notices for "Install extra packages" in devmaster ansible role.
+    - 
 - Bumping Drupal core to 7.67
 
 ### Contributors

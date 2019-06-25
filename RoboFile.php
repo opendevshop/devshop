@@ -404,16 +404,10 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if (!file_exists('aegir-home')) {
-      if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
         if ($this->prepareSourcecode($opts) == FALSE) {
           $this->say('Prepare source code failed.');
           exit(1);
         }
-      }
-      else {
-        $this->say('aegir-home must exist for devshop to work. Not running docker-compose up.');
-        return;
-      }
     }
 
     if ($opts['mode'] == 'docker-compose') {

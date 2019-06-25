@@ -27,9 +27,11 @@ env:
   - test="Ansible on Ubuntu 18.04 Apache"
     COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
 
+  - test="Ansible Install on CentOS 7"
+    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
+
   - test="Ansible Upgrade"
     COMMAND='robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test-upgrade --test --no-dev'
-
 
 addons:
   hosts:

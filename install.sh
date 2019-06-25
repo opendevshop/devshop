@@ -67,9 +67,10 @@ usage() {
 
 POST_INSTALL_WELCOME_MSG="
 
-Welcome to OpenDevShop! Use the link above to login.
+Welcome to OpenDevShop! Use the link below to sign in.
 
-You can run the command 'devshop login' to get another login link.
+The password for user 'admin' was securely generated and hidden. 
+Use `drush @hostmaster uli` or `devshop login` to get another login link.
 
 Please visit http://getdevshop.com for help and information.
 
@@ -461,24 +462,8 @@ ansible-playbook $PLAYBOOK_PATH --connection=local $ANSIBLE_VERBOSITY
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
 if [ ${PIPESTATUS[0]} == 0 ]; then
+  echo $POST_INSTALL_WELCOME_MSG
   su - aegir -c "devshop login"
-  echo ""
-  echo "Welcome to OpenDevShop! Use the link above to login."
-  echo ""
-  echo "You can run the command 'devshop login' to get another login link."
-  echo ""
-  echo "Please visit http://getdevshop.com for help and information."
-  echo ""
-  echo "Join the development community at https://github.com/opendevshop/devshop"
-  echo ""
-  echo "Thanks!"
-  echo "--The OpenDevShop Team"
-  echo ""
-
-  echo "  Issues: https://github.com/opendevshop/devshop/issues"
-  echo "  Chat: https://gitter.im/opendevshop/devshop "
-  echo "  Code: https://github.com/opendevshop/devshop"
-  echo ""
   exit 0
 else
   echo "The command 'devshop status' had an error. Check the logs and try again."
