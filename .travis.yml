@@ -39,8 +39,9 @@ env:
 # @TODO: The "repo" based roles on CentOS went haywire across the GeerlingGuy roles.
 # See https://github.com/ansible/ansible/issues/46517#issuecomment-427377148
 # It's also caused by the fact that the base docker images we use here were updated to ansible 2.7.
-#  - test="Ansible Install on CentOS 7"
-#    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
+
+  - test="Ansible Install on CentOS 7"
+    COMMAND="robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
 
 #  - test="Install with Ansible on Fedora 25"
 #    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
