@@ -69,7 +69,7 @@ projects[r4032login][version] = 1.8
 projects[admin_menu][version] = "3.0-rc6"
 projects[adminrole][version] = "1.1"
 projects[jquery_update][version] = "3.0-alpha5"
-projects[views][version] = "3.22"
+projects[views][version] = "3.23"
 projects[views_bulk_operations][version] = "3.5"
 projects[ctools][version] = "1.15"
 projects[features][version] = "2.11"
@@ -90,7 +90,7 @@ projects[cas_attributes][version] = 1.0-rc3
 
 ; Bootstrap base theme
 projects[bootstrap][type] = theme
-projects[bootstrap][version] = "3.23"
+projects[bootstrap][version] = "3.26"
 
 ; Timeago module
 projects[timeago][version] = 2.3
