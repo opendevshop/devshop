@@ -152,10 +152,11 @@ class DevmasterUpgrade extends Command
     if (file_exists($target_path)) {
       $number = 1;
       while (file_exists($target_path . '-' . $number)) {
+        $output->writeln("File exists at " . $target_path . '-' . $number);
         $number++;
       }
-      $variant .= '-' . $number;
-      $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+      $output->writeln("File DOES NOT exists at " . $target_path . '-' . $number);
+      $target_path = $target_path . '-' . $number;
     }
 
     $output->writeln('');
@@ -195,7 +196,8 @@ class DevmasterUpgrade extends Command
 
     // Upgrade DevMaster
     $output->writeln('Running hostmaster-migrate command...');
-    $cmd = "drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
+    $drush = dirname(dirname(dirname(__DIR__))) . '/bin/drush';
+    $cmd = "$drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
 
     // If they say no, exit.
@@ -228,7 +230,7 @@ class DevmasterUpgrade extends Command
 
     // Schedule the platform for deletion.
     $output->writeln('');
-    $cmd = "drush @hostmaster platform-delete $devmaster_root -y";
+    $cmd = "$drush @hostmaster platform-delete $devmaster_root -y";
 
     $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
 

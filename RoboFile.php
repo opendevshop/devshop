@@ -296,12 +296,12 @@ class RoboFile extends \Robo\Tasks {
 
     // aegir/hostmaster:xdebug
 
-      // @TODO: Put this dockerfile back
-      //    $this->taskDockerBuild('aegir-dockerfiles')
-//      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug-php7')
-//      ->tag('aegir/hostmaster:xdebug')
-//      ->run();
-    //    // devshop/devmaster
+    $this->taskDockerBuild('aegir-dockerfiles')
+      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug-php7')
+      ->tag('aegir/hostmaster:php7-xdebug')
+      ->run();
+
+//    // devshop/devmaster
     //    $this->taskDockerBuild('dockerfiles')
     //      ->option('file', 'dockerfiles/Dockerfile')
     //      ->tag('devshop/devmaster')
@@ -404,16 +404,10 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if (!file_exists('aegir-home')) {
-      if ($opts['no-interaction'] || $this->ask('aegir-home does not yet exist. Run "prepare:sourcecode" command?')) {
         if ($this->prepareSourcecode($opts) == FALSE) {
           $this->say('Prepare source code failed.');
           exit(1);
         }
-      }
-      else {
-        $this->say('aegir-home must exist for devshop to work. Not running docker-compose up.');
-        return;
-      }
     }
 
     if ($opts['mode'] == 'docker-compose') {
@@ -504,6 +498,7 @@ class RoboFile extends \Robo\Tasks {
         ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
         ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
         ->env('AEGIR_USER_UID', $opts['user-uid'])
+        ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
         ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init)
         ->run()
@@ -546,6 +541,7 @@ class RoboFile extends \Robo\Tasks {
             ->wasSuccessful()
         )) {
           $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
+
           exit(1);
         }
       }
@@ -642,6 +638,9 @@ class RoboFile extends \Robo\Tasks {
         }
         elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
           $service = FALSE;
+        }
+        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
+          $service = 'supervisor';
         }
         else {
           $service = 'supervisord';

@@ -1,49 +1,95 @@
 #!/bin/bash
 #
-#  DevShop Standalone Install Script
-#  =================================
-#
-#  This script will install a full devshop server from scratch. 
-#  
-#  Please read the full "Installing DevShop" instructions at https://docs.opendevshop.com/install.html
-#
-#  Before you start, please visit https://github.com/opendevshop/devshop/releases to be sure you have the latest version of this script,
-#
-#  DNS & Hostnames
-#  ---------------
-#  For devshop to work, the server's hostname must be a fullly qualified domain name that resolves to an accessible IP address.
-#
-#  Before you run this script, add DNS records for this server:
-#
-#    devshop.mydomain.com. 1800 IN A 1.2.3.4
-#    *.devshop.mydomain.com. 1800 IN A 1.2.3.4
-#
-#  This install script will attempt to set your hostname for you, if you use the --hostname option.
-#
-#
-#  Running Install.sh
-#  ==================
-#
-#   Must run as root or with sudo and -H option:
-#  
-#    root@ubunu:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
-#    root@ubunu:~# bash install.sh --hostname=devshop.mydomain.com
-#
-#   OR
-#
-#     sudo -H bash install.sh
-#
-#  Options:
-#    --hostname           The desired fully qualified domain name to set as this machine's hostname (Default: Current hostname)
-#    --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
-#    --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
-#    --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
-#    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
-#    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
-#    --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
-#    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. (Default: False)
-#    --license            The devshop.support license key for this server.
-#
+usage() {
+
+    echo \
+'
+  DevShop Standalone Install Script
+  =================================
+
+  This script will install a full devshop server from scratch.
+
+  Please read the full "Installing DevShop" instructions at https://docs.opendevshop.com/install.html
+
+  Before you start, please visit https://github.com/opendevshop/devshop/releases to be sure you have the latest version of this script,
+
+  DNS & Hostnames
+  ---------------
+  For devshop to work, the server\''s hostname must be a fullly qualified domain name that resolves to an accessible IP address.
+
+  Before you run this script, add DNS records for this server:
+
+    devshop.mydomain.com. 1800 IN A 1.2.3.4
+    *.devshop.mydomain.com. 1800 IN A 1.2.3.4
+
+  This install script will attempt to set your hostname for you, if you use the --hostname option.
+
+
+  Running Install.sh
+  ==================
+
+   Must run as root or with sudo and -H option:
+
+    root@ubuntu:~# wget https://raw.githubusercontent.com/opendevshop/devshop/1.x/install.sh
+    root@ubuntu:~# bash install.sh --hostname=devshop.mydomain.com
+
+   OR
+
+     sudo -H bash install.sh
+
+  Options:
+    --hostname           The desired fully qualified domain name to set as this machine\''s hostname (Default: Current hostname)
+    --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
+    --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
+    --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
+    --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
+    --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
+    --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
+    --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
+    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. (Default: False)
+    --license            The devshop.support license key for this server.
+    --help               Displays this help message and exits
+
+  Supporting DevShop
+  ==================
+
+  Your contributions make DevShop possible. Please consider becoming a patron of open source!
+
+      https://opencollective.com/devshop
+      https://www.patreon.com/devshop
+
+'
+
+  exit 1
+}
+
+# main
+
+POST_INSTALL_WELCOME_MSG="
+
+Welcome to OpenDevShop! Use the link below to sign in.
+
+The password for user 'admin' was securely generated and hidden. 
+Use `drush @hostmaster uli` or `devshop login` to get another login link.
+
+Please visit http://getdevshop.com for help and information.
+
+Join the development community at https://github.com/opendevshop/devshop
+
+Thanks!
+
+--The OpenDevShop Team
+
+Issues: https://github.com/opendevshop/devshop/issues
+Chat: https://gitter.im/opendevshop/devshop
+Code: https://github.com/opendevshop/devshop
+
+Your contributions make DevShop possible. Please consider becoming a patron of open source!
+
+  https://opencollective.com/devshop
+  https://www.patreon.com/devshop
+
+"
 
 set -e
 
@@ -156,12 +202,10 @@ done
 echo " OS: $OS"
 echo " Version: $VERSION"
 echo " Hostname: $HOSTNAME_FQDN"
-
-# If /var/aegir/config/server_master/nginx.conf is found, use NGINX to install.
-# If /var/aegir/config/server_master/apache.conf is found, use apache to install.
-
-# This will override any selected option for web server. This is so we don't install
-# a second webserver accidentally.
+    # If /var/aegir/config/server_master/nginx.conf is found, use NGINX to install.
+    # If /var/aegir/config/server_master/apache.conf is found, use apache to install.
+    # This will override any selected option for web server. This is so we don't install
+    # a second webserver accidentally.
 
 if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
   SERVER_WEBSERVER=nginx
@@ -281,7 +325,7 @@ if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   if [ $VERSION == '14.04' ]; then
       ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --ignore-certs"
   fi
-        
+
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
     yum install epel-release -y
     yum install git -y
@@ -388,7 +432,6 @@ fi
 #   ./group_vars/HOSTNAME: reserved for devshop control.
 #   ./hostname_vars/HOSTNAME: reserved for users to customize.
 ANSIBLE_CONFIG_PATH=$(dirname "${ANSIBLE_DEFAULT_HOST_LIST}")
-
 ANSIBLE_VARS_HOSTNAME_PATH="$ANSIBLE_CONFIG_PATH/host_vars/$HOSTNAME_FQDN"
 ANSIBLE_VARS_GROUP_PATH="$ANSIBLE_CONFIG_PATH/group_vars/devmaster"
 
@@ -474,24 +517,8 @@ ansible-playbook $PLAYBOOK_PATH --connection=local $ANSIBLE_VERBOSITY
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
 if [ ${PIPESTATUS[0]} == 0 ]; then
+  echo $POST_INSTALL_WELCOME_MSG
   su - aegir -c "devshop login"
-  echo ""
-  echo "Welcome to OpenDevShop! Use the link above to login."
-  echo ""
-  echo "You can run the command 'devshop login' to get another login link."
-  echo ""
-  echo "Please visit http://getdevshop.com for help and information."
-  echo ""
-  echo "Join the development community at https://github.com/opendevshop/devshop"
-  echo ""
-  echo "Thanks!"
-  echo "--The OpenDevShop Team"
-  echo ""
-
-  echo "  Issues: https://github.com/opendevshop/devshop/issues"
-  echo "  Chat: https://gitter.im/opendevshop/devshop "
-  echo "  Code: https://github.com/opendevshop/devshop"
-  echo ""
   exit 0
 else
   echo "The command 'devshop status' had an error. Check the logs and try again."

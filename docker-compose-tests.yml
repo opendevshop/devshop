@@ -26,6 +26,9 @@ services:
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
 
+      # Make sure devshop CLI is in the PATH.
+      PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin"
+
     privileged: true
     volumes:
       - ./aegir-home:/var/aegir:z
