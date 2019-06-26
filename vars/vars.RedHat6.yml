@@ -8,7 +8,7 @@ apache_user: apache
 supervisor_daemon: supervisord
 supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 
-extra_packages:
+__extra_packages:
   - postfix
   - sendmail
   - cronie
