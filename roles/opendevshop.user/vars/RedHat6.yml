@@ -1,0 +1,15 @@
+---
+
+# Override geerlingguy.mysql packages list, because his RedHat-6.yml only includes mysql and mysql-server.
+mysql_packages:
+  - mysql
+  - mysql-server
+  - mysql-libs
+  - MySQL-python27
+  - perl-DBD-MySQL
+
+# We keep these here instead of depending on an entire extra ansible role.
+remi_repo_url: "http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
+remi_repo_gpg_key_url: "http://rpms.remirepo.net/RPM-GPG-KEY-remi"
+
+php_enablerepo: "remi,remi-php71"
