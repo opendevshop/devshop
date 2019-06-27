@@ -9,9 +9,3 @@ mysql_daemon: mariadb
 mysql_log_error: /var/log/mariadb/mariadb.log
 mysql_syslog_tag: mariadb
 mysql_pid_file: /var/run/mariadb/mariadb.pid
-
-# We keep these here instead of depending on an entire extra ansible role.
-remi_repo_url: "http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
-remi_repo_gpg_key_url: "http://rpms.remirepo.net/RPM-GPG-KEY-remi"
-
-php_enablerepo: "remi,remi-php71"

@@ -128,14 +128,14 @@
       validate: 'visudo -cf %s'
       create: yes
 
-  - name: Install remi repo.
-    when: ansible_os_family == 'RedHat'
-    yum:
-      name: "{{ remi_repo_url }}"
-      state: present
-
-  - name: Import remi GPG key.
-    when: ansible_os_family == 'RedHat'
-    rpm_key:
-      key: "{{ remi_repo_gpg_key_url }}"
-      state: present
+#  - name: Install remi repo.
+#    when: ansible_os_family == 'RedHat'
+#    yum:
+#      name: "{{ remi_repo_url }}"
+#      state: present
+#
+#  - name: Import remi GPG key.
+#    when: ansible_os_family == 'RedHat'
+#    rpm_key:
+#      key: "{{ remi_repo_gpg_key_url }}"
+#      state: present
