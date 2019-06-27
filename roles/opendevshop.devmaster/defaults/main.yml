@@ -2,8 +2,8 @@
 
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
-server_hostname: local.devshop.site
-devshop_devmaster_email: admin@local.devshop.site
+server_hostname: devshop.local.computer
+devshop_devmaster_email: admin@devshop.local.computer
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_update: yes
