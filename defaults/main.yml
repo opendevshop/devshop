@@ -5,6 +5,11 @@
 server_hostname: devshop.local.computer
 devshop_devmaster_email: admin@devshop.local.computer
 
+# Set PHP Version:
+# DevShop uses geerlingguy.php-versions to handle PHP Version.
+# See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
+php_version: '7.1'
+
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_update: yes
 devshop_cli_path: /usr/share/devshop
