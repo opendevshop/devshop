@@ -128,7 +128,9 @@
 
 - name: "Upgrade Devmaster to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
-  when: devmaster_site_uri != ""
+  when:
+  - devmaster_site_uri != ""
+  - devmaster_skip_upgrade == false
 
 - name: DevShop.Support | Save License Key
   become: yes
