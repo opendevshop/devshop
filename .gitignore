@@ -18,6 +18,7 @@ devmaster_id_rsa.pub
 # Config
 bin/*
 ~bin/devshop
+!bin/hosting-queue-runner
 
 # Symfony code
 vendor

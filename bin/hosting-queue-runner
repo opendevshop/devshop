@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# This script just calls the "drush" executable in this folder, with the drush command "hosting-queued" on the @hostmaster site.
+# See hosting_queued.drush.inc
+
+# Get the directory of this script so we can run this drush.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+echo "$DIR/hosting-queue-runner| Running drush @hostmaster hosting-queued ..."
+$DIR/drush @hostmaster hosting-queued
