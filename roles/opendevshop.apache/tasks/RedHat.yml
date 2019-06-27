@@ -1,12 +1,12 @@
 ---
 # Special configurations for RedHat Family.
 
-- name: Setup | REDHAT | Install SCL in CentOS
-  action: yum name=centos-release-scl state=present
-  when: ansible_distribution == 'CentOS'
+#- name: Setup | REDHAT | Install SCL in CentOS
+#  action: yum name=centos-release-scl state=present
+#  when: ansible_distribution == 'CentOS'
 
-- name: "Setup | REDHAT | Enable repo for PHP version {{ remi_php_repo_name }}"
-  shell: "yum-config-manager --enable {{ remi_php_repo_name }} && yum update -y"
+#- name: "Setup | REDHAT | Enable repo for PHP version {{ remi_php_repo_name }}"
+#  shell: "yum-config-manager --enable {{ remi_php_repo_name }} && yum update -y"
 
 #- name: Setup | REDHAT | Install SCL in RHEL
 #  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
