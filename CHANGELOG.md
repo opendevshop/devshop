@@ -16,9 +16,12 @@ Click "Activate Support" or visit https://devshop.support to get started!
 - 139 Commits to Devmaster: https://github.com/opendevshop/devmaster/compare/7.x-1.50-rc7...7.x-1.50-rc8
 
 - Community
-  - Created [OpenCollective](https://opencollective.com/devshop) and [Patreon](https://www.patreon.com/devshop) pages, BACKERS.md, and added links to GetDevShop.com, the install scripts, and the web UI! 
-  - Your support makes DevShop possible. Please become a backer or a sponsor today! 
-  - https://opencollective.com/devshop or https://patreon.com/devshop
+  - Created [OpenCollective.com/DevShop](https://opencollective.com/devshop) and [Patreon.com/DevShop](https://www.patreon.com/devshop) pages, [BACKERS.md](./BACKERS.md), and added links to GetDevShop.com, the install scripts, and the web UI! 
+  
+    Your support makes DevShop possible. Please become a backer or a sponsor today!
+  
+  - Added a [USERS.md file](USERS.md) for people to publicly show recognize OpenDevShop as their hosting system. PLEASE  
+    consider submitting a Pull Request adding your sites that are or were hosted on DevShop. Every single site that gets added to this this helps make DevShop more sustainable, more trustworthy. Thank you!
   - New widget in DevShop to encourage contributors and Activate Support.
   
   ![Support the Collective Widget](https://raw.githubusercontent.com/opendevshop/documentation/master/images/support-the-collective.png)
