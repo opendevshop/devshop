@@ -1,7 +1,7 @@
 ---
 # Decide what php version to install on Redhat family systems.
 # Variable only applies to CentOS! (for now?)
-remi_php_repo_name: remi-php55
+remi_php_repo_name: remi-php71
 
 sudoers_file_path: /etc/sudoers
 aegir_user_home: /var/aegir
