@@ -11,7 +11,7 @@
 * [OpenDevShop.com](http://www.opendevshop.com): Company website.
 * [Follow us on Twitter](http://twitter.com/opendevshop)
 
-# About Devshop
+# About DevShop
 
 Version | Status | Aegir | Hosts | DevMaster | Install & CLI 
 --------|--------|-------|-------|----|-----
