@@ -40,7 +40,7 @@ See [aegir.coop](http://aegir.coop) for more information.
 
 # Tour
 
-See the [Tour](http://docs.opendevshop.com/tour.html) section of the documentation for a quick walkthrough of the DevShop interface.
+See the [Tour](http://docs.opendevshop.com/tour.html) section of the documentation for a quick walk-through of the DevShop interface.
 
 # Support
 
