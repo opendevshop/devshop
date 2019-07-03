@@ -62,7 +62,8 @@ function hosting_github_queue($count) {
       // Load all PRs from GitHub API
       $prs = $pr_api->all($project->github_owner, $project->github_repo);
 
-      foreach ($prs as $pr) {
+      foreach ($prs as &$pr) {
+        $pr = (object) $pr;
         $prs_with_no_environment["pr{$pr->number}"] = $pr;
       }
 
@@ -80,7 +81,8 @@ function hosting_github_queue($count) {
           unset($prs_with_no_environment[$devshop_environment_name]);
         }
         else {
-          print "Environment exists with the name $devshop_environment_name but No PR data saved for this environment! \n";
+          devshop_github_save_pr_env_data($prs_with_no_environment[$devshop_environment_name], $environment);
+          print "Environment exists with the name $devshop_environment_name but No PR data saved for this environment, so it was updated. \n";
         }
       }
 
