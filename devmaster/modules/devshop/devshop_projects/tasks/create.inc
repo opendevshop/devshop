@@ -124,4 +124,5 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'last_task' => $environment->last_task,
     ))
     ->execute();
+  return $environment;
 }

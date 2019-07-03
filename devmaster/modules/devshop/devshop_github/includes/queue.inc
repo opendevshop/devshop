@@ -60,12 +60,16 @@ function hosting_github_queue($count) {
       print "PR envs enabled for {$project->name}... \n";
 
       // Load all PRs from GitHub API
-      $prs = $pr_api->all($project->github_owner, $project->github_repo);
-
-      foreach ($prs as &$pr) {
+      $prs_data = $pr_api->all($project->github_owner, $project->github_repo);
+      foreach ($prs_data as $pr) {
         $pr = (object) $pr;
-        $prs_with_no_environment["pr{$pr->number}"] = $pr;
+        $slug = "pr{$pr->number}";
+        $prs[$slug] = $pr;
+        $envs_to_create[$slug] = $pr;
       }
+
+      // Start with the full list.
+      $envs_to_create = $prs;
 
       // For each existing environment...
       foreach ($project->environments as $devshop_environment_name => $environment) {
@@ -73,37 +77,43 @@ function hosting_github_queue($count) {
 
         // If PR data exists, and git SHA does not match PR sha: create deploy task.
         if (isset($environment->github_pull_request)) {
-          print "@TODO: Update existing PR environments data! \n";
-          print "@TODO: Remove from $prs_with_no_environment ! \n";
-          print "Environment exists. Removing from list of that need to be created. \n";
-
-          devshop_github_save_pr_env_data($prs_with_no_environment[$devshop_environment_name], $environment);
-          unset($prs_with_no_environment[$devshop_environment_name]);
+          print "Environment exists. Saving updated PR data and removing from list of that need to be created. \n";
+          devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
+          unset($envs_to_create[$devshop_environment_name]);
         }
         else {
-          devshop_github_save_pr_env_data($prs_with_no_environment[$devshop_environment_name], $environment);
-          print "Environment exists with the name $devshop_environment_name but No PR data saved for this environment, so it was updated. \n";
+          devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
+          print "Environment exists with the name $devshop_environment_name but no PR data existed. Saving it and removing from envs_to_create list. \n";
+          unset($envs_to_create[$devshop_environment_name]);
         }
       }
 
       // For all PRS that do not have an environment, create one.
-      foreach ($prs_with_no_environment as $pr_data) {
-        $pr = (object) $pr_data;
+      foreach ($envs_to_create as $slug => $pr) {
         $message = "Creating environment for PR $pr->number ... \n";
         $branch = $pr->head['ref'];
 
         // @TODO: Create a "PR Env pattern" setting.
-        $environment_name = "pr" . $pr->number;
+        $environment_name = $slug;
 
         // If method is "install"...
         if ($project->settings->github['pull_request_environments_method'] == 'devshop__github__install') {
-          hosting_create_environment($project, $environment_name, $branch);
+
+          // Create environment then save PR data.
+          // @TODO: Unify this into one function.
+          $environment = hosting_create_environment($project, $environment_name, $branch);
+          devshop_github_save_pr_env_data($pr, $environment);
+
           $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
         }
         // If environment exists for "pull_request_environments_method" setting, clone it.
         elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
           $source_env = $project->settings->github['pull_request_environments_method'];
-          hosting_create_environment($project, $environment_name, $branch, $source_env);
+
+          // Create environment then save PR data.
+          // @TODO: Unify this into one function.
+          $environment = hosting_create_environment($project, $environment_name, $branch, $source_env);
+          devshop_github_save_pr_env_data($pr, $environment);
           $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
         }
         // If environment does not exist, note that error.
@@ -114,16 +124,6 @@ function hosting_github_queue($count) {
         else {
           $message .= "Unknown PR environment creation method: {$project->settings->github['pull_request_environments_method']} \n";
         }
-      }
-    }
-
-    // Reload project data
-    $project = node_load($project->nid);
-
-    // Save latest PR object to all environments.
-    foreach ($prs as $pr) {
-      if (isset($project->environments["pr{$pr->number}"])) {
-        devshop_github_save_pr_env_data($pr, $project->environments["pr{$pr->number}"]);
       }
     }
   }
