@@ -179,6 +179,10 @@ function devshop_projects_drush_context_import($context, &$node) {
     $node->project->install_profile =   $project->install_profile;
     $node->project->settings        =   $project->settings;
 
+    if (!is_array($project->environments)){
+      return;
+    }
+
     foreach ($project->environments as $name => $environment) {
       $environment = (object) $environment;
 
@@ -242,7 +246,7 @@ function devshop_projects_drush_context_import($context, &$node) {
         }
       }
     }
-    devshop_reset_last_tasks();
+//    devshop_reset_last_tasks();
   }
 
   // If importing a site that has environment and project assigned,
