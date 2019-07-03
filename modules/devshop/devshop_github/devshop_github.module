@@ -4,6 +4,8 @@
  * @file devshop_github.module
  */
 
+require_once('includes/queue.inc');
+
 /**
  * Grab an authenticated GitHub client.
  *
@@ -1076,36 +1078,43 @@ function devshop_github_webhook($project_node) {
 
             // Insert PR record
             if (!$already_have_pr_info) {
-              $info = new stdClass();
-              $info->id = $data->pull_request->id;
-              $info->number = $data->pull_request->number;
-              $info->project_nid = $project->nid;
-              $info->environment_name = $environment_name;
-              $info->pull_request_object = serialize($data->pull_request);
-
-              // Last minute check for existing PR info
-              $results = db_select('hosting_devshop_github_pull_requests', 'pr')
-                ->condition('id', $data->pull_request->id)
-                ->fields('pr', array('id'))
-                ->execute()
-                ->fetchAssoc();
-
-              // If there are results, save $update param for drupal_write_record().
-              if (empty($results)) {
-                $update = array();
-              }
-              else {
-                $update = array('id');
-              }
-
-              // Save environment record.
-              try {
-                drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
+              if (devshop_github_save_pr_env_data($data->pull_request, $project)) {
                 $message .= ' ' . t('Pull Request info saved to DevShop.');
               }
-              catch (\PDOException $e) {
+              else {
                 $message .= 'Saving PR record failed: ' . $e->getMessage();
               }
+
+//              $info = new stdClass();
+//              $info->id = $data->pull_request->id;
+//              $info->number = $data->pull_request->number;
+//              $info->project_nid = $project->nid;
+//              $info->environment_name = $environment_name;
+//              $info->pull_request_object = serialize($data->pull_request);
+//
+//              // Last minute check for existing PR info
+//              $results = db_select('hosting_devshop_github_pull_requests', 'pr')
+//                ->condition('id', $data->pull_request->id)
+//                ->fields('pr', array('id'))
+//                ->execute()
+//                ->fetchAssoc();
+//
+//              // If there are results, save $update param for drupal_write_record().
+//              if (empty($results)) {
+//                $update = array();
+//              }
+//              else {
+//                $update = array('id');
+//              }
+//
+//              // Save environment record.
+//              try {
+//                drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
+//                $message .= ' ' . t('Pull Request info saved to DevShop.');
+//              }
+//              catch (\PDOException $e) {
+//                $message .= 'Saving PR record failed: ' . $e->getMessage();
+//              }
             }
           }
 
@@ -1340,4 +1349,41 @@ function devshop_public_key_valid_fingerprint() {
   }
 
   return $devshop_sshkey['fingerprint'];
+}
+
+/**
+ * @param $pr
+ * @param $environment
+ */
+function devshop_github_save_pr_env_data($pr, $environment) {
+  $info = new stdClass();
+  $info->id = $pr->id;
+  $info->number = $pr->number;
+  $info->project_nid = $environment->project_nid;
+  $info->environment_name = $environment->name;
+  $info->pull_request_object = serialize($pr);
+
+  // Last minute check for existing PR info
+  $results = db_select('hosting_devshop_github_pull_requests', 'pr')
+    ->condition('id', $pr->id)
+    ->fields('pr', array('id'))
+    ->execute()
+    ->fetchAssoc();
+
+  // If there are results, save $update param for drupal_write_record().
+  if (empty($results)) {
+    $update = array();
+  }
+  else {
+    $update = array('id');
+  }
+
+  // Save environment record.
+  try {
+    drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
+    return TRUE;
+  }
+  catch (\PDOException $e) {
+    return FALSE;
+  }
 }
