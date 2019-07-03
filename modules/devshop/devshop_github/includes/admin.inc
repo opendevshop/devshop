@@ -189,30 +189,6 @@ function devshop_github_token_is_valid($token = NULL) {
 }
 
 /**
- * Grab an authenticated GitHub client.
- *
- * @return \Exception|\Github\Client
- */
-function devshop_github_client() {
-
-  if (empty(variable_get('devshop_github_token'))) {
-    throw new \Exception(t('GitHub Token has not been saved yet.'));
-  }
-
-  $client = new \Github\Client();
-  $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
-
-  try {
-    $show = $client->currentUser()->show();
-    return $client;
-  }
-  catch (Exception $e) {
-    drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
-    throw $e;
-  }
-}
-
-/**
  * Page callback for "get all repos" link.
  */
 function devshop_github_get_repositories_page() {
