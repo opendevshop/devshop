@@ -42,7 +42,8 @@ function hosting_github_queue($count) {
   // Load GitHub API
   // @TODO: Move to devshop_github_client() ?
   try {
-    $pr_api = devshop_github_client()->pullRequests();
+    $client = devshop_github_client();
+    $pr_api = $client->pullRequests();
   } catch (\Exception $e) {
     watchdog('hosting_queue', 'GitHub API Client Failed: ' . $e->getMessage());
     return;
@@ -76,17 +77,26 @@ function hosting_github_queue($count) {
         print "Checking $devshop_environment_name... \n";
 
         // If PR data exists, and git SHA does not match PR sha: create deploy task.
-        if (isset($environment->github_pull_request)) {
-          print "Environment exists. Saving updated PR data and removing from list of that need to be created. \n";
+        $prs[$devshop_environment_name]->user = (object) $prs[$devshop_environment_name]->user;
+        if (!empty($environment->github_pull_request)) {
+          print "Environment $devshop_environment_name exists. Saving updated PR data. \n";
+
+          // @TODO: Figure out how to alter response from GitHub API for this request... See ResponseMediator.php in KNPLabs/github-api
           devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
           unset($envs_to_create[$devshop_environment_name]);
         }
         else {
           devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
-          print "Environment exists with the name $devshop_environment_name but no PR data existed. Saving it and removing from envs_to_create list. \n";
+          print "Environment exists with the name $devshop_environment_name but no PR data existed. Saving new PR data. \n";
           unset($envs_to_create[$devshop_environment_name]);
         }
       }
+
+      // List all environments to be created.
+      echo "PR environment discovery complete: \n";
+      echo format_plural(count($envs_to_create),  "1 environment to be created: ", t("!count Environments to be created: ", array(
+        "!count" => count($envs_to_create),
+      )));
 
       // For all PRS that do not have an environment, create one.
       foreach ($envs_to_create as $slug => $pr) {
