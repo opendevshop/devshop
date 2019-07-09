@@ -1,66 +1,52 @@
 ---
-#
-#- name: Supervisor | Install using pip on AmazonLinux
-#  pip:
-#    name: supervisor
-#  when:
-#    - ansible_distribution == "Amazon"
-#
-#- name: Supervisor | Add supervisor init script
-#  get_url:
-#    url: https://raw.githubusercontent.com/Supervisor/initscripts/master/redhat-init-equeffelec
-#    dest: /etc/init.d/supervisor
-#    mode: 0700
-#  when:
-#    - ansible_distribution == "Amazon"
-#
-#- supervisorctl:
-#    name: hosting-queue-runner
-#    state: started
-#    config: /var/opt/my_project/supervisord.conf
-#
-#- name: Supervisor | Set up supervisor job
-#  when: supervisor_running
-#  template:
-#    src: supervisor-hosting-queue-runner.conf.j2
-#    dest: "{{ aegir_user_home }}/config/hosting_queued/supervisor.conf"
-#    mode: 0644
-#  notify:
-#    - restart supervisor
-#      \
-##
-#- name: Supervisor | Add to services and set to start
-#  command: "{{ item }}"
-#  with_items:
-#    - chkconfig --add supervisor
-#    - chkconfig supervisor on
-#  when:
-#    - ansible_distribution == "Amazon"
-#  notify:
-#    - restart supervisor
-#
-#- name: Supervisor | Set up queue runner script
-#  when: supervisor_running
-#  template:
-#    src: hosting-queue-runner.j2
-#    dest: "{{ local_bin_path }}/hosting-queue-runner"
-#    mode: 0700
-#    owner: "{{ aegir_user_name }}"
-#    group: "{{ aegir_user_name }}"
-#
-#- name: Supervisor | Set up supervisor job
-#  when: supervisor_running
-#  template:
-#    src: supervisor-hosting-queue-runner.conf.j2
-#    dest: "{{ supervisor_hosting_queued_conf_path }}"
-#    mode: 0644
-#  notify:
-#    - restart supervisor
-#
-#- name: Service | Ensure Supervisor is restarted
-#  when: supervisor_running
-#  service:
-#    name: "{{ supervisor_daemon }}"
-#    state: restarted
-#    sleep: 5
-#    enabled: yes
+
+- name: Supervisor | Install using pip on AmazonLinux
+  pip:
+    name: supervisor
+  when:
+    - ansible_distribution == "Amazon"
+
+- name: Supervisor | Add supervisor init script
+  get_url:
+    url: https://raw.githubusercontent.com/Supervisor/initscripts/master/redhat-init-equeffelec
+    dest: /etc/init.d/supervisor
+    mode: 0700
+
+  when:
+    - ansible_distribution == "Amazon"
+
+- name: Supervisor | Add to services and set to start
+  command: "{{ item }}"
+  with_items:
+    - chkconfig --add supervisor
+    - chkconfig supervisor on
+  when:
+    - ansible_distribution == "Amazon"
+  notify:
+    - restart supervisor
+
+- name: Supervisor | Set up queue runner script
+  when: supervisor_running
+  template:
+    src: hosting-queue-runner.j2
+    dest: "{{ local_bin_path }}/hosting-queue-runner"
+    mode: 0700
+    owner: "{{ aegir_user_name }}"
+    group: "{{ aegir_user_name }}"
+
+- name: Supervisor | Set up supervisor job
+  when: supervisor_running
+  template:
+    src: supervisor-hosting-queue-runner.conf.j2
+    dest: "{{ supervisor_hosting_queued_conf_path }}"
+    mode: 0644
+  notify:
+    - restart supervisor
+
+- name: Service | Ensure Supervisor is restarted
+  when: supervisor_running
+  service:
+    name: "{{ supervisor_daemon }}"
+    state: restarted
+    sleep: 5
+    enabled: yes
