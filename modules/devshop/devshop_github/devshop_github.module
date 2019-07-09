@@ -529,35 +529,37 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       );
     }
 
-
-
-    // @TODO: Allow quick "click to create PR environment" here.
+    $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+      'fragment' => 'edit-project-settings-github',
+    ));
 
     if ($project->settings->github['pr_env_creation_mode'] == 'all') {
-
-      $prs_list = array(
-        '#prefix' => '<div class="list-group"><p class="alert alert-info">' . t('This project is configured to create environments for all Pull Requests.') . '</p>',
-        '#markup' => implode($items),
+      $step_display['help'] = array(
+        '#prefix' => '<div class="list-group"><p class="alert alert-info">',
+        '#markup' => t('This project is configured to create environments for all Pull Requests. !link', array(
+          '!link' => $settings_link
+        )),
         '#suffix' => '</div>',
+      );
+      $step_display['prs'] = array(
+        '#theme' => 'table',
+        '#rows' => $items,
       );
     }
     else {
-
-      $prs_list = array(
+      $step_display['prs'] = array(
         '#prefix' => '<div class="list-group"><p class="alert alert-info">',
-        '#markup' => t('This project is configured to create environments only for newly opened or re-opened Pull Requests.'),
+        '#theme' => 'item_list',
+        '#items' => array(
+          t('This project is configured to create environments only for newly opened or re-opened Pull Requests.'),
+          $settings_link,
+        ),
         '#suffix' => '</div>',
       );
     }
-
-    $prs_list['#suffix'] .= '<div class="alert alert-info">' . t('If you would like to change this, go back to !link.', array(
-      '!link' => l(t('the Project Information step'), 'projects/add/settings', array(
-        'fragment' => 'edit-project-settings-github',
-      ))
-    )) . '</div>';
   }
   catch (\Exception $e) {
-    $prs_list = array(
+    $step_display = array(
       '#markup' => t('GitHub authentication failed. !try or check your token at !link.', array(
         '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
         '!try' => l('Use the Public API', current_path(), array(
@@ -574,7 +576,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   $form['pr_environments'] = array(
     '#type' => 'item',
     '#prefix' => '<h3 class="title">' . t('Pull Request Environments') . '</h3>',
-    '#markup' => drupal_render($prs_list),
+    '#markup' => drupal_render($step_display),
     '#weight' => -1,
   );
 
