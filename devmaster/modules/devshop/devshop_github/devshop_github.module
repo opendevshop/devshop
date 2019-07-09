@@ -513,16 +513,16 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
     foreach ($prs as $pr) {
       // @TODO: If mode is "create", allow user to click to add specific PRs here.
       $items[] = l(
-        " <code class='pull-right'>{$pr['head']['ref']}</code>" .
         "<img style='max-width: 32px' src='{$pr['user']['avatar_url']}'> " .
         "<strong class='large'>PR {$pr['number']}</strong> " .
-        $pr['user']['login'],
+        $pr['user']['login'] .
+        " <code class='text-muted'>{$pr['head']['ref']}</code>",
         $pr['html_url'], array(
           'html' => 1,
           'attributes' => array(
             'target' => '_blank',
             'class' => array(
-              'list-group-item'
+              'btn btn-default'
             )
           ),
         )
