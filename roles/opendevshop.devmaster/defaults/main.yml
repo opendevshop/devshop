@@ -72,3 +72,6 @@ php_memory_limit: "512M"
 
 # Get a support license at https://devshop.support
 devshop_support_license_key: ""
+
+# The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
+hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
