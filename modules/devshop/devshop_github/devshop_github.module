@@ -90,22 +90,20 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   // $form['github']['pull_request_environments'] = array(
   $form['project']['settings']['github']['pull_request_environments'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Enable Pull Request Environments'),
+      '#title' => t('Enable Pull Request Environments <div class="help-block">Automatically create a copy of your site with the code from a Pull Request\'s branch.</div>'),
       '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : FALSE,
-      '#description' => t("Automatically create a copy of your site with the code from a Pull Request's branch."),
   );
 
   $form['project']['settings']['github']['pr_env_creation_mode'] = array(
-    '#title' => t('Creation Method'),
+    '#title' => t('Environment Creation Method'),
     '#type' => 'radios',
     '#options' => array(
-      'create' => t('Create Environments when Pull Requests are opened or re-opened.'),
-      'all' => t('Create Environments for all open Pull Requests.'),
+      'create' => t('Create Environments when Pull Requests are opened or re-opened. <div class="help-block">Recommended if you have a large number of open Pull Requests or if PRs have unstable or unknown code.</div>'),
+      'all' => t('Create Environments for all open Pull Requests.  <div class="help-block">Environments will be created and deleted as Pull Requests are opened, closed, and re-opened.</div>'),
     ),
     '#default_value' => !empty($node->project->settings->github['pr_env_creation_mode'])?
       $node->project->settings->github['pr_env_creation_mode']:
       'create',
-    '#description' => t('Select how PR environments should be created.'),
     '#states' => array(
       'visible' => array(
         ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
@@ -117,9 +115,10 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   // $form['github']['pull_request_environments_delete'] = array(
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete Pull Request Environments'),
+      '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
       '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : FALSE,
-      '#description' => t('When Pull Requests are merged or closed, delete the environment.'),
+// @TODO: Putting description in "help-block" right after title looks MUCH better and has better UX because the description is clickable. Put this in the theme layer.
+//      '#description' => t('When Pull Requests are merged or closed, delete the environment.'),
       '#states' => array(
         'visible' => array(
           ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
@@ -146,10 +145,10 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   }
   $form['project']['settings']['github']['pull_request_environments_method'] = array(
       '#type' => 'select',
-      '#title' => t('Pull Request Environment Creation Method'),
+      '#title' => t('Site Installation Method'),
       '#default_value' => isset($node->project->settings->github) ?
           $node->project->settings->github['pull_request_environments_method'] : 'devshop__github__install',
-      '#description' => t('Select the method for creating the pull request environments.'),
+      '#description' => t('Select the method for installing the Pull Request environments.'),
       '#options' => $options,
       '#states' => array(
         'visible' => array(
@@ -159,10 +158,9 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
   $form['project']['settings']['github']['pull_request_reinstall'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Reinstall Pull Request Environments on every git push.'),
+    '#title' => t('Rebuild Pull Request Environments on every git push. <div class="help-block">Destroy and Rebuild Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed every time code is pushed. The rebuild method is determie</div>'),
     '#default_value' => isset($node->project->settings->github) ?
       $node->project->settings->github['pull_request_reinstall'] : 0,
-    '#description' => t('Destroy and reinstall Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed.'),
     '#states' => array(
       'visible' => array(
         ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
