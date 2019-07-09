@@ -20,7 +20,6 @@ galaxy_info:
     - drupal
 
 dependencies:
-  - geerlingguy.supervisor
   - opendevshop.aegir-user
   - geerlingguy.mysql
   - geerlingguy.php

@@ -5,11 +5,15 @@ apache_user: apache
 # Used to inject date.timezone.
 # ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
-extra_packages:
-  - git
+supervisor_daemon: supervisord
+supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
+
+__extra_packages:
   - postfix
   - sendmail
   - cronie
+  - supervisor
   - openssl
+  - mod_ssl
 
 php_mysql_package: php-mysqlnd
