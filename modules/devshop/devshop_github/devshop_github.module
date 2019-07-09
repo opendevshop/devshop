@@ -11,22 +11,28 @@ require_once('includes/queue.inc');
  *
  * @return \Exception|\Github\Client
  */
-function devshop_github_client() {
-
-  if (empty(variable_get('devshop_github_token'))) {
-    throw new \Exception(t('GitHub Token has not been saved yet.'));
-  }
-
+function devshop_github_client($public = FALSE) {
   $client = new \Github\Client();
-  $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
 
-  try {
-    $show = $client->currentUser()->show();
-    return $client;
+  if (!$public) {
+    if (empty(variable_get('devshop_github_token'))) {
+      throw new \Exception(t('There is no GitHub Token'));
+    }
+
+    $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
+    try {
+      // If currentUser()->show() worked, we know we are authenticated.
+      $client->currentUser()->show();
+      return $client;
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
+      throw $e;
+    }
   }
-  catch (Exception $e) {
-    drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
-    throw $e;
+  else {
+    // return an unauthenticated client, use for public requests.
+    return $client;
   }
 }
 
@@ -487,6 +493,61 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
   if ($form_state['values']['git_source'] == 'github_existing') {
     form_set_value($element, $form_state['values']['github_repos'] , $form_state);
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters devshop_project_create_step_environments form.
+ */
+function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
+
+  $project = $form_state['project'];
+
+  // List the PRs.
+  try{
+    $public = !empty($_GET['github']) && $_GET['github'] == 'public';
+    $prs = devshop_github_client($public)->pullRequests()->all($project->github_owner, $project->github_repo);
+    dsm($prs);
+
+    $rows = array();
+    foreach ($prs as $pr) {
+      $rows[] = array(
+        l($pr['url'], $pr['number']),
+        $pr['head']['ref'],
+        "<img src='{$pr['head']['user']['avatar_url']}'>",
+        l($pr['head']['user']['login'], $pr['head']['user']['html_url']),
+      );
+    }
+    $prs_list = array(
+      '#theme' => 'table',
+      '#rows' => $rows,
+    );  }
+  catch (\Exception $e) {
+    $prs_list = array(
+      '#markup' => t('GitHub authentication failed. !try or check your token at !link.', array(
+        '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+        '!try' => l('Use the Public API', current_path(), array(
+          'query' => array(
+            'github' => 'public'
+          ),
+        ))
+      )),
+      '#prefix' => '<div class="alert alert-danger">',
+      '#suffix' => '</div>',
+    );
+  }
+
+  $form['pr_environments'] = array(
+    '#type' => 'item',
+    '#prefix' => '<h3 class="title">' . t('Pull Request Environments') . '</h3>',
+    '#markup' => drupal_render($prs_list),
+    '#weight' => -1,
+  );
+
+  // Add a header to distinguish from PRs
+  $form['project']['#prefix'] = '<h3 class="title">' . t('Additional Environments') . '</h3>';
+
 }
 
 /**
