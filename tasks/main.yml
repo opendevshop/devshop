@@ -17,9 +17,6 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Setup Supervisor
-  include: "supervisor.yml"
-
 - name: Detect DevShop CLI
   stat:
     path: "{{ devshop_cli_path }}"
