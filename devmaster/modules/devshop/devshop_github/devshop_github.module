@@ -9,16 +9,31 @@ require_once('includes/queue.inc');
 /**
  * Grab an authenticated GitHub client.
  *
- * @return \Exception|\Github\Client
+ * If a devshop_github_token is not found, it will attempt to use the Public API.
+ *
+ * @param bool $public
+ *   Set to TRUE to skip authentication.
+ *
+ * @return \Github\Client
+ * @throws Exception
  */
 function devshop_github_client($public = FALSE) {
   $client = new \Github\Client();
 
+  // Check for missing token. Set $public to TRUE.
+  if (empty(variable_get('devshop_github_token'))) {
+    $public = variable_get('devshop_github_use_public_api_if_no_token', TRUE);
+  }
+
+  // If not public...
   if (!$public) {
+
+    // Throw exception if token is missing.
     if (empty(variable_get('devshop_github_token'))) {
-      throw new \Exception(t('There is no GitHub Token'));
+      throw new \Exception(t('There is no GitHub Token set.'));
     }
 
+    // Set token in client.
     $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
@@ -26,6 +41,7 @@ function devshop_github_client($public = FALSE) {
       return $client;
     }
     catch (Exception $e) {
+      // If error, set_message and throw the exception upstream.
       drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
       throw $e;
     }
