@@ -1,1 +1,18 @@
 ---
+
+# Add hosting-queue-runner to supervisor programs.
+supervisor_programs:
+  - name: 'hosting-queue-runner'
+    command: "{{ hosting_queue_runner_bin_path }}"
+    state: present
+
+    # See https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf for options
+    configuration: |
+      user={{ aegir_user_name }}
+      numprocs=1
+      stdout_logfile=/var/log/hosting-queue-runner.log
+      stderr_logfile=/var/log/hosting-queue-runner.error.log
+      redirect_stderr=true
+      autostart=TRUE
+      autorestart=TRUE
+      environment=HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
