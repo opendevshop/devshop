@@ -41,6 +41,7 @@ function devshop_github_settings_form($form, &$form_state) {
 
   $form['devshop_github_token_step'] = array(
     '#title' => t('Step 2: Enter your GitHub Token'),
+    '#description' => t('If left blank, DevShop will attempt to use the Public API.'),
     '#type' => 'item',
     '#weight' => 2,
   );
