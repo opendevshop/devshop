@@ -508,21 +508,54 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   try{
     $public = !empty($_GET['github']) && $_GET['github'] == 'public';
     $prs = devshop_github_client($public)->pullRequests()->all($project->github_owner, $project->github_repo);
-    dsm($prs);
 
-    $rows = array();
+    $items = array();
     foreach ($prs as $pr) {
-      $rows[] = array(
-        l($pr['url'], $pr['number']),
-        $pr['head']['ref'],
-        "<img src='{$pr['head']['user']['avatar_url']}'>",
-        l($pr['head']['user']['login'], $pr['head']['user']['html_url']),
+      // @TODO: If mode is "create", allow user to click to add specific PRs here.
+      $items[] = l(
+        " <code class='pull-right'>{$pr['head']['ref']}</code>" .
+        "<img style='max-width: 32px' src='{$pr['user']['avatar_url']}'> " .
+        "<strong class='large'>PR {$pr['number']}</strong> " .
+        $pr['user']['login'],
+        $pr['html_url'], array(
+          'html' => 1,
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array(
+              'list-group-item'
+            )
+          ),
+        )
       );
     }
-    $prs_list = array(
-      '#theme' => 'table',
-      '#rows' => $rows,
-    );  }
+
+
+
+    // @TODO: Allow quick "click to create PR environment" here.
+
+    if ($project->settings->github['pr_env_creation_mode'] == 'all') {
+
+      $prs_list = array(
+        '#prefix' => '<div class="list-group"><p class="alert alert-info">' . t('This project is configured to create environments for all Pull Requests.') . '</p>',
+        '#markup' => implode($items),
+        '#suffix' => '</div>',
+      );
+    }
+    else {
+
+      $prs_list = array(
+        '#prefix' => '<div class="list-group"><p class="alert alert-info">',
+        '#markup' => t('This project is configured to create environments only for newly opened or re-opened Pull Requests.'),
+        '#suffix' => '</div>',
+      );
+    }
+
+    $prs_list['#suffix'] .= '<div class="alert alert-info">' . t('If you would like to change this, go back to !link.', array(
+      '!link' => l(t('the Project Information step'), 'projects/add/settings', array(
+        'fragment' => 'edit-project-settings-github',
+      ))
+    )) . '</div>';
+  }
   catch (\Exception $e) {
     $prs_list = array(
       '#markup' => t('GitHub authentication failed. !try or check your token at !link.', array(
