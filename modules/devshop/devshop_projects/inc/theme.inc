@@ -163,8 +163,17 @@ function devshop_projects_preprocess_node(&$vars) {
     }
 
     // Add a "Retry" button, unless it's a clone task.  Retrying a clone can be bad if an old clone task is restarted, it uses the latest task arguments, not the one you are viewing.
-    if ($vars['node']->task_type != 'clone' && user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
+    if ($vars['node']->task_type != 'clone' && user_access('retry failed tasks') && (
+        $vars['node']->task_status == HOSTING_TASK_ERROR ||
+        $vars['node']->task_status == HOSTING_TASK_WARNING ||
+        $vars['node']->task_status == HOSTING_TASK_SUCCESS
+      )) {
       $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+
+      // Change the name of the form button to "Run Again" if the task ended ok.
+      if ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
+        $vars['retry']['retry']['#value'] = t('Run Again');
+      }
     }
 
     // Show duration
