@@ -206,7 +206,7 @@ function devshop_projects_preprocess_node(&$vars) {
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#markup' => '<button class="follow-checkbox btn btn-default"><input type="checkbox" id="follow" checked="checked">' . t('Follow Logs') . '</button>',
+        '#markup' => '<button class="follow-checkbox btn btn-default"><input type="checkbox" id="follow">' . t('Follow Logs') . '</button>',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
