@@ -283,46 +283,23 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
 
     // aegir/hostmaster
-    $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-php7')
-      ->option('build-arg', "AEGIR_UID=$user_uid")
-      ->tag('aegir/hostmaster:php7')
-      ->run();
+    $versions = array(
+      '7',
+      '71',
+      '72'
+    );
+    foreach ($versions as $version) {
+      $this->taskDockerBuild('aegir-dockerfiles')
+         ->option('file', "aegir-dockerfiles/Dockerfile-php{$version}")
+         ->option('build-arg', "AEGIR_UID=$user_uid")
+         ->tag("aegir/hostmaster:php{$version}")
+         ->run();
 
-//      $this->taskDockerBuild('aegir-dockerfiles')
-//        ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug')
-//        ->tag('aegir/hostmaster:xdebug')
-//        ->run();
-
-    // aegir/hostmaster:xdebug
-
-    $this->taskDockerBuild('aegir-dockerfiles')
-      ->option('file', 'aegir-dockerfiles/Dockerfile-xdebug-php7')
-      ->tag('aegir/hostmaster:php7-xdebug')
-      ->run();
-
-//    // devshop/devmaster
-    //    $this->taskDockerBuild('dockerfiles')
-    //      ->option('file', 'dockerfiles/Dockerfile')
-    //      ->tag('devshop/devmaster')
-    //      ->run()
-    //      ;
-    //    // devshop/devmaster:xdebug
-    //    $this->taskDockerBuild('dockerfiles')
-    //      ->option('file', 'dockerfiles/Dockerfile-xdebug')
-    //      ->tag('devshop/devmaster:xdebug')
-    //      ->run()
-    //      ;
-    // aegir/web
-//    $this->taskDockerBuild('aegir-dockerfiles')
-//      ->option('file', 'aegir-dockerfiles/Dockerfile-web')
-//      ->tag('aegir/web')
-//      ->run();
-//
-//    $this->taskDockerBuild('aegir-dockerfiles')
-//      ->option('file', 'aegir-dockerfiles/Dockerfile-privileged')
-//      ->tag('aegir/hostmaster:privileged')
-//      ->run();
+      $this->taskDockerBuild('aegir-dockerfiles')
+         ->option('file', "aegir-dockerfiles/Dockerfile-xdebug-php{$version}")
+         ->tag("aegir/hostmaster:php{$version}-xdebug")
+         ->run();
+    }
   }
 
   /**
