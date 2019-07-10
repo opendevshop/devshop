@@ -519,18 +519,30 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
   $project = &$form_state['project'];
+  $form['pr_environments'] = array(
+    '#type' => 'container',
+    '#prefix' => '<h3 class="title">' . t('Pull Request Environments') . '</h3>',
+    '#weight' => -100,
+  );
+  $form['pr_environments']['environments_table'] = array(
+    '#tree' => TRUE,
+    '#theme' => 'devshop_projects_create_settings_form',
+  );
 
-  // List the PRs.
+  // Load the PRs.
   try{
     $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
 
-    foreach ($prs as $pr) {
+    foreach ($prs as $pr) {//    '#type' => 'fieldset',
 
+
+      // Prepare environment objects
       $environment = new stdClass();
       $environment->name = "pr{$pr['number']}";
       $environment->git_ref = $pr['head']['ref'];
       $project->environments[$environment->name] = $environment;
 
+      // Prepare form element.
       $element = devshop_project_environment_create_form_element($project, $environment);
       $element['name']['#attributes']['readonly'] = 1;
       $element['git_ref']['#type'] = 'value';
@@ -539,7 +551,11 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         '#type' => 'markup',
         '#markup' => "<a href='{$pr['html_url']}' class='btn btn-link' target='_blank'><img src='{$pr['user']['avatar_url']}' width='32'> {$environment->git_ref}</a></code>",
       );
-      $form['project']['environments'][$environment->name] = $element;
+
+      // Only add to $form if configured to keep all environments.
+      if ($project->settings->github['pr_env_creation_mode'] == 'all') {
+        $form['pr_environments']['environments_table'][$environment->name] = $element;
+      }
     }
 
     // Push "new" to the bottom.
@@ -551,49 +567,59 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       'fragment' => 'edit-project-settings-github',
     ));
 
-    if ($project->settings->github['pr_env_creation_mode'] == 'all') {
-      $step_display['help'] = array(
-        '#prefix' => '<div class="list-group"><p class="alert alert-info">',
-        '#markup' => t('This project is configured to create environments for all Pull Requests. !link', array(
-          '!link' => $settings_link
-        )),
+    // Project with PR environments disabled.
+    if (!$project->settings->github['pull_request_environments']) {
+      $help_display['help'] = array(
+        '#theme' => 'item_list',
+        '#items' => array(
+          t('Pull Request environments are disabled for this project.'),
+          $settings_link,
+        ),
+        '#prefix' => '<div class="alert alert-warning">',
         '#suffix' => '</div>',
       );
     }
-    else {
-      $step_display['prs'] = array(
-        '#prefix' => '<div class="list-group"><p class="alert alert-info">',
+    // Project configured to maintain all PR environments.
+    elseif ($project->settings->github['pr_env_creation_mode'] == 'all') {
+      $help_display['help'] = array(
         '#theme' => 'item_list',
         '#items' => array(
-          t('This project is configured to create environments only for newly opened or re-opened Pull Requests.'),
+          t('Project is configured to create environments for all Pull Requests. If you do not want an environment for one of your Pull Requests, close it, or change the Project Settings.'),
           $settings_link,
         ),
+        '#prefix' => '<div class="alert alert-info">',
+        '#suffix' => '</div>',
+      );
+    }
+    // Project configured to only create environments on PR open or re-open.
+    elseif ($project->settings->github['pr_env_creation_mode'] == 'create') {
+      $help_display['help'] = array(
+        '#theme' => 'item_list',
+        '#items' => array(
+          t('Project is configured to create environments only for new or reopened Pull Requests.'),
+          $settings_link,
+        ),
+        '#prefix' => '<div class="alert alert-info">',
         '#suffix' => '</div>',
       );
     }
   }
   catch (\Exception $e) {
-    $step_display = array(
-      '#markup' => t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
-        '%message' => $e->getMessage(),
-        '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
-        '!try' => l('Use the Public API', current_path(), array(
-          'query' => array(
-            'github' => 'public'
-          ),
-        ))
-      )),
+    $help_display['gh_error'] = array(
+      '#theme' => 'item_list',
+      '#items' => array(
+        t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
+          '%message' => $e->getMessage(),
+          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+        )),
+        $settings_link,
+      ),
       '#prefix' => '<div class="alert alert-danger">',
       '#suffix' => '</div>',
     );
   }
-
-  $form['pr_environments'] = array(
-    '#type' => 'item',
-    '#prefix' => '<h3 class="title">' . t('Pull Request Environments') . '</h3>',
-    '#markup' => drupal_render($step_display),
-    '#weight' => -1,
-  );
+  $form['pr_environments']['help'] = $help_display;
+  $form['pr_environments']['help']['#weight'] = -1;
 
   // Add a header to distinguish from PRs
   $form['project']['#prefix'] = '<h3 class="title">' . t('Additional Environments') . '</h3>';
