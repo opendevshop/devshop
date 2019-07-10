@@ -9,7 +9,6 @@
  * STEP 3: Form
  */
 function devshop_project_create_step_environments($form, &$form_state) {
-  dsm(__FUNCTION__);
   global $user;
   $project = &$form_state['project'];
   if ($project->verify_task_status == HOSTING_TASK_QUEUED || $project->verify_task_status == HOSTING_TASK_PROCESSING) {
