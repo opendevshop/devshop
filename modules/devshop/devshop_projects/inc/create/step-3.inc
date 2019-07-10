@@ -34,13 +34,13 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
-    '#suffix' => '</div>',
+    '#suffix' => '<p>' . t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') . '</p></div>',
   );
 
   // If there was a problem with loading branches or tags, hide the form and show a link to re-verify.
   if (empty($project->settings->git['branches']) && empty($project->settings->git['tags'])) {
     $form['error'] = array(
-      '#markup' => t('Unable to find any branches or tags. Please !verify.', array(
+      '#markup' => t('Unable to devshop_projects_create_settings_formfind any branches or tags. Please !verify.', array(
           '!verify' => l(t('Re-verify the project'), "hosting_confirm/{$project->nid}/project_verify", array(
             'query' => array('token' => drupal_get_token($user->uid)),
             'attributes' => array(
@@ -312,7 +312,6 @@ function devshop_project_environment_create_form_element($project, $environment)
 
   $element = array(
     '#tree' => TRUE,
-    '#type' => 'fieldset',
     '#theme' => 'devshop_projects_settings_table',
   );
 

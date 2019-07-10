@@ -25,8 +25,8 @@ fieldset.project-environments {
   clear: both;
 }
 
-#project-settings-table .description,
-#project-settings-table .form-item-labeled label
+.project-environments-table .description,
+.project-environments-table .form-item-labeled label
 {
   display: none;  
 }
