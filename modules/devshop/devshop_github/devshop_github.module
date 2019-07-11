@@ -654,7 +654,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
     unset($form['project']['environments']['NEW']);
     $form['project']['environments']['NEW'] = $new_element;
 
-    $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+    $settings_link = l(t('Change Project GitHub Settings'), 'projects/add/settings', array(
       'fragment' => 'edit-project-settings-github',
     ));
 
@@ -675,7 +675,8 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       $help_display['help'] = array(
         '#theme' => 'item_list',
         '#items' => array(
-          t('Project is configured to create environments for all Pull Requests. If you do not want an environment for one of your Pull Requests, close it, or change the Project Settings.'),
+          t('Project is configured to create environments for all Pull Requests.'),
+          t('If you do not want an environment for one of your Pull Requests, close it or change the Project GitHub Settings.'),
           $settings_link,
         ),
         '#prefix' => '<div class="alert alert-info">',
