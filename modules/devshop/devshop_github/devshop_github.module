@@ -224,8 +224,6 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
     );
-
-    $form['actions']['submit']['#submit'][] = 'devshop_github_form_site_node_form_submit_pr';
   }
 }
 
@@ -237,7 +235,7 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
 {
   // If PR found for this branch, put the PR data into form_state.
   if (!empty($form_state['pull_requests'][$element['#value']])) {
-    $form_state['pull_request'] = $pr = json_to_object($form_state['pull_requests'][$element['#value']]);
+    $form_state['values']['pull_request'] = $pr = json_to_object($form_state['pull_requests'][$element['#value']]);
 
     // If PR has different remote URL, set it.
     if ($pr->head->repo->fork) {
@@ -263,15 +261,14 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
 }
 
 /**
- * @param $form
- * @param $form_state
+ * Implements hook_node_insert().
  */
-function devshop_github_form_site_node_form_submit_pr($form, &$form_state)
-{
-  if (!empty($form_state['pull_request'])) {
-    $pr = $form_state['pull_request'];
-    $node = $form_state['node'];
-    devshop_github_save_pr_env_data($pr, $node->environment);
+function devshop_github_node_insert($node) {
+  if ($node->type == 'site' && !empty($node->pull_request)) {
+    $environment = new stdClass();
+    $environment->name = $node->environment_name;
+    $environment->project_nid = $node->project_nid;
+    devshop_github_save_pr_env_data($node->pull_request, $environment);
   }
 }
 
