@@ -68,7 +68,9 @@ function drush_ansible_services_pre_hosting_task()
         'hosts' =>$task->ref->title,
         'roles' => $task->ref->roles,
         'vars' => array(
-          'ansible_python_interpreter' => variable_get('aegir_ansible_remote_ansible_python_interpreter', '/usr/bin/python3'),
+          // This is set so that every server can determine it's own python interpretor.
+          // @see https://github.com/ansible/ansible/issues/6345#issuecomment-181999529
+          'ansible_python_interpreter' => variable_get('aegir_ansible_remote_ansible_python_interpreter', '/usr/bin/env python'),
         ),
     );
 
