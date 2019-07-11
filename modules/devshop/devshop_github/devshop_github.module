@@ -192,6 +192,101 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter() for site_node_form().
+ *
+ * Add the list of PRs to the Branch selector.
+ */
+function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id) {
+
+  $project = $form_state['project'];
+  if (arg(1) == 'add' && $project->git_provider == 'github'){
+    $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+
+    if (count($prs)) {
+      $existing_options = $form['git_ref']['#options'];
+      foreach ($prs as $pr) {
+        $pr_description = implode(' - ', array(
+          "PR {$pr['number']}",
+          $pr['head']['ref'],
+          $pr['user']['login'],
+          $pr['title'],
+        ));
+        $option_name = $pr['head']['ref'];
+        $pr_options['Pull Requests'][$option_name] = $pr_description;
+        $form_state['pull_requests'][$option_name] = $pr;
+      }
+
+      $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
+
+    }
+
+    $form['git_ref']['#options'] = array_merge($pr_options, $existing_options);
+    $form['git_ref']['#element_validate'] = array(
+      'devshop_github_form_site_node_form_validate_pr'
+    );
+
+    $form['actions']['submit']['#submit'][] = 'devshop_github_form_site_node_form_submit_pr';
+  }
+}
+
+/**
+ * @param $element
+ * @param $form_state
+ */
+function devshop_github_form_site_node_form_validate_pr($element, &$form_state, $form)
+{
+  // If PR found for this branch, put the PR data into form_state.
+  if (!empty($form_state['pull_requests'][$element['#value']])) {
+    $form_state['pull_request'] = $pr = json_to_object($form_state['pull_requests'][$element['#value']]);
+
+    // If PR has different remote URL, set it.
+    if ($pr->head->repo->fork) {
+      // Try to match project URL scheme
+      if (strpos($form_state['project']->git_url, 'https://') === 0) {
+        $remote_url = $pr->head->repo->clone_url;
+      }
+      elseif (strpos($form_state['project']->git_url, 'git://') === 0){
+        $remote_url = $pr->head->repo->git_url;
+      }
+      elseif (strpos($form_state['project']->git_url, 'git@') === 0){
+        $remote_url = $pr->head->repo->ssh_url;
+      }
+
+      // Set repo_url for this environment to the forked git remote.
+      form_set_value($form['git']['repo_url'], $remote_url, $form_state);
+
+      // Recreate the platform node, with the new git repo_url.
+      $platform_node = devshop_prepare_platform_node($form_state['project'], $form_state['environment_name'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+      form_set_value($form['platform_node'], $platform_node, $form_state);
+    }
+  }
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ */
+function devshop_github_form_site_node_form_submit_pr($form, &$form_state)
+{
+  if (!empty($form_state['pull_request'])) {
+    $pr = $form_state['pull_request'];
+    $node = $form_state['node'];
+    devshop_github_save_pr_env_data($pr, $node->environment);
+  }
+}
+
+/**
+ * Helper to normalize arrays to objects.
+ *
+ * @param $array
+ * @return mixed
+ */
+function json_to_object($array) {
+  $json = json_encode($array);
+  $object = json_decode($json);
+  return $object;
+}
+/**
  * Implements hook_form_alter().
  */
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
