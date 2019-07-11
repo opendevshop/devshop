@@ -134,7 +134,6 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   // Delete Pull Request environments?
-  // $form['github']['pull_request_environments_delete'] = array(
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
