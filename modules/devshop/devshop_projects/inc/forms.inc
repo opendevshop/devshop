@@ -173,8 +173,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
   else {
     $environments_options = array_combine($environments, $environments);
-    $environments_options[''] = t('None');
   }
+
+  $form_state['environments'] = $environments_options;
+  $environments_options[''] = t('None');
 
   $form['project']['codebase']['live_environment'] = array(
     '#type' => 'select',

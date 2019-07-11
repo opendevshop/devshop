@@ -151,7 +151,6 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   // Pull Request Environment method.
   // $form['github']['pull_request_environments_method'] = array(
 
-  $environments = array_keys($node->project->environments);
   $options = array(
     t('Install Drupal') => array(
         'devshop__github__install' => empty($node->project->install_profile)? t('Default Install Profile (configured later)'): $node->project->install_profile,
@@ -159,10 +158,10 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     t('Clone another environment') => array(),
   );
 
-  $options[t('Clone another environment')] = array_combine($environments, $environments);
+  $options[t('Clone another environment')] = $form_state['environments'];
   $options[t('Clone another environment')]['_primary'] = t('Primary Environment');
 
-  if (empty($environments)) {
+  if (empty($options[t('Clone another environment')])) {
     $options[t('Clone another environment')]['_primary'] = t('Primary Environment (configured later)');
   }
 
