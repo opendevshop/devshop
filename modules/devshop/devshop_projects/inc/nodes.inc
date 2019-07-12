@@ -215,6 +215,7 @@ function devshop_projects_node_insert($node) {
 
   // Environment data (without sites) are present during `hosting-import` drush calls.
   if (!empty($node->project->environments)) {
+    $node->project->nid = $node->nid;
     foreach ($node->project->environments as $name => $environment) {
 
       $environment = json_to_object($environment);
@@ -267,6 +268,22 @@ function devshop_projects_node_update($node) {
   drupal_write_record('hosting_devshop_project', $info, 'nid');
   if (!isset($node->no_verify) || $node->no_verify == FALSE) {
     hosting_add_task($node->nid, 'verify');
+  }
+
+  // Environment data (without sites) are present during `hosting-import` drush calls.
+  if (!empty($node->project->environments)) {
+    $node->project->nid = $node->nid;
+    foreach ($node->project->environments as $name => $environment) {
+
+      $environment = json_to_object($environment);
+      if (empty($environment->site)) {
+        hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
+      }
+      else {
+        $environment->project_nid = $node->nid;
+        devshop_environment_save($environment);
+      }
+    }
   }
 }
 
