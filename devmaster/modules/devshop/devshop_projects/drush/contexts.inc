@@ -22,7 +22,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
+    // Remove environments, we don't want to update those again.
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
   }
 
@@ -96,7 +98,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
+    // Remove environments, we don't want to update those again.
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
 
   }
@@ -188,13 +192,20 @@ function devshop_projects_drush_context_import($context, &$node) {
     }
 
     foreach ($project->environments as $name => $environment) {
-      $environment = (object) $environment;
+      // Preserve settings: Don't let covert_to_object() mess with the arrays.
+      // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
+      $settings = $environment->settings;
+      $environment = convert_to_object($environment);
+      $environment->settings = $settings;
 
       if (empty($environment->uri)) {
         $environment->uri = devshop_environment_url($project, $name);
       }
       if (empty($environment->name)) {
         $environment->name = $name;
+      }
+      if (empty($environment->settings)) {
+        $environment->settings = array();
       }
 
       // Backwards compatibility: *_context properties were added, may be missing.
@@ -217,51 +228,28 @@ function devshop_projects_drush_context_import($context, &$node) {
           '!site_context' => $environment->site_context,
           '!platform_context' => $environment->platform_context,
         )), 'success');
-        $environment_object = new stdClass();
-        $environment_object->name = $name;
-        $environment_object->site = $site_node->nid;
-        $environment_object->platform = $platform_node->nid;
-        $environment_object->settings = empty($environment->settings)? array(): $environment->settings;
 
-        // If hosting-import is being run a second time, the project node is updated.
-        if ($node->nid && $environment_object->site) {
-          $environment_object->project_nid = $node->nid;
-          $environment_object->settings = serialize($environment_object->settings);
-          devshop_environment_save($environment_object);
-          drush_log('Updated environment data for ' . $name, 'ok');
-        }
-        else {
-          // Project node hasn't been created yet. Add it here for devshop_projects_node_insert() to handle.
-          drush_log('Saving new environment data for ' . $name, 'ok');
-          $node->project->environments[$name] = $environment_object;
-        }
+        $environment->site = $site_node->nid;
+        $environment->platform = $platform_node->nid;
       }
-      else {
-        // If site or platform is missing, look for drush context. If found, trigger import of that.
-        $t = array(
-          '!context' => $environment->site_context,
-        );
-        if (empty($site_node) && $context = d($environment->site_context) && $context->type == 'site') {
-          drush_log(dt('Site node not found, using context "!context" instead.', $t), 'warning');
-          hosting_drush_import($context);
-        }
-        else {
-          drush_log(dt('Creating new environment "!context".', $t), 'ok');
-          hosting_create_environment($project, $environment->name, $environment->git_ref);
 
-          // Return because this function creates the platform.
-          return;
-        }
-        if (empty($platform_node) && $context = d($environment->platform_context) && $context->type == 'platform') {
-          drush_log(dt('Platform node not found, using context "!context" instead.', array('!context' => $environment->platform_context)), 'warning');
-          hosting_drush_import($context);
-        }
-        else {
-          drush_set_error(dt('No platform node or context found for "!context". Create one with that name first if you want environments to be created.', array('!context' => $environment->platform_context)));
-        }
+      // If hosting-import is being run a second time and the site exists, update it.
+      if ($node->nid && $environment->site) {
+        $environment->project_nid = $node->nid;
+        devshop_environment_save($environment);
+        drush_log('Updated environment data for ' . $name, 'ok');
+      }
+      elseif ($node->nid && empty($environment->site)) {
+        drush_log('Creating new environment for ' . $name, 'ok');
+        $environment->project_nid = $node->nid;
+        $node->project->environments[$name] = $environment;
+      }
+      elseif (empty($node->nid)) {
+        // Project node hasn't been created yet. Add it here for devshop_projects_node_insert() to handle.
+        drush_log('Saving new environment data for ' . $name, 'ok');
+        $node->project->environments[$name] = $environment;
       }
     }
-//    devshop_reset_last_tasks();
   }
 
   // If importing a site that has environment and project assigned,

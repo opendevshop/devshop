@@ -209,15 +209,21 @@ function devshop_projects_node_insert($node) {
     path_save($path);
   }
 
-  // @TODO: The wizard always creates the project before the environments.
-  // Not sure if we need this, but we might to enable importing via drush.
-  // Save Environment records.
-
-  // Environment data (without sites) are present during `hosting-import` drush calls.
+  // Save Environment records, if present.
+  // If using Start a Project wizard, environments is NOT set on project node insert.
+  // If using drush hosting-import, environments MIGHT be in the data.
+  // Soon CLI and API commands will exist to create all of them at once.
   if (!empty($node->project->environments)) {
+    $node->project->nid = $node->nid;
+    $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
-      $environment = json_to_object($environment);
+      // Preserve settings: Don't let covert_to_object() mess with the arrays.
+      // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
+      $settings = $environment->settings;
+      $environment = convert_to_object($environment);
+      $environment->settings = $settings;
+
       if (empty($environment->site)) {
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
@@ -267,6 +273,30 @@ function devshop_projects_node_update($node) {
   drupal_write_record('hosting_devshop_project', $info, 'nid');
   if (!isset($node->no_verify) || $node->no_verify == FALSE) {
     hosting_add_task($node->nid, 'verify');
+  }
+
+  $project_node = node_load($node->nid, NULL, TRUE);
+
+  // Environment data (without sites) are present during `hosting-import` drush calls.
+  if (!empty($node->project->environments)) {
+    $node->project->nid = $node->nid;
+    $node->project->name = $node->title;
+    foreach ($node->project->environments as $name => $environment) {
+
+      // Preserve settings: Don't let covert_to_object() mess with the arrays.
+      // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
+      $settings = $environment->settings;
+      $environment = convert_to_object($environment);
+      $environment->settings = $settings;
+
+      if (empty($project_node->project->environments[$name]->site)) {
+        hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
+      }
+      else {
+        $environment->project_nid = $node->nid;
+        devshop_environment_save($environment);
+      }
+    }
   }
 }
 

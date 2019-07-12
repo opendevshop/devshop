@@ -143,6 +143,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // Unpublish the project node.
     $task->ref->status = 0;
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
   }
 
