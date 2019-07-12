@@ -1717,7 +1717,7 @@ function devshop_github_create_all_pr_environments($project_node) {
     }
 
     // If local repo SHA does not match PR sha, create deploy task.
-    $environment->git_sha = trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
+    $environment->git_sha = file_exists($environment->repo_path)? trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null")): NULL;
 
     drush_log("Looking for new commits to {$environment->repo_path}...", "ok");
 
