@@ -209,11 +209,10 @@ function devshop_projects_node_insert($node) {
     path_save($path);
   }
 
-  // @TODO: The wizard always creates the project before the environments.
-  // Not sure if we need this, but we might to enable importing via drush.
-  // Save Environment records.
-
-  // Environment data (without sites) are present during `hosting-import` drush calls.
+  // Save Environment records, if present.
+  // If using Start a Project wizard, environments is NOT set on project node insert.
+  // If using drush hosting-import, environments MIGHT be in the data.
+  // Soon CLI and API commands will exist to create all of them at once.
   if (!empty($node->project->environments)) {
     $node->project->nid = $node->nid;
     $node->project->name = $node->title;
