@@ -1,7 +1,8 @@
 ---
+- hostname: name={{ server_hostname }}
 
 - name: Include OS-specific variables.
-  include_vars: "vars.{{ ansible_os_family }}.yml"
+  include_vars: "vars.{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
 
 - name: Install extra packages
   apt:
@@ -15,8 +16,6 @@
     name: '{{ extra_packages }}'
     state: present
   when: ansible_os_family == "RedHat"
-
-- hostname: name={{ server_hostname }}
 
 - name: Detect DevShop CLI
   stat:
@@ -126,7 +125,9 @@
 
 - name: "Upgrade Devmaster to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
-  when: devmaster_site_uri != ""
+  when:
+  - devmaster_site_uri != ""
+  - devmaster_skip_upgrade == false
 
 - name: DevShop.Support | Save License Key
   become: yes
@@ -184,9 +185,6 @@
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-
-- name: Setup Supervisor
-  include: "supervisor.yml"
 
 # CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
 # @TODO: Investigate php.ini for CLI on all OS
