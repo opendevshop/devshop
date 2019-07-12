@@ -42,7 +42,8 @@ services:
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /var/run/docker.sock:/var/run/docker.sock
       - $HOME/.ssh:/var/aegir/.ssh
-
+    extra_hosts:
+      - "remote.devshop.local.computer:10.10.10.11"
   database:
     image: mariadb
     logging:
