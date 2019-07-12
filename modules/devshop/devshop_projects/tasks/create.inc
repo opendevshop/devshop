@@ -21,6 +21,8 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $settings = (object) $settings;
   global $user;
 
+
+
   // Create site node.
   $site = new stdClass();
   $site->type = 'site';
@@ -112,14 +114,16 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
 
   // Get platform verify task
-  $tasks = hosting_get_tasks('rid', $site->platform_node->nid);
+  $tasks = hosting_get_tasks('rid', $site->nid);
   $environment->last_task = current($tasks)->nid;
+  $environment->project_nid = $project->nid;
 
   db_insert('hosting_devshop_project_environment')
     ->fields(array(
       'project_nid' => $environment->project_nid,
       'name' => $environment->name,
       'site' => $environment->site,
+      'platform' => $site->platform_node->nid,
       'settings' => serialize($environment->settings),
       'last_task' => $environment->last_task,
     ))
