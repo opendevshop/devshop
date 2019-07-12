@@ -879,7 +879,7 @@ function devshop_environment_url($project, $environment_name) {
   $domain = strtr($pattern, array(
     '@environment' => $environment_name,
     '@project' => $project->name,
-    '@hostname' => $_SERVER['SERVER_NAME'],
+    '@hostname' => $_SERVER['HTTP_HOST'],
   ));
   return $domain;
 }
