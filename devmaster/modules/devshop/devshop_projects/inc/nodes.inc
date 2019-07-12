@@ -218,7 +218,7 @@ function devshop_projects_node_insert($node) {
     $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
-      $environment = json_to_object($environment);
+      $environment = convert_to_object($environment);
       if (empty($environment->site)) {
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
@@ -270,14 +270,16 @@ function devshop_projects_node_update($node) {
     hosting_add_task($node->nid, 'verify');
   }
 
+  $project_node = node_load($node->nid, NULL, TRUE);
+
   // Environment data (without sites) are present during `hosting-import` drush calls.
   if (!empty($node->project->environments)) {
     $node->project->nid = $node->nid;
     $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
-      $environment = json_to_object($environment);
-      if (empty($environment->site)) {
+      $environment = convert_to_object($environment);
+      if (empty($project_node->project->environments[$name]->site)) {
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
       else {

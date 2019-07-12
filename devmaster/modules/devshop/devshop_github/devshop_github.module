@@ -6,6 +6,8 @@
 
 require_once('includes/queue.inc');
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Grab an authenticated GitHub client.
  *
@@ -234,7 +236,7 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
 {
   // If PR found for this branch, put the PR data into form_state.
   if (!empty($form_state['pull_requests'][$element['#value']])) {
-    $form_state['values']['pull_request'] = $pr = json_to_object($form_state['pull_requests'][$element['#value']]);
+    $form_state['values']['pull_request'] = $pr = convert_to_object($form_state['pull_requests'][$element['#value']]);
 
     // If PR has different remote URL, set it.
     if ($pr->head->repo->fork) {
@@ -277,11 +279,12 @@ function devshop_github_node_insert($node) {
  * @param $array
  * @return mixed
  */
-function json_to_object($array) {
-  $json = json_encode($array);
-  $object = json_decode($json);
+function convert_to_object($thing) {
+  $yml = Yaml::dump($thing, 2, 2, Yaml::DUMP_OBJECT_AS_MAP);
+  $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
   return $object;
 }
+
 /**
  * Implements hook_form_alter().
  */
