@@ -48,7 +48,7 @@ function hosting_github_queue($count) {
 
     // Check ones that have PR envs enabled
     if ($project->settings->github['pull_request_create_policy'] == 'all') {
-      drush_log("PR envs enabled for {$project->name}", "success");
+      drush_log("Project {$project->name} is configured to maintain environments for all pull requests. Creating environments...", "success");
       $message = devshop_github_create_all_pr_environments($project_node);
       drush_log($message, "success");
     }
