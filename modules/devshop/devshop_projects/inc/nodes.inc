@@ -218,7 +218,12 @@ function devshop_projects_node_insert($node) {
     $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
+      // Preserve settings: Don't let covert_to_object() mess with the arrays.
+      // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
+      $settings = $environment->settings;
       $environment = convert_to_object($environment);
+      $environment->settings = $settings;
+
       if (empty($environment->site)) {
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
@@ -278,7 +283,12 @@ function devshop_projects_node_update($node) {
     $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
+      // Preserve settings: Don't let covert_to_object() mess with the arrays.
+      // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
+      $settings = $environment->settings;
       $environment = convert_to_object($environment);
+      $environment->settings = $settings;
+
       if (empty($project_node->project->environments[$name]->site)) {
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
