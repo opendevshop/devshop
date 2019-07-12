@@ -1683,12 +1683,9 @@ function devshop_github_create_all_pr_environments($project_node) {
   // Start with the full list.
   $envs_to_create = $prs;
 
-  // @TODO: Improve output.
-  $message = '';
-
   // For each existing environment...
   foreach ($project->environments as $devshop_environment_name => $environment) {
-    $message .=  "Checking $devshop_environment_name... \n";
+    drush_log( "Checking $devshop_environment_name...", "ok");
 
     // If no PR data, keep looping.
     if (empty($environment->github_pull_request->pull_request_object->id)) {
@@ -1696,7 +1693,7 @@ function devshop_github_create_all_pr_environments($project_node) {
     }
     // If local environment already has PR data saved...
     elseif (!empty($environment->github_pull_request->pull_request_object->id)) {
-      $message .=  "Environment $devshop_environment_name exists. Saving updated PR data. \n";
+      drush_log( "Environment $devshop_environment_name exists. Saving updated PR data...", "ok");
 
       // Save PR data to database for this envronment.
       devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
@@ -1712,7 +1709,7 @@ function devshop_github_create_all_pr_environments($project_node) {
     }
     elseif (!empty($prs[$devshop_environment_name])) {
       devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
-      $message .=  "PR exists for the environment $devshop_environment_name but no PR data existed. Saving new PR data. \n";
+      drush_log( "PR exists for the environment $devshop_environment_name but no PR data existed. Saving new PR data.", "ok");
       unset($envs_to_create[$devshop_environment_name]);
     }
 
@@ -1752,14 +1749,14 @@ function devshop_github_create_all_pr_environments($project_node) {
   }
 
   // List all environments to be created.
-  $message .=  "PR environment discovery complete: \n";
-  $message .=  format_plural(count($envs_to_create),  "1 environment to be created: ", t("!count Environments to be created: ", array(
+  drush_log( "PR environment discovery complete.", "ok");
+  drush_log( format_plural(count($envs_to_create),  "1 environment to be created: ", t("!count Environments to be created: ", array(
     "!count" => count($envs_to_create),
-  )));
+  ))), "ok");
 
   // For all PRS that do not have an environment, create one.
   foreach ($envs_to_create as $slug => $pr) {
-    $message .= "Creating environment for PR $pr->number ... \n";
+    drush_log("Creating environment for PR $pr->number ...", "ok");
     $branch = $pr->head->ref;
 
     // If PR has different remote URL, set it.
@@ -1795,7 +1792,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
       devshop_github_save_pr_env_data($pr, $environment);
 
-      $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
+      drush_log("Environment $environment_name created for $project_node->title via installation profile.", "ok");
     }
     // If environment exists for "pull_request_environments_method" setting, clone it.
     elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
@@ -1805,15 +1802,15 @@ function devshop_github_create_all_pr_environments($project_node) {
       // @TODO: Unify this into one function.
       $environment = hosting_create_environment($project, $environment_name, $branch, $source_env);
       devshop_github_save_pr_env_data($pr, $environment);
-      $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
+      drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
     }
     // If environment does not exist, note that error.
     elseif (!isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
-      $message .= "No environment found named {$project->settings->github['pull_request_environments_method']} \n";
+      drush_log("No environment found named {$project->settings->github['pull_request_environments_method']}", "warning");
     }
     // If "pull_request_environments_method" is something else, we don't know what to do.
     else {
-      $message .= "Unknown PR environment creation method: {$project->settings->github['pull_request_environments_method']} \n";
+      drush_log("Unknown PR environment creation method: {$project->settings->github['pull_request_environments_method']}", "warning");
     }
   }
 
