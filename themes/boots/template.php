@@ -419,6 +419,11 @@ function boots_preprocess_environment(&$vars) {
     $environment->git_status = '';
     $environment->git_diff = '';
   }
+
+  // Look for alternative git URL
+  if ($environment->git_url != $project->git_url) {
+    $vars['git_origin'] = $environment->git_url;
+  }
 }
 
 /**

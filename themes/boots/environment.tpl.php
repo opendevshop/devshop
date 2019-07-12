@@ -686,6 +686,14 @@ sites/all/drush/drushrc.php
       </div>
     </div>
   <?php endif; ?>
+  <?php if (!empty($git_origin)): ?>
+    <div class="list-group-item environment-info">
+      <label><?php print t('Git Repo') ?></label>
+      <span class="content">
+        <?php print $git_origin ?>
+      </span>
+    </div>
+  <?php endif;?>
   </div>
 
     <div class="environment-task-logs <?php if (!isset($page)) print 'list-group-item' ?>">

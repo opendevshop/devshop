@@ -51,6 +51,12 @@
 <!-- STATUS/INFO -->
 <div id="project-info">
   <ul class="list-inline">
+    <?php if ($status != NODE_PUBLISHED): ?>
+        <li>
+            <strong>Status</strong>
+            <small><?php print t('Disabled') ; ?></small>
+        </li>
+    <?php endif; ?>
     <?php if ($project->settings->live['live_domain']): ?>
     <li>
       <strong>Live Site</strong>
