@@ -1707,7 +1707,9 @@ function devshop_github_create_all_pr_environments($project_node) {
 
       // If environment PR is not in GitHub PRs list, it has been closed or merged.
       // If PR is closed, and environment is enabled, and project is configured to delete, create a delete task.
-      if (empty($prs[$devshop_environment_name]) && $project->settings->github['pull_request_environments_delete'] && $environment->site_status == HOSTING_SITE_ENABLED) {
+
+      if (empty($prs[$devshop_environment_name]) && $project->settings->github['pull_request_environments_delete']) {
+        drush_log( "PR for environment $devshop_environment_name no longer exists. Scheduling for deletion...", "ok");
         hosting_add_task($environment->site, 'delete', array('force'));
         $deleted_environments++;
       }
