@@ -116,15 +116,15 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : FALSE,
   );
 
-  $form['project']['settings']['github']['pr_env_creation_mode'] = array(
-    '#title' => t('Environment Creation Method'),
+  $form['project']['settings']['github']['pull_request_create_policy'] = array(
+    '#title' => t('Environment Creation Policy'),
     '#type' => 'radios',
     '#options' => array(
       'create' => t('Create Environments when Pull Requests are opened or re-opened. <div class="help-block">Recommended if you have a large number of open Pull Requests or if PRs have unstable or unknown code.</div>'),
       'all' => t('Create Environments for all open Pull Requests.  <div class="help-block">Environments will be created and deleted as Pull Requests are opened, closed, and re-opened.</div>'),
     ),
-    '#default_value' => !empty($node->project->settings->github['pr_env_creation_mode'])?
-      $node->project->settings->github['pr_env_creation_mode']:
+    '#default_value' => !empty($node->project->settings->github['pull_request_create_policy'])?
+      $node->project->settings->github['pull_request_create_policy']:
       'create',
     '#states' => array(
       'visible' => array(
@@ -134,7 +134,6 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   // Delete Pull Request environments?
-  // $form['github']['pull_request_environments_delete'] = array(
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
@@ -644,7 +643,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       );
 
       // Only add to $form if configured to keep all environments.
-      if ($project->settings->github['pr_env_creation_mode'] == 'all') {
+      if ($project->settings->github['pull_request_create_policy'] == 'all') {
         $form['pr_environments']['environments_table'][$environment->name] = $element;
       }
     }
@@ -671,7 +670,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       );
     }
     // Project configured to maintain all PR environments.
-    elseif ($project->settings->github['pr_env_creation_mode'] == 'all') {
+    elseif ($project->settings->github['pull_request_create_policy'] == 'all') {
       $help_display['help'] = array(
         '#theme' => 'item_list',
         '#items' => array(
@@ -684,7 +683,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       );
     }
     // Project configured to only create environments on PR open or re-open.
-    elseif ($project->settings->github['pr_env_creation_mode'] == 'create') {
+    elseif ($project->settings->github['pull_request_create_policy'] == 'create') {
       $help_display['help'] = array(
         '#theme' => 'item_list',
         '#items' => array(
