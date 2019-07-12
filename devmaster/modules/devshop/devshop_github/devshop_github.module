@@ -1689,13 +1689,13 @@ function devshop_github_create_all_pr_environments($project_node) {
   foreach ($project->environments as $devshop_environment_name => $environment) {
     $message .=  "Checking $devshop_environment_name... \n";
 
-    // @TODO: If local git SHA does not match PR sha: create deploy task.
-
+    // If no PR data, keep looping.
+    if (empty($environment->github_pull_request->pull_request_object->id)) {
+      continue;
+    }
     // If local environment already has PR data saved...
-    if (!empty($environment->github_pull_request->pull_request_object->id)) {
+    elseif (!empty($environment->github_pull_request->pull_request_object->id)) {
       $message .=  "Environment $devshop_environment_name exists. Saving updated PR data. \n";
-
-      // @TODO: Figure out how to alter response from GitHub API for this request... See ResponseMediator.php in KNPLabs/github-api
 
       // Save PR data to database for this envronment.
       devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
@@ -1713,6 +1713,40 @@ function devshop_github_create_all_pr_environments($project_node) {
       devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
       $message .=  "PR exists for the environment $devshop_environment_name but no PR data existed. Saving new PR data. \n";
       unset($envs_to_create[$devshop_environment_name]);
+    }
+
+    // If local repo SHA does not match PR sha, create deploy task.
+    $environment->git_sha = trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
+
+    drush_log("Looking for new commits to {$environment->repo_path}...", "ok");
+
+    if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $prs[$devshop_environment_name]->head->sha) {
+      drush_log("Environment and PR SHAs are different...", "ok");
+
+      // If project is set to reinstall pull request environments, and this is a pull request environment, run a forced install task.
+      if (isset($project->settings->github['pull_request_reinstall']) && $project->settings->github['pull_request_reinstall'] == 1) {
+
+        // Trigger deploy task to get latest code.
+        // Pass no args to skip DB updates, cache clearing, etc.
+        drush_log('Creating deploy task for ' . $environment->name, 'ok');
+        hosting_add_task($environment->site, 'devshop-deploy', array(
+          'git_ref' => $environment->git_ref,
+        ));
+
+        // Trigger "install" with force-reinstall
+        drush_log('Creating install task for ' . $environment->name, 'ok');
+        hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+      }
+
+      // Otherwise, just run a "deploy" task.
+      else {
+
+        // Default args to the environments deploy settings.
+        $args = $environment->settings->deploy;
+        $args['git_ref'] = $environment->git_ref;
+        drush_log('Creating deploy task for ' . $environment->name, 'ok');
+        hosting_add_task($environment->site, 'devshop-deploy', $args);
+      }
     }
   }
 
