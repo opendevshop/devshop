@@ -216,6 +216,7 @@ function devshop_projects_node_insert($node) {
   // Environment data (without sites) are present during `hosting-import` drush calls.
   if (!empty($node->project->environments)) {
     $node->project->nid = $node->nid;
+    $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
       $environment = json_to_object($environment);
@@ -273,6 +274,7 @@ function devshop_projects_node_update($node) {
   // Environment data (without sites) are present during `hosting-import` drush calls.
   if (!empty($node->project->environments)) {
     $node->project->nid = $node->nid;
+    $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
       $environment = json_to_object($environment);
