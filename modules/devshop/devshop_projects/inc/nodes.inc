@@ -212,26 +212,15 @@ function devshop_projects_node_insert($node) {
   // @TODO: The wizard always creates the project before the environments.
   // Not sure if we need this, but we might to enable importing via drush.
   // Save Environment records.
+
+  // Environment data (without sites) are present during `hosting-import` drush calls.
   if (!empty($node->project->environments)) {
     foreach ($node->project->environments as $name => $environment) {
-      // Ensure correct data types
-      $environment = (object) $environment;
-      $environment->settings = (array) $environment->settings;
 
-      $info = new stdClass();
-      $info->project_nid = $node->nid;
-      $info->name = $name;
-      $info->site = $environment->site;
-      $info->platform = $environment->platform;
-
-      // Remove primary settings from settings array before saving.
-      unset($environment->settings['git_ref']);
-      unset($environment->settings['site']);
-      unset($environment->settings['platform']);
-      $info->settings = serialize($environment->settings);
-
-      // Save environment record.
-      drupal_write_record('hosting_devshop_project_environment', $info);
+      $environment = json_to_object($environment);
+      if (empty($environment->site)) {
+        hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
+      }
     }
   }
 }

@@ -714,7 +714,7 @@ function boots_preprocess_page(&$vars){
     // For node/%/* pages where node is site or platform, use the environment name as title2
     if (($vars['node']->type == 'site' || $vars['node']->type == 'platform')&& isset($vars['node']->environment)){
 
-      $vars['title2_url'] = url('node/' . $vars['node']->nid);
+      $vars['title2_url'] = url('node/' . $vars['node']->environment->site);
       $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
     }
     // On environment settings page...
