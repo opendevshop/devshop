@@ -276,8 +276,22 @@ function devshop_github_node_insert($node) {
   }
 
   // When a project is inserted, if the PR create policy is set to "all", create all PR environments.
-  if ($node->type == 'project' && $node->project->settings->github['pull_request_create_policy'] == 'all') {
-    devshop_github_create_all_pr_environments($node);
+  if ($node->type == 'project' && $node->project->settings['github']['pull_request_create_policy'] == 'all') {
+
+    // No errors, but this doesn't work.
+//    // Ensure github owner and repo are set.
+//    if (empty($node->project->github_owner)) {
+//      $git_repo_url = strtr($node->project->git_url, array(
+//        'git@github.com:' => 'http://github.com/',
+//        'git://' => 'http://',
+//        '.git' => '',
+//      ));
+//      $parts = explode('/', parse_url($git_repo_url, PHP_URL_PATH));
+//      $node->project->github_owner = $parts[1];
+//      $node->project->github_repo = $parts[2];
+//    }
+//
+//    devshop_github_create_all_pr_environments($node);
   }
 }
 
@@ -1675,13 +1689,25 @@ function devshop_github_create_all_pr_environments($project_node) {
   foreach ($project->environments as $devshop_environment_name => $environment) {
     $message .=  "Checking $devshop_environment_name... \n";
 
-    // If PR data exists, and git SHA does not match PR sha: create deploy task.
+    // @TODO: If local git SHA does not match PR sha: create deploy task.
+
+    // If local environment already has PR data saved...
     if (!empty($environment->github_pull_request->pull_request_object->id)) {
       $message .=  "Environment $devshop_environment_name exists. Saving updated PR data. \n";
 
       // @TODO: Figure out how to alter response from GitHub API for this request... See ResponseMediator.php in KNPLabs/github-api
+
+      // Save PR data to database for this envronment.
       devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
+
+      // Remove this environment from list of ones to create.
       unset($envs_to_create[$devshop_environment_name]);
+
+      // If environment PR is not in GitHub PRs list, it has been closed or merged.
+      // If PR is closed, and environment is enabled, and project is configured to delete, create a delete task.
+      if (empty($prs[$devshop_environment_name]) && $project->settings->github['pull_request_environments_delete'] && $environment->site_status == HOSTING_SITE_ENABLED) {
+        hosting_add_task($environment->site, 'delete', array('force'));
+      }
     }
     elseif (!empty($prs[$devshop_environment_name])) {
       devshop_github_save_pr_env_data($prs[$devshop_environment_name], $environment);
