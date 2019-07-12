@@ -121,6 +121,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'project_nid' => $environment->project_nid,
       'name' => $environment->name,
       'site' => $environment->site,
+      'platform' => $site->platform_node->nid,
       'settings' => serialize($environment->settings),
       'last_task' => $environment->last_task,
     ))
