@@ -63,7 +63,7 @@ function hosting_github_queue($count) {
       // Load all PRs from GitHub API
       $prs_data = $pr_api->all($project->github_owner, $project->github_repo);
       foreach ($prs_data as $pr) {
-        $pr = (object) $pr;
+        $pr = json_to_object($pr);
         $slug = "pr{$pr->number}";
         $prs[$slug] = $pr;
         $envs_to_create[$slug] = $pr;
@@ -101,7 +101,21 @@ function hosting_github_queue($count) {
       // For all PRS that do not have an environment, create one.
       foreach ($envs_to_create as $slug => $pr) {
         $message = "Creating environment for PR $pr->number ... \n";
-        $branch = $pr->head['ref'];
+        $branch = $pr->head->ref;
+
+        // If PR has different remote URL, set it.
+        if ($pr->head->repo->fork) {
+          // Try to match project URL scheme
+          if (strpos($project->git_url, 'https://') === 0) {
+            $remote_url = $pr->head->repo->clone_url;
+          }
+          elseif (strpos($project->git_url->git_url, 'git://') === 0){
+            $remote_url = $pr->head->repo->git_url;
+          }
+          elseif (strpos($project->git_url->git_url, 'git@') === 0){
+            $remote_url = $pr->head->repo->ssh_url;
+          }
+        }
 
         // @TODO: Create a "PR Env pattern" setting.
         $environment_name = $slug;
@@ -111,7 +125,7 @@ function hosting_github_queue($count) {
 
           // Create environment then save PR data.
           // @TODO: Unify this into one function.
-          $environment = hosting_create_environment($project, $environment_name, $branch);
+          $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
           devshop_github_save_pr_env_data($pr, $environment);
 
           $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
