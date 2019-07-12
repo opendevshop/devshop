@@ -1683,9 +1683,13 @@ function devshop_github_create_all_pr_environments($project_node) {
   // Start with the full list.
   $envs_to_create = $prs;
 
+  $deployed_environments = 0;
+  $deleted_environments = 0;
+
+
   // For each existing environment...
   foreach ($project->environments as $devshop_environment_name => $environment) {
-    drush_log( "Checking $devshop_environment_name...", "ok");
+    drush_log( "Checking $devshop_environment_name...");
 
     // If no PR data, keep looping.
     if (empty($environment->github_pull_request->pull_request_object->id)) {
@@ -1705,6 +1709,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       // If PR is closed, and environment is enabled, and project is configured to delete, create a delete task.
       if (empty($prs[$devshop_environment_name]) && $project->settings->github['pull_request_environments_delete'] && $environment->site_status == HOSTING_SITE_ENABLED) {
         hosting_add_task($environment->site, 'delete', array('force'));
+        $deleted_environments++;
       }
     }
     elseif (!empty($prs[$devshop_environment_name])) {
@@ -1716,7 +1721,7 @@ function devshop_github_create_all_pr_environments($project_node) {
     // If local repo SHA does not match PR sha, create deploy task.
     $environment->git_sha = file_exists($environment->repo_path)? trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null")): NULL;
 
-    drush_log("Looking for new commits to {$environment->repo_path}...", "ok");
+    drush_log("Looking for new commits to {$environment->repo_path}...");
 
     if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $prs[$devshop_environment_name]->head->sha) {
       drush_log("Environment and PR SHAs are different...", "ok");
@@ -1734,6 +1739,8 @@ function devshop_github_create_all_pr_environments($project_node) {
         // Trigger "install" with force-reinstall
         drush_log('Creating install task for ' . $environment->name, 'ok');
         hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+
+        $deployed_environments++;
       }
 
       // Otherwise, just run a "deploy" task.
@@ -1744,14 +1751,23 @@ function devshop_github_create_all_pr_environments($project_node) {
         $args['git_ref'] = $environment->git_ref;
         drush_log('Creating deploy task for ' . $environment->name, 'ok');
         hosting_add_task($environment->site, 'devshop-deploy', $args);
+        $deployed_environments++;
       }
     }
   }
 
   // List all environments to be created.
   drush_log( "PR environment discovery complete.", "ok");
-  drush_log( format_plural(count($envs_to_create),  "1 environment to be created: ", t("!count Environments to be created: ", array(
+  drush_log( format_plural(count($envs_to_create),  "1 environment created.", t("!count Environments created.", array(
     "!count" => count($envs_to_create),
+  ))), "ok");
+
+  drush_log( format_plural($deployed_environments,  "1 Environment Updated.", t("!count Environments Updated.", array(
+    "!count" => $deployed_environments,
+  ))), "ok");
+
+  drush_log( format_plural($deleted_environments,  "1 Environment Deleted.", t("!count Environments Deleted.", array(
+    "!count" => $deleted_environments,
   ))), "ok");
 
   // For all PRS that do not have an environment, create one.
