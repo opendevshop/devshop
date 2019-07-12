@@ -526,6 +526,11 @@ function drush_devshop_provision_post_provision_install() {
     elseif (file_exists($path_or_url) && is_readable($path_or_url)){
       $file_to_import = $path_or_url;
     }
+    elseif (!file_exists($path_or_url))  {
+      return drush_set_error('PROVISION_DATABASE_INSTALL', dt('The database file !file does not exist. Cannot continue.', array(
+        '!file' => $path_or_url,
+      )));
+    }
 
     // Import the file
     $alias = d()->name;
