@@ -22,7 +22,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
+    // Remove environments, we don't want to update those again.
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
   }
 
@@ -96,7 +98,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
+    // Remove environments, we don't want to update those again.
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
 
   }
