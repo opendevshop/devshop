@@ -63,7 +63,7 @@ function hosting_github_queue($count) {
       // Load all PRs from GitHub API
       $prs_data = $pr_api->all($project->github_owner, $project->github_repo);
       foreach ($prs_data as $pr) {
-        $pr = json_to_object($pr);
+        $pr = convert_to_object($pr);
         $slug = "pr{$pr->number}";
         $prs[$slug] = $pr;
         $envs_to_create[$slug] = $pr;

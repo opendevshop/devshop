@@ -192,7 +192,7 @@ function devshop_projects_drush_context_import($context, &$node) {
     }
 
     foreach ($project->environments as $name => $environment) {
-      $environment = json_to_object($environment);
+      $environment = convert_to_object($environment);
 
       if (empty($environment->uri)) {
         $environment->uri = devshop_environment_url($project, $name);
