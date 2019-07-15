@@ -1709,9 +1709,18 @@ function devshop_github_create_all_pr_environments($project_node) {
       // If PR is closed, and environment is enabled, and project is configured to delete, create a delete task.
 
       if (empty($prs[$devshop_environment_name]) && $project->settings->github['pull_request_environments_delete']) {
-        drush_log( "PR for environment $devshop_environment_name no longer exists. Scheduling for deletion...", "ok");
-        hosting_add_task($environment->site, 'delete', array('force'));
-        $deleted_environments++;
+
+        // Check for existing delete task.
+        $delete_task = hosting_get_most_recent_task($environment->site, 'delete');
+
+        if (empty($delete_task)) {
+          drush_log( "PR for environment $devshop_environment_name no longer exists, scheduling site for deletion...", "ok");
+          hosting_add_task($environment->site, 'delete', array('force' => 1));
+          $deleted_environments++;
+        }
+        else {
+          drush_log( "PR for environment $devshop_environment_name no longer exists, but site was already scheduled for deletion. Doing nothing.", "warning");
+        }
       }
     }
     elseif (!empty($prs[$devshop_environment_name])) {
