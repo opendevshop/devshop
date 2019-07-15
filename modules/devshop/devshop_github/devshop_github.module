@@ -276,7 +276,7 @@ function devshop_github_node_insert($node) {
   }
 
   // When a project is inserted, if the PR create policy is set to "all", create all PR environments.
-  if ($node->type == 'project' && $node->project->settings['github']['pull_request_create_policy'] == 'all') {
+//  if ($node->type == 'project' && $node->project->settings['github']['pull_request_create_policy'] == 'all') {
 
     // No errors, but this doesn't work.
 //    // Ensure github owner and repo are set.
@@ -292,7 +292,7 @@ function devshop_github_node_insert($node) {
 //    }
 //
 //    devshop_github_create_all_pr_environments($node);
-  }
+//  }
 }
 
 /**
