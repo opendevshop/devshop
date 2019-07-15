@@ -129,6 +129,12 @@
   - devmaster_site_uri != ""
   - devmaster_skip_upgrade == false
 
+- name: Verify Devmaster Site to ensure composer install
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-task verify hostmaster"
+
 - name: DevShop.Support | Save License Key
   become: yes
   become_user: "{{ aegir_user_name }}"
