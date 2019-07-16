@@ -143,13 +143,19 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   $form['project']['settings']['github']['pull_request_create_policy'] = array(
     '#title' => t('Environment Creation Policy'),
     '#type' => 'radios',
+    '#field_prefix' => '<span class="text-success">' . format_plural($pr_count,
+      t('The project has one open Pull Request'),
+      t('The project has @number open Pull Requests', array(
+        '@number' => $pr_count,
+      )) . '</span>'
+    ),
     '#options' => array(
-      'create' => t('Create Environments when Pull Requests are opened or re-opened. <div class="help-block">Recommended if you have a large number of open Pull Requests or if PRs have unstable or unknown code.</div>'),
       'all' => t('Create Environments for all open Pull Requests.  <div class="help-block">Environments will be created and deleted as Pull Requests are opened, closed, and re-opened.</div>'),
+      'create' => t('Only Create Environments when Pull Requests are opened or re-opened. <div class="help-block">Recommended if you have a large number of open Pull Requests or if PRs have unstable or unknown code.</div>'),
     ),
     '#default_value' => !empty($node->project->settings->github['pull_request_create_policy'])?
       $node->project->settings->github['pull_request_create_policy']:
-      'create',
+      'all',
     '#states' => array(
       'visible' => array(
         ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
@@ -161,7 +167,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
-      '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : FALSE,
+      '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : 1,
 // @TODO: Putting description in "help-block" right after title looks MUCH better and has better UX because the description is clickable. Put this in the theme layer.
 //      '#description' => t('When Pull Requests are merged or closed, delete the environment.'),
       '#states' => array(
@@ -700,8 +706,14 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
     unset($form['project']['environments']['NEW']);
     $form['project']['environments']['NEW'] = $new_element;
 
-    $settings_link = l(t('Change Project GitHub Settings'), 'projects/add/settings', array(
+    $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
       'fragment' => 'edit-project-settings-github',
+    ));
+
+    $prs_link = l(t('Pull Requests for @repo', array(
+      '@repo' => $project->github_owner . '/' . $project->github_repo,
+    )), $project->git_repo_url . '/pulls', array(
+      'attributes' => array('target' => '_blank')
     ));
 
     // Project with PR environments disabled.
@@ -711,6 +723,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         '#items' => array(
           t('Pull Request environments are disabled for this project.'),
           $settings_link,
+          $prs_link,
         ),
         '#prefix' => '<div class="alert alert-warning">',
         '#suffix' => '</div>',
@@ -722,8 +735,8 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         '#theme' => 'item_list',
         '#items' => array(
           t('Project is configured to create environments for all Pull Requests.'),
-          t('If you do not want an environment for one of your Pull Requests, close it or change the Project GitHub Settings.'),
           $settings_link,
+          $prs_link,
         ),
         '#prefix' => '<div class="alert alert-info">',
         '#suffix' => '</div>',
@@ -736,6 +749,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         '#items' => array(
           t('Project is configured to create environments only for new or reopened Pull Requests.'),
           $settings_link,
+          $prs_link,
         ),
         '#prefix' => '<div class="alert alert-info">',
         '#suffix' => '</div>',
