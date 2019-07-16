@@ -236,12 +236,12 @@ function devshop_projects_drush_context_import($context, &$node) {
       }
 
       // If hosting-import is being run a second time and the site exists, update it.
-      if ($node->nid && $environment->site) {
+      if (!empty($node->nid) && !empty($environment->site)) {
         $environment->project_nid = $node->nid;
         devshop_environment_save($environment);
         drush_log('Updated environment data for ' . $name, 'ok');
       }
-      elseif ($node->nid && empty($environment->site)) {
+      elseif (!empty($node->nid) && empty($environment->site)) {
         drush_log('Creating new environment for ' . $name, 'ok');
         $environment->project_nid = $node->nid;
         $node->project->environments[$name] = $environment;
