@@ -1856,7 +1856,7 @@ function devshop_github_create_all_pr_environments($project_node) {
 
       // Create environment then save PR data.
       // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, $remote_url);
+      $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, NULL, 'create', $remote_url);
       devshop_github_save_pr_env_data($pr, $environment);
       drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
     }
