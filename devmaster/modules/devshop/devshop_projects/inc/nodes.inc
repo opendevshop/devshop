@@ -220,7 +220,6 @@ function devshop_projects_node_insert($node) {
 
       // Preserve settings: Don't let covert_to_object() mess with the arrays.
       // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
-      $environment = (object) $environment;
       $settings = $environment->settings;
       $environment = convert_to_object($environment);
       $environment->settings = $settings;

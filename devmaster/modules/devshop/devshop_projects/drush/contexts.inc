@@ -192,8 +192,6 @@ function devshop_projects_drush_context_import($context, &$node) {
     }
 
     foreach ($project->environments as $name => $environment) {
-      $environment = (object) $environment;
-
       // Preserve settings: Don't let covert_to_object() mess with the arrays.
       // @TODO: Change all environment and project settings to be full objects, now that convert_to_object() exists.
       $settings = $environment->settings;
