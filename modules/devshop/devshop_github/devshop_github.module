@@ -112,12 +112,32 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
   $form['project']['settings']['deploy']['default_hooks']['#weight'] = -9;
 
-  // Pull Requests create environments?
-  // $form['github']['pull_request_environments'] = array(
+  // If Pull Requests were found in the environment, enable PR environments by default.
+  $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  $pr_count = count($prs);
+  if ($pr_count > 0) {
+    $form['project']['settings']['github']['found_prs'] = array(
+      '#type' => 'markup',
+      '#prefix' => '<div class="alert alert-success">',
+      '#suffix' => '</div>',
+      '#markup' => t('Pull Request Environments are enabled because !link. Please confirm your desired settings below.', array(
+        '!link' => l(format_plural($pr_count, t('there is 1 open Pull Request in your project'), t('there are @number open Pull Requests in your project', array('@number' => $pr_count))), $node->project->git_repo_url . '/pulls', array(
+          'attributes' => array(
+            'target' => '_blank',
+          ),
+        )),
+      )),
+    );
+    $pr_envs_default_value = 1;
+  }
+  else {
+    $pr_envs_default_value = isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : 0;
+  }
+
   $form['project']['settings']['github']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable Pull Request Environments <div class="help-block">Automatically create a copy of your site with the code from a Pull Request\'s branch.</div>'),
-      '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : FALSE,
+      '#default_value' => $pr_envs_default_value,
   );
 
   $form['project']['settings']['github']['pull_request_create_policy'] = array(
