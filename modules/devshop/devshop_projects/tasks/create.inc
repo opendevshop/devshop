@@ -21,8 +21,6 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $settings = (object) $settings;
   global $user;
 
-
-
   // Create site node.
   $site = new stdClass();
   $site->type = 'site';
