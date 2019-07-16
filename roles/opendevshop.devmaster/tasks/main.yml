@@ -133,7 +133,7 @@
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-task hostmaster verify"
+  command: "{{ drush_bin_path }} @hostmaster hosting-tasks -v"
 
 - name: DevShop.Support | Save License Key
   become: yes
