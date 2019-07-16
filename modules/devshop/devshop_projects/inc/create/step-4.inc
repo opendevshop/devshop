@@ -195,10 +195,27 @@ HTML;
   }
   elseif ($task_failed) {
     $project->no_finish = TRUE;
+
+    $message = t('Something went wrong when trying to clone your codebase.');
+
+    if (strpos($errors_rendered, 'Check the Publish Path of the platform and try again.') !== FALSE) {
+      if (empty($project->drupal_path)) {
+        $message = t("Drupal was not found in the project at the root. !link and try again.", array(
+          '!link' => l(t('Change Document Root in Project Settings'), '/project/add/settings'),
+        ));
+      }
+      else {
+        $message = t("<p>Drupal was not found in the project in the folder <code>@folder</code>.</p><p>!link and try again.</p>", array(
+          '@folder' => $project->drupal_path,
+          '!link' => l(t('Change Document Root in Project Settings'), '/projects/add/settings'),
+        ));
+      }
+    }
+
     $form['error'] = array(
-      '#prefix' => '<p class="error">',
-      '#markup' => t('Something went wrong when trying to clone your codebase.'),
-      '#suffix' => '</p>',
+      '#prefix' => '<div class="alert alert-danger">',
+      '#markup' => $message,
+      '#suffix' => '</div>',
     );
     $form['retry'] = array(
       '#type' => 'submit',
@@ -254,6 +271,7 @@ function devshop_project_create_step_sites_validate(&$from, &$form_state) {
       $task = current($environment->tasks['verify']);
       if (isset($task->nid)) {
         hosting_task_retry($task->nid);
+        drupal_goto(current_path());
       }
     }
   }
