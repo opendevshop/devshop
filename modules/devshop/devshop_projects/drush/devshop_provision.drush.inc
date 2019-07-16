@@ -519,7 +519,16 @@ function drush_devshop_provision_post_provision_install() {
 
     // If file exists but is not readable, alert the user.
     elseif (file_exists($path_or_url) && !is_readable($path_or_url)){
-      return drush_set_error('DEVSHOP_IMPORT_ERROR', dt('Unable to import SQL file @path: not readable.'));
+      $error = dt('Unable to import SQL file !file: not readable.');
+      if (drush_get_option('devshop_sql_import_fail_if_import_fails', false)) {
+        return drush_set_error('DEVSHOP_IMPORT_ERROR', $error, array(
+          '!file' => $path_or_url,
+        ));
+      }
+      else {
+        drush_log($error, 'warning');
+        return;
+      }
     }
 
     // If file exists and is readable, set it as the file to import.
@@ -527,9 +536,16 @@ function drush_devshop_provision_post_provision_install() {
       $file_to_import = $path_or_url;
     }
     elseif (!file_exists($path_or_url))  {
-      return drush_set_error('PROVISION_DATABASE_INSTALL', dt('The database file !file does not exist. Cannot continue.', array(
-        '!file' => $path_or_url,
-      )));
+      $error = dt('The database file !file does not exist. Unable to import.');
+      if (drush_get_option('devshop_sql_import_fail_if_import_fails', false)) {
+        return drush_set_error('PROVISION_DATABASE_INSTALL', $error, array(
+          '!file' => $path_or_url,
+        ));
+      }
+      else {
+        drush_log($error, 'warning');
+        return;
+      }
     }
 
     // Import the file
