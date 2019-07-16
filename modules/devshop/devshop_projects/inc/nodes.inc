@@ -217,9 +217,9 @@ function devshop_projects_node_insert($node) {
     $node->project->nid = $node->nid;
     $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
-
-      $environment = convert_to_object($environment);
+      // If site node does not exist, create it.
       if (empty($environment->site)) {
+        $environment = devshop_environment_normalize($environment);
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
     }
@@ -278,16 +278,32 @@ function devshop_projects_node_update($node) {
     $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
 
-      $environment = convert_to_object($environment);
+      // If site node does not exist, create it.
+      $environment = devshop_environment_normalize($environment);
       if (empty($project_node->project->environments[$name]->site)) {
         hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
       }
+      // If site does exist, save the environment data.
       else {
         $environment->project_nid = $node->nid;
         devshop_environment_save($environment);
       }
     }
   }
+}
+
+/**
+ * A hack until we have actual OOP.
+ *
+ * @param $environment
+ */
+function devshop_environment_normalize($environment) {
+  // Make sure environments are objects and settings are arrays
+  // Preserve settings, convert the rest to all objects.
+  $settings = $environment->settings;
+  $environment = convert_to_object($environment);
+  $environment->settings = (array) $settings;
+  return $environment;
 }
 
 /**
