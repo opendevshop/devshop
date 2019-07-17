@@ -3,7 +3,7 @@
 # Add hosting-queue-runner to supervisor programs.
 supervisor_programs:
   - name: 'hosting-queue-runner'
-    command: "{{ hosting_queue_runner_bin_path }}"
+    command: "/bin/bash -c 'source /etc/profile && env && {{ hosting_queue_runner_bin_path }}'"
     state: present
 
     # See https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf for options
