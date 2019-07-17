@@ -8,7 +8,8 @@
         "teqneers/php-stream-wrapper-for-git": "^2.0",
         "symfony/yaml": "^3.0",
         "ext-json": "*",
-        "knplabs/github-api": "~1.2",
+        "knplabs/github-api": "~2.11",
+	"php-http/guzzle6-adapter": "^1.1",
         "provision-ops/power-process": "^1.0"
     },
     "autoload": {
