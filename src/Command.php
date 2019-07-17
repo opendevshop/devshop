@@ -238,7 +238,7 @@ class Command extends BaseCommand
                         /**
                          * @var Response $response
                          */
-                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", [], json_encode($params));
                         $this->commitStatusMessage($response, $test_name, $test, $params->state);
                     } catch (\Exception $e) {
                         if ($e->getCode() == 404) {
@@ -347,7 +347,7 @@ class Command extends BaseCommand
                 }
 
                 if (!$input->getOption('dry-run')) {
-                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
+                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", [], json_encode($params));
                     $this->commitStatusMessage($response, $test_name, $test, $params->state);
                 }
 
