@@ -144,7 +144,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
     $hook_line = strtr($hook_line, array(
       '{{alias}}' => $environment->system_alias,
     ));
-    provision_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml');
+    provision_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml', $env);
   }
 }
 
