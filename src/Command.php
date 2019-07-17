@@ -4,8 +4,7 @@ namespace ProvisionOps\YamlTests;
 
 use ProvisionOps\Tools\PowerProcess as Process;
 use ProvisionOps\Tools\Style;
-
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
