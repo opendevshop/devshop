@@ -976,6 +976,37 @@ function devshop_github_node_load($nodes, $types) {
 }
 
 /**
+ * Implements hook_node_insert().
+ */
+function devshop_github_node_insert($node) {
+  if ($node->type == 'site' && !empty($node->pull_request)) {
+    $environment = new stdClass();
+    $environment->name = $node->environment_name;
+    $environment->project_nid = $node->project_nid;
+    devshop_github_save_pr_env_data($node->pull_request, $environment);
+  }
+
+  // When a project is inserted, if the PR create policy is set to "all", create all PR environments.
+  if ($node->type == 'project' && $node->project->settings['github']['pull_request_create_policy'] == 'all') {
+
+    // No errors, but this doesn't work.
+//    // Ensure github owner and repo are set.
+//    if (empty($node->project->github_owner)) {
+//      $git_repo_url = strtr($node->project->git_url, array(
+//        'git@github.com:' => 'http://github.com/',
+//        'git://' => 'http://',
+//        '.git' => '',
+//      ));
+//      $parts = explode('/', parse_url($git_repo_url, PHP_URL_PATH));
+//      $node->project->github_owner = $parts[1];
+//      $node->project->github_repo = $parts[2];
+//    }
+//
+//    devshop_github_create_all_pr_environments($node);
+  }
+}
+
+/**
  * Implements hook_node_update() for task insert.
  *
  * If task is a test run, send a "pending" commit status.
