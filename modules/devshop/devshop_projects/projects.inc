@@ -384,6 +384,10 @@ function devshop_project_load($node) {
 //      )
 //    );
 
+    $environment->dashboard_url = url("node/{$environment->site}", array(
+      'absolute' => true
+    ));
+
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
     $environments[$environment->name] = $environment;
