@@ -7,4 +7,4 @@ files[] = includes/admin.inc
 dependencies[] = devshop_projects
 dependencies[] = composer_manager
 
-files[] = DevShopPrEnvironment.php
+files[] = DevShopGitHubApi.php
