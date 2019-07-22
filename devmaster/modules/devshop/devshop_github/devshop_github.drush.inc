@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * Pass github token variable to the back end.
+ *
+ * @param $task
+ */
+function drush_devshop_github_pre_hosting_task($task)
+{
+  drush_set_option('devshop_github_token', variable_get('devshop_github_token', null));
+}
+
+/**
  * Implements hook_hosting_task_update_status().
  */
 function devshop_github_hosting_task_update_status($task, $status) {
