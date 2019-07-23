@@ -87,13 +87,16 @@ class DevShopGitHubApi {
       $deployment_data = json_decode($client->getHttpClient()->post($post_url, json_encode($deployment))->getBody(TRUE));
 
       // Save Deployment object to PR
-      $environment->github_pull_request->deployment = $deployment_data;
+//      $environment->settings['github']->deployment = $deployment_data;
 
       // Create Deployment Status
       $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_data->id}/statuses";
       $deployment_status_data = $client->getHttpClient()->post($post_url, json_encode($deployment_status));
 
-      $environment->github_pull_request->deployment_status = $deployment_status_data;
+//      $environment->github_pull_request->deployment_status = $deployment_status_data;
+
+      // Save PR data so PR data is saved.
+//      devshop_github_save_pr_env_data($environment->github_pull_request, $environment);
 
     }
     catch (\Exception $e) {
