@@ -27,18 +27,18 @@ class DevShopGitHubApi {
    * Create a GitHub "Deployment" and "Deployment Status".
    *
    * @param $environment
-   *   An environment object with "github_pull_request" property filled in.
+   *   An devshop environment object.
+   *
+   * @param $state
+   *   The state of the deployment status. Options are:
+   *   error, failure, pending, in_progress, queued, or success
    *
    * @param string $sha
    *   A specific git commit SHA, if desired. If left empty, deployment will be
    *   made against the environment "git_ref", a branch or tag.
    * @param $log_url
    */
-  static function createDeployment($environment, $sha  = NULL, $log_url = NULL) {
-
-    if (empty($environment->github_pull_request)) {
-      throw new \Exception('No Pull Request data in this environment.');
-    }
+  static function createDeployment($environment, $state = 'queued', $sha  = NULL, $log_url = NULL) {
 
     $project = $environment->project;
     $environment->dashboard_url = url("node/{$environment->site}", array(
@@ -68,7 +68,7 @@ class DevShopGitHubApi {
 
     // Deployment Status
     $deployment_status = new stdClass();
-    $deployment_status->state = 'queued';
+    $deployment_status->state = $state;
     $deployment_status->target_url = $environment->url;
     $deployment_status->log_url = empty($log_url)? $environment->dashboard_url: $log_url;
     $deployment_status->description = t('New environment is being created.  Please stand by.');
