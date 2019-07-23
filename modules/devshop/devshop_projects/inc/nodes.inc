@@ -300,7 +300,16 @@ function devshop_projects_node_update($node) {
 function devshop_environment_normalize($environment) {
   // Make sure environments are objects and settings are arrays
   // Preserve settings, convert the rest to all objects.
-  $settings = $environment->settings;
+  if (is_array($environment)) {
+   $settings = $environment['settings'];
+  }
+  elseif (is_object($environment)) {
+    $settings = $environment->settings;
+  }
+  else {
+    throw new \Exception(t('devshop_environment_normalize() function requires an object or array'));
+  }
+
   $environment = convert_to_object($environment);
   $environment->settings = (array) $settings;
   return $environment;
