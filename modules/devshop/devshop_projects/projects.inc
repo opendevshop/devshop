@@ -307,7 +307,10 @@ function devshop_project_load($node) {
     }
 
     // Load Install Method and info.
-    if (isset($environment->settings->install_method)) {
+    if (!empty($environment->settings->install_method['import'])) {
+      $environment->install_method = 'import';
+    }
+    elseif (isset($environment->settings->install_method['method'])) {
       $environment->install_method = $environment->settings->install_method['method'];
     }
     else {
