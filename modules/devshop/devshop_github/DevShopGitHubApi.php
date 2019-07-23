@@ -23,12 +23,18 @@ class DevShopGitHubApi {
     }
   }
 
-
   /**
+   * Create a GitHub "Deployment" and "Deployment Status".
+   *
    * @param $environment
+   *   An environment object with "github_pull_request" property filled in.
+   *
+   * @param string $sha
+   *   A specific git commit SHA, if desired. If left empty, deployment will be
+   *   made against the environment "git_ref", a branch or tag.
    * @param $log_url
    */
-  static function createDeployment($environment, $log_url = NULL) {
+  static function createDeployment($environment, $sha  = NULL, $log_url = NULL) {
 
     if (empty($environment->github_pull_request)) {
       throw new \Exception('No Pull Request data in this environment.');
@@ -41,8 +47,8 @@ class DevShopGitHubApi {
 
     $deployment = new stdClass();
 
-    // Git Reference. @TODO Set to SHA? GitHub let's us use sha branch or tag here.
-    $deployment->ref = $environment->git_ref;
+    // Git Reference. Use sha if specified.
+    $deployment->ref = $sha? $sha: $environment->git_ref;
 
     // In GitHub's API, "environment" is just a small string it displays on the pull request:
     $deployment->environment = $project->name . '.' . $environment->name;
