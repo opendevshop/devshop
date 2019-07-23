@@ -28,7 +28,7 @@ class DevShopGitHubApi {
    * @param $environment
    * @param $log_url
    */
-  static function CreateDeployment($environment, $log_url) {
+  static function createDeployment($environment, $log_url = NULL) {
 
     if (empty($environment->github_pull_request)) {
       throw new \Exception('No Pull Request data in this environment.');
