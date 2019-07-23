@@ -15,4 +15,4 @@ supervisor_programs:
       redirect_stderr=true
       autostart=TRUE
       autorestart=TRUE
-      environment=PATH="$PATH:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
+      environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
