@@ -43,6 +43,13 @@ function devshop_github_schema() {
         'size' => 'big',
         'description' => 'A serialized array of settings for this environment.',
       ),
+      'last_deployment_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'GitHub Deployment ID',
+      ),
     ),
     'primary key' => array('id'),
   );
@@ -91,4 +98,17 @@ function devshop_github_update_7001() {
       ))
       ->condition('name', 'devshop_github')
       ->execute();
+}
+
+/**
+ * Add the last_deployment_id field.
+ */
+function devshop_github_update_7002() {
+  db_add_field('hosting_devshop_github_pull_requests', 'last_deployment_id', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'The last GitHub Deployment ID created for this environment.',
+  ));
 }
