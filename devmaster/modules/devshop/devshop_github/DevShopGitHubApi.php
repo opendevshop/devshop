@@ -95,9 +95,7 @@ class DevShopGitHubApi {
       $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_data->id}/statuses";
       $deployment_status_data = $client->getHttpClient()->post($post_url, array(), json_encode($deployment_status));
 
-      // Save PR data so PR data is saved.
-//      devshop_github_save_pr_env_data($environment->github_pull_request, $environment);
-
+      watchdog('devshop_github', 'Deployment status saved: ' . $deployment_status_data);
     }
     catch (\Exception $e) {
       watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage());
