@@ -84,16 +84,16 @@ class DevShopGitHubApi {
 
       // Create Deployment
       $post_url = "/repos/$environment->github_owner/$environment->github_repo/deployments";
-      $deployment_data = json_decode($client->getHttpClient()->post($post_url, json_encode($deployment))->getBody(TRUE));
+      $deployment_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
+
+      watchdog('devshop_github', 'Deployment saved: ' . json_encode($deployment_data));
 
       // Save Deployment object to PR
 //      $environment->settings['github']->deployment = $deployment_data;
 
       // Create Deployment Status
       $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_data->id}/statuses";
-      $deployment_status_data = $client->getHttpClient()->post($post_url, json_encode($deployment_status));
-
-//      $environment->github_pull_request->deployment_status = $deployment_status_data;
+      $deployment_status_data = $client->getHttpClient()->post($post_url, array(), json_encode($deployment_status));
 
       // Save PR data so PR data is saved.
 //      devshop_github_save_pr_env_data($environment->github_pull_request, $environment);
@@ -115,8 +115,10 @@ class DevShopGitHubApi {
         $params->description = t('Branch is out of date! Merge from default branch.');
         $params->context = "devshop/{$project->name}/merge";
 
-            // Post status to github
-        $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+        // Post status to github
+        $deployment_status = $client->getHttpClient()->post("/repos/$environment->github_owner/$environment->github_repo/statuses/$sha", array(), json_encode($params));
+        watchdog('devshop_github', 'Deployment status saved: ' . $deployment_status);
+
       }
 
     } catch (Github\Exception\ValidationFailedException $e) {
