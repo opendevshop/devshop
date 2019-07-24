@@ -229,7 +229,15 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
 
   $project = $form_state['project'];
   if (arg(1) == 'add' && $project->git_provider == 'github'){
-    $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+    try {
+      $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+    }
+    catch (\Exception $e) {
+      drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
+        '%error' => $e->getMessage(),
+      )), 'warning');
+      return;
+    }
 
     if (count($prs)) {
       $existing_options = $form['git_ref']['#options'];
