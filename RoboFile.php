@@ -699,6 +699,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
+   * Stream watchdog logs from drupal
+   */
+  public function watchdog() {
+    $this->_exec('docker-compose exec -T devmaster drush @hostmaster wd-show --tail --extended');
+  }
+
+  /**
    * Enter a bash shell in the devmaster container.
    */
   public function shell($user = NULL) {
