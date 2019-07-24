@@ -69,7 +69,7 @@ class DevShopGitHubApi {
     // Deployment Status
     $deployment_status = new stdClass();
     $deployment_status->state = $state;
-    $deployment_status->target_url = $environment->url;
+    $deployment_status->target_url = 'http://' . $environment->uri;
     $deployment_status->log_url = empty($log_url)? $environment->dashboard_url: $log_url;
     $deployment_status->description = t('New environment is being created.  Please stand by.');
 
