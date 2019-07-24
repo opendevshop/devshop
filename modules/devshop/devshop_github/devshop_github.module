@@ -1658,13 +1658,14 @@ function devshop_public_key_valid_fingerprint() {
  * @param $pr
  * @param $environment
  */
-function devshop_github_save_pr_env_data($pr, $environment) {
+function devshop_github_save_pr_env_data($pr, $environment, $deployment_id = NULL) {
   $info = new stdClass();
   $info->id = $pr->id;
   $info->number = $pr->number;
   $info->project_nid = $environment->project_nid;
   $info->environment_name = $environment->name;
   $info->pull_request_object = serialize($pr);
+  $info->last_deployment_id = $deployment_id;
 
   // Last minute check for existing PR info
   $results = db_select('hosting_devshop_github_pull_requests', 'pr')
