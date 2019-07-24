@@ -89,7 +89,7 @@ class DevShopGitHubApi {
       watchdog('devshop_github', 'Deployment saved: ' . json_encode($deployment_data));
 
       // Save Deployment object to PR
-//      $environment->settings['github']->deployment = $deployment_data;
+      self::updateDeploymentId($environment->project_nid, $environment->name, $deployment_data->id);
 
       // Create Deployment Status
       $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_data->id}/statuses";
@@ -125,5 +125,22 @@ class DevShopGitHubApi {
       watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
 //      $message .= 'GitHub ValidationFailedException Error: ' . $e->getMessage();
     }
+  }
+
+  /**
+   * Save the deployment ID to the environment.
+   *
+   * @param $project_nid
+   * @param $environment_name
+   * @param $deployment_id
+   */
+  public static function updateDeploymentId($project_nid, $environment_name, $deployment_id)  {
+    db_update('hosting_devshop_github_pull_requests', 'pr')
+      ->condition('pr.project_nid', $project_nid)
+      ->condition('pr.environment_name', $environment_name)
+      ->fields(array(
+        'last_deployment_id' => $deployment_id,
+      ))
+      ->execute();
   }
 }
