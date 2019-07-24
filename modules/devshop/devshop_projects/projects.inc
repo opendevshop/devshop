@@ -180,14 +180,6 @@ function devshop_project_load($node) {
   ));
   foreach ($environment_data as $environment) {
 
-    // Don't load the environment if the site and/or platform is deleted.
-    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
-      continue;
-    }
-    if ($environment->platform_status == HOSTING_PLATFORM_DELETED) {
-      continue;
-    }
-
     // Drush alias
     $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
