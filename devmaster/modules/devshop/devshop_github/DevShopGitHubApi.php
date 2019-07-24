@@ -55,7 +55,7 @@ class DevShopGitHubApi {
 
     $deployment->payload = array(
       'devshop_site_url' => $environment->dashboard_url,
-      'devmaster_url' => $_SERVER['hostname'],
+      'devmaster_url' => $_SERVER['HTTP_HOST'],
     );
     $deployment->description = t('DevShop Deployment');
     $deployment->required_contexts = array();
