@@ -111,6 +111,12 @@ function devshop_project_load($node) {
       'git://' => 'http://',
       '.git' => '',
     ));
+
+    // Set github_owner and github_repo properties for project.
+    $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+    $project->github_owner = $parts[1];
+    $project->github_repo = $parts[2];
+
   }
   elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
     $project->git_provider = 'bitbucket';
@@ -205,9 +211,22 @@ function devshop_project_load($node) {
 
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
-      $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
+      $environment->git_repo_url = strtr($environment->git_url, array(
+        'git@github.com:' => 'http://github.com/',
+        'git://' => 'http://',
+        '.git' => '',
+      ));
+
+      $environment->git_ref_url = $environment->git_repo_url . '/tree/' . $environment->git_ref;
+
+      // Set github_owner and github_repo properties for project and environment.
+      $parts = explode('/', parse_url($environment->git_repo_url, PHP_URL_PATH));
+      $environment->github_owner = $parts[1];
+      $environment->github_repo = $parts[2];
+
     }
     else {
+      $environment->git_repo_url = url("node/$environment->site");
       $environment->git_ref_url = url("node/$environment->site/logs/commits");
     }
 
