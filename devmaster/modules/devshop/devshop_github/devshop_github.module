@@ -938,24 +938,6 @@ function devshop_github_node_load($nodes, $types) {
           }
         }
       }
-
-      // Parse github owner and repo.
-      if (isset($node->project) && $node->project->git_provider == 'github') {
-        $node->project->github_owner =
-        $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-        $node->project->github_owner = $parts[1];
-        $node->project->github_repo = $parts[2];
-      }
-    }
-    elseif (!empty($node->environment->repo_url) && $node->project->git_provider == 'github') {
-      $node->environment->git_repo_url = strtr($node->environment->git_url, array(
-        'git@github.com:' => 'http://github.com/',
-        'git://' => 'http://',
-        '.git' => '',
-      ));
-      $parts = explode('/', parse_url($node->environment->git_repo_url, PHP_URL_PATH));
-      $node->environment->github_owner = $parts[1];
-      $node->environment->github_repo = $parts[2];
     }
   }
 }
@@ -999,8 +981,8 @@ function devshop_github_node_update($node) {
 
     // Create a deployment status
     $project = $site->project;
-    $owner = $project->github_owner;
-    $repo = $project->github_repo;
+    $owner = $site->environment->github_owner;
+    $repo = $site->environment->github_repo;
     $sha = $site->environment->github_pull_request->pull_request_object->head->sha;
 
     $params = new stdClass();
