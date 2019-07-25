@@ -404,7 +404,11 @@ function devshop_project_load($node) {
 
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
-    $environments[$environment->name] = $environment;
+
+    // Only add to project if not deleted
+    if ($environment->site_status != HOSTING_SITE_DELETED) {
+      $environments[$environment->name] = $environment;
+    }
   }
 
   // Put live environment at the top.
