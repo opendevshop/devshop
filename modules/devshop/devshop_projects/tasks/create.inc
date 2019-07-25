@@ -126,5 +126,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'last_task' => $environment->last_task,
     ))
     ->execute();
+
+  module_invoke_all('devshop_post_environment_create', $environment);
   return $environment;
 }

@@ -1888,3 +1888,10 @@ function devshop_github_create_all_pr_environments($project_node) {
   // Fix missing last_task entries.
   devshop_reset_last_tasks();
 }
+
+/**
+ * Implements hook_devshop_post_environment_create().
+ */
+function devshop_github_devshop_post_environment_create($environment) {
+  DevShopGitHubApi::createDeployment($environment, 'pending');
+}
