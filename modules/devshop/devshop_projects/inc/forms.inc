@@ -1685,6 +1685,8 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     $primary_keys = array();
   }
 
+
+
   if (drupal_write_record('hosting_devshop_project_environment', $environment, $primary_keys)) {
 
     // Remove the "Site dev.drupal.devshop.local has been updated.
