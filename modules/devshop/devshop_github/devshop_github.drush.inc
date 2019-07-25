@@ -1,6 +1,37 @@
 <?php
 
 /**
+ * Implements hook_drush_command().
+ * Provides the "platform-delete" command.  This command triggers a delete task on a platform specified by it's path.
+ *
+ * This allows taking the final step in an upgrade: deleting the old devmaster.
+ */
+function devshop_github_drush_command()
+{
+  $items['github-deploy'] = array(
+    'description' => 'Create a deployment and deployment status for the chosen environment.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
+  );
+  return $items;
+}
+
+/**
+ *
+ */
+function drush_devshop_github_github_deploy($alias, $state, $description = NULL) {
+  print "Git Reference: " . d($alias)->platform->git_ref;
+
+  $project_name = d($alias)->project;
+  $environment_name = d($alias)->environment;
+  $project_node = devshop_projects_load_by_name($project_name);
+
+  $environment = $project_node->project->environments[$environment_name];
+  $environment->project = $project_node->project;
+
+  DevShopGitHubApi::createDeployment($environment, $state, $description);
+
+}
+/**
  * Pass github token variable to the back end.
  *
  * @param $task
@@ -25,7 +56,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     return;
   }
 
-  // If a pull request object is available...
+  // If a pull request object and Deployment is available...
   if (isset($environment->github_pull_request->pull_request_object->deployment)) {
 
     // If project is configured to reinstall every time, only react on "install" tasks. Otherwise, we get two github deployments because both a "deploy" (git pull) and a "install" task are run on each git push.
