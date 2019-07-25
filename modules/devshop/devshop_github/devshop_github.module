@@ -944,6 +944,8 @@ function devshop_github_node_load($nodes, $types) {
 
 /**
  * Implements hook_node_insert().
+ *
+ * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_github_node_insert($node) {
   if ($node->type == 'site' && !empty($node->pull_request)) {
@@ -953,6 +955,12 @@ function devshop_github_node_insert($node) {
     devshop_github_save_pr_env_data($node->pull_request, $environment);
 
     // @TODO: Create Deployment
+  }
+
+  if ($node->type == 'task' && $node->task_type == 'install') {
+    $site_node = node_load($node->rid);
+
+    \DevShopGitHubApi::createDeployment($site_node->environment, 'queued');
   }
 }
 
@@ -964,7 +972,7 @@ function devshop_github_node_insert($node) {
 function devshop_github_node_update($node) {
 
   // Only act on test triggers.
-  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'deploy')) {
+  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'devshop-deploy')) {
     return;
   }
 
@@ -983,7 +991,8 @@ function devshop_github_node_update($node) {
     $project = $site->project;
     $owner = $site->environment->github_owner;
     $repo = $site->environment->github_repo;
-    $sha = $site->environment->github_pull_request->pull_request_object->head->sha;
+
+    $sha = trim(shell_exec("cd {$site->environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
 
     $params = new stdClass();
     $params->state = 'pending';
@@ -1073,15 +1082,6 @@ function devshop_github_node_update($node) {
 //      }
 //      elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
 //        $state = 'success';
-//      }
-//      else {
-//        $state = 'error';
-//      }
-//
-//      $params = new stdClass();
-//      $params->state = $state;
-//      $params->target_url = $url;
-//      $params->description = $description;
 //      $params->context = 'devshop/' . $task->task_type;
 //
 //      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
@@ -1099,6 +1099,15 @@ function devshop_github_node_update($node) {
 //  }
 // }
 
+//      }
+//      else {
+//        $state = 'error';
+//      }
+//
+//      $params = new stdClass();
+//      $params->state = $state;
+//      $params->target_url = $url;
+//      $params->description = $descriptio
 /**
  *
  */
@@ -1647,7 +1656,9 @@ function devshop_github_save_pr_env_data($pr, $environment, $deployment_id = NUL
   $info->project_nid = $environment->project_nid;
   $info->environment_name = $environment->name;
   $info->pull_request_object = serialize($pr);
-  $info->last_deployment_id = $deployment_id;
+  if ($deployment_id) {
+    $info->last_deployment_id = $deployment_id;
+  }
 
   // Last minute check for existing PR info
   $results = db_select('hosting_devshop_github_pull_requests', 'pr')
@@ -1826,6 +1837,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       // Create environment then save PR data.
       // @TODO: Unify this into one function.
       $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
+      DevShopGitHubApi::createDeployment($environment, 'queued');
       devshop_github_save_pr_env_data($pr, $environment);
 
       drush_log("Environment $environment_name created for $project_node->title via installation profile.", "ok");
@@ -1837,6 +1849,8 @@ function devshop_github_create_all_pr_environments($project_node) {
       // Create environment then save PR data.
       // @TODO: Unify this into one function.
       $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, NULL, 'create', $remote_url);
+
+      DevShopGitHubApi::createDeployment($environment, 'queued');
       devshop_github_save_pr_env_data($pr, $environment);
       drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
     }
