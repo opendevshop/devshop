@@ -161,7 +161,7 @@ function devshop_projects_node_insert($node) {
     if (isset($_GET['redirect']) && $_GET['redirect'] == 'task-page') {
       drupal_goto("node/{$node->nid}");
     }
-    elseif (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+    elseif (isset($site->project) && !empty($site->project->nid) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
       drupal_goto("node/{$site->project->nid}");
     }
   }
