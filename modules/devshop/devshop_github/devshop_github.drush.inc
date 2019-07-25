@@ -38,6 +38,9 @@ function drush_devshop_github_github_deploy($alias, $state, $description = NULL)
  */
 function drush_devshop_github_pre_hosting_task($task)
 {
+  // @TODO If task is install or devshop-deploy, erase the deployment status from the PR so a new one is created.
+
+
   drush_set_option('devshop_github_token', variable_get('devshop_github_token', null));
 }
 
