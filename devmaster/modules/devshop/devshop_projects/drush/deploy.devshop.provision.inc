@@ -19,7 +19,7 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
   }
 
   // Verify that the branch or tag exists
-  if (empty($git_ref)) {
+  if (empty($git_ref) && empty(d()->platform->git_ref)) {
     return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', 'You must specify a valid branch or tag.');
   }
 }
@@ -29,6 +29,10 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
  */
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
+  if (empty($git_ref)) {
+    $git_ref = d()->platform->git_ref;
+  }
+
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
   $environment = (object) $project->environments[d()->environment];
@@ -61,6 +65,10 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
  * Post provision-devshop-deploy
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
+
+  if (empty($git_ref)) {
+    $git_ref = d()->platform->git_ref;
+  }
 
   // Get post deploy options
   $revert = drush_get_option('revert');
