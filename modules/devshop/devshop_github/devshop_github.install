@@ -69,6 +69,13 @@ function devshop_github_schema() {
         'default' => 0,
         'description' => "The project's Node ID.",
       ),
+      'environment_name' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 64,
+        'default' => '',
+        'description' => 'Name of the environment being deployed to.',
+      ),
       'deployment_object' => array(
         'type' => 'text',
         'not null' => FALSE,
