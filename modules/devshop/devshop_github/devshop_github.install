@@ -55,26 +55,19 @@ function devshop_github_schema() {
   );
   $schema['hosting_devshop_github_deployments'] = array(
     'fields' => array(
-      'id' => array(
+      'deployment_id' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
         'description' => 'GitHub Deployment ID',
       ),
-      'project_nid' => array(
+      'site_nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => "The project's Node ID.",
-      ),
-      'environment_name' => array(
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'length' => 64,
-        'default' => '',
-        'description' => 'Name of the environment being deployed to.',
+        'description' => "The Node ID of the site being deployed.",
       ),
       'deployment_object' => array(
         'type' => 'text',
@@ -83,9 +76,7 @@ function devshop_github_schema() {
         'description' => 'A serialized array of settings for this environment.',
       ),
     ),
-    'indexes' => array(
-      'project_environment' => array('project_nid', 'id'),
-    )
+    'primary key' => array('deployment_id'),
   );
   return $schema;
 }
