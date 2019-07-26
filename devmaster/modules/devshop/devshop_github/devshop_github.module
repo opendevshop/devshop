@@ -977,6 +977,22 @@ function devshop_github_node_load($nodes, $types) {
 }
 
 /**
+ * Implements hook_devshop_environment_alter().
+ */
+function devshop_github_devshop_environment_alter(&$environment, $project) {
+  $environment->github_deployments = db_select('hosting_devshop_github_deployments', 'd')
+    ->fields('d')
+    ->condition('d.site_nid', $environment->site)
+    ->orderBy('deployment_id', 'DESC')
+    ->execute()
+    ->fetchAllAssoc('site_nid');
+
+  foreach ($environment->github_deployments as &$deployment) {
+    $deployment->deployment_object = unserialize($deployment->deployment_object);
+  }
+}
+
+/**
  * Implements hook_node_insert().
  *
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
@@ -987,6 +1003,12 @@ function devshop_github_node_insert($node) {
     $environment->name = $node->environment_name;
     $environment->project_nid = $node->project_nid;
     devshop_github_save_pr_env_data($node->pull_request, $environment);
+  }
+
+  if ($node->type == 'task' & $node->task_type == 'devshop-deploy') {
+
+    $site = node_load($node->rid, null, true);
+    DevShopGitHubApi::createDeployment($site->environment, 'pending');
   }
 }
 
