@@ -1845,7 +1845,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       // Create environment then save PR data.
       // @TODO: Unify this into one function.
       $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
-      DevShopGitHubApi::createDeployment($environment, 'queued');
+//      DevShopGitHubApi::createDeployment($environment, 'queued');
       devshop_github_save_pr_env_data($pr, $environment);
 
       drush_log("Environment $environment_name created for $project_node->title via installation profile.", "ok");
@@ -1858,7 +1858,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       // @TODO: Unify this into one function.
       $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, NULL, 'create', $remote_url);
 
-      DevShopGitHubApi::createDeployment($environment, 'queued');
+//      DevShopGitHubApi::createDeployment($environment, 'queued');
       devshop_github_save_pr_env_data($pr, $environment);
       drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
     }
