@@ -1040,7 +1040,7 @@ function devshop_github_node_update($node) {
     $owner = $site->environment->github_owner;
     $repo = $site->environment->github_repo;
 
-    $sha = trim(shell_exec("cd {$site->environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
+    $sha = devshop_environment_get_git_sha($site->environment->repo_path);
 
     $params = new stdClass();
     $params->state = 'pending';
@@ -1931,4 +1931,15 @@ function devshop_github_create_all_pr_environments($project_node) {
  */
 function devshop_github_devshop_post_environment_create($environment) {
   DevShopGitHubApi::createDeployment($environment, 'pending');
+}
+
+/**
+ * Get the git sha from the desired path.
+ *
+ * @param $repo_path
+ *
+ * @return string
+ */
+function devshop_environment_get_git_sha($repo_path) {
+  return trim(shell_exec("cd {$repo_path}; git rev-parse HEAD  2> /dev/null"));
 }
