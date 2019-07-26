@@ -225,6 +225,24 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
  *
  * Add the list of PRs to the Branch selector.
  */
+function devshop_github_form_hosting_task_confirm_form_alter(&$form, &$form_state, $form_id) {
+
+  $form['#submit'][] = 'devshop_github_form_hosting_task_confirm_form_alter_submit';
+}
+
+/**
+ *
+ */
+function devshop_github_form_hosting_task_confirm_form_alter_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  DevShopGitHubApi::createDeployment();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for site_node_form().
+ *
+ * Add the list of PRs to the Branch selector.
+ */
 function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $project = $form_state['project'];
