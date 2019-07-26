@@ -57,10 +57,10 @@ SELECT
         else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
-            $entity->project = $project_node->project;
             if (isset($project_node->project->environments[$result->name])) {
               $entity->environment = $project_node->project->environments[$result->name];
             }
+            $entity->project = $project_node->project;
           }
         }
       }
