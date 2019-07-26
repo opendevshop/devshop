@@ -105,11 +105,11 @@ class DevShopGitHubApi {
     watchdog('devshop_github', 'Deployment status saved: ' . print_r($deployment_status_data, 1));
     }
     catch (\Exception $e) {
-      watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage());
+      watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage() . ' | Post URL: ' . $post_url . ' | '. $e->getTraceAsString());
       return false;
     }
     catch (Github\Exception\RuntimeException $e) {
-      watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage());
+      watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage() . ' | Post URL: ' . $post_url . ' | '. $e->getTraceAsString());
       if ($e->getCode() == '409') {
 //        $message .= "\n Branch is out of date! Merge code from base branch.";
 
