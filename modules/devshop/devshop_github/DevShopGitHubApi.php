@@ -38,9 +38,10 @@ class DevShopGitHubApi {
    *   made against the environment "git_ref", a branch or tag.
    * @param $log_url
    */
-  static function createDeployment($environment, $state = 'queued', $description = NULL, $sha  = NULL, $log_url = NULL) {
+  static function createDeployment($environment, $state = 'pending', $new = true, $description = NULL, $sha  = NULL, $log_url = NULL) {
 
     $project = $environment->project;
+    $site = node_load($environment->site);
     $environment->dashboard_url = url("node/{$environment->site}", array(
       'absolute' => true
     ));
@@ -49,7 +50,7 @@ class DevShopGitHubApi {
     try {
     $client = devshop_github_client();
 
-    if (empty($environment->github_pull_request->pull_request_object->deployment)) {
+    if ($new || empty($environment->github_deployments)) {
       $deployment = new stdClass();
 
       // Git Reference. Use sha if specified.
@@ -76,15 +77,15 @@ class DevShopGitHubApi {
       $post_url = "/repos/$environment->github_owner/$environment->github_repo/deployments";
       $deployment_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
-      watchdog('devshop_github', 'Deployment saved: ' . print_r($deployment_data, 1));
+      watchdog('devshop_github', 'New Deployment saved: ' . print_r($deployment_data, 1));
 
-      $environment->github_pull_request->pull_request_object->deployment = $deployment_data;
+      self::saveDeployment($deployment_data, $environment->site);
 
-      print "New Deployment created: " . $deployment_data->id;
     }
     else {
-      $deployment_data = $environment->github_pull_request->pull_request_object->deployment;
-      print "Old Deployment loaded: " . $deployment_data->id;}
+      $deployment_data = array_shift($site->github_deployments);
+      watchdog('devshop_github', 'Existing Deployment loaded: ' . print_r($deployment_data, 1));
+    }
 
     // Deployment Status
     $deployment_status = new stdClass();
@@ -134,20 +135,18 @@ class DevShopGitHubApi {
     devshop_github_save_pr_env_data( $environment->github_pull_request->pull_request_object, $environment);
   }
 
-//  /**
-//   * Save the deployment ID to the environment.
-//   *
-//   * @param $project_nid
-//   * @param $environment_name
-//   * @param $deployment_id
-//   */
-//  public static function updateDeploymentId($project_nid, $environment_name, $deployment_id)  {
-//    db_update('hosting_devshop_github_pull_requests', 'pr')
-//      ->condition('pr.project_nid', $project_nid)
-//      ->condition('pr.environment_name', $environment_name)
-//      ->fields(array(
-//        'last_deployment_id' => $deployment_id,
-//      ))
-//      ->execute();
-//  }
+  /**
+   * Save Deployment. Deployments never get updated.
+   *
+   * @param $project_nid
+   * @param $environment_name
+   * @param $deployment_id
+   */
+  public static function saveDeployment($deployment, $site_nid)  {
+    $record = new stdClass();
+    $record->deployment_id = $deployment->id;
+    $record->site_nid = $site_nid;
+    $record->deployment_object = serialize($deployment);
+    drupal_write_record('hosting_devshop_github_deployments', $record);
+  }
 }
