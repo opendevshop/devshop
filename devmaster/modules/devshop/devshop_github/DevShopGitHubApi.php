@@ -53,6 +53,7 @@ class DevShopGitHubApi {
       $deployment = new stdClass();
 
       // Git Reference. Use sha if specified.
+      // @TODO: Detect the actual SHA from git or the PR here?
       $deployment->ref = $sha? $sha: $environment->git_ref;
 
       // In GitHub's API, "environment" is just a small string it displays on the pull request:
