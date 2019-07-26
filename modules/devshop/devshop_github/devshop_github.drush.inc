@@ -19,7 +19,7 @@ function devshop_github_drush_command()
  *
  */
 function drush_devshop_github_github_deploy($alias, $state, $description = NULL) {
-  print "Git Reference: " . d($alias)->platform->git_ref;
+  drush_log("Git Reference: " . d($alias)->platform->git_ref, 'ok');
 
   $project_name = d($alias)->project;
   $environment_name = d($alias)->environment;
