@@ -53,6 +53,33 @@ function devshop_github_schema() {
     ),
     'primary key' => array('id'),
   );
+  $schema['hosting_devshop_github_deployments'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'GitHub Deployment ID',
+      ),
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The project's Node ID.",
+      ),
+      'deployment_object' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'A serialized array of settings for this environment.',
+      ),
+    ),
+    'indexes' => array(
+      'project_environment' => array('project_nid', 'id'),
+    )
+  );
   return $schema;
 }
 
@@ -101,14 +128,9 @@ function devshop_github_update_7001() {
 }
 
 /**
- * Add the last_deployment_id field.
+ * Create the hosting_devshop_github_deployments table.
  */
-function devshop_github_update_7002() {
-  db_add_field('hosting_devshop_github_pull_requests', 'last_deployment_id', array(
-    'type' => 'int',
-    'unsigned' => TRUE,
-    'not null' => TRUE,
-    'default' => 0,
-    'description' => 'The last GitHub Deployment ID created for this environment.',
-  ));
+function devshop_github_update_7003() {
+  $schema = devshop_github_schema();
+  db_create_table('hosting_devshop_github_deployments', $schema['hosting_devshop_github_deployments']);
 }
