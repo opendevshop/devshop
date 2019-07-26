@@ -15,9 +15,13 @@
  * to fire off anything you want, post deploy.
  *
  */
-function drush_devshop_post_provision_devshop_deploy($branch) {
+function drush_devshop_post_provision_devshop_deploy($branch = '') {
   
   drush_log('Hello, devshop', 'ok');
+
+  if (empty($branch)) {
+    $branch = d()->platform->git_ref;
+  }
 
   // If no changes in files were detected, the context 'devshop_block_deploy_hooks' gets saved to TRUE.
   if (drush_get_context('devshop_block_deploy_hooks')){
