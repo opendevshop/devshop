@@ -987,6 +987,10 @@ function devshop_github_devshop_environment_alter(&$environment, $project) {
     ->execute()
     ->fetchAllAssoc('site_nid');
 
+  if (empty($environment->github_deployments)) {
+    $environment->github_deployments = array();
+  }
+
   foreach ($environment->github_deployments as &$deployment) {
     $deployment->deployment_object = unserialize($deployment->deployment_object);
   }
