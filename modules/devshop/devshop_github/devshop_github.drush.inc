@@ -138,7 +138,18 @@ function devshop_github_hosting_task_update_status($task, $status) {
       }
 
       $sha = devshop_environment_get_git_sha($environment->repo_path);
-      DevShopGitHubApi::createDeployment($environment, $state, false, $description, $sha);
+
+      // Update the log URL because we know the Task NID now.
+      $task_url = url("node/$task->nid", array(
+        'absolute' => TRUE,
+      ));
+
+      watchdog('devshop_github', t('Creating deployment status: %state - %environment - %log_url', array(
+        '%state' => $state,
+        '%environment' => $environment->name,
+        '%log_url' => $task_url,
+      )));
+      DevShopGitHubApi::createDeployment($environment, $state, false, $description, $sha, $task_url);
 
       // If deploy task fails, tests won't run.
       if ($environment->settings->deploy['test'] && $status == HOSTING_TASK_ERROR) {
