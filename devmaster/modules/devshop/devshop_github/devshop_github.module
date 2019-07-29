@@ -1012,7 +1012,7 @@ function devshop_github_node_insert($node) {
   if ($node->type == 'task' & $node->task_type == 'devshop-deploy') {
 
     $site = node_load($node->rid, null, true);
-    DevShopGitHubApi::createDeployment($site->environment, 'pending');
+    DevShopGitHubApi::createDeployment($site->environment, 'pending', true);
   }
 }
 
