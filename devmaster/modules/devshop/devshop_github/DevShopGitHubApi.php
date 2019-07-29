@@ -40,7 +40,7 @@ class DevShopGitHubApi {
    */
   static function createDeployment($environment, $state = 'pending', $new = true, $description = NULL, $sha  = NULL, $log_url = NULL) {
 
-    $project = $environment->project;
+//    $project = $environment->project;
     $hostmaster_uri = hosting_get_hostmaster_uri();
 
     // If Deployment doesn't already exist, create it.
@@ -65,37 +65,47 @@ class DevShopGitHubApi {
       $deployment->description = t('Deploying git reference %ref to environment %env for project %proj: %link [by %server]', array(
         '%ref' => $deployment->ref,
         '%env' => $environment->name,
-        '%project' => $project->name,
+        '%project' => $environment->project_name,
         '%link' => $deployment->environment,
         '%server' => $hostmaster_uri,
       ));
       $deployment->required_contexts = array();
 
       // @TODO: Use the developer preview to get this flag: https://developer.github.com/v3/previews/#enhanced-deployments
-      $deployment->transient_environment = true;
+#      $deployment->transient_environment = true;
 
       // @TODO: Support deployment notifications for production.
-      $deployment->production_environment = false;
+#      $deployment->production_environment = false;
 
       // Create Deployment
       $post_url = "/repos/$environment->github_owner/$environment->github_repo/deployments";
-      $deployment_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
+      $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
-      watchdog('devshop_github', 'New Deployment saved: ' . print_r($deployment_data, 1));
-
-      self::saveDeployment($deployment_data, $environment->site);
-
+      $deployment_data = self::saveDeployment($deployment_object, $environment->site);
+      watchdog('devshop_github', 'New Deployment loaded: ' . $deployment_object->id);
     }
     else {
-      $deployment_data = current($environment->github_deployments);
-      watchdog('devshop_github', 'Existing Deployment loaded: ' . print_r($deployment_data, 1));
+      reset($environment->github_deployments);
+      $devshop_environment_deployment = current($environment->github_deployments);
+      $deployment_object = $devshop_environment_deployment->deployment_object;
+      watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
+    }
+
+    if (empty($deployment_object->id)) {
+      watchdog('devshop_github', 'WARNING: deployment ID not found: ' . print_r($deployment_object, 1));
+      return;
     }
 
     // Deployment Status
     $deployment_status = new stdClass();
     $deployment_status->state = $state;
-    $deployment_status->target_url = 'http://' . $environment->uri;
-    $deployment_status->log_url = empty($log_url)? $environment->dashboard_url: $log_url;
+
+    // Target URL is actually for the logs.
+    // According to GitHub API Docs:
+    // "This URL should contain output to keep the user updated while the task is running or serve as historical information for what happened in the deployment. "
+    $deployment_status->log_url =
+    $deployment_status->target_url =
+      empty($log_url)? $environment->dashboard_url: $log_url;
 
     // @TODO: Generate a default description?
     $deployment_status->description = $description;
@@ -107,10 +117,10 @@ class DevShopGitHubApi {
     $deployment_status->environment_url = $environment->url;
 
     // Create Deployment Status
-    $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_data->id}/statuses";
+    $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_object->id}/statuses";
     $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
 
-    watchdog('devshop_github', 'Deployment status saved: ' . print_r($deployment_status_data, 1));
+    watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
     }
     catch (\Exception $e) {
       watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage() . ' | Post URL: ' . $post_url . ' | '. $e->getTraceAsString());
@@ -124,9 +134,11 @@ class DevShopGitHubApi {
         // Send a failed commit status to alert to developer
         $params = new stdClass();
         $params->state = 'failure';
-        $params->target_url = $project->git_repo_url;
+        $params->log_url =
+        $params->target_url =
+          empty($log_url)? $environment->dashboard_url: $log_url;
         $params->description = t('Branch is out of date! Merge from default branch.');
-        $params->context = "devshop/{$project->name}/merge";
+        $params->context = "devshop/{$environment->project_name}/merge";
 
         // Post status to github
         $deployment_status = $client->getHttpClient()->post("/repos/$environment->github_owner/$environment->github_repo/statuses/$sha", array(), json_encode($params));
@@ -154,5 +166,9 @@ class DevShopGitHubApi {
     $record->site_nid = $site_nid;
     $record->deployment_object = serialize($deployment);
     drupal_write_record('hosting_devshop_github_deployments', $record);
+
+    // Unserialize and return.
+    $record->deployment_object = $deployment;
+    return $record;
   }
 }
