@@ -33,13 +33,6 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     $git_ref = d()->platform->git_ref;
   }
 
-  $project_name = d()->project;
-  $project = (object) d("@project_{$project_name}")->project;
-  $environment = (object) $project->environments[d()->environment];
-  $desired_ref_type = $project->settings['git']['refs'][$git_ref];
-
-    drush_log('[Current Working Directory]' . d()->platform->repo_path, 'p_log');
-
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
 
@@ -49,10 +42,14 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     // Checkout the chosen ref
     $git_checkout_output = provision_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
+    $git_ref_type = devshop_environment_get_git_ref_type(d()->platform->repo_path);
 
-    // Run Git Pull, if on a branch.
-    if ($desired_ref_type == 'branch') {
-      $git_pull_output = provision_process("git pull", d()->platform->repo_path, dt('DevShop Deploy'));
+    drush_log('[Current Working Directory]' . d()->platform->repo_path, 'p_log');
+    drush_log("[Git $git_ref_type to Deploy] $git_ref", 'p_log');
+
+  // Run Git Pull, if on a branch.
+    if ($git_ref_type == 'branch') {
+      provision_process("git pull", d()->platform->repo_path, dt('DevShop Deploy'));
     }
 
     // Run a submodule update and init.
