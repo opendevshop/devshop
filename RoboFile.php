@@ -706,6 +706,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
+   * Restart the containers.
+   */
+  public function restart() {
+      $this->_exec('docker-compose restart');
+  }
+
+  /**
    * Enter a bash shell in the devmaster container.
    */
   public function shell($user = NULL) {
