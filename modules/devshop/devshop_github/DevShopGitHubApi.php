@@ -41,6 +41,7 @@ class DevShopGitHubApi {
   static function createDeployment($environment, $state = 'pending', $new = true, $description = NULL, $sha  = NULL, $log_url = NULL) {
 
     $project = $environment->project;
+    $hostmaster_uri = hosting_get_hostmaster_uri();
 
     // If Deployment doesn't already exist, create it.
     try {
@@ -51,16 +52,23 @@ class DevShopGitHubApi {
 
       // Git Reference. Use sha if specified.
       // @TODO: Detect the actual SHA from git or the PR here?
+      // NO PR SPECIFIC THINGS in Deployments.
       $deployment->ref = $sha? $sha: $environment->git_ref;
 
       // In GitHub's API, "environment" is just a small string it displays on the pull request:
+      // It's a better  UX to show the full URI in the "environment" field.
       $deployment->environment = $environment->uri;
-
       $deployment->payload = array(
         'devshop_site_url' => $environment->dashboard_url,
-        'devmaster_url' => $_SERVER['HTTP_HOST'],
+        'devmaster_url' => $hostmaster_uri,
       );
-      $deployment->description = t('DevShop Deployment');
+      $deployment->description = t('Deploying git reference %ref to environment %env for project %proj: %link [by %server]', array(
+        '%ref' => $deployment->ref,
+        '%env' => $environment->name,
+        '%project' => $project->name,
+        '%link' => $deployment->environment,
+        '%server' => $hostmaster_uri,
+      ));
       $deployment->required_contexts = array();
 
       // @TODO: Use the developer preview to get this flag: https://developer.github.com/v3/previews/#enhanced-deployments
@@ -79,7 +87,7 @@ class DevShopGitHubApi {
 
     }
     else {
-      $deployment_data = array_shift($site->github_deployments);
+      $deployment_data = current($environment->github_deployments);
       watchdog('devshop_github', 'Existing Deployment loaded: ' . print_r($deployment_data, 1));
     }
 
@@ -88,6 +96,8 @@ class DevShopGitHubApi {
     $deployment_status->state = $state;
     $deployment_status->target_url = 'http://' . $environment->uri;
     $deployment_status->log_url = empty($log_url)? $environment->dashboard_url: $log_url;
+
+    // @TODO: Generate a default description?
     $deployment_status->description = $description;
 
     // @TODO: Use developer preview to get this:
