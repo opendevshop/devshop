@@ -1011,8 +1011,14 @@ function devshop_github_node_insert($node) {
 
   if ($node->type == 'task' & $node->task_type == 'devshop-deploy') {
 
+    // Get the latest environment info.
     $site = node_load($node->rid, null, true);
-    DevShopGitHubApi::createDeployment($site->environment, 'pending', true);
+
+    // Create a deployment on GitHub.
+    $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', true);
+
+    // Save the github deployment ID as a task arg.
+    $node->task_args['github_deployment_id'] = $deployment->id;
   }
 }
 
