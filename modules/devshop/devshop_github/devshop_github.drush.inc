@@ -145,12 +145,12 @@ function devshop_github_hosting_task_update_status($task, $status) {
       $task_url = url("node/$task->nid", array(
         'absolute' => TRUE,
       ));
-
-      watchdog('devshop_github', t('Creating deployment status: %state - %environment - %log_url', array(
-        '%state' => $state,
-        '%environment' => $environment->name,
-        '%log_url' => $task_url,
-      )));
+// @TODO: Throwing watchdog here threw the Typo3 phar protection error. Remove or refactor.
+//      watchdog('devshop_github', t('Creating deployment status: %state - %environment - %log_url', array(
+//        '%state' => $state,
+//        '%environment' => $environment->name,
+//        '%log_url' => $task_url,
+//      )));
       DevShopGitHubApi::createDeployment($environment, $state, false, $description, $sha, $task_url);
 
       // If deploy task fails, tests won't run.
