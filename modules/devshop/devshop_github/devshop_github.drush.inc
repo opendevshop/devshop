@@ -36,8 +36,14 @@ function drush_devshop_github_github_deploy($alias, $state, $description = NULL)
  *
  * @param $task
  */
-function drush_devshop_github_pre_hosting_task($task)
+function drush_devshop_github_pre_hosting_task()
 {
+  $task =& drush_get_context('HOSTING_TASK');
+
+  // Pass github_deployment_id from task node to drush options.
+  if ($task->_task_type == 'devshop-deploy' && !empty($task->task_args['github_deployment_id'])) {
+    $task->options['github_deployment_id'] = $task->task_args['github_deployment_id'];
+  }
   // @TODO If task is install or devshop-deploy, erase the deployment status from the PR so a new one is created.
   // @TODO: We should erase and create a "pending" status when the task nodes are created.
 
