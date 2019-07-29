@@ -37,6 +37,9 @@ class DevShopGitHubApi {
    *   A specific git commit SHA, if desired. If left empty, deployment will be
    *   made against the environment "git_ref", a branch or tag.
    * @param $log_url
+   *
+   * @return $deployment_object
+   *   A deployment object returned from GitHub.
    */
   static function createDeployment($environment, $state = 'pending', $new = true, $description = NULL, $sha  = NULL, $log_url = NULL) {
 
@@ -150,7 +153,8 @@ class DevShopGitHubApi {
       watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
 //      $message .= 'GitHub ValidationFailedException Error: ' . $e->getMessage();
     }
-    devshop_github_save_pr_env_data( $environment->github_pull_request->pull_request_object, $environment);
+
+    return $deployment_object;
   }
 
   /**
