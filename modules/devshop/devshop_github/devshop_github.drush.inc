@@ -82,6 +82,15 @@ function devshop_github_hosting_task_update_status($task, $status) {
       if ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
         $state = 'success';
       }
+      // @TODO: Enable preview queued and in_progress with:
+      // media type in the Accept header:
+      // application/vnd.github.flash-preview+json
+      elseif ($status == HOSTING_TASK_QUEUED) {
+        $state = 'queued';
+      }
+      elseif ($status == HOSTING_TASK_PROCESSING) {
+        $state = 'in_progress';
+      }
       else {
         $state = 'failure';
       }
