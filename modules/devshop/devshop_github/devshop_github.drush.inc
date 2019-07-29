@@ -87,9 +87,11 @@ function devshop_github_hosting_task_update_status($task, $status) {
       // application/vnd.github.flash-preview+json
       elseif ($status == HOSTING_TASK_QUEUED) {
         $state = 'queued';
+        $state = 'pending';
       }
       elseif ($status == HOSTING_TASK_PROCESSING) {
         $state = 'in_progress';
+        $state = 'pending';
       }
       else {
         $state = 'failure';
