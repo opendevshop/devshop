@@ -41,10 +41,6 @@ class DevShopGitHubApi {
   static function createDeployment($environment, $state = 'pending', $new = true, $description = NULL, $sha  = NULL, $log_url = NULL) {
 
     $project = $environment->project;
-    $site = node_load($environment->site);
-    $environment->dashboard_url = url("node/{$environment->site}", array(
-      'absolute' => true
-    ));
 
     // If Deployment doesn't already exist, create it.
     try {
