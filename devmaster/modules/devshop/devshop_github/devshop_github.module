@@ -985,7 +985,7 @@ function devshop_github_devshop_environment_alter(&$environment, $project) {
     ->condition('d.site_nid', $environment->site)
     ->orderBy('deployment_id', 'DESC')
     ->execute()
-    ->fetchAllAssoc('site_nid');
+    ->fetchAllAssoc('deployment_id');
 
   if (empty($environment->github_deployments)) {
     $environment->github_deployments = array();
