@@ -239,6 +239,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       return;
     }
 
+    $pr_options = array();
     if (count($prs)) {
       $existing_options = $form['git_ref']['#options'];
       foreach ($prs as $pr) {
