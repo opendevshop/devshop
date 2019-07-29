@@ -49,11 +49,13 @@ function drush_devshop_github_pre_hosting_task($task)
  */
 function devshop_github_hosting_task_update_status($task, $status) {
 
-  // React only on certain task types and if project and environment exist.
-  $types = array('install', 'test', 'devshop-deploy');
-  if (in_array($task->task_type, $types) && isset($task->ref->project) && !empty($task->ref->project) && isset($task->ref->environment) && !empty($task->ref->environment)) {
-    $project = $task->ref->project;
-    $environment = $task->ref->environment;
+  // Only run on devshop-deploy tasks.
+  if ($task->task_type = 'devshop-deploy') {
+    // Reload site node with "reset" to ensure all environment "github_deployments" are there.
+    $site = node_load($task->rid, null, true);
+    if (isset($site->environment)) {
+      $environment = $site->environment;
+    }
   }
   else {
     return;
