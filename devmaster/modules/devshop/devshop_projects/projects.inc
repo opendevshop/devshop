@@ -87,12 +87,12 @@ function devshop_project_load($node) {
   if (!empty($project->tasks['verify'])) {
     $project->verify = $project->tasks['verify'];
   }
-  
+
   // Load up all project settings.
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
-  
-  
+
+
   // Create "refs" array to determine ref type.
   $project->settings->git['refs'] = array();
   foreach ($project->settings->git as $type => $refs) {
@@ -180,6 +180,11 @@ function devshop_project_load($node) {
   ));
   foreach ($environment_data as $environment) {
 
+    // Site dashboard URL.
+    $environment->dashboard_url = url("node/{$environment->site}", array(
+      'absolute' => true
+    ));
+
     // Drush alias
     $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
@@ -252,7 +257,7 @@ function devshop_project_load($node) {
       else {
         $environment->db_server_nid = $environment->settings->db_server;
       }
-      
+
       if (!empty($db_servers[$environment->db_server_nid])) {
         $environment->db_server = $db_servers[$environment->db_server_nid];
       }
