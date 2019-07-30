@@ -235,7 +235,7 @@ function devshop_github_form_hosting_task_confirm_form_alter(&$form, &$form_stat
  */
 function devshop_github_form_hosting_task_confirm_form_alter_submit($form, &$form_state) {
   $values = $form_state['values'];
-  DevShopGitHubApi::createDeployment();
+//  DevShopGitHubApi::createDeployment();
 }
 
 /**
@@ -282,7 +282,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
 
     // Add our own submit handler.
     if (empty($form_state['node']->nid)) {
-      $form['actions']['submit']['#submit'][] = 'devshop_github_environment_settings_submit';
+      $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
     }
   }
 }
@@ -290,11 +290,11 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
 /**
  * Submit handler for site/environment settings page.
  */
-function devshop_github_environment_settings_submit($form, &$form_state) {
+function devshop_github_environment_create_submit($form, &$form_state) {
 
   // Save the environment record.
   $site = node_load($form_state['node']->nid, null, true);
-  DevShopGitHubApi::createDeployment($site->environment, 'pending');
+  DevShopGitHubApi::createDeployment($site->environment, 'pending', t('Environment Settings Submit'));
 
 }
 
@@ -1015,10 +1015,14 @@ function devshop_github_node_insert($node) {
     $site = node_load($node->rid, null, true);
 
     // Create a deployment on GitHub.
-    $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', true);
-
-    // Save the github deployment ID as a task arg.
-    $node->task_args['github_deployment_id'] = $deployment->id;
+//    $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', t('DevShop Deploy task queued.'));
+//
+//    drush_log(dt('Created Deployment Status: status: %state - %environment - %log_url - %id', array(
+//      '%id' => $deployment->id,
+//      '%state' => 'pending',
+//    )), 'p_log');
+//    // Save the github deployment ID as a task arg.
+//    $node->task_args['github_deployment_id'] = $deployment->id;
   }
 }
 
@@ -1940,7 +1944,7 @@ function devshop_github_create_all_pr_environments($project_node) {
  * Implements hook_devshop_post_environment_create().
  */
 function devshop_github_devshop_post_environment_create($environment) {
-  DevShopGitHubApi::createDeployment($environment, 'pending');
+//  DevShopGitHubApi::createDeployment($environment, 'pending');
 }
 
 /**
