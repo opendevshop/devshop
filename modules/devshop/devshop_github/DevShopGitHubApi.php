@@ -50,14 +50,15 @@ class DevShopGitHubApi {
 //    $project = $environment->project;
     $hostmaster_uri = hosting_get_hostmaster_uri();
 
-    $deployment_id = !empty($task->github_deployment->id)? $task->github_deployment->id: NULL;
+    // Lookup existing deployment for this task. I used hook_node_load() to ensure it's there, but who knows? data isn't there sometimes. Thanks, Drupal!
+    $existing_deployment_object =  unserialize(db_query('SELECT deployment_object FROM {hosting_devshop_github_deployments} WHERE task_nid = :nid', array(':nid' => $task->nid))->fetchField());
 
     // If Deployment doesn't already exist, create it.
     try {
     $client = devshop_github_client();
 
-    if (empty($deployment_id)) {
-      watchdog('devshop_github', "CREATE NEW DEPLOYMENT: ". ($deployment_id?$deployment_id: 'No ID. Good.'));
+    if (empty($existing_deployment_object)) {
+      watchdog('devshop_github', 'Creating new GitHub Deployment for Task !nid', array('!nid' => $task->nid));
       $deployment = new stdClass();
 
       // Git Reference. Use sha if specified.
@@ -99,9 +100,9 @@ class DevShopGitHubApi {
       $deployment_object = $deployment_data->deployment_object;
       watchdog('devshop_github', 'New Deployment created: ' . $deployment_object->id);
     }
-    // GitHub Deployment found attached to task.
+    // GitHub Deployment found attached to task, use that. Do not create new deployment status.
     else {
-        $deployment_object = $task->github_deployment;
+        $deployment_object = $existing_deployment_object;
         watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
     }
 
