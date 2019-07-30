@@ -28,7 +28,7 @@ function drush_devshop_github_github_deploy($alias, $state, $description = NULL)
   $environment = $project_node->project->environments[$environment_name];
   $environment->project = $project_node->project;
 
-  DevShopGitHubApi::createDeployment($environment, $state, $description);
+//  DevShopGitHubApi::createDeployment($environment, $state, $description);
 
 }
 /**
@@ -52,12 +52,18 @@ function drush_devshop_github_pre_hosting_task()
 
 /**
  * Implements hook_hosting_task_update_status().
+ *
+ * This fires BEFORE hook_node_insert?
  */
 function devshop_github_hosting_task_update_status($task, $status) {
+  drush_log("Running function devshop_github_hosting_task_update_status() type= $task->task_type status = $status", 'p_log');
 
   // React only on certain task types and if project and environment exist.
   $types = array('install', 'test', 'devshop-deploy');
-  if (in_array($task->task_type, $types) && isset($task->ref->project) && !empty($task->ref->project) && isset($task->ref->environment) && !empty($task->ref->environment)) {
+  if (empty($task->ref)) {
+    $task->ref = node_load($task->rid);
+  }
+  if (in_array($task->task_type, $types) && !empty($task->ref->project) && !empty($task->ref->environment)) {
     $project = $task->ref->project;
     $environment = $task->ref->environment;
   }
@@ -134,14 +140,16 @@ function devshop_github_hosting_task_update_status($task, $status) {
 //
 //      $deployment_status = $client->getHttpClient()->post($post_url, json_encode($params));
       if ($status == HOSTING_TASK_WARNING) {
-        $description = t('DevShop: Deploy success with warnings. [!url]', array(
+        $description = t('DevShop: !type success with warnings. [!url]', array(
           '!url' => $environment->url,
+          '!type' => $task->task_type,
         ));
       }
       else {
-        $description = t('DevShop: Deploy !status [!url]', array(
+        $description = t('DevShop: !type !status [!url]', array(
           '!status' => $state,
           '!url' => $environment->url,
+          '!type' => $task->task_type,
         ));
       }
 
@@ -151,13 +159,49 @@ function devshop_github_hosting_task_update_status($task, $status) {
       $task_url = url("node/$task->nid", array(
         'absolute' => TRUE,
       ));
-// @TODO: Throwing watchdog here threw the Typo3 phar protection error. Remove or refactor.
-//      watchdog('devshop_github', t('Creating deployment status: %state - %environment - %log_url', array(
-//        '%state' => $state,
-//        '%environment' => $environment->name,
-//        '%log_url' => $task_url,
-//      )));
-      DevShopGitHubApi::createDeployment($environment, $state, false, $description, $sha, $task_url);
+
+      // If task node really is NEW, aka called from hosting_task_insert(), create new deployment.
+      $task_github_deployment_id = db_select('hosting_task_arguments', 'a')
+        ->fields('a', array(
+          'value',
+        ))
+        ->condition('name', 'github_deployment_id')
+        ->condition('vid', $task->vid)
+        ->execute()
+        ->fetchField()
+      ;
+
+      watchdog('devshop_github', 'GitHub Deployment ID Found for Task: ' . $task->nid .': '. print_r($task_github_deployment_id, 1));
+
+      // No Deployment ID. Create deployment.
+      if (empty($task_github_deployment_id)) {
+        watchdog('devshop_github', 'NEW TASK, NEW DEPLOYMENT: Task NID: ' . $task->nid);
+        $deployment_object = DevShopGitHubApi::createDeployment($environment, $state, $description, $sha, $task_url);
+        $deployment_id = $deployment_object->id;
+        $key = 'github_deployment_id';
+        $value = $deployment_object->id;
+        $id = db_insert('hosting_task_arguments')
+          ->fields(array(
+            'vid' => $task->vid,
+            'nid' => $task->nid,
+            'name' => $key,
+            'value' => $value,
+          ))
+          ->execute();
+        watchdog('devshop_github', 'Deployment saved to hosting_task_arguments: Task NID: ' . $task->nid);
+      }
+      else {
+        $deployment_id = $task_github_deployment_id;
+      }
+
+      // If existing github deployment ID is specified in the task_args, use that.
+      if (!empty($deployment_id)) {
+        $deployment_object = DevShopGitHubApi::createDeployment($environment, $state, $description, $sha, $task_url, $deployment_id);
+      }
+      else {
+        $deployment_object = DevShopGitHubApi::createDeployment($environment, $state, $description, $sha, $task_url);
+      }
+      drush_log('RETURNED FROM DevShopGitHubApi::createDeployment:  ' . print_r($deployment_object, 1), 'p_log');
 
       // If deploy task fails, tests won't run.
       if ($environment->settings->deploy['test'] && $status == HOSTING_TASK_ERROR) {
