@@ -27,7 +27,7 @@
     validate: 'visudo -cf %s'
     create: yes
 
-- name: Test sudo apache2ctl reload access.
+- name: Test aegir magic permissions (sudo {{ apache_control }} -S) See "apache_control" variable.
   become: yes
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
