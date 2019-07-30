@@ -12,10 +12,10 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.170"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-12/3020169-permission-check.patch"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-05/3018114-client-optional.patch"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-10/3019462-administer-servers.patch"
+projects[hosting][version] = "3.x"
+projects[hosting][download][type] = git
+projects[hosting][download][url] = https://github.com/jashkenas/backbone.git
+projects[hosting][download][branch] = 7.x-3.x-devshop
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
