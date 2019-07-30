@@ -186,6 +186,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
 function devshop_projects_post_hosting_install_task($task, $data) {
   
   // Queue up a verification of the site.
+  // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->nid, 'verify');
   
 }
@@ -214,8 +215,10 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
   }
 
   // Queue up a verification of the platform.
+  // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->environment->platform, 'verify');
   
   // Queue up a verification of the site.
+  // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->nid, 'verify');
 }
