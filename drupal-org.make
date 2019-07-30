@@ -14,7 +14,6 @@ projects[devshop_stats][subdir] = "contrib"
 projects[hosting][subdir] = aegir
 projects[hosting][version] = "3.x"
 projects[hosting][download][type] = git
-projects[hosting][download][url] = https://github.com/jashkenas/backbone.git
 projects[hosting][download][branch] = 7.x-3.x-devshop
 
 ; Aegir Core not included in hosting.module
