@@ -66,6 +66,9 @@ class DevShopGitHubApi {
       // NO PR SPECIFIC THINGS in Deployments.
       $deployment->ref = $sha? $sha: $environment->git_ref;
 
+      // @TODO: Make this configurable.
+      $deployment->auto_merge = false;
+
       // https://developer.github.com/v3/repos/deployments/#create-a-deployment
       $deployment->task = "deploy:{$task->task_type}";
 
