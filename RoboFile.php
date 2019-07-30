@@ -57,23 +57,23 @@ class RoboFile extends \Robo\Tasks {
       $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
     }
   }
-
-  /**
-   * Launch devshop after running prep:host and prep:source. Use --build to
-   * build new local containers.
-   *
-   * If you only run one command, run this one.
-   */
-  public function launch($opts = ['build' => 0]) {
-    $this->prepareHost();
-    $this->prepareSourcecode();
-
-    if ($opts['build']) {
-      $this->prepareContainers();
-    }
-
-    $this->up(['follow' => TRUE]);
-  }
+//
+//  /**
+//   * Launch devshop after running prep:host and prep:source. Use --build to
+//   * build new local containers.
+//   *
+//   * If you only run one command, run this one.
+//   */
+//  public function launch($opts = ['build' => 0]) {
+//    $this->prepareHost();
+//    $this->prepareSourcecode();
+//
+//    if ($opts['build']) {
+//      $this->prepareContainers();
+//    }
+//
+//    $this->up(['follow' => TRUE]);
+//  }
 
   /**
    * Check for docker, docker-compose and drush. Install them if they are
@@ -83,7 +83,7 @@ class RoboFile extends \Robo\Tasks {
     // Check for docker
     $this->say('Checking for Docker...');
     if ($this->taskDockerRun('hello-world')
-      ->printed(FALSE)
+      ->printOutput(FALSE)
       ->run()
       ->wasSuccessful()) {
       $this->_exec('docker -v');
@@ -91,6 +91,7 @@ class RoboFile extends \Robo\Tasks {
     }
     else {
       $this->say('Could not run docker command. Find instructons for installing at https://www.docker.com/products/docker');
+      exit(1);
     }
 
     // Check for docker-compose
@@ -103,18 +104,7 @@ class RoboFile extends \Robo\Tasks {
       $this->say("Run the following command as root to install it or see https://docs.docker.com/compose/install/ for more information.");
 
       $this->say('curl -L "https://github.com/docker/compose/releases/download/' . self::DOCKER_COMPOSE_VERSION . '/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
-    }
-
-    // Check for drush
-    $this->say('Checking for drush...');
-    if ($this->_exec('drush --version')->wasSuccessful()) {
-      $this->say('drush detected.');
-    }
-    else {
-      $this->yell('Could not run drush.', 40, 'red');
-      $this->say("Run the following command as root to install it or see http://www.drush.org/en/master/install/ for more information.");
-
-      $this->say('php -r "readfile(\'https://s3.amazonaws.com/files.drush.org/drush.phar\');" > /usr/local/bin/drush && chmod +x /usr/local/bin/drush');
+      exit(1);
     }
   }
 
@@ -359,6 +349,9 @@ class RoboFile extends \Robo\Tasks {
     'fork' => FALSE,
     'devshop-version' => '1.x',
   ]) {
+
+    // Check for tools
+    $this->prepareHost();
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
