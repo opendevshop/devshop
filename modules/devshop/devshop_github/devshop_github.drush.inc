@@ -60,6 +60,11 @@ function devshop_github_hosting_task_update_status($task, $status) {
   // Reload the ref no matter what: we want fresh data.
   $task_reloaded = node_load($task->nid, NULL, TRUE);
   $task->ref = node_load($task->rid, NULL, TRUE);
+
+  if (!isset($task->ref->environment)) {
+    return;
+  }
+
   $environment = $task->ref->environment;
   if ($status == HOSTING_TASK_WARNING) {
     $description = t('DevShop: !type success with warnings. [!url]', array(
@@ -99,7 +104,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     )), 'p_log');
   }
 
-  $deployment_object = DevShopGitHubApi::createDeployment($environment, 'pending', $task, $description, $sha, $task_url);
+  $deployment_object = DevShopGitHubApi::createDeployment($environment, 'pending', $task_reloaded, $description, $sha, $task_url);
 
   if (!$deployment_object){
     drush_log(dt('Unable to create deployment: Object Empty'), 'warning');

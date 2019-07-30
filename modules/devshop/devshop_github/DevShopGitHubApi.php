@@ -137,11 +137,13 @@ class DevShopGitHubApi {
 
         // @TODO: @ElijahLynn This deployment status is not sending, maybe because it is STILL out of date?
         // With devshop, we sent this warning as a commit status instead.
-        watchdog('devshop_github', 'Caught github error: cannot merge code automatically. Sending error deployment status...');
-        $deployment_object = DevShopGitHubApi::createDeployment($environment, 'error', $task->nid, t('GitHub cannot trigger a deployment: Branch needs manual merging from default branch. Error: !error', array(
-          '!error' => $e->getMessage(),
-        )));
-        watchdog('devshop_github', 'Caught github error: cannot merge code automatically. Sending error deployment status... '. $deployment_object->id);
+        watchdog('devshop_github', 'Caught github error: cannot merge code automatically. TODO: Send error commit status ...');
+//        $deployment_object = DevShopGitHubApi::createDeployment($environment, 'error', $task->nid, t('GitHub cannot trigger a deployment: Branch needs manual merging from default branch. Error: !error', array(
+//          '!error' => $e->getMessage(),
+//        )));
+
+        // @TODO: deployment_object is not getting set here. Return false.
+        return false;
       }
     }
     catch (\Exception $e) {
