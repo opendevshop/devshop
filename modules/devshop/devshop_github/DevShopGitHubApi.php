@@ -41,7 +41,7 @@ class DevShopGitHubApi {
    * @return $deployment_object
    *   A deployment object returned from GitHub.
    */
-  static function createDeployment($environment, $state = 'pending', $task, $description = NULL, $sha  = NULL, $log_url = NULL) {
+  static function deploy($environment, $state = 'pending', $task, $description = NULL, $sha  = NULL, $log_url = NULL) {
 
     if (empty($task->nid)) {
       return FALSE;

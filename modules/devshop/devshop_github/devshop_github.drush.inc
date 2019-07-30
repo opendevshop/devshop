@@ -104,7 +104,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     )), 'p_log');
   }
 
-  $deployment_object = DevShopGitHubApi::createDeployment($environment, 'pending', $task_reloaded, $description, $sha, $task_url);
+  $deployment_object = DevShopGitHubApi::deploy($environment, 'pending', $task_reloaded, $description, $sha, $task_url);
 
   if (!$deployment_object){
     drush_log(dt('Unable to create deployment: Object Empty'), 'warning');
