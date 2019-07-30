@@ -708,7 +708,12 @@ function boots_preprocess_page(&$vars){
         $vars['title2'] = $object->environment->name;
       }
 
-      $vars['title2_url'] = 'node/' . $object->nid;
+      if (!empty($object->environment->site)) {
+        $vars['title2_url'] = 'node/' . $object->environment->site;
+      }
+      else {
+        $vars['title2_url'] = 'node/' . $object->nid;
+      }
       $vars['title2'] = l($vars['title2'], $vars['title2_url']);
 
       if ($vars['subtitle2'] == 'Platform') {
