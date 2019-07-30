@@ -104,10 +104,29 @@ function devshop_github_hosting_task_update_status($task, $status) {
     )), 'p_log');
   }
 
-  $deployment_object = DevShopGitHubApi::deploy($environment, 'pending', $task_reloaded, $description, $sha, $task_url);
+  // @TODO: Change this to a simple task status/github state hash.
+  if ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
+    $state = 'success';
+  }
+  // @TODO: Enable preview queued and in_progress with:
+  // media type in the Accept header:
+  // application/vnd.github.flash-preview+json
+  elseif ($status == HOSTING_TASK_QUEUED) {
+    $state = 'queued';
+    $state = 'pending';
+  }
+  elseif ($status == HOSTING_TASK_PROCESSING) {
+    $state = 'in_progress';
+    $state = 'pending';
+  }
+  else {
+    $state = 'failure';
+  }
+  // The method ::deploy() should return the existing deployment object for the $task_reloaded.
+  $deployment_object = DevShopGitHubApi::deploy($environment, $state, $task_reloaded, $description, $sha, $task_url);
 
   if (!$deployment_object){
-    drush_log(dt('Unable to create deployment: Object Empty'), 'warning');
+    drush_log("@TODO: Unable to set new deployment status: $deployment_object Empty: [$task->nid] $state", 'warning');
   }
 //
 //  // React only on certain task types and if project and environment exist.
