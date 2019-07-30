@@ -1015,14 +1015,10 @@ function devshop_github_node_insert($node) {
     $site = node_load($node->rid, null, true);
 
     // Create a deployment on GitHub.
-//    $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', t('DevShop Deploy task queued.'));
-//
-//    drush_log(dt('Created Deployment Status: status: %state - %environment - %log_url - %id', array(
-//      '%id' => $deployment->id,
-//      '%state' => 'pending',
-//    )), 'p_log');
-//    // Save the github deployment ID as a task arg.
-//    $node->task_args['github_deployment_id'] = $deployment->id;
+    $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', $node->nid, t('DevShop Deploy task queued.'));
+    watchdog('devshop_github', t('DevShop Deploy Task created [%nid] and GitHub Deployment Created: [%id]'), array(
+      '%id' => $deployment->id,
+    ));
   }
 }
 
