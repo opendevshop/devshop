@@ -1005,7 +1005,7 @@ function devshop_github_node_insert($node) {
     $site = node_load($node->rid, null, true);
     if ($site->type == 'site' && isset($site->environment)) {
       // Create a deployment on GitHub.
-      $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', $node, t('DevShop Deploy task queued.'), NULL, url("node/$node->nid", array(
+      $deployment = DevShopGitHubApi::deploy($site->environment, 'pending', $node, t('DevShop Deploy task queued.'), NULL, url("node/$node->nid", array(
         'absolute' => true,
       )));
       watchdog('devshop_github', t('DevShop Deploy Task created [%nid] and GitHub Deployment Created: [%id]'), array(
