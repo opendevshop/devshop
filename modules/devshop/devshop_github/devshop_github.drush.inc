@@ -171,8 +171,6 @@ function devshop_github_hosting_task_update_status($task, $status) {
         ->fetchField()
       ;
 
-      watchdog('devshop_github', 'GitHub Deployment ID Found for Task: ' . $task->nid .': '. print_r($task_github_deployment_id, 1));
-
       // No Deployment ID. Create deployment.
       if (empty($task_github_deployment_id)) {
         watchdog('devshop_github', 'NEW TASK, NEW DEPLOYMENT: Task NID: ' . $task->nid);
