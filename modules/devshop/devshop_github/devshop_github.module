@@ -960,6 +960,16 @@ function devshop_github_project_create_webhook($form, $form_state) {
  * Implements hook_node_load().
  */
 function devshop_github_node_load($nodes, $types) {
+
+  // Load each tasks deployment object.
+  $types_we_want_to_process = array('task');
+  if (count(array_intersect($types_we_want_to_process, $types))) {
+    $result = db_query('SELECT * FROM {hosting_devshop_github_deployments} WHERE task_nid IN(:nids)', array(':nids' => array_keys($nodes)));
+    foreach ($result as $record) {
+      $nodes[$record->task_nid]->github_deployment = unserialize($record->deployment_object);
+    }
+  }
+
   foreach ($nodes as $nid => &$node) {
     if ($node->type == 'project') {
       // Look for a pull request object.
