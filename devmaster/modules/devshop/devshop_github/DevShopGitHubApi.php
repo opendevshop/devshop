@@ -24,7 +24,16 @@ class DevShopGitHubApi {
   }
 
   /**
-   * Create a GitHub "Deployment" and "Deployment Status".
+   * Creates a GitHub "Deployment" and "Deployment Status".
+   *
+   * If the $task does not already have a github deployment in the database,
+   * it will create a new one on GitHub. If it does, it will be loaded.
+   *
+   * Once the deployment has been loaded or created, this method sets a
+   * "GitHub Deployment Status".
+   *
+   * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment
+   * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment-status
    *
    * @param $environment
    *   An devshop environment object.
