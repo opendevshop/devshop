@@ -291,10 +291,10 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
  * Submit handler for site/environment settings page.
  */
 function devshop_github_environment_create_submit($form, &$form_state) {
-
-  // Save the environment record.
-  $site = node_load($form_state['node']->nid, null, true);
-  DevShopGitHubApi::createDeployment($site->environment, 'pending', t('Environment Settings Submit'));
+//
+//  // Save the environment record.
+//  $site = node_load($form_state['node']->nid, null, true);
+//  DevShopGitHubApi::createDeployment($site->environment, 'pending', t('Environment Settings Submit'));
 
 }
 
@@ -987,26 +987,6 @@ function devshop_github_node_load($nodes, $types) {
 }
 
 /**
- * Implements hook_devshop_environment_alter().
- */
-function devshop_github_devshop_environment_alter(&$environment, $project) {
-  $environment->github_deployments = db_select('hosting_devshop_github_deployments', 'd')
-    ->fields('d')
-    ->condition('d.site_nid', $environment->site)
-    ->orderBy('deployment_id', 'DESC')
-    ->execute()
-    ->fetchAllAssoc('deployment_id');
-
-  if (empty($environment->github_deployments)) {
-    $environment->github_deployments = array();
-  }
-
-  foreach ($environment->github_deployments as &$deployment) {
-    $deployment->deployment_object = unserialize($deployment->deployment_object);
-  }
-}
-
-/**
  * Implements hook_node_insert().
  *
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
@@ -1023,12 +1003,15 @@ function devshop_github_node_insert($node) {
 
     // Get the latest environment info.
     $site = node_load($node->rid, null, true);
-
-    // Create a deployment on GitHub.
-    $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', $node->nid, t('DevShop Deploy task queued.'));
-    watchdog('devshop_github', t('DevShop Deploy Task created [%nid] and GitHub Deployment Created: [%id]'), array(
-      '%id' => $deployment->id,
-    ));
+    if ($site->type == 'site' && isset($site->environment)) {
+      // Create a deployment on GitHub.
+      $deployment = DevShopGitHubApi::createDeployment($site->environment, 'pending', $node, t('DevShop Deploy task queued.'), NULL, url("node/$node->nid", array(
+        'absolute' => true,
+      )));
+      watchdog('devshop_github', t('DevShop Deploy Task created [%nid] and GitHub Deployment Created: [%id]'), array(
+        '%id' => $deployment->id,
+      ));
+    }
   }
 }
 

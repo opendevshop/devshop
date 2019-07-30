@@ -41,16 +41,22 @@ class DevShopGitHubApi {
    * @return $deployment_object
    *   A deployment object returned from GitHub.
    */
-  static function createDeployment($environment, $state = 'pending',$description = NULL, $sha  = NULL, $log_url = NULL, $deployment_id = NULL) {
+  static function createDeployment($environment, $state = 'pending', $task, $description = NULL, $sha  = NULL, $log_url = NULL) {
+
+    if (empty($task->nid)) {
+      return FALSE;
+    }
 
 //    $project = $environment->project;
     $hostmaster_uri = hosting_get_hostmaster_uri();
+
+    $deployment_id = !empty($task->github_deployment->id)? $task->github_deployment->id: NULL;
 
     // If Deployment doesn't already exist, create it.
     try {
     $client = devshop_github_client();
 
-    if ($deployment_id == NULL) {
+    if (empty($deployment_id)) {
       watchdog('devshop_github', "CREATE NEW DEPLOYMENT: ". ($deployment_id?$deployment_id: 'No ID. Good.'));
       $deployment = new stdClass();
 
@@ -59,6 +65,9 @@ class DevShopGitHubApi {
       // NO PR SPECIFIC THINGS in Deployments.
       $deployment->ref = $sha? $sha: $environment->git_ref;
 
+      // https://developer.github.com/v3/repos/deployments/#create-a-deployment
+      $deployment->task = "deploy:{$task->task_type}";
+
       // In GitHub's API, "environment" is just a small string it displays on the pull request:
       // It's a better  UX to show the full URI in the "environment" field.
       $deployment->environment = $environment->uri;
@@ -66,13 +75,14 @@ class DevShopGitHubApi {
         'devshop_site_url' => $environment->dashboard_url,
         'devmaster_url' => $hostmaster_uri,
       );
-      $deployment->description = t('Deploying git reference %ref to environment %env for project %proj: %link [by %server]', array(
-        '%ref' => $deployment->ref,
-        '%env' => $environment->name,
-        '%project' => $environment->project_name,
-        '%link' => $deployment->environment,
-        '%server' => $hostmaster_uri,
-      ));
+      // Deployment description is limited to
+      $deployment->description = substr(t('Deploying ref !ref to environment !env for project !proj: !link [by !server]', array(
+        '!ref' => $deployment->ref,
+        '!env' => $environment->name,
+        '!project' => $environment->project_name,
+        '!link' => $deployment->environment,
+        '!server' => $hostmaster_uri,
+      )), 0, 140);
       $deployment->required_contexts = array();
 
       // @TODO: Use the developer preview to get this flag: https://developer.github.com/v3/previews/#enhanced-deployments
@@ -85,27 +95,14 @@ class DevShopGitHubApi {
       $post_url = "/repos/$environment->github_owner/$environment->github_repo/deployments";
       $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
-      $deployment_data = self::saveDeployment($deployment_object, $environment->site);
+      $deployment_data = self::saveDeployment($deployment_object, $task->nid);
       $deployment_object = $deployment_data->deployment_object;
       watchdog('devshop_github', 'New Deployment created: ' . $deployment_object->id);
     }
+    // GitHub Deployment found attached to task.
     else {
-      if (!empty($deployment_id) && isset($environment->github_deployments[$deployment_id])) {
-        $deployment_object = $environment->github_deployments[$deployment_id];
-        watchdog('devshop_github', 'Deployment loaded from parameter: ' . $deployment_object->id);
-      }
-      else {
-        reset($environment->github_deployments);
-        $devshop_environment_deployment = current($environment->github_deployments);
-        $deployment_object = $devshop_environment_deployment->deployment_object;
-        watchdog('devshop_github', 'Latest deployment loaded:' . $deployment_object->id);
-      }
-      watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
-    }
-
-    if (empty($deployment_object->id)) {
-      watchdog('devshop_github', 'WARNING: deployment ID not found: ' . print_r($deployment_object, 1));
-      return;
+        $deployment_object = $task->github_deployment;
+        watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
     }
 
     // Deployment Status
@@ -134,33 +131,22 @@ class DevShopGitHubApi {
 
     watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
     }
-    catch (\Exception $e) {
-      watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage() . ' | '. $e->getTraceAsString());
-      return false;
-    }
     catch (Github\Exception\RuntimeException $e) {
-      watchdog('devshop_github', 'GitHub Error: ' . $e->getMessage() . ' | Post URL: ' . $post_url . ' | '. $e->getTraceAsString());
-      if ($e->getCode() == '409') {
-//        $message .= "\n Branch is out of date! Merge code from base branch.";
+      watchdog('devshop_github', "GitHub Error: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url");
+      if ((string) $e->getCode() == '409') {
 
-        // Send a failed commit status to alert to developer
-        $params = new stdClass();
-        $params->state = 'failure';
-        $params->log_url =
-        $params->target_url =
-          empty($log_url)? $environment->dashboard_url: $log_url;
-        $params->description = t('Branch is out of date! Merge from default branch.');
-        $params->context = "devshop/{$environment->project_name}/merge";
-
-        // Post status to github
-        $deployment_status = $client->getHttpClient()->post("/repos/$environment->github_owner/$environment->github_repo/statuses/$sha", array(), json_encode($params));
-        watchdog('devshop_github', 'Deployment status saved: ' . $deployment_status);
-
+        // @TODO: @ElijahLynn This deployment status is not sending, maybe because it is STILL out of date?
+        // With devshop, we sent this warning as a commit status instead.
+        watchdog('devshop_github', 'Caught github error: cannot merge code automatically. Sending error deployment status...');
+        $deployment_object = DevShopGitHubApi::createDeployment($environment, 'error', $task->nid, t('GitHub cannot trigger a deployment: Branch needs manual merging from default branch. Error: !error', array(
+          '!error' => $e->getMessage(),
+        )));
+        watchdog('devshop_github', 'Caught github error: cannot merge code automatically. Sending error deployment status... '. $deployment_object->id);
       }
-
-    } catch (Github\Exception\ValidationFailedException $e) {
-      watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
-//      $message .= 'GitHub ValidationFailedException Error: ' . $e->getMessage();
+    }
+    catch (\Exception $e) {
+      watchdog('devshop_github', "GitHub Error: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url | {$e->getTraceAsString()}");
+      return false;
     }
 
     return $deployment_object;
@@ -173,10 +159,14 @@ class DevShopGitHubApi {
    * @param $environment_name
    * @param $deployment_id
    */
-  public static function saveDeployment($deployment, $site_nid)  {
+  public static function saveDeployment($deployment, $task_nid)  {
+
+    if (empty($task_nid)) {
+      return false;
+    }
     $record = new stdClass();
     $record->deployment_id = $deployment->id;
-    $record->site_nid = $site_nid;
+    $record->task_nid = $task_nid;
     $record->deployment_object = serialize($deployment);
     drupal_write_record('hosting_devshop_github_deployments', $record);
 
