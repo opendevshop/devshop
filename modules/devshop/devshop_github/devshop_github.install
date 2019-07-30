@@ -43,31 +43,24 @@ function devshop_github_schema() {
         'size' => 'big',
         'description' => 'A serialized array of settings for this environment.',
       ),
-      'last_deployment_id' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'GitHub Deployment ID',
-      ),
     ),
     'primary key' => array('id'),
   );
   $schema['hosting_devshop_github_deployments'] = array(
     'fields' => array(
+      'task_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The Task Node NID associated with the deployment.",
+      ),
       'deployment_id' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
         'description' => 'GitHub Deployment ID',
-      ),
-      'site_nid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => "The Node ID of the site being deployed.",
       ),
       'deployment_object' => array(
         'type' => 'text',
@@ -76,7 +69,9 @@ function devshop_github_schema() {
         'description' => 'A serialized array of settings for this environment.',
       ),
     ),
-    'primary key' => array('deployment_id'),
+    'primary key' => array(
+        'task_nid'
+    ),
   );
   return $schema;
 }
