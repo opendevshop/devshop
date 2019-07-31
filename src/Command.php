@@ -12,6 +12,14 @@ use Composer\Command\BaseCommand;
 use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
 
+$autoloader = __DIR__ . '/../../../../vendor/autoload.php';
+if (!file_exists($autoloader)) {
+    echo 'Directory "vendor" does not exist. Run "composer install".';
+    exit(1);
+}
+
+require $autoloader;
+
 /**
  * Class Command
  *
