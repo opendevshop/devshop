@@ -83,7 +83,7 @@ class DevShopGitHubApi {
 
       // In GitHub's API, "environment" is just a small string it displays on the pull request:
       // It's a better  UX to show the full URI in the "environment" field.
-      $deployment->environment = $environment->uri;
+      $deployment->environment = "{$environment->uri} - {$task->task_type}";
       $deployment->payload = array(
         'devshop_site_url' => $environment->dashboard_url,
         'devmaster_url' => $hostmaster_uri,
