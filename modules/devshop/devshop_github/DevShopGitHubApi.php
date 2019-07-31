@@ -68,26 +68,29 @@ class DevShopGitHubApi {
     try {
     $client = devshop_github_client();
 
+    // Git Reference. Use sha if specified.
+    $owner = $environment->github_owner;
+    $repo = $environment->github_repo;
+
+    if (!empty($environment->github_pull_request)) {
+      $ref = $environment->github_pull_request->pull_request_object->head->sha;
+      $owner = $project->github_owner;
+      $repo = $project->github_repo;
+    }
+    else {
+      $ref = $environment->git_ref;
+    }
+
     if (empty($existing_deployment_object)) {
       watchdog('devshop_github', 'Creating new GitHub Deployment for Task !nid', array('!nid' => $task->nid));
       $deployment = new stdClass();
 
-      // Git Reference. Use sha if specified.
-      $owner = $environment->github_owner;
-      $repo = $environment->github_repo;
-
       // If there is a PR, we must use the SHA in it, so that forked repos properly get deployment status.
-      if (!empty($environment->github_pull_request)) {
-        $deployment->ref = $environment->github_pull_request->pull_request_object->head->sha;
-        $owner = $project->github_owner;
-        $repo = $project->github_repo;
+      if ($sha) {
+        $ref = $sha;
       }
-      elseif ($sha) {
-        $deployment->ref = $sha;
-      }
-      else {
-        $deployment->ref = $environment->git_ref;
-      }
+
+      $deployment->ref = $ref;
 
       // @TODO: Make this configurable.
       $deployment->auto_merge = false;
