@@ -60,7 +60,8 @@ function devshop_github_hosting_task_update_status($task, $status) {
   // Only trigger deployments for the specified tasks.
   if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
     'devshop-deploy',
-    'install'
+    'install',
+    'test'
   )))) {
     return;
   }
