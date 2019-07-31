@@ -688,7 +688,7 @@ sites/all/drush/drushrc.php
   <?php endif; ?>
   <?php if (!empty($git_origin)): ?>
     <div class="list-group-item environment-info">
-      <label><?php print t('Git Repo') ?></label>
+      <label><?php print t('Forked Repo') ?></label>
       <span class="content">
         <?php print $git_origin ?>
       </span>
