@@ -80,7 +80,10 @@ function devshop_github_hosting_task_update_status($task, $status) {
     ));
   }
 
-  $sha = devshop_environment_get_git_sha($environment->repo_path);
+  // @TODO: Local SHA is only accurate after the git pull in "devshop-deploy".
+  // @TODO: Might be able to decide based on $status if we grab the SHA or branch.
+//  $sha = devshop_environment_get_git_sha($environment->repo_path);
+  $sha = NULL;
 
   // Update the log URL because we know the Task NID now.
   $task_url = url("node/$task->nid", array(
