@@ -23,6 +23,8 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
     return;
   }
 
+  $hooks_file = '';
+
   if (file_exists($environment->repo_path . '/.hooks.yaml')) {
     $hooks_file = '.hooks.yaml';
     $hooks_path = $environment->repo_path . '/.hooks.yaml';
