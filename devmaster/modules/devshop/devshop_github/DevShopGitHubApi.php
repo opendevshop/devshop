@@ -56,7 +56,9 @@ class DevShopGitHubApi {
       return FALSE;
     }
 
-//    $project = $environment->project;
+    $project_node = node_load($environment->project_nid);
+    $project = $project_node->project;
+
     $hostmaster_uri = hosting_get_hostmaster_uri();
 
     // Lookup existing deployment for this task. I used hook_node_load() to ensure it's there, but who knows? data isn't there sometimes. Thanks, Drupal!
@@ -92,7 +94,7 @@ class DevShopGitHubApi {
       $deployment->description = substr(t('Deploying ref !ref to environment !env for project !proj: !link [by !server]', array(
         '!ref' => $deployment->ref,
         '!env' => $environment->name,
-        '!project' => $environment->project_name,
+        '!project' => $project->name,
         '!link' => $deployment->environment,
         '!server' => $hostmaster_uri,
       )), 0, 140);
