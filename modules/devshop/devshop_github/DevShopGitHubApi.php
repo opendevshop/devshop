@@ -156,7 +156,7 @@ class DevShopGitHubApi {
     $deployment_status->environment_url = $environment->url;
 
     // Create Deployment Status
-    $post_url = "/repos/{$environment->github_owner}/{$environment->github_repo}/deployments/{$deployment_object->id}/statuses";
+    $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
     $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
 
     watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
