@@ -1000,7 +1000,7 @@ function devshop_github_node_insert($node) {
     devshop_github_save_pr_env_data($node->pull_request, $environment);
   }
 
-  if ($node->type == 'task' & $node->task_type == 'devshop-deploy') {
+  if ($node->type == 'task' && $node->task_type == 'devshop-deploy') {
 
     // Get the latest environment info.
     $site = node_load($node->rid, null, true);
