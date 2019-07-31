@@ -73,9 +73,21 @@ class DevShopGitHubApi {
       $deployment = new stdClass();
 
       // Git Reference. Use sha if specified.
-      // @TODO: Detect the actual SHA from git or the PR here?
-      // NO PR SPECIFIC THINGS in Deployments.
-      $deployment->ref = $sha? $sha: $environment->git_ref;
+      $owner = $environment->github_owner;
+      $repo = $environment->github_repo;
+
+      // If there is a PR, we must use the SHA in it, so that forked repos properly get deployment status.
+      if (!empty($environment->github_pull_request)) {
+        $deployment->ref = $environment->github_pull_request->pull_request_object->head->sha;
+        $owner = $project->github_owner;
+        $repo = $project->github_repo;
+      }
+      elseif ($sha) {
+        $deployment->ref = $sha;
+      }
+      else {
+        $deployment->ref = $environment->git_ref;
+      }
 
       // @TODO: Make this configurable.
       $deployment->auto_merge = false;
@@ -107,7 +119,7 @@ class DevShopGitHubApi {
 #      $deployment->production_environment = false;
 
       // Create Deployment
-      $post_url = "/repos/$environment->github_owner/$environment->github_repo/deployments";
+      $post_url = "/repos/$owner/$repo/deployments";
       $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
       $deployment_data = self::saveDeployment($deployment_object, $task->nid);
