@@ -57,6 +57,14 @@ function drush_devshop_github_pre_hosting_task()
  */
 function devshop_github_hosting_task_update_status($task, $status) {
 
+  // Only trigger deployments for the specified tasks.
+  if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
+    'devshop-deploy',
+    'install'
+  )))) {
+    return;
+  }
+
   // Reload the ref no matter what: we want fresh data.
   $task_reloaded = node_load($task->nid, NULL, TRUE);
   $task->ref = node_load($task->rid, NULL, TRUE);
@@ -125,6 +133,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
   else {
     $state = 'failure';
   }
+
   // The method ::deploy() should return the existing deployment object for the $task_reloaded.
   $deployment_object = DevShopGitHubApi::deploy($environment, $state, $task_reloaded, $description, $sha, $task_url);
 
