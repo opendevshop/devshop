@@ -66,7 +66,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     return;
   }
   // If this is a platform verify task and the platform is already enabled, don't fire deployment status.
-  elseif (in_array($task->task_type, array('verify')) && $task->ref->platform_status == HOSTING_PLATFORM_ENABLED) {
+  elseif ( $task->ref->type == 'platform' && in_array($task->task_type, array('verify')) && $task->ref->platform_status == HOSTING_PLATFORM_ENABLED) {
     return;
   }
 
