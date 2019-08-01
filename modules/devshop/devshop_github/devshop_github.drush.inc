@@ -52,12 +52,29 @@ function drush_devshop_github_pre_hosting_task()
 
 /**
  * Implements hook_hosting_task_update_status().
+ * This hook fires multiple times throughout the life of a hosting task.
  *
- * This fires BEFORE hook_node_insert?
+ * @param $task
+ *   The task node being updated. @see hosting_task.module
+ *   $task->task_status is the LAST status of the task.
+ *   See $status for the state you want to trigger from.
+ *
+ * @param $status
+ *    The "task_status" value the node is about to be updated with. This is the
+ *    state you should check for.
+ *
+ *    $status can be:
+ *      HOSTING_TASK_QUEUED;
+ *      HOSTING_TASK_PROCESSING;
+ *      HOSTING_TASK_ERROR;
+ *      HOSTING_TASK_SUCCESS;
+ *      HOSTING_TASK_WARNING;
  */
 function devshop_github_hosting_task_update_status($task, $status) {
 
   // Only trigger deployments for the specified tasks.
+  // Every type of task listed here will have a GitHub "deployment" object
+  // created for it, and that deployment will have it's status updated.
   if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
     'devshop-deploy',
     'install',
@@ -65,6 +82,10 @@ function devshop_github_hosting_task_update_status($task, $status) {
   )))) {
     return;
   }
+
+  // @TODO: If this is a test task, should we just update the deployment of the last "devshop-deploy" task to "error"?
+  // Or, do we let it ride with a 1-to-1 devshop task = github deployment relationship?
+  // It would not be hard to run a DevShopGithubAPI:deploy() here if ths were a test (or other kind of task).
 
   // Reload the ref no matter what: we want fresh data.
   $task_reloaded = node_load($task->nid, NULL, TRUE);
