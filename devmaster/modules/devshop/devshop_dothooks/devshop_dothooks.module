@@ -140,7 +140,7 @@ function devshop_dothooks_run_hook($hook, $environment) {
   $env = $_SERVER;
   $env['DEVSHOP_PROJECT'] = $environment->project_name;
   $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
-  $env['DRUSH_ALIAS'] = $environment->drush_alias;
+  $env['DRUSH_ALIAS'] = $environment->system_alias;
 
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
