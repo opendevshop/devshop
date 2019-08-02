@@ -9,6 +9,7 @@
  */
 class Provision_Config_ProjectAliases extends Provision_Config_Drushrc {
   public $template = 'project_aliases.tpl.php';
+  protected $mode = 0640;
 
   /**
    * @param $name
