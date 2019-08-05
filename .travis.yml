@@ -33,6 +33,8 @@ install:
 
 script:
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+  - cd ../yaml-tests-tests
+  - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
 
 #after_success:
 #  - travis_retry php vendor/bin/php-coveralls -v
