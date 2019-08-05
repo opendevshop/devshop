@@ -149,6 +149,20 @@ class Command extends BaseCommand
         // Validate YML
         $this->loadTestsYml();
 
+        // Load Environment variables
+        $dotenv = \Dotenv\Dotenv::create(array(
+
+          // Current user's home directory
+          isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
+
+          // Git repo holding the tests file.
+          dirname($this->gitRepo->getRepositoryPath()),
+
+          // Current directory
+          getcwd(),
+        ));
+        $dotenv->load();
+
         // Look for token.
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
             $token = $_SERVER['GITHUB_TOKEN'];
