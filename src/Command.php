@@ -161,7 +161,7 @@ class Command extends BaseCommand
           // Current directory
           getcwd(),
         ));
-        $dotenv->load();
+        $dotenv->safeLoad();
 
         // Look for token.
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
