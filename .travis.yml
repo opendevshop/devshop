@@ -34,10 +34,12 @@ install:
   - composer install --ansi
 
 script:
+  - echo "### Testing yaml-tests command script
   - cd $TRAVIS_BUILD_DIR
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+  - echo "### Testing yaml-tests composer command
   - cd $TRAVIS_TEST_DIR
-  - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+  - composer yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
 
 #after_success:
 #  - travis_retry php vendor/bin/php-coveralls -v

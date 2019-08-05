@@ -8,5 +8,11 @@
   ],
   "require": {
     "provision-ops/yaml-tests": "dev-composer-argg"
+  },
+  "config": {
+    "bin-dir": "bin",
+    "platform": {
+      "php":"7.0.8"
+    }
   }
 }
