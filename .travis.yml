@@ -31,6 +31,9 @@ install:
   - composer install --ansi
   - cp -rf tests $TRAVIS_TEST_DIR
   - cd $TRAVIS_TEST_DIR
+  - git init
+  - git add README.md
+  - git commit -m'Dummy commit: Yaml tests requires an active git folder and a commit to work'
   - composer install --ansi
 
 script:
@@ -39,7 +42,7 @@ script:
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
   - echo "### Testing yaml-tests composer command..."
   - cd $TRAVIS_TEST_DIR
-  - composer yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+  - composer yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL --dry-run
 
 #after_success:
 #  - travis_retry php vendor/bin/php-coveralls -v
