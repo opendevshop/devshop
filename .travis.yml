@@ -33,7 +33,7 @@ install:
   - cd $TRAVIS_TEST_DIR
   - git init
   - git add README.md
-  - git commit -m'Dummy commit: Yaml tests requires an active git folder and a commit to work'
+  - git commit -m"Dummy commit... Yaml tests requires an active git folder and a commit to work"
   - composer install --ansi
 
 script:
