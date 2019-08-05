@@ -200,8 +200,14 @@ class Command extends BaseCommand
         );
 
         $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
-        $this->repoOwner = isset($parts[1])? $parts[1]: '';
-        $this->repoName =isset($parts[2])? $parts[2]: '';
+        if (isset($parts[1]) && isset($parts[2])) {
+          $this->repoOwner = isset($parts[1])? $parts[1]: '';
+          $this->repoName =isset($parts[2])? $parts[2]: '';
+        }
+        else {
+          $this->repoOwner = '';
+          $this->repoName = '';
+        }
 
         $this->io->title("Yaml Tests Initialized");
 
