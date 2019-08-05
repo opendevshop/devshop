@@ -29,6 +29,7 @@ install:
   - cp -rf tests ../yaml-tests-tests
   - cd ../yaml-tests-tests
   - composer install --ansi
+  - cd ../yaml-tests
 
 script:
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
