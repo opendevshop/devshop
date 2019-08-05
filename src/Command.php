@@ -14,15 +14,15 @@ use TQ\Git\Repository\Repository;
 
 // @TODO: Figure out why our plugin isn't properly autoloading.
 if (file_exists(__DIR__.'/../../../../vendor/autoload.php')) {
-  $autoloaderPath = __DIR__.'/../../../../vendor/autoload.php';
+    $autoloaderPath = __DIR__.'/../../../../vendor/autoload.php';
 } elseif (file_exists(__DIR__.'/vendor/autoload.php')) {
-  $autoloaderPath = __DIR__.'/vendor/autoload.php';
+    $autoloaderPath = __DIR__.'/vendor/autoload.php';
 } elseif (file_exists(__DIR__.'/../../autoload.php')) {
-  $autoloaderPath = __DIR__ . '/../../autoload.php';
+    $autoloaderPath = __DIR__ . '/../../autoload.php';
 } elseif (file_exists(__DIR__.'/../vendor/autoload.php')) {
-  $autoloaderPath = __DIR__ . '/../vendor/autoload.php';
+    $autoloaderPath = __DIR__ . '/../vendor/autoload.php';
 } else {
-  die("Could not find autoloader. Run 'composer install'.");
+    die("Could not find autoloader. Run 'composer install'.");
 }
 
 /**
