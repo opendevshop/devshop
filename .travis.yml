@@ -30,7 +30,7 @@ install:
   # tests folder must be outside project.
   - composer install --ansi
   - cp -rf tests $TRAVIS_TEST_DIR
-  - cd $TRAVIS_TESTS_DIR
+  - cd $TRAVIS_TEST_DIR
   - composer install --ansi
 
 script:
