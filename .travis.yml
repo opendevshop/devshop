@@ -15,9 +15,6 @@ matrix:
     - php: 7.1
     - php: 7.0
 
-env:
-  - TRAVIS_TEST_DIR="/home/travis/yaml-tests-tests"
-
 sudo: false
 
 cache:
@@ -25,6 +22,7 @@ cache:
     - $HOME/.composer/cache
 
 install:
+  - TRAVIS_TEST_DIR=${TRAVIS_BUILD_DIR}-test
   - env
 
   # tests folder must be outside project.

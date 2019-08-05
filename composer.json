@@ -34,7 +34,7 @@
     "config": {
         "bin-dir": "bin",
         "platform": {
-            "php":"7.0.8"
+            "php":"7.1.3"
         }
     },
     "bin": [
