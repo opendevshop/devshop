@@ -15,6 +15,9 @@ matrix:
     - php: 7.1
     - php: 7.0
 
+env:
+  - TRAVIS_TEST_DIR="$HOME/yaml-tests-tests"
+
 sudo: false
 
 cache:
@@ -26,14 +29,14 @@ install:
 
   # tests folder must be outside project.
   - composer install --ansi
-  - cp -rf tests ../yaml-tests-tests
-  - cd ../yaml-tests-tests
+  - cp -rf tests $TRAVIS_TEST_DIR
+  - cd $TRAVIS_TESTS_DIR
   - composer install --ansi
-  - cd ../yaml-tests
 
 script:
+  - cd $TRAVIS_BUILD_DIR
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
-  - cd ../yaml-tests-tests
+  - cd $TRAVIS_TEST_DIR
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
 
 #after_success:
