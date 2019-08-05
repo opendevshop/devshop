@@ -16,7 +16,7 @@ matrix:
     - php: 7.0
 
 env:
-  - TRAVIS_TEST_DIR="$HOME/yaml-tests-tests"
+  - TRAVIS_TEST_DIR="/home/travis/yaml-tests-tests"
 
 sudo: false
 
