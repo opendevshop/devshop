@@ -27,6 +27,24 @@ To confirm the command is installed, ask for help:
 composer yaml-tests --help
 ```
 
+## GitHub Integration
+
+If you pass `yaml-tests` a GitHub Token, it will send the test results as
+"commit status" indicators.
+
+There are 3 ways to pass the GitHub Token to YamlTests:
+
+1. Use the `--github-token` command line option. Don't use this in CI, or you might expose your GitHub token in logs.
+2. Set a GITHUB_TOKEN environment variable. This is pretty simple in Docker, but can be a challenge if your tests get 
+run in different environments.
+3. **Recommended:** Create a `.env` file in your repo, or in your user's home directory:
+
+    ```
+    GITHUB_TOKEN=abcdefg
+    ``` 
+   
+    There is a `.env.example` file in this directory you can use as an example.
+
 ## Writing Tests
 
 ### Create tests.yml file

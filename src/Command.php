@@ -12,14 +12,6 @@ use Composer\Command\BaseCommand;
 use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
 
-$autoloader = __DIR__ . '/../../../../vendor/autoload.php';
-if (!file_exists($autoloader)) {
-    echo 'Directory "vendor" does not exist. Run "composer install".';
-    exit(1);
-}
-
-require $autoloader;
-
 /**
  * Class Command
  *
@@ -148,6 +140,20 @@ class Command extends BaseCommand
 
         // Validate YML
         $this->loadTestsYml();
+
+        // Load Environment variables
+        $dotenv = \Dotenv\Dotenv::create(array(
+
+          // Current user's home directory
+          isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
+
+          // Git repo holding the tests file.
+          dirname($this->gitRepo->getRepositoryPath()),
+
+          // Current directory
+          getcwd(),
+        ));
+        $dotenv->safeLoad();
 
         // Look for token.
         if (!empty($_SERVER['GITHUB_TOKEN'])) {

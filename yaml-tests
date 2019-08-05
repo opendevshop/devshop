@@ -9,13 +9,21 @@
  * be able to run `./bin/yaml-tests`.
  */
 
-$autoloader = __DIR__ . '/vendor/autoload.php';
-if (!file_exists($autoloader)) {
-  echo 'Directory "vendor" does not exist. Run "composer install".';
-  exit(1);
+// Thanks to g1a/starter for providing a standard autoloader.
+// If we're running from phar load the phar autoload file.
+$pharPath = \Phar::running(true);
+if ($pharPath) {
+  $autoloaderPath = "$pharPath/vendor/autoload.php";
+} else {
+  if (file_exists(__DIR__.'/vendor/autoload.php')) {
+    $autoloaderPath = __DIR__.'/vendor/autoload.php';
+  } elseif (file_exists(__DIR__.'/../../autoload.php')) {
+    $autoloaderPath = __DIR__ . '/../../autoload.php';
+  } else {
+    die("Could not find autoloader. Run 'composer install'.");
+  }
 }
-
-require $autoloader;
+$classLoader = require $autoloaderPath;
 
 use ProvisionOps\YamlTests\Command as YamlTestsCommand;
 use Symfony\Component\Console\Application;
