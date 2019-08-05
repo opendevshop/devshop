@@ -1,0 +1,12 @@
+{
+  "repositories": [
+    {
+      "type": "path",
+      "version": "dev-composer-argg",
+      "url": "../"
+    }
+  ],
+  "require": {
+    "provision-ops/yaml-tests": "dev-composer-argg"
+  }
+}
