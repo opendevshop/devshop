@@ -23,6 +23,11 @@ cache:
 
 install:
   - env
+
+  # tests folder must be outside project.
+  - composer install --ansi
+  - cp -rf tests ../yaml-tests-tests
+  - cd ../yaml-tests-tests
   - composer install --ansi
 
 script:
