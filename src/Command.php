@@ -181,7 +181,7 @@ class Command extends BaseCommand
         // Detect a TRAVIS_PULL_REQUEST_SHA
         // Travis tests from a commit created from master and our commit.
         // It's not the same commit as the pull request branch.
-        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA'])) {
+        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA']) && $this->gitRepo->getRepositoryPath() == $_SERVER['TRAVIS_BUILD_DIR']) {
             $this->repoSha = $_SERVER['TRAVIS_PULL_REQUEST_SHA'];
             $this->warningLite("Travis PR detected. Using PR SHA: " . $this->repoSha);
         }
