@@ -235,6 +235,14 @@ class Command extends BaseCommand
             $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
             $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
+
+            // Load Repo info to determine if it is a fork. We must post to the fork's parent in the API.
+            $repo = $this->githubClient->repository()->show($this->repoOwner, $this->repoName);
+            if (!empty($repo['parent'])) {
+                $this->successLite('Forked repository. Posting to the parent repo...');
+                $this->repoOwner = $repo['parent']['owner']['login'];
+                $this->repoName = $repo['parent']['name'];
+            }
         }
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
