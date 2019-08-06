@@ -25,6 +25,8 @@ if (file_exists(__DIR__.'/../../../../vendor/autoload.php')) {
     die("Could not find autoloader. Run 'composer install'.");
 }
 
+require_once $autoloaderPath;
+
 /**
  * Class Command
  *
