@@ -11,7 +11,7 @@
         "knplabs/github-api": "~2.11",
         "php-http/guzzle6-adapter": "^1.1",
         "provision-ops/power-process": "^1.0",
-        "vlucas/phpdotenv": "^3.4@dev"
+        "vlucas/phpdotenv": "~2"
     },
     "autoload": {
         "psr-4": {
