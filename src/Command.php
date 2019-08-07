@@ -157,7 +157,8 @@ class Command extends BaseCommand
         $this->loadTestsYml();
 
         // Load Environment variables
-        $dotenv = \Dotenv\Dotenv::create(array(
+        $dotenv = new \Dotenv\Dotenv(__DIR__);
+        $dotenv->safeLoad(array(
 
           // Current user's home directory
           isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
@@ -168,7 +169,6 @@ class Command extends BaseCommand
           // Current directory
           getcwd(),
         ));
-        $dotenv->safeLoad();
 
         // Look for token.
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
