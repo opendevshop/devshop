@@ -158,7 +158,7 @@ class DevShopDrupalContext extends RawDrupalContext {
     }
 
     /**
-     * @When I take a screenshot
+     * @When I save a screenshot
      */
     public function iTakeAScreenshot()
     {
