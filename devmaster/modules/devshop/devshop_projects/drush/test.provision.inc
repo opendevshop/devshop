@@ -17,6 +17,19 @@ function drush_devshop_provision_pre_provision_test(){
 
 /**
  * Implements the provision-devshop-test command.
+ *
+ * Do what "verify" task does, so that hook_provision_prepare_environment() gets called
+ */
+function drush_devshop_provision_provision_test_validate() {
+  if (d()->type === 'site') {
+    // Do what "verify" task does, so that hook_provision_prepare_environment() gets called
+    drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_SITE);
+    provision_prepare_environment();
+  }
+}
+
+/**
+ * Implements the provision-devshop-test command.
  */
 function drush_devshop_provision_provision_test() {
 
