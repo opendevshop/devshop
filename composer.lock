@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b36e97fee8288b19b98e7b515931a6ce",
+    "content-hash": "53e4db8a396d7d996569ae25f5426889",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -1303,16 +1303,16 @@
         },
         {
             "name": "provision-ops/power-process",
-            "version": "1.0.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/provision-ops/power-process.git",
-                "reference": "737c2ea7836225c46a6f2101019712bdcf4164eb"
+                "reference": "7f7699fbe5f38da0dfb4451b00e707ec07aa9891"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/737c2ea7836225c46a6f2101019712bdcf4164eb",
-                "reference": "737c2ea7836225c46a6f2101019712bdcf4164eb",
+                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/7f7699fbe5f38da0dfb4451b00e707ec07aa9891",
+                "reference": "7f7699fbe5f38da0dfb4451b00e707ec07aa9891",
                 "shasum": ""
             },
             "require": {
@@ -1336,7 +1336,7 @@
                 }
             ],
             "description": "A more powerful Process component.",
-            "time": "2019-05-31T13:05:22+00:00"
+            "time": "2019-08-15T22:18:38+00:00"
         },
         {
             "name": "psr/cache",
@@ -2840,6 +2840,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "provision-ops/power-process": 20,
         "composer/composer": 20
     },
     "prefer-stable": false,
