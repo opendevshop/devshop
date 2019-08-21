@@ -276,9 +276,8 @@ class Command extends BaseCommand
         if (count($this->yamlTests) > 0) {
             $this->io->table(array("Tests to run based on filter '$filter_string'"), $this->testsToTableRows());
         }
-
-        // If there are filters but tests were NOT removed, show a warning.
         else {
+            // If there are filters but tests were NOT removed, show a warning.
             $this->warningLite("The filter '$filter_string' was used but it did not match any tests.");
             exit(1);
         }
