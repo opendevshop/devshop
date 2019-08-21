@@ -255,10 +255,10 @@ class Command extends BaseCommand
 
         // If there are filters, shorten the list of tests to run.
         $filters = $input->getArgument('filter');
+        $filter_string = implode(' ', $filters);
         if (count($filters)) {
             foreach ($this->yamlTests as $name => $test) {
                 $run_the_test = false;
-                $filter_string = implode(' ', $filters);
                 foreach ($filters as $filter) {
                     // If the filter string was found in the test name, run the test.
                     if (strpos($name, $filter) !== false) {
@@ -273,12 +273,11 @@ class Command extends BaseCommand
         }
 
         // If there are no matches
-        if (count($this->yamlTests) > 0) {
+        if (count($filters) && count($this->yamlTests) > 0) {
             $this->io->table(array("Tests to run based on filter '$filter_string'"), $this->testsToTableRows());
-        }
-        else {
+        } elseif (count($filters)) {
             // If there are filters but tests were NOT removed, show a warning.
-            $this->warningLite("The filter '$filter_string' was used but it did not match any tests.");
+            $this->warningLite("The filter '$filter_string' was specified but it did not match any tests.");
             exit(1);
         }
     }
