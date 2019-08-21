@@ -26,12 +26,14 @@ install:
 
   # tests folder must be outside project.
   - composer install --ansi
-  - cp -rf tests $TRAVIS_TEST_DIR
-  - cd $TRAVIS_TEST_DIR
-  - git init
-  - git add README.md
-  - git commit -m"Dummy commit... Yaml tests requires an active git folder and a commit to work"
-  - composer install --ansi
+
+  # @TODO: Get a "composer plugin tester" working.
+#  - cp -rf tests $TRAVIS_TEST_DIR
+#  - cd $TRAVIS_TEST_DIR
+#  - git init
+#  - git add README.md
+#  - git commit -m"Dummy commit... Yaml tests requires an active git folder and a commit to work"
+#  - composer install --ansi
 
 script:
   - echo "### Testing yaml-tests command script..."
@@ -39,7 +41,7 @@ script:
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
 
   # @TODO: Confirm that the filter args work.
-  - ./yaml-tests lint --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+#  - ./yaml-tests lint --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
 
 # Can't get this to work.
 #  - echo "### Testing yaml-tests composer command..."
