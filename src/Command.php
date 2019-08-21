@@ -5,6 +5,7 @@ namespace ProvisionOps\YamlTests;
 use ProvisionOps\Tools\PowerProcess as Process;
 use ProvisionOps\Tools\Style;
 use GuzzleHttp\Psr7\Response;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -128,6 +129,11 @@ class Command extends BaseCommand
             'The hostname to use in the status description. Use if automatically detected hostname is not desired.',
             gethostname()
         );
+        $this->addArgument(
+            'filter',
+            InputArgument::IS_ARRAY,
+            'A list of strings to filter tests by.'
+        );
     }
 
     /**
@@ -246,6 +252,36 @@ class Command extends BaseCommand
         }
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
+
+        // If there are filters, shorten the list of tests to run.
+        $filters = $input->getArgument('filter');
+        if (count($filters)) {
+            foreach ($this->yamlTests as $name => $test) {
+                $run_the_test = false;
+                $filter_string = implode(' ', $filters);
+                foreach ($filters as $filter) {
+                    // If the filter string was found in the test name, run the test.
+                    if (strpos($name, $filter) !== false) {
+                        $run_the_test = true;
+                    }
+                }
+
+                if (!$run_the_test) {
+                    unset($this->yamlTests[$name]);
+                }
+            }
+        }
+
+        // If there are no matches
+        if (count($this->yamlTests) > 0) {
+            $this->io->table(array("Tests to run based on filter '$filter_string'"), $this->testsToTableRows());
+        }
+
+        // If there are filters but tests were NOT removed, show a warning.
+        else {
+            $this->warningLite("The filter '$filter_string' was used but it did not match any tests.");
+            exit(1);
+        }
     }
 
     /**
@@ -293,6 +329,7 @@ class Command extends BaseCommand
             }
 
             $this->io->newLine();
+            $rows = array();
 
             foreach ($this->yamlTests as $test_name => $test) {
                 if (is_array($test) && isset($test['command'])) {
@@ -422,6 +459,7 @@ class Command extends BaseCommand
 
     private function testsToTableRows()
     {
+        $rows = array();
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
                 $command = $test['command'];
