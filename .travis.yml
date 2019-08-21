@@ -13,7 +13,6 @@ matrix:
     - php: 7.3
     - php: 7.2
     - php: 7.1
-    - php: 7.0
 
 sudo: false
 
@@ -22,11 +21,32 @@ cache:
     - $HOME/.composer/cache
 
 install:
+  - TRAVIS_TEST_DIR=${TRAVIS_BUILD_DIR}-test
   - env
+
+  # tests folder must be outside project.
   - composer install --ansi
 
+  # @TODO: Get a "composer plugin tester" working.
+#  - cp -rf tests $TRAVIS_TEST_DIR
+#  - cd $TRAVIS_TEST_DIR
+#  - git init
+#  - git add README.md
+#  - git commit -m"Dummy commit... Yaml tests requires an active git folder and a commit to work"
+#  - composer install --ansi
+
 script:
+  - echo "### Testing yaml-tests command script..."
+  - cd $TRAVIS_BUILD_DIR
   - ./yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+
+  # @TODO: Confirm that the filter args work.
+#  - ./yaml-tests lint --ansi -v --hostname=$TRAVIS_JOB_WEB_URL
+
+# Can't get this to work.
+#  - echo "### Testing yaml-tests composer command..."
+#  - cd $TRAVIS_TEST_DIR
+#  - composer yaml-tests --ansi -v --hostname=$TRAVIS_JOB_WEB_URL --dry-run
 
 #after_success:
 #  - travis_retry php vendor/bin/php-coveralls -v

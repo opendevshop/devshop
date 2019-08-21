@@ -1,0 +1,2 @@
+yaml-tests-tests/composer-info:
+  command: composer info provision-ops/yaml-tests

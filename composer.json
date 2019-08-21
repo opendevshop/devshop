@@ -9,8 +9,9 @@
         "symfony/yaml": "^3.0",
         "ext-json": "*",
         "knplabs/github-api": "~2.11",
+        "php-http/guzzle6-adapter": "^1.1",
         "provision-ops/power-process": "dev-master",
-        "vlucas/phpdotenv": "^3.4@dev"
+        "vlucas/phpdotenv": "~2"
     },
     "autoload": {
         "psr-4": {
@@ -33,7 +34,7 @@
     "config": {
         "bin-dir": "bin",
         "platform": {
-            "php":"7.0.8"
+            "php":"7.1.3"
         }
     },
     "bin": [

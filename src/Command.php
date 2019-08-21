@@ -5,6 +5,7 @@ namespace ProvisionOps\YamlTests;
 use ProvisionOps\Tools\PowerProcess as Process;
 use ProvisionOps\Tools\Style;
 use GuzzleHttp\Psr7\Response;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,16 +15,18 @@ use TQ\Git\Repository\Repository;
 
 // @TODO: Figure out why our plugin isn't properly autoloading.
 if (file_exists(__DIR__.'/../../../../vendor/autoload.php')) {
-  $autoloaderPath = __DIR__.'/../../../../vendor/autoload.php';
+    $autoloaderPath = __DIR__.'/../../../../vendor/autoload.php';
 } elseif (file_exists(__DIR__.'/vendor/autoload.php')) {
-  $autoloaderPath = __DIR__.'/vendor/autoload.php';
+    $autoloaderPath = __DIR__.'/vendor/autoload.php';
 } elseif (file_exists(__DIR__.'/../../autoload.php')) {
-  $autoloaderPath = __DIR__ . '/../../autoload.php';
+    $autoloaderPath = __DIR__ . '/../../autoload.php';
 } elseif (file_exists(__DIR__.'/../vendor/autoload.php')) {
-  $autoloaderPath = __DIR__ . '/../vendor/autoload.php';
+    $autoloaderPath = __DIR__ . '/../vendor/autoload.php';
 } else {
-  die("Could not find autoloader. Run 'composer install'.");
+    die("Could not find autoloader. Run 'composer install'.");
 }
+
+require_once $autoloaderPath;
 
 /**
  * Class Command
@@ -126,6 +129,11 @@ class Command extends BaseCommand
             'The hostname to use in the status description. Use if automatically detected hostname is not desired.',
             gethostname()
         );
+        $this->addArgument(
+            'filter',
+            InputArgument::IS_ARRAY,
+            'A list of strings to filter tests by.'
+        );
     }
 
     /**
@@ -155,7 +163,8 @@ class Command extends BaseCommand
         $this->loadTestsYml();
 
         // Load Environment variables
-        $dotenv = \Dotenv\Dotenv::create(array(
+        $dotenv = new \Dotenv\Dotenv(__DIR__);
+        $dotenv->safeLoad(array(
 
           // Current user's home directory
           isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
@@ -166,7 +175,6 @@ class Command extends BaseCommand
           // Current directory
           getcwd(),
         ));
-        $dotenv->safeLoad();
 
         // Look for token.
         if (!empty($_SERVER['GITHUB_TOKEN'])) {
@@ -181,7 +189,7 @@ class Command extends BaseCommand
         // Detect a TRAVIS_PULL_REQUEST_SHA
         // Travis tests from a commit created from master and our commit.
         // It's not the same commit as the pull request branch.
-        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA'])) {
+        if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA']) && $this->gitRepo->getRepositoryPath() == $_SERVER['TRAVIS_BUILD_DIR']) {
             $this->repoSha = $_SERVER['TRAVIS_PULL_REQUEST_SHA'];
             $this->warningLite("Travis PR detected. Using PR SHA: " . $this->repoSha);
         }
@@ -200,8 +208,13 @@ class Command extends BaseCommand
         );
 
         $parts = explode('/', parse_url($remote_url, PHP_URL_PATH));
-        $this->repoOwner = $parts[1];
-        $this->repoName = $parts[2];
+        if (isset($parts[1]) && isset($parts[2])) {
+            $this->repoOwner = isset($parts[1])? $parts[1]: '';
+            $this->repoName =isset($parts[2])? $parts[2]: '';
+        } else {
+            $this->repoOwner = '';
+            $this->repoName = '';
+        }
 
         $this->io->title("Yaml Tests Initialized");
 
@@ -228,9 +241,45 @@ class Command extends BaseCommand
             $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
             $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
+
+            // Load Repo info to determine if it is a fork. We must post to the fork's parent in the API.
+            $repo = $this->githubClient->repository()->show($this->repoOwner, $this->repoName);
+            if (!empty($repo['parent'])) {
+                $this->successLite('Forked repository. Posting to the parent repo...');
+                $this->repoOwner = $repo['parent']['owner']['login'];
+                $this->repoName = $repo['parent']['name'];
+            }
         }
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
+
+        // If there are filters, shorten the list of tests to run.
+        $filters = $input->getArgument('filter');
+        $filter_string = implode(' ', $filters);
+        if (count($filters)) {
+            foreach ($this->yamlTests as $name => $test) {
+                $run_the_test = false;
+                foreach ($filters as $filter) {
+                    // If the filter string was found in the test name, run the test.
+                    if (strpos($name, $filter) !== false) {
+                        $run_the_test = true;
+                    }
+                }
+
+                if (!$run_the_test) {
+                    unset($this->yamlTests[$name]);
+                }
+            }
+        }
+
+        // If there are no matches
+        if (count($filters) && count($this->yamlTests) > 0) {
+            $this->io->table(array("Tests to run based on filter '$filter_string'"), $this->testsToTableRows());
+        } elseif (count($filters)) {
+            // If there are filters but tests were NOT removed, show a warning.
+            $this->warningLite("The filter '$filter_string' was specified but it did not match any tests.");
+            exit(1);
+        }
     }
 
     /**
@@ -278,6 +327,7 @@ class Command extends BaseCommand
             }
 
             $this->io->newLine();
+            $rows = array();
 
             foreach ($this->yamlTests as $test_name => $test) {
                 if (is_array($test) && isset($test['command'])) {
@@ -407,6 +457,7 @@ class Command extends BaseCommand
 
     private function testsToTableRows()
     {
+        $rows = array();
         foreach ($this->yamlTests as $test_name => $test) {
             if (is_array($test) && isset($test['command'])) {
                 $command = $test['command'];
