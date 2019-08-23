@@ -1306,8 +1306,16 @@ function devshop_github_webhook($project_node) {
               } // Otherwise, it is a clone from live.
               elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
                 $source_env = $project->settings->github['pull_request_environments_method'];
-                hosting_create_environment($project, $environment_name, $branch, $source_env);
+                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env);
+
+                // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
+                // @TODO: Decide if a setting is needed to control this behavior.
+                // @TODO: Reduce duplication with the github queue.
+                $deploy_task = hosting_add_task($environment->site, 'devshop-deploy', array(
+                  'git_ref' => $branch,
+                ));
                 $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
+                $message .= "Deploy task queued: $deploy_task->nid \n";
               } else {
                 $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
               }
@@ -1902,6 +1910,15 @@ function devshop_github_create_all_pr_environments($project_node) {
 //      DevShopGitHubApi::createDeployment($environment, 'queued');
       devshop_github_save_pr_env_data($pr, $environment);
       drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
+
+      // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
+      // @TODO: Decide if a setting is needed to control this behavior.
+      // @TODO: Reduce duplication with the github webhook.
+      drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
+      hosting_add_task($environment->site, 'devshop-deploy', array(
+        'git_ref' => $branch,
+      ));
+
     }
     // If environment does not exist, note that error.
     elseif (!isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
