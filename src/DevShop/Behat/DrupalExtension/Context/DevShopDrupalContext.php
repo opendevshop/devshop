@@ -237,4 +237,69 @@ class DevShopDrupalContext extends RawDrupalContext {
             // Simply continue on, as this driver doesn't support HTTP response codes.
         }
     }
+
+    /**
+     * @Then every link should work
+     * @Then every link on the page should work
+     */
+    public function everyLinkShouldWork() {
+        $elements = $this->getSession()
+          ->getPage()
+          ->findAll('xpath', '//a/@href');
+        $count = count($elements);
+        foreach ($elements as $element) {
+            // If element or tag is empty...
+            if (empty($element->getParent())) {
+                continue;
+            }
+            $href = $element->getParent()->getAttribute('href');
+
+            // Skip if empty
+            if (empty($href)) {
+                continue;
+            }
+            // Skip if already visited
+            if (isset($this->visited_links[$href])) {
+                print "Skipping visited link: $href \n\n";
+                continue;
+            }
+            // Save URL for later to avoid duplicates.
+            $this->visited_links[$href] = $href;
+            // Skip if an anchor tag
+            if (strpos($href, '#') === 0) {
+                print "Skipping anchor link: $href \n\n";
+                continue;
+            }
+            // Skip remote links
+            if (strpos($href, 'http') === 0) {
+                print "Skipping remote link: $href  \n\n";
+                continue;
+            }
+            // Skip mailto links
+            if (strpos($href, 'mailto') === 0) {
+                print "Skipping remote link: $href  \n\n";
+                continue;
+            }
+            print "Checking Link: " . $href . "\n";
+            $this->assertResponseAtPath($href, 200);
+
+            // @TODO: Remove this once we know it works.
+            // Mimics Drupal\DrupalExtension\Context\MinkContext::assertAtPath
+            //            $this->getSession()->visit($this->locatePath($href));
+            //            try {
+//                $this->getSession()->getStatusCode();
+//                $this->assertSession()->statusCodeEquals('200');
+//                print "200 Success \n";
+//            } catch (UnsupportedDriverActionException $e) {
+//                // Simply continue on, as this driver doesn't support HTTP response codes.
+//            } catch (ExpectationException $e) {
+//                print "200 Success NOT received \n";
+//                throw new \Exception("Page at URL $href did not return 200 code.");
+//            } catch (Behat\Mink\Exception\DriverException $e) {
+//                throw new \Exception($e->getMessage());
+//            }
+            print "\n";
+        }
+        print "Done! Checked $count Links";
+    }
 }
