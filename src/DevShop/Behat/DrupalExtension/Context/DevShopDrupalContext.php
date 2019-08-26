@@ -47,6 +47,11 @@ class DevShopDrupalContext extends RawDrupalContext {
     private $drushContext;
 
     /**
+     * @var array List of URLs the link test step has clicked.
+     */
+    private $visitedLinks = array();
+
+    /**
      * Prepare Contexts.
      * @BeforeScenario
      */
@@ -265,12 +270,12 @@ class DevShopDrupalContext extends RawDrupalContext {
                 continue;
             }
             // Skip if already visited
-            if (isset($this->visited_links[$href])) {
+            if (isset($this->visitedLinks[$href])) {
                 print "Skipping visited link: $href \n\n";
                 continue;
             }
             // Save URL for later to avoid duplicates.
-            $this->visited_links[$href] = $href;
+            $this->visitedLinks[$href] = $href;
             // Skip if an anchor tag
             if (strpos($href, '#') === 0) {
                 print "Skipping anchor link: $href \n\n";
