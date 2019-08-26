@@ -239,6 +239,12 @@ class DevShopDrupalContext extends RawDrupalContext {
     }
 
     /**
+     * Looks for every "a href" on the page and ensures a 200 code, skipping
+     * anchors, mailto, and external links.
+     *
+     * Originally created at https://gist.github.com/jonpugh/b2f95dd8e89b3218a20a
+     *
+     * @author Jon Pugh <jon@thinkdrop.net>
      * @Then every link should work
      * @Then every link on the page should work
      */
