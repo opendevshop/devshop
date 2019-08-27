@@ -134,7 +134,7 @@ class DevShopGitHubApi {
       // GitHub Deployment found attached to task, use that. Do not create new deployment status.
       else {
           $deployment_object = $existing_deployment_object;
-          watchdog('devshop_github', 'Existing Deployment loaded: ' . json_encode($deployment_object);
+          watchdog('devshop_github', 'Existing Deployment loaded: ' . json_encode($deployment_object));
       }
     }
     catch (Github\Exception\RuntimeException $e) {
