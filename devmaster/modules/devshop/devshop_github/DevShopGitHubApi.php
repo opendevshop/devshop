@@ -93,7 +93,7 @@ class DevShopGitHubApi {
         $deployment->ref = $ref;
 
         // Set auto_merge based on project settings.
-        $deployment->auto_merge = $project->settings->github['pull_request_auto_merge'];
+        $deployment->auto_merge = (bool) $project->settings->github['pull_request_auto_merge'];
 
         // https://developer.github.com/v3/repos/deployments/#create-a-deployment
         $deployment->task = "deploy:{$task->task_type}";
@@ -140,7 +140,7 @@ class DevShopGitHubApi {
       // Code 409 is used when the GitHub Deployments API "Auto-merge" fails because there is a conflict.
       // Instead of breaking our process by not getting a Deployment Object, try to save it again without auto_merge property.
       if ((string) $e->getCode() == '409') {
-        $deployment->auto_merge = $project->settings->github['pull_request_auto_merge'];
+        $deployment->auto_merge = false;
         $deployment->description .= ' ' . t('WARNING: Auto-Merge Failed. Deployed without updated primary branch.');
 
         $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
