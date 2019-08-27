@@ -73,7 +73,7 @@ class DevShopGitHubApi {
       $repo = $environment->github_repo;
 
       if (!empty($environment->github_pull_request)) {
-        $ref = $environment->github_pull_request->pull_request_object->head->sha;
+        $ref = $environment->github_pull_request->pull_request_object->head->ref;
         $owner = $project->github_owner;
         $repo = $project->github_repo;
       }
