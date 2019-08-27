@@ -218,6 +218,17 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       ),
     ),
   );
+  $form['project']['settings']['github']['pull_request_auto_merge'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable GitHub Auto-Merge. <div class="help-block">When creating the github deployment, tell it to attempt to automatically merge changes in from the primary branch. </div><div class="help-block"><span class="text-warning">WARNING: This will prevent deployment notifications if the branch cannot be merged because of a conflict. DevShop will send a message to GitHub notifying the developers they must resolve the conflicts to continue deployment notifications</span></div>'),
+    '#default_value' => isset($node->project->settings->github) ?
+      $node->project->settings->github['pull_request_auto_merge'] : 1,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
 }
 
 /**
