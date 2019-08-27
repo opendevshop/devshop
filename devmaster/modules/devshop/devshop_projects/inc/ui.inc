@@ -218,6 +218,8 @@ function devshop_environment_menu($environment) {
     }
   }
 
+  drupal_alter('devshop_environment_menu', $items, $environment);
+
   // Add all actions from hook_devshop_environment_menu()
   foreach ($items as $item) {
     if (isset($tasks[$item])) {
