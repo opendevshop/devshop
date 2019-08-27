@@ -92,8 +92,8 @@ class DevShopGitHubApi {
 
         $deployment->ref = $ref;
 
-        // @TODO: Make this configurable.
-        $deployment->auto_merge = false;
+        // Set auto_merge based on project settings.
+        $deployment->auto_merge = $project->settings->github['pull_request_auto_merge'];
 
         // https://developer.github.com/v3/repos/deployments/#create-a-deployment
         $deployment->task = "deploy:{$task->task_type}";
@@ -134,46 +134,20 @@ class DevShopGitHubApi {
           $deployment_object = $existing_deployment_object;
           watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
       }
-
-      // Deployment Status
-      $deployment_status = new stdClass();
-      $deployment_status->state = $state;
-
-      // Target URL is actually for the logs.
-      // According to GitHub API Docs:
-      // "This URL should contain output to keep the user updated while the task is running or serve as historical information for what happened in the deployment. "
-      $deployment_status->log_url =
-      $deployment_status->target_url =
-        empty($log_url)? $environment->dashboard_url: $log_url;
-
-      // @TODO: Generate a default description?
-      $deployment_status->description = $description;
-
-      // @TODO: Use developer preview to get this:
-      // https://developer.github.com/v3/previews/#deployment-statuses
-      // https://developer.github.com/v3/previews/#enhanced-deployments
-      $deployment_status->environment = $deployment_object->environment;
-      $deployment_status->environment_url = $environment->url;
-
-      // Create Deployment Status
-      $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
-      $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
-
-      watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
     }
     catch (Github\Exception\RuntimeException $e) {
       watchdog('devshop_github', "GitHub Error: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url");
+      // Code 409 is used when the GitHub Deployments API "Auto-merge" fails because there is a conflict.
+      // Instead of breaking our process by not getting a Deployment Object, try to save it again without auto_merge property.
       if ((string) $e->getCode() == '409') {
+        $deployment->auto_merge = $project->settings->github['pull_request_auto_merge'];
+        $deployment->description .= ' ' . t('WARNING: Auto-Merge Failed. Deployed without updated primary branch.');
 
-        // @TODO: @ElijahLynn This deployment status is not sending, maybe because it is STILL out of date?
-        // With devshop, we sent this warning as a commit status instead.
-        watchdog('devshop_github', 'Caught github error: cannot merge code automatically. TODO: Send error commit status ...');
-//        $deployment_object = DevShopGitHubApi::createDeployment($environment, 'error', $task->nid, t('GitHub cannot trigger a deployment: Branch needs manual merging from default branch. Error: !error', array(
-//          '!error' => $e->getMessage(),
-//        )));
+        $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
-        // @TODO: deployment_object is not getting set here. Return false.
-        return false;
+        $deployment_data = self::saveDeployment($deployment_object, $task->nid);
+        $deployment_object = $deployment_data->deployment_object;
+        watchdog('devshop_github', 'New Deployment created without auto_merge option: ' . $deployment_object->id);
       }
     }
     catch (\Exception $e) {
@@ -181,7 +155,38 @@ class DevShopGitHubApi {
       return false;
     }
 
-    return $deployment_object;
+    // Deployment Status
+    $deployment_status = new stdClass();
+    $deployment_status->state = $state;
+
+    // Target URL is actually for the logs.
+    // According to GitHub API Docs:
+    // "This URL should contain output to keep the user updated while the task is running or serve as historical information for what happened in the deployment. "
+    $deployment_status->log_url =
+    $deployment_status->target_url =
+      empty($log_url)? $environment->dashboard_url: $log_url;
+
+    // @TODO: Generate a default description?
+    $deployment_status->description = $description;
+
+    // @TODO: Use developer preview to get this:
+    // https://developer.github.com/v3/previews/#deployment-statuses
+    // https://developer.github.com/v3/previews/#enhanced-deployments
+    $deployment_status->environment = $deployment_object->environment;
+    $deployment_status->environment_url = $environment->url;
+
+    // Create Deployment Status
+    try {
+      $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
+      $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
+
+      watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
+      return $deployment_object;
+    }
+    catch (\Exception $e) {
+      watchdog('devshop_github', "Error sending Deploymen Status to GitHub: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url | {$e->getTraceAsString()}");
+      return false;
+    }
   }
 
   /**
