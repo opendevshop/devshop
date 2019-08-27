@@ -66,100 +66,100 @@ class DevShopGitHubApi {
 
     // If Deployment doesn't already exist, create it.
     try {
-    $client = devshop_github_client();
+      $client = devshop_github_client();
 
-    // Git Reference. Use sha if specified.
-    $owner = $environment->github_owner;
-    $repo = $environment->github_repo;
+      // Git Reference. Use sha if specified.
+      $owner = $environment->github_owner;
+      $repo = $environment->github_repo;
 
-    if (!empty($environment->github_pull_request)) {
-      $ref = $environment->github_pull_request->pull_request_object->head->sha;
-      $owner = $project->github_owner;
-      $repo = $project->github_repo;
-    }
-    else {
-      $ref = $environment->git_ref;
-    }
-
-    if (empty($existing_deployment_object)) {
-      watchdog('devshop_github', 'Creating new GitHub Deployment for Task !nid', array('!nid' => $task->nid));
-      $deployment = new stdClass();
-
-      // If there is a PR, we must use the SHA in it, so that forked repos properly get deployment status.
-      if ($sha) {
-        $ref = $sha;
+      if (!empty($environment->github_pull_request)) {
+        $ref = $environment->github_pull_request->pull_request_object->head->sha;
+        $owner = $project->github_owner;
+        $repo = $project->github_repo;
+      }
+      else {
+        $ref = $environment->git_ref;
       }
 
-      $deployment->ref = $ref;
+      if (empty($existing_deployment_object)) {
+        watchdog('devshop_github', 'Creating new GitHub Deployment for Task !nid', array('!nid' => $task->nid));
+        $deployment = new stdClass();
 
-      // @TODO: Make this configurable.
-      $deployment->auto_merge = false;
+        // If there is a PR, we must use the SHA in it, so that forked repos properly get deployment status.
+        if ($sha) {
+          $ref = $sha;
+        }
 
-      // https://developer.github.com/v3/repos/deployments/#create-a-deployment
-      $deployment->task = "deploy:{$task->task_type}";
+        $deployment->ref = $ref;
 
-      // In GitHub's API, "environment" is just a small string it displays on the pull request:
-      // It's a better  UX to show the full URI in the "environment" field.
-      $deployment->environment = "{$environment->uri} - {$task->task_type}";
-      $deployment->payload = array(
-        'devshop_site_url' => $environment->dashboard_url,
-        'devmaster_url' => $hostmaster_uri,
-      );
-      // Deployment description is limited to
-      $deployment->description = substr(t('Deploying ref !ref to environment !env for project !proj: !link [by !server]', array(
-        '!ref' => $deployment->ref,
-        '!env' => $environment->name,
-        '!project' => $project->name,
-        '!link' => $deployment->environment,
-        '!server' => $hostmaster_uri,
-      )), 0, 140);
-      $deployment->required_contexts = array();
+        // @TODO: Make this configurable.
+        $deployment->auto_merge = false;
 
-      // @TODO: Use the developer preview to get this flag: https://developer.github.com/v3/previews/#enhanced-deployments
-#      $deployment->transient_environment = true;
+        // https://developer.github.com/v3/repos/deployments/#create-a-deployment
+        $deployment->task = "deploy:{$task->task_type}";
 
-      // @TODO: Support deployment notifications for production.
-#      $deployment->production_environment = false;
+        // In GitHub's API, "environment" is just a small string it displays on the pull request:
+        // It's a better  UX to show the full URI in the "environment" field.
+        $deployment->environment = "{$environment->uri} - {$task->task_type}";
+        $deployment->payload = array(
+          'devshop_site_url' => $environment->dashboard_url,
+          'devmaster_url' => $hostmaster_uri,
+        );
+        // Deployment description is limited to
+        $deployment->description = substr(t('Deploying ref !ref to environment !env for project !proj: !link [by !server]', array(
+          '!ref' => $deployment->ref,
+          '!env' => $environment->name,
+          '!project' => $project->name,
+          '!link' => $deployment->environment,
+          '!server' => $hostmaster_uri,
+        )), 0, 140);
+        $deployment->required_contexts = array();
 
-      // Create Deployment
-      $post_url = "/repos/$owner/$repo/deployments";
-      $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
+        // @TODO: Use the developer preview to get this flag: https://developer.github.com/v3/previews/#enhanced-deployments
+  #      $deployment->transient_environment = true;
 
-      $deployment_data = self::saveDeployment($deployment_object, $task->nid);
-      $deployment_object = $deployment_data->deployment_object;
-      watchdog('devshop_github', 'New Deployment created: ' . $deployment_object->id);
-    }
-    // GitHub Deployment found attached to task, use that. Do not create new deployment status.
-    else {
-        $deployment_object = $existing_deployment_object;
-        watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
-    }
+        // @TODO: Support deployment notifications for production.
+  #      $deployment->production_environment = false;
 
-    // Deployment Status
-    $deployment_status = new stdClass();
-    $deployment_status->state = $state;
+        // Create Deployment
+        $post_url = "/repos/$owner/$repo/deployments";
+        $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
-    // Target URL is actually for the logs.
-    // According to GitHub API Docs:
-    // "This URL should contain output to keep the user updated while the task is running or serve as historical information for what happened in the deployment. "
-    $deployment_status->log_url =
-    $deployment_status->target_url =
-      empty($log_url)? $environment->dashboard_url: $log_url;
+        $deployment_data = self::saveDeployment($deployment_object, $task->nid);
+        $deployment_object = $deployment_data->deployment_object;
+        watchdog('devshop_github', 'New Deployment created: ' . $deployment_object->id);
+      }
+      // GitHub Deployment found attached to task, use that. Do not create new deployment status.
+      else {
+          $deployment_object = $existing_deployment_object;
+          watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
+      }
 
-    // @TODO: Generate a default description?
-    $deployment_status->description = $description;
+      // Deployment Status
+      $deployment_status = new stdClass();
+      $deployment_status->state = $state;
 
-    // @TODO: Use developer preview to get this:
-    // https://developer.github.com/v3/previews/#deployment-statuses
-    // https://developer.github.com/v3/previews/#enhanced-deployments
-    $deployment_status->environment = $deployment_object->environment;
-    $deployment_status->environment_url = $environment->url;
+      // Target URL is actually for the logs.
+      // According to GitHub API Docs:
+      // "This URL should contain output to keep the user updated while the task is running or serve as historical information for what happened in the deployment. "
+      $deployment_status->log_url =
+      $deployment_status->target_url =
+        empty($log_url)? $environment->dashboard_url: $log_url;
 
-    // Create Deployment Status
-    $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
-    $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
+      // @TODO: Generate a default description?
+      $deployment_status->description = $description;
 
-    watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
+      // @TODO: Use developer preview to get this:
+      // https://developer.github.com/v3/previews/#deployment-statuses
+      // https://developer.github.com/v3/previews/#enhanced-deployments
+      $deployment_status->environment = $deployment_object->environment;
+      $deployment_status->environment_url = $environment->url;
+
+      // Create Deployment Status
+      $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
+      $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
+
+      watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
     }
     catch (Github\Exception\RuntimeException $e) {
       watchdog('devshop_github', "GitHub Error: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url");
