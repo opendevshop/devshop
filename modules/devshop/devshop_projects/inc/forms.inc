@@ -515,6 +515,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
   // Hosting Task Forms
   if ($form_id == 'hosting_task_confirm_form') {
+
+    // Allow hosting_task_TASK_TYPE_form to define their page title.
+    if (!empty($form['parameters']['#page_title'])) {
+      drupal_set_title($form['parameters']['#page_title']);
+    }
+
     switch ($form['task']['#value']) {
 
       // Migrate Form: used for changing database server.
