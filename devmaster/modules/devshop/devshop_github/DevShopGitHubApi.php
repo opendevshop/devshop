@@ -123,16 +123,18 @@ class DevShopGitHubApi {
 
         // Create Deployment
         $post_url = "/repos/$owner/$repo/deployments";
+
+        // @TODO: Detect merged branch response message and log it.
         $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
         $deployment_data = self::saveDeployment($deployment_object, $task->nid);
         $deployment_object = $deployment_data->deployment_object;
-        watchdog('devshop_github', 'New Deployment created: ' . $deployment_object->id);
+        watchdog('devshop_github', 'New Deployment created: ' . json_encode($deployment_object));
       }
       // GitHub Deployment found attached to task, use that. Do not create new deployment status.
       else {
           $deployment_object = $existing_deployment_object;
-          watchdog('devshop_github', 'Existing Deployment loaded: ' . $deployment_object->id);
+          watchdog('devshop_github', 'Existing Deployment loaded: ' . json_encode($deployment_object);
       }
     }
     catch (Github\Exception\RuntimeException $e) {
