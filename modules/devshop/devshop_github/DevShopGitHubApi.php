@@ -143,7 +143,7 @@ class DevShopGitHubApi {
       // Instead of breaking our process by not getting a Deployment Object, try to save it again without auto_merge property.
       if ((string) $e->getCode() == '409') {
         $deployment->auto_merge = false;
-        $deployment->description .= ' ' . t('WARNING: Auto-Merge Failed. Deployed without updated primary branch.');
+        $description .= ' ' . t('WARNING: Auto-Merge Failed. Deployed without updated primary branch.');
 
         $deployment_object = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment))->getBody(TRUE));
 
