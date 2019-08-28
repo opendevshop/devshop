@@ -130,6 +130,8 @@ class DevShopGitHubApi {
         $deployment_data = self::saveDeployment($deployment_object, $task->nid);
         $deployment_object = $deployment_data->deployment_object;
         watchdog('devshop_github', 'New Deployment created: ' . json_encode($deployment_object));
+
+        // @TODO: Run another git fetch! There might be new commits after the Deployment got created if there was an auto_merge.
       }
       // GitHub Deployment found attached to task, use that. Do not create new deployment status.
       else {
