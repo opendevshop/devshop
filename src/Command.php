@@ -30,10 +30,6 @@ require_once $autoloaderPath;
 
 /**
  * Class Command
- *
- * Provides the `git-build` command to composer.
- *
- * @package jonpugh\ComposerGitBuild
  */
 class Command extends BaseCommand
 {
