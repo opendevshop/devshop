@@ -693,7 +693,7 @@ function boots_preprocess_page(&$vars){
 
     // Improve tasks display
     if ($vars['node']->type == 'task') {
-      $object = node_load($vars['node']->rid);
+      $object = $vars['node']->ref = node_load($vars['node']->rid);
 
       $vars['title2'] = $object->title;
       if ($object->type == 'site') {
@@ -719,6 +719,27 @@ function boots_preprocess_page(&$vars){
       if ($vars['subtitle2'] == 'Platform') {
         $vars['subtitle2'] = t('Environment') . ' ' . t('Platform');
       }
+    }
+
+    // For node/%/* pages where node is site, use the environment name as title2
+    if (isset($vars['node']->environment)){
+      // If the project node creation process was interrupted, the environment will have no "site" nid.
+      if ($vars['node']->environment->site == 0) {
+        $vars['title2_url'] = url('node/' . $vars['node']->environment->project_nid);
+      }
+      else {
+        $vars['title2_url'] = url('node/' . $vars['node']->environment->site);
+      }
+
+      // Override subtitle2 for platform node and task pages.
+      if ($vars['node']->type == 'platform') {
+        $vars['subtitle2'] = ' / '. l(t('Platform'), 'node/' . $vars['node']->nid);
+      }
+      elseif ($vars['node']->type == 'task' && $vars['node']->ref->type == 'platform') {
+        $vars['subtitle2'] = ' / '. l(t('Platform'), 'node/' . $vars['node']->rid);
+      }
+
+      $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
     }
 
     // For node/%/* pages where node is site or platform, use the environment name as title2
