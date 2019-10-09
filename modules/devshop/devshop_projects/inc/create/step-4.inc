@@ -97,7 +97,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $errors = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':nid' => $task->nid, ':type' => 'devshop%', ':error' => 'error'));
+      $errors = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':vid' => $task->vid, ':type' => 'p_%', ':error' => 'error'));
 
       foreach ($errors as $error) {
         if ($error->type == 'p_command' || $error->type == 'error') {
