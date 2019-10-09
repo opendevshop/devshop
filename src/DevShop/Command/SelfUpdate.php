@@ -125,7 +125,7 @@ EOT
       // Bail if there are working copy changes, ignoring untracked files.
       // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
       if (!$input->getOption('ignore-working-copy-changes') && $git->getWrapper()->git('status -s --untracked-files=no', $git->getDirectory())) {
-        throw new \Exception("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check.");
+        throw new \Exception("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check. Git Status: " . PHP_EOL . $git->getStatus());
       }
 
       // Checkout the desired version.
