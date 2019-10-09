@@ -74,7 +74,7 @@ function ansible_roles_node_load($nodes, $types)
     foreach ($nodes as $node) {
 
         // If node is server master, load all available roles.
-        if (isset($node->hosting_name) && $node->hosting_name == 'server_master') {
+        if (isset($node->hosting_name) && $node->hosting_name == 'hostmaster') {
 
             // Load all available custom roles
             $node->ansible_roles_available = array();
@@ -88,12 +88,17 @@ function ansible_roles_node_load($nodes, $types)
                         // @TODO: Probably a much classier way to do this...
                         if (method_exists($object, 'getRoles')) {
                             $roles = $object->getRoles();
+
+                            // @TODO: make sure getRoles() always returns an array.
+                            if (!is_array($roles)) {
+                              $roles = array();
+                            }
                             foreach ($roles as $role) {
                                 if (is_string($role)) {
                                     $role_data = array(
                                       'name' => $role,
                                     );
-                                }
+                                    $role_name = $role;                                }
                                 elseif (is_object($role) || is_array($role)) {
                                     $role = (object) $role;
                                     $role_data = array(
@@ -105,8 +110,9 @@ function ansible_roles_node_load($nodes, $types)
                                     if (!empty($role->version)) {
                                         $role_data['version'] = $role->version;
                                     }
+                                    $role_name = $role->name;
                                 }
-                                $node->ansible_roles_available[] = $role_data;
+                                $node->ansible_roles_available[$role_name] = $role_data;
                             }
                         }
                     }
@@ -114,7 +120,7 @@ function ansible_roles_node_load($nodes, $types)
 
             }
             $yml = new \Symfony\Component\Yaml\Dumper();
-            $node->ansible_role_file = $yml->dump($node->ansible_roles_available, 10);
+            $node->ansible_role_file = $yml->dump(array_values($node->ansible_roles_available), 10);
         }
 
         // Only act on server nodes with services.
@@ -132,13 +138,13 @@ function ansible_roles_node_load($nodes, $types)
             if ($type == 'ansible_roles') {
                 continue;
             }
-            if (method_exists($service, 'getRoleNames')) {
-                $roles = array_merge($roles, $service->getRoleNames());
+            if (property_exists($service, 'roles')) {
+                $roles = array_merge($roles, $service->roles);
             }
         }
 
-        if (isset($services['ansible_roles'])) {
-            $roles = array_merge($roles, $node->services['ansible_roles']->getRoleNames());
+        if (isset($services['ansible_roles']) && property_exists($services['ansible_roles'], 'roles')) {
+            $roles = array_merge($roles, $services['ansible_roles']->roles);
         }
 
         $node->roles = $roles;

@@ -35,8 +35,8 @@ function ansible_roles_provision_services() {
  */
 function ansible_roles_hosting_server_context_options(&$task) {
 
-  // Only server_master gets ansible_roles_available.
-  if (isset($task->ref->hosting_name) && $task->ref->hosting_name == 'server_master' && isset($task->ref->ansible_roles_available)) {
+  // Only hostmaster gets ansible_roles_available.
+  if (isset($task->ref->hosting_name) && $task->ref->hosting_name == 'hostmaster' && isset($task->ref->ansible_roles_available)) {
     $task->context_options['ansible_roles_available'] = $task->ref->ansible_roles_available;
   }
 }
@@ -48,11 +48,11 @@ function drush_ansible_roles_pre_hosting_task() {
 
   $task =& drush_get_context('HOSTING_TASK');
 
-  if ($task->task_type == 'verify' && $task->ref->hosting_name == 'server_master' ) {
+  if ($task->task_type == 'verify' && $task->ref->hosting_name == 'hostmaster' ) {
 
     // First we must save a roles.yml file so we can install custom ones.
     // @see ansible_roles_node_load()
-    $filename = "private://server-master-roles-{$task->ref->vid}.yml";
+    $filename = "private://hostmaster-roles-{$task->ref->vid}.yml";
     $real_file_path = file_unmanaged_save_data($task->ref->ansible_role_file, $filename);
 
     if (file_exists($real_file_path)) {

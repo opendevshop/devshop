@@ -77,7 +77,7 @@ function ansible_roles_settings_add_submit(&$form, &$form_state) {
     )));
 
     // Queue a verify task for server master to install the roles.
-    $nid = hosting_context_nid('server_master');
+    $nid = hosting_context_nid('hostmaster');
     hosting_add_task($nid, 'verify');
 
     drupal_goto('admin/hosting/roles');

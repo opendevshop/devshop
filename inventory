@@ -32,7 +32,7 @@ else {
 
 // Get JSON from an Aegir server.
 // @TODO: Add some kind of authentication!!
-$contents = file_get_contents("http://{$hostname}/inventory");
+$contents = file_get_contents("https://{$hostname}/inventory");
 if ($contents) {
   print $contents;
   exit(0);

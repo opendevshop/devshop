@@ -56,6 +56,7 @@ It involves a few components:
     To set an environment variable, either type this out or put it in `/etc/bashrc` or `/etc/bash.bashrc`
 
         export AEGIR_HOSTMASTER_HOSTNAME=aegir.myhostname.com
+ansible all -u root --become --become-user=aegir -m command -a 'drush @hm cc all'
 
 5. Install Galaxy Roles
 
@@ -110,6 +111,10 @@ Type `ansible` and look for the `-u and --become options for more info about how
   The "-u" option determines what user ansible tries to login as.  If you need to perform operations that require
   root privileges, specify "-u root".  Otherwise, ansible will default the name you are currently using (the same
   behavior for the 'ssh' command.)
+
+  If you have root access, but want to run a command as a different user (such as aegir) you can use --become and --become-user options:
+    
+          $ ansible all -u root --become --become-user=aegir -m command -a 'drush @hm cc all'
 
 ## Using Ansible Playbook
 

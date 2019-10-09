@@ -48,11 +48,11 @@ class hostingService_http_ansible_nginx extends hostingService_http_nginx_ssl
             'opendevshop.aegir-nginx',
             'geerlingguy.php' => array(
                 'name' => 'geerlingguy.php',
-                'version' => '2.0.3',
+                'version' => '3.7.0',
             ),
             'geerlingguy.php-mysql' => array(
               'name' => 'geerlingguy.php-mysql',
-              'version' => '1.2.0',
+              'version' => '2.0.1',
             ),
             'geerlingguy.composer'
         );

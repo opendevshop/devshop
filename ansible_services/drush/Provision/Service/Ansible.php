@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../vendor/autoload.php');
-
 use Asm\Ansible\Ansible;
 
 
@@ -29,6 +27,11 @@ class Provision_Service_Ansible extends Provision_Service {
    * @return mixed
    */
   public function runRolesInstall() {
+
+    // Handle pre-composer manager install.
+    if (!class_exists('Asm\Ansible\Ansible')) {
+      return;
+    }
 
     // Look for playbook
     $this->rolesFilePath = drush_get_option('roles_file_path', '');
@@ -58,7 +61,7 @@ class Provision_Service_Ansible extends Provision_Service {
 
     $exit = $ansible->execute(function ($type, $buffer) {
       if (drush_get_option('is-devshop', FALSE)) {
-        drush_log($buffer, 'p_command');
+        drush_log($buffer, 'p_info');
       }
       else {
         print $buffer;
@@ -82,6 +85,11 @@ class Provision_Service_Ansible extends Provision_Service {
    * @return mixed
    */
   public function runPlaybook() {
+
+    // Handle pre-composer manager install.
+    if (!class_exists('Asm\Ansible\Ansible')) {
+      return;
+    }
 
     drush_log('Provision_Service_http_ansible_apache::init_server', 'status');
 
@@ -250,7 +258,16 @@ class Provision_Service_Ansible extends Provision_Service {
     return array();
   }
 
+    /**
+     * If the server is using Docker (with hosting_docker) server->remote_host is overridden as "localhost".
+     * @TODO: figure out a better way for hosting_docker to handle this.
+     */
   function getHostname() {
-    return $this->server->remote_host;
+      if (!empty($this->server->hostname)) {
+          return $this->server->hostname;
+      }
+      else {
+          return $this->server->remote_host;
+      }
   }
 }

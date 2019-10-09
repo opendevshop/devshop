@@ -41,7 +41,9 @@ function aegir_ansible_inventory_node_load($nodes, $types)
         if ($node->type != 'server') {
             continue;
         }
-        $node->ansible_vars = array();
+        if (!is_array($node->ansible_vars)) {
+          $node->ansible_vars = array();
+        }
         foreach ($node->services as $type => $service) {
             if (isset($service->ansible_vars) && is_array($service->ansible_vars)) {
                 $node->ansible_vars = array_merge($node->ansible_vars, $service->ansible_vars);
@@ -51,6 +53,12 @@ function aegir_ansible_inventory_node_load($nodes, $types)
         // Global ansible variables?  Not sure if this is the place.
         // @TODO: Move this to a "users" service.
         $node->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
+
+        // If we have an IP address, connect via that instead.
+        $ip_address = array_shift($node->ip_addresses);
+        if (!empty($ip_address)) {
+          $node->ansible_vars['ansible_host'] = $ip_address;
+        }
     }
 }
 

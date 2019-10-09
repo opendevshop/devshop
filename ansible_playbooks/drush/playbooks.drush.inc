@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../vendor/autoload.php');
-
 use Asm\Ansible\Ansible;
 
 /**
@@ -91,7 +89,7 @@ function drush_playbooks_provision_playbook($playbook_file) {
 
   $exit = $ansible->execute(function ($type, $buffer) {
     if (drush_get_option('is-devshop', FALSE)) {
-      drush_log($buffer, 'p_command');
+      drush_log($buffer, 'p_info');
     }
     else {
       print $buffer;

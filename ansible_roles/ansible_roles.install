@@ -50,7 +50,7 @@ function ansible_roles_install() {
   }
   
   // Queue a verify task for server master to install the roles.
-  $nid = hosting_context_nid('server_master');
+  $nid = hosting_context_nid('hostmaster');
   hosting_add_task($nid, 'verify');
 }
 
