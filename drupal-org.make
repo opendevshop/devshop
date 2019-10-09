@@ -37,7 +37,7 @@ projects[hosting_tasks_extra][subdir] = aegir
 projects[hosting_tasks_extra][version] = "3.170"
 
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = "3.170"
+projects[hosting_logs][version] = "3.x"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_filemanager][version] = "1.x"
