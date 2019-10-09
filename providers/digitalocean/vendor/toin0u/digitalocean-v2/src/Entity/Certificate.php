@@ -12,13 +12,12 @@
 namespace DigitalOceanV2\Entity;
 
 /**
- * @author Yassir Hannoun <yassir.hannoun@gmail.com>
- * @author Graham Campbell <graham@alt-three.com>
+ * @author Jacob Holmes <jwh315@cox.net>
  */
-final class Image extends AbstractEntity
+final class Certificate extends AbstractEntity
 {
     /**
-     * @var int
+     * @var string
      */
     public $id;
 
@@ -30,42 +29,17 @@ final class Image extends AbstractEntity
     /**
      * @var string
      */
-    public $type;
+    public $notAfter;
 
     /**
      * @var string
      */
-    public $distribution;
-
-    /**
-     * @var string
-     */
-    public $slug;
-
-    /**
-     * @var int
-     */
-    public $minDiskSize;
-
-    /**
-     * @var float
-     */
-    public $sizeGigabytes;
+    public $sha1Fingerprint;
 
     /**
      * @var string
      */
     public $createdAt;
-
-    /**
-     * @var bool
-     */
-    public $public;
-
-    /**
-     * @var string[]
-     */
-    public $regions = [];
 
     /**
      * @param string $createdAt

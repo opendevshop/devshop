@@ -13,12 +13,11 @@ namespace DigitalOceanV2\Entity;
 
 /**
  * @author Yassir Hannoun <yassir.hannoun@gmail.com>
- * @author Graham Campbell <graham@alt-three.com>
  */
-final class Image extends AbstractEntity
+final class Snapshot extends AbstractEntity
 {
     /**
-     * @var int
+     * @var string
      */
     public $id;
 
@@ -30,17 +29,17 @@ final class Image extends AbstractEntity
     /**
      * @var string
      */
-    public $type;
+    public $createdAt;
 
     /**
      * @var string
      */
-    public $distribution;
+    public $resourceId;
 
     /**
      * @var string
      */
-    public $slug;
+    public $resourceType;
 
     /**
      * @var int
@@ -51,16 +50,6 @@ final class Image extends AbstractEntity
      * @var float
      */
     public $sizeGigabytes;
-
-    /**
-     * @var string
-     */
-    public $createdAt;
-
-    /**
-     * @var bool
-     */
-    public $public;
 
     /**
      * @var string[]

@@ -13,14 +13,23 @@ namespace DigitalOceanV2\Entity;
 
 /**
  * @author Yassir Hannoun <yassir.hannoun@gmail.com>
- * @author Graham Campbell <graham@alt-three.com>
  */
-final class Image extends AbstractEntity
+final class Volume extends AbstractEntity
 {
     /**
-     * @var int
+     * @var string
      */
     public $id;
+
+    /**
+     * @var Region
+     */
+    public $region;
+
+    /**
+     * @var int[]
+     */
+    public $dropletIds = [];
 
     /**
      * @var string
@@ -30,25 +39,10 @@ final class Image extends AbstractEntity
     /**
      * @var string
      */
-    public $type;
-
-    /**
-     * @var string
-     */
-    public $distribution;
-
-    /**
-     * @var string
-     */
-    public $slug;
+    public $description;
 
     /**
      * @var int
-     */
-    public $minDiskSize;
-
-    /**
-     * @var float
      */
     public $sizeGigabytes;
 
@@ -58,14 +52,23 @@ final class Image extends AbstractEntity
     public $createdAt;
 
     /**
-     * @var bool
+     * @param array $parameters
      */
-    public $public;
+    public function build(array $parameters)
+    {
+        parent::build($parameters);
 
-    /**
-     * @var string[]
-     */
-    public $regions = [];
+        foreach ($parameters as $property => $value) {
+            switch ($property) {
+                case 'region':
+                    if (is_object($value)) {
+                        $this->region = new Region($value);
+                    }
+                    unset($parameters[$property]);
+                    break;
+            }
+        }
+    }
 
     /**
      * @param string $createdAt

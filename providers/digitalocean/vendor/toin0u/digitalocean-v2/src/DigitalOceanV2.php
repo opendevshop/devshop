@@ -14,6 +14,7 @@ namespace DigitalOceanV2;
 use DigitalOceanV2\Adapter\AdapterInterface;
 use DigitalOceanV2\Api\Account;
 use DigitalOceanV2\Api\Action;
+use DigitalOceanV2\Api\Certificate;
 use DigitalOceanV2\Api\Domain;
 use DigitalOceanV2\Api\DomainRecord;
 use DigitalOceanV2\Api\Droplet;
@@ -23,6 +24,8 @@ use DigitalOceanV2\Api\Key;
 use DigitalOceanV2\Api\RateLimit;
 use DigitalOceanV2\Api\Region;
 use DigitalOceanV2\Api\Size;
+use DigitalOceanV2\Api\Snapshot;
+use DigitalOceanV2\Api\Volume;
 
 /**
  * @author Antoine Corcy <contact@sbin.dk>
@@ -57,6 +60,14 @@ class DigitalOceanV2
     public function action()
     {
         return new Action($this->adapter);
+    }
+
+    /**
+     * @return Certificate
+     */
+    public function certificate()
+    {
+        return new Certificate($this->adapter);
     }
 
     /**
@@ -129,5 +140,21 @@ class DigitalOceanV2
     public function size()
     {
         return new Size($this->adapter);
+    }
+
+    /**
+     * @return Volume
+     */
+    public function volume()
+    {
+        return new Volume($this->adapter);
+    }
+
+    /**
+     * @return Snapshot
+     */
+    public function snapshot()
+    {
+        return new Snapshot($this->adapter);
     }
 }

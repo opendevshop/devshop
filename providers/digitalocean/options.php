@@ -8,9 +8,7 @@
  */
 function aegir_digital_ocean_options_form() {
   $form = array();
-  aegir_digital_ocean_load_api();
-  require_once dirname(__FILE__) . '/digital-ocean-master/vendor/autoload.php';
-  require_once dirname(__FILE__) . '/digital-ocean-master/src/DigitalOceanV2.php';
+  aegir_digitalocean_load_api();
   $token = variable_get('aegir_cloud_digital_ocean_api_token', array());
 
   if (empty($token)) {
@@ -83,11 +81,14 @@ function aegir_digital_ocean_options_form() {
         '#title' => t('Setup as remote aegir server'),
         '#default_value' => $default_options['aegir_digital_ocean_default_remote_server'],
       );
-      //$form['aegir_digital_ocean_default_cloud_config'] = array(
-      //  '#type' => 'textarea',
-      //  '#title' => t('Cloud Config'),
-      //  '#default_value' => $default_options['aegir_digital_ocean_default_cloud_config'],
-      //);
+      $form['aegir_digital_ocean_default_user_data'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Cloud Init'),
+        '#default_value' => $default_options['aegir_digital_ocean_default_user_data'],
+        '#description' => t('Cloud Init (aka User Data) is a standardized way to pre-configure your server, supported by most cloud server providers. If this field is Bash, it is run as soon as the server is ready. If this field has YML, it can do many things. See !link for Cloud Init examples', array(
+          '!link' => l('cloudinit.readthedocs.io', 'https://cloudinit.readthedocs.io/en/latest/topics/examples.html')
+        )),
+      );
     }
 
     $form['note'] = array(
@@ -127,13 +128,13 @@ function aegir_digital_ocean_options_form_submit($form, $form_state) {
 
     $options = array();
 
-    $digitalocean = aegir_digital_ocean_load_api();
+    $digitalocean = aegir_digitalocean_load_api();
 
     $image = $digitalocean->image();
     $images = $image->getAll();
     $image_options = array();
     foreach ($images as $image) {
-      $image_options[$image->slug] = $image->distribution . ' - ' . $image->name;
+      $image_options[$image->id] = $image->distribution . ' - ' . $image->name;
     }
     $options['images'] = $image_options;
 
