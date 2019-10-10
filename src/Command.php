@@ -246,11 +246,11 @@ class Command extends BaseCommand
             $this->io->writeln('');
         }
 
-      $this->say("Git Remote: <comment>{$remote_url}</comment>");
-      $this->say("Local Git Branch: <comment>{$this->gitRepo->getCurrentBranch()}</comment>");
-      $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
-      $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
-      $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
+        $this->say("Git Remote: <comment>{$remote_url}</comment>");
+        $this->say("Local Git Branch: <comment>{$this->gitRepo->getCurrentBranch()}</comment>");
+        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
+        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
         // @TODO: Dry run could still read info from the repo.
@@ -266,9 +266,8 @@ class Command extends BaseCommand
             // Load the commit object. Catch an exception, and change the message. Our users will wonder, "but there is a commit!"
             try {
                 $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-            }
-            catch (RuntimeException $exception) {
-              throw new RuntimeException("Commit not found in the remote repository. Yaml-tests cannot post commit status until the commits are pushed to the remote repository.");
+            } catch (RuntimeException $exception) {
+                throw new RuntimeException("Commit not found in the remote repository. Yaml-tests cannot post commit status until the commits are pushed to the remote repository.");
             }
 
             $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
@@ -288,10 +287,9 @@ class Command extends BaseCommand
             ));
 
             if (empty($prs)) {
-              $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tested.");
-            }
-            else {
-              $this->pullRequest = $prs[0];
+                $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tested.");
+            } else {
+                $this->pullRequest = $prs[0];
             }
         }
 
@@ -457,28 +455,24 @@ BODY;
                         // Prevent exceeding of comment size.
                         $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
                         if (strlen($process->output) > $remaining_chars) {
-                          $output = substr($process->output, 0, $remaining_chars) . "...";
-                        }
-                        else {
-                          $output = $process->output;
+                            $output = substr($process->output, 0, $remaining_chars) . "...";
+                        } else {
+                            $output = $process->output;
                         }
 
                         $comment['body'] = str_replace('{{output}}', $output, $comment['body']);
 
                         try {
-
                             // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
                             if (!empty($this->pullRequest)) {
-
                               // @TODO: This is NOT working. I can't get a PR Comment to submit.
                               // $comment['path'] = $input->getOption('tests-file');
 //                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
 
-                              $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
-                            }
-                            // If the branch is not yet a PR, we will just post a commit comment.
+                                $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            } // If the branch is not yet a PR, we will just post a commit comment.
                             else {
-                              $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                                $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                             }
 
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
