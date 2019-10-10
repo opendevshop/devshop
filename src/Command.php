@@ -69,7 +69,7 @@ class Command extends BaseCommand
      *
      * @var String
      */
-    protected $gitSha;
+    protected $repoSha;
 
     /**
      * The "name" of the repo, when using the scheme "owner/name"
@@ -84,6 +84,12 @@ class Command extends BaseCommand
      * @var String
      */
     protected $repoOwner;
+    /**
+     * The pull request data associated with the current local branch.
+     *
+     * @var Array
+     */
+    protected $pullRequest;
 
     /**
      * The options from the project's composer.json "config" section.
@@ -274,13 +280,17 @@ class Command extends BaseCommand
             }
 
             // Lookup Pull Request, if there is one.
-            $pr = $this->githubClient->pullRequests()->all($this->repoOwner, $this->repoName, array(
-              'head' => $this->gitRepo->getCurrentBranch(),
+            $string = $this->repoOwner . ':' .  $this->gitRepo->getCurrentBranch();
+            $prs = $this->githubClient->pullRequests()->all($this->repoOwner, $this->repoName, array(
+              'head' => $string,
             ));
 
-            print_r($pr); die;
-
-            $pr;
+            if (empty($prs)) {
+              $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tested.");
+            }
+            else {
+              $this->pullRequest = $prs[0];
+            }
         }
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
@@ -440,7 +450,14 @@ class Command extends BaseCommand
                         );
 
                         try {
-                            $comment_response = $client->pullRequests()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest, $comment);
+
+                            if (!empty($this->pullRequest)) {
+                              $comment_response = $client->pullRequests()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+                            }
+                            else {
+                              $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            }
+
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
                             $params->target_url = $comment_response['html_url'];
                         } catch (\Github\Exception\RuntimeException $e) {
