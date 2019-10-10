@@ -2,6 +2,7 @@
 
 namespace ProvisionOps\YamlTests;
 
+use Github\Exception\RuntimeException;
 use ProvisionOps\Tools\PowerProcess as Process;
 use ProvisionOps\Tools\Style;
 use GuzzleHttp\Psr7\Response;
@@ -253,8 +254,16 @@ class Command extends BaseCommand
             }
 
             $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
-            $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-            $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
+
+            // Load the commit object. Catch an exception, and change the message. Our users will wonder, "but there is a commit!"
+            try {
+                $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
+            }
+            catch (RuntimeException $exception) {
+              throw new RuntimeException("Commit not found in the remote repository. Yaml-tests cannot post commit status until the commits are pushed to the remote repository.");
+            }
+
+            $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
 
             // Load Repo info to determine if it is a fork. We must post to the fork's parent in the API.
             $repo = $this->githubClient->repository()->show($this->repoOwner, $this->repoName);
@@ -263,6 +272,15 @@ class Command extends BaseCommand
                 $this->repoOwner = $repo['parent']['owner']['login'];
                 $this->repoName = $repo['parent']['name'];
             }
+
+            // Lookup Pull Request, if there is one.
+            $pr = $this->githubClient->pullRequests()->all($this->repoOwner, $this->repoName, array(
+              'head' => $this->gitRepo->getCurrentBranch(),
+            ));
+
+            print_r($pr); die;
+
+            $pr;
         }
 
         $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
@@ -422,7 +440,7 @@ class Command extends BaseCommand
                         );
 
                         try {
-                            $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            $comment_response = $client->pullRequests()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest, $comment);
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
                             $params->target_url = $comment_response['html_url'];
                         } catch (\Github\Exception\RuntimeException $e) {
