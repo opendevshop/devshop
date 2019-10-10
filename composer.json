@@ -10,7 +10,7 @@
         "ext-json": "*",
         "knplabs/github-api": "~2.11",
         "php-http/guzzle6-adapter": "^1.1",
-        "provision-ops/power-process": "dev-master",
+        "provision-ops/power-process": "~1.1",
         "vlucas/phpdotenv": "~2"
     },
     "autoload": {

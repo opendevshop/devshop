@@ -2,6 +2,7 @@
 
 namespace ProvisionOps\YamlTests;
 
+use Github\Exception\RuntimeException;
 use ProvisionOps\Tools\PowerProcess as Process;
 use ProvisionOps\Tools\Style;
 use GuzzleHttp\Psr7\Response;
@@ -33,6 +34,8 @@ require_once $autoloaderPath;
  */
 class Command extends BaseCommand
 {
+    const GITHUB_COMMENT_MAX_SIZE = 65536;
+
     protected $createTag = false;
     protected $tagName = null;
     protected $branchName;
@@ -68,7 +71,27 @@ class Command extends BaseCommand
      *
      * @var String
      */
-    protected $gitSha;
+    protected $repoSha;
+
+    /**
+     * The "name" of the repo, when using the scheme "owner/name"
+     *
+     * @var String
+     */
+    protected $repoName;
+
+    /**
+     * The "owner" of the repo, when using the scheme "owner/name"
+     *
+     * @var String
+     */
+    protected $repoOwner;
+    /**
+     * The pull request data associated with the current local branch.
+     *
+     * @var Array
+     */
+    protected $pullRequest;
 
     /**
      * The options from the project's composer.json "config" section.
@@ -190,6 +213,8 @@ class Command extends BaseCommand
             $this->warningLite("Travis PR detected. Using PR SHA: " . $this->repoSha);
         }
 
+        // Parse remote to retrieve git repo "owner" and "name".
+        // @TODO: This is hard coded to GitHub right now. Must support other hosts eventually.
         $remotes = $this->gitRepo->getCurrentRemote();
         $remote_url = current($remotes)['push'];
 
@@ -222,11 +247,13 @@ class Command extends BaseCommand
         }
 
         $this->say("Git Remote: <comment>{$remote_url}</comment>");
+        $this->say("Local Git Branch: <comment>{$this->gitRepo->getCurrentBranch()}</comment>");
         $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
+        // @TODO: Dry run could still read info from the repo.
         if (!$input->getOption('dry-run')) {
             $this->githubClient = new \Github\Client();
 
@@ -235,8 +262,15 @@ class Command extends BaseCommand
             }
 
             $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
-            $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
-            $this->say("GitHub Commit: <comment>" . $commit['html_url'] . "</>");
+
+            // Load the commit object. Catch an exception, and change the message. Our users will wonder, "but there is a commit!"
+            try {
+                $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
+            } catch (RuntimeException $exception) {
+                throw new RuntimeException("Commit not found in the remote repository. Yaml-tests cannot post commit status until the commits are pushed to the remote repository.");
+            }
+
+            $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
 
             // Load Repo info to determine if it is a fork. We must post to the fork's parent in the API.
             $repo = $this->githubClient->repository()->show($this->repoOwner, $this->repoName);
@@ -244,6 +278,18 @@ class Command extends BaseCommand
                 $this->successLite('Forked repository. Posting to the parent repo...');
                 $this->repoOwner = $repo['parent']['owner']['login'];
                 $this->repoName = $repo['parent']['name'];
+            }
+
+            // Lookup Pull Request, if there is one.
+            $string = $this->repoOwner . ':' .  $this->gitRepo->getCurrentBranch();
+            $prs = $this->githubClient->pullRequests()->all($this->repoOwner, $this->repoName, array(
+              'head' => $string,
+            ));
+
+            if (empty($prs)) {
+                $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tested.");
+            } else {
+                $this->pullRequest = $prs[0];
             }
         }
 
@@ -387,25 +433,51 @@ class Command extends BaseCommand
                         // @TODO: Make the commenting optional/configurable
                         // Write a comment on the commit with the results
                         // @see https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+
                         $comment = array();
-                        $comment['body'] = implode(
-                            "\n",
-                            array(
-                                "###### :x: Test Failed: `$test_name`",
-                                '  ```bash',
-                                '  ' . $command,
-                                '  ```',
-                                '  ```bash',
-                                '  ' . $process->getOutput(),
-                                '  ' . $process->getErrorOutput(),
-                                '  ```',
-                                '*AUTOMATED COMMENT FROM provision-ops/yaml-tests, running on ' . $input->getOption('hostname') . '*',
-                            )
-                        );
+                        $comment['commit_id'] = $this->repoSha;
+                        $comment['position'] = 1;
+
+                        // @TODO: Allow tests.yml to define the path to post.
+                        $comment['body'] = <<<BODY
+<details>
+    <summary>:x: Test Failed: <code>$test_name</code></summary>
+    <pre>$command</pre>
+    <pre><code>{{output}}</code></pre>
+    
+    <ul>
+      <li><strong>On:</strong> {$input->getOption('hostname')} </li>
+      <li><strong>In:</strong> {$process->duration}</li>
+    </ul>
+    
+</details>
+BODY;
+                        // Prevent exceeding of comment size.
+                        $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
+                        if (strlen($process->getOutput() . $process->getErrorOutput()) > $remaining_chars) {
+                            $output = substr($process->getOutput() . $process->getErrorOutput(), 0, $remaining_chars) . "...";
+                        } else {
+                            $output = $process->getOutput() . $process->getErrorOutput();
+                        }
+
+                        $comment['body'] = str_replace('{{output}}', $output, $comment['body']);
 
                         try {
-                            $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
+                            if (!empty($this->pullRequest)) {
+                              // @TODO: This is NOT working. I can't get a PR Comment to submit.
+                              // $comment['path'] = $input->getOption('tests-file');
+//                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+
+                                $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            } // If the branch is not yet a PR, we will just post a commit comment.
+                            else {
+                                $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                            }
+
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
+
+                            // @TODO: Set Target URL from yaml-test options.
                             $params->target_url = $comment_response['html_url'];
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
