@@ -58,6 +58,7 @@ projects[aegir_cloud][version] = "1.x"
 ;projects[hosting_solr][version] = "1"
 
 ; Contrib Modules
+projects[devel][version] = "1.7"
 projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.5
 projects[composer_manager][version] = 1.8
