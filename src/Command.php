@@ -454,10 +454,10 @@ class Command extends BaseCommand
 BODY;
                         // Prevent exceeding of comment size.
                         $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
-                        if (strlen($process->output) > $remaining_chars) {
-                            $output = substr($process->output, 0, $remaining_chars) . "...";
+                        if (strlen($process->getOutput() . $process->getErrorOutput()) > $remaining_chars) {
+                            $output = substr($process->getOutput() . $process->getErrorOutput(), 0, $remaining_chars) . "...";
                         } else {
-                            $output = $process->output;
+                            $output = $process->getOutput() . $process->getErrorOutput();
                         }
 
                         $comment['body'] = str_replace('{{output}}', $output, $comment['body']);
