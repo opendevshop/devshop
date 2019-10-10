@@ -237,10 +237,11 @@ class Command extends BaseCommand
             $this->io->writeln('');
         }
 
-        $this->say("Git Remote: <comment>{$remote_url}</comment>");
-        $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
+      $this->say("Git Remote: <comment>{$remote_url}</comment>");
+      $this->say("Local Git Branch: <comment>{$this->gitRepo->getCurrentBranch()}</comment>");
+      $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
+      $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
+      $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
         // @TODO: Dry run could still read info from the repo.
