@@ -71,6 +71,20 @@ class Command extends BaseCommand
     protected $gitSha;
 
     /**
+     * The "name" of the repo, when using the scheme "owner/name"
+     *
+     * @var String
+     */
+    protected $repoName;
+
+    /**
+     * The "owner" of the repo, when using the scheme "owner/name"
+     *
+     * @var String
+     */
+    protected $repoOwner;
+
+    /**
      * The options from the project's composer.json "config" section.
      *
      * @var array
