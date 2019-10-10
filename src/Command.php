@@ -34,6 +34,8 @@ require_once $autoloaderPath;
  */
 class Command extends BaseCommand
 {
+    const GITHUB_COMMENT_MAX_SIZE = 65536;
+
     protected $createTag = false;
     protected $tagName = null;
     protected $branchName;
@@ -433,32 +435,55 @@ class Command extends BaseCommand
                         // @TODO: Make the commenting optional/configurable
                         // Write a comment on the commit with the results
                         // @see https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+
                         $comment = array();
-                        $comment['body'] = implode(
-                            "\n",
-                            array(
-                                "#### :x: Test Failed: `$test_name` in `$process->duration` on `{$input->getOption('hostname')}`",
-                                "<pre>$command</pre>",
-                                '<details><summary>Output</summary>',
-                                '',
-                                '```',
-                                '  ' . $process->getOutput(),
-                                '  ' . $process->getErrorOutput(),
-                                '```',
-                                '</details>',
-                            )
-                        );
+                        $comment['commit_id'] = $this->repoSha;
+                        $comment['position'] = 1;
+
+                        // @TODO: Allow tests.yml to define the path to post.
+                        $comment['body'] = <<<BODY
+<details>
+    <summary>:x: Test Failed: <code>$test_name</code></summary>
+    <pre>$command</pre>
+    <pre><code>{{output}}</code></pre>
+    
+    <ul>
+      <li><strong>On:</strong> {$input->getOption('hostname')} </li>
+      <li><strong>In:</strong> {$process->duration}</li>
+    </ul>
+    
+</details>
+BODY;
+                        // Prevent exceeding of comment size.
+                        $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
+                        if (strlen($process->output) > $remaining_chars) {
+                          $output = substr($process->output, 0, $remaining_chars) . "...";
+                        }
+                        else {
+                          $output = $process->output;
+                        }
+
+                        $comment['body'] = str_replace('{{output}}', $output, $comment['body']);
 
                         try {
 
+                            // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
                             if (!empty($this->pullRequest)) {
-                              $comment_response = $client->pullRequests()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+
+                              // @TODO: This is NOT working. I can't get a PR Comment to submit.
+                              // $comment['path'] = $input->getOption('tests-file');
+//                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+
+                              $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                             }
+                            // If the branch is not yet a PR, we will just post a commit comment.
                             else {
                               $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                             }
 
                             $this->successLite("Comment Created: {$comment_response['html_url']}");
+
+                            // @TODO: Set Target URL from yaml-test options.
                             $params->target_url = $comment_response['html_url'];
                         } catch (\Github\Exception\RuntimeException $e) {
                             $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
