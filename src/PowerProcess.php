@@ -17,6 +17,7 @@ class PowerProcess extends BaseProcess {
     public $io;
     public $successMessage = 'Process Succeeded';
     public $failureMessage = 'Process Failed';
+    public $duration = '';
 
     /**
      * @param $io Style
@@ -52,6 +53,7 @@ class PowerProcess extends BaseProcess {
 
         $timer = new TimeKeeper();
         $timer->start();
+
         $exit = parent::run(function ($type, $buffer) {
             $lines = explode("\n", $buffer);
             foreach ($lines as $line) {
@@ -65,15 +67,15 @@ class PowerProcess extends BaseProcess {
             }
         });
         $timer->stop();
-        $timer_output = $timer->formatDuration($timer->elapsed());
+        $this->duration = $timer->formatDuration($timer->elapsed());
 
         if ($exit == 0) {
             $this->io->newLine();
-            $this->io->writeln(" <info>✔</info> {$this->successMessage} in {$timer_output} <fg=black>Output: /path/to/file</>");
+            $this->io->writeln(" <info>✔</info> {$this->successMessage} in {$this->duration} <fg=black>Output: /path/to/file</>");
         }
         else {
             $this->io->newLine();
-            $this->io->writeln(" <fg=red>✘</> {$this->failureMessage} in {$timer_output} <fg=black>Output: /path/to/file</>");
+            $this->io->writeln(" <fg=red>✘</> {$this->failureMessage} in {$this->duration} <fg=black>Output: /path/to/file</>");
         }
 
         return $exit;
