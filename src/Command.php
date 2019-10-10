@@ -204,6 +204,8 @@ class Command extends BaseCommand
             $this->warningLite("Travis PR detected. Using PR SHA: " . $this->repoSha);
         }
 
+        // Parse remote to retrieve git repo "owner" and "name".
+        // @TODO: This is hard coded to GitHub right now. Must support other hosts eventually.
         $remotes = $this->gitRepo->getCurrentRemote();
         $remote_url = current($remotes)['push'];
 
@@ -241,6 +243,7 @@ class Command extends BaseCommand
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
 
+        // @TODO: Dry run could still read info from the repo.
         if (!$input->getOption('dry-run')) {
             $this->githubClient = new \Github\Client();
 
