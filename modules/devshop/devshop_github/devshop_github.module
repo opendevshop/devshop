@@ -874,12 +874,6 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
     return;
   }
 
-  // Return if there is no github token
-  $github_token = variable_get('devshop_github_token', '');
-  if (empty($github_token)) {
-    return;
-  }
-
   // Load project and github
   $project_node = node_load($form['nid']['#value']);
   $project = $project_node->project;
@@ -887,6 +881,41 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
   // Return if provider is not github.
   if ($project->git_provider != 'github') {
     return;
+  }
+
+  $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+    'fragment' => 'edit-project-settings-github',
+  ));
+
+  // Load the PRs.
+  try {
+    $prs = devshop_github_client()
+      ->pullRequests()
+      ->all($project->github_owner, $project->github_repo);
+dsm($prs);
+    foreach ($prs as $pr) {
+      $form['platforms']['#rows'][] = array(
+        'name' => "pr{$pr['number']}",
+        'branch' => $pr['head']['ref'],
+        'version' => array(
+          'colspan' => 3,
+          'data' => "<a href='{$pr['html_url']}' class='btn btn-link btn-sm' target='_blank'><img src='{$pr['user']['avatar_url']}' width='32'> {$pr['title']}</a>",
+        ),
+      );
+    }
+  }
+  catch (\Exception $e) {
+    drupal_set_message(theme('item_list', array(
+      'items' => array(
+        t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
+          '%message' => $e->getMessage(),
+          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+        )),
+        $settings_link,
+      ),
+    )), 'error');
+
+    drupal_set_message(get_class($e));
   }
 
   // Return if deploy method is not webhook.
@@ -1781,15 +1810,27 @@ function devshop_github_create_all_pr_environments($project_node) {
   // For each existing PR environment on DevShop:
   foreach ($project->environments as $environment) {
     $site_url = url("node/{$environment->site}", array('absolute' => true));
+
+    // Get PR ID, if it already has one.
+    if (!empty($environment->github_pull_request->pull_request_object->id)) {
+      $environment_pr_id = $environment->github_pull_request->pull_request_object->id;
+      $environment_pr_slug = "pr{$environment_pr_id}";
+    }
+    else {
+      $environment_pr_id = NULL;
+      $environment_pr_slug = NULL;
+    }
+
+
     drush_log("Checking $environment->name... [$site_url]");
 
     // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
-    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request->pull_request_object->id) && empty($prs[$environment->name])) {
+    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request->pull_request_object->id) && empty($prs[$environment_pr_slug])) {
       continue;
     }
     // If no PR data, but the environment name matches a PR's slug, update data.
     // Handles the edge case where a pr123 environment lost it's github PR info.
-    elseif (empty($environment->github_pull_request->pull_request_object->id) && !empty($prs[$environment->name])) {
+    elseif (!$environment_pr_id && !empty($prs[$environment->name])) {
       devshop_github_save_pr_env_data($prs[$environment->name], $environment);
       drush_log(
         "Environment found with the name '$environment->name'. Assuming it is a PR environment. Updating it with PR data and removing it from the list of environments to create. [$site_url]",
@@ -1798,15 +1839,18 @@ function devshop_github_create_all_pr_environments($project_node) {
       unset($prs_to_create_environments_for[$environment->name]);
     }
     // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
-    elseif (!empty($environment->github_pull_request->pull_request_object->id) && !empty($prs[$environment->name])) {
-      devshop_github_save_pr_env_data($prs[$environment->name], $environment);
+    elseif ($environment_pr_id && !empty($prs[$environment_pr_slug])) {
+      devshop_github_save_pr_env_data($prs[$environment_pr_slug], $environment);
       drush_log("PR environment found and updated: $environment->name [$site_url]", "ok");
-      unset($prs_to_create_environments_for[$environment->name]);
+
+      // If this environment is a "automated" PR environment, unset it from the list of envs to create.
+      if ($environment_pr_slug == $environment->name) {
+        unset($prs_to_create_environments_for[$environment_pr_slug]);
+      }
     }
 
-    // If there IS PR data on this environment and the PR does NOT exist, update the PR info, and queue it for deletion.
-    elseif (!empty($environment->github_pull_request->pull_request_object->id) && empty($prs[$environment->name])) {
-      devshop_github_save_pr_env_data($prs[$environment->name], $environment);
+    // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
+    elseif ($environment_pr_id && empty($prs[$environment_pr_slug])) {
       drush_log("PR environment $environment->name exists but PR has been closed. [$site_url]", "ok");
       if ($project->settings->github['pull_request_environments_delete'] && empty($environment->tasks['delete'])) {
         drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
