@@ -443,12 +443,13 @@ class Command extends BaseCommand
 <details>
     <summary>:x: Test Failed: <code>$test_name</code></summary>
     <pre>$command</pre>
-    <pre><code>{{output}}</code></pre>
+   
+```
+{{output}}
+```
     
-    <ul>
-      <li><strong>On:</strong> {$input->getOption('hostname')} </li>
-      <li><strong>In:</strong> {$process->duration}</li>
-    </ul>
+- **On:** {$input->getOption('hostname')}
+- **In:** {$process->duration}
     
 </details>
 BODY;
@@ -464,7 +465,7 @@ BODY;
                             $output = $process_output;
                         }
 
-                        $comment['body'] = str_replace('{{output}}', self::stripAnsi($output), $comment['body']);
+                        $comment['body'] = str_replace('{{output}}', self::stripAnsi(trim($output)), $comment['body']);
 
                         try {
                             // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
@@ -550,8 +551,9 @@ BODY;
      *
      * @return string|string[]|null
      */
-    protected function stripAnsi($string) {
-      return preg_replace('#\\x1b[[][^A-Za-z]*[A-Za-z]#', '', $string);
+    protected function stripAnsi($string)
+    {
+        return preg_replace('#\\x1b[[][^A-Za-z]*[A-Za-z]#', '', $string);
     }
 
     protected function commitStatusMessage(Response $response, $test_name, $test, $state)
