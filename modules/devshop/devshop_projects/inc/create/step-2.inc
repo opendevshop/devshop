@@ -77,12 +77,12 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
 /**
  * STEP 2: Submit
  *
- * If webroot was updated, update platforms path.
+ * If webroot or git url was updated, update platforms path.
  */
 function devshop_project_create_step_settings_submit(&$form, &$form_state) {
 
   // Update any platforms if the path to drupal changed
-  if ($form['project']['codebase']['drupal_path']['#default_value'] != $form_state['values']['project']['drupal_path']) {
+  if ($form['project']['codebase']['drupal_path']['#default_value'] != $form_state['values']['project']['drupal_path'] || $form['project']['git_url']['#default_value'] != $form_state['values']['project']['git_url']) {
     $environments = db_query("
       SELECT
           e.platform, e.name
@@ -94,14 +94,14 @@ function devshop_project_create_step_settings_submit(&$form, &$form_state) {
     foreach ($environments as $environment) {
       $platform = node_load($environment->platform);
       $platform->publish_path = $form_state['values']['project']['code_path'] . DIRECTORY_SEPARATOR . $environment->name . DIRECTORY_SEPARATOR . $form_state['values']['project']['drupal_path'];
+      $platform->git['repo_url'] = $form_state['values']['project']['git_url'];
       node_save($platform);
     }
     $count = count($environments);
     if ($count) {
-      drupal_set_message(t('You changed the web document root to %root. @count updated with the new information.', array(
-        '%root' => $form_state['values']['project']['drupal_path'],
-        '@count' => format_plural($count, t('1 site was'), t( '@count sites were', array('@count' => $count))),
-      )), 'success');
+      drupal_set_message(t('Document root and git repo URL updated for @count.', array(
+        '@count' => format_plural($count, t('1 site'), t( '@count sites', array('@count' => $count))),
+      )));
     }
   }
 }
