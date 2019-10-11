@@ -35,6 +35,7 @@ require_once $autoloaderPath;
 class Command extends BaseCommand
 {
     const GITHUB_COMMENT_MAX_SIZE = 65536;
+    const GITHUB_STATUS_DESCRIPTION_MAX_SIZE = 140;
 
     protected $createTag = false;
     protected $tagName = null;
@@ -341,13 +342,13 @@ class Command extends BaseCommand
                     $params = new \stdClass();
                     $params->state = 'pending';
                     $params->target_url = 'https:///path/to/file';
-                    $params->description = implode(
+                    $params->description = substr(implode(
                         ' — ',
                         array(
                         $input->getOption('hostname'),
                         !empty($test['description'])? $test['description']: $test_name
                         )
-                    );
+                    ), 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
                     $params->context = $test_name;
 
                     // Post status to github
