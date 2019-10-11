@@ -342,14 +342,16 @@ class Command extends BaseCommand
                     $params = new \stdClass();
                     $params->state = 'pending';
                     $params->target_url = 'https:///path/to/file';
-                    $params->description = substr(implode(
+                    $params->description = implode(
                         ' — ',
                         array(
                         $input->getOption('hostname'),
                         !empty($test['description'])? $test['description']: $test_name
                         )
-                    ), 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
+                    );
                     $params->context = $test_name;
+
+                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
 
                     // Post status to github
                     try {
@@ -517,6 +519,7 @@ BODY;
                 }
 
                 if (!$input->getOption('dry-run')) {
+                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
                     $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", [], json_encode($params));
                     $this->commitStatusMessage($response, $test_name, $test, $params->state);
                 }
