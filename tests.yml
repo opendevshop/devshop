@@ -4,8 +4,5 @@ yaml-tests/phpcs: bin/phpcs --standard=PSR2 -n src --colors
 
 yaml-tests/github-comment-test:
   description: Confirm github errors get truncated enough.
-  command: printf_new "*" 66000
-
-yaml-tess/ignore-failure:
-  command: thisisnotaworkingcommand
+  command: printf '+ %.0s' {1..33000} && exit 1
   ignore-failure: yes
