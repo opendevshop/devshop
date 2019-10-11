@@ -176,7 +176,12 @@ HTML;
 
   // Output our table.
   $form['platforms'] = array(
-    '#markup' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('table')))),
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#attributes' => array(
+      'class' => array('table')
+    ),
   );
 
   // Not completed means show all tasks are not completed (or errored)
