@@ -269,8 +269,9 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
     }
 
     $pr_options = array();
+    $existing_options = $form['git_ref']['#options'];
+
     if (count($prs)) {
-      $existing_options = $form['git_ref']['#options'];
       foreach ($prs as $pr) {
         $pr_description = implode(' - ', array(
           "PR {$pr['number']}",
