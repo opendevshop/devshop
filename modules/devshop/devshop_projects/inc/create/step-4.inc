@@ -198,7 +198,7 @@ HTML;
 
     $message = t('Something went wrong when trying to clone your codebase.');
 
-    if (strpos($errors_rendered, 'Check the Publish Path of the platform and try again.') !== FALSE) {
+    if (strpos($errors_rendered, 'Check the Publish Path of the platform') !== FALSE) {
       if (empty($project->drupal_path)) {
         $message = t("Drupal was not found in the project at the root. !link and try again.", array(
           '!link' => l(t('Change Document Root in Project Settings'), '/project/add/settings'),
@@ -217,6 +217,9 @@ HTML;
       '#markup' => $message,
       '#suffix' => '</div>',
     );
+    $form['errors'] = array(
+      '#markup' => $errors_rendered,
+    );
     $form['retry'] = array(
       '#type' => 'submit',
       '#value' => t('Retry'),
@@ -228,13 +231,13 @@ HTML;
 
   // If ready...
   else {
-    
+
     // If no common profiles found, just set to standard.
     if (count($available_profiles) == 0) {
       $available_profiles['standard'] = 'No default profile.';
       $default_profile = 'standard';
     }
-      
+
     $project->no_finish = FALSE;
 
     // Install Profile
