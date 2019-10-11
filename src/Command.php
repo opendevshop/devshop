@@ -35,6 +35,7 @@ require_once $autoloaderPath;
 class Command extends BaseCommand
 {
     const GITHUB_COMMENT_MAX_SIZE = 65536;
+    const GITHUB_STATUS_DESCRIPTION_MAX_SIZE = 140;
 
     protected $createTag = false;
     protected $tagName = null;
@@ -350,6 +351,8 @@ class Command extends BaseCommand
                     );
                     $params->context = $test_name;
 
+                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
+
                     // Post status to github
                     try {
                         /**
@@ -372,17 +375,12 @@ class Command extends BaseCommand
             $rows = array();
 
             foreach ($this->yamlTests as $test_name => $test) {
-                if (is_array($test) && isset($test['command'])) {
-                    $command = $test['command'];
-                } elseif (is_array($test)) {
-                    $command = implode(' && ', $test);
-                } else {
-                    $command = $test;
-                }
+                $command = implode(" && ", $test['command']);
+                $command_view = implode("\n", $test['command']);
 
                 $results_row = array(
                     $test_name,
-                    $command,
+                    $command_view,
                 );
 
                 $process = new Process($command, $this->io);
@@ -398,6 +396,10 @@ class Command extends BaseCommand
                 }
 
                 $this->io->section($title);
+
+                if ($test['show-output'] == false) {
+                    $process->disableOutput();
+                }
 
                 $exit = $process->run();
 
@@ -453,41 +455,62 @@ class Command extends BaseCommand
     
 </details>
 BODY;
-                        // Prevent exceeding of comment size.
-                        $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
+                        // Prevent exceeding of comment size by truncating.
+                        $comment_template_length = strlen($comment['body']) - 10;
+                        $truncate_message =  "... *(truncated)*";
+                        $truncate_message_length = strlen($truncate_message);
+
+                        $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - ($comment_template_length + $truncate_message_length);
 
                         // @TODO: Nooooo, getAllOutput()!
-                        $process_output = $process->getOutput() . $process->getErrorOutput();
+                        if ($process->isOutputDisabled()) {
+                            $process_output = "OUTPUT HIDDEN";
+                        } else {
+                            $process_output = $process->getOutput() . $process->getErrorOutput();
+                        }
 
                         if (strlen($process_output) > $remaining_chars) {
-                            $output = substr($process_output, 0, $remaining_chars) . "...";
+                            $output = substr($process_output, 0, $remaining_chars) . $truncate_message;
                         } else {
                             $output = $process_output;
                         }
 
                         $comment['body'] = str_replace('{{output}}', self::stripAnsi(trim($output)), $comment['body']);
 
-                        try {
-                            // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
-                            if (!empty($this->pullRequest)) {
-                              // @TODO: This is NOT working. I can't get a PR Comment to submit.
-                              // $comment['path'] = $input->getOption('tests-file');
-//                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+                        // Catch ourselves if our math is wrong.
+                        if (strlen($comment['body']) > self::GITHUB_COMMENT_MAX_SIZE) {
+                            throw new \Exception('Comment body is STILL too long... the math in yaml-tests/src/Command.php must be wrong.');
+                        }
 
-                                $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
-                            } // If the branch is not yet a PR, we will just post a commit comment.
-                            else {
-                                $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                        if (isset($test['post-errors']) && $test['post-errors'] == false) {
+                            $this->warningLite("Skipped post of errors to GitHub, as configured in " . $this->testsFile);
+                        } else {
+                            try {
+                                // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
+                                if (!empty($this->pullRequest)) {
+                                  // @TODO: This is NOT working. I can't get a PR Comment to submit.
+                                  // $comment['path'] = $input->getOption('tests-file');
+    //                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+
+                                    $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                                } // If the branch is not yet a PR, we will just post a commit comment.
+                                else {
+                                    $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
+                                }
+
+                                $this->successLite("Comment Created: {$comment_response['html_url']}");
+
+                                // @TODO: Set Target URL from yaml-test options.
+                                $params->target_url = $comment_response['html_url'];
+                            } catch (\Github\Exception\RuntimeException $e) {
+                                $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                             }
-
-                            $this->successLite("Comment Created: {$comment_response['html_url']}");
-
-                            // @TODO: Set Target URL from yaml-test options.
-                            $params->target_url = $comment_response['html_url'];
-                        } catch (\Github\Exception\RuntimeException $e) {
-                            $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                         }
                     }
+                }
+
+                if ($test['show-output'] == false) {
+                    $this->warningLite("Output was hidden, as configured in " . $this->testsFile);
                 }
 
                 // If TRAVIS_JOB_WEB_URL is present and the target_url was not changed, use that as the target_url.
@@ -496,6 +519,7 @@ BODY;
                 }
 
                 if (!$input->getOption('dry-run')) {
+                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
                     $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", [], json_encode($params));
                     $this->commitStatusMessage($response, $test_name, $test, $params->state);
                 }
@@ -526,20 +550,41 @@ BODY;
     private function loadTestsYml()
     {
         $this->yamlTests = Yaml::parse(file_get_contents($this->testsFilePath));
+
+        // Set Defaults
+        foreach ($this->yamlTests as $name => $test) {
+            $commands = array();
+
+          // test is a string
+            if (is_string($test)) {
+                $commands[] = $test;
+                $test = array(
+                'command' => $commands
+                );
+            } // test.command is a string
+            elseif (is_array($test) && isset($test['command']) && is_string($test['command'])) {
+                $commands[] = $test['command'];
+            } // test is an array of commands
+            elseif (!isset($test['command']) && is_array($test)) {
+                $commands += $test;
+            } // test.command is an array
+            elseif (is_array($test) && is_array($test['command'])) {
+                $commands += $test['command'];
+            }
+
+            $test['command'] = $commands;
+            $test['post-errors'] = isset($test['post-errors'])? $test['post-errors']: true;
+            $test['show-output'] = isset($test['show-output'])? $test['show-output']: true;
+
+            $this->yamlTests[$name] = $test;
+        }
     }
 
     private function testsToTableRows()
     {
         $rows = array();
         foreach ($this->yamlTests as $test_name => $test) {
-            if (is_array($test) && isset($test['command'])) {
-                $command = $test['command'];
-            } elseif (is_array($test)) {
-                $command = implode("\n", $test);
-            } else {
-                $command = $test;
-            }
-            $rows[] = array($test_name, $command);
+            $rows[] = array($test_name,  implode("\n", $test['command']));
         }
         return $rows;
     }

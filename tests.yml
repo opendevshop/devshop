@@ -2,6 +2,17 @@
 yaml-tests/lint: find src -name '*.php' -print0 | xargs -0 -n1 php -l
 yaml-tests/phpcs: bin/phpcs --standard=PSR2 -n src --colors
 
-yaml-tess/ignore-failure:
-  command: thisisnotaworkingcommand
-  ignore-failure: yes
+yaml-tests/github-comment-test:
+  description: Confirm github errors get truncated enough.
+  command:
+  - printf '+ %.0s' {1..33000}
+  - exit 1
+
+  # Set ignore-failure to TRUE to post a Success commit status not matter what.
+  ignore-failure: true
+
+  # Set post-errors to FALSE to skip posting error logs to github comments.
+  post-errors: FALSE
+
+  # Set show-output to FALSE to not print the output or show it in the github comment.
+  show-output: FALSE
