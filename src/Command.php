@@ -443,24 +443,29 @@ class Command extends BaseCommand
 <details>
     <summary>:x: Test Failed: <code>$test_name</code></summary>
     <pre>$command</pre>
-    <pre><code>{{output}}</code></pre>
+   
+```
+{{output}}
+```
     
-    <ul>
-      <li><strong>On:</strong> {$input->getOption('hostname')} </li>
-      <li><strong>In:</strong> {$process->duration}</li>
-    </ul>
+- **On:** {$input->getOption('hostname')}
+- **In:** {$process->duration}
     
 </details>
 BODY;
                         // Prevent exceeding of comment size.
                         $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
-                        if (strlen($process->getOutput() . $process->getErrorOutput()) > $remaining_chars) {
-                            $output = substr($process->getOutput() . $process->getErrorOutput(), 0, $remaining_chars) . "...";
+
+                        // @TODO: Nooooo, getAllOutput()!
+                        $process_output = $process->getOutput() . $process->getErrorOutput();
+
+                        if (strlen($process_output) > $remaining_chars) {
+                            $output = substr($process_output, 0, $remaining_chars) . "...";
                         } else {
-                            $output = $process->getOutput() . $process->getErrorOutput();
+                            $output = $process_output;
                         }
 
-                        $comment['body'] = str_replace('{{output}}', $output, $comment['body']);
+                        $comment['body'] = str_replace('{{output}}', self::stripAnsi(trim($output)), $comment['body']);
 
                         try {
                             // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
@@ -537,6 +542,18 @@ BODY;
             $rows[] = array($test_name, $command);
         }
         return $rows;
+    }
+
+    /**
+     * Strips all ansi codes from a string. Used for posting plaintext github comments.
+     *
+     * @param $string
+     *
+     * @return string|string[]|null
+     */
+    protected function stripAnsi($string)
+    {
+        return preg_replace('#\\x1b[[][^A-Za-z]*[A-Za-z]#', '', $string);
     }
 
     protected function commitStatusMessage(Response $response, $test_name, $test, $state)
