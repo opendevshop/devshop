@@ -453,19 +453,28 @@ class Command extends BaseCommand
     
 </details>
 BODY;
-                        // Prevent exceeding of comment size.
-                        $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - strlen($comment['body']);
+                        // Prevent exceeding of comment size by truncating.
+                        $comment_template_length = strlen($comment['body']) - 10;
+                        $truncate_message =  "... *(truncated)*";
+                        $truncate_message_length = strlen($truncate_message);
+
+                        $remaining_chars = self::GITHUB_COMMENT_MAX_SIZE - ($comment_template_length + $truncate_message_length);
 
                         // @TODO: Nooooo, getAllOutput()!
                         $process_output = $process->getOutput() . $process->getErrorOutput();
 
                         if (strlen($process_output) > $remaining_chars) {
-                            $output = substr($process_output, 0, $remaining_chars) . "...";
+                            $output = substr($process_output, 0, $remaining_chars) . $truncate_message;
                         } else {
                             $output = $process_output;
                         }
 
                         $comment['body'] = str_replace('{{output}}', self::stripAnsi(trim($output)), $comment['body']);
+
+                        // Catch ourselves if our math is wrong.
+                        if (strlen($comment['body']) > self::GITHUB_COMMENT_MAX_SIZE ) {
+                          throw new \Exception('Comment body is STILL too long... the math in yaml-tests/src/Command.php must be wrong.');
+                        }
 
                         try {
                             // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
