@@ -93,6 +93,21 @@ function devshop_hosting_install_footer_menu() {
 }
 
 /**
+ * Implements hook_update_dependencies()
+ * Ensures hosting site schema is updated before the queues run and try to load nodes out of sync with the schema.
+ */
+function devshop_hosting_update_dependencies() {
+
+  // Force hosting_site_update_7302() function provided by this module
+  // must run before the devshop_hosting_update_7009() function provided by the
+  // 'another_module' module.
+  $dependencies['devshop_hosting'][7009] = array(
+    'hosting_site' => 7302,
+  );
+  return $dependencies;
+}
+
+/**
  * Set weight of this module higher than views.
  */
 function devshop_hosting_update_7001() {
