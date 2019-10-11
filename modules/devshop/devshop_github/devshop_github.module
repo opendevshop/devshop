@@ -892,7 +892,7 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
     $prs = devshop_github_client()
       ->pullRequests()
       ->all($project->github_owner, $project->github_repo);
-dsm($prs);
+
     foreach ($prs as $pr) {
       $form['platforms']['#rows'][] = array(
         'name' => "pr{$pr['number']}",
