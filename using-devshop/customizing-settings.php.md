@@ -1,4 +1,4 @@
-# Using settings.php
+# Customizing settings.php
 
 ## Background
 
@@ -57,23 +57,25 @@ Possible include files:
 ### DevShop Project and Environment Variables
 
 A server environment variable is written in settings.php. You can check them if you need environment-specific settings.
-  
-  ```php
+
+```php
   # This site's devshop project name and environment name.
   $_SERVER['DEVSHOP_ENVIRONMENT'] = 'production';
   $_SERVER['DEVSHOP_PROJECT'] = 'thinkdrop';
-  ```
+```
 
 For example, you can disable all caches in all environments except for production:
 
-    ```php
-    if ($_SERVER['DEVSHOP_ENVIRONMENT'] != 'production') {
-        $conf['cache'] = 0;                       // Page cache
-        $conf['page_cache_maximum_age'] =  0;     // External cache TTL
-        $conf['preprocess_css'] = FALSE;          // Optimize css
-        $conf['preprocess_js'] = FALSE;           // Optimize javascript
-        $conf['views_skip_cache'] = TRUE;         // Views caching
-     }
+```text
+```php
+if ($_SERVER['DEVSHOP_ENVIRONMENT'] != 'production') {
+    $conf['cache'] = 0;                       // Page cache
+    $conf['page_cache_maximum_age'] =  0;     // External cache TTL
+    $conf['preprocess_css'] = FALSE;          // Optimize css
+    $conf['preprocess_js'] = FALSE;           // Optimize javascript
+    $conf['views_skip_cache'] = TRUE;         // Views caching
+ }
+```
 
 ### Remote Servers
 

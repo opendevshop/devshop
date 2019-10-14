@@ -16,7 +16,7 @@
 ## About Devshop
 
 | Version | Status | Aegir | Hosts | DevMaster | Install & CLI |
-| --- | --- | --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | 1.x | Stable | 3.x | D6,D7,D8 | ![DevMaster 1.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=1.x) | ![DevShop 1.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=1.x) |
 
 DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test and update drupal sites. It provides a front-end built in Drupal \([Devmaster](http://github.com/devshop/devmaster)\) and a back-end built with drush, Symfony, and Ansible.

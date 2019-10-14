@@ -1,11 +1,6 @@
 # Installing DevShop
 
-There are a number of ways to get DevShop up and running:
-1. **Install Script**: https://github.com/opendevshop/devshop/blob/1.x/install.sh
-  Use the standalone install script to fully bootstrap a new Ubuntu or CentOS7 server. Instructions are below. Find the latest release on the [Releases page on the GitHub Repo](http://github.com/opendevshop/devshop/releases).
-2. **Docker**: See [hub.docker.com/r/devshop/devmaster/](https://hub.docker.com/r/devshop/devmaster/) for instructions.
-3. **Vagrant**: The [core project on GitHub](https://github.com/opendevshop/devshop) contains a Vagrantfile that you may use to launch a working devshop on your local computer.
-4. **Ansible**: We have an Ansible role publicly available at [galaxy.ansible.com/opendevshop/devmaster](https://galaxy.ansible.com/opendevshop/devmaster/). The Vagrantfile and standalone install script both use Ansible roles to configure the servers.
+There are a number of ways to get DevShop up and running: 1. **Install Script**: [https://github.com/opendevshop/devshop/blob/1.x/install.sh](https://github.com/opendevshop/devshop/blob/1.x/install.sh) Use the standalone install script to fully bootstrap a new Ubuntu or CentOS7 server. Instructions are below. Find the latest release on the [Releases page on the GitHub Repo](http://github.com/opendevshop/devshop/releases). 2. **Docker**: See [hub.docker.com/r/devshop/devmaster/](https://hub.docker.com/r/devshop/devmaster/) for instructions. 3. **Vagrant**: The [core project on GitHub](https://github.com/opendevshop/devshop) contains a Vagrantfile that you may use to launch a working devshop on your local computer. 4. **Ansible**: We have an Ansible role publicly available at [galaxy.ansible.com/opendevshop/devmaster](https://galaxy.ansible.com/opendevshop/devmaster/). The Vagrantfile and standalone install script both use Ansible roles to configure the servers.
 
 ## Standalone Install Script
 

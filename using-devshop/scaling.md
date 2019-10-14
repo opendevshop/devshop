@@ -6,7 +6,7 @@ Being based on Aegir, DevShop has two methods for scaling a site's servers:
 
 _Web Packs_ use NFS to sync the entire `/var/aegir/projects` folder to a group of servers.
 
-For more information on Web Packs, see the Aegir documentation page at [http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/#using-the-pack-module](http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/#using-the-pack-module).
+For more information on Web Packs, see the Aegir documentation page at [http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/\#using-the-pack-module](http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/#using-the-pack-module).
 
 **Pros:**
 
@@ -26,7 +26,7 @@ For more information on Web Packs, see the Aegir documentation page at [http://a
 
 _Web Clusters_ uses Rsync to copy an environment's files to a group of servers.
 
-For more information on Web Clusters, see the documentation page at [http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/#using-the-cluster-module](http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/#using-the-cluster-module).
+For more information on Web Clusters, see the documentation page at [http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/\#using-the-cluster-module](http://aegir.readthedocs.io/en/3.x/usage/servers/clustering/#using-the-cluster-module).
 
 **Pros:**
 

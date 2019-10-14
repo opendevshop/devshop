@@ -45,7 +45,7 @@ deploy: |
   drush {{alias}} cc all
   echo "Environment Variables:"
   env
-  
+
 # Fires after "verify" task.
 verify: |
   drush {{alias}} status

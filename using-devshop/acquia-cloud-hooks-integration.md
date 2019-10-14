@@ -8,7 +8,6 @@ The code in acquia.drush.inc will detect an acquia repo and trigger your hooks t
 
 See the Acquia Cloud Hooks repository for more information and samples: [https://github.com/acquia/cloud-hooks](https://github.com/acquia/cloud-hooks)
 
-
 ## Hooks
 
 ### post-code-deploy
