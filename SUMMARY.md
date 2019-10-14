@@ -20,6 +20,7 @@
 ## Using DevShop
 
 * [Deployment Hooks](using-devshop/deployment-hooks.md)
+* [Migrating sites into DevShop](using-devshop/migrating-sites-into-devshop.md)
 * [Customizing settings.php](using-devshop/customizing-settings.php.md)
 * [Automated Testing](using-devshop/automated-testing.md)
 * [Acquia Cloud Hooks Integration](using-devshop/acquia-cloud-hooks-integration.md)
