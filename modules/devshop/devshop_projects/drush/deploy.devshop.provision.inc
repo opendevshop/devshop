@@ -94,17 +94,19 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Built in Hooks
   if ($composer) {
+    $composer_install_command = drush_get_option('provision_composer_install_command', 'composer install --no-interaction --no-progress --no-dev')
     if (file_exists(d()->platform->repo_path . '/composer.json')) {
-      $commands[] = drush_get_option('provision_composer_install_command', 'composer install --no-interaction --no-progress --no-dev');
+      $repo_path = d()->platform->repo_path;
+      $commands[] = "cd {$repo_path} && {$composer_install_command}";
     }
     elseif (file_exists($environment->root . '/composer.json')) {
-      $commands[] = "cd {$environment->root} && composer install";
+      $commands[] = "cd {$environment->root} && {$composer_install_command}";
     }
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped running composer install...'), 'ok');
   }
-  
+
   // Built in Hooks
   if ($update) {
     $commands[] = "drush {$environment->drush_alias} updatedb --yes";
