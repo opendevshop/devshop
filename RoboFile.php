@@ -710,11 +710,29 @@ class RoboFile extends \Robo\Tasks {
    */
   public function shell($user = NULL) {
 
+    // Check if single container is running (as opposed to docker compose)
+    $devshop_container_running = $this->taskExec('docker exec -ti devshop_container echo')
+        ->silent(1)
+        ->run()
+        ->wasSuccessful();
+
     if ($user) {
-      $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+      // if devshop_container exists, shell into that.
+      if ($devshop_container_running) {
+        $process = new \Symfony\Component\Process\Process("docker exec --user $user -ti devshop_container bash");
+      }
+      else {
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+      }
     }
     else {
-      $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+      // if devshop_container exists, shell into that.
+      if ($devshop_container_running) {
+        $process = new \Symfony\Component\Process\Process("docker exec -ti devshop_container bash");
+      }
+      else {
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+      }
     }
     $process->setTty(TRUE);
     $process->run();
