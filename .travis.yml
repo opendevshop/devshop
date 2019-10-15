@@ -95,7 +95,7 @@ before_install:
 script:
 
   # Launch devshop including preparing the source code.
-  - echo "Running ${COMMAND} -n --xdebug=0 ..."
+  - echo "Running ${COMMAND} -n --disable-xdebug ..."
   - ${COMMAND} -n --disable-xdebug
   
 notifications:
