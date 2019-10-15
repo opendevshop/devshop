@@ -7,7 +7,6 @@ supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner
 
 extra_packages:
   - vim
-  - supervisor
   - openssl
   - postfix
   - cron
