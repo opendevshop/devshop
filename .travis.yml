@@ -77,7 +77,8 @@ before_install:
   - composer install
 
 script:
-  - ${COMMAND} -n --fork
+  - echo "Running ${COMMAND} -n --disable-xdebug --fork ..."
+  - ${COMMAND} -n --disable-xdebug --fork
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state
