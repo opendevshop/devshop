@@ -19,6 +19,9 @@
 - name: geerlingguy.apache
   version: 3.0.3
 
+- name: geerlingguy.supervisor
+  version: 2.0.2
+
 - name: geerlingguy.nginx
   version: 2.6.2
 
