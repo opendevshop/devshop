@@ -415,6 +415,10 @@ ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
 ANSIBLE_EXTRA_VARS+=("travis: false")
 ANSIBLE_EXTRA_VARS+=("supervisor_running: true")
 
+if [ -n "$TRAVIS" ]; then
+  ANSIBLE_EXTRA_VARS+=("server_hostname_ignore_errors: yes")
+fi
+
 # Lookup special variable overrides.
 if [ -n "$MAKEFILE_PATH" ]; then
   ANSIBLE_EXTRA_VARS+=("devshop_makefile: ${MAKEFILE_PATH}")
