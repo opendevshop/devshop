@@ -108,7 +108,9 @@ abstract class Command extends BaseCommand
 
     try {
       $this->ansible = new Ansible(
-        getcwd()
+        getcwd(),
+        trim(`which ansible-playbook`),
+        trim(`which ansible-galaxy`)
       );
     } catch (CommandException $exception) {
       if ($this->ansibleRequired) {
