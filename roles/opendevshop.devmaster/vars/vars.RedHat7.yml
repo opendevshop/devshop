@@ -12,7 +12,6 @@ extra_packages:
   - postfix
   - sendmail
   - cronie
-  - supervisord
   - openssl
   - mod_ssl
 
