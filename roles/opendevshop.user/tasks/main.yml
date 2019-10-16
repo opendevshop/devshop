@@ -6,9 +6,13 @@
   - name: Include global variables.
     include_vars: "vars.yml"
 
-  # Include variables and define needed variables.
-  - name: Include OS-specific variables.
-    include_vars: "{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
+  - name: Include RedHat variables.
+    include_vars: "vars.RedHat{{ ansible_distribution_major_version }}.yml"
+    when: ansible_os_family == "RedHat"
+
+  - name: Include Debian variables.
+    include_vars: "vars.Debian.yml"
+    when: ansible_os_family == "Debian"
 
   - name: Include Ubuntu 14 variables.
     include_vars: "vars.Ubuntu14.yml"
