@@ -113,7 +113,8 @@ HTML;
 function devshop_dothooks_run_hook($hook, $environment) {
 
   // Reload the alter hook in case there are new hooks.
-  devshop_dothooks_devshop_environment_alter($environment, $environment->project);
+  $project_node = devshop_projects_load_by_name($environment->project_name);
+  devshop_dothooks_devshop_environment_alter($environment, $project_node->project);
 
   // Respect drush option, but default to environment settings.
   if (!drush_get_option('dothooks', $environment->settings->deploy['dothooks'])) {
