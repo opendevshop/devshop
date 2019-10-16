@@ -46,7 +46,7 @@
       gid: "{{ aegir_user_gid }}"
 
   - name: Create Aegir user
-    when: aegir_create_user
+    when: aegir_create_user == "yes"
     ignore_errors: yes
     user:
       name: "{{ aegir_user_name }}"
