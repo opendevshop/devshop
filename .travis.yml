@@ -74,4 +74,4 @@ script:
   - ${COMMAND} -n --disable-xdebug
   
 notifications:
-  slack: thinkdrop:pb05x3ZL3qumHs0RjqEXvYfA
+  slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA
