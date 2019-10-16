@@ -28,7 +28,7 @@
         state: present
 
   - name: Ensure openssh-client is available (including ssh-keygen tool)
-    when: ansible_os_family == 'RedHapt'
+    when: ansible_os_family == 'RedHat'
     yum:
         name: 'openssh'
         state: present
