@@ -173,8 +173,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   }
   else {
     $environments_options = array_combine($environments, $environments);
-    $environments_options[''] = t('None');
   }
+
+  $form_state['environments'] = $environments_options;
+  $environments_options[''] = t('None');
 
   $form['project']['codebase']['live_environment'] = array(
     '#type' => 'select',
@@ -513,6 +515,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
   // Hosting Task Forms
   if ($form_id == 'hosting_task_confirm_form') {
+
+    // Allow hosting_task_TASK_TYPE_form to define their page title.
+    if (!empty($form['parameters']['#page_title'])) {
+      drupal_set_title($form['parameters']['#page_title']);
+    }
+
     switch ($form['task']['#value']) {
 
       // Migrate Form: used for changing database server.
@@ -794,6 +802,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     devshop_projects_create_environment_form($form, $form_state, $form_id);
 
     $project = devshop_projects_load_by_name(arg(3));
+    $form_state['project'] = $project->project;
   }
 
   // Only act on site nodes that are in projects.
@@ -1302,10 +1311,11 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     }
 
     // Generate field prefix and suffix using domain name pattern.
+    $form_state['environment_name'] = $element['#value'];
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
@@ -1340,15 +1350,22 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
  * @return stdClass
  *   A populated object ready for node_submit and node_save.
  */
-function devshop_prepare_platform_node($project, $environment_name, $git_ref, $web_server) {
+function devshop_prepare_platform_node($project, $environment_name, $git_ref, $web_server, $git_remote = NULL) {
   $platform_node = new stdClass();
   $platform_node->type = 'platform';
   $platform_node->title = $project->name . '_' . $environment_name;
   
   // Specify GIT Url for hosting_git.module
-  $platform_node->git['repo_url'] = $project->git_url;
+  if (empty($git_remote)) {
+    $platform_node->git['repo_url'] = $project->git_url;
+  }
+  else {
+    $platform_node->git['repo_url'] = $git_remote;
+  }
+
   $platform_node->git['git_ref'] = $git_ref;
-  
+
+
   // Enable git pull queue for this platform if chosen.
   if ($project->settings->deploy['method'] == 'queue') {
     $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
@@ -1673,6 +1690,8 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   else {
     $primary_keys = array();
   }
+
+
 
   if (drupal_write_record('hosting_devshop_project_environment', $environment, $primary_keys)) {
 

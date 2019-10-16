@@ -57,10 +57,10 @@ SELECT
         else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
-            $entity->project = $project_node->project;
             if (isset($project_node->project->environments[$result->name])) {
               $entity->environment = $project_node->project->environments[$result->name];
             }
+            $entity->project = $project_node->project;
           }
         }
       }
@@ -87,12 +87,12 @@ function devshop_project_load($node) {
   if (!empty($project->tasks['verify'])) {
     $project->verify = $project->tasks['verify'];
   }
-  
+
   // Load up all project settings.
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
-  
-  
+
+
   // Create "refs" array to determine ref type.
   $project->settings->git['refs'] = array();
   foreach ($project->settings->git as $type => $refs) {
@@ -111,6 +111,12 @@ function devshop_project_load($node) {
       'git://' => 'http://',
       '.git' => '',
     ));
+
+    // Set github_owner and github_repo properties for project.
+    $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+    $project->github_owner = $parts[1];
+    $project->github_repo = $parts[2];
+
   }
   elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
     $project->git_provider = 'bitbucket';
@@ -174,13 +180,10 @@ function devshop_project_load($node) {
   ));
   foreach ($environment_data as $environment) {
 
-    // Don't load the environment if the site and/or platform is deleted.
-    if ($environment->site_status == HOSTING_SITE_DELETED && $environment->platform_status == HOSTING_PLATFORM_DELETED) {
-      continue;
-    }
-    if ($environment->platform_status == HOSTING_PLATFORM_DELETED) {
-      continue;
-    }
+    // Site dashboard URL.
+    $environment->dashboard_url = url("node/{$environment->site}", array(
+      'absolute' => true
+    ));
 
     // Drush alias
     $environment->drush_alias = "@{$project->name}.{$environment->name}";
@@ -205,9 +208,22 @@ function devshop_project_load($node) {
 
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
-      $environment->git_ref_url = $project->git_repo_url . '/tree/' . $environment->git_ref;
+      $environment->git_repo_url = strtr($environment->git_url, array(
+        'git@github.com:' => 'http://github.com/',
+        'git://' => 'http://',
+        '.git' => '',
+      ));
+
+      $environment->git_ref_url = $environment->git_repo_url . '/tree/' . $environment->git_ref;
+
+      // Set github_owner and github_repo properties for project and environment.
+      $parts = explode('/', parse_url($environment->git_repo_url, PHP_URL_PATH));
+      $environment->github_owner = $parts[1];
+      $environment->github_repo = $parts[2];
+
     }
     else {
+      $environment->git_repo_url = url("node/$environment->site");
       $environment->git_ref_url = url("node/$environment->site/logs/commits");
     }
 
@@ -241,7 +257,7 @@ function devshop_project_load($node) {
       else {
         $environment->db_server_nid = $environment->settings->db_server;
       }
-      
+
       if (!empty($db_servers[$environment->db_server_nid])) {
         $environment->db_server = $db_servers[$environment->db_server_nid];
       }
@@ -307,7 +323,10 @@ function devshop_project_load($node) {
     }
 
     // Load Install Method and info.
-    if (isset($environment->settings->install_method)) {
+    if (!empty($environment->settings->install_method['import'])) {
+      $environment->install_method = 'import';
+    }
+    elseif (isset($environment->settings->install_method['method'])) {
       $environment->install_method = $environment->settings->install_method['method'];
     }
     else {
@@ -384,9 +403,17 @@ function devshop_project_load($node) {
 //      )
 //    );
 
+    $environment->dashboard_url = url("node/{$environment->site}", array(
+      'absolute' => true
+    ));
+
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
-    $environments[$environment->name] = $environment;
+
+    // Only add to project if not deleted
+    if ($environment->site_status != HOSTING_SITE_DELETED) {
+      $environments[$environment->name] = $environment;
+    }
   }
 
   // Put live environment at the top.

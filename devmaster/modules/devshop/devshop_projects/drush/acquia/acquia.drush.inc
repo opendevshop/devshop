@@ -11,9 +11,13 @@
  *
  * Checks for Acquia cloud hooks and runs them.
  */
-function drush_acquia_post_provision_devshop_deploy($branch) {
+function drush_acquia_post_provision_devshop_deploy($branch = '') {
 
   if (d()->type == 'site'){
+
+    if (empty($branch)) {
+      $branch = d()->platform->git_ref;
+    }
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;

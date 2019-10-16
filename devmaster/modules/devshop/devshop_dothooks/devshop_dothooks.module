@@ -1,12 +1,12 @@
 <?php
 
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
 use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 require_once 'hooks.php';
 
@@ -17,12 +17,13 @@ require_once 'hooks.php';
  */
 function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
 
-  $yaml = new Parser();
   $hooks_path = '';
 
   if (!isset($environment->settings->deploy['dothooks']) || empty($environment->settings->deploy['dothooks'])){
     return;
   }
+
+  $hooks_file = '';
 
   if (file_exists($environment->repo_path . '/.hooks.yaml')) {
     $hooks_file = '.hooks.yaml';
@@ -43,8 +44,8 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
   // Attempt to parse
   if (!empty($environment->dothooks_file_name)) {
     try {
-      $environment->dothooks = $yaml->parse(file_get_contents($hooks_path));
-    } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+      $environment->dothooks = Yaml::parseFile($hooks_path);
+    } catch (ParseException $e) {
       $environment->warnings[] = array(
         'text' => t('Invalid YAML in !file: !message', array(
           '!file' => $hooks_path,
@@ -112,7 +113,8 @@ HTML;
 function devshop_dothooks_run_hook($hook, $environment) {
 
   // Reload the alter hook in case there are new hooks.
-  devshop_dothooks_devshop_environment_alter($environment, $environment->project);
+  $project_node = devshop_projects_load_by_name($environment->project_name);
+  devshop_dothooks_devshop_environment_alter($environment, $project_node->project);
 
   // Respect drush option, but default to environment settings.
   if (!drush_get_option('dothooks', $environment->settings->deploy['dothooks'])) {
@@ -139,13 +141,14 @@ function devshop_dothooks_run_hook($hook, $environment) {
   $env = $_SERVER;
   $env['DEVSHOP_PROJECT'] = $environment->project_name;
   $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
+  $env['DRUSH_ALIAS'] = $environment->system_alias;
 
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
     $hook_line = strtr($hook_line, array(
       '{{alias}}' => $environment->system_alias,
     ));
-    provision_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml');
+    provision_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml', $env);
   }
 }
 

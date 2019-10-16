@@ -419,6 +419,11 @@ function boots_preprocess_environment(&$vars) {
     $environment->git_status = '';
     $environment->git_diff = '';
   }
+
+  // Look for alternative git URL
+  if ($environment->git_url != $project->git_url) {
+    $vars['git_origin'] = $environment->git_url;
+  }
 }
 
 /**
@@ -703,7 +708,12 @@ function boots_preprocess_page(&$vars){
         $vars['title2'] = $object->environment->name;
       }
 
-      $vars['title2_url'] = 'node/' . $object->nid;
+      if (!empty($object->environment->site)) {
+        $vars['title2_url'] = 'node/' . $object->environment->site;
+      }
+      else {
+        $vars['title2_url'] = 'node/' . $object->nid;
+      }
       $vars['title2'] = l($vars['title2'], $vars['title2_url']);
 
       if ($vars['subtitle2'] == 'Platform') {
@@ -735,7 +745,7 @@ function boots_preprocess_page(&$vars){
     // For node/%/* pages where node is site or platform, use the environment name as title2
     if (($vars['node']->type == 'site' || $vars['node']->type == 'platform')&& isset($vars['node']->environment)){
 
-      $vars['title2_url'] = url('node/' . $vars['node']->nid);
+      $vars['title2_url'] = url('node/' . $vars['node']->environment->site);
       $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);
     }
     // On environment settings page...

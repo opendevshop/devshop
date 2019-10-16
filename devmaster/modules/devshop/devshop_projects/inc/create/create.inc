@@ -43,6 +43,15 @@ function devshop_projects_create_wizard($step = NULL) {
     $project->base_url = '';
 
     // ** set the storage object so its ready for whatever comes next
+
+    // Resume a project creation wizard.
+    if ($project_node_resume = node_load(arg(3))) {
+      $project->nid = $project_node_resume->nid;
+      $project->git_url = $project_node_resume->project->git_url;
+      $project->name = $project_node_resume->project->name;
+      $project->code_path = $project_node_resume->project->code_path;
+      $project->base_url = $project_node_resume->project->base_url;
+    }
     ctools_object_cache_set('project', 'devshop_project', $project);
   }
   else {

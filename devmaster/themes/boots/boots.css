@@ -998,7 +998,7 @@ pre.ansi_box {
     font-size: 13px;
 }
 
-#project-settings-table .form-control,
+.project-environments-table .form-control,
 #hosting-task-confirm-form .form-control#edit-parameters-environment-name {
     width: auto;
     display:inline;

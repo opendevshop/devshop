@@ -1,10 +1,11 @@
 {
   "require": {
     "cpliakas/git-wrapper": "~1.0",
-    "knplabs/github-api": "~1.2",
+    "knplabs/github-api": "^2.11",
     "sensiolabs/ansi-to-html": "^1.1",
-    "symfony/yaml": "^3.0",
-    "symfony/process": "^2.7"
+    "symfony/process": "^2.7",
+    "php-http/guzzle6-adapter": "^1.1",
+    "symfony/yaml": "^3.4"
   },
   "config": {
     "platform": {

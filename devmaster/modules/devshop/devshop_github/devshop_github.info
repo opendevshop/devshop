@@ -6,3 +6,5 @@ files[] = includes/add-key.inc
 files[] = includes/admin.inc
 dependencies[] = devshop_projects
 dependencies[] = composer_manager
+
+files[] = DevShopGitHubApi.php

@@ -4,6 +4,57 @@
  * @file devshop_github.module
  */
 
+require_once('includes/queue.inc');
+
+use Symfony\Component\Yaml\Yaml;
+
+/**
+ * Grab an authenticated GitHub client.
+ *
+ * If a devshop_github_token is not found, it will attempt to use the Public API.
+ *
+ * @param bool $public
+ *   Set to TRUE to skip authentication.
+ *
+ * @return \Github\Client
+ * @throws Exception
+ */
+function devshop_github_client($public = FALSE) {
+  $client = new \Github\Client();
+
+  // Check for missing token. Set $public to TRUE.
+  if (empty(variable_get('devshop_github_token'))) {
+    $public = variable_get('devshop_github_use_public_api_if_no_token', TRUE);
+  }
+
+  // If not public...
+  if (!$public) {
+
+    // Throw exception if token is missing.
+    if (empty(variable_get('devshop_github_token'))) {
+      throw new \Exception(t('There is no GitHub Token set.'));
+    }
+
+    // Set token in client.
+    $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
+    try {
+      // If currentUser()->show() worked, we know we are authenticated.
+      $client->currentUser()->show();
+      return $client;
+    }
+    catch (Exception $e) {
+      // If error, set_message and throw the exception upstream.
+      drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
+      throw $e;
+    }
+  }
+  else {
+    // return an unauthenticated client, use for public requests.
+    return $client;
+  }
+}
+
+
 /**
  * Implements hook_menu().
  */
@@ -57,24 +108,68 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
       '#title' => t('GitHub Integration'),
+      '#weight' => -10,
   );
+  $form['project']['settings']['deploy']['default_hooks']['#weight'] = -9;
 
-  // Pull Requests create environments?
-  // $form['github']['pull_request_environments'] = array(
+  // If Pull Requests were found in the environment, enable PR environments by default.
+  $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  $pr_count = count($prs);
+  if ($pr_count > 0) {
+    $form['project']['settings']['github']['found_prs'] = array(
+      '#type' => 'markup',
+      '#prefix' => '<div class="alert alert-success">',
+      '#suffix' => '</div>',
+      '#markup' => t('Pull Request Environments are enabled because !link. Please confirm your desired settings below.', array(
+        '!link' => l(format_plural($pr_count, t('there is 1 open Pull Request in your project'), t('there are @number open Pull Requests in your project', array('@number' => $pr_count))), $node->project->git_repo_url . '/pulls', array(
+          'attributes' => array(
+            'target' => '_blank',
+          ),
+        )),
+      )),
+    );
+    $pr_envs_default_value = 1;
+  }
+  else {
+    $pr_envs_default_value = isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : 0;
+  }
+
   $form['project']['settings']['github']['pull_request_environments'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Create Environments for Pull Requests'),
-      '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : FALSE,
-      '#description' => t('If using GitHub, create a new environment when a new Pull Request is created.'),
+      '#title' => t('Enable Pull Request Environments <div class="help-block">Automatically create a copy of your site with the code from a Pull Request\'s branch.</div>'),
+      '#default_value' => $pr_envs_default_value,
+  );
+
+  $form['project']['settings']['github']['pull_request_create_policy'] = array(
+    '#title' => t('Environment Creation Policy'),
+    '#type' => 'radios',
+    '#field_prefix' => '<span class="text-success">' . format_plural($pr_count,
+      t('The project has one open Pull Request'),
+      t('The project has @number open Pull Requests', array(
+        '@number' => $pr_count,
+      )) . '</span>'
+    ),
+    '#options' => array(
+      'all' => t('Create Environments for all open Pull Requests.  <div class="help-block">Environments will be created and deleted as Pull Requests are opened, closed, and re-opened.</div>'),
+      'create' => t('Only Create Environments when Pull Requests are opened or re-opened. <div class="help-block">Recommended if you have a large number of open Pull Requests or if PRs have unstable or unknown code.</div>'),
+    ),
+    '#default_value' => !empty($node->project->settings->github['pull_request_create_policy'])?
+      $node->project->settings->github['pull_request_create_policy']:
+      'all',
+    '#states' => array(
+      'visible' => array(
+        ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   // Delete Pull Request environments?
-  // $form['github']['pull_request_environments_delete'] = array(
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete Pull Request Environments'),
-      '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : FALSE,
-      '#description' => t('When Pull Requests are closed, delete the environment.'),
+      '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
+      '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : 1,
+// @TODO: Putting description in "help-block" right after title looks MUCH better and has better UX because the description is clickable. Put this in the theme layer.
+//      '#description' => t('When Pull Requests are merged or closed, delete the environment.'),
       '#states' => array(
         'visible' => array(
           ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
@@ -85,26 +180,26 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   // Pull Request Environment method.
   // $form['github']['pull_request_environments_method'] = array(
 
-  $environments = array_keys($node->project->environments);
   $options = array(
     t('Install Drupal') => array(
-        'devshop__github__install' => empty($node->project->install_profile)? t('Default install profile.'): $node->project->install_profile,
+        'devshop__github__install' => empty($node->project->install_profile)? t('Default Install Profile (configured later)'): $node->project->install_profile,
     ),
     t('Clone another environment') => array(),
   );
 
-  if (empty($environments)) {
-    $options[t('Clone another environment')][] = t('No environments available. Check Project settings when you have one.');
+  $options[t('Clone another environment')] = $form_state['environments'];
+  $options[t('Clone another environment')]['_primary'] = t('Primary Environment');
+
+  if (empty($options[t('Clone another environment')])) {
+    $options[t('Clone another environment')]['_primary'] = t('Primary Environment (configured later)');
   }
-  else {
-    $options[t('Clone another environment')] = array_combine($environments, $environments);
-  }
+
   $form['project']['settings']['github']['pull_request_environments_method'] = array(
       '#type' => 'select',
-      '#title' => t('Pull Request Environment Creation Method'),
+      '#title' => t('Site Installation Method'),
       '#default_value' => isset($node->project->settings->github) ?
           $node->project->settings->github['pull_request_environments_method'] : 'devshop__github__install',
-      '#description' => t('Select the method for creating the pull request environments.'),
+      '#description' => t('Select the method for installing the Pull Request environments.'),
       '#options' => $options,
       '#states' => array(
         'visible' => array(
@@ -114,16 +209,154 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
   $form['project']['settings']['github']['pull_request_reinstall'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Reinstall Pull Request Environments on every git push.'),
+    '#title' => t('Rebuild Pull Request Environments on every git push. <div class="help-block">Destroy and Rebuild Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed every time code is pushed. The rebuild method is determie</div>'),
     '#default_value' => isset($node->project->settings->github) ?
       $node->project->settings->github['pull_request_reinstall'] : 0,
-    '#description' => t('Destroy and reinstall Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed.'),
     '#states' => array(
       'visible' => array(
         ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
       ),
     ),
   );
+  $form['project']['settings']['github']['pull_request_auto_merge'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable GitHub Auto-Merge. <div class="help-block">When creating the github deployment, tell it to attempt to automatically merge changes in from the primary branch. </div><div class="help-block"><span class="text-warning">WARNING: This will prevent deployment notifications if the branch cannot be merged because of a conflict. DevShop will send a message to GitHub notifying the developers they must resolve the conflicts to continue deployment notifications</span></div>'),
+    '#default_value' => isset($node->project->settings->github) ?
+      $node->project->settings->github['pull_request_auto_merge'] : 1,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for site_node_form().
+ *
+ * Add the list of PRs to the Branch selector.
+ */
+function devshop_github_form_hosting_task_confirm_form_alter(&$form, &$form_state, $form_id) {
+
+  $form['#submit'][] = 'devshop_github_form_hosting_task_confirm_form_alter_submit';
+}
+
+/**
+ *
+ */
+function devshop_github_form_hosting_task_confirm_form_alter_submit($form, &$form_state) {
+  $values = $form_state['values'];
+//  DevShopGitHubApi::createDeployment();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for site_node_form().
+ *
+ * Add the list of PRs to the Branch selector.
+ */
+function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id) {
+
+  $project = $form_state['project'];
+  if (arg(1) == 'add' && $project->git_provider == 'github'){
+    try {
+      $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+    }
+    catch (\Exception $e) {
+      drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
+        '%error' => $e->getMessage(),
+      )), 'warning');
+      return;
+    }
+
+    $pr_options = array();
+    $existing_options = $form['git_ref']['#options'];
+
+    if (count($prs)) {
+      foreach ($prs as $pr) {
+        $pr_description = implode(' - ', array(
+          "PR {$pr['number']}",
+          $pr['head']['ref'],
+          $pr['user']['login'],
+          $pr['title'],
+        ));
+        $option_name = $pr['head']['ref'];
+        $pr_options['Pull Requests'][$option_name] = $pr_description;
+        $form_state['pull_requests'][$option_name] = $pr;
+      }
+
+      $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
+
+    }
+
+    $form['git_ref']['#options'] = array_merge($pr_options, $existing_options);
+    $form['git_ref']['#element_validate'] = array(
+      'devshop_github_form_site_node_form_validate_pr'
+    );
+
+    // Add our own submit handler.
+    if (empty($form_state['node']->nid)) {
+      $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
+    }
+  }
+}
+
+/**
+ * Submit handler for site/environment settings page.
+ */
+function devshop_github_environment_create_submit($form, &$form_state) {
+//
+//  // Save the environment record.
+//  $site = node_load($form_state['node']->nid, null, true);
+//  DevShopGitHubApi::createDeployment($site->environment, 'pending', t('Environment Settings Submit'));
+
+}
+
+/**
+ * @param $element
+ * @param $form_state
+ */
+function devshop_github_form_site_node_form_validate_pr($element, &$form_state, $form)
+{
+  // If PR found for this branch, put the PR data into form_state.
+  if (!empty($form_state['pull_requests'][$element['#value']])) {
+    $form_state['values']['pull_request'] = $pr = convert_to_object($form_state['pull_requests'][$element['#value']]);
+
+    // If PR has different remote URL, set it.
+    if ($pr->head->repo->fork) {
+      // Try to match project URL scheme
+      if (strpos($form_state['project']->git_url, 'https://') === 0) {
+        $remote_url = $pr->head->repo->clone_url;
+      }
+      elseif (strpos($form_state['project']->git_url, 'git://') === 0){
+        $remote_url = $pr->head->repo->git_url;
+      }
+      elseif (strpos($form_state['project']->git_url, 'git@') === 0){
+        $remote_url = $pr->head->repo->ssh_url;
+      }
+      else {
+        $remote_url = $pr->head->repo->clone_url;
+      }
+
+      // Set repo_url for this environment to the forked git remote.
+      form_set_value($form['git']['repo_url'], $remote_url, $form_state);
+
+      // Recreate the platform node, with the new git repo_url.
+      $platform_node = devshop_prepare_platform_node($form_state['project'], $form_state['environment_name'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+      form_set_value($form['platform_node'], $platform_node, $form_state);
+    }
+  }
+}
+
+/**
+ * Helper to normalize arrays to objects.
+ *
+ * @param $array
+ * @return mixed
+ */
+function convert_to_object($thing) {
+  $yml = Yaml::dump($thing, 2, 2, Yaml::DUMP_OBJECT_AS_MAP);
+  $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
+  return $object;
 }
 
 /**
@@ -446,6 +679,130 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters devshop_project_create_step_environments form.
+ */
+function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
+
+  $project = &$form_state['project'];
+  $form['pr_environments'] = array(
+    '#type' => 'container',
+    '#prefix' => '<h3 class="title">' . t('Pull Request Environments') . '</h3>',
+    '#weight' => -100,
+  );
+  $form['pr_environments']['environments_table'] = array(
+    '#tree' => TRUE,
+    '#theme' => 'devshop_projects_create_settings_form',
+  );
+
+  // Load the PRs.
+  try{
+    $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+
+    foreach ($prs as $pr) {//    '#type' => 'fieldset',
+
+
+      // Prepare environment objects
+      $environment = new stdClass();
+      $environment->name = "pr{$pr['number']}";
+      $environment->git_ref = $pr['head']['ref'];
+      $project->environments[$environment->name] = $environment;
+
+      // Prepare form element.
+      $element = devshop_project_environment_create_form_element($project, $environment);
+      $element['name']['#attributes']['readonly'] = 1;
+      $element['git_ref']['#type'] = 'value';
+      $element['git_ref']['#value'] = $environment->git_ref;
+      $element['git_ref']['git_ref_display'] = array(
+        '#type' => 'markup',
+        '#markup' => "<a href='{$pr['html_url']}' class='btn btn-link' target='_blank'><img src='{$pr['user']['avatar_url']}' width='32'> {$environment->git_ref}</a></code>",
+      );
+
+      // Only add to $form if configured to keep all environments.
+      if ($project->settings->github['pull_request_create_policy'] == 'all') {
+        $form['pr_environments']['environments_table'][$environment->name] = $element;
+      }
+    }
+
+    // Push "new" to the bottom.
+    $new_element = $form['project']['environments']['NEW'];
+    unset($form['project']['environments']['NEW']);
+    $form['project']['environments']['NEW'] = $new_element;
+
+    $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+      'fragment' => 'edit-project-settings-github',
+    ));
+
+    $prs_link = l(t('Pull Requests for @repo', array(
+      '@repo' => $project->github_owner . '/' . $project->github_repo,
+    )), $project->git_repo_url . '/pulls', array(
+      'attributes' => array('target' => '_blank')
+    ));
+
+    // Project with PR environments disabled.
+    if (!$project->settings->github['pull_request_environments']) {
+      $help_display['help'] = array(
+        '#theme' => 'item_list',
+        '#items' => array(
+          t('Pull Request environments are disabled for this project.'),
+          $settings_link,
+          $prs_link,
+        ),
+        '#prefix' => '<div class="alert alert-warning">',
+        '#suffix' => '</div>',
+      );
+    }
+    // Project configured to maintain all PR environments.
+    elseif ($project->settings->github['pull_request_create_policy'] == 'all') {
+      $help_display['help'] = array(
+        '#theme' => 'item_list',
+        '#items' => array(
+          t('Project is configured to create environments for all Pull Requests.'),
+          $settings_link,
+          $prs_link,
+        ),
+        '#prefix' => '<div class="alert alert-info">',
+        '#suffix' => '</div>',
+      );
+    }
+    // Project configured to only create environments on PR open or re-open.
+    elseif ($project->settings->github['pull_request_create_policy'] == 'create') {
+      $help_display['help'] = array(
+        '#theme' => 'item_list',
+        '#items' => array(
+          t('Project is configured to create environments only for new or reopened Pull Requests.'),
+          $settings_link,
+          $prs_link,
+        ),
+        '#prefix' => '<div class="alert alert-info">',
+        '#suffix' => '</div>',
+      );
+    }
+  }
+  catch (\Exception $e) {
+    $help_display['gh_error'] = array(
+      '#theme' => 'item_list',
+      '#items' => array(
+        t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
+          '%message' => $e->getMessage(),
+          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+        )),
+        $settings_link,
+      ),
+      '#prefix' => '<div class="alert alert-danger">',
+      '#suffix' => '</div>',
+    );
+  }
+  $form['pr_environments']['help'] = $help_display;
+  $form['pr_environments']['help']['#weight'] = -1;
+
+  // Add a header to distinguish from PRs
+  $form['project']['#prefix'] = '<h3 class="title">' . t('Create Additional Environments') . '</h3>';
+
+}
+
+/**
  * @param $element
  * @param $form_state
  * @param $form
@@ -518,12 +875,6 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
     return;
   }
 
-  // Return if there is no github token
-  $github_token = variable_get('devshop_github_token', '');
-  if (empty($github_token)) {
-    return;
-  }
-
   // Load project and github
   $project_node = node_load($form['nid']['#value']);
   $project = $project_node->project;
@@ -531,6 +882,41 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
   // Return if provider is not github.
   if ($project->git_provider != 'github') {
     return;
+  }
+
+  $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+    'fragment' => 'edit-project-settings-github',
+  ));
+
+  // Load the PRs.
+  try {
+    $prs = devshop_github_client()
+      ->pullRequests()
+      ->all($project->github_owner, $project->github_repo);
+
+    foreach ($prs as $pr) {
+      $form['platforms']['#rows'][] = array(
+        'name' => "pr{$pr['number']}",
+        'branch' => $pr['head']['ref'],
+        'version' => array(
+          'colspan' => 3,
+          'data' => "<a href='{$pr['html_url']}' class='btn btn-link btn-sm' target='_blank'><img src='{$pr['user']['avatar_url']}' width='32'> {$pr['title']}</a>",
+        ),
+      );
+    }
+  }
+  catch (\Exception $e) {
+    drupal_set_message(theme('item_list', array(
+      'items' => array(
+        t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
+          '%message' => $e->getMessage(),
+          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+        )),
+        $settings_link,
+      ),
+    )), 'error');
+
+    drupal_set_message(get_class($e));
   }
 
   // Return if deploy method is not webhook.
@@ -616,9 +1002,18 @@ function devshop_github_project_create_webhook($form, $form_state) {
  * Implements hook_node_load().
  */
 function devshop_github_node_load($nodes, $types) {
-  if (count(array_intersect(array('project'), $types))) {
-    foreach ($nodes as $nid => $node) {
 
+  // Load each tasks deployment object.
+  $types_we_want_to_process = array('task');
+  if (count(array_intersect($types_we_want_to_process, $types))) {
+    $result = db_query('SELECT * FROM {hosting_devshop_github_deployments} WHERE task_nid IN(:nids)', array(':nids' => array_keys($nodes)));
+    foreach ($result as $record) {
+      $nodes[$record->task_nid]->github_deployment = unserialize($record->deployment_object);
+    }
+  }
+
+  foreach ($nodes as $nid => &$node) {
+    if ($node->type == 'project') {
       // Look for a pull request object.
       $pull_requests = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid));
       foreach ($pull_requests as $pull_request) {
@@ -629,17 +1024,37 @@ function devshop_github_node_load($nodes, $types) {
           }
         }
       }
-
-      // Parse github owner and repo.
-      if (isset($node->project) && $node->project->git_provider == 'github') {
-        $node->project->github_owner =
-          $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-        $node->project->github_owner = $parts[1];
-        $node->project->github_repo = $parts[2];
-      }
     }
   }
+}
 
+/**
+ * Implements hook_node_insert().
+ *
+ * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
+ */
+function devshop_github_node_insert($node) {
+  if ($node->type == 'site' && !empty($node->pull_request)) {
+    $environment = new stdClass();
+    $environment->name = $node->environment_name;
+    $environment->project_nid = $node->project_nid;
+    devshop_github_save_pr_env_data($node->pull_request, $environment);
+  }
+
+  if ($node->type == 'task' && $node->task_type == 'devshop-deploy') {
+
+    // Get the latest environment info.
+    $site = node_load($node->rid, null, true);
+    if ($site->type == 'site' && isset($site->environment)) {
+      // Create a deployment on GitHub.
+      $deployment = DevShopGitHubApi::deploy($site->environment, 'pending', $node, t('DevShop Deploy task queued.'), NULL, url("node/$node->nid", array(
+        'absolute' => true,
+      )));
+      watchdog('devshop_github', t('DevShop Deploy Task created [%nid] and GitHub Deployment Created: [%id]'), array(
+        '%id' => $deployment->id,
+      ));
+    }
+  }
 }
 
 /**
@@ -650,7 +1065,7 @@ function devshop_github_node_load($nodes, $types) {
 function devshop_github_node_update($node) {
 
   // Only act on test triggers.
-  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'deploy')) {
+  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'devshop-deploy')) {
     return;
   }
 
@@ -667,9 +1082,10 @@ function devshop_github_node_update($node) {
 
     // Create a deployment status
     $project = $site->project;
-    $owner = $project->github_owner;
-    $repo = $project->github_repo;
-    $sha = $site->environment->github_pull_request->pull_request_object->head->sha;
+    $owner = $site->environment->github_owner;
+    $repo = $site->environment->github_repo;
+
+    $sha = devshop_environment_get_git_sha($site->environment->repo_path);
 
     $params = new stdClass();
     $params->state = 'pending';
@@ -759,15 +1175,6 @@ function devshop_github_node_update($node) {
 //      }
 //      elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
 //        $state = 'success';
-//      }
-//      else {
-//        $state = 'error';
-//      }
-//
-//      $params = new stdClass();
-//      $params->state = $state;
-//      $params->target_url = $url;
-//      $params->description = $description;
 //      $params->context = 'devshop/' . $task->task_type;
 //
 //      $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
@@ -785,6 +1192,15 @@ function devshop_github_node_update($node) {
 //  }
 // }
 
+//      }
+//      else {
+//        $state = 'error';
+//      }
+//
+//      $params = new stdClass();
+//      $params->state = $state;
+//      $params->target_url = $url;
+//      $params->description = $descriptio
 /**
  *
  */
@@ -923,166 +1339,179 @@ function devshop_github_webhook($project_node) {
                 $message .= "Already have a PR for $environment_name ... not inserting.";
                 $already_have_pr_info = TRUE;
               }
-            }
-            else {
+            } else {
               // If method is "install"...
               if ($project->settings->github['pull_request_environments_method'] == 'devshop__github__install') {
                 hosting_create_environment($project, $environment_name, $branch);
                 $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
-              }
-              // Otherwise, it is a clone from live.
-              elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']] )) {
+              } // Otherwise, it is a clone from live.
+              elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
                 $source_env = $project->settings->github['pull_request_environments_method'];
-                hosting_create_environment($project, $environment_name, $branch, $source_env);
+                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env);
+
+                // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
+                // @TODO: Decide if a setting is needed to control this behavior.
+                // @TODO: Reduce duplication with the github queue.
+                $deploy_task = hosting_add_task($environment->site, 'devshop-deploy', array(
+                  'git_ref' => $branch,
+                ));
                 $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
-              }
-              else {
+                $message .= "Deploy task queued: $deploy_task->nid \n";
+              } else {
                 $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
               }
             }
-
-            $project_node = node_load($project->nid);
-            $project = $project_node->project;
-            $environment = $project->environments[$environment_name];
-
-            $owner = $project->github_owner;
-            $repo = $project->github_repo;
-            $message .= "\n About to try to create a deployment for $owner/$repo...  \n";
-
-            // Send a "deployment" to github.
-            try {
-              $token = variable_get('devshop_github_token', '');
-              $client = new \Github\Client();
-              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-
-              $sha = $data->pull_request->head->sha;
-
-              $params = new stdClass();
-              $params->ref = $sha;
-
-              // In GitHub's API, "environment" is just a small string it displays on the pull request:
-              $params->environment = $project->name . '.' . $environment_name;
-                devshop_environment_url($project, $environment_name)
-              ;
-              $params->required_contexts = array();
-
-              // $message .= "\nEnvironment: " . print_r($environment, 1);
-              $message .= "\nDeployment Params: " . print_r($params, 1);
-
-              $post_url = "/repos/$owner/$repo/deployments";
-              $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
-
-              // Save deployment to pull request data for later access.
-              $data->pull_request->deployment = $deployment;
-
-              $message .= " Deployment Created! \n";
-
-              // Create deployment status
-              $params = new stdClass();
-              $params->state = 'pending';
-              $params->target_url = $environment->url;;
-              $params->description = t('New environment is being created.  Please stand by.');
-              $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/deployments/{$deployment->id}/statuses", json_encode($params));
-
-              $message .= " Deployment Status Created! \n";
-
-              // Set a commit status for this REF for devshop/deploy context
-              $sha = $data->pull_request->head->sha;
-
-              $params = new stdClass();
-              $params->state = 'pending';
-              $params->target_url = url("node/$environment->site", array('absolute' => TRUE));
-              $params->description = t('DevShop: Deploy');
-              $params->context = "devshop/{$project->name}/deploy";
-
-              // Post status to github
-              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-              $message .= " Commit Status Created! \n";
-
-              // Determine if we are going to run tests.
-              // For now it is using the "live environment" setting.
-              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
-
-//              // If live environment is set to run tests on deploy...
-//              $live_environment = $project->settings->live['live_environment'];
-//              if ($project->environments[$live_environment]->settings->deploy['test']) {
+//
+//            $project_node = node_load($project->nid);
+//            $project = $project_node->project;
+//            $environment = $project->environments[$environment_name];
+//
+//            $owner = $project->github_owner;
+//            $repo = $project->github_repo;
+//            $message .= "\n About to try to create a deployment for $owner/$repo...  \n";
+//
+//            // Send a "deployment" to github.
+//            try {
+//              $token = variable_get('devshop_github_token', '');
+//              $client = new \Github\Client();
+//              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+//
+//              $sha = $data->pull_request->head->sha;
+//
+//              $params = new stdClass();
+//              $params->ref = $sha;
+//
+//              // In GitHub's API, "environment" is just a small string it displays on the pull request:
+//              $params->environment = $project->name . '.' . $environment_name;
+//                devshop_environment_url($project, $environment_name)
+//              ;
+//              $params->required_contexts = array();
+//
+//              // $message .= "\nEnvironment: " . print_r($environment, 1);
+//              $message .= "\nDeployment Params: " . print_r($params, 1);
+//
+//              $post_url = "/repos/$owner/$repo/deployments";
+//              $deployment = json_decode($client->getHttpClient()->post($post_url, json_encode($params))->getBody(TRUE));
+//
+//              // Save deployment to pull request data for later access.
+//              $data->pull_request->deployment = $deployment;
+//
+//              $message .= " Deployment Created! \n";
+//
+//              // Create deployment status
+//              $params = new stdClass();
+//              $params->state = 'pending';
+//              $params->target_url = $environment->url;;
+//              $params->description = t('New environment is being created.  Please stand by.');
+//              $deployment_status = $client->getHttpClient()->post("/repos/$owner/$repo/deployments/{$deployment->id}/statuses", json_encode($params));
+//
+//              $message .= " Deployment Status Created! \n";
+//
+//              // Set a commit status for this REF for devshop/deploy context
+//              $sha = $data->pull_request->head->sha;
+//
+//              $params = new stdClass();
+//              $params->state = 'pending';
+//              $params->target_url = url("node/$environment->site", array('absolute' => TRUE));
+//              $params->description = t('DevShop: Deploy');
+//              $params->context = "devshop/{$project->name}/deploy";
+//
+//              // Post status to github
+//              $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
+//              $message .= " Commit Status Created! \n";
+//
+//              // Determine if we are going to run tests.
+//              // For now it is using the "live environment" setting.
+//              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
+//
+////              // If live environment is set to run tests on deploy...
+////              $live_environment = $project->settings->live['live_environment'];
+////              if ($project->environments[$live_environment]->settings->deploy['test']) {
+////                $params = new stdClass();
+////                $params->state = 'pending';
+////                $params->target_url = url(
+////                  "node/$environment->site",
+////                  array('absolute' => true)
+////                );
+////                $params->description = t('DevShop: Run Tests');
+////                $params->context = 'devshop/tests';
+////
+////                // Post status to github
+////                $status = $client->getHttpClient()->post(
+////                  "/repos/$owner/$repo/statuses/$sha",
+////                  json_encode($params)
+////                );
+////                $message .= " Commit Status for pending test run Created! \n";
+////              }
+//
+//            } catch (Github\Exception\RuntimeException $e) {
+//              watchdog('devshop_github', 'GitHub Runtime Error: ' . $e->getMessage());
+//              $message .= 'GitHub RunTimeException during PR Create: ' . $e->getMessage() . $e->getCode();
+//
+//              if ($e->getCode() == '409') {
+//                $message .= "\n Branch is out of date! alert the developer!";
+//
+//                // Send a failed commit status to alert to developer
 //                $params = new stdClass();
-//                $params->state = 'pending';
-//                $params->target_url = url(
-//                  "node/$environment->site",
-//                  array('absolute' => true)
-//                );
-//                $params->description = t('DevShop: Run Tests');
-//                $params->context = 'devshop/tests';
+//                $params->state = 'failure';
+//                $params->target_url = $project->git_repo_url;
+//                $params->description = t('Branch is out of date! Merge from default branch.');
+//                $params->context = "devshop/{$project->name}/merge";
 //
 //                // Post status to github
-//                $status = $client->getHttpClient()->post(
-//                  "/repos/$owner/$repo/statuses/$sha",
-//                  json_encode($params)
-//                );
-//                $message .= " Commit Status for pending test run Created! \n";
+//                $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
 //              }
-
-            } catch (Github\Exception\RuntimeException $e) {
-              watchdog('devshop_github', 'GitHub Runtime Error: ' . $e->getMessage());
-              $message .= 'GitHub RunTimeException during PR Create: ' . $e->getMessage() . $e->getCode();
-
-              if ($e->getCode() == '409') {
-                $message .= "\n Branch is out of date! alert the developer!";
-
-                // Send a failed commit status to alert to developer
-                $params = new stdClass();
-                $params->state = 'failure';
-                $params->target_url = $project->git_repo_url;
-                $params->description = t('Branch is out of date! Merge from default branch.');
-                $params->context = "devshop/{$project->name}/merge";
-
-                // Post status to github
-                $status = $client->getHttpClient()->post("/repos/$owner/$repo/statuses/$sha", json_encode($params));
-              }
-              else {
-                http_response_code(500);
-              }
-
-            } catch (Github\Exception\ValidationFailedException $e) {
-              watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
-              $message .= 'GitHub ValidationFailedException Error: ' . $e->getMessage();
-            }
+//              else {
+//                http_response_code(500);
+//              }
+//
+//            } catch (Github\Exception\ValidationFailedException $e) {
+//              watchdog('devshop_github', 'GitHub Validation Failed Error: ' . $e->getMessage());
+//              $message .= 'GitHub ValidationFailedException Error: ' . $e->getMessage();
+//            }
 
             // Insert PR record
             if (!$already_have_pr_info) {
-              $info = new stdClass();
-              $info->id = $data->pull_request->id;
-              $info->number = $data->pull_request->number;
-              $info->project_nid = $project->nid;
-              $info->environment_name = $environment_name;
-              $info->pull_request_object = serialize($data->pull_request);
-
-              // Last minute check for existing PR info
-              $results = db_select('hosting_devshop_github_pull_requests', 'pr')
-                ->condition('id', $data->pull_request->id)
-                ->fields('pr', array('id'))
-                ->execute()
-                ->fetchAssoc();
-
-              // If there are results, save $update param for drupal_write_record().
-              if (empty($results)) {
-                $update = array();
-              }
-              else {
-                $update = array('id');
-              }
-
-              // Save environment record.
-              try {
-                drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
+              if (devshop_github_save_pr_env_data($data->pull_request, $project)) {
                 $message .= ' ' . t('Pull Request info saved to DevShop.');
-              }
-              catch (\PDOException $e) {
-                $message .= 'Saving PR record failed: ' . $e->getMessage();
+              } else {
+                $message .= 'Saving PR record failed: ' . print_r($data->pull_request, 1);
               }
             }
           }
+
+//              $info = new stdClass();
+//              $info->id = $data->pull_request->id;
+//              $info->number = $data->pull_request->number;
+//              $info->project_nid = $project->nid;
+//              $info->environment_name = $environment_name;
+//              $info->pull_request_object = serialize($data->pull_request);
+//
+//              // Last minute check for existing PR info
+//              $results = db_select('hosting_devshop_github_pull_requests', 'pr')
+//                ->condition('id', $data->pull_request->id)
+//                ->fields('pr', array('id'))
+//                ->execute()
+//                ->fetchAssoc();
+//
+//              // If there are results, save $update param for drupal_write_record().
+//              if (empty($results)) {
+//                $update = array();
+//              }
+//              else {
+//                $update = array('id');
+//              }
+//
+//              // Save environment record.
+//              try {
+//                drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
+//                $message .= ' ' . t('Pull Request info saved to DevShop.');
+//              }
+//              catch (\PDOException $e) {
+//                $message .= 'Saving PR record failed: ' . $e->getMessage();
+//              }
+//            }
+//          }
 
           // When PR is updated, send a new deployment status environment.
           elseif ($data->action == 'synchronize') {
@@ -1315,4 +1744,280 @@ function devshop_public_key_valid_fingerprint() {
   }
 
   return $devshop_sshkey['fingerprint'];
+}
+
+/**
+ * @param $pr
+ * @param $environment
+ */
+function devshop_github_save_pr_env_data($pr, $environment) {
+  $info = new stdClass();
+  $info->id = $pr->id;
+  $info->number = $pr->number;
+  $info->project_nid = $environment->project_nid;
+  $info->environment_name = $environment->name;
+  $info->pull_request_object = serialize($pr);
+
+  // Last minute check for existing PR info
+  $results = db_select('hosting_devshop_github_pull_requests', 'pr')
+    ->condition('id', $pr->id)
+    ->fields('pr', array('id'))
+    ->execute()
+    ->fetchAssoc();
+
+  // If there are results, save $update param for drupal_write_record().
+  if (empty($results)) {
+    $update = array();
+  }
+  else {
+    $update = array('id');
+  }
+
+  // Save environment record.
+  try {
+    drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
+    return TRUE;
+  }
+  catch (\PDOException $e) {
+    return FALSE;
+  }
+}
+
+/**
+ * Function to create all PR environments for a project. Used by the Github
+ * queue and on project Node Insert.
+ */
+function devshop_github_create_all_pr_environments($project_node) {
+
+  // Load all PRs from GitHub API
+  $project = $project_node->project;
+  try {
+    $prs_data = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+  } catch (\Exception $e) {
+    drupal_set_message(t("Unable to load Pull Requests: !message", array('!message' => $e->getMessage())));
+    return;
+  }
+  foreach ($prs_data as $pr) {
+    $pr = convert_to_object($pr);
+    $slug = "pr{$pr->number}";
+    $prs[$slug] = $pr;
+  }
+  $prs_to_create_environments_for = $prs;
+  $deployed_environments = 0;
+  $deleted_environments = 0;
+
+  // Step 1: Update existing existing environments, populate $prs_to_create_environments_for,
+  // and queue "delete", "deploy", or "install" tasks for PRs depending on their state.
+  // For each existing PR environment on DevShop:
+  foreach ($project->environments as $environment) {
+    $site_url = url("node/{$environment->site}", array('absolute' => true));
+
+    // Get PR ID, if it already has one.
+    if (!empty($environment->github_pull_request->pull_request_object->id)) {
+      $environment_pr_id = $environment->github_pull_request->pull_request_object->id;
+      $environment_pr_slug = "pr{$environment_pr_id}";
+    }
+    else {
+      $environment_pr_id = NULL;
+      $environment_pr_slug = NULL;
+    }
+
+
+    drush_log("Checking $environment->name... [$site_url]");
+
+    // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
+    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request->pull_request_object->id) && empty($prs[$environment_pr_slug])) {
+      continue;
+    }
+    // If no PR data, but the environment name matches a PR's slug, update data.
+    // Handles the edge case where a pr123 environment lost it's github PR info.
+    elseif (!$environment_pr_id && !empty($prs[$environment->name])) {
+      devshop_github_save_pr_env_data($prs[$environment->name], $environment);
+      drush_log(
+        "Environment found with the name '$environment->name'. Assuming it is a PR environment. Updating it with PR data and removing it from the list of environments to create. [$site_url]",
+        "warning"
+      );
+      unset($prs_to_create_environments_for[$environment->name]);
+    }
+    // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
+    elseif ($environment_pr_id && !empty($prs[$environment_pr_slug])) {
+      devshop_github_save_pr_env_data($prs[$environment_pr_slug], $environment);
+      drush_log("PR environment found and updated: $environment->name [$site_url]", "ok");
+
+      // If this environment is a "automated" PR environment, unset it from the list of envs to create.
+      if ($environment_pr_slug == $environment->name) {
+        unset($prs_to_create_environments_for[$environment_pr_slug]);
+      }
+    }
+
+    // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
+    elseif ($environment_pr_id && empty($prs[$environment_pr_slug])) {
+      drush_log("PR environment $environment->name exists but PR has been closed. [$site_url]", "ok");
+      if ($project->settings->github['pull_request_environments_delete'] && empty($environment->tasks['delete'])) {
+        drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
+        hosting_add_task($environment->site, 'delete', array('force' => 1));
+        $deleted_environments++;
+      }
+
+      // Since this PR is closed, and the site is scheduled for deletion, don't
+      // run any further tasks on the site.
+      continue;
+    }
+
+    // Deploy Task Detection.
+    // Read current SHA from the environment repo_path
+    $environment->git_sha = file_exists($environment->repo_path)? trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null")): NULL;
+
+    // If Site was installed properly and is still enabled, and repo_path is a real folder, and environment git_sha is not empty, and local git_sha does not match github PR sha...
+    if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $prs[$environment->name]->head->sha) {
+      drush_log(dt("Environment @name SHA (@e) and PR SHA (@p) are different. Preparing a deploy task... [@url] ", array(
+        '@name' => $environment->name,
+        '@e' => $environment->git_sha,
+        '@p' => $prs[$environment->name]->head->sha,
+        '@url' => $site_url,
+      )), "ok");
+
+
+      // Check for queued deploy tasks. If there are none, create one.
+      $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'devshop-deploy');
+      if (count($queued_deploy_tasks) == 0) {
+
+        // Trigger deploy task to get latest code.
+        // Pass no args to skip DB updates, cache clearing, etc.
+        drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
+        hosting_add_task($environment->site, 'devshop-deploy', array(
+          'git_ref' => $environment->git_ref,
+        ));
+        $deployed_environments++;
+      }
+      else {
+        drush_log("PR environment deployment skipped: $environment->name $environment->git_ref [$site_url]", "ok");
+      }
+
+      // If site is set to rebuild, trigger "install" with force-reinstall
+      if ($project->settings->github['pull_request_reinstall']) {
+        drush_log("PR environment scheduled for reinstallation: $environment->name [$site_url]", "ok");
+        $queued_install_tasks = hosting_get_new_tasks(1, $environment->site, 'install');
+        if (count($queued_install_tasks) == 0) {
+          hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+        }
+        else {
+          drush_log("PR install task skipped: there is already a task in the queue.", "ok");
+        }
+      }
+    }
+    drush_log("PR Processing complete for $environment->name", "ok");
+    drush_log("", "ok");
+    drush_log("", "ok");
+    drush_log("", "ok");
+
+  }
+
+
+  // Step 2: For all PRS that do not have an environment, create one.
+  foreach ($prs_to_create_environments_for as $slug => $pr) {
+    drush_log("Creating environment for PR $pr->number ...", "ok");
+    $branch = $pr->head->ref;
+
+    // If PR has different remote URL, set it.
+    if ($pr->head->repo->fork) {
+      // Try to match project URL scheme
+      if (strpos($project->git_url, 'https://') === 0) {
+        $remote_url = $pr->head->repo->clone_url;
+      }
+      elseif (strpos($project->git_url->git_url, 'git://') === 0){
+        $remote_url = $pr->head->repo->git_url;
+      }
+      elseif (strpos($project->git_url->git_url, 'git@') === 0){
+        $remote_url = $pr->head->repo->ssh_url;
+      }
+      else {
+        $remote_url = $pr->head->repo->clone_url;
+      }
+    }
+
+    // If not a fork, use the same git_ref as project.
+    else {
+      $remote_url = $project->git_ref;
+    }
+
+    // @TODO: Create a "PR Env pattern" setting.
+    $environment_name = $slug;
+
+    // If method is "install"...
+    if ($project->settings->github['pull_request_environments_method'] == 'devshop__github__install') {
+
+      // Create environment then save PR data.
+      // @TODO: Unify this into one function.
+      $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
+//      DevShopGitHubApi::createDeployment($environment, 'queued');
+      devshop_github_save_pr_env_data($pr, $environment);
+
+      drush_log("Environment $environment_name created for $project_node->title via installation profile.", "ok");
+    }
+    // If environment exists for "pull_request_environments_method" setting, clone it.
+    elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
+      $source_env = $project->settings->github['pull_request_environments_method'];
+
+      // Create environment then save PR data.
+      // @TODO: Unify this into one function.
+      $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, NULL, 'create', $remote_url);
+
+//      DevShopGitHubApi::createDeployment($environment, 'queued');
+      devshop_github_save_pr_env_data($pr, $environment);
+      drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
+
+      // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
+      // @TODO: Decide if a setting is needed to control this behavior.
+      // @TODO: Reduce duplication with the github webhook.
+      // @TODO: Make this a global setting for all "clone" environment installs.
+      drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
+      hosting_add_task($environment->site, 'devshop-deploy', array(
+        'git_ref' => $branch,
+      ));
+
+    }
+    // If environment does not exist, note that error.
+    elseif (!isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
+      drush_log("No environment found named {$project->settings->github['pull_request_environments_method']}", "warning");
+    }
+    // If "pull_request_environments_method" is something else, we don't know what to do.
+    else {
+      drush_log("Unknown PR environment creation method: {$project->settings->github['pull_request_environments_method']}", "warning");
+    }
+  }
+
+  // Process $prs_to_create_environments_for
+  drush_log( format_plural(count($prs_to_create_environments_for),  "1 environment created.", t("!count Environments created.", array(
+    "!count" => count($prs_to_create_environments_for),
+  ))), "ok");
+
+  drush_log( format_plural($deployed_environments,  "1 Environment Updated.", t("!count Environments Updated.", array(
+    "!count" => $deployed_environments,
+  ))), "ok");
+
+  drush_log( format_plural($deleted_environments,  "1 Environment Deleted.", t("!count Environments Deleted.", array(
+    "!count" => $deleted_environments,
+  ))), "ok");
+
+  // Fix missing last_task entries.
+  devshop_reset_last_tasks();
+}
+
+/**
+ * Implements hook_devshop_post_environment_create().
+ */
+function devshop_github_devshop_post_environment_create($environment) {
+//  DevShopGitHubApi::createDeployment($environment, 'pending');
+}
+
+/**
+ * Get the git sha from the desired path.
+ *
+ * @param $repo_path
+ *
+ * @return string
+ */
+function devshop_environment_get_git_sha($repo_path) {
+  return trim(shell_exec("cd {$repo_path}; git rev-parse HEAD  2> /dev/null"));
 }

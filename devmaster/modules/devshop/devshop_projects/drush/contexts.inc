@@ -22,7 +22,9 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
+    // Remove environments, we don't want to update those again.
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
   }
 
@@ -96,10 +98,13 @@ function devshop_projects_hosting_project_context_options(&$task) {
 
     // Save the project node now that we have branches and tags.
     // Don't verify again, this is the verification process.
+    // Remove environments, we don't want to update those again.
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
 
   }
+
 
   // Save project object to drush alias (aegir context).
   if (isset($task->ref->project)) {
@@ -167,8 +172,10 @@ function devshop_projects_hosting_platform_context_options(&$task) {
 function devshop_projects_drush_context_import($context, &$node) {
   if ($context->type == 'project') {
 
-    $node->title = $context->project_name;
-    $node->type = 'project';
+    if (empty($node->nid)) {
+      $node->title = $context->project_name;
+      $node->type = 'project';
+    }
 
     $project = (object) $context->project;
     $node->project = new stdClass();
@@ -179,8 +186,23 @@ function devshop_projects_drush_context_import($context, &$node) {
     $node->project->install_profile =   $project->install_profile;
     $node->project->settings        =   $project->settings;
 
+    if (!is_array($project->environments)){
+      drush_log(' no environments array ', 'ok');
+      return;
+    }
+
     foreach ($project->environments as $name => $environment) {
-      $environment = (object) $environment;
+      $environment = devshop_environment_normalize($environment);
+
+      if (empty($environment->uri)) {
+        $environment->uri = devshop_environment_url($project, $name);
+      }
+      if (empty($environment->name)) {
+        $environment->name = $name;
+      }
+      if (empty($environment->settings)) {
+        $environment->settings = array();
+      }
 
       // Backwards compatibility: *_context properties were added, may be missing.
       if (empty($environment->site_context)) {
@@ -196,53 +218,34 @@ function devshop_projects_drush_context_import($context, &$node) {
 
       // If both site and platform nodes were found, load them in.
       if ($site_node && $platform_node) {
-        drush_log(dt('Site and Environment nodes found. Saving environment data for site "!site_context" (nid:!site) and platform "!platform_context" (nid:!platform)', array(
+        drush_log(dt('Site and Platform nodes found. Saving environment data for site "!site_context" (nid:!site) and platform "!platform_context" (nid:!platform)', array(
           '!site' => $site_node->nid,
           '!platform' => $platform_node->nid,
           '!site_context' => $environment->site_context,
           '!platform_context' => $environment->platform_context,
         )), 'success');
-        $environment_object = new stdClass();
-        $environment_object->name = $name;
-        $environment_object->site = $site_node->nid;
-        $environment_object->platform = $platform_node->nid;
-        $environment_object->settings = $environment->settings;
 
-        // Project environments only get automatically added on project insert.
-        if (!empty($node->nid)) {
-          $environment_object->project_nid = $node->nid;
-          $environment_object->settings = serialize($environment_object->settings);
-          devshop_environment_save($environment_object);
-        }
-        else {
-          // Project is being created, we can just append the environment.
-          $node->project->environments[$name] = $environment_object;
-        }
+        $environment->site = $site_node->nid;
+        $environment->platform = $platform_node->nid;
       }
-      else {
-        // If site or platform is missing, look for drush context. If found, trigger import of that.
-        $t = array(
-          '!context' => $environment->site_context,
-        );
-        if (empty($site_node) && $context = d($environment->site_context) && $context->type == 'site') {
-          drush_log(dt('Site node not found, using context "!context" instead.', $t), 'warning');
-          hosting_drush_import($context);
-        }
-        else {
-          // @TODO: Should we create site context here?
-          drush_set_error(dt('No site node or context found for "!context". Create one with that name first if you want environments to be created.', $t));
-        }
-        if (empty($platform_node) && $context = d($environment->platform_context) && $context->type == 'platform') {
-          drush_log(dt('Platform node not found, using context "!context" instead.', array('!context' => $environment->platform_context)), 'warning');
-          hosting_drush_import($context);
-        }
-        else {
-          // @TODO: Should we create platform context here?
-          drush_set_error(dt('No platform node or context found for "!context". Create one with that name first if you want environments to be created.', array('!context' => $environment->platform_context)));
-        }
+
+      // If hosting-import is being run a second time and the site exists, update it.
+      if (!empty($node->nid) && !empty($environment->site)) {
+        $environment->project_nid = $node->nid;
+        devshop_environment_save($environment);
+        drush_log('Updated environment data for ' . $name, 'ok');
+      }
+      elseif (!empty($node->nid) && empty($environment->site)) {
+        drush_log('Creating new environment for ' . $name, 'ok');
+        $environment->project_nid = $node->nid;
+        $node->project->environments[$name] = $environment;
+      }
+      elseif (empty($node->nid)) {
+        // Project node hasn't been created yet. Add it here for devshop_projects_node_insert() to handle.
+        drush_log('Saving new environment data for ' . $name, 'ok');
+        $node->project->environments[$name] = $environment;
       }
     }
-    devshop_reset_last_tasks();
   }
 
   // If importing a site that has environment and project assigned,
