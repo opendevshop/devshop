@@ -32,6 +32,7 @@ before_script:
 
 script:
   # Run tests.
+  - cat $ROLE_ORGANIZATION_NAME.$ROLE_NAME/molecule/default/molecule.yml
   - molecule test
 
 notifications:
