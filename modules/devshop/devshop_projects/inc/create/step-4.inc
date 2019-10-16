@@ -97,7 +97,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $errors = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':vid' => $task->vid, ':type' => 'p_%', ':error' => 'error'));
+      $errors = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':vid' => $task->vid, ':type' => 'p_error', ':error' => 'error'));
 
       foreach ($errors as $error) {
         if ($error->type == 'p_command' || $error->type == 'error') {
@@ -176,7 +176,12 @@ HTML;
 
   // Output our table.
   $form['platforms'] = array(
-    '#markup' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('table')))),
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#attributes' => array(
+      'class' => array('table')
+    ),
   );
 
   // Not completed means show all tasks are not completed (or errored)
@@ -195,10 +200,30 @@ HTML;
   }
   elseif ($task_failed) {
     $project->no_finish = TRUE;
+
+    $message = t('Something went wrong when trying to clone your codebase.');
+
+    if (strpos($errors_rendered, 'Check the Publish Path of the platform') !== FALSE) {
+      if (empty($project->drupal_path)) {
+        $message = t("Drupal was not found in the project at the root. !link and try again.", array(
+          '!link' => l(t('Change Document Root in Project Settings'), '/project/add/settings'),
+        ));
+      }
+      else {
+        $message = t("<p>Drupal was not found in the project in the folder <code>@folder</code>.</p><p>!link and try again.</p>", array(
+          '@folder' => $project->drupal_path,
+          '!link' => l(t('Change Document Root in Project Settings'), '/projects/add/settings'),
+        ));
+      }
+    }
+
     $form['error'] = array(
-      '#prefix' => '<p class="error">',
-      '#markup' => t('Something went wrong when trying to clone your codebase.'),
-      '#suffix' => '</p>',
+      '#prefix' => '<div class="alert alert-danger">',
+      '#markup' => $message,
+      '#suffix' => '</div>',
+    );
+    $form['errors'] = array(
+      '#markup' => $errors_rendered,
     );
     $form['retry'] = array(
       '#type' => 'submit',
@@ -211,13 +236,13 @@ HTML;
 
   // If ready...
   else {
-    
+
     // If no common profiles found, just set to standard.
     if (count($available_profiles) == 0) {
       $available_profiles['standard'] = 'No default profile.';
       $default_profile = 'standard';
     }
-      
+
     $project->no_finish = FALSE;
 
     // Install Profile
@@ -254,6 +279,7 @@ function devshop_project_create_step_sites_validate(&$from, &$form_state) {
       $task = current($environment->tasks['verify']);
       if (isset($task->nid)) {
         hosting_task_retry($task->nid);
+        drupal_goto(current_path());
       }
     }
   }

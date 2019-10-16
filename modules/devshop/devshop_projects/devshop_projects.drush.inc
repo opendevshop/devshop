@@ -82,8 +82,10 @@ function drush_devshop_projects_pre_hosting_task()
     $task->args['git_ref'] = $task->task_args['git_ref'];
 
     // Just load in all of the task_args as options(they come from the task form.)
-    foreach ($task->task_args as $arg => $value) {
-      $task->options[$arg] = $value;
+    if (is_array($task->task_args)) {
+      foreach ($task->task_args as $arg => $value) {
+        $task->options[$arg] = $value;
+      }
     }
   }
 
@@ -143,6 +145,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     // Unpublish the project node.
     $task->ref->status = 0;
     $task->ref->no_verify = TRUE;
+    $task->ref->environments = NULL;
     node_save($task->ref);
   }
 
@@ -183,6 +186,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
 function devshop_projects_post_hosting_install_task($task, $data) {
   
   // Queue up a verification of the site.
+  // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->nid, 'verify');
   
 }
@@ -211,8 +215,10 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
   }
 
   // Queue up a verification of the platform.
+  // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->environment->platform, 'verify');
   
   // Queue up a verification of the site.
+  // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->nid, 'verify');
 }

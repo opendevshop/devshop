@@ -41,6 +41,7 @@ function devshop_github_settings_form($form, &$form_state) {
 
   $form['devshop_github_token_step'] = array(
     '#title' => t('Step 2: Enter your GitHub Token'),
+    '#description' => t('If left blank, DevShop will attempt to use the Public API.'),
     '#type' => 'item',
     '#weight' => 2,
   );
@@ -185,30 +186,6 @@ function devshop_github_token_is_valid($token = NULL) {
     // Happens when user has no public keys.
   catch (Exception $e) {
     return $e;
-  }
-}
-
-/**
- * Grab an authenticated GitHub client.
- *
- * @return \Exception|\Github\Client
- */
-function devshop_github_client() {
-
-  if (empty(variable_get('devshop_github_token'))) {
-    throw new \Exception(t('GitHub Token has not been saved yet.'));
-  }
-
-  $client = new \Github\Client();
-  $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
-
-  try {
-    $show = $client->currentUser()->show();
-    return $client;
-  }
-  catch (Exception $e) {
-    drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
-    throw $e;
   }
 }
 

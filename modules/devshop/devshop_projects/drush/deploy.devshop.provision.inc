@@ -19,16 +19,8 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
   }
 
   // Verify that the branch or tag exists
-  if (empty($git_ref)) {
+  if (empty($git_ref) && empty(d()->platform->git_ref)) {
     return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', 'You must specify a valid branch or tag.');
-  }
-
-  $project_alias = '@project_' . d()->project;
-  $project = (object) d($project_alias)->project;
-
-  if (!isset($project->settings['git']['refs'][$git_ref])) {
-    $drush_command = "drush $project_alias provision-verify";
-    return drush_set_error('DEVSHOP_FRAMEWORK_ERROR', "Branch or tag '$git_ref' not found. Try running '$drush_command' to fetch new remote branches or tags.");
   }
 }
 
@@ -37,26 +29,32 @@ function drush_devshop_provision_pre_provision_devshop_deploy($git_ref = ''){
  */
 function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
 {
-  $project_name = d()->project;
-  $project = (object) d("@project_{$project_name}")->project;
-  $environment = (object) $project->environments[d()->environment];
-  $desired_ref_type = $project->settings['git']['refs'][$git_ref];
-
-    drush_log('[Current Working Directory]' . d()->platform->repo_path, 'p_log');
+  if (empty($git_ref)) {
+    $git_ref = d()->platform->git_ref;
+  }
 
     // Stash any changes? Not sure if we should do this anymore...
     // $git->command('stash');
 
     // Fetch
-    provision_process("git fetch --all", d()->platform->repo_path, dt('DevShop Deploy'));
+    provision_process("git fetch origin", d()->platform->repo_path, dt('DevShop Deploy'));
+
+    provision_process("git show", d()->platform->repo_path, dt('Pre-deploy git status'));
 
     // Checkout the chosen ref
     $git_checkout_output = provision_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
+    $git_ref_type = devshop_environment_get_git_ref_type(d()->platform->repo_path);
 
-    // Run Git Pull, if on a branch.
-    if ($desired_ref_type == 'branch') {
-      $git_pull_output = provision_process("git pull", d()->platform->repo_path, dt('DevShop Deploy'));
+    drush_log('[Current Working Directory]' . d()->platform->repo_path, 'p_log');
+    drush_log("[Git $git_ref_type to Deploy] $git_ref", 'p_log');
+
+    // If the current working copy was detected to be a branch, update the code
+    // to the exact reference of the current remote.
+    // This is the better than using git pull because it can handle force pushed branches.
+    if ($git_ref_type == 'branch') {
+      provision_process("git reset --hard origin/{$git_ref}", d()->platform->repo_path, dt('DevShop Deploy'));
+      provision_process("git show", d()->platform->repo_path, dt('Post deploy git status'));
     }
 
     // Run a submodule update and init.
@@ -69,6 +67,10 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
  * Post provision-devshop-deploy
  */
 function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
+
+  if (empty($git_ref)) {
+    $git_ref = d()->platform->git_ref;
+  }
 
   // Get post deploy options
   $revert = drush_get_option('revert');
@@ -92,17 +94,19 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Built in Hooks
   if ($composer) {
+    $composer_install_command = drush_get_option('provision_composer_install_command', 'composer install --no-interaction --no-progress --no-dev')
     if (file_exists(d()->platform->repo_path . '/composer.json')) {
-      $commands[] = "composer install";
+      $repo_path = d()->platform->repo_path;
+      $commands[] = "cd {$repo_path} && {$composer_install_command}";
     }
     elseif (file_exists($environment->root . '/composer.json')) {
-      $commands[] = "cd {$environment->root} && composer install";
+      $commands[] = "cd {$environment->root} && {$composer_install_command}";
     }
   }
   else {
     drush_log(dt('[DEVSHOP] Skipped running composer install...'), 'ok');
   }
-  
+
   // Built in Hooks
   if ($update) {
     $commands[] = "drush {$environment->drush_alias} updatedb --yes";

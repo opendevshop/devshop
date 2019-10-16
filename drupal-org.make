@@ -12,33 +12,32 @@ projects[devshop_stats][subdir] = "contrib"
 ; For development, use latest branch.
 ; For release, use tagged version
 projects[hosting][subdir] = aegir
-projects[hosting][version] = "3.170"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-12/3020169-permission-check.patch"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-05/3018114-client-optional.patch"
-projects[hosting][patch][] = "https://www.drupal.org/files/issues/2018-12-10/3019462-administer-servers.patch"
+projects[hosting][version] = "3.x"
+projects[hosting][download][type] = git
+projects[hosting][download][branch] = 7.x-3.x-devshop
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
-projects[eldir][version] = "3.170"
+projects[eldir][version] = "3.180"
 
 projects[hosting_git][subdir] = aegir
 projects[hosting_git][version] = "3.171"
 projects[hosting_git][patch][] = "https://www.drupal.org/files/issues/2019-05-20/3055846-web-ip-access.patch"
 
 projects[hosting_https][subdir] = aegir
-projects[hosting_https][version] = "3.171"
+projects[hosting_https][version] = "3.182"
 
 projects[hosting_remote_import][subdir] = aegir
-projects[hosting_remote_import][version] = "3.170"
+projects[hosting_remote_import][version] = "3.180"
 
 projects[hosting_site_backup_manager][subdir] = aegir
-projects[hosting_site_backup_manager][version] = "3.170"
+projects[hosting_site_backup_manager][version] = "3.180"
 
 projects[hosting_tasks_extra][subdir] = aegir
-projects[hosting_tasks_extra][version] = "3.170"
+projects[hosting_tasks_extra][version] = "3.180"
 
 projects[hosting_logs][subdir] = aegir
-projects[hosting_logs][version] = "3.170"
+projects[hosting_logs][version] = "3.181"
 
 projects[hosting_filemanager][subdir] = aegir
 projects[hosting_filemanager][version] = "1.x"
@@ -47,7 +46,7 @@ projects[aegir_ssh][subdir] = aegir
 projects[aegir_ssh][version] = 1.0
 
 projects[aegir_config][subdir] = aegir
-projects[aegir_config][version] = 1.00-beta1
+projects[aegir_config][version] = 1.x
 
 projects[aegir_ansible][subdir] = aegir
 projects[aegir_ansible][version] = "1.x"
@@ -59,6 +58,7 @@ projects[aegir_cloud][version] = "1.x"
 ;projects[hosting_solr][version] = "1"
 
 ; Contrib Modules
+projects[devel][version] = "1.7"
 projects[sshkey][version] = "2.0"
 projects[betterlogin][version] = 1.5
 projects[composer_manager][version] = 1.8

@@ -161,7 +161,7 @@ function devshop_projects_node_insert($node) {
     if (isset($_GET['redirect']) && $_GET['redirect'] == 'task-page') {
       drupal_goto("node/{$node->nid}");
     }
-    elseif (isset($site->project) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
+    elseif (isset($site->project) && !empty($site->project->nid) && arg(0) == 'hosting_confirm' && arg(1) == $site->nid) {
       drupal_goto("node/{$site->project->nid}");
     }
   }
@@ -209,29 +209,19 @@ function devshop_projects_node_insert($node) {
     path_save($path);
   }
 
-  // @TODO: The wizard always creates the project before the environments.
-  // Not sure if we need this, but we might to enable importing via drush.
-  // Save Environment records.
+  // Save Environment records, if present.
+  // If using Start a Project wizard, environments is NOT set on project node insert.
+  // If using drush hosting-import, environments MIGHT be in the data.
+  // Soon CLI and API commands will exist to create all of them at once.
   if (!empty($node->project->environments)) {
+    $node->project->nid = $node->nid;
+    $node->project->name = $node->title;
     foreach ($node->project->environments as $name => $environment) {
-      // Ensure correct data types
-      $environment = (object) $environment;
-      $environment->settings = (array) $environment->settings;
-
-      $info = new stdClass();
-      $info->project_nid = $node->nid;
-      $info->name = $name;
-      $info->site = $environment->site;
-      $info->platform = $environment->platform;
-
-      // Remove primary settings from settings array before saving.
-      unset($environment->settings['git_ref']);
-      unset($environment->settings['site']);
-      unset($environment->settings['platform']);
-      $info->settings = serialize($environment->settings);
-
-      // Save environment record.
-      drupal_write_record('hosting_devshop_project_environment', $info);
+      // If site node does not exist, create it.
+      if (empty($environment->site)) {
+        $environment = devshop_environment_normalize($environment);
+        hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
+      }
     }
   }
 }
@@ -279,6 +269,50 @@ function devshop_projects_node_update($node) {
   if (!isset($node->no_verify) || $node->no_verify == FALSE) {
     hosting_add_task($node->nid, 'verify');
   }
+
+  $project_node = node_load($node->nid, NULL, TRUE);
+
+  // Environment data (without sites) are present during `hosting-import` drush calls.
+  if (!empty($node->project->environments)) {
+    $node->project->nid = $node->nid;
+    $node->project->name = $node->title;
+    foreach ($node->project->environments as $name => $environment) {
+
+      // If site node does not exist, create it.
+      $environment = devshop_environment_normalize($environment);
+      if (empty($project_node->project->environments[$name]->site)) {
+        hosting_create_environment($node->project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_url);
+      }
+      // If site does exist, save the environment data.
+      else {
+        $environment->project_nid = $node->nid;
+        devshop_environment_save($environment);
+      }
+    }
+  }
+}
+
+/**
+ * A hack until we have actual OOP.
+ *
+ * @param $environment
+ */
+function devshop_environment_normalize($environment) {
+  // Make sure environments are objects and settings are arrays
+  // Preserve settings, convert the rest to all objects.
+  if (is_array($environment)) {
+   $settings = $environment['settings'];
+  }
+  elseif (is_object($environment)) {
+    $settings = $environment->settings;
+  }
+  else {
+    throw new \Exception(t('devshop_environment_normalize() function requires an object or array'));
+  }
+
+  $environment = convert_to_object($environment);
+  $environment->settings = (array) $settings;
+  return $environment;
 }
 
 /**

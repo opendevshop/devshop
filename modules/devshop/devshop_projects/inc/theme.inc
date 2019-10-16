@@ -75,7 +75,7 @@ function theme_devshop_projects_settings_form($form) {
     }
     $rows[] = $row;
   }
-  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'project-settings-table')));
+  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('project-environments-table'))));
   return $output;
 }
 
@@ -115,11 +115,9 @@ function theme_devshop_projects_create_settings_form($vars) {
       'header' => $header,
       'rows' => $rows,
       'attributes' => array(
-          'id' => 'project-settings-table',
-          'class' => array('table'),
+          'class' => array('table', 'project-environments-table'),
       )
   ));
-  $output .= '<p>' . t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') . '</p>';
 
   return $output;
 }
@@ -163,8 +161,17 @@ function devshop_projects_preprocess_node(&$vars) {
     }
 
     // Add a "Retry" button, unless it's a clone task.  Retrying a clone can be bad if an old clone task is restarted, it uses the latest task arguments, not the one you are viewing.
-    if ($vars['node']->task_type != 'clone' && user_access('retry failed tasks') && ($vars['node']->task_status == HOSTING_TASK_ERROR)) {
+    if ($vars['node']->task_type != 'clone' && user_access('retry failed tasks') && (
+        $vars['node']->task_status == HOSTING_TASK_ERROR ||
+        $vars['node']->task_status == HOSTING_TASK_WARNING ||
+        $vars['node']->task_status == HOSTING_TASK_SUCCESS
+      )) {
       $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+
+      // Change the name of the form button to "Run Again" if the task ended ok.
+      if ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
+        $vars['retry']['retry']['#value'] = t('Run Again');
+      }
     }
 
     // Show duration
@@ -206,7 +213,7 @@ function devshop_projects_preprocess_node(&$vars) {
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#markup' => '<button class="follow-checkbox btn btn-default"><input type="checkbox" id="follow" checked="checked">' . t('Follow Logs') . '</button>',
+        '#markup' => '<button class="follow-checkbox btn btn-default"><input type="checkbox" id="follow">' . t('Follow Logs') . '</button>',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
@@ -224,16 +231,6 @@ function devshop_projects_preprocess_node(&$vars) {
         $vars['running_label'] = t('Queued');
       }
     }
-    global $user;
-    $vars['run_again'] = l(t('Run Again'), "hosting_confirm/{$node->rid}/{$node->ref_type}_{$node->task_type}", array(
-      'query' => array(
-        'token' => drupal_get_token($user->uid),
-        'redirect' => 'task-page',
-      ),
-      'attributes' => array(
-        'class' => array('btn btn-default'),
-      )
-    ));
   }
 }
 

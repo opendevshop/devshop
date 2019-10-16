@@ -34,13 +34,13 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
-    '#suffix' => '</div>',
+    '#suffix' => '<p>' . t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') . '</p></div>',
   );
 
   // If there was a problem with loading branches or tags, hide the form and show a link to re-verify.
   if (empty($project->settings->git['branches']) && empty($project->settings->git['tags'])) {
     $form['error'] = array(
-      '#markup' => t('Unable to find any branches or tags. Please !verify.', array(
+      '#markup' => t('Unable to devshop_projects_create_settings_formfind any branches or tags. Please !verify.', array(
           '!verify' => l(t('Re-verify the project'), "hosting_confirm/{$project->nid}/project_verify", array(
             'query' => array('token' => drupal_get_token($user->uid)),
             'attributes' => array(
@@ -67,107 +67,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
       $env_title = $name;
     }
 
-    $form['project']['environments'][$name] = array(
-      '#tree' => TRUE,
-      '#type' => 'fieldset',
-      '#theme' => 'devshop_projects_settings_table',
-    );
-
-    // Environment properties
-    // Generate field prefix and suffix using domain name pattern.
-    if (variable_get('devshop_projects_allow_custom_base_url')) {
-      $pattern = $project->base_url;
-    }
-    else {
-      $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
-    }
-  
-    $labels = explode('@environment', strtr($pattern, array(
-      '@project' => $project->name,
-      '@hostname' => $_SERVER['SERVER_NAME'],
-    )));
-    $form['project']['environments'][$name]['name'] = array(
-      '#type' => 'textfield',
-      '#default_value' => $env_title,
-      '#size' => 6,
-      '#maxlength' => 64,
-      '#attributes' => array(
-        'placeholder' => t('name'),
-      ),
-      '#field_prefix' => '<div class="input-group"><div class="input-group-addon">http://' . $labels[0] . '</div>',
-      '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . $labels[1] .'</div>
-        </div>',
-    );
-    $form['project']['environments'][$name]['site'] = array(
-      '#type' => 'value',
-      '#value' => isset($environment->site) ? $environment->site : NULL,
-    );
-    $form['project']['environments'][$name]['platform'] = array(
-      '#type' => 'value',
-      '#value' => isset($environment->platform) ? $environment->platform : NULL,
-    );
-    $form['project']['environments'][$name]['git_ref'] = array(
-      '#type' => 'select',
-      '#bootstrap_ignore_pre_render' => TRUE,
-      '#options' => devshop_projects_git_ref_options($project),
-      '#default_value' => isset($environment->git_ref) ? $environment->git_ref : 'HEAD',
-    );
-
-    // HTTP Server select.
-    $http_servers = hosting_get_servers('http', FALSE);
-
-    // Determine default web server.
-    $default_web_server = isset($environment->settings, $environment->settings->web_server) ?
-      $environment->settings->web_server :
-      $project->settings->default_environment['web_server'];
-
-    // Fallback if environment or default not found.
-    if (empty($default_web_server)) {
-      $default_web_server = key($http_servers);
-    }
-
-    if (count($http_servers) == 1) {
-      $form['project']['environments'][$name]['settings']['web_server'] = array(
-          '#type' => 'value',
-          '#value' => $default_web_server,
-      );
-    }
-    elseif (count($http_servers) > 1) {
-      $form['project']['environments'][$name]['settings']['web_server'] = array(
-        '#title' => t('Web server'),
-        '#type' => 'select',
-        '#options' => $http_servers,
-        '#default_value' => $default_web_server
-      );
-    }
-
-    // DB Server select.
-    $db_servers = hosting_get_servers('db', FALSE);
-
-    // Determine default db server.
-    $default_db_server = isset($environment->settings, $environment->settings->db_server) ?
-      $environment->settings->db_server :
-      $project->settings->default_environment['db_server'];
-
-    // Fallback if environment or default not found.
-    if (empty($default_db_server) || !isset($db_servers[$default_db_server])) {
-      $default_db_server = key($db_servers);
-    }
-
-    if (count($db_servers) == 1) {
-      $form['project']['environments'][$name]['settings']['db_server'] = array(
-          '#type' => 'value',
-          '#default_value' => $default_db_server,
-      );
-    }
-    elseif (count($db_servers) > 1) {
-      $form['project']['environments'][$name]['settings']['db_server'] = array(
-        '#title' => t('Database server'),
-        '#type' => 'select',
-        '#options' => $db_servers,
-        '#default_value' => $default_db_server
-      );
-    }
+    $form['project']['environments'][$name] = devshop_project_environment_create_form_element($project, $environment);
 
     // Add Environment
     $form['add_environment'] = array(
@@ -400,4 +300,116 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Remove default "task" messages.
   drupal_set_message('Environments saved! Now preparing codebases...');
+}
+
+
+/**
+ *
+ */
+function devshop_project_environment_create_form_element($project, $environment) {
+
+  $name = $environment->name;
+
+  $element = array(
+    '#tree' => TRUE,
+    '#theme' => 'devshop_projects_settings_table',
+  );
+
+  // Environment properties
+  // Generate field prefix and suffix using domain name pattern.
+  if (variable_get('devshop_projects_allow_custom_base_url')) {
+    $pattern = $project->base_url;
+  }
+  else {
+    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+  }
+
+  $labels = explode('@environment', strtr($pattern, array(
+    '@project' => $project->name,
+    '@hostname' => $_SERVER['SERVER_NAME'],
+  )));
+  $element['name'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $name,
+    '#size' => 6,
+    '#maxlength' => 64,
+    '#attributes' => array(
+      'placeholder' => t('name'),
+    ),
+    '#field_prefix' => '<div class="input-group"><div class="input-group-addon">http://' . $labels[0] . '</div>',
+    '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . $labels[1] .'</div>
+        </div>',
+  );
+  $element['site'] = array(
+    '#type' => 'value',
+    '#value' => isset($environment->site) ? $environment->site : NULL,
+  );
+  $element['platform'] = array(
+    '#type' => 'value',
+    '#value' => isset($environment->platform) ? $environment->platform : NULL,
+  );
+  $element['git_ref'] = array(
+    '#type' => 'select',
+    '#bootstrap_ignore_pre_render' => TRUE,
+    '#options' => devshop_projects_git_ref_options($project),
+    '#default_value' => isset($environment->git_ref) ? $environment->git_ref : 'HEAD',
+  );
+
+  // HTTP Server select.
+  $http_servers = hosting_get_servers('http', FALSE);
+
+  // Determine default web server.
+  $default_web_server = isset($environment->settings, $environment->settings->web_server) ?
+    $environment->settings->web_server :
+    $project->settings->default_environment['web_server'];
+
+  // Fallback if environment or default not found.
+  if (empty($default_web_server)) {
+    $default_web_server = key($http_servers);
+  }
+
+  if (count($http_servers) == 1) {
+    $element['settings']['web_server'] = array(
+      '#type' => 'value',
+      '#value' => $default_web_server,
+    );
+  }
+  elseif (count($http_servers) > 1) {
+    $element['settings']['web_server'] = array(
+      '#title' => t('Web server'),
+      '#type' => 'select',
+      '#options' => $http_servers,
+      '#default_value' => $default_web_server
+    );
+  }
+
+  // DB Server select.
+  $db_servers = hosting_get_servers('db', FALSE);
+
+  // Determine default db server.
+  $default_db_server = isset($environment->settings, $environment->settings->db_server) ?
+    $environment->settings->db_server :
+    $project->settings->default_environment['db_server'];
+
+  // Fallback if environment or default not found.
+  if (empty($default_db_server) || !isset($db_servers[$default_db_server])) {
+    $default_db_server = key($db_servers);
+  }
+
+  if (count($db_servers) == 1) {
+    $element['settings']['db_server'] = array(
+      '#type' => 'value',
+      '#default_value' => $default_db_server,
+    );
+  }
+  elseif (count($db_servers) > 1) {
+    $element['settings']['db_server'] = array(
+      '#title' => t('Database server'),
+      '#type' => 'select',
+      '#options' => $db_servers,
+      '#default_value' => $default_db_server
+    );
+  }
+
+  return $element;
 }

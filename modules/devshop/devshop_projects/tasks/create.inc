@@ -17,7 +17,7 @@
  * @param $source_environment
  *   If desired, the environment to clone. (Copy the database and create a new branch from)
  */
-function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create') {
+function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create', $git_remote_url = NULL) {
   $settings = (object) $settings;
   global $user;
 
@@ -31,7 +31,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   $site->client = HOSTING_DEFAULT_CLIENT;
 
   // Attach a new platform node.
-  $site->platform_node = devshop_prepare_platform_node($project, $new_environment_name, $new_environment_branch, $settings->web_server);
+  $site->platform_node = devshop_prepare_platform_node($project, $new_environment_name, $new_environment_branch, $settings->web_server, $git_remote_url);
 
   // Set db server to the project default, if none was set.
   if (empty($settings->db_server) && !empty($project->settings->default_environment['db_server'])) {
@@ -112,16 +112,21 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
 
   // Get platform verify task
-  $tasks = hosting_get_tasks('rid', $site->platform_node->nid);
+  $tasks = hosting_get_tasks('rid', $site->nid);
   $environment->last_task = current($tasks)->nid;
+  $environment->project_nid = $project->nid;
 
   db_insert('hosting_devshop_project_environment')
     ->fields(array(
-      'project_nid' => $project->nid,
+      'project_nid' => $environment->project_nid,
       'name' => $environment->name,
       'site' => $environment->site,
+      'platform' => $site->platform_node->nid,
       'settings' => serialize($environment->settings),
       'last_task' => $environment->last_task,
     ))
     ->execute();
+
+  module_invoke_all('devshop_post_environment_create', $environment);
+  return $environment;
 }
