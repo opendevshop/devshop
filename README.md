@@ -47,7 +47,7 @@ The git repository to use for the CLI and Ansible roles data.
     
 The path to install the CLI code to. 
 
-    devshop_cli_update: yes
+    devshop_cli_update: true
     
 Set to "no" to block updating the `devshop_cli_path` to the `devshop_version`.
 

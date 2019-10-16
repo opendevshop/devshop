@@ -4,7 +4,7 @@
   become: true
 
   vars:
-    server_hostname: devshop.local.computer
+    apache_listen_port_ssl: 443
 
   pre_tasks:
     - name: Update apt cache.

@@ -11,7 +11,7 @@ devshop_devmaster_email: admin@devshop.local.computer
 php_version: '7.1'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
-devshop_cli_update: yes
+devshop_cli_update: true
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
@@ -28,7 +28,7 @@ mysql_root_password_update: no
 aegir_db_host: localhost
 aegir_client_name: admin
 
-supervisor_running: yes
+supervisor_running: true
 
 drush_dl_method: wget
 

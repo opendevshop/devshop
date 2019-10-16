@@ -8,7 +8,7 @@
   apt:
     pkg: '{{ extra_packages }}'
     state: installed
-    update_cache: yes
+    update_cache: true
   when: ansible_os_family == "Debian"
 
 - name: Install extra packages
@@ -23,14 +23,12 @@
   register: cliPath
 
 - name: Install DevShop CLI
-  # This should always be set so the devshop cli is set to the latest version, in case this is being run just via playbooks and not the verify:system command.
-  # when: cliPath.stat.islnk is not defined
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
     update: "{{ devshop_cli_update }}"
     dest: "{{ devshop_cli_path }}"
-    force: "yes"
+    force: "true"
 
 - name: Setup devshop CLI
   command: "{{ composer_path }} install"
@@ -44,13 +42,13 @@
 
 - name: Check drush status
   command: "{{ drush_bin_path }} status"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear drush caches
   command: "{{ drush_bin_path }} cache-clear drush"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
@@ -65,26 +63,26 @@
 - name: Install required drush packages.
   command: "{{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
   with_dict: "{{ devshop_drush_packages }}"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Setup Drush Bash Enhancements
   command: "{{ drush_bin_path }} init --yes"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Get Devmaster root
   shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
   register: devmaster_site_root
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: True
@@ -92,7 +90,7 @@
 - name: Get Devmaster URI
   shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
   register: devmaster_site_uri
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: True
@@ -113,7 +111,7 @@
     msg: "{{ devmaster_install_command }}"
 
 - name: Install Devmaster
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_install_command }}"
@@ -126,69 +124,69 @@
 - name: "Upgrade Devmaster to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
   when:
-  - devmaster_site_uri != ""
-  - devmaster_skip_upgrade == false
+    - devmaster_site_uri != ""
+    - devmaster_skip_upgrade == false
 
 - name: Verify Devmaster Site to ensure composer install
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster hosting-tasks -v"
 
 - name: DevShop.Support | Save License Key
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key != ""
 
 - name: DevShop.Support | Validate License Key to setup support modules.
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support -v"
   when: devshop_support_license_key != ""
 
 - name: Ensure hosting-dispatch crontab is setup
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
 
 - name: Save SSH key as variable
   shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
-  become: yes
+  become: true
   become_user: aegir
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Ensure privacy of SSH Keys
   file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
   with_items:
-    - { path: '.ssh', mode: '0700' }
-    - { path: '.ssh/id_rsa', mode: '600' }
-    - { path: '.ssh/id_rsa.pub', mode: '644' }
+    - {path: '.ssh', mode: '0700'}
+    - {path: '.ssh/id_rsa', mode: '600'}
+    - {path: '.ssh/id_rsa.pub', mode: '644'}
 
 - name: Set git user name and email
   shell: "git config --global user.email aegir@{{ server_hostname }}"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Set git user name and email
   shell: "git config --global user.name DevShop"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Set git user name and email
   shell: "git config --global push.default simple"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
