@@ -37,7 +37,7 @@
   - name: Ensure openssh-client is available (including ssh-keygen tool)
     when: ansible_os_family == "RedHat"
     yum:
-        name: "openssh"
+        name: "openssh-clients"
         state: present
 
   - name: Populate service facts
