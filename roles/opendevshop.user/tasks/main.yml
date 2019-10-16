@@ -12,28 +12,28 @@
 
   - name: Include Ubuntu 14 variables.
     include_vars: "vars.Ubuntu14.yml"
-    when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
+    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
 
   - name: Include Ubuntu 16 variables.
     include_vars: "vars.Ubuntu16.yml"
-    when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '16'
+    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "16"
 
   - name: Include Ubuntu 18 variables.
     include_vars: "vars.Ubuntu18.yml"
-    when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '18'
+    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "18"
 
   - name: Ensure openssh-client is available (including ssh-keygen tool)
-    when: ansible_os_family == 'Debian'
+    when: ansible_os_family == "Debian"
     apt:
         update_cache: yes
         cache_valid_time: 600
-        name: 'openssh-client'
+        name: "openssh-client"
         state: present
 
   - name: Ensure openssh-client is available (including ssh-keygen tool)
-    when: ansible_os_family == 'RedHat'
+    when: ansible_os_family == "RedHat"
     yum:
-        name: 'openssh'
+        name: "openssh"
         state: present
 
   - name: Populate service facts
@@ -46,7 +46,7 @@
       gid: "{{ aegir_user_gid }}"
 
   - name: Create Aegir user
-    when: aegir_create_user == 'yes'
+    when: aegir_create_user
     ignore_errors: yes
     user:
       name: "{{ aegir_user_name }}"
@@ -64,8 +64,8 @@
       group: "{{ aegir_user_name }}"
       owner: "{{ aegir_user_name }}"
 
-  # Aegir's CentOS installation requires this.
-  - name: Set appropriate permissions for Aegir's home folder.
+  # Aegir"s CentOS installation requires this.
+  - name: Set appropriate permissions for Aegir"s home folder.
     command: chmod -R 755 {{ aegir_user_home }}
     when: ansible_os_family == "RedHat"
 
@@ -120,25 +120,25 @@
 
   - name: Allow aegir user to run fix-* scripts
     with_items:
-      - 'fix-drupal-site-ownership'
-      - 'fix-drupal-site-permissions'
-      - 'fix-drupal-platform-ownership'
-      - 'fix-drupal-platform-permissions'
+      - "fix-drupal-site-ownership"
+      - "fix-drupal-site-permissions"
+      - "fix-drupal-platform-ownership"
+      - "fix-drupal-platform-permissions"
     lineinfile:
-      dest: '{{ sudoers_file_path }}'
-      line: '{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}.sh'
+      dest: "{{ sudoers_file_path }}"
+      line: "{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}.sh"
       state: present
-      validate: 'visudo -cf %s'
+      validate: "visudo -cf %s"
       create: yes
 
 #  - name: Install remi repo.
-#    when: ansible_os_family == 'RedHat'
+#    when: ansible_os_family == "RedHat"
 #    yum:
 #      name: "{{ remi_repo_url }}"
 #      state: present
 #
 #  - name: Import remi GPG key.
-#    when: ansible_os_family == 'RedHat'
+#    when: ansible_os_family == "RedHat"
 #    rpm_key:
 #      key: "{{ remi_repo_gpg_key_url }}"
 #      state: present
