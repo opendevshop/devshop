@@ -12,5 +12,6 @@
 - src: geerlingguy.git
 - src: geerlingguy.composer
 - src: geerlingguy.drush
+- src: geerlingguy.supervisor
 - src: opendevshop.aegir-user
 - src: opendevshop.aegir-apache
