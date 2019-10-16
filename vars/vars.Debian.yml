@@ -9,6 +9,7 @@ extra_packages:
   - vim
   - supervisor
   - openssl
+  - patch
   - postfix
   - cron
   - zip

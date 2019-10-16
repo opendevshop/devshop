@@ -9,6 +9,7 @@ supervisor_daemon: supervisord
 supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 
 extra_packages:
+  - patch
   - postfix
   - sendmail
   - cronie
