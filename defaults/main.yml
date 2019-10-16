@@ -23,7 +23,7 @@ devshop_install_profile: devmaster
 devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
-mysql_root_password_update: no
+mysql_root_password_update: false
 
 aegir_db_host: localhost
 aegir_client_name: admin

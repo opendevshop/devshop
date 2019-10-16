@@ -85,7 +85,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Get Devmaster URI
   shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
@@ -93,7 +93,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  ignore_errors: True
+  ignore_errors: true
 
 - set_fact:
     devmaster_site_root: "{{ devmaster_site_root.stdout }}"
@@ -192,7 +192,7 @@
 
 # CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
 # @TODO: Investigate php.ini for CLI on all OS
-#- name: 'RedHat: Set timezone in PHP.ini for CLI.'
+# - name: 'RedHat: Set timezone in PHP.ini for CLI.'
 #  lineinfile:
 #    dest: '{{ php_cli_ini_path }}'
 #    line: 'date.timezone = America/Chicago'
