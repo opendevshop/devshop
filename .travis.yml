@@ -1,80 +1,38 @@
-language: php
+---
+# Big thanks to @geerlingguy for his unending commitment to this stuff.
+# Introduction to molecule: https://www.jeffgeerling.com/blog/2018/testing-your-ansible-roles-molecule
+# This was copied from geerlingguy.apache: https://github.com/geerlingguy/ansible-role-apache/blob/master/.travis.yml
 
-sudo: required
-
-# Only run tests when committing to our primary branch and pull requests.
-branches:
-  only:
-  - master
+language: python
+services: docker
 
 env:
   global:
-  - ANSIBLE_ROLE_NAME=opendevshop.devmaster
-  - DEVSHOP_VERSION=1.x
-  - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer'
-
+    - ROLE_ORGANIZATION_NAME: opendevshop
+    - ROLE_NAME: devmaster
   matrix:
-  - test="Ubuntu 14.04 Apache"
-    COMMAND="bin/robo up --mode=install.sh --test"
+    - MOLECULE_DISTRO: centos7
+      MOLECULE_DOCKER_COMMAND: /usr/lib/systemd/systemd
+    - MOLECULE_DISTRO: centos6
+    - MOLECULE_DISTRO: ubuntu1804
+    - MOLECULE_DISTRO: ubuntu1604
+    - MOLECULE_DISTRO: ubuntu1404
+    - MOLECULE_DISTRO: debian9
+    - MOLECULE_DISTRO: debian8
 
-  - test="Ubuntu 16.04 Apache"
-    COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
+install:
+  # Install test dependencies.
+  - pip install molecule docker
 
-#   - test="Ubuntu 18.04 Apache"
-#     COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
-
-  #  - test="Install with Ansible on Ubuntu 14.04 with NGINX"
-  #    COMMAND="robo up --mode=install.sh --test --install-sh-options='--server-webserver=nginx'"
-
-#   - test="Ansible Install on CentOS 7"
-#     COMMAND="bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-centos7-ansible --test"
-
-#  - test="Install with Ansible on Fedora 25"
-#    COMMAND="robo up --mode=install.sh --install-sh-image=centos:7 --test"
-
-addons:
-  hosts:
-  - devshop.travis
-  - dev.projectname.devshop.travis
-  - live.projectname.devshop.travis
-  - dev.drpl8.devshop.travis
-  - testenv.drpl8.devshop.travis
-  - dev.rootproject.devshop.local.computer
-
-services:
-- docker
-
-before_install:
-- env
-- id -u
-- docker --version
-- docker-compose --version
-
-# Clone devshop
-- cd ..
-- git clone http://github.com/opendevshop/devshop
-- cd devshop
-- git checkout $DEVSHOP_VERSION
-
-# Prepare devshop CLI.
-- composer install
+before_script:
+  # Use actual Ansible Galaxy role name for the project directory.
+  - cd ../
+  - mv ansible-role-$ROLE_NAME $ROLE_ORGANIZATION_NAME.$ROLE_NAME
+  - cd $ROLE_ORGANIZATION_NAME.$ROLE_NAME
 
 script:
-
-# Run robo p:s to scaffold roles
-- bin/robo p:s -n
-- ls -la 
-- cp -rf $TRAVIS_BUILD_DIR/* roles/$ANSIBLE_ROLE_NAME
-
-# Copy this role into the /roles folder
-
-
-# Launch devshop including preparing the source code.
-- echo "Running ${COMMAND} -n --xdebug=0 ..."
-- ${COMMAND} -n --disable-xdebug
-
-notifications:
-  slack: thinkdrop:pb05x3ZL3qumHs0RjqEXvYfA
+  # Run tests.
+  - molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

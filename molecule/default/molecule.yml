@@ -1,0 +1,30 @@
+---
+# Big thanks to @geerlingguy for his unending commitment to this stuff.
+# Introduction to molecule: https://www.jeffgeerling.com/blog/2018/testing-your-ansible-roles-molecule
+# This was copied from geerlingguy.apache: https://github.com/geerlingguy/ansible-role-apache/blob/master/molecule/default/molecule.yml
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-file: molecule/default/yaml-lint.yml
+platforms:
+  - name: instance
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
