@@ -4,6 +4,10 @@
 # This was copied from geerlingguy.apache: https://github.com/geerlingguy/ansible-role-apache/blob/master/molecule/default/molecule.yml
 dependency:
   name: galaxy
+
+  # If you are getting really tired of ansible-galaxy install every time you try to run your playbook, uncomment this line.
+  # enabled: false
+
 driver:
   name: docker
 lint:
