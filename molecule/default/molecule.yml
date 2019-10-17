@@ -6,7 +6,7 @@ dependency:
   name: galaxy
 
   # If you are getting really tired of ansible-galaxy install every time you try to run your playbook, uncomment this line.
-  enabled: false
+  # enabled: false
 
 driver:
   name: docker
