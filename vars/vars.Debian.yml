@@ -6,6 +6,7 @@ supervisor_daemon: supervisor
 supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner.conf
 
 extra_packages:
+  - git
   - vim
   - openssl
   - patch
