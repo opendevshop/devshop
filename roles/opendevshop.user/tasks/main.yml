@@ -26,19 +26,19 @@
     include_vars: "vars.Ubuntu18.yml"
     when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "18"
 
-  - name: Ensure openssh-client is available (including ssh-keygen tool)
+  - name: Install prerequisite packages for Debian
     when: ansible_os_family == "Debian"
     apt:
         update_cache: yes
         cache_valid_time: 600
-        name: "openssh-client"
+        name: "{{ devshop_prerequisite_packages }}"
         state: present
 
-  - name: Ensure openssh-client is available (including ssh-keygen tool)
+  - name: Install prerequisite packages for RedHat
     when: ansible_os_family == "RedHat"
     yum:
-        name: "openssh-clients"
-        state: present
+      name: "{{ devshop_prerequisite_packages }}"
+      state: present
 
   - name: Populate service facts
     service_facts:

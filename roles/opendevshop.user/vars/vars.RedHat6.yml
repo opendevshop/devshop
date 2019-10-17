@@ -9,3 +9,6 @@ mysql_packages:
   - MySQL-python27
   - perl-DBD-MySQL
 
+devshop_prerequisite_packages:
+- openssh-clients
+- pip
