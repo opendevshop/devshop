@@ -27,6 +27,9 @@ scenario:
 dependency:
   name: galaxy
 
+  # You can skip the ansible-galaxy install by setting enabled: false
+  # enabled: false
+
   # Set 'ansible-galaxy install' command line options
   options:
 
