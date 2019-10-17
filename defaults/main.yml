@@ -65,6 +65,8 @@ devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=
 
 devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
 
+devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
+
 # Set to true if you want to skip the "devmaster" upgrade process during the "devshop upgrade" command.
 devmaster_skip_upgrade: false
 
