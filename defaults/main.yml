@@ -2,8 +2,9 @@
 
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
-server_hostname: "devshop.local.computer"
-devshop_devmaster_email: "admin@devshop.local.computer"
+server_hostname: devshop.local.computer
+server_hostname_ignore_errors: no
+devshop_devmaster_email: admin@devshop.local.computer
 
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
