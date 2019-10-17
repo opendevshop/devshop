@@ -13,6 +13,9 @@
 - src: geerlingguy.composer
 - src: geerlingguy.drush
 - src: geerlingguy.supervisor
+
 - src: opendevshop.aegir-user
   version: master
+
 - src: opendevshop.aegir-apache
+  version: master
