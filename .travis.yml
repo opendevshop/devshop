@@ -10,6 +10,7 @@ env:
   global:
     - ROLE_ORGANIZATION_NAME: opendevshop
     - ROLE_NAME: devmaster
+    - GALAXY_IGNORE_ERRORS: false
   matrix:
     - MOLECULE_DISTRO: centos7
       MOLECULE_DOCKER_COMMAND: /usr/lib/systemd/systemd
@@ -33,6 +34,9 @@ before_script:
 script:
   # Run tests.
   - molecule test
+
+after_failure:
+  - cat $ROLE_ORGANIZATION_NAME.$ROLE_NAME/molecule/default/molecule.yml
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

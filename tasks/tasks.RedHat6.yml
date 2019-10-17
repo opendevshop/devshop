@@ -1,0 +1,40 @@
+---
+
+# When support for amazonlinux starts, you might need this:
+
+# - name: Overrides ansible_distribution_major_version as 6 when distro is Amazon.
+#    set_fact: ansible_distribution_major_version=6
+#    when: ansible_distribution == "Amazon" and ( ansible_distribution_major_version == "NA" or ansible_distribution_major_version == "2018" )
+#
+# - name: Symlink supervisor bin ansible_distribution_major_versionaths
+#  file:
+#    src: "/usr/local/bin/{{ item }}"
+#    dest: "/usr/bin/{{ item }}"
+#    state: link
+#    force: yes
+#  with_items:
+#    - supervisord
+#    - supervisorctl
+#
+# - name: Symlink supervisord configuration file
+#  file:
+#    src: "/etc/supervisor/supervisord.conf"
+#    dest: "/etc/supervisord.conf"
+#    state: link
+#    force: yes
+#
+# - name: Setup prompt
+#    block:
+#      - name: Add .git-prompt.sh
+#        get_url:
+#          url: https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+#          dest: /var/aegir/.git-prompt.sh
+#          mode: '0755'
+#          owner: "{{ aegir_user_name }}"
+#
+#      - name: Fix drush-prompt.sh to source .git-prompt.sh.
+#        lineinfile:
+#          path: /var/aegir/.bashrc
+#          line: source /var/aegir/.git-prompt.sh
+#          insertbefore: "Drush prompt"
+#    tags: prompt

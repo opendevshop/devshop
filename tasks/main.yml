@@ -1,8 +1,18 @@
 ---
-- hostname: name={{ server_hostname }}
+- hostname:
+    name: "{{ server_hostname }}"
+
+  # In testing, with containers, it can be problematic to set the hostname, so we skip it.
+  # @TODO: Change to compare server_hostname var to `hostname -f`
+  when: server_hostname != "devshop.local.computer"
 
 - name: Include OS-specific variables.
   include_vars: "vars.{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
+  when: ansible_os_family == "RedHat"
+
+- name: Include OS-specific variables.
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "Debian"
 
 - name: Install extra packages
   apt:

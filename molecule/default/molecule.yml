@@ -2,8 +2,48 @@
 # Big thanks to @geerlingguy for his unending commitment to this stuff.
 # Introduction to molecule: https://www.jeffgeerling.com/blog/2018/testing-your-ansible-roles-molecule
 # This was copied from geerlingguy.apache: https://github.com/geerlingguy/ansible-role-apache/blob/master/molecule/default/molecule.yml
+
+# The main "molecule" command to run is "molecule test". That runs this "scenario".
+scenario:
+  name: default
+  test_sequence:
+    - lint
+    # Comment this out to not destroy a running container when you run 'molecule test' again.
+    - destroy
+
+    # Comment this out to speed up local development.
+    - dependency
+    - syntax
+    - create
+    - converge
+    - idempotence
+    - verify
+
+    # Comment this out leave the container in place.
+    - destroy
+
+# Configure the "dependency" action: ansible-galaxy install.
 dependency:
   name: galaxy
+
+  # Set 'ansible-galaxy install' command line options
+  options:
+
+    # Turn off '--force' option so 'ansible-galaxy' doesn't re-download the files every time you run 'molecule'.
+    force: false
+
+    # Make development of dependencies easier by keeping version data.
+    keep-scm-meta: true
+
+    # Put roles right to this one. Reduce possible role locations.
+    roles-path: ../
+
+    # The 'ansible-galaxy' command considers the pre-existence of a role's folder an "error".
+    # That command and 'molecule' will exit with failure if this flag and '--force' is not set.
+    # This setup sets 'ignore-errors' to 'false' when run in Travis to make sure that automated tests will catch problems,
+    # but it defaults to 'true' so it runs quickly for local developers.
+    ignore-errors: ${GALAXY_IGNORE_ERRORS:-true}
+
 driver:
   name: docker
 lint:
@@ -11,9 +51,10 @@ lint:
   options:
     config-file: molecule/default/yaml-lint.yml
 platforms:
-  - name: instance
+  - name: instance-${MOLECULE_DISTRO:-centos7}
     image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
     command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    hostname: devshop.local.computer
     privileged: true
     pre_build_image: true
 provisioner:
@@ -23,14 +64,11 @@ provisioner:
       stdout_callback: yaml
   options:
     v: true
-
   lint:
     name: ansible-lint
     enabled: false
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
-scenario:
-  name: default
 verifier:
   name: testinfra
   lint:
