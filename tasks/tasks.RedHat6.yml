@@ -6,7 +6,7 @@
 #    set_fact: ansible_distribution_major_version=6
 #    when: ansible_distribution == "Amazon" and ( ansible_distribution_major_version == "NA" or ansible_distribution_major_version == "2018" )
 #
-#- name: Symlink supervisor bin ansible_distribution_major_versionaths
+# - name: Symlink supervisor bin ansible_distribution_major_versionaths
 #  file:
 #    src: "/usr/local/bin/{{ item }}"
 #    dest: "/usr/bin/{{ item }}"
@@ -16,14 +16,14 @@
 #    - supervisord
 #    - supervisorctl
 #
-#- name: Symlink supervisord configuration file
+# - name: Symlink supervisord configuration file
 #  file:
 #    src: "/etc/supervisor/supervisord.conf"
 #    dest: "/etc/supervisord.conf"
 #    state: link
 #    force: yes
 #
-#- name: Setup prompt
+# - name: Setup prompt
 #    block:
 #      - name: Add .git-prompt.sh
 #        get_url:
