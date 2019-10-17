@@ -10,6 +10,7 @@ env:
   global:
     - ROLE_ORGANIZATION_NAME: opendevshop
     - ROLE_NAME: devmaster
+    - GALAXY_IGNORE_ERRORS: false
   matrix:
     - MOLECULE_DISTRO: centos7
       MOLECULE_DOCKER_COMMAND: /usr/lib/systemd/systemd
