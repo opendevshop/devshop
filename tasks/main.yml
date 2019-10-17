@@ -51,6 +51,12 @@
     dest: /etc/profile.d/devshop-cli-path.sh
     content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
 
+- name: Debug environment
+  command: "env"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
 - name: Check drush status
   command: "{{ drush_bin_path }} status"
   become: true
