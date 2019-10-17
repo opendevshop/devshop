@@ -1,19 +1,33 @@
 ---
-local_bin_path: /usr/local/sbin
+local_bin_path: /usr/bin
+composer_path: /usr/bin/composer
 apache_user: apache
-
+apache_vhosts_version: "2.2"
+apache_packages:
+  - httpd24
+  - httpd24-devel
+  - mod24_ssl
+  - openssh
 # Used to inject date.timezone.
 # ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
 supervisor_daemon: supervisord
 supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
 
-__extra_packages:
+extra_packages:
+  - git
+  - patch
   - postfix
   - sendmail
   - cronie
-  - supervisor
   - openssl
   - mod_ssl
 
+mysql_packages:
+  - mysql57
+  - mysql57-server
+  - mysql57-libs
+  - MySQL-python27
+  - perl-DBD-MySQL
+  -
 php_mysql_package: php-mysqlnd
