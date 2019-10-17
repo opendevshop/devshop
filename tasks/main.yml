@@ -137,7 +137,7 @@
     - devmaster_site_uri != ""
     - devmaster_skip_upgrade == false
 
-- name: Verify Devmaster Site to ensure composer install
+- name: Devmaster | Run all outstanding tasks
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
