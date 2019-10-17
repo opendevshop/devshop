@@ -6,6 +6,9 @@
   vars:
     php_opcache_enable: false
 
+  environment:
+    TERM: xterm
+
   pre_tasks:
     - name: System Information
       debug:
