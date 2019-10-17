@@ -17,5 +17,7 @@ php_packages:
 
 # Change this from 10-opcache.ini so that it works on centOS. CentOS adds opcache.ini.
 # Use absolute path for opcache.so.
-php_opcache_conf_filename: opcache.ini
-php_opcache_zend_extension: /usr/lib64/php/modules/opcache.so
+
+# @TODO: Might not need this anymore... Removing in PR  https://github.com/opendevshop/ansible-role-devmaster/pull/14
+#php_opcache_conf_filename: opcache.ini
+#php_opcache_zend_extension: /usr/lib64/php/modules/opcache.so
