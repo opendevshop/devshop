@@ -30,5 +30,5 @@ mysql_packages:
   - mysql57-libs
   - MySQL-python27
   - perl-DBD-MySQL
-  -
+
 php_mysql_package: php-mysqlnd
