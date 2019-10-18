@@ -55,8 +55,8 @@ lint:
   options:
     config-file: molecule/default/yaml-lint.yml
 platforms:
-  - name: instance-${MOLECULE_DISTRO:-centos7}
-    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+  - name: instance-${MOLECULE_DISTRO:-ubuntu16}
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu16}-ansible
     command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
     hostname: devshop.local.computer
     volumes:
