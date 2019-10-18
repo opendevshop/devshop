@@ -19,6 +19,13 @@
     group: "{{ aegir_user_name }}"
     force: no
 
+- name: Add aegir to apache group.
+  when: aegir_user_in_web_group == 'yes'
+  user:
+    name: "{{ aegir_user_name }}"
+    groups: "{{ apache_user }}"
+    append: yes
+
 - name: Add aegir user to sudoers to reload apache
   lineinfile:
     dest: '{{ sudoers_file_path }}'
@@ -32,13 +39,6 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "sudo {{ apache_control }} -S"
-
-- name: Add aegir to apache group.
-  when: aegir_user_in_web_group == 'yes'
-  user:
-    name: "{{ aegir_user_name }}"
-    groups: "{{ apache_user }}"
-    append: yes
 
 - name: Post Install on RedHat
   include: "RedHat-post.yml"
