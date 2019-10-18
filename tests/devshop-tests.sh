@@ -1,24 +1,14 @@
 #!/bin/bash
-
 set -e
 
-echo ">> ENV on devshop-tests.sh:"
-env
+# Use path relative to this script to find bin dir.
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
+echo "Found DevShop CLI in $DEVSHOP_PATH"
 
-# Print the lines and exit if a failure happens.
-echo ">> Checking versions of devshop, drush, node, npm..."
-/usr/share/devshop/bin/devshop --version
-/usr/share/devshop/bin/drush --version
-
-# @TODO: These commands fail when using the docker-compose based test suites.
-# See https://travis-ci.org/opendevshop/devshop/jobs/529898435#L2196
-if [ -v $TRAVIS ]; then
-    /usr/share/devshop/bin/node --version
-    /usr/share/devshop/bin/npm --version
-fi
+# Set PATH to devshop bin folder so drush, node, npm, and devshop commands are fixed.
+export PATH=${DEVSHOP_PATH}:${PATH}
 
 # Run remaining tasks from install process.
-
 echo ">> Verify hostmaster platform first."
 PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
@@ -36,7 +26,7 @@ drush @hostmaster vset hosting_queued_paused 1
 drush @hostmaster en dblog -y
 
 # Run the test suite.
-/usr/share/devshop/bin/devshop devmaster:test
+devshop devmaster:test
 #drush @hostmaster provision-test --behat-folder-path=profiles/devmaster/tests --test-type=behat
 
 # Unpause the task queue.
