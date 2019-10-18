@@ -180,7 +180,7 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
     - Enable DevShop Permissions module by default so authenticated users can do most things. Patched hosting module to allow users to create sites even if they don't have an associated.
     - Disabled importing of "existing sites" when a platform is verified because this can be problematic. Some teams use `sites/something` for code but not site credentials.
     - Enable devshop_support_network_client module by default.
-    - Fixed Devshop Acquia Hooks logging: needed to be updated to the latest p_log style instead of `devshop_log`.
+    - Fixed DevShop Acquia Hooks logging: needed to be updated to the latest p_log style instead of `devshop_log`.
     - Removed composer.json and committed vendor code from all modules.
     - Allow changing a project's default Git URL.
     - Fix missing error logs on project create wizard.
