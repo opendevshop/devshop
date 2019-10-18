@@ -21,8 +21,8 @@ projects[eldir][type] = theme
 projects[eldir][version] = "3.180"
 
 projects[hosting_git][subdir] = aegir
-projects[hosting_git][version] = "3.171"
-projects[hosting_git][patch][] = "https://www.drupal.org/files/issues/2019-05-20/3055846-web-ip-access.patch"
+projects[hosting_git][download][type] = git
+projects[hosting_git][download][branch] = 7.x-3.x
 
 projects[hosting_https][subdir] = aegir
 projects[hosting_https][version] = "3.182"
