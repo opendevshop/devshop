@@ -3,7 +3,7 @@
     "description": "Command Line interface for DevShop",
     "require": {
         "symfony/console": "^2.7",
-        "symfony/process": "^2.7",
+        "symfony/process": "^3.4",
         "knplabs/github-api": "^1.4",
         "symfony/filesystem": "^2.7",
         "cpliakas/git-wrapper": "1.*",

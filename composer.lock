@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81657f06a84584bcc4e09e49c31606b8",
+    "content-hash": "232a3d75c6e1d97b61df866607ea0c1a",
     "packages": [
         {
             "name": "asm/php-ansible",
@@ -2001,25 +2001,25 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.8.50",
+            "version": "v3.4.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "c3591a09c78639822b0b290d44edb69bf9f05dc8"
+                "reference": "344dc588b163ff58274f1769b90b75237f32ed16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/c3591a09c78639822b0b290d44edb69bf9f05dc8",
-                "reference": "c3591a09c78639822b0b290d44edb69bf9f05dc8",
+                "url": "https://api.github.com/repos/symfony/process/zipball/344dc588b163ff58274f1769b90b75237f32ed16",
+                "reference": "344dc588b163ff58274f1769b90b75237f32ed16",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9"
+                "php": "^5.5.9|>=7.0.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev"
+                    "dev-master": "3.4-dev"
                 }
             },
             "autoload": {
@@ -2046,7 +2046,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2018-11-11T11:18:13+00:00"
+            "time": "2019-09-25T14:09:38+00:00"
         },
         {
             "name": "symfony/var-dumper",
