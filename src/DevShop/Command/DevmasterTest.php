@@ -130,29 +130,30 @@ class DevmasterTest extends Command {
     if ($input->getOption('name')) {
       $cmd .= ' --name=' . $input->getOption('name');
     }
-    
+
+    // @TODO: require provision-ops/power-process
     $process = new Process($cmd);
     $process->setTimeout(NULL);
     $process->setWorkingDirectory($input->getOption('behat-path'));
-    $process->setEnv(array(
-      'HOME' => '/var/aegir',
-      'PATH' => getenv('PATH') . ':/usr/share/composer/vendor/bin/',
-      'BEHAT_PARAMS' => json_encode(array(
-        'extensions' => array(
-          'Behat\\MinkExtension' => array(
-            'base_url' => "http://{$uri}"
+
+    $env = $_SERVER;
+    $env['BEHAT_PARAMS'] = json_encode(array(
+      'extensions' => array(
+        'Behat\\MinkExtension' => array(
+          'base_url' => "http://{$uri}"
+        ),
+        'Drupal\\DrupalExtension' => array(
+          'drush' => array(
+            'root' => $root
           ),
-          'Drupal\\DrupalExtension' => array(
-            'drush' => array(
-              'root' => $root
-            ),
-            'drupal' => array(
-              'drupal_root' => $root
-            ),
+          'drupal' => array(
+            'drupal_root' => $root
           ),
-        )
+        ),
       )
-    )));
+    ));
+
+    $process->setEnv($env);
 
     $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
