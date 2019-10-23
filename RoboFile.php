@@ -182,20 +182,23 @@ class RoboFile extends \Robo\Tasks {
       'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
       'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
       'geerlingguy.supervisor' => 'http://github.com/geerlingguy/ansible-role-supervisor.git',
-      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
-      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
-      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
-      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
+//      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+//      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
+//      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
+//      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
     $this->yell("Cloning Ansible Roles...");
 
     $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/roles.yml'));
     foreach ($roles_yml as $role) {
-      $roles[$role['name']] = [
-        'repo' => $role_repos[$role['name']],
-        'version' => $role['version'],
-      ];
+      // Only install the role if it is in the role_repos array.
+      if (!empty($role_repos[$role['name']])) {
+        $roles[$role['name']] = [
+            'repo' => $role_repos[$role['name']],
+            'version' => $role['version'],
+        ];
+      }
     }
 
     foreach ($roles as $name => $role) {
@@ -238,8 +241,6 @@ class RoboFile extends \Robo\Tasks {
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
-      $devmaster_ssh_git_url = "git@github.com:opendevshop/devmaster.git";
-      $devmaster_drupal_git_url = "git@git.drupal.org:project/devmaster.git";
 
       if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
         $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
@@ -248,24 +249,24 @@ class RoboFile extends \Robo\Tasks {
         $this->say("<comment>Unable to set devshop git remote to $devshop_ssh_git_url !</comment>");
       }
 
-      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
-        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
-      }
-      else {
-        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
-      }
+//      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
+//        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
+//      }
+//      else {
+//        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
+//      }
 
-      // Check for drupal remote
-      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote get-url drupal")->run()->wasSuccessful()) {
-        $this->say('Git remote "drupal" already exists in devmaster.');
-      }
-      // If remote does not exist, add it.
-      elseif ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote add drupal $devmaster_drupal_git_url")->run()->wasSuccessful()) {
-        $this->yell("Added 'drupal' git remote and added git.drupal.org as a second push target on origin!");
-      }
-      else {
-        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
-      }
+//      // Check for drupal remote
+//      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote get-url drupal")->run()->wasSuccessful()) {
+//        $this->say('Git remote "drupal" already exists in devmaster.');
+//      }
+//      // If remote does not exist, add it.
+//      elseif ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote add drupal $devmaster_drupal_git_url")->run()->wasSuccessful()) {
+//        $this->yell("Added 'drupal' git remote and added git.drupal.org as a second push target on origin!");
+//      }
+//      else {
+//        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
+//      }
     }
 
     return TRUE;

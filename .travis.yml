@@ -7,7 +7,8 @@ git:
 # Only run tests when committing to our primary branch and pull requests.
 branches:
   only:
-    - 1.x
+    - develop
+
 env:
   global:
     - DEVSHOP_VERSION=1.x
@@ -15,7 +16,7 @@ env:
 
   matrix:
   - test="Upgrade"
-    COMMAND="robo up --test-upgrade --no-dev"
+    COMMAND="robo up --test-upgrade"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
  
   - test="Install"

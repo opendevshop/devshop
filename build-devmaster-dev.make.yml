@@ -1,4 +1,3 @@
-
 # DevShop Development Makefile
 core: "7.x"
 api: "2"
@@ -17,9 +16,8 @@ projects:
     type: profile
     subdir: ''
     download:
-      type: git
-      branch: 7.x-1.x
-      url: https://github.com/opendevshop/devmaster.git
+      type: copy
+      url: devmaster
 
   devel:
     version: 1
