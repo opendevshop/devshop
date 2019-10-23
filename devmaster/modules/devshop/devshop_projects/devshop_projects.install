@@ -1,0 +1,478 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Projects
+ */
+
+/**
+ * Redefine HOSTING_ADMIN_CLIENT, it is missing for some reason during the update process.
+ */
+if (!defined('HOSTING_ADMIN_CLIENT')) {
+  define('HOSTING_ADMIN_CLIENT', 1);
+}
+
+/**
+ * Implements hook_update_dependencies()
+ *
+ * Ensures http_basic_auth update runs before ours.
+ *
+ * Prevents breakage on upgrade from beta10 to HEAD: https://travis-ci.org/opendevshop/devmaster/jobs/233420027
+ */
+function devshop_projects_update_dependencies() {
+  $dependencies['devshop_hosting'][7010] = array(
+    'hosting_http_basic_auth' => 7300,
+  );
+  return $dependencies;
+}
+
+/**
+ * Implements hook_install()
+ */
+function devshop_projects_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_projects')
+    ->execute();
+}
+
+/**
+ * Implements hook_schema().
+ */
+function devshop_projects_schema() {
+  $schema['hosting_devshop_project'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project/Node ID.',
+      ),
+      'git_url' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'code_path' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'drupal_path' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'base_url' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'install_profile' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'settings' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'A serialized array of settings for this project.',
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+
+  // Table for tracking environments
+  $schema['hosting_devshop_project_environment'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      'description' => "The project's Node ID.",
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 64,
+        'default' => '',
+        'description' => 'Environment name.',
+      ),
+      'site' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'unsigned' => TRUE,
+        'description' => 'The node ID of the site for this environment.',
+      ),
+      'platform' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'unsigned' => TRUE,
+        'description' => 'The node ID of the platform for this environment.',
+      ),
+      'settings' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'A serialized array of settings for this environment.',
+      ),
+      'last_task' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'The NID of the last task that should be displayed on an environment.',
+      ),
+    ),
+    'indexes' => array(
+      'project_environment' => array('project_nid', 'name'),
+    ),
+  );
+  return $schema;
+}
+
+/**
+ *  Add the "data" column to projects.
+ */
+function devshop_projects_update_1() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project} " .
+		      "ADD COLUMN data longtext NOT NULL default ''");
+  return $ret;
+}
+
+/*
+ * Update 2: Delete rows in the hosting_devshop_project_objects table
+ * that the node pointed to by object nid no longer exists.
+ */
+function devshop_projects_update_2() {
+  $ret = array();
+  $query = db_query("SELECT object_nid " .
+		    "FROM {hosting_devshop_project_object}");
+
+  while($proj = db_fetch_object($query)) {
+    $count = db_result(db_query("SELECT COUNT(*) FROM {node} " .
+				"WHERE nid = %d", $proj->object_nid));
+    if ($count != 1) {
+      $ret[] = update_sql('DELETE FROM {hosting_devshop_project_object} ' .
+			  'WHERE object_nid = %d', $proj->object_nid);
+    }
+  }
+
+  return $ret;
+}
+
+/**
+ * Adds git_branch column to hosting_devshop_project_objects table.
+ */
+function devshop_projects_update_3() {
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_project_object', 'git_branch', array('type' => 'varchar', 'length' => 16, 'not null' => FALSE));
+  return $ret;
+}
+
+/**
+ * Changes env_type to environment in {hosting_devshop_project_object}.
+ */
+function devshop_projects_update_4() {
+  $ret = array();
+  $schema = devshop_projects_schema();
+  $spec = $schema['hosting_devshop_project_object']['fields']['environment'];
+  db_change_field($ret, 'hosting_devshop_project_object', 'env_type', 'environment', $spec);
+  return $ret;
+}
+
+/**
+ * Makes "git_branch" field larger.
+ */
+function devshop_projects_update_5() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} CHANGE git_branch git_branch VARCHAR(128) NULL");
+  return $ret;
+}
+
+/**
+ * Adds drupal_path column to hosting_devshop_project table.
+ */
+function devshop_projects_update_6() {
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_project', 'drupal_path', array('type' => 'text', 'size' => 'big', 'not null' => FALSE));
+  return $ret;
+}
+
+/**
+ * Adds drupal_path column to hosting_devshop_project table.
+ */
+function devshop_projects_update_7() {
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_project_object', 'drupal_path', array('type' => 'text', 'size' => 'big', 'not null' => FALSE));
+  return $ret;
+}
+
+/**
+ * Makes "environment" field larger.
+ */
+function devshop_projects_update_8() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {hosting_devshop_project_object} CHANGE environment environment VARCHAR(64) NOT NULL");
+
+  return $ret;
+}
+
+/**
+ * Add clone_nid column to hosting_devshop_project_object.
+ */
+function devshop_projects_update_9() {
+  $ret = array();
+  $ret[] = db_add_field($ret, 'hosting_devshop_project_object', 'clone_nid', array('type' => 'int', 'not null' => FALSE, 'default' => 0, 'unsigned' => TRUE));
+
+  return $ret;
+}
+
+/**
+ * 6.x-1.9-beta4 -^
+ *
+ * 6.x-1.9-rc1 -v (FUTURE RELEASE)
+ */
+
+/**
+ * Remove live_domain from hosting_devshop_project schema.
+ */
+function devshop_projects_update_6000() {
+  $ret = array();
+  if (db_column_exists('hosting_devshop_project', 'live_domain')){
+    $ret[] = db_drop_field($ret, 'hosting_devshop_project', 'live_domain');
+  }
+  return $ret;
+}
+
+/**
+ * Create new hosting_devshop_environment table.
+ */
+function devshop_projects_update_6001() {
+  // Create only the new table
+  // Clone of drupal_install_schema('devshop_projects');
+  $module = 'devshop_projects';
+  $name = 'hosting_devshop_project_environment';
+
+  $schema = drupal_get_schema_unprocessed($module);
+  _drupal_initialize_schema($module, $schema);
+
+  $ret = array();
+  db_create_table($ret, $name, $schema['hosting_devshop_project_environment']);
+  return $ret;
+}
+
+/**
+ * Enable hosting_alias module to allow custom domains on sites.
+ */
+function devshop_projects_update_6002() {
+  module_enable(array('hosting_alias'));
+  return array();
+}
+
+/**
+ * Remove legacy `hosting_devshop_project_object` table.
+ */
+function devshop_projects_update_6003(){
+  $ret = array();
+  db_drop_table($ret, 'hosting_devshop_project_object');
+  return $ret;
+}
+
+/**
+ * Change "data" column to "settings" column.
+ */
+function devshop_projects_update_6004(){
+  $ret = array();
+  db_change_column($ret, 'hosting_devshop_project', 'data', 'settings', 'text', array(
+    'not null' => FALSE,
+    'size' => 'big',
+    'description' => 'A serialized array of settings for this project.',
+  ));
+  return $ret;
+}
+
+/**
+ * Turn on the new Boots theme.
+ * Uncomment once the theme is ready.
+function devshop_projects_update_600X() {
+  variable_set('theme_default','boots');
+  return array();
+}
+ */
+
+/**
+ * Add "last_task" column for environments.
+ */
+function devshop_projects_update_6008(){
+  $schema = devshop_projects_schema();
+  $ret = array();
+  $ret[] = db_add_field(
+      $ret,
+      'hosting_devshop_project_environment',
+      'last_task', $schema['hosting_devshop_project_environment']['fields']['last_task']
+  );
+  return $ret;
+}
+
+/**
+ * Update all environments with their last_task();
+ */
+function devshop_projects_update_6009 () {
+
+  // Lookup all environments
+  $query = db_query('SELECT * FROM {hosting_devshop_project_environment}');
+  while ($result = db_fetch_object($query)) {
+    $site = node_load($result->site);
+    $result = db_fetch_object(db_query("SELECT t.nid, t.vid FROM hosting_task t INNER JOIN node n ON n.vid = t.vid WHERE rid = %d GROUP BY t.nid ORDER BY vid DESC", $site->nid));
+
+    $task = node_load($result->nid);
+    $site->environment->last_task = array(
+        'status' => $task->task_status,
+        'type' => $task->task_type,
+        'nid' => $task->nid,
+    );
+    devshop_environment_save_last_task($site->environment);
+  }
+}
+
+
+/**
+ * Reset all environment's "last task" to the NID.
+ */
+function devshop_projects_update_6010 () {
+
+  // Lookup all environments
+  $query = db_query('SELECT * FROM {hosting_devshop_project_environment}');
+  while ($result = db_fetch_object($query)) {
+    $site = node_load($result->site);
+    $result = db_fetch_object(db_query("SELECT t.nid, t.vid FROM hosting_task t INNER JOIN node n ON n.vid = t.vid WHERE rid = %d GROUP BY t.nid ORDER BY vid DESC", $site->nid));
+    $site->environment->last_task = $result->nid;
+    devshop_environment_save_last_task($site->environment);
+  }
+}
+
+/**
+ * Reset all environment's "last task" to the NID, again.
+ */
+function devshop_projects_update_6011 () {
+  devshop_reset_last_tasks();
+}
+
+/**
+ * Remove the menu form from the project node form.
+ */
+function devshop_projects_update_7000 () {
+  variable_set('menu_options_project', array());
+}
+
+/**
+ * Remove the menu form from the site node form.
+ */
+function devshop_projects_update_7001 () {
+  variable_set('menu_options_site', array());
+}
+
+// @TODO: This breaks upgrades. Figure out why and in include it in an upcoming release.
+///**
+// * Enable devshop_testing.
+// */
+//function devshop_projects_update_7002 () {
+//  module_enable(array(
+//    'devshop_testing',
+//  ));
+//}
+
+/**
+ * Fully resetting project and site node menu settings.
+ */
+function devshop_projects_update_7003 () {
+  variable_set('menu_options_site', '');
+  variable_set('menu_options_project', '');
+}
+
+/**
+ * Enable Hosting Git and Hosting Git Checkout.
+ */
+function devshop_projects_update_7004 () {
+  module_enable(array(
+    'hosting_git',
+    'hosting_git_pull',
+  ));
+}
+
+/**
+ * Save git_ref data to hosting_git table and drop the devshop environment's git_ref field.
+ */
+function devshop_projects_update_7005 () {
+  $environments = db_query('SELECT * FROM {hosting_devshop_project_environment} e LEFT JOIN {hosting_devshop_project} p ON p.nid = e.project_nid');
+  foreach ($environments as $environment) {
+    if ($environment->platform) {
+      db_merge('hosting_git')
+        ->key(array('nid' => $environment->platform))
+        ->fields(array(
+          'repo_url' => $environment->git_url,
+          'git_ref' => $environment->git_ref,
+        ))
+        ->execute();
+      drupal_set_message(t("Updated Platform $environment->platform with $environment->git_url and $environment->git_ref"));
+    }
+    else {
+      drupal_set_message(t("No Platform found for environment $environment->name for site $environment->site."), 'warning');
+    }
+  }
+
+  if (db_drop_field('hosting_devshop_project_environment', 'git_ref')) {
+    drupal_set_message(t("Git ref information has been migrated and the field has been removed."));
+  }
+  else {
+    drupal_set_message(t("Unable to remove git_ref field from hosting_devshop_project_environment table."), 'error');
+  }
+}
+
+/**
+ * Reduce the character limit for bootstrap to turn form element descriptions into tooltips.
+ */
+function devshop_projects_update_7007 () {
+  // Get the settings
+  $settings = variable_get('theme_boots_settings', array());
+
+  // Set the variable
+  $settings['bootstrap_forms_smart_descriptions_limit'] = 40;
+
+  // Save our settings
+  variable_set('theme_boots_settings', $settings);
+}
+
+/**
+ * Set weight of devshop_projects module to 1 so it loads alters after hosting_git.
+ */
+function devshop_projects_update_7008 () {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_projects')
+    ->execute();
+
+}
+
+/**
+ * Update hosting contexts for project node to ensure they all begin with "project_".
+ */
+function devshop_projects_update_7009 () {
+  $query = "UPDATE hosting_context c JOIN node n ON n.nid=c.nid  SET c.name = CONCAT('project_', name) WHERE n.type='project' AND c.name NOT LIKE 'project_'";
+  if (!db_query($query)) {
+    drupal_set_message(t('Something went wrong when running a query to update hosting_context table to ensure all projects are prefixed with "project_":') . $query);
+  }
+}

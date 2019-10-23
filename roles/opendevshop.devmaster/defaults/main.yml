@@ -1,0 +1,78 @@
+---
+
+# Server hostname will default to this unless overridden in your inventory or extra_vars.
+# It is overridden in devshop's install.sh file to match the server's current hostname.
+server_hostname: devshop.local.computer
+server_hostname_ignore_errors: no
+devshop_devmaster_email: admin@devshop.local.computer
+
+# Set PHP Version:
+# DevShop uses geerlingguy.php-versions to handle PHP Version.
+# See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
+php_version: '7.1'
+
+devshop_cli_repo: http://github.com/opendevshop/devshop.git
+devshop_cli_update: yes
+devshop_cli_path: /usr/share/devshop
+devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
+
+devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
+
+devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
+devshop_install_profile: devmaster
+devshop_working_copy: --working-copy
+
+aegir_server_webserver: apache
+mysql_root_password_update: no
+
+aegir_db_host: localhost
+aegir_client_name: admin
+
+supervisor_running: yes
+
+drush_dl_method: wget
+
+devshop_drush_packages:
+  provision: 7.x-3.x-devshop
+  registry_rebuild: 7.x-2.2
+
+php_date_timezone: "America/New_York"
+
+# You should specify your own random mysql_root_password in your own playbooks or inventory.
+# mysql_root_password: PleaseRandomizeOnPlaybookRun
+
+# The version of devshop & devmaster to install.
+# Overridden by install.sh
+devshop_version: 1.x
+devshop_cli_version: "{{ devshop_version }}"
+
+devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=0 {{ server_hostname }} \
+                                --aegir_db_host={{ aegir_db_host }} \
+                                --aegir_db_pass={{ mysql_root_password }} \
+                                --aegir_db_port=3306 \
+                                --aegir_db_user={{ mysql_root_username }} \
+                                --aegir_db_grant_all_hosts=1 \
+                                --aegir_host={{ server_hostname }} \
+                                --client_name={{ aegir_client_name }} \
+                                --client_email={{ devshop_devmaster_email }} \
+                                --http_service_type={{ aegir_server_webserver }} \
+                                --makefile={{ devshop_makefile }} \
+                                --profile={{ devshop_install_profile }} \
+                                --root=/var/aegir/devmaster-{{ devshop_version }} \
+                                {{ devshop_working_copy }} \
+"
+
+devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
+
+# If your system does not allow root user in "sudo" group, change this to "su"
+ansible_become_method_aegir: sudo
+
+# Server Options
+php_memory_limit: "512M"
+
+# Get a support license at https://devshop.support
+devshop_support_license_key: ""
+
+# The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
+hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"

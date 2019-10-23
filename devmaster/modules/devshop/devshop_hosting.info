@@ -1,0 +1,6 @@
+name = DevShop Hosting
+description = Provides the streamlined DevShop user interface and experience.  NOTE: This module alters some of of the UI of Aegir Hostmaster.
+core = 7.x
+package = DevShop
+
+dependencies[] = hosting

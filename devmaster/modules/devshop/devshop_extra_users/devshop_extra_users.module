@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_extra_users_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'site_node_form') {
+
+    $form['parameters']['environment']['settings']['manager_email'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Manager Email'),
+      '#description' => t('Enter an email address and a user will be created.'),
+    );
+  }
+}

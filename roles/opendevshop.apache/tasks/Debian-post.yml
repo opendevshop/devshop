@@ -1,0 +1,9 @@
+---
+
+- name: Symbolic link to Aegir's Apache Config
+  file:
+    src: "{{ aegir_user_home }}/config/apache.conf"
+    # For Debian, apache_conf_path == '/etc/apache2'
+    dest: "{{ apache_conf_path }}/conf-enabled/{{ aegir_user_name }}.conf"
+    state: link
+    force: yes

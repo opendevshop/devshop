@@ -1,0 +1,42 @@
+<?php
+/**
+ * @file devshop_pull.module
+ *
+ * Provides a Hosting Queue and a URL callback for remote services to ping, in
+ * order to trigger a Pull Code task.
+ *
+ * Used to keep a dev server up to date with the commits of projects.
+ *
+ */
+
+define('DEVSHOP_PULL_STATUS_OK', 1);
+define('DEVSHOP_PULL_STATUS_ACCESS_DENIED', 2);
+define('DEVSHOP_PULL_STATUS_INVALID_CODE', 3);
+
+// The base URL to use for the Post Commit callback.
+define('DEVSHOP_PULL_CALLBACK_URL', 'webhook');
+
+/**
+ * Implements hook_permission().
+ */
+function devshop_pull_permission() {
+  return array(
+    'configure devshop pull' => array(
+      'title' => t('configure devshop pull'),
+      'description' => t('Configure DevShop Pull module.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function devshop_pull_menu() {
+  $items[DEVSHOP_PULL_CALLBACK_URL] = array(
+    'page callback' => 'devshop_pull_callback',
+    'access callback' => TRUE,
+    'file' => 'devshop_pull.inc',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}

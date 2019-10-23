@@ -1,0 +1,1338 @@
+html,
+body {
+    height: 100%;
+}
+
+body.admin-menu .navbar-static-top {
+  margin-top: 20px !important;
+  z-index: 3;
+}
+
+.environment-wrapper {
+  min-width: 330px;
+}
+
+.environment .list-group-item {
+  border: none;
+}
+
+.environment .list-group-item:first-child,
+.environment .list-group-item:last-child {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.environment .list-group-item .content {
+    font-size: .7em;
+    text-transform: uppercase;
+    color: grey;
+}
+
+.environment-main {
+  border-left: 1px #ededed solid;
+  border-right: 1px #ededed solid;
+  border-collapse: collapse;
+}
+.environment-messages .list-group-item-info {
+  background-color: whitesmoke;
+  color: #777;
+
+  border-bottom: 1px solid whitesmoke;
+  border-top: 1px solid whitesmoke;
+  border-collapse: collapse;
+}
+.environment-messages .list-group-item-default {
+  color: #777;
+  border-bottom: 1px solid whitesmoke;
+  border-top: 1px solid whitesmoke;
+  border-collapse: collapse;
+}
+
+.environment-messages .list-group-item {
+  padding: 0px;
+
+  border-bottom: 1px solid whitesmoke;
+  border-top: 1px solid whitesmoke;
+  border-collapse: collapse;
+}
+.environment-messages .list-group-item .text {
+  padding: 5px 10px;
+
+}
+
+.environment.disabled .list-group-item-disabled {
+  background-color: #e5e5e5 !important;
+}
+.environment.disabled .list-group-item-info {
+  background-color: whitesmoke !important;
+}
+
+.table-controls {
+  border: 1px solid #ddd;
+  margin: 0px;
+}
+
+.btn-env-buttons {
+  min-width: 92px;
+}
+#navbar .task-list.btn-group {
+  padding: .5em;
+}
+#navbar .active-task {
+  color: #ffffaa;
+}
+
+.environment-git-ref {
+  max-width: 77%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.environment-meta-data {
+    margin: 0px;
+    padding: 3px 6px;
+    color: #777;
+    font-size: .7em;
+    white-space: nowrap;
+}
+
+.environment.live-environment .environment-meta-data {
+  color: #fff;
+}
+
+.environment-indicators {
+  display: inline;
+}
+.environment-meta-data i.fa {
+    margin-right: .5em;
+}
+
+.environment-meta-data.environment-info i.fa {
+    margin-right: 0;
+}
+.environment-meta-data.environment-info {
+    text-transform: uppercase;
+    z-index: 1;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: -5px;
+}
+
+.environment-status {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.environment-link {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.environment-link:hover {
+    text-decoration: none;
+}
+
+.environment-link:hover span {
+    text-decoration: underline;
+}
+
+
+.environment-link strong {
+    font-style: inherit;
+    color: inherit;
+    text-transform: inherit;
+}
+
+.environment-header {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: 30px;
+  border-radius: 5px 5px 0 0;
+}
+
+.environment-header.list-group-item-disabled {
+  border: 1px #ededed solid;
+  background: whitesmoke;
+}
+
+.environment-menu button.environment-menu-button {
+  z-index: 1;
+  padding: .3em;
+}
+
+.environment-dropdowns {
+  position: absolute;
+  right: 18px;
+  top: 7px;
+}
+
+.environment-domains {
+  position: relative;
+  padding: 0px;
+  white-space: nowrap;
+}
+
+.environment-domains .url-wrapper .btn{
+  padding: 3px;
+}
+
+.environment-domains.login-available {
+  padding-right: 4em;
+}
+
+.environment.live-environment .environment-header {
+  background: #4E6DDB;
+ }
+
+.environment.live-environment .environment-header a,
+.environment.live-environment .environment-header a.btn-text,
+.environment.live-environment .environment-header button.btn-link,
+.environment.live-environment .environment-header span,
+.environment.live-environment .environment-header button,
+.environment.live-environment .environment-menu,
+.environment.live-environment .environment-menu a,
+.environment.live-environment .environment-menu a.btn-text,
+.environment.live-environment .environment-menu button.btn-link
+{
+    color: white;
+}
+
+.environment.live-environment .environment-menu .dropdown-menu a,
+.environment.live-environment .environment-menu .dropdown-menu {
+  color: black;
+}
+
+
+.environment.live-environment .environment-menu button.btn-link:hover {
+  text-decoration: none;
+}
+
+#project-info {
+  padding-bottom: .5em;
+}
+
+.add-project-button .btn {
+  height: 9.5em;
+  padding: 3em 0em;
+  background: white;
+  color: #4cae4c;
+  width: 100%;
+}
+.add-project-button .btn:hover,
+.add-project-button .btn:active {
+  background: inherit;
+  color: inherit;
+
+  color: white;
+  background: #4cae4c;
+}
+
+.add-project-button .fa {
+  font-size: 2em;
+  margin-bottom: .25em;
+}
+
+.navbar-nav {
+    margin: 0;
+}
+.navbar-nav li {
+    text-align: right;
+}
+
+ul.secondary {
+    float: right;
+}
+
+.navbar-project > .container-fluid {
+    padding-left: .5em;
+    padding-right: .5em;
+}
+.main-project-nav {
+  margin: .5em 0;
+}
+
+/*.main-project-nav .dropdown a.active {*/
+  /*background: #333;*/
+  /*color: white;*/
+/*}*/
+
+.navbar-project .nav-pills a.active {
+    background: whitesmoke;
+    border: 1px solid whitesmoke;
+}
+
+.navbar-project .main-project-nav > ul.nav-pills  > li > a.active {
+  background: white;
+
+}
+
+
+
+.project-stuff {
+    position: absolute;
+    right: 0px;
+    top: -45px;
+}
+
+.project-stuff a {
+    color: #777;
+}
+
+/*.environment .tasks-button {*/
+    /*position: absolute;*/
+    /*top: 1px;*/
+    /*right: 15px;*/
+    /*z-index: 2;*/
+/*}*/
+
+
+/*.environment .tasks-button > a {*/
+    /*padding: 10px 5px;*/
+    /*height: 3.2em;*/
+/*}*/
+
+/*.environment .tasks-button > a:hover,*/
+/*.environment .tasks-button.open > a {*/
+    /*background: #428bca;*/
+    /*color: white;*/
+    /*text-decoration: none;*/
+    /*border-radius: 4px;*/
+/*}*/
+
+/*.environment.live-environment .tasks-button > a {*/
+    /*color: white;*/
+/*}*/
+
+/*.environment.live-environment .tasks-button > a:hover,*/
+/*.environment.live-environment .tasks-button.open > a {*/
+  /*text-decoration: underline;*/
+/*}*/
+
+.environment-main > .list-group-item.btn-group {
+    padding: 0px;
+}
+.environment-main > .list-group-item.btn-group a.btn {
+    margin: 0px 3px;
+    background: transparent !important;
+}
+
+.environment-main > .list-group-item.btn-group .btn,
+.environment-main > .list-group-item.btn-group > .btn-group {
+    font-size: 1.0em;
+    color: #777;
+    border: none !important;
+    border-radius: 0px;
+    background: transparent !important;
+}
+
+
+.environment-main > .list-group-item.btn-group > a:hover {
+    color: #111 !important;
+    background-color: whitesmoke;
+}
+
+.environment-domains button {
+    display: inline-block;
+}
+
+
+.environment-domains.btn-group-justified>.btn-group .btn {
+    width: auto;
+}
+
+.environment-domains .btn-group-smaller > a,
+.environment-domains .btn-group-smaller > button {
+    margin: 0px 5px;
+    padding: 3px;
+    color: #777;
+    font-size: .8em !important;
+}
+.environment-domains a:hover,
+.environment-domains button:hover,
+.environment-meta-data:hover,
+.environment-meta-data button:hover {
+  text-decoration: underline;
+}
+
+.url-wrapper {
+  text-overflow:ellipsis;
+  overflow: hidden;
+  display: inline;
+  max-width: 75%;
+}
+
+.environment .last-commit {
+  display: block;
+  color: #777;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+.environment .last-commit span {
+  font-style: italic;
+  font-size: .8em;
+  color: #999999;
+}
+
+
+
+.btn.settings {
+    margin: -5px 0px;
+    border:none;
+}
+
+.dropdown-menu>li>a {
+    white-space: normal;
+}
+
+input.form-control.webhook-url {
+  display: inline;
+  width: 36em;
+
+}
+
+@media (max-width: 640px) {
+    body.admin-menu {
+        margin-top: 40px !important;
+    }
+}
+.environment-deploy,
+.environment-tests {
+    padding: 0px;
+}
+
+.environment-deploy.list-group-item {
+    white-space: nowrap;
+}
+
+.dropdown-menu li label,
+.environment label
+/* Keeping... not sure if this affects other UI elements.
+.well label,
+.well dt
+ */
+{
+  font-size: .7em;
+  text-transform: uppercase;
+  color: grey;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+
+.task-arguments.well {
+  min-height: inherit;
+  margin-bottom: 0px;
+}
+.task-arguments.well dl {
+  margin-bottom: 0px;
+}
+.task-arguments.well .dl-horizontal dt {
+  width: 120px;
+  padding-top: .5em;
+  padding-right: 2em;
+  margin-bottom: 0px;
+}
+
+.task-arguments.well .dl-horizontal dd {
+  margin-left: 120px;
+}
+
+.environment-tests.list-group-item > label {
+  font-size: .7em;
+  color: grey;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.environment-tests button,
+.environment-tests a {
+  color: #777;
+  background: none;
+  border: none;
+  font-size: .9em;
+}
+
+.btn-deploy-code li a {
+  white-space: nowrap;
+}
+
+.btn-deploy-code li.create-git-ref a {
+  float: none;
+}
+
+.alert-spacing {
+  margin-top: 15px;
+}
+
+.deploy-db-indicator {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.btn-deploy-database a {
+  position: relative;
+}
+
+.devshop-tasks {
+  min-width: 340px;
+  z-index:20;
+  max-width: 27em;
+}
+
+.environment-menu .devshop-tasks .tasks,
+.environment-menu .devshop-tasks .actions {
+  float: left;
+  width: 50%;
+}
+
+.devshop-tasks.dropdown-menu {
+  padding-bottom: 0px;
+  top: 91%;
+}
+.devshop-tasks .actions .list-group,
+.devshop-tasks .tasks .list-group
+{
+  margin-bottom: 0px;
+}
+.devshop-tasks .actions .list-group-item:first-child,
+.devshop-tasks .tasks .list-group-item:first-child
+{
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-top: -10px;
+}
+.devshop-tasks .actions .list-group-item:last-child,
+.devshop-tasks .tasks .list-group-item:last-child
+{
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom: none;
+}
+
+.task-list.btn-group.open button {
+  background: white;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 4px !important;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.task-list.btn-group.open button i {
+  color: #777;
+}
+
+#navbar .task-list.btn-group.open button,
+#navbar .task-list.btn-group.open button .active-task {
+  color: #777;
+}
+
+.devshop-stack li.inline {
+  position: relative;
+}
+.devshop-stack li.inline a {
+
+  display: inline-block;
+  height: 3.5em;
+}
+
+.devshop-stack li.inline a:first-child {
+  width: 80%;
+}
+.devshop-stack li.inline a:last-child {
+  width: 15%;
+  padding: 0px;
+  position: absolute;
+  top: 0px;
+}
+
+.devshop-stack li.inline a:last-child i.fa {
+  position: absolute;
+  top: 25%;
+  left: 31%;
+  font-size: 1.5em;
+}
+
+.modal-results.modal-lg {
+  min-width: 900px;
+  width: auto;
+  max-width: 90%;
+}
+
+/* Bootstrap breaks user/permissions table */
+th.checkbox, td.checkbox {
+    display: table-cell;
+}
+
+/* shows hidden task logs **/
+.hosting-task-full {
+  display: inherit;
+}
+
+.hosting-task-summary {
+  display: none;
+}
+
+
+.padded-top {
+  padding-top: 1em;
+}
+
+ul.dropdown-menu li.text {
+  padding: .25em 2em;
+  font-size: .8em;
+}
+
+.node-type-site .environment {
+  position: relative;
+}
+
+.node-type-site .environment-dropdowns {
+  right: 0px;
+}
+
+.environment.pull-request img.environment-avatar {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+.environment.pull-request .environment-header {
+  padding-left: 48px !important;
+}
+
+.environment.pull-request .environment-header a.pull-request i.fa-github {
+    font-size: 1.5em;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.environment-main > .list-group-item,
+.environment-task-logs.list-group-item {
+  padding: 0px;
+  clear: both;
+}
+
+.environment-main > .list-group-item pre {
+  white-space: pre;
+}
+
+.environment-main  > .environment-header.list-group-item {
+  white-space: normal;
+}
+
+.environment-main > .list-group-item.text,
+.environment-menu > ul.dropdown-menu li .text
+{
+  padding: 10px 15px;
+  white-space: normal;
+}
+
+.environment-main > .list-group-item.text .btn-group {
+  margin-top: -10px;
+  margin-right: -15px;
+}
+
+.environment-main > .list-group-item.environment-header {
+  padding: 10px 80px 10px 10px;
+}
+
+.environment-main > .list-group-item  .btn-group > .btn,
+.environment-main > .list-group-item  .btn-group > button
+{
+  font-size: .8em;
+  text-transform: uppercase;
+  font-weight: normal;
+  border: none !important;
+  border-radius: 0px;
+  background: transparent !important;
+  color: gray;
+  /*padding-left: 0.75em;*/
+  /*padding-right: 0.75em;*/
+
+}
+
+.environment-main  .list-group-item  .btn-group > button.btn-danger {
+    color: #a94442;
+}
+.environment-main  .list-group-item  .btn-group > button.btn-warning {
+    color: #f0ad4e;
+}
+.environment-main  .list-group-item  .btn-group > button.btn-info {
+    color: #428bca;
+}
+.environment-main  .list-group-item  .btn-group > button.btn-success {
+    color: #40a823;
+}
+
+.environment-main  .list-group-item-git > .dropdown-menu {
+    max-width: 350px;
+}
+.environment-main  .list-group-item  .btn-group > a.alert-link {
+  color: inherit;
+  font-size: inherit;
+}
+.environment-main  .list-group-item > .btn-group > button:hover {
+  color: #333;
+}
+
+.github-button {
+  font-size: 1.5em;
+}
+
+#hosting-site-info, #hosting-task-list {
+  float: left;
+  margin: 0 30px 15px 0;
+  width: 25%;
+}
+
+form > div > fieldset {
+    /*padding: 20px 0px;*/
+}
+form > div > fieldset > legend {
+    /*padding: 20px 0px 0px;*/
+
+}
+
+html.js fieldset.collapsed {
+    height: 2em;
+}
+
+.btn-urls {
+  max-width: 63%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+.btn-urls-single {
+  max-width: 75%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.environment-menu .dropdown-menu a {
+    white-space: nowrap;
+}
+
+.environment-task-logs .text {
+    text-transform: uppercase;
+    font-size: .8em;
+}
+.environment-tasks-alert {
+    position:relative;
+}
+.environment-tasks-alert > .text {
+    z-index: 2;
+}
+.environment-tasks-alert .alert-link {
+  display: block;
+}
+.node-type-site .environment-tasks-alert .time,
+.dropdown-menu .environment-tasks-alert .time {
+    float:right;
+}
+.environment-task-logs .btn-logs {
+    z-index: 3;
+}
+
+.environment .progress {
+    border-radius: 0px;
+    border: none;
+    margin: 0;
+    padding: 0px;
+    background: transparent;
+    box-shadow: none;
+    clear: both;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    left: 0px;
+    z-index: 1;
+    height: 1.8em;
+    display: none;
+}
+
+.task-text {
+    padding: 0;
+    text-transform: uppercase;
+    font-size: .8em;
+    z-index: 2;
+    position: relative;
+    white-space: nowrap;
+}
+
+.task-text a {
+    padding: 5px 10px;
+}
+
+.environment .progress-bar {
+    float: none;
+    background-color: #bbb;;
+    width: 100%;
+}
+.environment-tasks-alert.alert-processing .progress {
+    display: block;
+    width: 100%;
+}
+
+.btn-logs > button {
+    color: grey;
+    padding: 3px 8px;
+    margin: 0px;
+    background-color: transparent !important;
+    border: none;
+    border-radius: initial;
+}
+.btn-logs > button:focus,
+.btn-logs > button:hover
+{
+    background-color: transparent !important;
+}
+
+.btn-logs > .dropdown-menu {
+    padding: 0px;
+    border: none;
+    -webkit-border-radius: none;
+    -moz-border-radius: none;
+    border-radius: none;
+}
+
+.btn-logs .list-group-item {
+    white-space: nowrap;
+    min-width: 22em;
+}
+
+.environment-task-logs > .alert-default {
+    background-color: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.environment-menu i.fa {
+    width: 20px;
+}
+
+.environment-menu .dropdown-menu .divider {
+    margin: 3px 0px;
+}
+
+.nav-pills.environment-tasks-nav a {
+    color: #333;
+}
+
+form.retry.btn.btn-default {
+    padding: 0;
+}
+form.retry.btn.btn-default > div > button.btn-default {
+    margin: 0;
+    border: none;
+}
+
+.hosting-task-retry, .hosting-task-retry div, .hosting-task-retry form {
+    display: block;
+}
+div.hosting-task-retry form, div.hosting-task-retry form input {
+    padding: 0.25em 0.5em !important;
+}
+
+.alert-status {
+    background: #ccc;color: #444;
+}
+
+.dropdown-settings.dropdown-menu {
+    width: 255px;
+    padding: 0px;
+}
+
+.alert-queued {
+    background: #ddd;
+}
+
+.alert-queued .alert-link {
+    color: #777;
+}
+.alert-processing .alert-link {
+    color: #333;
+}
+
+.processing {
+    z-index: 1;
+}
+/*.environment-task-logs > div {*/
+    /*position: relative;*/
+    /*z-index: 2;*/
+/*}*/
+
+.project-environments a.alert-queued,
+.devshop-tasks a.list-group-item-queued {
+    color: #777;
+}
+.devshop-tasks a.list-group-item-queued {
+    color: #777;
+    background-color: #ddd;
+}
+.devshop-tasks a.list-group-item-queued:hover {
+    color: #333;
+    background-color: #dedede;
+}
+.project-environments a.alert-processing,
+.devshop-tasks a.list-group-item-processing {
+    color: #333;
+    background-color: #ddd;
+}
+.project-environments a.alert-processing:hover,
+.devshop-tasks a.list-group-item-processing:hover {
+    color: #000;
+    background-color: #ccc;
+}
+
+.refresh-link {
+    font-size: 0.8em;
+    color: #444;
+    white-space: nowrap;
+}
+
+#project-add-status {
+    margin-top: 15px;
+    overflow-x: hidden;
+}
+
+#project-add-status.panel label
+{
+    font-size: .7em;
+    text-transform: uppercase;
+    color: grey;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-left: 0px;
+}
+
+.panel.devshop-command .panel-heading {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+.panel.devshop-command pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+
+.environment-dothooks pre {
+  margin: 0 1em 1em;
+  font-size: .8em;
+  overflow-x: scroll;
+  word-wrap: normal;
+}
+
+
+.task-details {
+  margin-top: 3em;
+}
+
+.running-indicator {
+    display: none;
+}
+
+.running-indicator.active {
+    display: block;
+}
+.task-badge {
+    margin-right: 5px;
+}
+.task-arg {
+  padding-right: 2em;
+  white-space: nowrap;
+}
+
+.task-arguments-list {
+  display: inline-block;
+
+}
+
+.ansi_color_bg_black {
+    background: #262626;
+}
+
+#hosting-task-confirm-form .form-checkboxes .form-item span {
+    width: 6em;
+    display: inline-block;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    text-align: right;
+    padding-right: 1em;
+}
+
+#hosting-task-confirm-form .form-checkboxes .form-item code {
+    background: transparent;
+}
+
+.panel-ansii.panel-body {
+    background: #262626;
+    padding: 0;
+}
+
+.panel-type-error pre {
+  white-space: normal;
+}
+
+pre.ansi_box {
+    padding: 1.25em;
+    white-space: pre-wrap;
+    line-height: 120%;
+}
+
+.errors-table td > div {
+    color: rgb(51, 51, 51);
+    display: block;
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.project-environments-table .form-control,
+#hosting-task-confirm-form .form-control#edit-parameters-environment-name {
+    width: auto;
+    display:inline;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.form-control#edit-environment-name {
+    width: auto;
+    text-align: center;
+    display:inline;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.input-group-addon-url {
+    width: 100%;
+    text-align: left;
+}
+
+#devshop-project-create-step-git #edit-cancel {
+    float: right;
+}
+
+.project-add-environment-button {
+    margin: 0px auto;
+    text-align: center;
+}
+#edit-add-environment {
+    background: #999;
+}
+p.wait {
+    text-align: center;
+    padding: 32px 0px 52px;
+    background: bottom center no-repeat url(images/loading.gif);
+}
+
+p.error {
+    text-align: center;
+    padding: 32px 0px 52px;
+}
+
+#hosting-site-info, #hosting-task-list {
+    width: 100%;
+    float: none;
+    margin: 0;
+}
+.node-type-server .panel-body .form-item {
+    margin-right: 2em;
+}
+
+a.logo img {
+    max-height: 3em;
+}
+
+.project-link {
+    font-size: 1.5em;
+    font-weight: bold;
+    display: block;
+}
+
+.btn-group-links {
+    white-space: nowrap;
+}
+
+.btn-group-links .btn-hooks {
+    white-space: normal;
+}
+
+.btn-hooks {
+    float: none !important;
+    display: inline-block;
+}
+
+#devshop-project-create-step-sites #edit-cancel,
+#devshop-project-create-step-environments #edit-cancel,
+#project-node-form #edit-cancel {
+    float: right;
+}
+
+li.text.code {
+    white-space: nowrap;
+}
+
+.list-group-item-info p {
+    color: #0f0f0f;
+}
+
+.panel-drush-access section {
+    padding-bottom: 1em;
+}
+.panel-drush-access label {
+    width: 25%;
+}
+.panel-drush-access input {
+    width: 70%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.list-group-item.clone-info {
+    padding: .5em 0 .3em;
+}
+
+
+
+.modal-info label {
+  width: 19%;
+}
+
+.modal-info input.form-control {
+  display: inline-block;
+  width: 60%;
+}
+
+.add-environment-container {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.install-method-wrapper {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.install-method-wrapper.radio input[type="radio"] {
+  margin-left: -16px;
+}
+
+#edit-install-method > .form-item > label {
+  width: 100%;
+  white-space: normal;
+}
+
+#edit-install-method {
+  clear: left;
+}
+.form-item-environment-name {
+  padding-left: 0 !important;
+}
+.form-item-git-ref {
+  padding-right: 0 !important;
+}
+#edit-install-method-clone-source label span {
+  min-width: 6em;
+  display: inline-block;
+}
+#edit-install-method-clone-source label small.git-ref {
+  min-width: 6em;
+  display: inline-block;
+  margin-left: 1em;
+}
+#edit-install-method-clone-source label:hover {
+  background-color: whitesmoke;
+}
+.no-wrap {
+    white-space: nowrap;
+}
+.inline {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#block-menu-devshop-footer-links > ul > li {
+    display: inline-block;
+}
+
+#block-menu-devshop-footer-links > h2.block-title {
+    display: none;
+}
+
+.devshop-support-block h3 {
+  font-size: 1.0em;
+  color: gray;
+  text-transform: uppercase;
+  padding: 1em;
+  padding-top:3em;
+}
+
+
+.region-footer .devshop-support-block h3 {
+  padding-top:1em;
+}
+
+.region-footer .devshop-support-block h3,
+.region-footer .devshop-support-block ul.nav,
+.region-footer .devshop-support-block ul.nav  li
+{
+  display: inline-block;
+}
+
+.table-responsive {
+  overflow: visible;
+}
+
+.task-info {
+    width: 100%;
+    z-index: 100;
+    position: relative;
+}
+
+.task-info-fixed {
+    width: 73%;
+    top: 20px;
+    position: fixed;
+}
+
+.project-environment-links-fixed {
+    position: fixed;
+    top: 30px;
+    z-index: 1;
+    background: white;
+    width: 25%;
+}
+
+
+
+@media (max-width: 767px) {
+
+    .task-info-fixed {
+        width: 96%;
+        top: 40px;
+    }
+
+    .project-environment-links-fixed {
+        top: 172px;
+        min-width: 50%;
+    }
+}
+
+.follow-checkbox {
+    position: absolute;
+    right: 10px;
+    z-index: 10;
+}
+ul.cas-links {
+    padding-left: 0;
+}
+
+img.login-images {
+    max-width:150px;
+}
+
+.row.logos {
+
+    width: 300px;
+    margin: 0px auto;
+}
+
+footer.anonymous-page {
+    padding-top: 5em;
+}
+
+#hosting-site-edit-info label {
+    position: relative;
+    left: 0;
+}
+
+.form-item-git-url-select > .chosen-container {
+  display: block !important;
+  width: 100% !important;
+}
+
+#edit-devshop-github-token-button > a.btn {
+    clear: both;
+}
+
+#devshop-github-settings-form .form-item {
+  margin-top: 2em;
+}
+
+.form-item-github-organization,
+.form-item-github-repository-name  {
+    display: inline-block;
+}
+
+
+.alert-project-welcome {
+    margin: 2em 0em;
+    padding: 1em 2em;
+}
+.alert-project-welcome h2 {
+    margin-top: 0px;
+}
+
+#edit-github-create label,
+.form-item-github-repos label
+{
+    display: block;
+}
+
+#edit-settings-github-repository-source-composer-project-suggestions,
+#edit-settings-github-repository-source-composer-project {
+    width: 25em;
+}
+
+.form-item-github-create-github-organization,
+.form-item-github-create-github-repository-name {
+  display: inline-block;
+}
+
+form .well .form-type-radios label,
+form .well .form-type-radios .form-type-radio
+{
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.form-item-github-create-github-repository-name {
+    width: 14em;
+}
+
+#edit-settings-github-repository-source-populate-choice > div.form-type-radio > label {
+    margin-right: 2em;
+}
+
+#edit-github-create-github-organization {
+     min-width: 14em;
+}
+
+#edit-github-create-github-repository-public {
+    padding-bottom: 1em;
+}
+
+.form-control.chosen-container {
+    padding: 0px;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+
+    height: 30px;
+}
+.form-control.chosen-container > a > span {
+  padding: 6px 0px;
+}
+.form-control.chosen-container.chosen-container-single .chosen-single {
+    height: 34px;
+}

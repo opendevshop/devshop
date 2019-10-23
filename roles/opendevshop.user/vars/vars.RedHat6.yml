@@ -1,0 +1,14 @@
+---
+
+# Override geerlingguy.mysql packages list, because his RedHat-6.yml only includes mysql and mysql-server.
+mysql_supports_innodb_large_prefix: true
+mysql_packages:
+  - mysql57
+  - mysql57-server
+  - mysql57-libs
+  - MySQL-python27
+  - perl-DBD-MySQL
+
+devshop_prerequisite_packages:
+- openssh-clients
+- pip

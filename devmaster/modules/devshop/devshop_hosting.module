@@ -1,0 +1,441 @@
+<?php
+/**
+ * @file devshop_hosting.module
+ *
+ * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
+ */
+
+/**
+ * Implements hook_help()
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function devshop_hosting_help($path, $arg)
+{
+  switch ($path) {
+    // Main module help for the block module
+    case 'admin/help#devshop_hosting':
+      $welcome = t('Welcome to OpenDevShop Help');
+      $note = t("There isn't much help built into OpenDevShop yet.  Please visit the documentation site for more information.");
+      $link = t("DevShop Documentation");
+      $url = "http://docs.devshop.support";
+
+      return <<<HTML
+
+<h3>$welcome</h3>
+<p>$note</p>
+
+<a href="$url" class="btn btn-primary btn-large">
+  <large>$link</large>
+<br/>
+  <small>$url</small>
+</a>
+
+HTML;
+
+  }
+}
+
+/**
+ * Implements hook_init().
+ *
+ * Adds CSS and sets the logo.
+ */
+function devshop_hosting_init() {
+  drupal_add_css(drupal_get_path('module', 'devshop_hosting') . '/devshop.css');
+  $path = drupal_get_path('module', 'devshop_hosting') . '/icon.png';
+
+  drupal_add_html_head('<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">');
+
+  // Ensure devshop CLI bin dir is in the path
+  $path = variable_get('devshop_cli_dir', '/usr/share/devshop') . '/bin';
+  $_SERVER['PATH'] .= ':' . $path;
+
+}
+
+/**
+ * Implements hook_menu().
+ *
+ * Defines a new menu callback: login page for new users, redirect to projects
+ * for authenticated users.
+ */
+function devshop_hosting_menu() {
+  $items['devshop'] = array(
+    'title' => 'Welcome to DevShop',
+    'description' => '',
+    'page callback' => 'devshop_hosting_home',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/reports/devshop_sites'] = array(
+    'title' => 'DevShop Environments',
+    'description' => "List all active sites and their IP addresses.",
+    'page callback' => 'devshop_hosting_sites_status',
+    'weight' => -60,
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['devshop/login/reset/%'] = array(
+    'title' => 'Reset Login',
+    'description' => "List all active sites and their IP addresses.",
+    'page callback' => 'devshop_hosting_login_reset',
+    'page arguments' => array(3),
+    'weight' => -60,
+    'access arguments' => array('create login-reset task'),
+  );
+  return $items;
+}
+
+/**
+ * @param $blocks
+ * @param $theme
+ * @param $code_blocks
+ */
+function devshop_hosting_block_info_alter(&$blocks, $theme, $code_blocks) {
+
+    // Enable the links block and put it in the footer..
+    $blocks['menu']['devshop-footer-links']['status'] = 1;
+    $blocks['menu']['devshop-footer-links']['region'] = 'footer';
+}
+
+/**
+ * Menu callback for path "devshop"
+ *
+ * Provides a login page or redirects to proejcts
+ */
+function devshop_hosting_home() {
+  if (user_is_logged_in()) {
+    drupal_goto(variable_get('devshop_frontpage', 'projects'));
+  }
+  else {
+    drupal_goto(variable_get('devshop_frontpage_anonymous', 'user/login'));
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Streamlines login and servers pages.
+ */
+function devshop_hosting_menu_alter(&$items) {
+
+  // Commented out for the upgrade. Remove when 1.0.0 is released.
+//  $items['user/password']['type'] = MENU_CALLBACK;
+//  unset($items['hosting/sites']);
+//  unset($items['hosting/platforms']);
+//  unset($items['hosting/clients']);
+//
+//  $items['hosting/servers/add'] = $items['node/add/server'];
+//  $items['hosting/servers/add']['title'] = t('Add new Server');
+//  $items['hosting/servers/add']['type'] = MENU_LOCAL_TASK;
+//  $items['hosting/servers/add']['page arguments'] = array('server');
+//
+//  $items['hosting/servers/list'] = array(
+//    'title' => t('All Servers'),
+//    'weight' => -1,
+//    'type' => MENU_DEFAULT_LOCAL_TASK,
+//  );
+
+
+  $items['hosting/sites']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/platforms']['type'] = MENU_LOCAL_TASK;
+  $items['hosting/clients']['type'] = MENU_LOCAL_TASK;
+
+  $items['node/%node/goto_site']['page callback'] = 'devshop_hosting_site_goto';
+
+}
+
+/**
+ * Override for hosting_site_goto().
+ * @param $node
+ */
+function devshop_hosting_site_goto($node) {
+  $cid = "hosting:site:" . $node->nid . ":login_link";
+  $cache = cache_get($cid);
+  if (user_access('create login-reset task') && !is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
+    $theurl = $cache->data['link'];
+    cache_clear_all($cid, 'cache');
+  }
+  else {
+    $theurl = devshop_hosting_site_url($node);
+  }
+
+  drupal_goto($theurl);
+  exit();
+}
+
+/**
+ * Override for _hosting_site_url().
+ * @param $node
+ *
+ * Allows us to check for project live domain alias.
+ */
+function devshop_hosting_site_url($node) {
+  $schema = 'http';
+  $port = null;
+
+  if (isset($node->project_nid)) {
+    $project = node_load($node->project_nid);
+    $url = "{$node->environment}.{$project->base_url}";
+  }
+  else {
+    $url = strtolower(trim($node->title));
+  }
+
+  $platform = node_load($node->platform);
+  $server = node_load($platform->web_server);
+
+
+  if ($server->services['http']->has_port()) {
+    $port = $server->services['http']->port;
+    if ($port == 80) {
+      $port = null;
+    }
+  }
+
+  /**
+   * This is part of the ssl feature, but is better to implement here.
+   */
+  if (isset($node->ssl_enabled) && ($node->ssl_enabled == 2)) {
+    // this is a bit of a magic number, because we cant rely on the constant being available yet.
+    // 2 == Only SSL is enabled.
+    $schema = 'https';
+
+    if ($server->services['http']->has_port()) {
+      $port = $server->services['http']->ssl_port;
+      if ($port == 443) {
+        $port = null;
+      }
+    }
+  }
+
+  if (is_numeric($port)) {
+    return "{$schema}://{$url}:{$port}";
+  }
+
+  return "{$schema}://{$url}";
+}
+
+/**
+ * Implements hook_form_alter() for user_login().
+ * Provides some UI enhancements.
+ */
+function devshop_hosting_form_user_login_alter(&$form) {
+  $form['pass']['#description'] = l(t('Forgot your Password?'), 'user/password');
+
+  // Add user register link
+  if (user_register_access()) {
+    $form['submit']['#suffix'] = t('or') . ' ' . l(t('Create an Account'), 'user/register');
+  }
+}
+
+/**
+ * Implements hook_form_alter() for user_login_block().
+ * Hides the login block form on "devshop" page.
+ */
+function devshop_hosting_form_user_login_block_alter(&$form) {
+  if (arg(0) == 'devshop') {
+    $form = array();
+  }
+}
+
+/**
+ * Page callback for devshop site status.
+ * @return string
+ */
+function devshop_hosting_sites_status() {
+
+  $query = db_query("SELECT nid FROM {node} WHERE type = :type AND status = :status", array(':type' => 'project', ':status' => 1));
+  while ($result = db_fetch_object($query)) {
+    $node = node_load($result->nid);
+
+    foreach ($node->project->environments as $environment) {
+      if ($environment->site_status == HOSTING_SITE_ENABLED && count($environment->ip_addresses)) {
+        $ip = array_shift($environment->ip_addresses);
+        $items[] = "$ip $environment->uri";
+      }
+    }
+  }
+  return theme('item_list', array('items' => $items, 'title' => t('Site Hosts')));
+}
+
+/**
+ * Special callback that waits for the login task to become available.
+ */
+function devshop_hosting_login_reset($site_nid) {
+
+  $site = node_load($site_nid);
+
+  // Set time limit to 3 minutes.
+  drupal_set_time_limit(180);
+
+  // Create new reset-login task, if needed
+  $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
+  if (!($cache && (REQUEST_TIME < $cache->data['expire']))) {
+    $task = hosting_add_task($site_nid, 'login-reset');
+    drupal_get_messages();
+  }
+  else {
+    $tasks = hosting_get_tasks('rid', $site_nid, 'login-reset');
+  }
+
+  // Wait for it to complete
+  while ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
+    sleep(1);
+    $cache = cache_get("hosting:site:" . $site_nid . ":login_link");
+    if ($cache && (REQUEST_TIME < $cache->data['expire'])) {
+      break;
+    }
+  }
+
+  // Output link to login.
+  $title = t('Log in');
+  $close = t('Close');
+  $login_text = t('Log in to !site', array('!site' => $site->environment->uri));
+  $url = url("node/{$site_nid}/goto_site");
+
+  print <<<HTML
+   <div class="modal-content">
+     <div class="modal-header">
+       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+       <h4 class="modal-title" id="loginModalLabel">
+         $title
+       </h4>
+     </div>
+     <div class="modal-body">
+       <a href="$url" target="_blank" class="btn btn-primary">
+         <i class="fa fa-sign-in"></i>
+         $login_text
+       </a>
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
+     </div>
+   </div>
+HTML;
+
+}
+
+/**
+ * Replacement for hosting_get_tasks() that will load tasks for the platform and the site, as well as clone targets.
+ * @param $environment
+ *   The environment object.
+ *
+ * @param null $type
+ *   The task type you wish to retrieve.
+ *
+ * @param null $key
+ *
+ *    If $key is specified, the return array will be re-ordered, with the key of
+ *    the array being set to $task_node->$key.
+ *
+ *    For example, if you want all tasks for an environment, sorted by date, use
+ *    'vid' for the $key parameter:
+ *
+ *    $tasks = devshop_get_tasks($environment, NULL, 'vid');
+ *
+ * @return array
+ *
+ *    By default, an array is returned with Task types as the keys. Each element
+ *    in the array is another array, keyed by VID.
+ *
+ */
+function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20) {
+
+  // Load tasks from hosting_task table for both site and platform.
+  $args = array();
+  if ($environment->site) {
+    if ($type) {
+      $where = "(t.rid = :site OR t.rid = :platform) AND t.task_type = :type";
+      $args = array(
+        ':site' => $environment->site,
+        ':platform' => $environment->platform,
+        ':type' => $type
+      );
+    }
+    else {
+      $where = "(t.rid = :site OR t.rid = :platform)";
+      $args = array(
+        ':site' => $environment->site,
+        ':platform' => $environment->platform,
+      );
+    }
+  }
+  else {
+    if ($type) {
+      $where = "(t.rid = :platform AND t.task_type = :type)";
+      $args = array(
+        ':platform' => $environment->platform,
+        ':type' => $type
+      );
+    }
+    else {
+      $where = "(t.rid = :platform)";
+      $args = array(
+        ':platform' => $environment->platform,
+      );
+    }
+  }
+
+  // Ensure limit is safe.
+  if (!is_int($limit) || $limit <= 0) {
+    $limit = 20;
+  }
+  $results = db_query("
+    SELECT t.nid, t.task_type
+      FROM {node} tn
+      INNER JOIN {hosting_task} t ON tn.nid = t.nid
+      WHERE
+        $where
+      ORDER BY t.vid DESC
+      LIMIT $limit
+  ",
+    $args
+  );
+  $tasks = array();
+  foreach ($results as $result) {
+    $tasks[$result->task_type][$result->nid] = node_load($result->nid);
+  }
+
+  // Load "Clone" tasks
+  if ($type == NULL || $type == 'clone') {
+    $results = db_query(
+      "
+      SELECT ta.nid
+        FROM {hosting_task_arguments} ta
+        INNER JOIN {hosting_task} t ON ta.nid = t.nid
+        WHERE
+          name = :name AND value = :platform
+        LIMIT 1
+    ",
+      array(
+        ':platform' => $environment->platform,
+        ':name' => 'target_platform',
+      )
+    );
+    foreach ($results as $result) {
+      $task_node = node_load($result->nid);
+      $tasks[$task_node->task_type][$task_node->nid] = $task_node;
+    }
+  }
+
+  // If key is requested...
+  if ($key) {
+    foreach ($tasks as $task_type => $task_list) {
+      foreach ($task_list as $task) {
+        $new_task_list[$task->{$key}] = $task;
+      }
+    }
+    if ($key == 'nid') {
+      krsort($new_task_list);
+    }
+    else {
+      ksort($new_task_list);
+    }
+    return $new_task_list;
+  }
+  else {
+    ksort($tasks);
+    return $tasks;
+  }
+}

@@ -1,0 +1,154 @@
+<?php
+
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
+use Symfony\Component\Yaml\Exception\ParseException;
+
+require_once 'hooks.php';
+
+/**
+ * Implements hook_devshop_environment_alter()
+ *
+ * For site nodes, look for a .hooks.yml (or .hooks.yaml, or .hooks) file in the git repo root.
+ */
+function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
+
+  $hooks_path = '';
+
+  if (!isset($environment->settings->deploy['dothooks']) || empty($environment->settings->deploy['dothooks'])){
+    return;
+  }
+
+  $hooks_file = '';
+
+  if (file_exists($environment->repo_path . '/.hooks.yaml')) {
+    $hooks_file = '.hooks.yaml';
+    $hooks_path = $environment->repo_path . '/.hooks.yaml';
+  }
+  elseif (file_exists($environment->repo_path . '/.hooks.yml')) {
+    $hooks_file = '.hooks.yml';
+    $hooks_path = $environment->repo_path . '/.hooks.yml';
+  }
+  elseif (file_exists($environment->repo_path . '/.hooks')) {
+    $hooks_file = '.hooks';
+    $hooks_path = $environment->repo_path . '/.hooks';
+  }
+
+  $environment->dothooks_file_name = $hooks_file;
+  $environment->dothooks_file_path = $hooks_path;
+
+  // Attempt to parse
+  if (!empty($environment->dothooks_file_name)) {
+    try {
+      $environment->dothooks = Yaml::parseFile($hooks_path);
+    } catch (ParseException $e) {
+      $environment->warnings[] = array(
+        'text' => t('Invalid YAML in !file: !message', array(
+          '!file' => $hooks_path,
+          '!message' => $e->getMessage(),
+        )),
+        'type' => 'error',
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_help()
+ * @param $path
+ * @param $arg
+ * @return string
+ */
+function devshop_dothooks_help($path, $arg)
+{
+  switch ($path) {
+    // Main module help for the block module
+    case 'admin/help#devshop_dothooks':
+      $note = t(
+        'You can control what happens on deploy through a <code>.hooks</code> file in your repository.'
+      );
+
+      return <<<HTML
+<p>$note</p>
+<pre>
+# Fires after an environment is installed.
+install: |
+  drush {{alias}} vset site_name "Hooks Hooks Hooks"
+
+# Fires after code is deployed. A "deployment" happens when you push to your
+# git repository or select a new branch or tag for your environment.
+deploy: |
+  drush {{alias}} updb -y
+  drush {{alias}} cc all
+
+# Fires after "verify" task.
+verify: |
+  drush {{alias}} status
+
+# Fires after "Run Tests" task.
+test: |
+  drush {{alias}} uli
+
+
+# Fires after "Deploy Data (Sync)" task.
+sync: |
+  drush {{alias}} en devel -y
+
+</pre>
+HTML;
+
+  }
+}
+
+
+/**
+ * Runs a hook for a task.
+ * @param $hook
+ * @param $task
+ */
+function devshop_dothooks_run_hook($hook, $environment) {
+
+  // Reload the alter hook in case there are new hooks.
+  $project_node = devshop_projects_load_by_name($environment->project_name);
+  devshop_dothooks_devshop_environment_alter($environment, $project_node->project);
+
+  // Respect drush option, but default to environment settings.
+  if (!drush_get_option('dothooks', $environment->settings->deploy['dothooks'])) {
+    drush_log('[.hooks] Environment not configured to run .hooks commands.', 'info');
+    return;
+  }
+
+  // If no dothooks file is found, throw an error.
+  if (empty($environment->dothooks)) {
+    drush_log(dt('Hook file not found, but the project is configured to use them. Create a .hooks file or turn off "Run deploy commands in the .hooks file".'), 'notice');
+    return;
+  }
+
+  drush_log('[.hooks] Hook file found: ' . $environment->dothooks_file_name, 'ok');
+
+  // Allow big string or lists of commands.
+  if (is_array($environment->dothooks[$hook])) {
+    $hooks = array_filter($environment->dothooks[$hook]);
+  }
+  else {
+    $hooks = array_filter(explode("\n", $environment->dothooks[$hook]));
+  }
+
+  $env = $_SERVER;
+  $env['DEVSHOP_PROJECT'] = $environment->project_name;
+  $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
+  $env['DRUSH_ALIAS'] = $environment->system_alias;
+
+  // Prepare and run each command.
+  foreach ($hooks as $hook_line) {
+    $hook_line = strtr($hook_line, array(
+      '{{alias}}' => $environment->system_alias,
+    ));
+    provision_process($hook_line, $environment->repo_path, 'DevShop .hooks.yml', $env);
+  }
+}
+

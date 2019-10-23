@@ -1,0 +1,63 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Projects
+ */
+
+/**
+ * Implements hook_install()
+ */
+function devshop_testing_install() {
+  // Push devshop_testing's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_testing')
+    ->execute();
+}
+
+/**
+ * Implements hook_enable()
+ */
+function devshop_testing_enable() {
+  drupal_set_message('The DevShop testing system has been enabled. Visit your projects settings pages to enable testing.');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function devshop_testing_schema() {
+ $schema['hosting_devshop_project_testing'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Project Node ID.',
+      ),
+      'tests_to_run' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => 'A list of tests to run',
+      ),
+    ),
+    'primary key' => array('project_nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Set a weight higher than devshop_project so our form altering can access the project settings.
+ */
+function devshop_testing_update_7000() {
+  db_update('system')
+    ->fields(array(
+      'weight' => 2
+    ))
+    ->condition('name', 'devshop_testing')
+    ->execute();
+}

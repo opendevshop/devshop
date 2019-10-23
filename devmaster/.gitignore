@@ -1,0 +1,5 @@
+; Ignore modules from make file.
+modules/contrib
+modules/aegir
+themes/contrib
+libraries

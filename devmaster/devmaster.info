@@ -1,0 +1,79 @@
+name = OpenDevShop DevMaster
+description = Web interface for OpenDevShop.
+core = 7.x
+
+; Drupal core
+dependencies[] = block
+dependencies[] = help
+dependencies[] = menu
+dependencies[] = node
+dependencies[] = system
+dependencies[] = user
+dependencies[] = update
+
+; Aegir core
+dependencies[] = hosting
+dependencies[] = hosting_task
+dependencies[] = hosting_client
+dependencies[] = hosting_db_server
+dependencies[] = hosting_site
+dependencies[] = hosting_package
+dependencies[] = hosting_platform
+dependencies[] = hosting_web_server
+dependencies[] = hosting_server
+dependencies[] = hosting_clone
+dependencies[] = hosting_cron
+dependencies[] = hosting_migrate
+dependencies[] = hosting_git_checkout
+dependencies[] = hosting_git_tag
+dependencies[] = hosting_git_commit
+
+; DevShop Aegir
+dependencies[] = hosting_alias
+dependencies[] = hosting_queued
+dependencies[] = hosting_http_basic_auth
+dependencies[] = hosting_sync
+
+dependencies[] = hosting_filemanager
+dependencies[] = hosting_logs
+dependencies[] = hosting_tasks_extra
+dependencies[] = hosting_backup_queue
+dependencies[] = hosting_site_backup_manager
+dependencies[] = hosting_https
+dependencies[] = hosting_apache_https
+
+;dependencies[] = fix_permissions
+;dependencies[] = fix_ownership
+
+; Drupal contrib
+dependencies[] = navbar
+dependencies[] = betterlogin
+dependencies[] = chosen
+dependencies[] = composer_manager
+dependencies[] = views
+dependencies[] = views_bulk_operations
+dependencies[] = actions_permissions
+dependencies[] = r4032login
+dependencies[] = jquery_update
+dependencies[] = module_filter
+dependencies[] = hosting_letsencrypt
+
+; This breaks hosting.install.  Removing it for now.
+;dependencies[] = adminrole
+
+; DevShop
+dependencies[] = devshop_hosting
+dependencies[] = devshop_dothooks
+dependencies[] = devshop_projects
+dependencies[] = devshop_pull
+dependencies[] = devshop_github
+dependencies[] = devshop_testing
+dependencies[] = aegir_ssh
+dependencies[] = aegir_download
+dependencies[] = aegir_update
+dependencies[] = aegir_config
+dependencies[] = devshop_permissions
+dependencies[] = devshop_stats
+dependencies[] = devshop_remotes
+dependencies[] = devshop_support_network_client
+

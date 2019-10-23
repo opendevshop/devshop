@@ -1,0 +1,62 @@
+language: php
+
+sudo: required
+
+# Only run test when committing to 1.x branch.
+branches:
+  only:
+    - 7.x-1.x
+
+env:
+  global:
+    - DEVSHOP_VERSION=1.x
+    - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer devshop.local.computer'
+
+  matrix:
+  - test="Upgrade"
+    COMMAND="robo up --test-upgrade --no-dev"
+    UPGRADE_FROM_VERSION="1.0.0-beta10"
+
+  - test="Install"
+    COMMAND="robo up --test"
+
+services:
+  - docker
+
+before_install:
+  - pwd
+  - env
+
+  # Install Robo
+  - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
+  - sudo mv robo.phar /usr/local/bin/robo
+  - sudo chmod +x /usr/local/bin/robo
+
+  # Install Drush
+  - wget https://github.com/drush-ops/drush/releases/download/8.1.9/drush.phar
+  - sudo mv drush.phar /usr/local/bin/drush
+  - sudo chmod +x /usr/local/bin/drush
+
+  # Install drupalorg_drush, for validating the makefile.
+  - drush dl drupalorg_drush-7.x-1.x
+  - drush verify-makefile
+
+  # Clone devshop
+  - cd ..
+  - git clone http://github.com/opendevshop/devshop
+  - cd devshop
+  - git checkout -qf ${DEVSHOP_VERSION}
+  - git status
+  - pwd
+  - cp build-devmaster-travis-forks.make.yml build-devmaster-dev.make.yml
+  - cat build-devmaster-dev.make.yml
+
+  # Prepare devshop CLI.
+  - composer install
+
+script:
+  - echo "Running ${COMMAND} -n --disable-xdebug --fork ..."
+  - ${COMMAND} -n --disable-xdebug --fork
+
+notifications:
+  slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA

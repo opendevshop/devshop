@@ -1,0 +1,208 @@
+---
+- hostname:
+    name: '{{ server_hostname }}'
+  ignore_errors: '{{ server_hostname_ignore_errors }}'
+
+- name: Include version specific variables for Debian OS Family
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "Debian"
+
+- name: Include version specific variables for RedHat OS Family
+  include_vars: "vars.{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
+  when: ansible_os_family == "RedHat"
+
+- name: Install extra packages
+  apt:
+    pkg: '{{ extra_packages }}'
+    state: installed
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install extra packages
+  yum:
+    name: '{{ extra_packages }}'
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Detect DevShop CLI
+  stat:
+    path: "{{ devshop_cli_path }}"
+  register: cliPath
+
+- name: Install DevShop CLI
+  # This should always be set so the devshop cli is set to the latest version, in case this is being run just via playbooks and not the verify:system command.
+  # when: cliPath.stat.islnk is not defined
+  git:
+    repo: "{{ devshop_cli_repo }}"
+    version: "{{ devshop_cli_version }}"
+    update: "{{ devshop_cli_update }}"
+    dest: "{{ devshop_cli_path }}"
+    force: "yes"
+
+- name: Setup devshop CLI
+  command: "{{ composer_path }} install"
+  args:
+    chdir: "{{ devshop_cli_path }}"
+
+- name: Add DevShop bin directory to Path
+  copy:
+    dest: /etc/profile.d/devshop-cli-path.sh
+    content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
+
+- name: Check drush status
+  command: "{{ drush_bin_path }} status"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Clear drush caches
+  command: "{{ drush_bin_path }} cache-clear drush"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Create /var/aegir/.drush
+  file:
+    path: "{{ aegir_user_home }}/.drush"
+    owner: "{{ aegir_user_name }}"
+    group: "{{ aegir_user_name }}"
+    mode: 0744
+    state: directory
+
+- name: Install required drush packages.
+  command: "{{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
+  with_dict: "{{ devshop_drush_packages }}"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Setup Drush Bash Enhancements
+  command: "{{ drush_bin_path }} init --yes"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Get Devmaster root
+  shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  register: devmaster_site_root
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: True
+
+- name: Get Devmaster URI
+  shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  register: devmaster_site_uri
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: True
+
+- set_fact:
+    devmaster_site_root: "{{ devmaster_site_root.stdout }}"
+    devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
+
+- name: Devmaster Root
+  debug:
+    msg: "{{ devmaster_site_root }}"
+- name: Devmaster URI
+  debug:
+    msg: "{{ devmaster_site_uri }}"
+
+- name: Devmaster Install Command
+  debug:
+    msg: "{{ devmaster_install_command }}"
+
+- name: Install Devmaster
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_install_command }}"
+  when: devmaster_site_uri == ""
+
+- name: Devmaster Upgrade Command
+  debug:
+    msg: "{{ devmaster_upgrade_command }}"
+
+- name: "Upgrade Devmaster to {{ devshop_version }}"
+  command: "{{ devmaster_upgrade_command }}"
+  when:
+  - devmaster_site_uri != ""
+  - devmaster_skip_upgrade == false
+
+- name: Verify Devmaster Site to ensure composer install
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-tasks -v"
+
+- name: DevShop.Support | Save License Key
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
+  when: devshop_support_license_key != ""
+
+- name: DevShop.Support | Validate License Key to setup support modules.
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support -v"
+  when: devshop_support_license_key != ""
+
+- name: Ensure hosting-dispatch crontab is setup
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
+
+- name: Save SSH key as variable
+  shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  become: yes
+  become_user: aegir
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Ensure privacy of SSH Keys
+  file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
+  with_items:
+    - { path: '.ssh', mode: '0700' }
+    - { path: '.ssh/id_rsa', mode: '600' }
+    - { path: '.ssh/id_rsa.pub', mode: '644' }
+
+- name: Set git user name and email
+  shell: "git config --global user.email aegir@{{ server_hostname }}"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Set git user name and email
+  shell: "git config --global user.name DevShop"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Set git user name and email
+  shell: "git config --global push.default simple"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: yes
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+# CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
+# @TODO: Investigate php.ini for CLI on all OS
+#- name: 'RedHat: Set timezone in PHP.ini for CLI.'
+#  lineinfile:
+#    dest: '{{ php_cli_ini_path }}'
+#    line: 'date.timezone = America/Chicago'
+#  when: ansible_os_family == "RedHat"

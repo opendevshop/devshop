@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * Implements hook_requirements()
+ *
+ * Display the data payload the devshop server is sending back to devshop.support
+ *
+ * @param $phase
+ *
+ * @return array
+ */
+function devshop_support_network_client_requirements($phase) {
+
+  $requirements = array();
+
+  // Ensure translations don't break during installation.
+  $t = get_t();
+
+  // Report Drupal version
+  if ($phase == 'runtime') {
+    $requirements['devshop_support'] = array(
+      'title' => $t('DevShop License Payload'),
+      'value' => devshop_payload_to_table(),
+      'severity' => REQUIREMENT_INFO,
+    );
+  }
+  return $requirements;
+}
+
+/**
+ * Convert the devshop support client data payload to an HTML table.
+ * @param null $data
+ *
+ * @return string
+ * @throws \Exception
+ */
+function devshop_payload_to_table($data = NULL) {
+
+
+  if (!$data) {
+    $data = devshop_support_network_client_client_data();
+  }
+
+  $rows = array();
+  foreach ($data as $name => $value) {
+    if (is_array($value) and !empty($value)) {
+      $value = devshop_payload_to_table($value);
+    }
+    $rows[] = array(
+      "<strong>{$name}</strong>", $value
+    );
+  }
+
+  return theme('table', array(
+    'rows' => $rows,
+  ));
+}
+
+/**
+ * Implements hook_install()
+ */
+function devshop_support_network_client_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1
+    ))
+    ->condition('name', 'devshop_support_network_client')
+    ->execute();
+
+  variable_set('composer_manager_vendor_dir', 'sites/all/vendor');
+  variable_set('composer_manager_autobuild_file', 0);
+
+}
+
+/**
+ *
+ */
+function devshop_support_network_client_update_7000() {
+  devshop_support_network_client_install();
+}
+
+/**
+ * Delete the composer_manager_file_dir so we just use the default.
+ */
+function devshop_support_network_client_update_7001() {
+  variable_del('composer_manager_file_dir');
+}
+
+/**
+ * Check for CAS library location and save it.
+ */
+function devshop_support_network_client_update_7002()
+{
+
+  if (file_exists(DRUPAL_ROOT . '/profiles/devmaster/libraries/cas')) {
+    $cas_library_dir = 'profiles/devmaster/libraries/cas';
+  } elseif (file_exists(DRUPAL_ROOT . '/sites/all/libraries/cas')) {
+    $cas_library_dir = 'sites/all/libraries/cas';
+  } else {
+    $cas_library_dir = '';
+  }
+  variable_set('cas_library_dir', $cas_library_dir);
+}

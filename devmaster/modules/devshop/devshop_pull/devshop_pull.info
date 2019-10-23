@@ -1,0 +1,5 @@
+name = DevShop Pull
+description = Provides a variety of methods to trigger a Pull Code task on DevShop projects.
+core = 7.x
+package = DevShop
+dependencies[] = devshop_projects

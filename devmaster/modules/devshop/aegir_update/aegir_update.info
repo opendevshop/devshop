@@ -1,0 +1,4 @@
+name = Aegir Update
+description = Adds the ability to update your Drupal site using Aegir.
+core = 7.x
+dependencies[] = hosting_site

@@ -1,0 +1,304 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the devshop_hosting module.
+ *
+ */
+
+
+/**
+ * Implements hook_install().
+ *
+ * Sets a new frontpage.
+ */
+function devshop_hosting_install() {
+  variable_set('site_frontpage', 'devshop');
+  drupal_set_message(t('Site frontpage set to <em>devshop</em>.'));
+
+  db_update('system')
+  ->fields(array(
+    'weight' => 11,
+  ))
+  ->condition('name', "devshop_hosting")
+  ->execute();
+
+  devshop_hosting_install_footer_menu();
+}
+
+/**
+ * Implements hook_requirements().
+ * @param $phase
+ * @return array
+ */
+function devshop_hosting_requirements($phase) {
+  $requirements = array();
+
+  $devshop_version = file_get_contents(drupal_get_path('profile', 'devmaster') . '/VERSION.txt');
+  $t = get_t();
+
+  // Report DevShop version
+  if ($phase == 'runtime') {
+    $requirements['devshop'] = array(
+      'title' => $t('DevShop Version'),
+      'value' => $devshop_version,
+      'severity' => REQUIREMENT_OK,
+    );
+  }
+
+  return $requirements;
+}
+
+/**
+ * Install the footer menu block and links.
+ */
+function devshop_hosting_install_footer_menu() {
+    $t = get_t();
+    $menu = array(
+        'menu_name' => 'devshop-footer-links',
+        'title' => $t('DevShop Footer Links'),
+    );
+    menu_save($menu);
+
+    // Lookup hostmaster node.
+    $nid = db_select('hosting_context', 'hc')
+        ->fields('hc', ['nid'])
+        ->condition('name', 'hostmaster')
+        ->execute()
+        ->fetchField()
+    ;
+
+    // Add links.
+    $links["admin/devshop"] = $t('DevShop Settings');
+    $links["node/$nid"] = $t('Hostmaster Dashboard');
+    $links['https://docs.opendevshop.com'] = $t('Documentation');
+    $links['https://gitter.im/opendevshop/devshop'] = $t('Chat');
+    $links['https://github.com/opendevshop/devshop/issues'] = $t('Issue Queue');
+    $links['https://devshop.support'] = $t('Get DevShop.Support');
+
+    $number = 0;
+    foreach ($links as $url => $title) {
+        $menu_item = [
+            'link_title' => $title,
+            'link_path' => $url,
+            'menu_name' => 'devshop-footer-links',
+            'description' => $title,
+            'weight' => $number,
+        ];
+        menu_link_save($menu_item);
+        $number++;
+    }
+    menu_rebuild();
+
+    // Add alter to block to add CSS or classes.
+}
+
+/**
+ * Implements hook_update_dependencies()
+ * Ensures hosting site schema is updated before the queues run and try to load nodes out of sync with the schema.
+ */
+function devshop_hosting_update_dependencies() {
+
+  // Force hosting_site_update_7302() function provided by this module
+  // must run before the devshop_hosting_update_7009() function provided by the
+  // 'another_module' module.
+  $dependencies['devshop_hosting'][7009] = array(
+    'hosting_site' => 7302,
+  );
+  return $dependencies;
+}
+
+/**
+ * Set weight of this module higher than views.
+ */
+function devshop_hosting_update_7001() {
+  $ret = array();
+  $ret[] = update_sql('UPDATE {system} SET weight = 11 WHERE name = "devshop_hosting"');
+  return $ret;
+}
+
+/**
+ * Disable aegir's "Welcome" page.
+ */
+function devshop_hosting_update_7002() {
+  variable_set('hosting_welcome_page', 0);
+}
+
+/**
+ * Enable devshop_github module.
+ */
+function devshop_hosting_update_7003() {
+  module_enable(array('devshop_hosting'));
+}
+
+/**
+ * Enable devshop_dothooks module.
+ */
+function devshop_hosting_update_7004() {
+  module_enable(array('devshop_dothooks'));
+}
+
+/**
+ * Save 'aegir_hostmaster_site_nid' variable for devshop.
+ */
+function devshop_hosting_update_7005() {
+  $nid = db_query('SELECT site.nid
+                     FROM hosting_site site
+                     JOIN hosting_package_instance pkgi
+                       ON pkgi.rid = site.nid
+                     JOIN hosting_package pkg
+                       ON pkg.nid = pkgi.package_id
+                    WHERE pkg.short_name = \'devmaster\'')->fetchField();
+  variable_set('aegir_hostmaster_site_nid', $nid);
+}
+
+/**
+ * Enable devshop_stats module.
+ *
+ * Removed now that we had a "successful failure". https://travis-ci.org/opendevshop/devmaster/jobs/189200584#L2682
+ *
+function devshop_hosting_update_7006() {
+  module_enable(array('devshop_stats'));
+}
+ */
+
+/**
+ * Disable and uninstall distro_update module.
+ */
+function devshop_hosting_update_7006() {
+  module_disable(array('distro_update'));
+  drupal_uninstall_modules(array('distro_update'));
+}
+
+/**
+ * Set the "Force removal of deleted sites, platforms, and servers" setting.
+ */
+function devshop_hosting_update_7007() {
+  variable_set('hosting_delete_force', 1);
+}
+
+/**
+ * Enable Aegir Download, Commit, Update, and Config modules.
+ */
+function devshop_hosting_update_7009() {
+    module_enable(array('aegir_download', 'aegir_commit', 'aegir_update', 'aegir_config', 'aegir_features'));
+}
+
+/**
+ * Enable Hosting Git Tag module.
+ */
+function devshop_hosting_update_7010() {
+    module_enable(array('hosting_git_tag'));
+}
+
+//drupal_set_installed_schema_version('devshop_hosting', 7010);
+
+/**
+ * Enable the footer menu.
+ */
+function devshop_hosting_update_7011() {
+    devshop_hosting_install_footer_menu();
+}
+
+/**
+ * Enable Devshop Remotes.
+ */
+function devshop_hosting_update_7012() {
+  module_enable(array('devshop_remotes'));
+}
+
+/**
+ * Enable Hosting Git Checkout module for creating branches.
+ */
+function devshop_hosting_update_7013() {
+  module_enable(array('hosting_git_checkout'));
+}
+
+/**
+ * Enable Aegir features module to allow one click feature updates and reverts.
+ */
+function devshop_hosting_update_7014() {
+  module_enable(array('aegir_features'));
+}
+
+/**
+ * Remove aegir_commit and aegir_features from the system.
+ */
+function devshop_hosting_update_7015 (){
+  $modules = array(
+    'aegir_commit',
+    'aegir_features',
+  );
+  db_delete('system')
+    ->condition('name', $modules, 'IN')
+    ->condition('type', 'module')
+    ->execute();
+}
+
+/**
+ * Enable LetsEncrypt.org support for automatic free HTTPS certificates.
+ */
+function devshop_hosting_update_7016() {
+  module_enable(array('hosting_letsencrypt'));
+}
+
+/**
+ * Enable DevShop.Support Client!
+ */
+function devshop_hosting_update_7100() {
+  module_enable(array('devshop_support_network_client'));
+}
+
+/**
+ * Disable client requirement.
+ */
+function devshop_hosting_update_7101() {
+  variable_set('hosting_client_require_client_to_create_site', FALSE);
+}
+
+/**
+ * Enable composer_manager module.
+ */
+function devshop_hosting_update_7102() {
+  module_enable(array('composer_manager'));
+}
+
+/**
+ * Enable navbar, disable and uninstall admin_menu modules.
+ */
+function devshop_hosting_update_7103() {
+  module_disable(array('admin_menu'));
+  drupal_uninstall_modules(array('admin_menu', 'admin_menu_toolbar'));
+  module_enable(array('navbar'));
+}
+
+/**
+ * Don't automatically import sites on platform verify.
+ */
+function devshop_hosting_update_7104() {
+  variable_set('hosting_platform_automatic_site_import', FALSE);
+}
+
+/**
+ * Add a DevShop Settings link to the footer menu.
+ */
+function devshop_hosting_update_7105() {
+  $menu_item = array(
+    'link_title' => t('DevShop Settings'),
+    'link_path' => 'admin/devshop',
+    'menu_name' => 'devshop-footer-links',
+    'description' => t("Manage this DevShop's Settings"),
+    'weight' => -1,
+  );
+  menu_link_save($menu_item);
+}
+
+/**
+ * Enable "chosen" module and make sure "chosen" widget allows "contains" string searching.
+ */
+function devshop_hosting_update_7106() {
+  module_enable(array('chosen'));
+  variable_set('chosen_search_contains', 1);
+  variable_set('chosen_jquery_selector', 'select:visible');
+  variable_set('chosen_minimum_single', 0);
+  variable_set('chosen_minimum_multiple', 0);
+}
