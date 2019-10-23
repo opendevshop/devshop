@@ -20,7 +20,7 @@ Version | Status | Aegir | Hosts      | DevMaster | Install & CLI
 [![Backers on Open Collective](https://opencollective.com/devshop/backers/badge.svg)](#backers)
  [![Sponsors on Open Collective](https://opencollective.com/devshop/sponsors/badge.svg)](#sponsors) 
 
-DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test, and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](http://github.com/opendevshop/devmaster)) and a back-end built with Drush, Symfony, and Ansible.
+DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test, and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](https://github.com/opendevshop/devmaster)) and a back-end built with Drush, Symfony, and Ansible.
 
 DevShop deploys your sites using git, and allows you to create unlimited environments for each site.  DevShop makes it very easy to deploy any branch or tag to each environment
 
