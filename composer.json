@@ -5,7 +5,7 @@
         "symfony/console": "^3.4",
         "symfony/process": "^3.4",
         "knplabs/github-api": "^1.4",
-        "symfony/filesystem": "^2.7",
+        "symfony/filesystem": "^3.4",
         "cpliakas/git-wrapper": "1.*",
         "asm/php-ansible": "v1.2.0",
         "consolidation/robo": "^1",
