@@ -1813,8 +1813,8 @@ function devshop_github_create_all_pr_environments($project_node) {
     $site_url = url("node/{$environment->site}", array('absolute' => true));
 
     // Get PR ID, if it already has one.
-    if (!empty($environment->github_pull_request->pull_request_object->id)) {
-      $environment_pr_id = $environment->github_pull_request->pull_request_object->id;
+    if (!empty($environment->github_pull_request->number)) {
+      $environment_pr_id = $environment->github_pull_request->number;
       $environment_pr_slug = "pr{$environment_pr_id}";
     }
     else {
@@ -1852,7 +1852,7 @@ function devshop_github_create_all_pr_environments($project_node) {
 
     // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
     elseif ($environment_pr_id && empty($prs[$environment_pr_slug])) {
-      drush_log("PR environment $environment->name exists but PR has been closed. [$site_url]", "ok");
+      drush_log("PR $environment_pr_id environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
       if ($project->settings->github['pull_request_environments_delete'] && empty($environment->tasks['delete'])) {
         drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
         hosting_add_task($environment->site, 'delete', array('force' => 1));
