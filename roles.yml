@@ -32,7 +32,7 @@
   version: 1.5.0-rc1
 
 - name: opendevshop.devmaster
-  version: master
+  version: 1.5.0
 
 - name: opendevshop.aegir-user
   version: master
