@@ -26,7 +26,7 @@
   version: 2.6.2
 
 - name: opendevshop.aegir-apache
-  version: master
+  version: 1.5.0
 
 - name: opendevshop.aegir-nginx
   version: 1.5.0-rc1
@@ -35,4 +35,4 @@
   version: 1.5.0
 
 - name: opendevshop.aegir-user
-  version: master
+  version: 1.5.0
