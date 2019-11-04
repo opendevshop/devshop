@@ -1,0 +1,15 @@
+# monorepo-builder.yml
+parameters:
+  directories_to_repositories:
+
+    # Drupal Distribution
+    devmaster: 'git@github.com:opendevshop/devmaster.git'
+
+    # Ansible Role: Devmaster
+    roles/opendevshop.devmaster: 'git@github.com:opendevshop/ansible-role-devmaster.git'
+
+    # Ansible Role: Aegir User
+    roles/opendevshop.aegir-user: 'git@github.com:opendevshop/ansible-role-aegir-user.git'
+
+    # Ansible Role: Aegir Apache
+    roles/opendevshop.aegir-apache: 'git@github.com:opendevshop/ansible-role-devmaster.git'
