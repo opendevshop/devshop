@@ -4,11 +4,6 @@ sudo: required
 git:
   depth: false
 
-# Only run tests when committing to our primary branch and pull requests.
-branches:
-  only:
-    - develop
-
 env:
   global:
     - DEVSHOP_VERSION=1.x
