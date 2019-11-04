@@ -1,0 +1,25 @@
+galaxy_info:
+  author: Jon Pugh
+  description: Makes an apache server accessible as an aegir remote.
+  company: ThinkDrop Inc
+  
+  license: GPLv2
+  
+  min_ansible_version: 1.2
+
+  galaxy_tags:
+    - aegir
+    - opendevshop
+    - hosting
+  
+  platforms:
+    - name: EL
+      versions:
+      - 7
+    - name: Ubuntu
+      versions:
+      - trusty
+      
+dependencies:
+  - opendevshop.aegir-user
+  - geerlingguy.apache

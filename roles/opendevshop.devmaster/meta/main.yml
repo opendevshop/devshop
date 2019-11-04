@@ -1,0 +1,29 @@
+galaxy_info:
+  author: Jon Pugh
+  description: Installs DevShop Devmaster
+  company: ThinkDrop Inc
+  min_ansible_version: 2.0
+  license: GPLv2
+  
+  platforms:
+    - name: EL
+      versions:
+      - 7
+    - name: Ubuntu
+      versions:
+      - trusty
+      - xenial
+      
+  galaxy_tags:
+    - aegir
+    - hosting
+    - drupal
+
+dependencies:
+  - geerlingguy.supervisor
+  - opendevshop.aegir-user
+  - geerlingguy.mysql
+  - geerlingguy.php
+  - geerlingguy.composer
+
+  

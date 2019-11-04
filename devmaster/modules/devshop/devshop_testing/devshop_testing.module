@@ -1,0 +1,316 @@
+<?php
+
+/**
+ * @file devshop_projects.module
+ * a module in the DevShop module group which enables the user to create
+ * proects and group sites/platforms into project groups.
+ */
+
+/**
+ * Implements hook_menu()
+ */
+function devshop_testing_menu_alter(&$items) {
+  $items['node/%node']['access callback'] = 'devshop_testing_node_access_alter';
+  $items['node/%node/revisions/%/view']['access callback'] = 'devshop_testing_node_revision_access_alter';
+}
+
+/**
+ * Replacement access check for node/% pages.
+ *
+ * We do this so we can check a secondary permission for Task nodes of type
+ * "test"
+ *
+ * @param $op
+ * @param $node
+ * @param null $account
+ */
+function devshop_testing_node_access_alter($op, $node, $account = NULL) {
+  if ($node->type == 'task' && $node->task_type == 'test' && user_access('access test results')) {
+    return TRUE;
+  }
+  else {
+    return node_access($op, $node, $account);
+  }
+}
+
+/**
+ * Replacement access check for node/%/revision/%/view pages.
+ *
+ * We do this so we can check a secondary permission for Task nodes of type
+ * "test"
+ *
+ * @param $op
+ * @param $node
+ * @param null $account
+ */
+function devshop_testing_node_revision_access_alter($node, $op = 'view') {
+  if ($node->type == 'task' && $node->task_type == 'test' && user_access('access test results')) {
+    return TRUE;
+  }
+  else {
+    return _node_revision_access($node, $op);
+  }
+}
+
+/**
+ * Implementation of hook_perm()
+ */
+function devshop_testing_permission() {
+  return array(
+    'create test task' => array(
+      'title' => t('Create test task'),
+      'description' => t('Run tests on a site.'),
+    ),
+    'access test results' => array(
+      'title' => t('Access test results on task node pages.'),
+      'description' => t('This permission grants special access to task nodes of type "test".  Use this is you wish to grant outside developers (such as anonymous) access to test results.'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_hosting_tasks()
+ */
+function devshop_testing_hosting_tasks() {
+  $tasks = array();
+
+  $tasks['site']['test'] = array(
+    'title' => t('Run Tests'),
+    'description' => t('Run tests on the site.'),
+    'dialog' => TRUE,
+    'task_permitted' => TRUE,
+    'access callback' => 'devshop_hosting_task_menu_access',
+    'icon' => 'pencil-square-o',
+  );
+
+  return $tasks;
+}
+
+/**
+ * Implements hook_devshop_environment_menu().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+// I'm getting rid of this for now for testing. I want this button at the top.
+//function devshop_testing_devshop_environment_menu($environment) {
+//  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+//    return array(
+//      'test'
+//    );
+//  }
+//}
+
+/**
+ * Implementation of hook_hosting_task_TASK_TYPE_form().
+ *
+ * Our parameters are added in devshop_testing_form_alter()
+ */
+function hosting_task_test_form($node) {
+// $form = devshop_testing_form_elements($node->project, $node->environment->name);
+  $form = array();
+  return $form;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
+
+  // If it's the project form, it's "defaults" for environments.
+  if ($form_id == 'project_node_form') {
+    $form['project']['settings']['testing'] = array_merge(array(
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#group' => 'project_settings',
+      '#title' => t('Testing'),
+      '#description' => t('Configure how testing is handled for this project.'),
+    ), devshop_testing_form_elements($form['#node']->project)
+    );
+  }
+
+  // If it's the site (environment) form, it is the override.
+  elseif ($form_id == 'site_node_form') {
+    if (!isset($form['#node']->project)) {
+      return;
+    }
+    $form['environment']['settings']['testing'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Testing'),
+      '#description' => t('Set the testing settings for this environment.'),
+      '#weight' => 100,
+    );
+    $form['environment']['settings']['testing'] = devshop_testing_form_elements($form['#node']->project,  $form['#node']->environment->name);
+  }
+  // Run Tests Form: add extra submit handler to stringify the test options.
+  elseif ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'test') {
+//    array_unshift($form['#submit'], 'devshop_testing_task_submit');
+  }
+}
+
+/**
+ * Helper that returns the common form elements for running tests.
+ */
+function devshop_testing_form_elements($project, $environment_name = NULL) {
+
+
+  // Load environment object and settings, if we need it.
+  if ($environment_name) {
+    $environment = (object) $project->environments[$environment_name];
+    $settings = $environment->settings;
+  }
+  else {
+    // If these settings are not for a specific environment, load up live or the first one.
+    if ($project->settings->live['live_environment']) {
+      $environment = (object) $project->environments[$project->settings->live['live_environment']];
+    }
+    else {
+      $environment = array_shift($project->environments);
+    }
+    $settings = $project->settings;
+  }
+
+  // If this is an environment form, and we are missing testing settings, inherit the project settings.
+  if (isset($environment) && !isset($settings->testing)) {
+    $settings->testing = $project->settings->testing;
+  }
+  // If a project and we are missing testing settings, load defaults.
+  // @TODO: Move this to the node API?
+  elseif (!isset($settings->testing)) {
+    $settings->testing = array(
+      'test_type' => 0,
+      'tests_to_run' => '',
+      'behat_folder_path' => '',
+      'behat_bin' => 'bin/behat',
+    );
+  }
+
+  // build this group of fields.
+  $testing_form = array();
+  $testing_form['test_type'] = array(
+    '#title' => t('Test Type'),
+    '#options' => array(
+      '0' => 'none',
+      'simpletest' => t('Simpletest'),
+      'behat' => t('Behat'),
+    ),
+    '#type' => 'radios',
+    '#default_value' => $settings->testing['test_type'],
+  );
+
+  // Look for behat feature files.
+  // @TODO: Extract this to a hook to make tests types extensible.
+
+  // @TODO: Figure out a better way to handle lists of tests per environment.
+//  $tests = array();
+//
+//  // Final check for repo root.
+//  if (empty($environment->repo_path)){
+//    $tests[] = 'Something is wrong. Environment not found.';
+//  }
+//  else {
+//    $directory = $environment->repo_path . '/' . $settings->testing['behat_folder_path'] . '/features';
+//
+//    $files = file_scan_directory($directory, '.feature', array('.', '..'));
+//
+//    $tests = array();
+//    foreach ($files as $file) {
+//      $value = str_replace($directory, '', $file->filename);
+//      $tests[$value] = $file->basename;
+//    }
+//  }
+//
+//  $testing_form['tests_to_run'] = array(
+//    '#type' => 'checkboxes',
+//    '#options' => $tests,
+//    '#title' => t('Tests to Run'),
+//    '#default_value' => $settings->testing['tests_to_run'],
+//    '#description' => t('Select the tests you wish to run.  Leave all unchecked to run all of them.'),
+//  );
+//
+//  if (empty($environment_name)) {
+//    $testing_form['tests_to_run']['#description'] = t('Select the tests you wish to run by default. These tests were detected from your environment %live.', array('%live' => $environment->name));
+//  }
+
+  $testing_form['behat_folder_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Behat folder path'),
+    '#description' => t('Enter the path to your behat tests folder, relative to your git repo root.'),
+    '#default_value' => $settings->testing['behat_folder_path'],
+  );
+  
+  // Lock fields in environment settings.
+  if ($environment_name) {
+    $locked = array(
+      'test_type',
+      'behat_folder_path',
+    );
+    foreach ($locked as $field){
+      $testing_form[$field]['#value'] = $testing_form[$field]['#default_value'];
+      $testing_form[$field]['#type'] = 'value';
+    }
+  }
+  return $testing_form;
+}
+
+/**
+ * Helper to stringify the tests to run.
+ */
+function devshop_testing_task_submit(&$form, &$form_state) {
+
+  // Implode tests to run
+//  $value = implode(',', array_filter($form_state['values']['parameters']['tests_to_run']));
+//  form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
+}
+
+/**
+ * Implements hook_devshop_deploy_hooks_form_elements_alter().
+ */
+function devshop_testing_devshop_deploy_hooks_form_elements_alter(&$form, $is_environment_form) {
+  // Add to deploy hooks.
+
+  // If this is the environment form and the project allows environment specific deploy hooks...
+  if ($is_environment_form && $form['#project']->settings->deploy['allow_environment_deploy_config']) {
+    $default_value = $form['#environment']->settings->deploy['test'];
+  }
+  // If this is env form and project does not allow env specific deploy hooks...
+  elseif ($is_environment_form && !$form['#project']->settings->deploy['allow_environment_deploy_config']) {
+    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
+  }
+  // If this is a project form...
+  elseif (!$is_environment_form) {
+    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
+  }
+  else {
+    $default_value = 0;
+  }
+
+  $form['test'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Run Tests.'),
+    '#description' => t('Run tests after every code deploy.'),
+    '#weight' => 100,
+    '#default_value' => $default_value,
+  );
+}
+
+/**
+ * Implements hook_hosting_slack_message_alter()
+ */
+function devshop_testing_hosting_slack_message_alter(&$message_options) {
+
+
+  if ($message_options->task->task_type == 'test') {
+
+    $url = url('node/' . $message_options->task->nid . '/revisions/' . $message_options->task->vid  . '/view', array('absolute' => TRUE));
+
+    $attachment = new stdClass();
+    $attachment->fallback = t('Results: ') . $url;
+    $attachment->title = t('Results: ');
+    $attachment->text = $url;
+    $attachment->title_link = $url;
+
+    $message_options->attachments[] = $attachment;
+
+  }
+}

@@ -1,0 +1,22 @@
+galaxy_info:
+  author: Jon Pugh
+  description: Aegir User
+  company: ThinkDrop Inc
+  license: GPLv2
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+    - xenial
+  - name: EL
+    versions:
+    - 7
+  
+  galaxy_tags:
+    - aegir
+    - hosting
+    - drupal
+
+dependencies: []
+

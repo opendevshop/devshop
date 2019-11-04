@@ -1,0 +1,14 @@
+---
+local_bin_path: /usr/local/bin
+apache_user: www-data
+
+supervisor_daemon: supervisor
+supervisor_hosting_queued_conf_path: /etc/supervisor/conf.d/hosting-queue-runner.conf
+
+extra_packages:
+  - vim
+  - openssl
+  - postfix
+  - cron
+  - zip
+  - dbus
