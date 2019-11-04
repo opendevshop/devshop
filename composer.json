@@ -10,7 +10,11 @@
         "asm/php-ansible": "v1.2.0",
         "consolidation/robo": "^1",
         "drush/drush": "~8.1",
-        "mouf/nodejs-installer": "^1.0"
+        "mouf/nodejs-installer": "^1.0",
+        "php": "^7.1"
+    },
+    "require-dev": {
+        "symplify/monorepo-builder": "^6.1"
     },
     "repositories": [
         {
@@ -31,9 +35,7 @@
         "devshop"
     ],
     "config": {
-        "platform": {
-            "php": "5.5.38"
-        },
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "sort-packages:": "true"
     }
 }
