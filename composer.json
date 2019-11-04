@@ -11,8 +11,7 @@
         "consolidation/robo": "^1",
         "drush/drush": "~8.1",
         "mouf/nodejs-installer": "^1.0",
-        "php": "^7.1",
-        "symfony/yaml": "^3"
+        "php": "^7.1"
     },
     "require-dev": {
         "symplify/monorepo-builder": "^6.1"
