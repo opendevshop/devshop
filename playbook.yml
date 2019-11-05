@@ -6,8 +6,8 @@
 - hosts: all
   user: root
   roles:
-    - opendevshop.aegir-user
-    - opendevshop.aegir-apache
+    - opendevshop.user
+    - opendevshop.apache
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
