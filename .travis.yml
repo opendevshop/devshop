@@ -15,11 +15,11 @@ env:
 
   matrix:
   - test="Upgrade"
-    COMMAND="robo up --test-upgrade --no-dev"
+    COMMAND="bin/robo up --test-upgrade --no-dev"
     UPGRADE_FROM_VERSION="1.0.0-beta10"
  
   - test="Install"
-    COMMAND="robo up --test"
+    COMMAND="bin/robo up --test"
 
 addons:
   hosts:
@@ -53,16 +53,6 @@ before_install:
   - id -u
   - docker --version
   - docker-compose --version
-
-  # Install Robo
-  - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
-  - sudo mv robo.phar /usr/local/bin/robo
-  - sudo chmod +x /usr/local/bin/robo
-
-  # Install Drush
-  - wget https://github.com/drush-ops/drush/releases/download/8.1.9/drush.phar
-  - sudo mv drush.phar /usr/local/bin/drush
-  - sudo chmod +x /usr/local/bin/drush
 
   # Prepare devshop CLI.
   - composer install
