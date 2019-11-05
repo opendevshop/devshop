@@ -22,8 +22,17 @@ use Symfony\Component\Yaml\Yaml;
 function devshop_github_client($public = FALSE) {
   $client = new \Github\Client();
 
+  // If ENV var is set, use that instead
+  if (!empty($_SERVER['GITHUB_TOKEN'])) {
+    $github_token = $_SERVER['GITHUB_TOKEN'];
+  }
+  // If not ENV var, load Drupal variable.
+  else {
+    $github_token = variable_get('devshop_github_token');
+  }
+
   // Check for missing token. Set $public to TRUE.
-  if (empty(variable_get('devshop_github_token'))) {
+  if (empty($github_token)) {
     $public = variable_get('devshop_github_use_public_api_if_no_token', TRUE);
   }
 
@@ -31,12 +40,12 @@ function devshop_github_client($public = FALSE) {
   if (!$public) {
 
     // Throw exception if token is missing.
-    if (empty(variable_get('devshop_github_token'))) {
+    if (empty($github_token)) {
       throw new \Exception(t('There is no GitHub Token set.'));
     }
 
     // Set token in client.
-    $client->authenticate(variable_get('devshop_github_token'), Github\Client::AUTH_HTTP_TOKEN);
+    $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
       $client->currentUser()->show();
