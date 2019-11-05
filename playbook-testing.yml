@@ -7,4 +7,5 @@
   user: root
   roles:
     - opendevshop.user
+    - opendevshop.apache
     - geerlingguy.apache
