@@ -9,6 +9,52 @@ require_once('includes/queue.inc');
 use Symfony\Component\Yaml\Yaml;
 
 /**
+ * Retrieve the token from either environment variable or drupal variable.
+ * @return mixed
+ */
+function devshop_github_token() {
+
+  // If ENV var is set, use that instead
+  if (!empty($_SERVER['GITHUB_TOKEN'])) {
+    $github_token = $_SERVER['GITHUB_TOKEN'];
+  }
+
+  // If no ENV var, load Drupal variable.
+  else {
+    $github_token = variable_get('devshop_github_token', '');
+  }
+
+  return $github_token;
+}
+
+/**
+ * Check if a token is valid. Checks the stored token if none is passed in.
+ *
+ * @param null $token
+ *   A specific token to check.
+ *
+ * @return bool|\Exception
+ */
+function devshop_github_token_is_valid($token = NULL) {
+
+  if (empty($token)) {
+    $token = devshop_github_token();
+  }
+
+  $client = new \Github\Client();
+  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+  try {
+    $show = $client->currentUser()->show();
+    return TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    return $e;
+  }
+}
+
+/**
  * Grab an authenticated GitHub client.
  *
  * If a devshop_github_token is not found, it will attempt to use the Public API.
@@ -22,14 +68,7 @@ use Symfony\Component\Yaml\Yaml;
 function devshop_github_client($public = FALSE) {
   $client = new \Github\Client();
 
-  // If ENV var is set, use that instead
-  if (!empty($_SERVER['GITHUB_TOKEN'])) {
-    $github_token = $_SERVER['GITHUB_TOKEN'];
-  }
-  // If not ENV var, load Drupal variable.
-  else {
-    $github_token = variable_get('devshop_github_token');
-  }
+  $github_token = devshop_github_token();
 
   // Check for missing token. Set $public to TRUE.
   if (empty($github_token)) {
