@@ -8,4 +8,6 @@
   roles:
     - opendevshop.user
     - opendevshop.apache
-    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.composer
