@@ -97,7 +97,7 @@ set -e
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 DEVSHOP_INSTALL_PATH=/usr/share/devshop
-DEVSHOP_PLAYBOOK=''
+DEVSHOP_PLAYBOOK='playbook.yml'
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
