@@ -18,7 +18,7 @@
 - name: Install extra packages
   apt:
     pkg: '{{ extra_packages }}'
-    state: installed
+    state: present
     update_cache: true
   when: ansible_os_family == "Debian"
 
