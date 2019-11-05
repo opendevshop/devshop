@@ -54,16 +54,6 @@ before_install:
   - docker --version
   - docker-compose --version
 
-  # Install Robo
-  - wget https://github.com/consolidation/Robo/releases/download/1.0.5/robo.phar
-  - sudo mv robo.phar /usr/local/bin/robo
-  - sudo chmod +x /usr/local/bin/robo
-
-  # Install Drush
-  - wget https://github.com/drush-ops/drush/releases/download/8.1.9/drush.phar
-  - sudo mv drush.phar /usr/local/bin/drush
-  - sudo chmod +x /usr/local/bin/drush
-
   # Prepare devshop CLI.
   - composer install
 
