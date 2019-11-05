@@ -97,6 +97,7 @@ set -e
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 DEVSHOP_INSTALL_PATH=/usr/share/devshop
+DEVSHOP_PLAYBOOK=''
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
@@ -188,6 +189,9 @@ while [ $# -gt 0 ]; do
       ;;
     --ansible-default-host-list=*)
       ANSIBLE_DEFAULT_HOST_LIST="${1#*=}"
+      ;;
+    --playbook=*)
+      DEVSHOP_PLAYBOOK="${1#*=}"
       ;;
     *)
       echo $LINE
@@ -347,7 +351,7 @@ fi
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-echo " Playbook: $DEVSHOP_INSTALL_PATH/playbook.yml "
+echo " Playbook: $DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK "
 echo " Roles: $DEVSHOP_INSTALL_PATH/roles.yml "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
@@ -447,12 +451,6 @@ echo $LINE
 # Run the playbook.
 echo " Installing with Ansible..."
 echo $LINE
-
-if [ $SERVER_WEBSERVER == 'apache' ]; then
-  PLAYBOOK_FILE="playbook.yml"
-elif [ $SERVER_WEBSERVER == 'nginx' ]; then
-  PLAYBOOK_FILE="playbook-nginx.yml"
-fi
 
 # If ansible playbook fails syntax check, report it and exit.
 PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$PLAYBOOK_FILE"
