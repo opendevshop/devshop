@@ -371,7 +371,7 @@ fi
 
 # Check inventory file for [devmaster] group or is executable, leave it alone.
 if [ `cat ${ANSIBLE_DEFAULT_HOST_LIST} | grep ${HOSTNAME_FQDN}` ] || [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
-  echo "Inventsory file found at $ANSIBLE_DEFAULT_HOST_LIST has $HOSTNAME_FQDN. Not modifying."
+  echo "Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST has $HOSTNAME_FQDN. Not modifying."
 else
 # Create inventory file.
   echo "Hostname $HOSTNAME_FQDN not found in the file $ANSIBLE_DEFAULT_HOST_LIST... Creating new file..."
@@ -453,7 +453,7 @@ echo " Installing with Ansible..."
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
-PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$PLAYBOOK_FILE"
+PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK"
 if [[ ! `ansible-playbook --syntax-check ${PLAYBOOK_PATH}` ]]; then
     echo " Ansible syntax check failed! Check ${PLAYBOOK_PATH} and try again."
     exit 1
