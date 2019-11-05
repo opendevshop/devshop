@@ -1,0 +1,9 @@
+##
+# DevShop: DevMaster Server with Apache
+#
+
+---
+- hosts: all
+  user: root
+  roles:
+    - geerlingguy.apache
