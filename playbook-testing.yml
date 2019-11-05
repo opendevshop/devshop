@@ -6,4 +6,5 @@
 - hosts: all
   user: root
   roles:
+    - opendevshop.user
     - geerlingguy.apache
