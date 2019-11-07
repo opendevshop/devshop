@@ -26,6 +26,7 @@ env:
     COMMAND="bin/robo up --test"
 
 jobs:
+  fast_finish: true
   allow_failures:
     - env: ALLOW_FAIL=true
 
