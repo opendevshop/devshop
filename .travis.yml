@@ -11,7 +11,10 @@ env:
 
   matrix:
   - test='Install on Ubuntu 16.04 Apache'
-    COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test --install-sh-options="--playbook=playbook-testing.yml"'
+    COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
+
+  - test='Install on Ubuntu 18.04 Apache'
+    COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
 
   - test="Upgrade"
     COMMAND="bin/robo up --test-upgrade"
