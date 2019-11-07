@@ -6,7 +6,7 @@
 - hosts: all
   user: root
   roles:
-    - opendevshop.user
+    - opendevshop.users
     - opendevshop.apache
     - geerlingguy.php
     - geerlingguy.php-mysql
