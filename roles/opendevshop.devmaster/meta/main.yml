@@ -32,7 +32,7 @@ galaxy_info:
         - bionic
 
 dependencies:
-  - opendevshop.aegir-user
+  - opendevshop.users
   - geerlingguy.supervisor
   - geerlingguy.mysql
   - geerlingguy.php
