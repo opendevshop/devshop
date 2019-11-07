@@ -469,6 +469,7 @@ class RoboFile extends \Robo\Tasks {
         ->publish(80,80)
         ->detached()
         ->privileged()
+        ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
         ->env('TERM', 'xterm')
         ->env('TRAVIS', TRUE)
         ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
