@@ -1,0 +1,14 @@
+name: Build DevShop Server Container
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the DevShop Server Container Docker image
+      run: docker build Dockerfiles --file Dockerfiles/Dockerfile --tag devshop/server:$(date +%s)
