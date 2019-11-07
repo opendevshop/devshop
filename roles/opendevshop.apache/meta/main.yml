@@ -32,5 +32,5 @@ galaxy_info:
       - bionic
 
 dependencies:
-  - opendevshop.user
+  - opendevshop.users
   - geerlingguy.apache
