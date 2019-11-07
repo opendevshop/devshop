@@ -608,28 +608,29 @@ class RoboFile extends \Robo\Tasks {
 
       if ($opts['test']) {
 
-        # Disable supervisor
-        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
-          $service = 'supervisor';
-        }
-        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
-          $service = FALSE;
-        }
-        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
-          $service = 'supervisor';
-        }
-        else {
-          $service = 'supervisord';
-        }
-
-        if ($service && !$this->taskDockerExec('devshop_container')
-          ->exec("service $service stop")
-          ->run()
-          ->wasSuccessful()
-        ) {
-          $this->say('Unable to disable supervisor.');
-          exit(1);
-        }
+// @TODO: This should not be needed anymore?
+//        # Disable supervisor
+//        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
+//          $service = 'supervisor';
+//        }
+//        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+//          $service = FALSE;
+//        }
+//        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
+//          $service = 'supervisor';
+//        }
+//        else {
+//          $service = 'supervisord';
+//        }
+//
+//        if ($service && !$this->taskDockerExec('devshop_container')
+//          ->exec("service $service stop")
+//          ->run()
+//          ->wasSuccessful()
+//        ) {
+//          $this->say('Unable to disable supervisor.');
+//          exit(1);
+//        }
 
         $this->yell("Running devshop-tests.sh ...");
 
