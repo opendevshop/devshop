@@ -496,29 +496,30 @@ class RoboFile extends \Robo\Tasks {
         }
       }
       elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+// @TODO: If this is the cause of wonkiness, let's not install dbus just for testing. There are better ways to set hostname.
         // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
-        if (!(
-          $this->taskDockerExec('devshop_container')
-            ->exec("apt-get update")
-            ->run()
-            ->wasSuccessful()
-          && $this->taskDockerExec('devshop_container')
-            ->exec("apt-get install dbus -y")
-            ->env('DEBIAN_FRONTEND', 'noninteractive')
-            ->run()
-            ->wasSuccessful()
-
-          // @TODO: Hack attempt to fix failing apache restarts: https://travis-ci.org/opendevshop/devshop/jobs/608769926#L2447
-          // Idea from: https://unix.stackexchange.com/questions/239489/dbus-system-failed-to-activate-service-org-freedesktop-login1-timed-out
-          && $this->taskDockerExec('devshop_container')
-            ->exec("systemctl restart systemd-logind")
-            ->run()
-            ->wasSuccessful()
-        )) {
-          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
-
-          exit(1);
-        }
+//        if (!(
+//          $this->taskDockerExec('devshop_container')
+//            ->exec("apt-get update")
+//            ->run()
+//            ->wasSuccessful()
+//          && $this->taskDockerExec('devshop_container')
+//            ->exec("apt-get install dbus -y")
+//            ->env('DEBIAN_FRONTEND', 'noninteractive')
+//            ->run()
+//            ->wasSuccessful()
+//
+//          // @TODO: Hack attempt to fix failing apache restarts: https://travis-ci.org/opendevshop/devshop/jobs/608769926#L2447
+//          // Idea from: https://unix.stackexchange.com/questions/239489/dbus-system-failed-to-activate-service-org-freedesktop-login1-timed-out
+//          && $this->taskDockerExec('devshop_container')
+//            ->exec("systemctl restart systemd-logind")
+//            ->run()
+//            ->wasSuccessful()
+//        )) {
+//          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
+//
+//          exit(1);
+//        }
       }
 
       // Display home folder.
