@@ -775,22 +775,13 @@ class RoboFile extends \Robo\Tasks {
       $not_ready = !$this->confirm("Did you write a great CHANGELOG.md? Please make sure all (good) changes are included on the main branch (1.x) before continuing!");
     }
 
-    $release_directories[] = '.';
-    $release_directories[] = './aegir-home/devmaster-1.x/profiles/devmaster';
-
-    $dirs = implode(' ', $release_directories);
-    $cwd = getcwd();
-    if ($this->confirm("Create the branch $release_branch in directories $dirs")) {
-      foreach ($release_directories as $directory) {
-        chdir($directory);
+    if ($this->confirm("Create the branch $release_branch?")) {
         $this->_exec("git checkout -b $release_branch");
-      }
-      chdir($cwd);
     }
 
     // Write version to files.
-    if ($this->confirm("Write '$version' to ./aegir-home/devmaster-1.x/profiles/devmaster/VERSION.txt")) {
-      file_put_contents('./aegir-home/devmaster-1.x/profiles/devmaster/VERSION.txt', $version);
+    if ($this->confirm("Write '$version' to ./devmaster/VERSION.txt")) {
+      file_put_contents('./devmaster/VERSION.txt', $version);
     }
 
     if ($this->confirm("Write '$version' to install.sh? ")) {
@@ -804,94 +795,44 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
     }
 
-    if ($this->confirm("Write '$drupal_org_version' to drupal-org.make for devshop_stats? ")) {
-      $this->_exec("sed -i -e 's/projects\[devshop_stats\]\[version\] = 1.x/projects[devshop_stats][version] = $drupal_org_version/' ./aegir-home/devmaster-1.x/profiles/devmaster/drupal-org.make");
-    }
-
     if ($this->confirm("Show git diff before committing?")) {
-      foreach ($release_directories as $dir) {
-        chdir($dir);
-        $this->_exec("git diff -U1");
-      }
-      chdir($cwd);
+      $this->_exec("git diff -U1");
     }
     if ($this->confirm("Commit changes to $release_branch? ")) {
-      foreach ($release_directories as $dir) {
-        chdir($dir);
-        $this->_exec("git commit -am 'Automated Commit from DevShop Robofile.php `release` command. Preparing version $version.'");
-      }
-      chdir($cwd);
+      $this->_exec("git commit -am 'Automated Commit from DevShop Robofile.php `release` command. Preparing version $version.'");
     }
 
-    if ($this->confirm("Tag release of devshop_stats module to 7.x-$drupal_org_version? ")) {
-      chdir('./aegir-home/devmaster-1.x/sites/all/modules/aegir/devshop_stats');
+    if ($this->confirm("Create a release tag? ")) {
 
-      if (file_exists('.git/config')) {
-        $this->taskGitStack()
-          ->tag($drupal_org_tag)
-          ->run();
-        $this->taskGitStack()
-          ->push("origin", $drupal_org_tag)
-          ->run();
-      }
-      else {
-        $this->yell('No Tag Written! devshop_stats folder is not a git clone. Check ./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats and ensure it is a git clone of http://git.drupal.org/project/devshop_stats');
-      }
-      chdir($cwd);
-    }
-
-    $this->say("Now, go create a new release for devshop_stats, so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
-    $this->say("Use the tag $drupal_org_tag");
-
-    $not_ready = TRUE;
-    while ($not_ready) {
-      $not_ready = !$this->confirm("Is the release ready?");
-    }
-
-    if ($this->confirm("Create a tag in devshop and devmaster repos? ")) {
-
-      // Tag devshop with $version.
-      chdir($cwd);
+      // Tag devshop and devmaster with $version and drupal_org_tag.
       $this->taskGitStack()
         ->tag($version, "DevShop $version")
+        ->tag($drupal_org_tag, "DevShop Devmaster $version")
         ->run();
-
-      // Tag devmaster with version and drupal_org_version.
-      chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
-      $this->taskGitStack()
-        ->tag($version, "DevShop $version")
-        ->tag($drupal_org_tag, "DevShop $version")
-        ->run();
-      chdir($cwd);
     }
 
-    if ($this->confirm("Push the new release tags devshop $version and devmaster $drupal_org_version? (will attempt to push devmaster to remote 'drupal'.)")) {
-
-      chdir($cwd);
-      $this->taskGitStack()
-        ->push("origin", $version)
-        ->run();
-
-      chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
+    if ($this->confirm("Push the new release tags $version and $drupal_org_version?")) {
       if (!$this->taskGitStack()
         ->push("origin", $version)
         ->push("origin", $drupal_org_tag)
-        ->push("drupal", $version)
-        ->push("drupal", $drupal_org_tag)
         ->run()
         ->wasSuccessful()
       ) {
-        $this->say('Pushing to remotes origin or drupal failed. If you need to add drupsl origin: git remote add origin username@git.drupal.org:project/devmaster.git');
+        $this->say('Pushing tags to remote origin');
       }
-
-      chdir($cwd);
     }
-
 
     $this->say("The final steps we still have to do manually:");
     $this->say("1. Go create a new release of devmaster: https://www.drupal.org/node/add/project-release/1779370 using the tag $drupal_org_tag");
     $this->say("2. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster");
     $this->say("3. Create a new 'release' on GitHub: https://github.com/opendevshop/devshop/releases/new using tag $version.  Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
+    $this->say("  - Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
+    $this->say("  - Upload install.sh script to release files.");
     $this->say("4. Put the new version in gh-pages branch index.html");
+
+    if ($this->confirm("Checkout main branch and run `monorepo-builder split` to push current branch and latest tag to all sub-repos?")) {
+      $this->_exec("git checkout 1.x");
+      $this->_exec("bin/monorepo-builder split");
+    }
   }
 }
