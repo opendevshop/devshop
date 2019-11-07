@@ -1,13 +1,20 @@
-Ansible Role: Aegir User
-===========
+# Ansible Role: DevShop Users
 
-Installs the "aegir" user and prepares for use as a remote server.
+This role serves to prepare a server's system users. 
+
+It was originally created to install the `aegir` user for OpenDevShop Servers.
+
+It is being repurposed as a generic "application user" role, as well as being
+able to setup system admin users. 
+
+1. Installs an "application" user with special permissions.
+  - Initial implementation is the `aegir` user, who has access to run `sudo apachectl`. 
+2. *Coming soon:* Recommends `geerlingguy.github-users` and `geerlingguy.security` roles.
 
 Dependencies
 ------------
 
-We are going to do our best to rely on other roles. Our role dependencies are
-the requirements.
+None. This is a base role that only deals with linux users.
 
 License
 -------
@@ -17,6 +24,4 @@ GPL-2
 Author Information
 ------------------
 
-This role was created by OpenDevShop Inc for the Aegir Project.
-
-See http://opendevshop.com or http://aegirproject.org for more information.
+Jon Pugh <jon@thinkdrop.net>
