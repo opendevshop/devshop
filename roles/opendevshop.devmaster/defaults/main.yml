@@ -3,7 +3,7 @@
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
 server_hostname: devshop.local.computer
-server_hostname_ignore_errors: no
+server_hostname_ignore_errors: false
 devshop_devmaster_email: admin@devshop.local.computer
 
 # Set PHP Version:
@@ -12,7 +12,7 @@ devshop_devmaster_email: admin@devshop.local.computer
 php_version: '7.1'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
-devshop_cli_update: yes
+devshop_cli_update: true
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
@@ -24,12 +24,12 @@ devshop_install_profile: devmaster
 devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
-mysql_root_password_update: no
+mysql_root_password_update: false
 
 aegir_db_host: localhost
 aegir_client_name: admin
 
-supervisor_running: yes
+supervisor_running: true
 
 drush_dl_method: wget
 
@@ -64,6 +64,11 @@ devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=
 "
 
 devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
+
+devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
+
+# Set to true if you want to skip the "devmaster" upgrade process during the "devshop upgrade" command.
+devmaster_skip_upgrade: false
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo

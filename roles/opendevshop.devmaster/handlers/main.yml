@@ -1,6 +1,0 @@
----
-- name: restart supervisor
-  service:
-    name: "{{ supervisor_daemon }}"
-    state: restarted
-    sleep: 3

@@ -49,7 +49,7 @@ fi
 cd $VAGRANT_HOME
 if [ ! -d ../roles ]; then
     mkdir ../roles
-    ansible-galaxy install -r ../roles.yml -p ../roles
+    ansible-galaxy install -r ../requirements.yml -p ../roles
     cd ../roles
 
     # Overwrite the roles installed by galaxy with git clones of Our Roles

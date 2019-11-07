@@ -5,11 +5,12 @@ parameters:
     # Drupal Distribution
     devmaster: 'git@github.com:opendevshop/devmaster.git'
 
-    # Ansible Role: Devmaster
+    # Ansible Role: DevShop Devmaster
+    # @TODO: Consider renaming. This is really for the primary server, not just "devmaster" Drupal profile.
     roles/opendevshop.devmaster: 'git@github.com:opendevshop/ansible-role-devmaster.git'
 
-    # Ansible Role: Aegir User
-    roles/opendevshop.aegir-user: 'git@github.com:opendevshop/ansible-role-aegir-user.git'
+    # Ansible Role: DevShop Users
+    roles/opendevshop.users: 'git@github.com:opendevshop/ansible-role-users.git'
 
-    # Ansible Role: Aegir Apache
-    roles/opendevshop.aegir-apache: 'git@github.com:opendevshop/ansible-role-devmaster.git'
+    # Ansible Role: DevShop Apache
+    roles/opendevshop.apache: 'git@github.com:opendevshop/ansible-role-apache.git'

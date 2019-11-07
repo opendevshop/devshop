@@ -39,7 +39,7 @@ usage() {
 
   Options:
     --hostname           The desired fully qualified domain name to set as this machine\''s hostname (Default: Current hostname)
-    --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
+    --install-path       The path to install the main devshop source code including CLI, makefile, requirements.yml (Default: /usr/share/devshop)
     --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
     --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
     --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
@@ -97,6 +97,7 @@ set -e
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 DEVSHOP_INSTALL_PATH=/usr/share/devshop
+DEVSHOP_PLAYBOOK='playbook.yml'
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
@@ -188,6 +189,9 @@ while [ $# -gt 0 ]; do
       ;;
     --ansible-default-host-list=*)
       ANSIBLE_DEFAULT_HOST_LIST="${1#*=}"
+      ;;
+    --playbook=*)
+      DEVSHOP_PLAYBOOK="${1#*=}"
       ;;
     *)
       echo $LINE
@@ -347,8 +351,8 @@ fi
 echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
-echo " Playbook: $DEVSHOP_INSTALL_PATH/playbook.yml "
-echo " Roles: $DEVSHOP_INSTALL_PATH/roles.yml "
+echo " Playbook: $DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK "
+echo " Roles: $DEVSHOP_INSTALL_PATH/requirements.yml "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
@@ -367,7 +371,7 @@ fi
 
 # Check inventory file for [devmaster] group or is executable, leave it alone.
 if [ `cat ${ANSIBLE_DEFAULT_HOST_LIST} | grep ${HOSTNAME_FQDN}` ] || [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
-  echo "Inventsory file found at $ANSIBLE_DEFAULT_HOST_LIST has $HOSTNAME_FQDN. Not modifying."
+  echo "Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST has $HOSTNAME_FQDN. Not modifying."
 else
 # Create inventory file.
   echo "Hostname $HOSTNAME_FQDN not found in the file $ANSIBLE_DEFAULT_HOST_LIST... Creating new file..."
@@ -440,22 +444,16 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
-echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/roles.yml in the ansible-galaxy default location..."
-ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
+echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/requirements.yml in the ansible-galaxy default location..."
+ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/requirements.yml" $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # Run the playbook.
 echo " Installing with Ansible..."
 echo $LINE
 
-if [ $SERVER_WEBSERVER == 'apache' ]; then
-  PLAYBOOK_FILE="playbook.yml"
-elif [ $SERVER_WEBSERVER == 'nginx' ]; then
-  PLAYBOOK_FILE="playbook-nginx.yml"
-fi
-
 # If ansible playbook fails syntax check, report it and exit.
-PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$PLAYBOOK_FILE"
+PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK"
 if [[ ! `ansible-playbook --syntax-check ${PLAYBOOK_PATH}` ]]; then
     echo " Ansible syntax check failed! Check ${PLAYBOOK_PATH} and try again."
     exit 1

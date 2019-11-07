@@ -1,12 +1,23 @@
-Ansible Role: Aegir Apache
-=========
+# Ansible Role: DevShop Apache
 
-Extends the geerlingguy.apache role to allow usage as an aegir remote server.
+Extends the geerlingguy.apache role for DevShop.
 
-Tasks
-=====
+- Allows `app-user` to run `apachectl` to allow dynamic reconfiguration
+of Apache by the application by adding sudoers.
+- Symlink from /etc/apache/conf.d to include Apache config in the `app-user`
+ home directory.
+ 
+Dependencies
+------------
 
-This role does very little: 
+- [geerlingguy.apache](https://galaxy.ansible.com/geerlingguy/apache)
 
-- Symlink from /etc/apache/conf.d to Aegir's Apache.conf
-- Add to sudoers to allow aegir to reload apache.
+License
+-------
+
+GPL-2
+
+Author Information
+------------------
+
+Jon Pugh <jon@thinkdrop.net>
