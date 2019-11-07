@@ -190,7 +190,7 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell("Cloning Ansible Roles...");
 
-    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/roles.yml'));
+    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/requirements.yml'));
     foreach ($roles_yml as $role) {
       // Only install the role if it is in the role_repos array.
       if (!empty($role_repos[$role['name']])) {

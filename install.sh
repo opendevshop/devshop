@@ -39,7 +39,7 @@ usage() {
 
   Options:
     --hostname           The desired fully qualified domain name to set as this machine\''s hostname (Default: Current hostname)
-    --install-path       The path to install the main devshop source code including CLI, makefile, roles.yml (Default: /usr/share/devshop)
+    --install-path       The path to install the main devshop source code including CLI, makefile, requirements.yml (Default: /usr/share/devshop)
     --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
     --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
     --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
@@ -352,7 +352,7 @@ echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo " Playbook: $DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK "
-echo " Roles: $DEVSHOP_INSTALL_PATH/roles.yml "
+echo " Roles: $DEVSHOP_INSTALL_PATH/requirements.yml "
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
@@ -444,8 +444,8 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
-echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/roles.yml in the ansible-galaxy default location..."
-ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/roles.yml" $ANSIBLE_GALAXY_OPTIONS
+echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/requirements.yml in the ansible-galaxy default location..."
+ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/requirements.yml" $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # Run the playbook.
