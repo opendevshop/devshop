@@ -261,7 +261,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form['project']['settings']['deploy']['method']['#options']['manual'] .= ' <em>' . t('Not recommended. All environments must be manually updated.') . '</em>' . '</div>';
 
   // Add link to hosting queues admin if the user can access them.
-  if (!$queues['deploy']['enabled'] && user_access('administer hosting queues')) {
+  if (!isset($queues['deploy']['enabled']) && user_access('administer hosting queues')) {
     $form['project']['settings']['deploy']['queue_admin'] = array(
       '#value' => t('The !link is disabled. Enable it to allow projects to pull code in the queue.', array(
         '!link' => l(t('Pull Queue'), 'admin/hosting/queues'),
@@ -405,7 +405,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Force new environments to use these servers.'),
     '#description' => t('When new environments are created, they will use the servers selected above.'),
     '#type' => 'checkbox',
-    '#default_value' => $project->settings->default_environment['force_default_servers'],
+    '#default_value' => $project->settings->default_environment['force_default_servers']?: 0,
   );
   return $form;
 }

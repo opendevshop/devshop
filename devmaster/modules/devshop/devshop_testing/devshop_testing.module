@@ -161,7 +161,7 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
   }
   else {
     // If these settings are not for a specific environment, load up live or the first one.
-    if ($project->settings->live['live_environment']) {
+    if (!empty($project->settings->live['live_environment'])) {
       $environment = (object) $project->environments[$project->settings->live['live_environment']];
     }
     else {
@@ -279,7 +279,7 @@ function devshop_testing_devshop_deploy_hooks_form_elements_alter(&$form, $is_en
   }
   // If this is a project form...
   elseif (!$is_environment_form) {
-    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
+    $default_value = isset($form['#project']->settings->deploy)? $form['#project']->settings->deploy['default_hooks']['test']: 0;
   }
   else {
     $default_value = 0;
