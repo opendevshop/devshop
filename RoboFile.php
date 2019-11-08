@@ -431,6 +431,7 @@ class RoboFile extends \Robo\Tasks {
 
 
       if (isset($cmd)) {
+          // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
         if ($this->_exec($cmd)->wasSuccessful()) {
           exit(0);
         }
