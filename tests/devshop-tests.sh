@@ -25,6 +25,9 @@ drush @hostmaster vset hosting_queued_paused 1
 # Enable watchdog
 drush @hostmaster en dblog -y
 
+# Save GitHub Token
+drush @hostmaster vset devshop_github_token ${GITHUB_TOKEN}
+
 # Run the test suite.
 devshop devmaster:test
 #drush @hostmaster provision-test --behat-folder-path=profiles/devmaster/tests --test-type=behat
