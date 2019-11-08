@@ -392,6 +392,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['mode'] == 'docker-compose') {
       $env = "-e TERM=xterm";
       $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
+      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
