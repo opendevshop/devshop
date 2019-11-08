@@ -26,7 +26,9 @@ drush @hostmaster vset hosting_queued_paused 1
 drush @hostmaster en dblog -y
 
 # Save GitHub Token
-drush @hostmaster vset devshop_github_token ${GITHUB_TOKEN}
+if [ -n "${GITHUB_TOKEN}" ]; then
+  drush @hostmaster vset devshop_github_token ${GITHUB_TOKEN}
+fi
 
 # Run the test suite.
 devshop devmaster:test
