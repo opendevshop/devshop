@@ -109,7 +109,7 @@ function devshop_github_install() {
     else {
       // Display a message about setting a github personal token.
       drupal_set_message(t('DevShop GitHub module has been enabled.  You must add an access token to enable full functionality at !link.', array(
-          '!link' => l(t('the settings page'), 'admin/devshop/github'),drupal_flush_all_caches
+          '!link' => l(t('the settings page'), 'admin/devshop/github'),
       )));
     }
 }
