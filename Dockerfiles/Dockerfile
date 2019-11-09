@@ -6,7 +6,9 @@ ENV PROVISION_VERSION 7.x-3.x
 ENV COMPOSER_VERSION 1.8.4
 ENV DRUSH_VERSION 8.1.18
 ENV REGISTRY_REBUILD_VERSION 7.x-2.5
-ENV AEGIR_MAKEFILE https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make
+
+COPY ../build-devmaster.make /build-devmaster.make
+ENV AEGIR_MAKEFILE /build-devmaster.make
 
 ENV DEBIAN_FRONTEND=noninteractive
 
