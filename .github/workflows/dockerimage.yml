@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the DevShop Server Docker image
-      run: docker build . --file Dockerfiles\Dockerfile --tag devshop/server:$(date +%s)
+      run: docker build . --file Dockerfiles/Dockerfile --tag devshop/server:$(date +%s)
 
     - name: Run DevShop Server and tests
       run: docker run devshop/server:$(date +%s) /usr/share/devshop/tests/run-tests.sh
