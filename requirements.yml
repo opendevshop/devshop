@@ -21,6 +21,3 @@
 
 - name: geerlingguy.supervisor
   version: 2.0.2
-
-- name: opendevshop.aegir-nginx
-  version: 1.5.0-rc1
