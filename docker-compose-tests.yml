@@ -15,7 +15,7 @@ services:
       - database
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
-      AEGIR_MAKEFILE: https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make
+      AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
       AEGIR_PROFILE: devmaster
       AEGIR_VERSION: 1.x
       TRAVIS: 1
