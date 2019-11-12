@@ -125,16 +125,16 @@ RUN wget http://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_permissions/sc
 RUN bash standalone-install-fix-permissions-ownership.sh
 
 # Copy files
-COPY files/sudoers-aegir /etc/sudoers.d/aegir
+COPY Dockerfiles/files/sudoers-aegir /etc/sudoers.d/aegir
 RUN chmod 0440 /etc/sudoers.d/aegir
 
-COPY files/docker-entrypoint.sh /usr/local/bin/
+COPY Dockerfiles/files/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-COPY files/services-start.sh /usr/local/bin/services-start
+COPY Dockerfiles/files/services-start.sh /usr/local/bin/services-start
 RUN chmod +x /usr/local/bin/services-start
 
-COPY files/set-user-ids.sh /usr/local/bin/set-user-ids
+COPY Dockerfiles/files/set-user-ids.sh /usr/local/bin/set-user-ids
 RUN chmod +x /usr/local/bin/set-user-ids
 
 # Prepare Aegir Logs folder.
