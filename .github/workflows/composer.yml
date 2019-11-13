@@ -34,5 +34,11 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Cache composer cache directory
+        uses: actions/cache@v1
+        with:
+          path: .gh-actions-composer-cache
+          key: 'composer-cache'
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
