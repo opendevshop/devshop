@@ -1,0 +1,46 @@
+name: Code Actions
+
+on: [push]
+
+jobs:
+  composer-install:
+    name: Composer Install
+    env:
+      COMPOSER_HOME: .gh-actions-composer-cache
+
+    runs-on: [ubuntu-16.04]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Cache composer cache directory
+      uses: actions/cache@v1
+      with:
+        path: .gh-actions-composer-cache
+        key: 'composer-cache'
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+  monorepo-split:
+    name: Split Git Repository
+    needs: composer-install
+    env:
+      COMPOSER_HOME: .gh-actions-composer-cache
+
+    runs-on: [ubuntu-16.04]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Cache composer cache directory
+        uses: actions/cache@v1
+        with:
+          path: .gh-actions-composer-cache
+          key: 'composer-cache'
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
