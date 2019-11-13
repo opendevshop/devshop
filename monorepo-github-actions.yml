@@ -9,14 +9,14 @@ parameters:
   directories_to_repositories:
 
     # Drupal Distribution
-    devmaster: "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/opendevshop/devmaster.git"
+    devmaster: "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/opendevshop/devmaster.git"
 
     # Ansible Role: DevShop Devmaster
     # @TODO: Consider renaming. This is really for the primary server, not just "devmaster" Drupal profile.
-    roles/opendevshop.devmaster: "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/opendevshop/ansible-role-devmaster.git"
+    roles/opendevshop.devmaster: "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/opendevshop/ansible-role-devmaster.git"
 
     # Ansible Role: DevShop Users
-    roles/opendevshop.users: "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/opendevshop/ansible-role-users.git"
+    roles/opendevshop.users: "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/opendevshop/ansible-role-users.git"
 
     # Ansible Role: DevShop Apache
-    roles/opendevshop.apache: "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/opendevshop/ansible-role-apache.git"
+    roles/opendevshop.apache: "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/opendevshop/ansible-role-apache.git"
