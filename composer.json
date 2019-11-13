@@ -2,12 +2,12 @@
     "name": "devshop/cli",
     "description": "Command Line interface for DevShop",
     "require": {
-        "symfony/console": "^3.4",
-        "symfony/process": "^3.4",
+        "symfony/console": "^4.3",
+        "symfony/process": "^4.3",
         "knplabs/github-api": "^1.4",
-        "symfony/filesystem": "^3.4",
+        "symfony/filesystem": "^4.3",
         "cpliakas/git-wrapper": "1.*",
-        "asm/php-ansible": "v1.2.0",
+        "asm/php-ansible": "^2.0",
         "consolidation/robo": "^1",
         "mouf/nodejs-installer": "^1.0",
         "php": "^7.1"
@@ -19,10 +19,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/jonpugh/MonorepoBuilder"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/opendevshop/php-ansible"
         }
     ],
     "authors": [
@@ -40,5 +36,7 @@
     "config": {
         "bin-dir": "bin",
         "sort-packages:": "true"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
