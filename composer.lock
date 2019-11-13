@@ -3005,12 +3005,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jonpugh/MonorepoBuilder.git",
-                "reference": "7b444baf1ab6ab9a90e675fbfc1060660faecb0f"
+                "reference": "cbeedf510465d5c86dfd915b7147c884d9983238"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jonpugh/MonorepoBuilder/zipball/7b444baf1ab6ab9a90e675fbfc1060660faecb0f",
-                "reference": "7b444baf1ab6ab9a90e675fbfc1060660faecb0f",
+                "url": "https://api.github.com/repos/jonpugh/MonorepoBuilder/zipball/cbeedf510465d5c86dfd915b7147c884d9983238",
+                "reference": "cbeedf510465d5c86dfd915b7147c884d9983238",
                 "shasum": ""
             },
             "require": {
@@ -3055,9 +3055,9 @@
             ],
             "description": "Not only Composer tools to build a Monorepo.",
             "support": {
-                "source": "https://github.com/jonpugh/MonorepoBuilder/tree/no-branch-option"
+                "source": "https://github.com/jonpugh/MonorepoBuilder/tree/devshop"
             },
-            "time": "2019-11-13T19:18:16+00:00"
+            "time": "2019-11-13T22:25:33+00:00"
         },
         {
             "name": "symplify/package-builder",
