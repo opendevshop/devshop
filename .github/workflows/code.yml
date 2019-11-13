@@ -2,12 +2,13 @@ name: Code Actions
 
 on: [push]
 
+env:
+  COMPOSER_HOME: .gh-actions-composer-cache
+  GITHUB_TOKEN: ${GITHUB_TOKEN}
+
 jobs:
   composer-install:
     name: Composer Install
-    env:
-      COMPOSER_HOME: .gh-actions-composer-cache
-
     runs-on: [ubuntu-16.04]
 
     steps:
@@ -28,8 +29,6 @@ jobs:
   monorepo-split:
     name: Split Git Repository
     needs: composer-install
-    env:
-      COMPOSER_HOME: .gh-actions-composer-cache
 
     runs-on: [ubuntu-16.04]
 
