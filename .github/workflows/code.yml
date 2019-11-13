@@ -45,5 +45,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Create a branch for the monorepo-builder
+        run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
+
       - name: Split monorepo
         run: bin/monorepo-builder split --config=monorepo-github-actions.yml
