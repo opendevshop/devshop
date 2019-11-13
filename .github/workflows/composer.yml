@@ -23,7 +23,7 @@ jobs:
     - name: Cache composer cache directory
       uses: actions/cache@v1
       with:
-        path: ${{ HOME }}/.composer
+        path: $HOME/.composer
         key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.OS }}-build-${{ env.cache-name }}-
