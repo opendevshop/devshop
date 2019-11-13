@@ -3,35 +3,39 @@ name: Composer Validate & Install
 on: [push]
 
 jobs:
-  build:
+  composer-install:
+    env:
+      COMPOSER_HOME: .gh-actions-composer-cache
 
     runs-on: [ubuntu-16.04]
 
     steps:
     - uses: actions/checkout@v1
 
-    - name: Cache composer vendor directory
-      uses: actions/cache@v1
-      with:
-        path: vendor
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
-          ${{ runner.OS }}-
-
     - name: Cache composer cache directory
       uses: actions/cache@v1
       with:
-        path: ${HOME}/.composer
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
-          ${{ runner.OS }}-
+        path: .gh-actions-composer-cache
+        key: 'composer-cache'
 
     - name: Validate composer.json and composer.lock
       run: composer validate
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
+
+  monorepo-split:
+    needs: composer-install
+    env:
+      COMPOSER_HOME: .gh-actions-composer-cache
+
+    runs-on: [ubuntu-16.04]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: @TODO Monorepo builder split.
+        run: composer install --prefer-dist --no-progress --no-suggest
