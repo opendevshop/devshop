@@ -17,7 +17,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Split Git Repositories
-      run: bin/monorepo-builder --config=monorepo-github-actios.yml
+      run: bin/monorepo-builder --config=monorepo-github-actions.yml
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
