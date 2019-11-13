@@ -3005,12 +3005,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jonpugh/MonorepoBuilder.git",
-                "reference": "cbeedf510465d5c86dfd915b7147c884d9983238"
+                "reference": "27b955fcac00c986405d7af0c1adcca9c2b3904a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jonpugh/MonorepoBuilder/zipball/cbeedf510465d5c86dfd915b7147c884d9983238",
-                "reference": "cbeedf510465d5c86dfd915b7147c884d9983238",
+                "url": "https://api.github.com/repos/jonpugh/MonorepoBuilder/zipball/27b955fcac00c986405d7af0c1adcca9c2b3904a",
+                "reference": "27b955fcac00c986405d7af0c1adcca9c2b3904a",
                 "shasum": ""
             },
             "require": {
@@ -3057,7 +3057,7 @@
             "support": {
                 "source": "https://github.com/jonpugh/MonorepoBuilder/tree/devshop"
             },
-            "time": "2019-11-13T22:25:33+00:00"
+            "time": "2019-11-13T22:38:35+00:00"
         },
         {
             "name": "symplify/package-builder",
