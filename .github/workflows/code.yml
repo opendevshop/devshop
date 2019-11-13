@@ -1,9 +1,10 @@
-name: Composer Validate & Install
+name: Code Actions
 
 on: [push]
 
 jobs:
   composer-install:
+    name: Composer Install
     env:
       COMPOSER_HOME: .gh-actions-composer-cache
 
@@ -25,6 +26,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
   monorepo-split:
+    name: Split Git Repository
     needs: composer-install
     env:
       COMPOSER_HOME: .gh-actions-composer-cache
