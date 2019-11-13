@@ -4,6 +4,7 @@ on: [push]
 
 env:
   COMPOSER_HOME: .gh-actions-composer-cache
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   composer-install:
