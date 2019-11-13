@@ -9,14 +9,17 @@
         "cpliakas/git-wrapper": "1.*",
         "asm/php-ansible": "v1.2.0",
         "consolidation/robo": "^1",
-        "drush/drush": "~8.1",
         "mouf/nodejs-installer": "^1.0",
         "php": "^7.1"
     },
     "require-dev": {
-        "symplify/monorepo-builder": "^6.1"
+        "symplify/monorepo-builder": "dev-devshop"
     },
     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jonpugh/MonorepoBuilder"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/opendevshop/php-ansible"
