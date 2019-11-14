@@ -10,6 +10,10 @@ ENV REGISTRY_REBUILD_VERSION 7.x-2.5
 RUN mkdir /usr/share/devshop
 COPY * /usr/share/devshop/
 
+# Just link it into bin, we can deal with PATH in docker later.
+RUN ln -s /usr/share/devshop/bin/devshop /usr/local/bin/devshop
+RUN ln -s /usr/share/devshop/tests/devshop-tests.sh /usr/local/bin/devshop-tests.sh
+
 ENV AEGIR_MAKEFILE /usr/share/devshop/build-devmaster.make
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -132,9 +136,6 @@ RUN chmod 0440 /etc/sudoers.d/aegir
 
 COPY Dockerfiles/files/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-COPY tests/devshop-tests.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/devshop-tests.sh
 
 COPY Dockerfiles/files/services-start.sh /usr/local/bin/services-start
 RUN chmod +x /usr/local/bin/services-start
