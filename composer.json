@@ -41,7 +41,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-install-cmd": [
-            "php -r \"copy('https://github.com/drush-ops/drush/releases/download/8.3.1/drush.phar', 'bin/drush');\"",
+            "php -r \"copy('https://github.com/drush-ops/drush/releases/download/8.3.0/drush.phar', 'bin/drush');\"",
             "php -r \"chmod('bin/drush', 0755);\"",
             "drush --version"
         ]
