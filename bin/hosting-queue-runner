@@ -4,5 +4,8 @@
 
 # Get the directory of this script so we can run this drush.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-echo "$DIR/hosting-queue-runner| Running drush @hostmaster hosting-queued ..."
+
+echo "$DIR/hosting-queue-runner | PATH: ${PATH}"
+echo "$DIR/hosting-queue-runner | Running drush @hostmaster hosting-queued ..."
+
 $DIR/drush @hostmaster hosting-queued
