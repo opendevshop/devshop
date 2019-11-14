@@ -1,0 +1,67 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Queues.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function devshop_pull_schema() {
+  $schema['hosting_devshop_pull_projects'] = array(
+    'fields' => array(
+      'project_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pull_method' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_pull' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_pull_status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_pull_ip' => array(
+        'type' => 'varchar',
+        'length' => 15,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('project_nid'),
+  );
+  return $schema;
+}
+
+/**
+ * no-op: code fixed in devshop_pull_update_6201()
+ */
+function devshop_pull_update_6000() {
+  $ret = array();
+  return $ret;
+}
+/**
+ * Add last_pull_ip column to our hosting_devshop_pull_projects table.
+ */
+function devshop_pull_update_6001() {
+  $ret = array();
+  db_add_field($ret, 'hosting_devshop_pull_projects', 'last_pull_ip', array('type' => 'varchar', 'not null' => TRUE, 'default' => '', 'length' => 15));
+  return $ret;
+}
+
+/**
+ * Remove legacy `hosting_devshop_pull_platforms` table.
+ */
+function devshop_pull_update_6002() {
+  $ret = array();
+  db_drop_table($ret, 'hosting_devshop_pull_platforms');
+  return $ret;
+}

@@ -1,0 +1,31 @@
+---
+
+# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+
+php_default_version_debian: "5"
+
+# Variables from geerlingguy.php v2
+php_packages_extra:
+  - php5-mcrypt
+  - php-pear
+#  
+#   - php-apc
+  - libpcre3-dev
+  - libapache2-mod-php5
+
+php_conf_paths:
+  - /etc/php5/fpm
+  - /etc/php5/apache2
+  - /etc/php5/cli
+
+php_extension_conf_paths:
+  - /etc/php5/fpm/conf.d
+  - /etc/php5/apache2/conf.d
+  - /etc/php5/cli/conf.d
+
+php_fpm_daemon: php5-fpm
+php_fpm_conf_path: "/etc/php5/fpm"
+php_fpm_pool_conf_path: "{{ __php_fpm_conf_path }}/pool.d/www.conf"
+
+# Variables from geerlingguy.php-mysql
+php_mysql_package: php5-mysql

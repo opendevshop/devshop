@@ -1,0 +1,21 @@
+name: Build DevShop Server Container
+
+on: [push]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the DevShop Server Docker image
+      run: docker build . --file Dockerfiles/Dockerfile --tag devshop/server:$GITHUB_SHA
+
+    - name: Run DevShop Server and tests
+      if: false
+      run: docker run -e GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA devshop-tests.sh

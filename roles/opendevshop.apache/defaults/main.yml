@@ -1,0 +1,6 @@
+---
+sudoers_file_path: /etc/sudoers
+aegir_user_home: /var/aegir
+aegir_user_in_web_group: 'yes'
+
+ansible_become_method_aegir: sudo

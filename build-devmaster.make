@@ -3,6 +3,12 @@
 ;
 ; This makefile is used by the DevShop standalone installer to build devmaster.
 ;
+; This makefile targets git repos directly so that it can be used standalone.
+; It will not load the ./devmaster project from this directory, but will load
+; it from the remote sub repository https://github.com/opendevshop/devmaster.git
+;
+; The DevShop development and testing tools, use the build-devmaster-dev.make.yml
+; file instead so you can develop the project and distribution at the same time.
 
 core = 7.x
 api = 2
@@ -17,6 +23,8 @@ projects[devmaster][type] = "profile"
 projects[devmaster][download][type] = "git"
 
 ###DEVELOPMENTSTART###
+; This is used by the drupal.org system to create "dev" releases.
+; @TODO: Consider removing the "devmaster" github repo and just use drupal.org.
 ; DEVELOPMENT OVERRIDE
 ; Removed during release process.
 ; This is so that different version of "devshop" (the branch) can install a different version of devmaster.

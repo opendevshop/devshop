@@ -1,0 +1,45 @@
+---
+
+# Finalize setup of PHP 5.5
+- name: Symbolic link to Aegir's Apache Config
+  file:
+    src: "{{ aegir_user_home }}/config/apache.conf"
+    # For RedHat, apache_conf_path == '/etc/httpd/conf.d'
+    dest: "{{ apache_conf_path }}/{{ aegir_user_name }}.conf"
+    state: link
+    force: yes
+
+#- name: Setup | REDHAT | Symbolic link to add PHP to PATH.
+#  file:
+#    src=/opt/rh/php55/enable
+#    dest=/etc/profile.d/php.sh
+#    state=link
+#    force=yes
+
+#- name: Setup | REDHAT | Symboc link to php executable.
+#  file:
+#    src=/opt/rh/php55/root/usr/bin/php
+#    dest=/usr/bin/php
+#    state=link
+#    force=yes
+
+#- name: Setup | REDHAT | Add Apache Mods
+#  file:
+#    src=/opt/rh/httpd24/root/etc/httpd/conf.d/php55-php.conf
+#    dest=/etc/httpd/conf.d/php55-php.conf
+#    state=link
+#    force=yes
+#
+#- name: Setup | REDHAT | Add Apache Mods
+#  file:
+#    src=/opt/rh/httpd24/root/etc/httpd/conf.modules.d/10-php55-php.conf
+#    dest=/etc/httpd/conf.modules.d/php55-php.conf
+#    state=link
+#    force=yes
+
+#- name: Setup | REDHAT | Add Apache Mods
+#  file:
+#    src=/opt/rh/httpd24/root/etc/httpd/modules/libphp55-php5.so
+#    dest=/etc/httpd/modules/libphp55-php5.so
+#    state=link
+#    force=yes
