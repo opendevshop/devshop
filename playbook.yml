@@ -9,6 +9,7 @@
     - opendevshop.users
     - opendevshop.apache
     - geerlingguy.php
+    - geerlingguy.php-versions
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster
