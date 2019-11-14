@@ -4,24 +4,24 @@
 
 # Variables from geerlingguy.php v2
 
-__php_packages:
-  # @TODO: These can be moved to apache role, right?
-  - libapache2-mod-php
-  - libpcre3-dev
-  - "php{{ php_version }}"
-  - "php{{ php_version }}-apcu"
-  - "php{{ php_version }}-cli"
-  - "php{{ php_version }}-common"
-  - "php{{ php_version }}-curl"
-  - "php{{ php_version }}-dev"
-  - "php{{ php_version }}-fpm"
-  - "php{{ php_version }}-gd"
-  - "php{{ php_version }}-imap"
-  - "php{{ php_version }}-json"
-  - "php{{ php_version }}-mbstring"
-  - "php{{ php_version }}-mysqlnd"
-  - "php{{ php_version }}-opcache"
-  - "php{{ php_version }}-pear"
-  - "php{{ php_version }}-sqlite3"
-  - "php{{ php_version }}-xml"
-  - "php{{ php_version }}-yaml"
+#__php_packages:
+#  # @TODO: These can be moved to apache role, right? or maybe we shouldn't need these at all...
+#  - libapache2-mod-php
+#  - libpcre3-dev
+#  - "php{{ php_version }}"
+#  - "php{{ php_version }}-apcu"
+#  - "php{{ php_version }}-cli"
+#  - "php{{ php_version }}-common"
+#  - "php{{ php_version }}-curl"
+#  - "php{{ php_version }}-dev"
+#  - "php{{ php_version }}-fpm"
+#  - "php{{ php_version }}-gd"
+#  - "php{{ php_version }}-imap"
+#  - "php{{ php_version }}-json"
+#  - "php{{ php_version }}-mbstring"
+#  - "php{{ php_version }}-mysqlnd"
+#  - "php{{ php_version }}-opcache"
+#  - "php{{ php_version }}-pear"
+#  - "php{{ php_version }}-sqlite3"
+#  - "php{{ php_version }}-xml"
+#  - "php{{ php_version }}-yaml"
