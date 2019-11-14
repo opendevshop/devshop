@@ -131,6 +131,9 @@ RUN chmod 0440 /etc/sudoers.d/aegir
 COPY Dockerfiles/files/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+COPY tests/devshop-tests.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/devshop-tests.sh
+
 COPY Dockerfiles/files/services-start.sh /usr/local/bin/services-start
 RUN chmod +x /usr/local/bin/services-start
 
