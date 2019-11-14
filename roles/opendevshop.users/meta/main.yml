@@ -1,0 +1,34 @@
+---
+galaxy_info:
+  author: jonpugh
+  description: Set up application and admin users.
+  company: ThinkDrop Inc
+
+  license: GPLv2
+
+  min_ansible_version: 2.4
+
+  galaxy_tags:
+    - web
+    - apache
+    - webserver
+    - html
+    - httpd
+    - aegir
+    - opendevshop
+    - devshop
+    - hosting
+    - drupal
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 6
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+
+dependencies: []

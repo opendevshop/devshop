@@ -1,0 +1,22 @@
+# monorepo-builder.yml
+# 
+# This file defines the sub-repositories we want to push to.
+#
+# GitHub Actions handles running `bin/monorepo-builder split` on every push, so developers should not have to run it
+# manually at all.
+#
+parameters:
+  directories_to_repositories:
+
+    # Drupal Distribution
+    devmaster: 'git@github.com:opendevshop/devmaster.git'
+
+    # Ansible Role: DevShop Devmaster
+    # @TODO: Consider renaming. This is really for the primary server, not just "devmaster" Drupal profile.
+    roles/opendevshop.devmaster: 'git@github.com:opendevshop/ansible-role-devmaster.git'
+
+    # Ansible Role: DevShop Users
+    roles/opendevshop.users: 'git@github.com:opendevshop/ansible-role-users.git'
+
+    # Ansible Role: DevShop Apache
+    roles/opendevshop.apache: 'git@github.com:opendevshop/ansible-role-apache.git'

@@ -172,20 +172,23 @@ class RoboFile extends \Robo\Tasks {
       'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
       'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
       'geerlingguy.supervisor' => 'http://github.com/geerlingguy/ansible-role-supervisor.git',
-      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
-      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
-      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
-      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
+//      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+//      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
+//      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
+//      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
     ];
 
     $this->yell("Cloning Ansible Roles...");
 
-    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/roles.yml'));
+    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/requirements.yml'));
     foreach ($roles_yml as $role) {
-      $roles[$role['name']] = [
-        'repo' => $role_repos[$role['name']],
-        'version' => $role['version'],
-      ];
+      // Only install the role if it is in the role_repos array.
+      if (!empty($role_repos[$role['name']])) {
+        $roles[$role['name']] = [
+            'repo' => $role_repos[$role['name']],
+            'version' => $role['version'],
+        ];
+      }
     }
 
     foreach ($roles as $name => $role) {
@@ -228,8 +231,6 @@ class RoboFile extends \Robo\Tasks {
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
-      $devmaster_ssh_git_url = "git@github.com:opendevshop/devmaster.git";
-      $devmaster_drupal_git_url = "git@git.drupal.org:project/devmaster.git";
 
       if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
         $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
@@ -238,24 +239,24 @@ class RoboFile extends \Robo\Tasks {
         $this->say("<comment>Unable to set devshop git remote to $devshop_ssh_git_url !</comment>");
       }
 
-      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
-        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
-      }
-      else {
-        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
-      }
+//      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
+//        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
+//      }
+//      else {
+//        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
+//      }
 
-      // Check for drupal remote
-      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote get-url drupal")->run()->wasSuccessful()) {
-        $this->say('Git remote "drupal" already exists in devmaster.');
-      }
-      // If remote does not exist, add it.
-      elseif ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote add drupal $devmaster_drupal_git_url")->run()->wasSuccessful()) {
-        $this->yell("Added 'drupal' git remote and added git.drupal.org as a second push target on origin!");
-      }
-      else {
-        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
-      }
+//      // Check for drupal remote
+//      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote get-url drupal")->run()->wasSuccessful()) {
+//        $this->say('Git remote "drupal" already exists in devmaster.');
+//      }
+//      // If remote does not exist, add it.
+//      elseif ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote add drupal $devmaster_drupal_git_url")->run()->wasSuccessful()) {
+//        $this->yell("Added 'drupal' git remote and added git.drupal.org as a second push target on origin!");
+//      }
+//      else {
+//        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
+//      }
     }
 
     return TRUE;
@@ -384,6 +385,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['mode'] == 'docker-compose') {
       $env = "-e TERM=xterm";
       $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
+      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
@@ -422,6 +424,7 @@ class RoboFile extends \Robo\Tasks {
 
 
       if (isset($cmd)) {
+          // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
         if ($this->_exec($cmd)->wasSuccessful()) {
           exit(0);
         }
@@ -461,6 +464,7 @@ class RoboFile extends \Robo\Tasks {
         ->publish(80,80)
         ->detached()
         ->privileged()
+        ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
         ->env('TERM', 'xterm')
         ->env('TRAVIS', TRUE)
         ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
@@ -488,22 +492,30 @@ class RoboFile extends \Robo\Tasks {
         }
       }
       elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+// @TODO: If this is the cause of wonkiness, let's not install dbus just for testing. There are better ways to set hostname.
         // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
-        if (!(
-          $this->taskDockerExec('devshop_container')
-            ->exec("apt-get update")
-            ->run()
-            ->wasSuccessful() &&
-          $this->taskDockerExec('devshop_container')
-            ->exec("apt-get install dbus -y")
-            ->env('DEBIAN_FRONTEND', 'noninteractive')
-            ->run()
-            ->wasSuccessful()
-        )) {
-          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
-
-          exit(1);
-        }
+//        if (!(
+//          $this->taskDockerExec('devshop_container')
+//            ->exec("apt-get update")
+//            ->run()
+//            ->wasSuccessful()
+//          && $this->taskDockerExec('devshop_container')
+//            ->exec("apt-get install dbus -y")
+//            ->env('DEBIAN_FRONTEND', 'noninteractive')
+//            ->run()
+//            ->wasSuccessful()
+//
+//          // @TODO: Hack attempt to fix failing apache restarts: https://travis-ci.org/opendevshop/devshop/jobs/608769926#L2447
+//          // Idea from: https://unix.stackexchange.com/questions/239489/dbus-system-failed-to-activate-service-org-freedesktop-login1-timed-out
+//          && $this->taskDockerExec('devshop_container')
+//            ->exec("systemctl restart systemd-logind")
+//            ->run()
+//            ->wasSuccessful()
+//        )) {
+//          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
+//
+//          exit(1);
+//        }
       }
 
       // Display home folder.
@@ -592,28 +604,29 @@ class RoboFile extends \Robo\Tasks {
 
       if ($opts['test']) {
 
-        # Disable supervisor
-        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
-          $service = 'supervisor';
-        }
-        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
-          $service = FALSE;
-        }
-        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
-          $service = 'supervisor';
-        }
-        else {
-          $service = 'supervisord';
-        }
-
-        if ($service && !$this->taskDockerExec('devshop_container')
-          ->exec("service $service stop")
-          ->run()
-          ->wasSuccessful()
-        ) {
-          $this->say('Unable to disable supervisor.');
-          exit(1);
-        }
+// @TODO: This should not be needed anymore?
+//        # Disable supervisor
+//        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
+//          $service = 'supervisor';
+//        }
+//        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+//          $service = FALSE;
+//        }
+//        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
+//          $service = 'supervisor';
+//        }
+//        else {
+//          $service = 'supervisord';
+//        }
+//
+//        if ($service && !$this->taskDockerExec('devshop_container')
+//          ->exec("service $service stop")
+//          ->run()
+//          ->wasSuccessful()
+//        ) {
+//          $this->say('Unable to disable supervisor.');
+//          exit(1);
+//        }
 
         $this->yell("Running devshop-tests.sh ...");
 
@@ -799,22 +812,13 @@ class RoboFile extends \Robo\Tasks {
       $not_ready = !$this->confirm("Did you write a great CHANGELOG.md? Please make sure all (good) changes are included on the main branch (1.x) before continuing!");
     }
 
-    $release_directories[] = '.';
-    $release_directories[] = './aegir-home/devmaster-1.x/profiles/devmaster';
-
-    $dirs = implode(' ', $release_directories);
-    $cwd = getcwd();
-    if ($this->confirm("Create the branch $release_branch in directories $dirs")) {
-      foreach ($release_directories as $directory) {
-        chdir($directory);
+    if ($this->confirm("Create the branch $release_branch?")) {
         $this->_exec("git checkout -b $release_branch");
-      }
-      chdir($cwd);
     }
 
     // Write version to files.
-    if ($this->confirm("Write '$version' to ./aegir-home/devmaster-1.x/profiles/devmaster/VERSION.txt")) {
-      file_put_contents('./aegir-home/devmaster-1.x/profiles/devmaster/VERSION.txt', $version);
+    if ($this->confirm("Write '$version' to ./devmaster/VERSION.txt")) {
+      file_put_contents('./devmaster/VERSION.txt', $version);
     }
 
     if ($this->confirm("Write '$version' to install.sh? ")) {
@@ -828,94 +832,44 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
     }
 
-    if ($this->confirm("Write '$drupal_org_version' to drupal-org.make for devshop_stats? ")) {
-      $this->_exec("sed -i -e 's/projects\[devshop_stats\]\[version\] = 1.x/projects[devshop_stats][version] = $drupal_org_version/' ./aegir-home/devmaster-1.x/profiles/devmaster/drupal-org.make");
-    }
-
     if ($this->confirm("Show git diff before committing?")) {
-      foreach ($release_directories as $dir) {
-        chdir($dir);
-        $this->_exec("git diff -U1");
-      }
-      chdir($cwd);
+      $this->_exec("git diff -U1");
     }
     if ($this->confirm("Commit changes to $release_branch? ")) {
-      foreach ($release_directories as $dir) {
-        chdir($dir);
-        $this->_exec("git commit -am 'Automated Commit from DevShop Robofile.php `release` command. Preparing version $version.'");
-      }
-      chdir($cwd);
+      $this->_exec("git commit -am 'Automated Commit from DevShop Robofile.php `release` command. Preparing version $version.'");
     }
 
-    if ($this->confirm("Tag release of devshop_stats module to 7.x-$drupal_org_version? ")) {
-      chdir('./aegir-home/devmaster-1.x/sites/all/modules/aegir/devshop_stats');
+    if ($this->confirm("Create a release tag? ")) {
 
-      if (file_exists('.git/config')) {
-        $this->taskGitStack()
-          ->tag($drupal_org_tag)
-          ->run();
-        $this->taskGitStack()
-          ->push("origin", $drupal_org_tag)
-          ->run();
-      }
-      else {
-        $this->yell('No Tag Written! devshop_stats folder is not a git clone. Check ./aegir-home/devmaster-1.x/profiles/devmaster/modules/contrib/devshop_stats and ensure it is a git clone of http://git.drupal.org/project/devshop_stats');
-      }
-      chdir($cwd);
-    }
-
-    $this->say("Now, go create a new release for devshop_stats, so the build is ready before we push the new version of devmaster: https://www.drupal.org/node/add/project-release/2676696");
-    $this->say("Use the tag $drupal_org_tag");
-
-    $not_ready = TRUE;
-    while ($not_ready) {
-      $not_ready = !$this->confirm("Is the release ready?");
-    }
-
-    if ($this->confirm("Create a tag in devshop and devmaster repos? ")) {
-
-      // Tag devshop with $version.
-      chdir($cwd);
+      // Tag devshop and devmaster with $version and drupal_org_tag.
       $this->taskGitStack()
         ->tag($version, "DevShop $version")
+        ->tag($drupal_org_tag, "DevShop Devmaster $version")
         ->run();
-
-      // Tag devmaster with version and drupal_org_version.
-      chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
-      $this->taskGitStack()
-        ->tag($version, "DevShop $version")
-        ->tag($drupal_org_tag, "DevShop $version")
-        ->run();
-      chdir($cwd);
     }
 
-    if ($this->confirm("Push the new release tags devshop $version and devmaster $drupal_org_version? (will attempt to push devmaster to remote 'drupal'.)")) {
-
-      chdir($cwd);
-      $this->taskGitStack()
-        ->push("origin", $version)
-        ->run();
-
-      chdir('./aegir-home/devmaster-1.x/profiles/devmaster');
+    if ($this->confirm("Push the new release tags $version and $drupal_org_version?")) {
       if (!$this->taskGitStack()
         ->push("origin", $version)
         ->push("origin", $drupal_org_tag)
-        ->push("drupal", $version)
-        ->push("drupal", $drupal_org_tag)
         ->run()
         ->wasSuccessful()
       ) {
-        $this->say('Pushing to remotes origin or drupal failed. If you need to add drupsl origin: git remote add origin username@git.drupal.org:project/devmaster.git');
+        $this->say('Pushing tags to remote origin');
       }
-
-      chdir($cwd);
     }
-
 
     $this->say("The final steps we still have to do manually:");
     $this->say("1. Go create a new release of devmaster: https://www.drupal.org/node/add/project-release/1779370 using the tag $drupal_org_tag");
     $this->say("2. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster");
     $this->say("3. Create a new 'release' on GitHub: https://github.com/opendevshop/devshop/releases/new using tag $version.  Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
+    $this->say("  - Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
+    $this->say("  - Upload install.sh script to release files.");
     $this->say("4. Put the new version in gh-pages branch index.html");
+
+    if ($this->confirm("Checkout main branch and run `monorepo-builder split` to push current branch and latest tag to all sub-repos?")) {
+      $this->_exec("git checkout 1.x");
+      $this->_exec("bin/monorepo-builder split");
+    }
   }
 }

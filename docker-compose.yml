@@ -15,13 +15,14 @@ services:
       - database
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
-      AEGIR_MAKEFILE: https://raw.githubusercontent.com/opendevshop/devshop/1.x/build-devmaster.make
+      AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
       AEGIR_PROFILE: devmaster
       AEGIR_VERSION: 1.x
       PROVISION_VERSION: 7.x-3.x
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
       XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
       PHP_IDE_CONFIG: "serverName=devshop.local.computer"
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
 
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home

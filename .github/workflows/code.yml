@@ -1,0 +1,54 @@
+name: Code Actions
+
+on: [push]
+
+env:
+  COMPOSER_HOME: .gh-actions-composer-cache
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  composer-install:
+    name: Composer Install
+    runs-on: [ubuntu-16.04]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Cache composer cache directory
+      uses: actions/cache@v1
+      with:
+        path: .gh-actions-composer-cache
+        key: 'composer-cache'
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+  monorepo-split:
+    if: false
+    name: Split Git Repository
+    needs: composer-install
+
+    runs-on: [ubuntu-16.04]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Cache composer cache directory
+        uses: actions/cache@v1
+        with:
+          path: .gh-actions-composer-cache
+          key: 'composer-cache'
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Create a branch for the monorepo-builder
+        run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
+
+      - run: 'echo "GITHUB_TOKEN: ${GITHUB_TOKEN}"'
+
+      - name: Split monorepo
+        run: bin/monorepo-builder split --config=monorepo-github-actions.yml

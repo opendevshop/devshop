@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file queue.inc
+ * Contains hooks to create a Hosting Queue...
+ */
+
+/**
+ * Implements hook_hosting_queues().
+ */
+function devshop_github_hosting_queues() {
+  $items['github'] = array(
+    'type' => 'batch',
+    'name' => t('GitHub'),
+    'description' => t('GitHub Polling: Keep environments up to date with latest code and maintain PR environments.'),
+    'total_items' => 1,
+    'frequency' => strtotime("1 minute", 0),
+    'singular' => t('project'),
+    'plural' => t('projects'),
+  );
+  return $items;
+}
+
+/**
+ * Implements hosting_QUEUE_TYPE_queue().
+ *
+ * Provides the `hosting-github` drush command.
+ *
+ * This is run by cron, via the hosting queues system.
+ */
+function hosting_github_queue($count) {
+
+  // Load all published projects.
+  $query = db_select('hosting_devshop_project', 'p');
+  $query->join('node', 'n', 'p.nid = n.nid');
+  $query
+    ->fields('p', array('nid'))
+    ->condition('n.status', NODE_PUBLISHED)
+    ->execute();
+
+  $projects = $query->execute()->fetchAll();
+
+  // Look through all projects...
+  foreach ($projects as $project) {
+    $project_node = node_load($project->nid);
+    $project = $project_node->project;
+
+    drush_log("Checking project {$project->name}...", "success");
+
+    // Check ones that have PR envs enabled
+    if ($project->settings->github['pull_request_create_policy'] == 'all') {
+      drush_log("Project {$project->name} is configured to maintain environments for all pull requests. Preparing environments...", "success");
+      $message = devshop_github_create_all_pr_environments($project_node);
+      drush_log($message, "success");
+    }
+  }
+
+  print "Queue done: \n";
+  return TRUE;
+}
+

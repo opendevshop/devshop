@@ -152,6 +152,9 @@ sleep 3
 # Exit on the first failed line.
 set -e
 
+echo "DevShop | Setting GitHub Token ... "
+drush @hostmaster vset devshop_github_token $GITHUB_TOKEN
+
 echo "DevShop | Running 'drush cc drush' ... "
 drush cc drush
 
