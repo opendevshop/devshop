@@ -25,5 +25,3 @@ ssh_known_hosts:
   - bitbucket.org
   - drupal.org
   - gitlab.com
-
-php_version: '7.2'
