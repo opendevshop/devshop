@@ -17,4 +17,5 @@ jobs:
       run: docker build . --file Dockerfiles/Dockerfile --tag devshop/server:$GITHUB_SHA
 
     - name: Run DevShop Server and tests
+      if: false
       run: docker run -e GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA devshop-tests.sh
