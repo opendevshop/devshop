@@ -455,7 +455,11 @@ class RoboFile extends \Robo\Tasks {
       if (!empty(shell_exec('docker ps -f name=devshop_container -q'))) {
           $this->say('Docker Container devshop_container is already running.');
       }
-      # Launch Server container
+      # Detect a stopped devshop_container
+      elseif (!empty(shell_exec('docker ps -f name=devshop_container -q -a'))) {
+          $this->_exec('docker start devshop_container');
+      }
+      # Launch new devshop_container
       elseif (!$this->taskDockerRun($opts['install-sh-image'])
         ->name('devshop_container')
         ->volume($this->devshop_root_path, '/usr/share/devshop')
