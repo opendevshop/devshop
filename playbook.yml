@@ -5,11 +5,17 @@
 ---
 - hosts: all
   user: root
+  vars:
+    php_version: '7.2'
+
   roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+
     - opendevshop.users
     - opendevshop.apache
-    - geerlingguy.php
     - geerlingguy.php-versions
+    - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster
