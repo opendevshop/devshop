@@ -343,7 +343,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
-    'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
+    'install-sh-image' => 'geerlingguy/docker-ubuntu1804-ansible',
     'install-sh-options' => '--server-webserver=apache',
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
@@ -451,8 +451,12 @@ class RoboFile extends \Robo\Tasks {
         $_SERVER['SITE_HOSTS'] = 'devshop.local.computer';
       }
 
+      # Detect a running devshop_container
+      if (!empty(shell_exec('docker ps -f name=devshop_container -q'))) {
+          $this->say('Docker Container devshop_container is already running.');
+      }
       # Launch Server container
-      if (!$this->taskDockerRun($opts['install-sh-image'])
+      elseif (!$this->taskDockerRun($opts['install-sh-image'])
         ->name('devshop_container')
         ->volume($this->devshop_root_path, '/usr/share/devshop')
         ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
