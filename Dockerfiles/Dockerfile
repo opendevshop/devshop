@@ -7,8 +7,10 @@ ENV COMPOSER_VERSION 1.8.4
 ENV DRUSH_VERSION 8.1.18
 ENV REGISTRY_REBUILD_VERSION 7.x-2.5
 
-COPY build-devmaster.make /build-devmaster.make
-ENV AEGIR_MAKEFILE /build-devmaster.make
+RUN mkdir /usr/share/devshop
+COPY * /usr/share/devshop/
+
+ENV AEGIR_MAKEFILE /usr/share/devshop/build-devmaster.make
 
 ENV DEBIAN_FRONTEND=noninteractive
 
