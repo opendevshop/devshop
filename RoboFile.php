@@ -82,7 +82,7 @@ class RoboFile extends \Robo\Tasks {
   public function prepareHost() {
     // Check for docker
     $this->say('Checking for Docker...');
-    if ($this->taskDockerRun('hello-world')
+    if ($this->taskExec('docker info')
       ->printOutput(FALSE)
       ->run()
       ->wasSuccessful()) {
