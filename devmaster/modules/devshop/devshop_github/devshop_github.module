@@ -141,9 +141,7 @@ function devshop_github_menu() {
  * Implements hook_form_FORM_ID_alter() for project_node_form().
  */
 function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id) {
-
-  // @TODO: For some strange reason, The environments list is truncated here! Reloading the node fixed it.
-  $node = node_load($form_state['node']->nid, NULL, TRUE);
+  $node = $form['#node'];
 
   if ($node->project->git_provider != 'github') {
     return;
