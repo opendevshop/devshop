@@ -608,6 +608,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
@@ -1670,16 +1671,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v4.3.8",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "3b2e0cb029afbb0395034509291f21191d1a4db0"
+                "reference": "75ad33d9b6f25325ebc396d68ad86fd74bcfbb06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/3b2e0cb029afbb0395034509291f21191d1a4db0",
-                "reference": "3b2e0cb029afbb0395034509291f21191d1a4db0",
+                "url": "https://api.github.com/repos/symfony/process/zipball/75ad33d9b6f25325ebc396d68ad86fd74bcfbb06",
+                "reference": "75ad33d9b6f25325ebc396d68ad86fd74bcfbb06",
                 "shasum": ""
             },
             "require": {
@@ -1688,7 +1689,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -1715,7 +1716,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2019-10-28T17:07:32+00:00"
+            "time": "2019-10-28T20:30:34+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -3112,18 +3113,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Symplify/SmartFileSystem.git",
-                "reference": "1bb5021e59930bc752e19fc75eea01221b5a4bc1"
+                "reference": "280d073c39c0a93c5a2312f903606240635d95bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Symplify/SmartFileSystem/zipball/1bb5021e59930bc752e19fc75eea01221b5a4bc1",
-                "reference": "1bb5021e59930bc752e19fc75eea01221b5a4bc1",
+                "url": "https://api.github.com/repos/Symplify/SmartFileSystem/zipball/280d073c39c0a93c5a2312f903606240635d95bd",
+                "reference": "280d073c39c0a93c5a2312f903606240635d95bd",
                 "shasum": ""
             },
             "require": {
                 "nette/utils": "^3.0",
                 "php": "^7.2",
-                "symfony/filesystem": "^3.4|^4.3|^5.0"
+                "symfony/filesystem": "^4.3|^5.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^0.11.19",
@@ -3145,7 +3146,7 @@
                 "MIT"
             ],
             "description": "Sanitized FileInfo with safe getRealPath() and other handy methods",
-            "time": "2019-11-12T23:23:19+00:00"
+            "time": "2019-11-18T15:13:51+00:00"
         }
     ],
     "aliases": [],
