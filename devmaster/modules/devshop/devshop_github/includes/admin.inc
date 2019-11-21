@@ -171,6 +171,25 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
   }
 }
 
+function devshop_github_token_is_valid($token = NULL) {
+
+  if (empty($token)) {
+    $token = variable_get('devshop_github_token');
+  }
+
+  $client = new \Github\Client();
+  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+
+  try {
+    $show = $client->currentUser()->show();
+    return TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    return $e;
+  }
+}
+
 /**
  * Page callback for "get all repos" link.
  */
