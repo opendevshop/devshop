@@ -94,7 +94,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
 
   // Built in Hooks
   if ($composer) {
-    $composer_install_command = drush_get_option('provision_composer_install_command', 'composer install --no-interaction --no-progress --no-dev')
+    $composer_install_command = drush_get_option('provision_composer_install_command', 'composer install --no-interaction --no-progress --no-dev');
     if (file_exists(d()->platform->repo_path . '/composer.json')) {
       $repo_path = d()->platform->repo_path;
       $commands[] = "cd {$repo_path} && {$composer_install_command}";
