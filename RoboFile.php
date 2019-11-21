@@ -744,6 +744,7 @@ class RoboFile extends \Robo\Tasks {
       }
     }
     $process->setTty(TRUE);
+    $process->setTimeout(NULL);
     $process->run();
   }
 
