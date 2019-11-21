@@ -6,7 +6,15 @@ ENV PROVISION_VERSION 7.x-3.x
 ENV COMPOSER_VERSION 1.8.4
 ENV DRUSH_VERSION 8.1.18
 ENV REGISTRY_REBUILD_VERSION 7.x-2.5
-ENV AEGIR_MAKEFILE https://raw.githubusercontent.com/opendevshop/devshop/$DEVSHOP_VERSION/build-devmaster.make
+
+RUN mkdir /usr/share/devshop
+COPY * /usr/share/devshop/
+
+# Just link it into bin, we can deal with PATH in docker later.
+RUN ln -s /usr/share/devshop/bin/devshop /usr/local/bin/devshop
+RUN ln -s /usr/share/devshop/tests/devshop-tests.sh /usr/local/bin/devshop-tests.sh
+
+ENV AEGIR_MAKEFILE /usr/share/devshop/build-devmaster.make
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -123,16 +131,16 @@ RUN wget http://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_permissions/sc
 RUN bash standalone-install-fix-permissions-ownership.sh
 
 # Copy files
-COPY files/sudoers-aegir /etc/sudoers.d/aegir
+COPY Dockerfiles/files/sudoers-aegir /etc/sudoers.d/aegir
 RUN chmod 0440 /etc/sudoers.d/aegir
 
-COPY files/docker-entrypoint.sh /usr/local/bin/
+COPY Dockerfiles/files/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-COPY files/services-start.sh /usr/local/bin/services-start
+COPY Dockerfiles/files/services-start.sh /usr/local/bin/services-start
 RUN chmod +x /usr/local/bin/services-start
 
-COPY files/set-user-ids.sh /usr/local/bin/set-user-ids
+COPY Dockerfiles/files/set-user-ids.sh /usr/local/bin/set-user-ids
 RUN chmod +x /usr/local/bin/set-user-ids
 
 # Prepare Aegir Logs folder.

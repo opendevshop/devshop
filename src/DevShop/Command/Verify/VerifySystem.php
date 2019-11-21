@@ -221,7 +221,7 @@ If this is a new installation, you may select the default randomly generated pas
         }
 
         // Install devshop roles
-        $roles_file_path = realpath(dirname(dirname(dirname(dirname(__DIR__)))) . '/roles.yml');
+        $roles_file_path = realpath(dirname(dirname(dirname(dirname(__DIR__)))) . '/requirements.yml');
         $output->writeln('Installing Ansible roles from ' . $roles_file_path . ' to /etc/ansible/roles ...');
         $this->ansible->galaxy()
           ->roleFile($roles_file_path)

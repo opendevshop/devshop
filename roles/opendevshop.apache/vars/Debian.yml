@@ -1,0 +1,26 @@
+---
+# vars file for aegir.apache on Debian
+apache_control: /usr/sbin/apache2ctl
+apache_user: www-data
+
+php_packages:
+- libpcre3-dev
+- php
+- php-apcu
+- php-common
+- php-cli
+- php-curl
+- php-dev
+- php-fpm
+- php-gd
+- php-imap
+- php-json
+- php-mbstring
+- php-mysqlnd
+- php-opcache
+- php-pear
+- php-sqlite3
+- php-xml
+- libapache2-mod-php
+
+php_mysql_package: php-mysql

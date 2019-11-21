@@ -1,0 +1,151 @@
+<?php
+
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
+ */
+function devshop_acquia_post_hosting_devshop_deploy_task($task, $data) {
+  drush_run_acquia_hook($task);
+}
+
+/**
+ * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
+ */
+function devshop_acquia_post_hosting_sync_task($task, $data) {
+  drush_run_acquia_hook($task);
+}
+
+/**
+ * Helper for running acquia cloud hooks.
+ * @param $hook
+ * @param $environment
+ */
+function drush_run_acquia_hook($task) {
+
+  // If task is not running on a site, return.
+  if ($task->ref->type != 'site') {
+    return;
+  }
+
+  // If this is a deploy task, and acquia hooks is not configured to run, return.
+  if ($task->task_type == 'devshop-deploy' && (!isset($task->task_args['acquia_hooks']) || $task->task_args['acquia_hooks'] != 1)) {
+    return;
+  }
+
+  $environment = (object) $task->ref->environment;
+  $project = (object) $task->ref->project;
+
+  // If project has no path to drupal, we know it's not acquia.
+  if ($project->drupal_path != 'docroot' || !file_exists($environment->repo_path . '/hooks')) {
+    drush_log('Acquia Cloud Hooks error', 'p_command');
+    drush_log('./docroot or ./hooks folder is missing, but Acquia hooks are configured to run.  Please create the hooks or turn off Acquia Cloud Hooks for the project.', 'p_error');
+    return drush_set_error('DRUSH_ERROR');
+  }
+
+  // Determine the hook to run
+  $hooks = array();
+
+  // If "manual" deployment, it's a post-code-deploy
+  if (isset($task->task_args['manual']) && $task->task_args['manual'] == 1) {
+    $hooks[] = 'post-code-deploy';
+  }
+  // If it is automatic, it's a "post-code-update"
+  elseif ($task->task_type == 'devshop_deploy') {
+    $hooks[] = 'post-code-update';
+  }
+  // If task is sync...
+  elseif ($task->task_type == 'sync') {
+    // If database is copied, run post-db-copy hook.
+    if ($task->task_args['database']) {
+      $hooks[] = 'post-db-copy';
+    }
+    // If files are copied, run post-files-copy hook.
+    if ($task->task_args['files']) {
+      $hooks[] = 'post-files-copy';
+    }
+  }
+
+  foreach ($hooks as $hook) {
+
+  drush_log("[DEVSHOP] Invoking acquia hooks for hook $hook in environment {$environment->name} ... Scanning  {$environment->repo_path}/hooks/common/{$hook}  & {$environment->repo_path}/hooks/{$environment->name}/{$hook} ", 'ok');
+
+  // Collect cloud hook scripts to run for all environments "common".
+  $files = scandir("{$environment->repo_path}/hooks/common/{$hook}");
+  if (empty($files)) $files = array();
+
+  // The list of files we will run.
+  $scripts = array();
+
+  // Remove incorrect entries from scandir.
+  $files = array_diff($files, array('..', '.', '.gitignore'));
+
+  // Collect the full path to each script.
+  foreach ($files as $script) {
+    $scripts[] = realpath("{$environment->repo_path}/hooks/common/{$hook}/{$script}");
+  }
+
+  // Collect cloud hook scripts to run for this environment.
+  if (file_exists("{$environment->repo_path}/hooks/{$environment->name}/{$hook}")) {
+
+    $files = scandir("{$environment->repo_path}/hooks/{$environment->name}/{$hook}");
+
+    // Remove incorrect entries from scandir.
+    $files= array_diff($files, array('..', '.', '.gitignore'));
+
+    // Collect the full path to each script.
+    foreach ($files as $script) {
+      $scripts[] = realpath("{$environment->repo_path}/hooks/{$environment->name}/{$hook}/{$script}");
+    }
+  }
+
+  // Notify logs how many scripts we've found
+    $count = count($scripts);
+    drush_log("[DEVSHOP] Found $count scripts to run...", 'ok');
+
+    // Run Scripts
+  // @TODO: Implement using symfony:Process component.
+  // Usage: post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
+  foreach ($scripts as $file) {
+    drush_log('[DEVSHOP] Running Acquia Cloud Hook: ' . $file, 'ok');
+    $hook_path = str_replace($environment->repo_path, '', $file);
+    drush_log("[Acquia Cloud Hook $hook] $hook_path", 'p_command');
+
+    // This is a trick.  DevShop doesn't have aliases like $project.$environment.
+    // When Acquia cloud hook writers create a script, they will use something like:
+    //
+    //    drush_alias=$site'.'$target_env
+    //    drush @$drush_alias cc all
+    //
+    // So, by passing "environment->name" as $site, and project.hostname as $target_env,
+    // we can trick the Acquia cloud script to use the right alias.
+    $alias = explode('.', $environment->drush_alias);
+    $environment_name = substr($alias[0], 1);
+
+    $command = "sh $file {$environment_name} {$project->base_url} {$environment_name} old_branch {$environment->git_ref} repo_url repo_type";
+
+    drush_log('[Running] ' . $command, 'p_log');
+
+    $process = new Process($command);
+    $process->setTimeout(NULL);
+    $exit_code = $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        drush_log($buffer, 'p_ok');
+      }
+      else {
+        drush_log($buffer, 'p_ok');
+      }
+    });
+
+    // check exit code
+    if ($exit_code === 0) {
+      drush_log("[.hooks] Command executed successfully.", 'ok');
+    }
+    else {
+      drush_log("[.hooks] Hook command failed: $command", 'error');
+      drush_log($command, 'p_error');
+    }
+  }
+  }
+}

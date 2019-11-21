@@ -25,6 +25,14 @@ drush @hostmaster vset hosting_queued_paused 1
 # Enable watchdog
 drush @hostmaster en dblog -y
 
+# Save GitHub Token
+if [ -n "${GITHUB_TOKEN}" ]; then
+  drush @hostmaster vset devshop_github_token ${GITHUB_TOKEN}
+  echo ">> Drupal variable set from GITHUB_TOKEN environment variable."
+else
+  echo ">> GITHUB_TOKEN environment variable not found."
+fi
+
 # Run the test suite.
 devshop devmaster:test
 #drush @hostmaster provision-test --behat-folder-path=profiles/devmaster/tests --test-type=behat

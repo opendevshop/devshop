@@ -1,0 +1,418 @@
+<?php
+/**
+ * @file
+ * devshop_remotes.module
+ *
+ * For now I am starting with the "Add remote alias" feature. We can add more
+ * "remote management" stuff later.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function devshop_remotes_menu() {
+  $items['project/%/add-alias'] = array(
+    'title' => 'Add remote alias',
+    'description' => 'Add a remote alias to a project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_remotes_alias_add_form', 1),
+    'access arguments' => array('add remote aliases to projects'),
+  ) ;
+  $items['project/%/delete-alias/%'] = array(
+    'title' => 'Remove remote alias',
+    'description' => 'Remove a remote alias from a project',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devshop_remotes_alias_remove_form', 1, 3),
+    'access arguments' => array('remove remote aliases from projects'),
+  ) ;
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function devshop_remotes_permission() {
+  return array(
+    'add remote aliases to projects' => array(
+      'title' => t('add remote aliases to projects'),
+      'description' => t('Allow the user to add remote aliases to the project.'),
+    ),
+    'remove remote aliases from projects' => array(
+      'title' => t('remove remote aliases from projects'),
+      'description' => t('Allow the user to remove remote aliases from projects.'),
+    ),
+  );
+}
+
+/**
+ * @param $project_name
+ */
+function devshop_remotes_alias_add_form($form, &$form_state, $project_name) {
+
+  $node = devshop_load_project_by_name($project_name);
+  $form['project_nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+  $form['name'] = array(
+    '#title' => t('Alias Name'),
+    '#description' => t('Add the machine name for the alias. letters, numbers, and underscores only.  This must not match a devshop environment name.'),
+    '#type' => 'textfield',
+  );
+  $form['note'] = array(
+    '#markup' => t('Enter the following items exactly as they appear in your drush alias.'),
+  );
+  $form['uri'] = array(
+    '#title' => t('URI'),
+    '#type' => 'textfield',
+  );
+  $form['root'] = array(
+    '#title' => t('Root'),
+    '#type' => 'textfield',
+  );
+  $form['remote_host'] = array(
+    '#title' => t('Remote Host'),
+    '#type' => 'textfield',
+  );
+  $form['remote_user'] = array(
+    '#title' => t('Remote User'),
+    '#type' => 'textfield',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save Alias'),
+  );
+  return $form;
+}
+
+/**
+ * Form validate for "add remote alias".
+ * @param $form
+ * @param $form_state
+ */
+function devshop_remotes_alias_add_form_validate(&$form, $form_state) {
+
+  $project_node = node_load($form_state['values']['project_nid']);
+  $project = $project_node->project;
+
+  // Lowercase and trim the name.
+  $form_state['values']['name'] = trim(strtolower($form_state['values']['name']));
+  form_set_value($form['name'], $form_state['values']['name'], $form_state);
+
+  // Don't allow the alias to match the project name, it causes drush aliases to break.
+  if ($project_node->title == $form_state['values']['name']) {
+    form_set_error('name', t('The alias name cannot match the project name.'));
+  }
+
+  // Only allow numbers and letters.
+  if (!preg_match('!^[a-z0-9]+$!', $form_state['values']['name'])) {
+    form_set_error('name', t('Only letters and numbers are allowed.'));
+  }
+
+  // Check for environment.
+  if (isset($project_node->project->environments[$form_state['values']['name']])) {
+    form_set_error('name', t('An environment named %name already exists in this project. Please choose a different name.', array(
+      '%name' => $form_state['values']['name'],
+    )));
+  }
+
+  // Check for existing alias.
+  if (isset($project->settings->aliases[$form_state['values']['name']])) {
+    form_set_error('name', t('An alias named %name already exists in this project. Please choose a different name.', array(
+      '%name' => $form_state['values']['name'],
+    )));
+  }
+}
+
+/**
+ * Form validate for "add remote alias".
+ * @param $form
+ * @param $form_state
+ */
+function devshop_remotes_alias_add_form_submit(&$form, &$form_state) {
+
+  // Load project node.
+  $project_node = node_load($form_state['values']['project_nid']);
+  $project = &$project_node->project;
+
+  // Save alias to "settings" data.
+  $project->settings->aliases[$form_state['values']['name']] = array(
+    'uri' => $form_state['values']['uri'],
+    'root' => $form_state['values']['root'],
+    'remote-user' => $form_state['values']['remote_user'],
+    'remote-host' => $form_state['values']['remote_host'],
+  );
+
+  node_save($project_node);
+
+  // Redirect to project
+  $form_state['redirect'] = "node/{$project_node->nid}";
+
+}
+
+
+/**
+ * @param $project_name
+ */
+function devshop_remotes_alias_remove_form($form, &$form_state, $project_name, $alias_name) {
+  // Load project node.
+  $node = devshop_load_project_by_name($project_name);
+  $project = &$node->project;
+
+  $alias = $project->settings->aliases[$alias_name];
+
+  $form['project_nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $alias_name,
+  );
+
+  $form['project'] = array(
+    '#title' => t('Project'),
+    '#type' => 'item',
+    '#markup' => $project_name,
+  );
+  $form['alias'] = array(
+    '#title' => t('Alias') . ': ' . $alias_name,
+    '#type' => 'item',
+    '#field_prefix' => '<pre>',
+    '#field_suffix' => '</pre>',
+    '#markup' => var_export($alias, 1),
+  );
+
+  return confirm_form($form, t('Are you sure you want to remove this alias?'), "node/{$node->nid}", '', t('Delete Alias'));
+
+}
+
+/**
+ * Form validate for "add remote alias".
+ * @param $form
+ * @param $form_state
+ */
+function devshop_remotes_alias_remove_form_submit(&$form, &$form_state) {
+
+  // Load project node.
+  $project_node = node_load($form_state['values']['project_nid']);
+  $project = &$project_node->project;
+
+  // Save alias to "settings" data.
+  unset($project->settings->aliases[$form_state['values']['name']]);
+  node_save($project_node);
+
+  // Redirect to project
+  $form_state['redirect'] = "node/{$project_node->nid}";
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function devshop_remotes_preprocess_node(&$variables) {
+
+  $node = $variables['node'];
+  if ($node->type != 'project') {
+    return;
+  }
+
+  $count = count($variables['node']->project->settings->aliases);
+  $label = t('Remote Aliases');
+  $delete_label = t('Delete Alias');
+
+  $aliases = '';
+
+  foreach ($variables['node']->project->settings->aliases as $name => $alias) {
+    $alias_rendered = var_export($alias, 1);
+    $uri = $alias['uri'];
+
+    if (user_access('remove remote aliases from projects')) {
+      $delete_url = url("project/{$node->title}/delete-alias/{$name}");
+      $delete_url_link = "<a href='$delete_url'' class='btn btn-link'><i class='fa fa-trash'></i> $delete_label</a>";
+
+    }
+
+      $aliases.= <<<HTML
+<div>
+  <a href="http://{$uri}" target="_blank"> 
+    $name  
+  </a>
+  <div class="pull-right">
+    {$delete_url_link}
+  </div>
+  <div>
+    <pre class="panel-body clear">$alias_rendered
+    </pre>
+  </div>
+</div>
+HTML;
+  }
+
+  if (user_access('add remote aliases to projects')) {
+
+    $aliases_url = url("project/{$node->title}/add-alias");
+    $add_link_title = t('Add Remote Alias');
+    $add_link = "<a href='{$aliases_url}'' class='btn btn-success pull-right'>
+                  <i class='fa fa-plus'></i> {$add_link_title}
+                </a>";
+  }
+  else {
+    $add_link = '';
+  }
+
+  $variables['project_extra_items'][] = <<<HTML
+
+      <button type="button" class="btn btn-xs btn-link text-muted" data-toggle="modal" data-target="#remote-aliases-modal" title="Remote Aliases">
+        <i class="fa fa-cloud"></i>
+        {$label}: $count
+       </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="remote-aliases-modal" tabindex="-1" role="dialog" aria-labelledby="remote-aliases-modal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              
+              {$add_link}
+              
+              <h4 class="modal-title" id="drush-alias-modal">Remote Aliases</h4>
+            </div>
+            <div class="modal-body">
+              $aliases
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+HTML;
+
+}
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ *
+ * The Project Node Form.
+ */
+function devshop_remotes_form_project_node_form_alter(&$form, &$form_state, $form_id) {
+  $node = $form['#node'];
+  $project = $node->project;
+
+  // Make sure alias settings data gets saved in project node form.
+  $form['project']['settings']['aliases'] = array(
+    '#value' => $project->settings->aliases,
+    '#type' => 'value',
+  );
+}
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ *
+ * The Project Node Form.
+ */
+function devshop_remotes_form_hosting_task_confirm_form_alter(&$form, &$form_state, $form_id) {
+
+  if (arg(2) != 'site_sync') {
+    return;
+  }
+
+//  $site = $form_state['build_info']['args'][0];
+//
+//  if (isset($_GET['source']) && isset($site->project->settings->aliases[$_GET['source']])) {
+//    $alias_name = $_GET['source'];
+//    $alias_record = $alias_name. $site->project->settings->aliases[$alias_name];
+//    $actual_alias = "@{$site->project->name}.{$alias_name}";
+//
+////    $form['parameters']['source']['custom_alias']['text']['#type'] = 'value';
+//    $form['parameters']['source']['#default_value'] = 'wtf';
+//
+//    $form['source_display'] = array(
+//      '#type' => 'item',
+//      '#title' => t('Source'),
+//      '#markup' => l($alias_record['uri'], 'http://' . $alias_record['uri'], array(
+//        'attributes' => array(
+//          'target' => '_blank',
+//        ),
+//      )),
+//      '#weight' => -10,
+//    );
+//  }
+}
+
+/**
+ * Implements hook_preprocess_environment().
+ * @TODO: This is not working! Get to work then remove from boots/template.php
+ */
+function devshop_remotes_preprocess_environment(&$vars) {
+
+  kpr($vars);
+  die;
+
+}
+
+/**
+ * When loading project node, lookup sql sources from composer.json!
+ *
+ * @param $nodes
+ * @param $types
+ */
+function devshop_remotes_node_load($nodes, $types) {
+  if (count(array_intersect(array('project'), $types))) {
+    foreach ($nodes as &$node) {
+
+      if (!is_array($node->project->settings->aliases)) {
+        $node->project->settings->aliases = array();
+      }
+
+
+      // Load all composer.json files from all environments.
+      foreach ($node->project->environments as $env) {
+        if (file_exists($env->repo_path . '/composer.json')) {
+          $composer_data = json_decode(file_get_contents($env->repo_path . '/composer.json'), TRUE);
+          if (!isset($composer_data['config']['devshop']['sync_sources']) || !is_array($composer_data['config']['devshop']['sync_sources'])) {
+            continue;
+          }
+          $sync_sources = $composer_data['config']['devshop']['sync_sources'];
+          foreach ($sync_sources as $name => $source) {
+
+            // If environment exists with this name and existing alias exists with this name, unset it.
+            if (isset($node->project->environments[$name]) && $node->project->environments[$name]->site_status == HOSTING_SITE_ENABLED && isset($node->project->settings->aliases[$name])) {
+              unset($node->project->settings->aliases[$name]);
+            }
+
+            // If environment does not exist with this name, load it.
+            if (!isset($node->project->environments[$name])) {
+              $source['loaded_from'] = $env->repo_path . '/composer.json';
+              $node->project->settings->aliases[$name] = $source;
+            }
+            else {
+              global $user;
+              if (variable_get('hosting_require_disable_before_delete', TRUE)) {
+                $delete_link = l(t('disable the @name environment', array('@name' => $name)), "hosting_confirm/{$node->project->environments[$name]->site}/site_disable", array('query' => array('token' => drupal_get_token($user->uid))));
+
+              }
+              else {
+                $delete_link = t('!disable or !delete the !name environment', array(
+                  '!name' => l($name, "node/{$node->project->environments[$name]->site}"),
+                  '!disable' => l(t('Disable'), "hosting_confirm/{$node->project->environments[$name]->site}/site_disable", array('query' => array('token' => drupal_get_token($user->uid)))),
+                  '!delete' => l(t('Delete'), "hosting_confirm/{$node->project->environments[$name]->site}/site_delete", array('query' => array('token' => drupal_get_token($user->uid))))
+                ));
+              }
+
+              $node->project->messages['remote_alias_conflict'] = array(
+                'message' => t('There is a remote alias sync source defined in composer.json with the name %name that has the same name as an environment. To remove this message, delete or rename the "config.devshop.sync_sources.%name" entry in all composer.json files in all environments, or !delete_link.', array(
+                  '%name' => $name,
+                  '!delete_link' => $delete_link,
+                )),
+                'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+                'type' => 'danger',
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+}

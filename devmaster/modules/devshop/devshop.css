@@ -1,0 +1,130 @@
+div#header div.logo a {
+  text-indent: -999px;
+  overflow: hidden;
+  height: 72px !important;
+  width: 72px !important;
+  margin: 10px;
+}
+
+#devshop-project-create-step-environments .platform {
+  clear: both;
+  border-bottom: 1px solid #e8e8e8;
+}
+#devshop-project-create-step-environments .platform .form-item {
+  float: left;
+  width: 46%;
+  clear: none;
+  height: 2.0em;
+  border-bottom: none;
+}
+body.aegir #page div.node div.content fieldset.project-environments div.form-item {
+  padding: 5px;
+}
+
+fieldset.project-environments {
+  clear: both;
+}
+
+.project-environments-table .description,
+.project-environments-table .form-item-labeled label
+{
+  display: none;  
+}
+
+textarea#rsa {
+  display: none;
+}
+
+.form-submit {
+  margin-top: 10px;
+}
+#edit-cancel {
+  float: right;
+}
+.command input {
+  font-family: Courier New, monospace;
+  width: 100%;
+}
+#footer {
+  height: 100px !important;
+  line-height: inherit !important;
+}
+#footer h2 {
+  border: none;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+#footer .block {
+  float: left;
+  margin-right: 20px;
+  
+}
+
+#block-system-0.block {
+  float: right;
+}
+
+body.node-type-project a.hosting-goto-site-link {
+  background: none;
+  padding: inherit;
+}
+
+/**
+ * Task Block!
+ */
+#block-devshop_hosting-devshop_tasks {
+  position: absolute;
+  top: 0px;
+  margin: 0px auto;
+  width: 940px;
+}
+
+
+#block-devshop_hosting-devshop_tasks .content {
+  position: absolute;
+  right: 0px;
+  top: 40px;
+}
+
+#block-devshop_hosting-devshop_tasks  #devshop-task-status {
+  font: bold 13px/20px "Helvetica Neue",Arial,sans-serif;
+  border: 0px;
+  padding: 5px 10px 5px 30px;
+  color: #fff;
+  background: #666;
+  cursor: pointer;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  width: 200px;  
+}
+
+#block-devshop_hosting-devshop_tasks  #devshop-task-status.active {
+  background: #666 5px no-repeat url('devshop_projects/images/spinner-white.gif');
+}
+
+#block-devshop_hosting-devshop_tasks  #devshop-task-status.inactive {
+  background: #666;
+}
+
+
+#hosting-task-queue-block {
+  display: none;
+  width: 96%;
+  margin: 0px auto;
+}
+
+
+#block-devshop_hosting-devshop_tasks:hover #hosting-task-queue-block {
+  display: block;
+}
+
+
+#block-devshop_hosting-devshop_tasks .task-logs-link {
+  display: block;
+  padding: 5px 10px;
+  background: #999;
+  color: white;
+  text-align: center;
+  font-size: 10pt;
+  text-transform: uppercase;
+}
