@@ -6,8 +6,6 @@
 
 require_once('includes/queue.inc');
 
-use Symfony\Component\Yaml\Yaml;
-
 /**
  * Retrieve the token from either environment variable or drupal variable.
  * @return mixed
@@ -393,18 +391,6 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
       form_set_value($form['platform_node'], $platform_node, $form_state);
     }
   }
-}
-
-/**
- * Helper to normalize arrays to objects.
- *
- * @param $array
- * @return mixed
- */
-function convert_to_object($thing) {
-  $yml = Yaml::dump($thing, 2, 2, Yaml::DUMP_OBJECT_AS_MAP);
-  $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
-  return $object;
 }
 
 /**
