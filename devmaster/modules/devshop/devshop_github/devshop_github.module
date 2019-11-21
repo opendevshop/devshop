@@ -1355,8 +1355,8 @@ function devshop_github_webhook($project_node) {
         if ($project->settings->github['pull_request_environments']) {
           $message = 'Pull Request Received.';
 
-          // @TODO: Handle forks?
           $branch = $data->pull_request->head->ref;
+          $git_url = $data->pull_request->head->repo->ssh_url;
 
           // Determine environment branch.
           // @TODO: Make Configurable, allow branch names to be env name
@@ -1378,12 +1378,12 @@ function devshop_github_webhook($project_node) {
             } else {
               // If method is "install"...
               if ($project->settings->github['pull_request_environments_method'] == 'devshop__github__install') {
-                hosting_create_environment($project, $environment_name, $branch);
+                hosting_create_environment($project, $environment_name, $branch, null, $git_url);
                 $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
               } // Otherwise, it is a clone from live.
               elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
                 $source_env = $project->settings->github['pull_request_environments_method'];
-                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env);
+                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, $git_url);
 
                 // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
                 // @TODO: Decide if a setting is needed to control this behavior.
