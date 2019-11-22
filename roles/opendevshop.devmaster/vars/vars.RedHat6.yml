@@ -11,8 +11,6 @@ apache_packages:
 # Used to inject date.timezone.
 # ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
-supervisor_hosting_queued_conf_path: /etc/supervisord.d/hosting-queue-runner.ini
-
 extra_packages:
   - git
   - patch
