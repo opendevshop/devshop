@@ -35,6 +35,10 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - uses: fregante/setup-git-token@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Cache composer cache directory
         uses: actions/cache@v1
         with:
@@ -50,4 +54,4 @@ jobs:
       - run: 'echo "GITHUB_TOKEN: ${GITHUB_TOKEN}"'
 
       - name: Split monorepo
-        run: bin/monorepo-builder split --config=monorepo-github-actions.yml
+        run: bin/monorepo-builder split
