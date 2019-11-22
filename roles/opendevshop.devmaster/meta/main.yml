@@ -1,38 +1,35 @@
 ---
 galaxy_info:
-  author: jonpugh
-  description: DevShop Devmaster server.
+  author: Jon Pugh
+  description: Installs a DevShop Server
   company: ThinkDrop Inc
-
+  min_ansible_version: 2.0
   license: GPLv2
-
-  min_ansible_version: 2.4
-
-  galaxy_tags:
-    - web
-    - apache
-    - webserver
-    - html
-    - httpd
-    - aegir
-    - opendevshop
-    - devshop
-    - hosting
-    - drupal
 
   platforms:
     - name: EL
       versions:
         - 7
-        - 6
     - name: Ubuntu
       versions:
         - trusty
         - xenial
-        - bionic
+
+  galaxy_tags:
+    - aegir
+    - apache
+    - devshop
+    - drupal
+    - hosting
+    - html
+    - httpd
+    - opendevshop
+    - web
+    - webops
+    - webserver
 
 dependencies:
-  - opendevshop.users
+  - opendevshop.aegir-user
   - geerlingguy.supervisor
   - geerlingguy.mysql
   - geerlingguy.php
