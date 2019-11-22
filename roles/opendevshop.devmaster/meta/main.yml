@@ -1,7 +1,8 @@
 ---
 galaxy_info:
   author: Jon Pugh
-  description: Installs a DevShop Server
+  role_name: devmaster
+  description: DevShop Devmaster server.
   company: ThinkDrop Inc
   min_ansible_version: 2.0
   license: GPLv2
