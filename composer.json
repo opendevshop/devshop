@@ -43,6 +43,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
+        "split": [
+            "DevShop\\Composer::splitRepos"
+        ],
         "post-install-cmd": [
             "DevShop\\Composer::installBins"
         ]
