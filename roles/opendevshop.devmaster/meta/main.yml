@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   author: jonpugh
+  role_name: devmaster
   description: DevShop Devmaster server.
   company: ThinkDrop Inc
 

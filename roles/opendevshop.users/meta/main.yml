@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: users
   author: jonpugh
   description: Set up application and admin users.
   company: ThinkDrop Inc

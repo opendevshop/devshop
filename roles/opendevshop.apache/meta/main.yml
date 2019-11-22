@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   author: jonpugh
+  role_name: apache
   description: Apache Web Server for DevShop hosting system.
   company: ThinkDrop Inc
   
