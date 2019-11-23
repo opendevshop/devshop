@@ -1,4 +1,4 @@
-name: Split Repositories
+name: Code Processes
 
 on: [push]
 
@@ -6,11 +6,39 @@ env:
   COMPOSER_HOME: .gh-actions-composer-cache
 
 jobs:
+  composer-install:
+    name: Composer Install
+    runs-on: [ubuntu-16.04]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Cache composer cache directory
+      uses: actions/cache@v1
+      with:
+        path: .gh-actions-composer-cache
+        key: 'composer-cache'
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
   monorepo-split:
+    name: Split Git Repositories
+    needs: composer-install
+
     runs-on: [ubuntu-16.04]
 
     steps:
       - uses: actions/checkout@v1
+
+      - uses: fregante/setup-git-token@v1
+        with:
+          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
+          name: devshopbot
+          email: jon@thinkdrop.net
 
       - name: Cache composer cache directory
         uses: actions/cache@v1
@@ -18,19 +46,24 @@ jobs:
           path: .gh-actions-composer-cache
           key: 'composer-cache'
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
+      - name: Cache git split database file.
+        uses: actions/cache@v1
+        with:
+          path: $RUNNER_WORKSPACE/devshop/.git/splitsh.db
+          key: 'splitsh-cache'
 
-      - name: Composer Install
+      - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Create a branch for the monorepo-builder
         run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
 
+      - name: Debug environment
+        run: env
+
+      - run: mkdir $HOME/.ssh
       - name: Authorize GitHub.com as a known_host
-        run: |
-          mkdir $HOME/.ssh
-          ssh-keyscan github.com > $HOME/.ssh/known_hosts
+        run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
       
       - name: Split monorepo
         run: composer split
