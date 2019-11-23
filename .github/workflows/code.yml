@@ -34,7 +34,7 @@ jobs:
         run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
 
       - name: Prepare environment
-      - run: |
+        run: |
           mkdir $HOME/.ssh
           ssh-keyscan github.com > $HOME/.ssh/known_hosts
           ln -sf ${COMMIT_CACHE_PATH}/splitsh.db .git/splitsh.db
