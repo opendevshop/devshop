@@ -48,6 +48,9 @@
         ],
         "post-install-cmd": [
             "DevShop\\Composer::installBins"
+        ],
+        "post-update-cmd": [
+            "DevShop\\Composer::installBins"
         ]
     }
 }

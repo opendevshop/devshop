@@ -14,7 +14,7 @@ class Composer {
 
   const BIN_FILES = array(
     'drush' => 'https://github.com/drush-ops/drush/releases/download/8.3.0/drush.phar',
-    'splitsh' => 'https://bitbucket.org/drupalorg-infrastructure/subtree-splitter/raw/5d81a6fafd1802659369e4b8cbcc64bb3103db8a/splitsh-lite',
+    'splitsh-lite' => 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz',
   );
 
   /**
@@ -23,9 +23,24 @@ class Composer {
   static function installBins() {
     foreach (self::BIN_FILES as $name => $url) {
       $bin_path = "bin/{$name}";
-      copy($url, $bin_path);
+
+      if (strpos($url, 'tar.gz') !== FALSE) {
+        $filename = sys_get_temp_dir() . "/$name";
+        $filename_tar = "$filename.tar";
+        $filename_tar_gz = "$filename_tar.gz";
+
+        echo "\n- Downloading to $filename_tar_gz";
+        copy($url, $filename_tar_gz);
+
+        passthru("tar zxf $filename_tar_gz");
+        rename("./" . $name, $bin_path);
+      }
+      else {
+        copy($url, $bin_path);
+      }
+
       chmod($bin_path, 0755);
-      echo "Installed $url to $bin_path \n";
+      echo "\n- Installed $url to $bin_path";
     }
   }
 
