@@ -63,7 +63,6 @@ jobs:
       - run: mkdir $HOME/.ssh
       - name: Authorize GitHub.com as a known_host
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
-      - run: chown $USER:$USER $HOME/.ssh/known_hosts
-
+      
       - name: Split monorepo
         run: composer split
