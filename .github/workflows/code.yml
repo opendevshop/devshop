@@ -37,7 +37,9 @@ jobs:
         run: |
           mkdir $HOME/.ssh
           ssh-keyscan github.com > $HOME/.ssh/known_hosts
+          ls -la
           ln -sf ${COMMIT_CACHE_PATH}/splitsh.db .git/splitsh.db
+          ls -la
 
       - name: Split monorepo
         run: composer split
