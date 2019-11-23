@@ -51,8 +51,5 @@ jobs:
       - name: Create a branch for the monorepo-builder
         run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
 
-      - run: 'echo "GITHUB_TOKEN: ${GITHUB_TOKEN}"'
-      - run: 'cat monorepo-builder.yml'
-
       - name: Split monorepo
-        run: bin/monorepo-builder split
+        run: composer split
