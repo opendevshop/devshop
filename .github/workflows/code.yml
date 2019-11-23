@@ -36,8 +36,7 @@ jobs:
         run: |
           mkdir -p .cache-commits
           touch .cache-commits/splitsh.db
-          ln -s .cache-commits/splitsh.db .git/splitsh.db
-          ls -la .cache-commits
+          ln .cache-commits/splitsh.db .git/splitsh.db
           mkdir $HOME/.ssh
           ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
