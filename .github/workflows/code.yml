@@ -60,12 +60,10 @@ jobs:
       - name: Debug environment
         run: env
 
+      - run: mkdir $HOME/.ssh
       - name: Authorize GitHub.com as a known_host
-        run:
-        - mkdir $HOME/.ssh
-        - ssh-keyscan github.com > $HOME/.ssh/known_hosts
-        - chown $USER:$USER $HOME/.ssh/known_hosts
-
+        run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
+      - run: chown $USER:$USER $HOME/.ssh/known_hosts
 
       - name: Split monorepo
         run: composer split
