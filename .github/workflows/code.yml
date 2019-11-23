@@ -4,7 +4,6 @@ on: [push]
 
 env:
   COMPOSER_HOME: .cache-composer
-  COMMIT_CACHE_PATH: .cache-commits
 
 jobs:
   monorepo-split:
@@ -18,13 +17,13 @@ jobs:
       - name: Cache Composer
         uses: actions/cache@v1
         with:
-          path: ${COMPOSER_HOME}
+          path: .cache-composer
           key: 'composer'
 
       - name: Cache Commits
         uses: actions/cache@v1
         with:
-          path: ${COMMIT_CACHE_PATH}
+          path: .cache-commits
           key: 'commits'
 
       - name: Composer Install
@@ -37,9 +36,7 @@ jobs:
         run: |
           mkdir $HOME/.ssh
           ssh-keyscan github.com > $HOME/.ssh/known_hosts
-          ls -la
-          ln -sf ${COMMIT_CACHE_PATH}/splitsh.db .git/splitsh.db
-          ls -la
+          ln -s .cache-commits/splitsh.db .git/splitsh.db
 
       - name: Split monorepo
         run: composer split
