@@ -45,6 +45,12 @@ jobs:
           path: .gh-actions-composer-cache
           key: 'composer-cache'
 
+      - name: Cache git split database file.
+        uses: actions/cache@v1
+        with:
+          path: .git/splitsh.db
+          key: 'splitsh-cache'
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
