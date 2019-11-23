@@ -65,6 +65,12 @@ class Composer {
 
       // Use a different local target branch so we dont break local installs by reassigning the current branch to the new commit.
       $target = "refs/splits/$folder";
+
+      // Handle special case for devmaster
+      if ($folder == 'devmaster' && $branch == '1.x') {
+        $branch = '7.x-1.x';
+      }
+
       // Split the commits into a different branch.
       if (self::exec("splitsh-lite --progress --prefix={$folder}/ --target=$target") != 0) {
         exit(1);
