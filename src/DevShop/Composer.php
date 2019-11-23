@@ -58,7 +58,7 @@ class Composer {
    */
   static function splitRepos() {
 
-    $branch = trim(shell_exec('git rev-parse --symbolic-full-name --abbrev-ref HEAD'));
+    $current_branch = trim(shell_exec('git rev-parse --symbolic-full-name --abbrev-ref HEAD'));
 
     foreach (self::REPOS as $folder => $remote) {
       echo "\n\n- Splitting $folder ... \n";
@@ -67,8 +67,11 @@ class Composer {
       $target = "refs/splits/$folder";
 
       // Handle special case for devmaster
-      if ($folder == 'devmaster' && $branch == '1.x') {
+      if ($folder == 'devmaster' && $current_branch == '1.x') {
         $branch = '7.x-1.x';
+      }
+      else {
+        $branch = '1.x';
       }
 
       // Split the commits into a different branch.
