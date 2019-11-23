@@ -51,5 +51,8 @@ jobs:
       - name: Create a branch for the monorepo-builder
         run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
 
+      - name: Authorize GitHub.com as a known_host
+        run: ssh-keyscan github.com > $HOME/.ssh/known_hosts && chown $USER:$USER $HOME/.ssh/known_hosts
+
       - name: Split monorepo
         run: composer split
