@@ -3,6 +3,10 @@
 namespace DevShop;
 
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
+
 /**
  * Class Composer
  *
@@ -58,13 +62,23 @@ class Composer {
    * Run the splitsh script on each repo.
    */
   static function splitRepos() {
+
+    $process = new Process(['git', 'rev-parse', '--symbolic-full-name', '--abbrev-ref', 'HEAD']);
+    $process->run();
+
+    // executes after the command finishes
+    if (!$process->isSuccessful()) {
+      throw new ProcessFailedException($process);
+    }
+
+    $branch = trim($process->getOutput());
     foreach (self::REPOS as $folder => $remote) {
-      passthru("splitsh-lite --progress --prefix={$folder}/ --target=refs/heads/split/$folder", $exit);
+      passthru("splitsh-lite --progress --prefix={$folder}/ --target=HEAD", $exit);
       if ($exit != 0) {
         exit($exit);
       }
 
-      passthru("git push $remote refs/heads/split/$folder:refs/heads/split/$folder", $exit);
+      passthru("git push $remote HEAD:$branch", $exit);
       if ($exit != 0) {
         exit($exit);
       }
