@@ -2,11 +2,6 @@
 
 namespace DevShop;
 
-
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
-
 /**
  * Class Composer
  *
@@ -33,7 +28,7 @@ class Composer {
         $filename_tar = "$filename.tar";
         $filename_tar_gz = "$filename_tar.gz";
 
-        echo "\n- Downloading to $filename_tar_gz";
+        echo "- Downloading to $filename_tar_gz \n";
         copy($url, $filename_tar_gz);
 
         passthru("tar zxf $filename_tar_gz");
@@ -44,7 +39,7 @@ class Composer {
       }
 
       chmod($bin_path, 0755);
-      echo "\n- Installed $url to $bin_path";
+      echo "- Installed $url to $bin_path \n";
     }
   }
 
@@ -63,25 +58,35 @@ class Composer {
    */
   static function splitRepos() {
 
-    $process = new Process(['git', 'rev-parse', '--symbolic-full-name', '--abbrev-ref', 'HEAD']);
-    $process->run();
+    $branch = trim(shell_exec('git rev-parse --symbolic-full-name --abbrev-ref HEAD'));
 
-    // executes after the command finishes
-    if (!$process->isSuccessful()) {
-      throw new ProcessFailedException($process);
-    }
-
-    $branch = trim($process->getOutput());
     foreach (self::REPOS as $folder => $remote) {
-      passthru("splitsh-lite --progress --prefix={$folder}/ --target=HEAD", $exit);
-      if ($exit != 0) {
-        exit($exit);
+      echo "\n\n- Splitting $folder ... \n";
+
+      // Use a different local target branch so we dont break local installs by reassigning the current branch to the new commit.
+      $target = "refs/splits/$folder";
+      // Split the commits into a different branch.
+      if (self::exec("splitsh-lite --progress --prefix={$folder}/ --target=$target") != 0) {
+        exit(1);
       }
 
-      passthru("git push $remote HEAD:$branch", $exit);
-      if ($exit != 0) {
-        exit($exit);
+      // Push the branch to the remote.
+      if (self::exec("git push $remote $target:$branch") != 0) {
+        exit(1);
       }
+
     }
+  }
+
+  /**
+   * Print the command then run it.
+   * @param $command
+   *
+   * @return mixed
+   */
+  static function exec($command) {
+    echo "> $command \n";
+    passthru($command, $exit);
+    return $exit;
   }
 }
