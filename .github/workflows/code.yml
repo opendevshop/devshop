@@ -37,7 +37,7 @@ jobs:
 
       - uses: fregante/setup-git-token@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
 
       - name: Cache composer cache directory
         uses: actions/cache@v1
