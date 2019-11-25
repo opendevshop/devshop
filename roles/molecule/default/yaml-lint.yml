@@ -2,4 +2,6 @@
 extends: default
 rules:
   line-length: disable
-ignore: geerlingguy.*
+ignore: |
+  geerlingguy.*
+  molecule
