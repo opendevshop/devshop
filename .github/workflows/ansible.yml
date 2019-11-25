@@ -15,5 +15,5 @@ jobs:
           pip install molecule docker
       - name: Run `molecule test`
         run: |
-          cd molecule
+          cd roles/molecule
           molecule test
