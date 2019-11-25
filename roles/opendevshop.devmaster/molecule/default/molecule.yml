@@ -40,7 +40,7 @@ dependency:
     keep-scm-meta: true
 
     # Put roles right to this one. Reduce possible role locations.
-    roles-path: .
+    roles-path: ../
 
     # The 'ansible-galaxy' command considers the pre-existence of a role's folder an "error".
     # That command and 'molecule' will exit with failure if this flag and '--force' is not set.
@@ -68,8 +68,6 @@ provisioner:
   config_options:
     defaults:
       stdout_callback: yaml
-  env:
-    ANSIBLE_ROLES_PATH: ./
   options:
     v: true
   lint:
