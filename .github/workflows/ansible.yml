@@ -14,17 +14,17 @@ jobs:
         id: cache
         with:
           path: .cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/molecule/requirements
-          .txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
           restore-keys: |
                 ${{ runner.os }}-test
 
       - name: Install Ansible Molecule
         if: steps.cache.outputs.cache-hit != 'true'
-
         run: |
           python -m pip install --upgrade pip
-          pip install molecule docker
+          pip install -r requirements.txt
+        working-directory: roles/opendevshop.devmaster/molecule
+
       - name: Run `molecule test`
         working-directory: roles
         run: molecule test
