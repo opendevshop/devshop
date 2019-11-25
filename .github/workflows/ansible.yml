@@ -26,6 +26,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install molecule docker
       - name: Run `molecule test`
-        run: |
-          cd roles/molecule
-          molecule test
+        working-directory: roles
+        run: molecule test
