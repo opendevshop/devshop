@@ -29,7 +29,7 @@ galaxy_info:
     - webserver
 
 dependencies:
-  - opendevshop.user
+  - opendevshop.users
   - geerlingguy.supervisor
   - geerlingguy.mysql
   - geerlingguy.php
