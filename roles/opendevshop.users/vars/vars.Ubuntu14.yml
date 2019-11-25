@@ -8,8 +8,6 @@ php_default_version_debian: "5"
 php_packages_extra:
   - php5-mcrypt
   - php-pear
-#  
-#   - php-apc
   - libpcre3-dev
   - libapache2-mod-php5
 
