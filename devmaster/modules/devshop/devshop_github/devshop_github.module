@@ -6,8 +6,6 @@
 
 require_once('includes/queue.inc');
 
-use Symfony\Component\Yaml\Yaml;
-
 /**
  * Retrieve the token from either environment variable or drupal variable.
  * @return mixed
@@ -393,18 +391,6 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
       form_set_value($form['platform_node'], $platform_node, $form_state);
     }
   }
-}
-
-/**
- * Helper to normalize arrays to objects.
- *
- * @param $array
- * @return mixed
- */
-function convert_to_object($thing) {
-  $yml = Yaml::dump($thing, 2, 2, Yaml::DUMP_OBJECT_AS_MAP);
-  $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
-  return $object;
 }
 
 /**
@@ -1367,8 +1353,8 @@ function devshop_github_webhook($project_node) {
         if ($project->settings->github['pull_request_environments']) {
           $message = 'Pull Request Received.';
 
-          // @TODO: Handle forks?
           $branch = $data->pull_request->head->ref;
+          $git_url = $data->pull_request->head->repo->ssh_url;
 
           // Determine environment branch.
           // @TODO: Make Configurable, allow branch names to be env name
@@ -1390,12 +1376,12 @@ function devshop_github_webhook($project_node) {
             } else {
               // If method is "install"...
               if ($project->settings->github['pull_request_environments_method'] == 'devshop__github__install') {
-                hosting_create_environment($project, $environment_name, $branch);
+                hosting_create_environment($project, $environment_name, $branch, null, $git_url);
                 $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
               } // Otherwise, it is a clone from live.
               elseif (isset($project->environments[$project->settings->github['pull_request_environments_method']])) {
                 $source_env = $project->settings->github['pull_request_environments_method'];
-                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env);
+                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, $git_url);
 
                 // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
                 // @TODO: Decide if a setting is needed to control this behavior.
@@ -1845,6 +1831,7 @@ function devshop_github_create_all_pr_environments($project_node) {
     drupal_set_message(t("Unable to load Pull Requests: !message", array('!message' => $e->getMessage())));
     return;
   }
+  $prs = array();
   foreach ($prs_data as $pr) {
     $pr = convert_to_object($pr);
     $slug = "pr{$pr->number}";
@@ -1861,8 +1848,8 @@ function devshop_github_create_all_pr_environments($project_node) {
     $site_url = url("node/{$environment->site}", array('absolute' => true));
 
     // Get PR ID, if it already has one.
-    if (!empty($environment->github_pull_request->pull_request_object->id)) {
-      $environment_pr_id = $environment->github_pull_request->pull_request_object->id;
+    if (!empty($environment->github_pull_request->number)) {
+      $environment_pr_id = $environment->github_pull_request->number;
       $environment_pr_slug = "pr{$environment_pr_id}";
     }
     else {
@@ -1900,7 +1887,7 @@ function devshop_github_create_all_pr_environments($project_node) {
 
     // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
     elseif ($environment_pr_id && empty($prs[$environment_pr_slug])) {
-      drush_log("PR environment $environment->name exists but PR has been closed. [$site_url]", "ok");
+      drush_log("PR $environment_pr_id environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
       if ($project->settings->github['pull_request_environments_delete'] && empty($environment->tasks['delete'])) {
         drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
         hosting_add_task($environment->site, 'delete', array('force' => 1));
@@ -1917,11 +1904,12 @@ function devshop_github_create_all_pr_environments($project_node) {
     $environment->git_sha = file_exists($environment->repo_path)? trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null")): NULL;
 
     // If Site was installed properly and is still enabled, and repo_path is a real folder, and environment git_sha is not empty, and local git_sha does not match github PR sha...
-    if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $prs[$environment->name]->head->sha) {
+    $pr_object = $prs[$environment_pr_slug];
+    if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $pr_object->head->sha) {
       drush_log(dt("Environment @name SHA (@e) and PR SHA (@p) are different. Preparing a deploy task... [@url] ", array(
         '@name' => $environment->name,
         '@e' => $environment->git_sha,
-        '@p' => $prs[$environment->name]->head->sha,
+        '@p' => $pr_object->head->sha,
         '@url' => $site_url,
       )), "ok");
 
@@ -1961,6 +1949,16 @@ function devshop_github_create_all_pr_environments($project_node) {
 
   }
 
+  // If pull_request_environments_method method set to "_primary", and live_environment is not set,throw an error.
+  if ($project->settings->github['pull_request_environments_method'] == '_primary' && empty($project->settings->live['live_environment'])) {
+    return drush_set_error("DRUSH_FRAMEWORK_ERROR", 'PR environments set to clone "Primary Environment", but there is none configured. Visit Project Settings > General Settings and choose a Primary Environment.');
+  }
+
+  //  If pull_request_environments_method method set to "_primary", reset 'pull_request_environments_method' to the name of the primary environment.
+  elseif ($project->settings->github['pull_request_environments_method'] == '_primary' && !empty($project->settings->live['live_environment'])) {
+    $primary_env_name = $project->settings->live['live_environment'];
+    $project->settings->github['pull_request_environments_method'] = $primary_env_name;
+  }
 
   // Step 2: For all PRS that do not have an environment, create one.
   foreach ($prs_to_create_environments_for as $slug => $pr) {

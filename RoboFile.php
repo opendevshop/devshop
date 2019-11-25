@@ -82,7 +82,7 @@ class RoboFile extends \Robo\Tasks {
   public function prepareHost() {
     // Check for docker
     $this->say('Checking for Docker...');
-    if ($this->taskDockerRun('hello-world')
+    if ($this->taskExec('docker info')
       ->printOutput(FALSE)
       ->run()
       ->wasSuccessful()) {
@@ -122,7 +122,6 @@ class RoboFile extends \Robo\Tasks {
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
-    'fork' => FALSE,
     'devshop-version' => '1.x',
     'test-upgrade' => FALSE
   ]) {
@@ -207,9 +206,6 @@ class RoboFile extends \Robo\Tasks {
     // Run drush make to build the devmaster stack.
     $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
-
-    // If "fork" option is set, use travis forks makefile.
-    $makefile_path = $opts['fork']? 'build-devmaster-travis-forks.make.yml': $makefile_path;
 
     // Append the desired devshop root path.
     $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
@@ -348,7 +344,6 @@ class RoboFile extends \Robo\Tasks {
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
-    'fork' => FALSE,
     'devshop-version' => '1.x',
   ]) {
 
@@ -757,6 +752,7 @@ class RoboFile extends \Robo\Tasks {
       }
     }
     $process->setTty(TRUE);
+    $process->setTimeout(NULL);
     $process->run();
   }
 
