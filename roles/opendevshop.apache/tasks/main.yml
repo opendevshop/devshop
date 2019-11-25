@@ -20,11 +20,11 @@
     force: no
 
 - name: Add aegir to apache group.
-  when: aegir_user_in_web_group == 'yes'
+  when: aegir_user_in_web_group == true
   user:
     name: "{{ aegir_user_name }}"
     groups: "{{ apache_user }}"
-    append: yes
+    append: true
 
 - name: Add aegir user to sudoers to reload apache
   lineinfile:
@@ -32,10 +32,10 @@
     line: '{{ aegir_user_name }} ALL=NOPASSWD: {{ apache_control }}'
     state: present
     validate: 'visudo -cf %s'
-    create: yes
+    create: true
 
 - name: Test aegir magic permissions (sudo {{ apache_control }} -S) See "apache_control" variable.
-  become: yes
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "sudo {{ apache_control }} -S"

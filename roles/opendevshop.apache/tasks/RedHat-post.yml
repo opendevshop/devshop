@@ -7,7 +7,7 @@
     # For RedHat, apache_conf_path == '/etc/httpd/conf.d'
     dest: "{{ apache_conf_path }}/{{ aegir_user_name }}.conf"
     state: link
-    force: yes
+    force: true
 
 #- name: Setup | REDHAT | Symbolic link to add PHP to PATH.
 #  file:

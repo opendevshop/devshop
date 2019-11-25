@@ -29,7 +29,7 @@
 - name: Install prerequisite packages for Debian
   when: ansible_os_family == "Debian"
   apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 600
     name: "{{ devshop_prerequisite_packages }}"
     state: present
@@ -50,15 +50,15 @@
     gid: "{{ aegir_user_gid }}"
 
 - name: Create Aegir user
-  when: aegir_create_user == "yes"
-  ignore_errors: yes
+  when: aegir_create_user == true
+  ignore_errors: true
   user:
     name: "{{ aegir_user_name }}"
     shell: /bin/bash
     group: "{{ aegir_user_name }}"
-    system: yes
+    system: true
     home: "{{ aegir_user_home }}"
-    generate_ssh_key: yes
+    generate_ssh_key: true
     uid: "{{ aegir_user_uid }}"
 
 - name: Ensure /var/aegir is owned by aegir user.
@@ -110,7 +110,7 @@
     url: "https://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_ownership/scripts/{{ item }}.sh?id={{ aegir_hosting_version }}"
     dest: "{{ local_bin_path }}/{{ item }}.sh"
     mode: 0755
-    force: yes
+    force: true
 
 - name: Install fix-drupal-*-permissions scripts.
   with_items:
@@ -120,7 +120,7 @@
     url: "https://cgit.drupalcode.org/hosting_tasks_extra/plain/fix_permissions/scripts/{{ item }}.sh?id={{ aegir_hosting_version }}"
     dest: "{{ local_bin_path }}/{{ item }}.sh"
     mode: 0755
-    force: yes
+    force: true
 
 - name: Allow aegir user to run fix-* scripts
   with_items:
@@ -133,7 +133,7 @@
     line: "{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}.sh"
     state: present
     validate: "visudo -cf %s"
-    create: yes
+    create: true
 
 #  - name: Install remi repo.
 #    when: ansible_os_family == "RedHat"
