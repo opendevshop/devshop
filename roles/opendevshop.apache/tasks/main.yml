@@ -17,7 +17,7 @@
     content: ''
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
-    force: no
+    force: false
 
 - name: Add aegir to apache group.
   when: aegir_user_in_web_group == true
