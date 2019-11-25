@@ -1,0 +1,10 @@
+[program:hosting_queue_runner]
+; Adjust the next line to point to where you copied the script.
+command={{ local_bin_path }}/hosting-queue-runner
+user={{ aegir_user_name }}
+numprocs=1
+stdout_logfile=/var/log/hosting_queue_runner
+autostart=TRUE
+autorestart=TRUE
+; Tweak the next line to match your environment.
+environment=HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
