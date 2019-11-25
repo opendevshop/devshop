@@ -1,8 +1,7 @@
 ---
 galaxy_info:
   author: Jon Pugh
-  role_name: devmaster
-  description: DevShop Devmaster server.
+  description: Installs DevShop Devmaster
   company: ThinkDrop Inc
   min_ansible_version: 2.0
   license: GPLv2
@@ -18,19 +17,11 @@ galaxy_info:
 
   galaxy_tags:
     - aegir
-    - apache
-    - devshop
-    - drupal
     - hosting
-    - html
-    - httpd
-    - opendevshop
-    - web
-    - webops
-    - webserver
+    - drupal
 
 dependencies:
-  - opendevshop.users
+  - opendevshop.aegir-user
   - geerlingguy.supervisor
   - geerlingguy.mysql
   - geerlingguy.php

@@ -144,15 +144,6 @@
     - devmaster_site_uri != ""
     - devmaster_skip_upgrade == false
 
-- name: DevShop | Save GitHub Token
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster vset devshop_github_token {{ devshop_github_token }}"
-  when: devshop_github_token != ""
-  # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
-  ignore_errors: true
-
 - name: Devmaster | Run all outstanding tasks
   become: true
   become_user: "{{ aegir_user_name }}"
