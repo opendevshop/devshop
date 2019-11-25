@@ -68,6 +68,8 @@ provisioner:
   config_options:
     defaults:
       stdout_callback: yaml
+  env:
+    ANSIBLE_ROLES_PATH: ./
   options:
     v: true
   lint:
