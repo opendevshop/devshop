@@ -4,7 +4,7 @@ galaxy_info:
   role_name: apache
   description: Apache Web Server for DevShop hosting system.
   company: ThinkDrop Inc
-  
+
   license: GPLv2
 
   min_ansible_version: 2.4
@@ -20,17 +20,17 @@ galaxy_info:
     - devshop
     - hosting
     - drupal
-  
+
   platforms:
     - name: EL
       versions:
-      - 7
-      - 6
+        - 7
+        - 6
     - name: Ubuntu
       versions:
-      - trusty
-      - xenial
-      - bionic
+        - trusty
+        - xenial
+        - bionic
 
 dependencies:
   - opendevshop.users

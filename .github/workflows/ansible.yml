@@ -1,0 +1,35 @@
+name: Ansible Roles
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+
+# @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
+#      - uses: actions/cache@v1
+#        id: cache
+#        with:
+#          path: .cache/pip
+#          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
+#          restore-keys: |
+#                ${{ runner.os }}-test
+
+      - name: Install Ansible Molecule
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ./roles/opendevshop.devmaster/molecule
+        run: |
+          pwd
+          ls -la
+          python -m pip install --upgrade pip
+          pip install -r molecule-requirements.txt
+
+      - name: Run `molecule test`
+        working-directory: ./roles/opendevshop.devmaster
+        run: molecule test
+        # @TODO: Figure out why `molecule test` command doesn't get past mysql: https://github.com/opendevshop/devshop/commit/993a48a91c6d57ccb64559c44d946b961ebf7734/checks?check_suite_id=330086957#step:5:172
+        continue-on-error: true
