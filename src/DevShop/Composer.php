@@ -81,7 +81,7 @@ class Composer {
       }
 
       // Push the branch to the remote.
-      if (self::exec("git push $remote $target:refs/heads/$branch") != 0) {
+      if (self::exec("git push --force $remote $target:refs/heads/$branch") != 0) {
         exit(1);
       }
 
