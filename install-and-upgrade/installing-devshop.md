@@ -93,8 +93,8 @@ In summary, the script does the following:
 2. Generates a secure MySQL password and saves it to the /root/.my.cnf.
 3. Clones [http://github.com/opendevshop/devshop.git](http://github.com/opendevshop/devshop.git) to /usr/share/devshop and checks out the chosen version.  These files include the Ansible playbooks and variables files.
 4. Runs the Ansible playbooks listed in [playbook.yml](https://github.com/opendevshop/devshop/blob/1.x/playbook.yml):
-   * opendevshop.aegir-user
-   * opendevshop.aegir-apache
+   * opendevshop.users
+   * opendevshop.apache
    * geerlingguy.php
    * geerlingguy.php-mysql
    * geerlingguy.composer
