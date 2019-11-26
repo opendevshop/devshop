@@ -29,5 +29,5 @@ jobs:
           pip install -r molecule-requirements.txt
 
       - name: Run `molecule test`
-        working-directory: roles
+        working-directory: ./roles/opendevshop.devmaster/molecule
         run: molecule test
