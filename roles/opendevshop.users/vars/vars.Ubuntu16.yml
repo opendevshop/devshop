@@ -1,6 +1,6 @@
 ---
 
-# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+# This has to be in the users playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
 
 # Variables from geerlingguy.php v2
 

@@ -171,7 +171,7 @@ class RoboFile extends \Robo\Tasks {
       'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
       'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
       'geerlingguy.supervisor' => 'http://github.com/geerlingguy/ansible-role-supervisor.git',
-//      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+//      'opendevshop.apache' => 'http://github.com/opendevshop/ansible-role-apache',
 //      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
 //      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
 //      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
