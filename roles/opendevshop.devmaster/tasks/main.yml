@@ -112,7 +112,8 @@
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
 
-- set_fact:
+- name: Detect Devmaster
+  set_fact:
     devmaster_site_root: "{{ devmaster_site_root.stdout }}"
     devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
 
