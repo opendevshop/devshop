@@ -5,22 +5,31 @@ set -e
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
 echo "Found DevShop CLI in $DEVSHOP_PATH"
 
+echo "DevShop | devshop-tests.sh | environment"
+env
+
+# Print the lines and exit if a failure happens.
+echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
+/usr/share/devshop/bin/devshop --version
+/usr/share/devshop/bin/drush --version
+
 # Set PATH to devshop bin folder so drush, node, npm, and devshop commands are fixed.
 export PATH=${DEVSHOP_PATH}:${PATH}
 
 # Run remaining tasks from install process.
-echo ">> Verify hostmaster platform first."
+# Pause the task queue.
+echo "DevShop | devshop-tests.sh | Disabling hosting queue..."
+drush @hostmaster dis hosting_queued -y
+drush @hostmaster vset hosting_queued_paused 1
+
+echo "DevShop | devshop-tests.sh | Verify hostmaster platform first..."
 PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
 
-echo ">> Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force"
-drush @hostmaster hosting-tasks --fork=0 --strict=0 --force
+echo "DevShop | devshop-tests.sh |  Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true"
+drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
 
-echo ">> Running remaining tasks: Complete!"
-
-# Pause the task queue.
-drush @hostmaster dis hosting_queued -y
-drush @hostmaster vset hosting_queued_paused 1
+echo "DevShop | devshop-tests.sh | Running remaining tasks: Complete!"
 
 # Enable watchdog
 drush @hostmaster en dblog -y
