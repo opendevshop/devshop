@@ -53,8 +53,8 @@ class RoboFile extends \Robo\Tasks {
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
-    if (empty($this->git_ref) && !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
-      $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+    if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
+      $this->git_ref = $_SERVER['GITHUB_REF'];
     }
   }
 //
@@ -461,10 +461,7 @@ class RoboFile extends \Robo\Tasks {
         ->privileged()
         ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
         ->env('TERM', 'xterm')
-        ->env('TRAVIS', TRUE)
         ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
-//        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
-//        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
         ->env('AEGIR_USER_UID', $opts['user-uid'])
         ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
         ->exec('/usr/share/devshop/tests/run-tests.sh')
@@ -566,7 +563,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
-        $upgrade_to_branch = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $_SERVER['TRAVIS_BRANCH'];
+        $upgrade_to_branch = !empty($_SERVER['GITHUB_REF'])? $_SERVER['GITHUB_REF']: '1.x';
         $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
         if (!$this->taskDockerExec('devshop_container')
           ->exec($upgrade_command)
