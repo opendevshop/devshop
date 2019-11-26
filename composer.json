@@ -8,7 +8,7 @@
         "symfony/filesystem": "^4.3",
         "cpliakas/git-wrapper": "1.*",
         "asm/php-ansible": "^2.0",
-        "consolidation/robo": "^1",
+        "consolidation/robo": "^2",
         "mouf/nodejs-installer": "^1.0",
         "php": "^7.1"
     },
