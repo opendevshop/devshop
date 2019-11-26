@@ -1,4 +1,4 @@
-name: Code Processes
+name: Code
 
 on: [push]
 
@@ -22,7 +22,7 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
-    - name: Install dependencies
+    - name: Composer Install
       run: composer install --prefer-dist --no-progress --no-suggest
 
   monorepo-split:

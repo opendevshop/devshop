@@ -1,5 +1,7 @@
 name: Install Script
 on: [push]
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -17,9 +19,9 @@ jobs:
     - name: Prepare Code
       uses: actions/checkout@v1
 
-    - name: Prepare Dependencies
+    - name: Composer Install
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Test Install
+    - name: Run install.sh Script
       run: |
         bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-${GEERLINGGUY_DISTRO}-ansible --test --disable-xdebug --no-interaction
