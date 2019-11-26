@@ -10,5 +10,3 @@ extra_packages:
   - postfix
   - cron
   - zip
-# @TODO: Trying to solve apache restart problem.
-#  - dbus

@@ -10,8 +10,7 @@ hostmaster
 provision
 
 # @TODO: Now that devshop roles are in this repo, should we organize by core/contrib?
-roles
-!roles/opendevshop.*
+roles/geerlingguy.*
 
 # Local config
 .vagrant

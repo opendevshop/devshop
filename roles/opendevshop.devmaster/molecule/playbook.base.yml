@@ -1,0 +1,10 @@
+##
+# DevShop: Base server.
+#
+
+---
+- hosts: all
+  user: root
+  become: true
+  roles:
+    - opendevshop.users

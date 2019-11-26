@@ -10,5 +10,5 @@ mysql_packages:
   - perl-DBD-MySQL
 
 devshop_prerequisite_packages:
-- openssh-clients
-- pip
+  - openssh-clients
+  - pip

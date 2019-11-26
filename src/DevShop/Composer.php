@@ -61,7 +61,7 @@ class Composer {
     $current_branch = trim(shell_exec('git rev-parse --symbolic-full-name --abbrev-ref HEAD'));
 
     foreach (self::REPOS as $folder => $remote) {
-      echo "\n\n- Splitting $folder ... \n";
+      echo "\n\n- Splitting $folder for branch $current_branch ... \n";
 
       // Use a different local target branch so we dont break local installs by reassigning the current branch to the new commit.
       $target = "refs/splits/$folder";
@@ -69,9 +69,10 @@ class Composer {
       // Handle special case for devmaster
       if ($folder == 'devmaster' && $current_branch == '1.x') {
         $branch = '7.x-1.x';
+        echo "\n\n- Pushing devmaster to 7.x-1.x ... \n";
       }
       else {
-        $branch = '1.x';
+        $branch = $current_branch;
       }
 
       // Split the commits into a different branch.
@@ -80,7 +81,7 @@ class Composer {
       }
 
       // Push the branch to the remote.
-      if (self::exec("git push $remote $target:refs/heads/$branch") != 0) {
+      if (self::exec("git push --force $remote $target:refs/heads/$branch") != 0) {
         exit(1);
       }
 
