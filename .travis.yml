@@ -7,6 +7,8 @@ git:
 env:
   global:
     - DEVSHOP_VERSION=1.x
+    - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
+    - GITHUB_HEAD_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer devshop.local.computer'
 
   matrix:
