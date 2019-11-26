@@ -1,5 +1,7 @@
 language: php
 
+dist: bionic
+
 sudo: required
 git:
   depth: false
