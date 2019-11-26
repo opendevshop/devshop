@@ -1,21 +1,17 @@
 name: Install Script
 on: [push]
-
-strategy:
-  matrix:
-    # @see https://hub.docker.com/u/geerlingguy/
-    # Pattern must match available image name "geerlingguy/docker-*-ansible".
-    # ie. https://hub.docker.com/r/geerlingguy/docker-ubuntu1804-ansible
-    GEERLINGGUY_DISTRO:
-      # - centos7
-      # - ubuntu1604
-      - ubuntu1804
-
 jobs:
-
   build:
-
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        # @see https://hub.docker.com/u/geerlingguy/
+        # Pattern must match available image name "geerlingguy/docker-*-ansible".
+        # ie. https://hub.docker.com/r/geerlingguy/docker-ubuntu1804-ansible
+        GEERLINGGUY_DISTRO:
+          # - centos7
+          # - ubuntu1604
+          - ubuntu1804
 
     steps:
     - name: Prepare Code
