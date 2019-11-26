@@ -22,4 +22,4 @@ jobs:
 
     - name: Test Install
       run: |
-        bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-${GEERLINGGUY_DISTRO}-ansible --test --disable-xdebug --non-interactive
+        bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-${GEERLINGGUY_DISTRO}-ansible --test --disable-xdebug --no-interaction
