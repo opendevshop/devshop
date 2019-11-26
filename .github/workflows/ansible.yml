@@ -10,13 +10,14 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
 
-      - uses: actions/cache@v1
-        id: cache
-        with:
-          path: .cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
-          restore-keys: |
-                ${{ runner.os }}-test
+# @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
+#      - uses: actions/cache@v1
+#        id: cache
+#        with:
+#          path: .cache/pip
+#          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
+#          restore-keys: |
+#                ${{ runner.os }}-test
 
       - name: Install Ansible Molecule
         if: steps.cache.outputs.cache-hit != 'true'
