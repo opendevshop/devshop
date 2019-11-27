@@ -22,4 +22,5 @@
       command: "{{ devmaster_test_command }}"
 
   roles:
+    - role: geerlingguy.mysql
     - role: opendevshop.devmaster
