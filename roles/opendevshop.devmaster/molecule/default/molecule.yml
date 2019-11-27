@@ -1,6 +1,8 @@
 ---
 dependency:
   name: galaxy
+  # Uncomment to avoid long galaxy install.
+  # enabled: false
 driver:
   name: docker
 lint:
