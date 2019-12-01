@@ -865,4 +865,16 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("bin/monorepo-builder split");
     }
   }
+
+  /**
+   * Run the molecule test command.
+   */
+  function moleculeTest() {
+    $this->_exec("cd roles/opendevshop.devmaster && molecule test");
+  }
+
+  function moleculeConverge() {
+    $this->_exec("cd roles/opendevshop.devmaster && molecule converge");
+  }
+
 }
