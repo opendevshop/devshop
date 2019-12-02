@@ -110,6 +110,8 @@ projects:
     download:
       type: git
       tag: 7.x-1.7
+    patch:
+      - https://www.drupal.org/files/issues/2018-12-13/3020349-cas-library-path.patch
 
   cas_attributes:
     download:
