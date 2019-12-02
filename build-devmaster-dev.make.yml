@@ -83,81 +83,127 @@ projects:
   admin_menu:
     download:
       type: git
+      branch: 7.x-1.x
+
   adminrole:
     download:
       type: git
+      branch: 7.x-3.x
+
   betterlogin:
     download:
       type: git
+      branch: 7.x-1.x
+
   cas:
     download:
       type: git
+      branch: 7.x-1.x
+
   cas_attributes:
     download:
       type: git
+      branch: 7.x-1.x
+
   chosen:
     download:
       type: git
+      branch: 7.x-2.x
+
   composer_manager:
     download:
       type: git
+      branch: 7.x-1.x
+
   ctools:
     download:
       type: git
-  distro_update:
-    download:
-      type: git
+      branch: 7.x-1.x
+
   entity:
     download:
       type: git
+      branch: 7.x-1.x
+
   features:
     download:
       type: git
+      branch: 7.x-2.x
+
   hosting_statsd:
     download:
       type: git
+      branch: 7.x-1.x
+
   intercomio:
     download:
       type: git
+      branch: 7.x-1.x
+
   jquery_update:
     download:
       type: git
+      branch: 7.x-3.x
+
   libraries:
     download:
       type: git
+      branch: 7.x-2.X
+
   module_filter:
     download:
       type: git
+      branch: 7.x-2.x
+
   navbar:
     download:
       type: git
+      branch: 7.x-1.x
+
   openidadmin:
     download:
       type: git
+      branch: 7.x-1.x
+
   overlay_paths:
     download:
       type: git
+      branch: 7.x-1.x
+
   r4032login:
     download:
       type: git
+      branch: 7.x-1.x
+
   sshkey:
     download:
       type: git
+      branch: 7.x-2.x
+
   statsd:
     download:
       type: git
+      branch: 7.x-1.x
+
   timeago:
     download:
       type: git
+      branch: 7.x-2.x
+
   token:
     download:
       type: git
+      branch: 7.x-1.x
+
   views:
     download:
       type: git
+      branch: 7.x-3.x
+
   views_bulk_operations:
     download:
       type: git
+      branch: 7.x-3.x
 
 libraries:
 
