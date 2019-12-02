@@ -83,12 +83,12 @@ projects:
   admin_menu:
     download:
       type: git
-      branch: 7.x-1.x
+      branch: 7.x-3.x
 
   adminrole:
     download:
       type: git
-      branch: 7.x-3.x
+      branch: 7.x-1.x
 
   betterlogin:
     download:
