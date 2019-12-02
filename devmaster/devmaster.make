@@ -1,8 +1,13 @@
+;
+; devmaster.make
+;
+; This file is to ensure devmaster's requirements are loaded automatically when
+; another makefiles requires "devmaster".
+;
+; This is how drush make behaves for install profiles: if a PROJECTNAME.make
+; file is found, it loads it into the build.
+
 core = 7.x
 api = 2
 
-; Includes
-
-; This makefile will make sure we get the development code from the Aegir
-; modules instead of the tagged releases.
 includes[devmaster] = drupal-org.make
