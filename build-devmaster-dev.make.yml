@@ -4,7 +4,7 @@ api: "2"
 
 defaults:
   projects:
-    subdir: "aegir"
+    subdir: "contrib"
 
 projects:
   drupal:
@@ -79,6 +79,85 @@ projects:
     download:
       type: git
       branch: 7.x-1.x
+
+  admin_menu:
+    download:
+      type: git
+  adminrole:
+    download:
+      type: git
+  betterlogin:
+    download:
+      type: git
+  cas:
+    download:
+      type: git
+  cas_attributes:
+    download:
+      type: git
+  chosen:
+    download:
+      type: git
+  composer_manager:
+    download:
+      type: git
+  ctools:
+    download:
+      type: git
+  distro_update:
+    download:
+      type: git
+  entity:
+    download:
+      type: git
+  features:
+    download:
+      type: git
+  hosting_statsd:
+    download:
+      type: git
+  intercomio:
+    download:
+      type: git
+  jquery_update:
+    download:
+      type: git
+  libraries:
+    download:
+      type: git
+  module_filter:
+    download:
+      type: git
+  navbar:
+    download:
+      type: git
+  openidadmin:
+    download:
+      type: git
+  overlay_paths:
+    download:
+      type: git
+  r4032login:
+    download:
+      type: git
+  sshkey:
+    download:
+      type: git
+  statsd:
+    download:
+      type: git
+  timeago:
+    download:
+      type: git
+  token:
+    download:
+      type: git
+  views:
+    download:
+      type: git
+  views_bulk_operations:
+    download:
+      type: git
 
 libraries:
 
