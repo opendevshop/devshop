@@ -29,12 +29,49 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Detect DevShop CLI
-  stat:
-    path: "{{ devshop_cli_path }}"
-  register: cliPath
+- name: Detect currently installed version of DevShop.
+  shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
+  register: __devshop_version_installed
+  ignore_errors: True
 
-- name: Install DevShop CLI
+- name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
+  shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
+  register: __devshop_is_version_ancestor
+  ignore_errors: True
+  when:
+    - __devshop_version_installed.failed == False
+
+- name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
+  set_fact:
+    devshop_cli_update: False
+    devmaster_skip_upgrade: True
+  when:
+    - __devshop_is_version_ancestor.failed
+
+- name: "Setting Variables for existing DevShop install (Version {{ __devshop_version_installed.stdout }})"
+  set_fact:
+    devshop_cli_upgrade_or_install: "Upgrade"
+    devshop_version_installed: "{{ __devshop_version_installed.stdout }}"
+  when:
+    - __devshop_version_installed.failed == False
+
+- name: "Setting Variables for new DevShop install (Version {{ devshop_version }})"
+  set_fact:
+    devshop_cli_upgrade_or_install: "Install"
+    devshop_version_installed: False
+  when:
+    - __devshop_version_installed.failed
+
+- name: "{{ __devshop_cli_upgrade_or_install }} DevShop CLI version {{ devshop_cli_version }} in {{ devshop_cli_path }}"
+  git:
+    repo: "{{ devshop_cli_repo }}"
+    version: "{{ devshop_cli_version }}"
+    update: "{{ devshop_cli_update }}"
+    dest: "{{ devshop_cli_path }}"
+    force: True
+  when: devshop_cli_update
+
+- name: Install DevShop CLI Dependencies
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
