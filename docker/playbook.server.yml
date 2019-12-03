@@ -2,13 +2,13 @@
 - hosts: all
   become: yes
 
-  vars_files:
-    - docker-hub-overrides.yml
   vars:
-
     # Hostname must be set when container is launched, which "hostname" option.
-    server_hostname: ''
-    php_default_version_debian: 7.3
+    server_hostname: ""
+
+    # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
+    php_version: "7.2"
+    php_default_version_debian: "{{ php_version }}"
 
   roles:
     - opendevshop.users

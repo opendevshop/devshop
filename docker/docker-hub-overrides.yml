@@ -1,5 +1,0 @@
----
-hostname_configure: false
-firewall_enabled: false
-
-server_hostname_ignore_errors: true
