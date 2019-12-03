@@ -271,31 +271,9 @@ class RoboFile extends \Robo\Tasks {
    * or you can pass as an argument.
    */
   public function prepareContainers($user_uid = NULL) {
-
-    if (is_null($user_uid)) {
-      $user_uid = trim(shell_exec('id -u'));
-    }
-
-    $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
-
-    // aegir/hostmaster
-    $versions = array(
-      '7',
-      '71',
-      '72'
-    );
-    foreach ($versions as $version) {
-      $this->taskDockerBuild('aegir-dockerfiles')
-         ->option('file', "aegir-dockerfiles/Dockerfile-php{$version}")
-         ->option('build-arg', "AEGIR_UID=$user_uid")
-         ->tag("aegir/hostmaster:php{$version}")
-         ->run();
-
-      $this->taskDockerBuild('aegir-dockerfiles')
-         ->option('file', "aegir-dockerfiles/Dockerfile-xdebug-php{$version}")
-         ->tag("aegir/hostmaster:php{$version}-xdebug")
-         ->run();
-    }
+    $this->taskDockerBuild()
+      ->tag("devshop/server:local")
+      ->run();
   }
 
   /**
