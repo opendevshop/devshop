@@ -66,25 +66,25 @@ class Composer {
       // Use a different local target branch so we dont break local installs by reassigning the current branch to the new commit.
       $target = "refs/splits/$folder";
 
-      // Handle special case for devmaster
-      if ($folder == 'devmaster' && $current_branch == '1.x') {
-        $branch = '7.x-1.x';
-        echo "\n\n- Pushing devmaster to 7.x-1.x ... \n";
-      }
-      else {
-        $branch = $current_branch;
-      }
-
       // Split the commits into a different branch.
       if (self::exec("splitsh-lite --progress --prefix={$folder}/ --target=$target") != 0) {
         exit(1);
       }
 
-      // Push the branch to the remote.
-      if (self::exec("git push --force $remote $target:refs/heads/$branch") != 0) {
+      // Push the current_branch to the remote.
+      if (self::exec("git push --force $remote $target:refs/heads/$current_branch") != 0) {
         exit(1);
       }
 
+      // Handle special case for devmaster
+      // Push an additional "7.x-1.x" or "7.x-2.x" branch to remote if splitting 1.x or 2.x
+      if ($folder == 'devmaster' && $current_branch == '1.x') {
+        $branch = "7.x-$current_branch";
+        echo "\n\n- Pushing devmaster to $branch ... \n";
+        if (self::exec("git push --force $remote $target:refs/heads/$branch") != 0) {
+          exit(1);
+        }
+      }
     }
   }
 

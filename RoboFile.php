@@ -158,6 +158,14 @@ class RoboFile extends \Robo\Tasks {
           ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
           ->run();
       }
+
+      // Checkout provision to the 7.x-3.x-devshop branch.
+      if ($path == 'provision') {
+        $this->taskGitStack()
+          ->dir($this->devshop_root_path . '/' . $path)
+          ->checkout('7.x-3.x-devshop')
+          ->run();
+      }
     }
 
     // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
@@ -435,6 +443,7 @@ class RoboFile extends \Robo\Tasks {
         'ubuntu:14.04' => '/sbin/init',
         'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
         'geerlingguy/docker-ubuntu1604-ansible' => '/lib/systemd/systemd',
+        'geerlingguy/docker-ubuntu1804-ansible' => '/lib/systemd/systemd',
         'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
 
@@ -452,6 +461,7 @@ class RoboFile extends \Robo\Tasks {
         ->volume($this->devshop_root_path, '/usr/share/devshop')
         ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
         ->volume($this->devshop_root_path . '/roles', '/etc/ansible/roles')
+        ->volume($this->devshop_root_path . '/provision', '/var/aegir/.drush/commands/provision')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
