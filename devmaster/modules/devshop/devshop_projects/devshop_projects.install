@@ -132,7 +132,7 @@ function devshop_projects_schema() {
       ),
     ),
     'unique keys' => array(
-      'project_environment' => array(
+      'project_environment_key' => array(
         'project_nid',
         'name',
       ),
