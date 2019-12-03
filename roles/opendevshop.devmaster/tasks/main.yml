@@ -174,7 +174,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_install_command }}"
   when:
-    - devmaster_skip_install
+    - devmaster_skip_install == false
     - devmaster_site_uri == ""
 
 - name: Devmaster Upgrade Command
