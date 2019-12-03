@@ -726,7 +726,7 @@ class RoboFile extends \Robo\Tasks {
         $process = new \Symfony\Component\Process\Process("docker exec --user $user -ti devshop_container bash");
       }
       else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash");
       }
     }
     else {
@@ -735,7 +735,7 @@ class RoboFile extends \Robo\Tasks {
         $process = new \Symfony\Component\Process\Process("docker exec -ti devshop_container bash");
       }
       else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
       }
     }
     $process->setTty(TRUE);

@@ -13,7 +13,7 @@ RUN ansible-playbook /usr/share/devshop/docker/playbook.server.yml
 
 EXPOSE 80 443 3306 8025
 
-USER aegir
+USER root
 
 
 
