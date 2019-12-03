@@ -317,6 +317,7 @@ class RoboFile extends \Robo\Tasks {
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
    * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option $build Run `robo prepare:containers` to rebuild the container first.
    */
   public function up($opts = [
     'follow' => 1,
@@ -331,6 +332,7 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
+    'build' => FALSE
   ]) {
 
     // Check for tools
@@ -354,6 +356,11 @@ class RoboFile extends \Robo\Tasks {
     // Determine current UID.
     if (is_null($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
+    }
+
+    // Build the container if desired.
+    if ($opts['build']) {
+      $this->prepareContainers($opts['user-uid']);
     }
 
     if (!file_exists('aegir-home')) {
