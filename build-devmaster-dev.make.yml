@@ -33,7 +33,7 @@ projects:
   hosting_git:
     download:
       type: git
-      tag: 7.x-3.180
+      tag: 7.x-3.181
 
   hosting_remote_import:
     download:
