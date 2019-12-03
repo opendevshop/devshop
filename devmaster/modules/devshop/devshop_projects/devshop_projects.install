@@ -132,7 +132,7 @@ function devshop_projects_schema() {
       ),
     ),
     'unique keys' => array(
-      'project_environment_key' => array(
+      'project_nid_name' => array(
         'project_nid',
         'name',
       ),
@@ -487,6 +487,6 @@ function devshop_projects_update_7009 () {
  *  Add the "project_environment" unique index to the hosting_devshop_project_environment table.
  */
 function devshop_projects_update_7010() {
-  db_query("CREATE UNIQUE INDEX project_environment ON {hosting_devshop_project_environment}(project_nid, name)")
+  db_query("CREATE UNIQUE INDEX project_nid_name ON {hosting_devshop_project_environment}(project_nid, name)")
     ->execute();
 }
