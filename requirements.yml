@@ -21,3 +21,7 @@
 
 - name: geerlingguy.supervisor
   version: 2.0.2
+
+- name: geerlingguy.php-versions
+  src: https://github.com/opendevshop/ansible-role-php-versions
+  version: multi-php
