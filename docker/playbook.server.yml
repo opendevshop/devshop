@@ -15,6 +15,13 @@
     # @TODO: This may not be needed now that the "ancestor" check is in place.
     devshop_cli_update: false
 
+    # Since this file only runs during docker build, we should skip devmaster install... BUT...
+#    devmaster_skip_install: True
+
+    # @TODO: Until the new container has a new docker entrypoint that can install devmaster, we should run devmaster
+    # install in the container build as a test.
+    devmaster_skip_install: False
+
   roles:
     - opendevshop.users
     - opendevshop.apache
