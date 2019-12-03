@@ -48,6 +48,7 @@
   when:
     # Only run when devshop is already installed and the ancestor check failed.
     - __devshop_version_installed.failed == False
+    - __devshop_is_version_ancestor is defined
     - __devshop_is_version_ancestor.failed
 
 - name: "Setting Variables for existing DevShop install (Version {{ __devshop_version_installed.stdout }})"
