@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Build the DevShop Server Docker image
-      run: docker build --tag devshop/server:$GITHUB_SHA
+      run: docker build . --tag devshop/server:$GITHUB_SHA
 
     - name: Run DevShop Server and tests
       if: false
