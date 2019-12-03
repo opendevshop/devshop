@@ -189,7 +189,8 @@
 
 - name: Configure DevShop Web Interface
   include_tasks: "config-devmaster.yml"
-  when: devmaster_skip_install == false and devmaster_site_uri == ""
+  when:
+    - devmaster_skip_install == false
 
 - name: Ensure privacy of SSH Keys
   file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
