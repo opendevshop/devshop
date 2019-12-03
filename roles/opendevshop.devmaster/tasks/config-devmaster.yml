@@ -12,7 +12,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-tasks -v"
+  command: "{{ drush_bin_path }} @hostmaster hosting-tasks"
 
 - name: DevShop.Support | Save License Key
   become: true
@@ -25,7 +25,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support -v"
+  command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support"
   when: devshop_support_license_key != ""
 
 - name: Ensure hosting-dispatch crontab is setup
