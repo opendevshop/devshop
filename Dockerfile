@@ -2,7 +2,7 @@ FROM geerlingguy/docker-ubuntu1804-ansible:latest
 LABEL maintainer="Jon Pugh"
 
 ENV ANSIBLE_PIPELINING=1
-ENV ANSIBLE_VERBOSITY=2
+ENV ANSIBLE_VERBOSITY=1
 ENV ENABLE_TASK_DEBUGGER=1
 
 # Copy DevShop Core to /usr/share/devshop
