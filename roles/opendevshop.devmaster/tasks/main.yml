@@ -75,14 +75,6 @@
   when: devshop_cli_update
 
 - name: Install DevShop CLI Dependencies
-  git:
-    repo: "{{ devshop_cli_repo }}"
-    version: "{{ devshop_cli_version }}"
-    update: "{{ devshop_cli_update }}"
-    dest: "{{ devshop_cli_path }}"
-    force: "true"
-
-- name: Setup devshop CLI
   command: "{{ composer_path }} install"
   args:
     chdir: "{{ devshop_cli_path }}"
