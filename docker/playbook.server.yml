@@ -5,6 +5,7 @@
   vars:
     # Hostname must be set when container is launched, which "hostname" option.
     server_hostname: ""
+    server_hostname_ignore_errors: true
 
     # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
     php_version: "7.2"
