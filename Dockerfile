@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV ANSIBLE_PIPELINING=1
 ENV ANSIBLE_VERBOSITY=1
 ENV ENABLE_TASK_DEBUGGER=1
+ENV PATH="/usr/share/devshop/bin:$PATH"
 
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
@@ -12,13 +13,17 @@ COPY ./ /usr/share/devshop
 # Copy provisioning directory, variable overrides, and scripts into container.
 COPY ./ansible.cfg /etc/ansible/ansible.cfg
 
+# Copy docker shell scripts to /usr/local/bin
+COPY ./docker/bin/* /usr/local/bin
+
+RUN ls -la /usr/local/bin
+RUN echo $PATH
+
 # Provision DevShop inside Docker.
 RUN ansible-galaxy install -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
 RUN ansible-playbook /usr/share/devshop/docker/playbook.server.yml
 
 EXPOSE 80 443 3306 8025
 
-USER root
-
-
-
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
+CMD ["/lib/systemd/systemd"]
