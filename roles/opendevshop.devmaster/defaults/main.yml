@@ -70,6 +70,9 @@ devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 
+# Set to true to skip the devmaster install process.
+devmaster_skip_install: False
+
 # Set to true if you want to skip the "devmaster" upgrade process during the "devshop upgrade" command.
 devmaster_skip_upgrade: false
 

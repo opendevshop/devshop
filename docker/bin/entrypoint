@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+echo "   ____              ____  _                      "
+echo "  |  _ \  _____   __/ ___|| |__   ___  _ __       "
+echo "  | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \      "
+echo "  | |_| |  __/\ V /  ___) | | | | (_) | |_) |     "
+echo "  |____/ \___| \_/  |____/|_| |_|\___/| .__/      "
+echo "           http://getdevshop.com      |_|         "
+echo "__________________________________________________"
+echo ""
+echo "              Docker Entrypoint                   "
+echo "__________________________________________________"
+
+log() {
+  echo "DevShop | $@";
+}
+
+# Run Ansible playbook one more time.
+#log "Run-time Ansible Config: $EXTRA_VARS"
+
+log "Running Ansible Playbook: docker/playbook.server.yml --tags install-devmaster"
+ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+
+# Run the Docker CMD
+log "DevShop | Running Docker Command '$@' ..."
+exec "$@"

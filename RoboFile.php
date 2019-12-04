@@ -270,32 +270,19 @@ class RoboFile extends \Robo\Tasks {
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL) {
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer') {
 
+    // Determine current UID.
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
 
-    $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
-
-    // aegir/hostmaster
-    $versions = array(
-      '7',
-      '71',
-      '72'
-    );
-    foreach ($versions as $version) {
-      $this->taskDockerBuild('aegir-dockerfiles')
-         ->option('file', "aegir-dockerfiles/Dockerfile-php{$version}")
-         ->option('build-arg', "AEGIR_UID=$user_uid")
-         ->tag("aegir/hostmaster:php{$version}")
-         ->run();
-
-      $this->taskDockerBuild('aegir-dockerfiles')
-         ->option('file', "aegir-dockerfiles/Dockerfile-xdebug-php{$version}")
-         ->tag("aegir/hostmaster:php{$version}-xdebug")
-         ->run();
-    }
+    // Hostname should match server_hostname in playbook.server.yml
+    $this->taskDockerBuild()
+      ->tag("devshop/server:local")
+      ->option('--add-host', "{$hostname}:127.0.0.1")
+      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
+      ->run();
   }
 
   /**
@@ -339,6 +326,7 @@ class RoboFile extends \Robo\Tasks {
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
    * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option $build Run `robo prepare:containers` to rebuild the container first.
    */
   public function up($opts = [
     'follow' => 1,
@@ -353,6 +341,7 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
+    'build' => FALSE
   ]) {
 
     // Check for tools
@@ -376,6 +365,11 @@ class RoboFile extends \Robo\Tasks {
     // Determine current UID.
     if (is_null($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
+    }
+
+    // Build the container if desired.
+    if ($opts['build']) {
+      $this->prepareContainers($opts['user-uid']);
     }
 
     if (!file_exists('aegir-home')) {
@@ -741,7 +735,7 @@ class RoboFile extends \Robo\Tasks {
         $process = new \Symfony\Component\Process\Process("docker exec --user $user -ti devshop_container bash");
       }
       else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash");
       }
     }
     else {
@@ -750,7 +744,7 @@ class RoboFile extends \Robo\Tasks {
         $process = new \Symfony\Component\Process\Process("docker exec -ti devshop_container bash");
       }
       else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
       }
     }
     $process->setTty(TRUE);

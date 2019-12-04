@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    # Hostname must be set when container is launched, which "hostname" option.
+    server_hostname: "devshop.local.computer"
+    server_hostname_ignore_errors: true
+
+    # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
+    php_version: "7.2"
+    php_default_version_debian: "{{ php_version }}"
+
+    # Needs to be set to false when developing so your code doesn't get updated inside the container on build.
+    # Code gets copied using the Dockerfile
+    # @TODO: This may not be needed now that the "ancestor" check is in place.
+    devshop_cli_update: false
+
+    # Since this file only runs during docker build, we should skip devmaster install... BUT...
+    devmaster_skip_install: true
+
+  roles:
+    - opendevshop.users
+    - opendevshop.apache
+    - geerlingguy.php
+    - geerlingguy.php-versions
+    - geerlingguy.php-mysql
+    - geerlingguy.composer
+    - opendevshop.devmaster

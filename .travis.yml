@@ -3,6 +3,11 @@ language: php
 sudo: required
 git:
   depth: false
+  quiet: true
+
+branches:
+  only:
+    - 1.x
 
 env:
   global:

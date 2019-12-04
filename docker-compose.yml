@@ -4,15 +4,11 @@ version: '2'
 
 services:
 
-  devmaster:
-    image: aegir/hostmaster:php72-xdebug
+  devshop:
+    image: devshop/server:local
     ports:
       - 80:80
     hostname: devshop.local.computer
-    links:
-      - database
-    depends_on:
-      - database
     environment:
       MYSQL_ROOT_PASSWORD: strongpassword
       AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
@@ -41,22 +37,26 @@ services:
       - ./aegir-home:/var/aegir:delegated
       - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster:delegated
       - ./:/usr/share/devshop:delegated
+      - ./docker/bin/entrypoint:/usr/local/bin/entrypoint
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - $HOME/.ssh:/var/aegir/.ssh
     extra_hosts:
       - "remote.devshop.local.computer:10.10.10.11"
-  database:
-    image: mariadb
-    logging:
-      driver: none
-    environment:
-      MYSQL_ROOT_PASSWORD: strongpassword
+
+# Database container is now optional: for local development just use the devshop/server container.
+#  database:
+#    image: mariadb
+#    logging:
+#      driver: none
+#    environment:
+#      MYSQL_ROOT_PASSWORD: strongpassword
 
   admin:
     image: phpmyadmin/phpmyadmin
     links:
-      - database:db
+      - devshop:db
     ports:
       - 8080:80
 
