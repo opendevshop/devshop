@@ -413,18 +413,6 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      // Build a local container.
-      if ($opts['user-uid'] != '1000') {
-        $dockerfile = $opts['disable-xdebug'] ? 'aegir-dockerfiles/Dockerfile-local' : 'aegir-dockerfiles/Dockerfile-local-xdebug';
-        $this->taskDockerBuild($this->devshop_root_path . '/aegir-dockerfiles')
-          ->option('file', $this->devshop_root_path . '/' . $dockerfile)
-          ->tag('aegir/hostmaster:local')
-          ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
-          ->option('no-cache')
-          ->run();
-      }
-
-
       if (isset($cmd)) {
           // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
         if ($this->_exec($cmd)->wasSuccessful()) {
