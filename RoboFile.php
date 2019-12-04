@@ -405,7 +405,7 @@ class RoboFile extends \Robo\Tasks {
         $cmd = "docker-compose up -d";
 
         # Run final playbook to install devshop.
-        $cmd .= "docker-compose exec devshop ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"
+        $cmd .= "; docker-compose exec devshop ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"
 ";
 
         if ($opts['follow']) {
