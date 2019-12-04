@@ -19,6 +19,8 @@
     # Since this file only runs during docker build, we should skip devmaster install... BUT...
     devmaster_skip_install: true
 
+    ansible_python_interpreter: /usr/bin/python3
+
   roles:
     - opendevshop.users
     - opendevshop.apache
