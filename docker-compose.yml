@@ -33,7 +33,7 @@ services:
       # AEGIR_HTTP_SERVICE_TYPE: https_apache
 
       # Ansible vars to use at run time. Only the playbook.*.install.yml playbook is used at run time.
-      EXTRA_VARS: "{\"devshop_devmaster_email\": \"jon@thinkdrop.net\"}"
+      EXTRA_VARS: "{\"devshop_devmaster_email\": \"jon@thinkdrop.net\", \"devmaster_skip_install\": false}"
 
     privileged: true
     volumes:
