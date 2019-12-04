@@ -129,55 +129,10 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
-- name: Get Devmaster root
-  shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
-  register: devmaster_site_root
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  ignore_errors: true
-
-- name: Get Devmaster URI
-  shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
-  register: devmaster_site_uri
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  ignore_errors: true
-
-- set_fact:
-    devmaster_site_root: "{{ devmaster_site_root.stdout }}"
-    devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
-
-- name: Devmaster Root
-  debug:
-    msg: "{{ devmaster_site_root }}"
-- name: Devmaster URI
-  debug:
-    msg: "{{ devmaster_site_uri }}"
-
-- name: Devmaster Install Command
-  debug:
-    msg: "{{ devmaster_install_command }}"
-
-- name: Install Devmaster
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_install_command }}"
+- name: Install DevShop Web Interface
+  include_tasks: "install-devmaster.yml"
   when:
     - devmaster_skip_install == false
-    - devmaster_site_uri == ""
-
-- name: Devmaster Upgrade Command
-  debug:
-    msg: "{{ devmaster_upgrade_command }}"
-
-- name: "Upgrade Devmaster to {{ devshop_version }}"
-  command: "{{ devmaster_upgrade_command }}"
-  when:
-    - devmaster_site_uri != ""
-    - devmaster_skip_upgrade == false
 
 - name: Configure DevShop Web Interface
   include_tasks: "config-devmaster.yml"
