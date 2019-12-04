@@ -20,7 +20,7 @@ log() {
 #log "Run-time Ansible Config: $EXTRA_VARS"
 
 log "Running Ansible Playbook: docker/playbook.server.yml --tags install-devmaster"
-ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster
+ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars "devmaster_skip_install=false"
 
 # Run the Docker CMD
 log "DevShop | Running Docker Command '$@' ..."
