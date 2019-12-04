@@ -272,11 +272,16 @@ class RoboFile extends \Robo\Tasks {
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer') {
 
-    // Hostname should match server_hostname in playbook.server.yml
+    // Determine current UID.
+    if (is_null($user_uid)) {
+      $user_uid = trim(shell_exec('id -u'));
+    }
 
+    // Hostname should match server_hostname in playbook.server.yml
     $this->taskDockerBuild()
       ->tag("devshop/server:local")
       ->option('--add-host', "{$hostname}:127.0.0.1")
+      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
       ->run();
   }
 
