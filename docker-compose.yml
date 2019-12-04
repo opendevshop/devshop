@@ -39,6 +39,7 @@ services:
       - ./:/usr/share/devshop:delegated
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - $HOME/.ssh:/var/aegir/.ssh
     extra_hosts:
       - "remote.devshop.local.computer:10.10.10.11"
