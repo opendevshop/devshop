@@ -131,6 +131,8 @@
 
 - name: Install DevShop Web Interface
   include_tasks: "install-devmaster.yml"
+  tags:
+    - install-devmaster
   when:
     - devmaster_skip_install == false
 
