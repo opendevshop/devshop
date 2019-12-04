@@ -407,7 +407,7 @@ class RoboFile extends \Robo\Tasks {
         $cmd[] = "docker-compose up -d";
 
         # Run final playbook to install devshop.
-        $cmd[]= " docker exec devshop_server ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"
+        $cmd[]= " docker-compose exec devshop ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"
 ";
 
         if ($opts['follow']) {
@@ -693,7 +693,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell($user = NULL) {
+  public function shell($user = 'aegir') {
 
     // Check if single container is running (as opposed to docker compose)
     $devshop_container_running = $this->taskExec('docker exec -ti devshop_container echo')
