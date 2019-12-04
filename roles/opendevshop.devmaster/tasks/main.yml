@@ -129,16 +129,15 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
-- name: Install DevShop Web Interface
+- name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
   tags: [install-devmaster]
-  when:
-    - devmaster_skip_install == false
+  when: not devmaster_skip_install|bool
 
 - name: Configure DevShop Web Interface
+  tags: [install-devmaster]
   include_tasks: "config-devmaster.yml"
-  when:
-    - devmaster_skip_install == false
+  when: not devmaster_skip_install|bool
 
 - name: Ensure privacy of SSH Keys
   file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
