@@ -403,6 +403,9 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
         $cmd = "docker-compose up -d";
+
+        $cmd .= "docker-compose exec devshop 'devshop devmaster:install'";
+
         if ($opts['follow']) {
           $cmd .= "; docker-compose logs -f";
         }

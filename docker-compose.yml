@@ -32,6 +32,9 @@ services:
       # This would work for changing to nginx, once the container supports that.
       # AEGIR_HTTP_SERVICE_TYPE: https_apache
 
+      # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
+      ANSIBLE_VERBOSITY: 4
+
     privileged: true
     volumes:
       - ./aegir-home:/var/aegir:delegated
