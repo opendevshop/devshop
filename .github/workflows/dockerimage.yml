@@ -18,4 +18,6 @@ jobs:
       run: docker build . --tag devshop/server:$GITHUB_SHA --add-host devshop.local.computer:127.0.0.1
 
     - name: Run DevShop Server and tests
-      run: docker run -e GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA /usr/share/devshop/tests/devshop-tests.sh
+      run: |
+        docker run --name devshop --hostname devshop.local.computer --detach --env GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA
+        docker exec -ti devshop /usr/share/devshop/tests/devshop-tests.sh
