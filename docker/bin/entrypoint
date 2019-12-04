@@ -20,8 +20,9 @@ log "Checking Services..."
 service --status-all
 
 log "  Run 'docker-compose exec devshop 'devshop devmaster:install' now to install devshop.' "
-log "Launching systemd..."
-exec "/lib/systemd/systemd"
+log "Running: $@"
+exec "$@"
+
 #
 ## Run Ansible playbook one more time.
 ##log "Run-time Ansible Config: $EXTRA_VARS"
