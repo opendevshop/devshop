@@ -20,4 +20,4 @@ jobs:
     - name: Run DevShop Server and tests
       run: |
         docker run --name devshop --hostname devshop.local.computer --detach --env GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA
-        docker exec -ti devshop /usr/share/devshop/tests/devshop-tests.sh
+        docker exec devshop /usr/share/devshop/tests/devshop-tests.sh
