@@ -19,9 +19,6 @@
     # Since this file only runs during docker build, we should skip devmaster install... BUT...
     devmaster_skip_install: true
 
-    # @TODO:  This seemed to cause failure down the line? https://github.com/opendevshop/devshop/pull/440/checks?check_run_id=333655835
-    ansible_python_interpreter: /usr/bin/python3
-
   roles:
     - opendevshop.users
     - opendevshop.apache
