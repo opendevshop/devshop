@@ -12,7 +12,9 @@ function devshop_environment_get_git_ref_type($environment_repo_path) {
     return null;
   }
   $git_status = shell_exec("cd {$environment_repo_path}; git status");
-  if (strpos($git_status, 'On branch ') === 0) {
+
+  // @TODO: Use the git library for this!!
+  if (strpos($git_status, 'On branch ') === 0 || strpos($git_status, 'Your branch ') === 0) {
     return 'branch';
   }
   else {
