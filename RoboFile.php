@@ -402,7 +402,7 @@ class RoboFile extends \Robo\Tasks {
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd[] = "docker-compose -f docker-compose-tests.yml run devshop --name devshop_server --detached $env ";
+        $cmd[] = "docker-compose -f docker-compose-tests.yml run devshop --rm --name devshop_server --detached $env ";
         $cmd[] = "docker exec devshop_server '$command'";
       }
       elseif ($opts['test-upgrade']) {
