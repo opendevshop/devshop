@@ -434,7 +434,7 @@ class RoboFile extends \Robo\Tasks {
           // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
         foreach ($cmd as $command) {
           if (!$this->_exec($command)->wasSuccessful()) {
-            throw new RuntimeException("Command failed: $cmd");
+            throw new RuntimeException("Command failed: $command");
           }
         }
         return;
