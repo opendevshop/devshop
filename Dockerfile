@@ -26,6 +26,6 @@ RUN ansible-galaxy install -r /usr/share/devshop/requirements.yml -p /usr/share/
 RUN ansible-playbook /usr/share/devshop/docker/playbook.server.yml -e aegir_user_uid=$DEVSHOP_USER_UID -e aegir_user_gid=$DEVSHOP_USER_UID --skip-tags install-devmaster
 
 EXPOSE 80 443 3306 8025
-
+WORKDIR /var/aegir
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
 CMD ["/lib/systemd/systemd"]
