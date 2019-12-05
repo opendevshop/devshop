@@ -46,12 +46,12 @@ The second, `server_hostname=devshop.mydomain.com` is the variable that Ansible 
 
 This list of available Ansible variables depends on the roles being used. DevShop uses Jeff Geerling's roles which are very well written, so there are many variables to use.
 
-The easiest way to review all of the roles, variables, and templates that DevShop uses in one place is to use the `ansible-galaxy` command and DevShop's `roles.yml` file: [https://github.com/opendevshop/devshop/blob/1.x/roles.yml](https://github.com/opendevshop/devshop/blob/1.x/roles.yml)
+The easiest way to review all of the roles, variables, and templates that DevShop uses in one place is to use the `ansible-galaxy` command and DevShop's `requirements.yml` file: [https://github.com/opendevshop/devshop/blob/1.x/requirements.yml](https://github.com/opendevshop/devshop/blob/1.x/requirements.yml)
 
 Get that file and run `ansible-galaxy install`:
 
 ```text
-   ansible-galaxy install -r roles.yml
+   ansible-galaxy install -r requirements.yml
 ```
 
 In each Ansible Role repository, look for the `defaults/main.yml` file. In this file are all the available variable names you can use, along with their default values.
