@@ -33,7 +33,7 @@ services:
       # AEGIR_HTTP_SERVICE_TYPE: https_apache
 
       # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
-      ANSIBLE_VERBOSITY: 4
+      ANSIBLE_VERBOSITY: 0
 
     privileged: true
     volumes:
