@@ -4,6 +4,7 @@ require_once 'vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Exception\RuntimeException;
 
 /**
  * This file provides commands to the robo CLI for managing development and
@@ -92,7 +93,7 @@ class RoboFile extends \Robo\Tasks {
     }
     else {
       $this->say('Could not run docker command. Find instructons for installing at https://www.docker.com/products/docker');
-      exit(1);
+      throw new RuntimeException('Unable to continue.');
     }
 
     // Check for docker-compose
@@ -105,7 +106,7 @@ class RoboFile extends \Robo\Tasks {
       $this->say("Run the following command as root to install it or see https://docs.docker.com/compose/install/ for more information.");
 
       $this->say('curl -L "https://github.com/docker/compose/releases/download/' . self::DOCKER_COMPOSE_VERSION . '/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
-      exit(1);
+      throw new RuntimeException('Unable to continue.');
     }
   }
 
@@ -246,7 +247,7 @@ class RoboFile extends \Robo\Tasks {
 
 //      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
 //        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
-//      }
+//      }RuntimeException
 //      else {
 //        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
 //      }
@@ -291,14 +292,15 @@ class RoboFile extends \Robo\Tasks {
         break;
     }
 
-    $this->taskDockerBuild()
+    return $this->taskDockerBuild()
       ->tag("devshop/server:local")
 
       // Hostname should match server_hostname in playbook.server.yml
       ->option('--add-host', "{$hostname}:127.0.0.1")
       ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
       ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
-      ->run();
+      ->run()
+      ->wasSuccessful();
   }
 
   /**
@@ -384,15 +386,12 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Build the container if desired.
-    if ($opts['build']) {
-      $this->prepareContainers($opts['user-uid']);
+    if ($opts['build'] && !$this->prepareContainers($opts['user-uid'])) {
+      throw new RuntimeException("Container Preparation failed.");
     }
 
-    if (!file_exists('aegir-home')) {
-        if ($this->prepareSourcecode($opts) == FALSE) {
-          $this->say('Prepare source code failed.');
-          exit(1);
-        }
+    if (!file_exists('aegir-home') && !$this->prepareSourcecode($opts)) {
+      throw new RuntimeException("Source Code Preparation failed.");
     }
 
     if ($opts['mode'] == 'docker-compose') {
@@ -435,10 +434,10 @@ class RoboFile extends \Robo\Tasks {
           // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
         foreach ($cmd as $command) {
           if (!$this->_exec($command)->wasSuccessful()) {
-            exit(1);
+            throw new RuntimeException("Command failed: $cmd");
           }
         }
-        exit(0);
+        return;
       }
     }
     elseif ($opts['mode'] == 'install.sh' || $opts['mode'] == 'manual') {
@@ -486,8 +485,7 @@ class RoboFile extends \Robo\Tasks {
         ->exec($init)
         ->run()
         ->wasSuccessful()) {
-        $this->say('Docker Run failed.');
-        exit(1);
+        throw new RuntimeException('Docker Run failed.');
       }
 
       # Install mysql first to ensure it is started.
@@ -497,8 +495,7 @@ class RoboFile extends \Robo\Tasks {
           ->run()
           ->wasSuccessful()
         ) {
-          $this->say('Set init policy failed.');
-          exit(1);
+          throw new RuntimeException('Set init policy failed.');
         }
       }
       elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
@@ -574,7 +571,7 @@ class RoboFile extends \Robo\Tasks {
           ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Installation of devshop $version failed.");
+          throw new RunException("Installation of devshop $version failed.");
         };
 
         // Run devshop upgrade. This command runs:
@@ -587,14 +584,14 @@ class RoboFile extends \Robo\Tasks {
           ->exec($upgrade_command)
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Command $upgrade_command failed.");
+          throw new RuntimeException("Command $upgrade_command failed.");
         };
 
         if (!$this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/bin/devshop status')
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Command 'devshop status' failed.");
+          throw new RuntimeException("Command 'devshop status' failed.");
         };
       }
       else {
@@ -607,8 +604,7 @@ class RoboFile extends \Robo\Tasks {
             //        ->option('tty')
             ->run()
             ->wasSuccessful()) {
-          $this->say('Docker Exec install.sh failed.');
-          exit(1);
+          throw new RuntimeException('Docker Exec install.sh failed.');
         }
       }
 
@@ -622,8 +618,7 @@ class RoboFile extends \Robo\Tasks {
           ->run()
           ->wasSuccessful()
         ) {
-          $this->say('Docker Exec devshop-tests.sh failed.');
-          exit(1);
+          throw new RuntimeException('Docker Exec devshop-tests.sh failed.');
         }
       }
     }
