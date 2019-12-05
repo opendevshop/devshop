@@ -16,20 +16,5 @@ log() {
   echo "DevShop | $@";
 }
 
-log "Checking Services..."
-service --status-all
-
-log "  Run 'docker-compose exec devshop 'devshop devmaster:install' now to install devshop.' "
 log "Running: $@"
 exec "$@"
-
-#
-## Run Ansible playbook one more time.
-##log "Run-time Ansible Config: $EXTRA_VARS"
-#
-#log "Running Ansible Playbook: docker/playbook.server.yml --tags install-devmaster"
-#ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars "devmaster_skip_install=false"
-#
-## Run the Docker CMD
-#log "DevShop | Running Docker Command '$@' ..."
-#exec "$@"
