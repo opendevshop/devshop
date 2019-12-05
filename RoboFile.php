@@ -3,6 +3,7 @@
 require_once 'vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * This file provides commands to the robo CLI for managing development and
@@ -277,11 +278,26 @@ class RoboFile extends \Robo\Tasks {
       $user_uid = trim(shell_exec('id -u'));
     }
 
-    // Hostname should match server_hostname in playbook.server.yml
+    // Pass robo -v to Ansible -v.
+    switch ($this->output->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $ansible_verbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $ansible_verbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $ansible_verbosity = 3;
+        break;
+    }
+
     $this->taskDockerBuild()
       ->tag("devshop/server:local")
+
+      // Hostname should match server_hostname in playbook.server.yml
       ->option('--add-host', "{$hostname}:127.0.0.1")
       ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
+      ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
       ->run();
   }
 
