@@ -31,6 +31,8 @@ mysql_root_password_update: false
 
 aegir_db_host: localhost
 aegir_client_name: admin
+aegir_logs_path: /var/log/aegir
+hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
 
 drush_dl_method: wget
 

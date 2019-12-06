@@ -11,7 +11,7 @@ supervisor_programs:
     configuration: |
       user={{ aegir_user_name }}
       numprocs=1
-      stdout_logfile=/var/log/hosting-queue-runner.log
+      stdout_logfile={{ hosting_queue_runner_log_path }}
       redirect_stderr=true
       autostart=TRUE
       autorestart=TRUE
