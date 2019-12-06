@@ -437,6 +437,7 @@ class RoboFile extends \Robo\Tasks {
       else {
 
         $cmd[] = "docker-compose exec devshop devshop status";
+        $cmd[] = "docker-compose exec devshop devshop login";
 
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
