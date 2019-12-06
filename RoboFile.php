@@ -409,6 +409,7 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "docker-compose up -d";
       $cmd[] = "sleep 1";
       $cmd[] = "docker ps";
+      $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
 
       # Run final playbook to install devshop.
       $cmd[]= " docker-compose exec -T devshop $this->devshopInstall";
