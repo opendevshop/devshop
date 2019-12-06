@@ -50,7 +50,6 @@
   when:
     - devmaster_site_uri == ""
   tags: [install-devmaster]
-  notify: restart supervisor
 
 - name: Devmaster Upgrade Command
   debug:
@@ -69,3 +68,10 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: restart supervisor
+  debug:
+  tags: [install-devmaster]
+  notify: restart supervisor
+
