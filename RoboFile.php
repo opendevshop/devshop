@@ -303,6 +303,8 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
+  protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
+
   /**
    * Launch devshop in a variety of ways. Useful for local development and CI
    * testing.
@@ -399,10 +401,15 @@ class RoboFile extends \Robo\Tasks {
       $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
       $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
+      // Launch all containers, detached
+      $cmd[] = "docker-compose up -d";
+
+      # Run final playbook to install devshop.
+      $cmd[]= " docker-compose exec devshop $this->devshopInstall";
+
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd[] = "docker-compose -f docker-compose-tests.yml run devshop --rm --name devshop_server --detached $env ";
-        $cmd[] = "docker exec devshop_server '$command'";
+        $cmd[]= " docker-compose exec -T $env devshop $command";
       }
       elseif ($opts['test-upgrade']) {
         $version = self::UPGRADE_FROM_VERSION;
@@ -412,18 +419,19 @@ class RoboFile extends \Robo\Tasks {
         // @TODO: Have this detect the branch and use that for the version.
         $root_target = '/var/aegir/devmaster-' . $opts['devshop-version'];
 
-        //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
-
         // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-        $cmd[] = "docker-compose -f {$this->devshop_root_path}/docker-compose-tests.yml run --rm --name devshop_server --detached $env -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION={$provision_version} devshop";
-        $cmd[] = "docker exec devshop_server '$command'";
+        $env .= " -e UPGRADE_FROM_VERSION={$version}";
+        $env .= " -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version}";
+        $env .= " -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target";
+        $env .= " -e AEGIR_VERSION={$version}";
+        $env .= " -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make";
+        $env .= " -e PROVISION_VERSION={$provision_version}";
+
+        $cmd[]= " docker-compose exec -T $env devshop $command";
       }
       else {
-        $cmd[] = "docker-compose up -d";
 
-        # Run final playbook to install devshop.
-        $cmd[]= " docker-compose exec devshop ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"
-";
+        $cmd[] = "docker-compose exec devshop devshop status";
 
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
@@ -431,7 +439,6 @@ class RoboFile extends \Robo\Tasks {
       }
 
       if (!empty($cmd)) {
-          // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
         foreach ($cmd as $command) {
           if (!$this->_exec($command)->wasSuccessful()) {
             throw new RuntimeException("Command failed: $command");
