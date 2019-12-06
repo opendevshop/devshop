@@ -1,20 +1,23 @@
+#
+# docker-compose-tests.yml
+#
+# Only used in CI.  See https://github.com/opendevshop/devshop/actions
+
 version: '2'
-
-# This compose file is just an example. Create your own to launch your own Aegir cluster
-
 services:
-
   devshop:
     image: devshop/server:local
     ports:
       - 80:80
     hostname: devshop.local.computer
     environment:
+      # Change to use a different database host.
+      DATABASE_HOST: localhost
       MYSQL_ROOT_PASSWORD: strongpassword
       AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
       AEGIR_PROFILE: devmaster
       AEGIR_VERSION: 1.x
-      TRAVIS: 1
+      PROVISION_VERSION: 7.x-3.x
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
       XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
       PHP_IDE_CONFIG: "serverName=devshop.local.computer"
@@ -23,12 +26,13 @@ services:
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
 
-      # Make sure devshop CLI is in the PATH.
-      PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin"
+      # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
+      ANSIBLE_VERBOSITY: 0
+
+      # Add additional files you would like to output in the container logs here, separated by a space.
+      DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
 
     privileged: true
     volumes:
-      - ./aegir-home:/var/aegir:z
-      - ./:/usr/share/devshop:z
-      - ./provision:/usr/share/drush/commands/provision:z
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/mysql

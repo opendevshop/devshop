@@ -450,9 +450,14 @@ class RoboFile extends \Robo\Tasks {
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
-          if (!$this->_exec($command)->wasSuccessful()) {
-            throw new RuntimeException("Command failed: $command");
+          $process = new \Symfony\Component\Process\Process($command);
+          if ($opts['test'] || $opts['test-upgrade']) {
+            $process->setEnv([
+              'COMPOSE_FILE' => 'docker-compose-tests.yml'
+            ]);
           }
+          $process->setTimeout(NULL);
+          $process->mustRun();
         }
         return;
       }
@@ -490,6 +495,7 @@ class RoboFile extends \Robo\Tasks {
         ->publish(80,80)
         ->detached()
         ->privileged()
+        ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
         ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
         ->env('TERM', 'xterm')
         ->env('TRAVIS', TRUE)
