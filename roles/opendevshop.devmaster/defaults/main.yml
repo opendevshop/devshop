@@ -32,8 +32,6 @@ mysql_root_password_update: false
 aegir_db_host: localhost
 aegir_client_name: admin
 
-supervisor_running: true
-
 drush_dl_method: wget
 
 devshop_drush_packages:
