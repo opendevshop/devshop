@@ -7,6 +7,9 @@
     server_hostname: "devshop.local.computer"
     server_hostname_ignore_errors: true
 
+    # Should match MYSQL_ROOT_PASSWORD in docker-compose.yml files
+    mysql_root_password: strongpassword
+
     # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
     php_version: "7.2"
     php_default_version_debian: "{{ php_version }}"
