@@ -50,6 +50,7 @@
   when:
     - devmaster_site_uri == ""
   tags: [install-devmaster]
+  notify: restart supervisor
 
 - name: Devmaster Upgrade Command
   debug:
@@ -62,3 +63,9 @@
     - devmaster_site_uri != ""
     - devmaster_skip_upgrade == false
   tags: [install-devmaster]
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
