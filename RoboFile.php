@@ -278,11 +278,14 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Hostname should match server_hostname in playbook.server.yml
-    $this->taskDockerBuild()
+    if (!$this->taskDockerBuild()
       ->tag("devshop/server:local")
       ->option('--add-host', "{$hostname}:127.0.0.1")
       ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
-      ->run();
+      ->run()
+      ->wasSuccessful()) {
+      throw new RuntimeException('Docker Build Failed.');
+    }
   }
 
   /**
