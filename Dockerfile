@@ -35,7 +35,7 @@ RUN ansible --version
 COPY ./ /usr/share/devshop
 
 # Copy docker shell scripts to /usr/local/bin
-COPY ./docker/bin/* /usr/local/bin
+COPY ./docker/bin/* /usr/local/bin/
 
 RUN ls -la /usr/local/bin
 RUN echo $PATH
