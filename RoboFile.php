@@ -407,6 +407,8 @@ class RoboFile extends \Robo\Tasks {
 
       // Launch all containers, detached
       $cmd[] = "docker-compose up -d";
+      $cmd[] = "sleep 1";
+      $cmd[] = "docker ps";
 
       # Run final playbook to install devshop.
       $cmd[]= " docker-compose exec -T devshop $this->devshopInstall";
