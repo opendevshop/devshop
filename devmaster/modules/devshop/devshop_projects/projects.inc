@@ -412,6 +412,9 @@ function devshop_project_load($node) {
 
     // Only add to project if not deleted
     if ($environment->site_status != HOSTING_SITE_DELETED) {
+      // @TODO: Finish up the classes!
+      // $environments[$environment->name] = new \DevShop\Environment\Environment($environment);
+
       $environments[$environment->name] = $environment;
     }
   }
