@@ -229,8 +229,7 @@ class RoboFile extends \Robo\Tasks {
 
       $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if (!$result->wasSuccessful()) {
-        $this->say("Drush make failed with the exit code " . $result->getExitCode());
-        return FALSE;
+        throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
       }
     }
 
@@ -264,8 +263,6 @@ class RoboFile extends \Robo\Tasks {
 //        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
 //      }
     }
-
-    return TRUE;
   }
 
   /**
@@ -389,12 +386,12 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Build the container if desired.
-    if ($opts['build'] && !$this->prepareContainers($opts['user-uid'])) {
-      throw new RuntimeException("Container Preparation failed.");
+    if ($opts['build']) {
+      $this->prepareContainers($opts['user-uid']);
     }
 
-    if (!file_exists('aegir-home') && !$this->prepareSourcecode($opts)) {
-      throw new RuntimeException("Source Code Preparation failed.");
+    if (!file_exists('aegir-home')){
+      $this->prepareSourcecode($opts);
     }
 
     if ($opts['mode'] == 'docker-compose') {
