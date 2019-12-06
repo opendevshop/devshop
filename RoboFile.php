@@ -423,11 +423,13 @@ class RoboFile extends \Robo\Tasks {
         $root_target = '/var/aegir/devmaster-' . $opts['devshop-version'];
 
         // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
+        $dev_makefile = $opts['no-dev']? '': '-dev';
+
         $env .= " -e UPGRADE_FROM_VERSION={$version}";
         $env .= " -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version}";
         $env .= " -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target";
         $env .= " -e AEGIR_VERSION={$version}";
-        $env .= " -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make";
+        $env .= " -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster{$dev_makefile}.make";
         $env .= " -e PROVISION_VERSION={$provision_version}";
 
         $cmd[]= " docker-compose exec -T $env devshop $command";
