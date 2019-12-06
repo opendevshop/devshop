@@ -697,7 +697,7 @@ class RoboFile extends \Robo\Tasks {
    * Stream watchdog logs from drupal
    */
   public function watchdog() {
-    $this->_exec('docker-compose exec -T devshop drush @hostmaster wd-show --tail --extended');
+    $this->_exec("docker-compose exec --user $this->user -T devshop drush @hostmaster wd-show --tail --extended");
   }
 
   /**
@@ -745,8 +745,8 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run all devshop tests on the containers.
    */
-  public function test() {
-    $process = new \Symfony\Component\Process\Process("docker-compose exec devshop /usr/share/devshop/tests/devshop-tests.sh");
+  public function test($user = 'aegir') {
+    $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh");
     $process->setTty(TRUE);
     $process->run();
   }
@@ -754,8 +754,8 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Get a one-time login link to Devamster.
    */
-  public function login() {
-    $this->_exec('docker-compose exec -T devshop drush @hostmaster uli');
+  public function login($user = 'aegir') {
+    $this->_exec('docker-compose exec --user $user -T devshop drush @hostmaster uli');
   }
 
   /**
