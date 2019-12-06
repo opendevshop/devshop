@@ -20,7 +20,6 @@ services:
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
       XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
       PHP_IDE_CONFIG: "serverName=devshop.local.computer"
-      GITHUB_TOKEN: "${GITHUB_TOKEN}"
 
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
@@ -37,6 +36,9 @@ services:
       # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
       ANSIBLE_VERBOSITY: 0
 
+      # Add additional files you would like to output in the container logs here, separated by a space.
+      DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+
     privileged: true
     volumes:
       - ./aegir-home:/var/aegir:delegated
@@ -47,6 +49,9 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - $HOME/.ssh:/var/aegir/.ssh
+      # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
+      # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
+
     extra_hosts:
       - "remote.devshop.local.computer:10.10.10.11"
 
