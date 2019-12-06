@@ -287,6 +287,9 @@ class RoboFile extends \Robo\Tasks {
       case OutputInterface::VERBOSITY_DEBUG:
         $ansible_verbosity = 3;
         break;
+      default:
+        $ansible_verbosity = 0;
+        break;
     }
 
     // Hostname should match server_hostname in playbook.server.yml
