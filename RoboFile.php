@@ -292,7 +292,8 @@ class RoboFile extends \Robo\Tasks {
         break;
     }
 
-    return $this->taskDockerBuild()
+    // Hostname should match server_hostname in playbook.server.yml
+    if (!$this->taskDockerBuild()
       ->tag("devshop/server:local")
 
       // Hostname should match server_hostname in playbook.server.yml
@@ -300,7 +301,9 @@ class RoboFile extends \Robo\Tasks {
       ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
       ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
       ->run()
-      ->wasSuccessful();
+      ->wasSuccessful()) {
+      throw new RuntimeException('Docker Build Failed.');
+    }
   }
 
   /**
