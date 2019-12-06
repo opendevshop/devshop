@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "docker-compose up -d";
 
       # Run final playbook to install devshop.
-      $cmd[]= " docker-compose exec devshop $this->devshopInstall";
+      $cmd[]= " docker-compose exec -T devshop $this->devshopInstall";
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
