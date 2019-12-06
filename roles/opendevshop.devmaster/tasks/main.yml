@@ -134,6 +134,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_make_command }}"
+  args:
     creates: "{{ devshop_devmaster_path }}/index.php"
 
 - name: "Install DevShop Web Interface"
