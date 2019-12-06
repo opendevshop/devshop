@@ -13,7 +13,7 @@ echo "              Docker Entrypoint                   "
 echo "__________________________________________________"
 
 log() {
-  echo "DevShop | $@";
+  echo "DevShop | entrypoint | $@";
 }
 
 log "Running: $@"
