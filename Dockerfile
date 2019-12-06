@@ -14,15 +14,20 @@ ENV pip_packages "ansible"
 
 # Use Python3
 RUN apt-get update \
+    && apt-get remove -y \
+       python-setuptools \
+       python-pip \
     && apt-get install -y --no-install-recommends \
        python3-setuptools \
-       python3-pip \
-    && rm -Rf /var/lib/apt/lists/* \
-    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
-    && apt-get clean
+       python3-pip
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 
 # (re) Install Ansible via Pip(3).
 RUN pip install $pip_packages
+
+RUN ansible --version
 
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
