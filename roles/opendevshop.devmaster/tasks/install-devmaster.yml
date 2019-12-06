@@ -38,6 +38,10 @@
     msg: "{{ devmaster_install_command }}"
   tags: [install-devmaster]
 
+- name: Wait for MySQL Server to be ready.
+  command: mysql-wait
+  tags: [install-devmaster]
+
 - name: Install Devmaster
   become: true
   become_user: "{{ aegir_user_name }}"

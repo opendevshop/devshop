@@ -10,6 +10,8 @@ services:
       - 80:80
     hostname: devshop.local.computer
     environment:
+      # Change to use a different database host.
+      DATABASE_HOST: localhost
       MYSQL_ROOT_PASSWORD: strongpassword
       AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
       AEGIR_PROFILE: devmaster
@@ -38,9 +40,10 @@ services:
     privileged: true
     volumes:
       - ./aegir-home:/var/aegir:delegated
-      - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster:delegated
+      - ./devmaster:/var/aegir/devmaster  #-1.x/profiles/devmaster:delegated
       - ./:/usr/share/devshop:delegated
       - ./docker/bin/entrypoint:/usr/local/bin/entrypoint
+      - ./docker/bin/mysql-wait:/usr/local/bin/mysql-wait
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
