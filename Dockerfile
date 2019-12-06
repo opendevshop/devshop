@@ -10,6 +10,20 @@ ENV PATH="/usr/share/devshop/bin:$PATH"
 ARG DEVSHOP_USER_UID=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
 
+ENV pip_packages "ansible"
+
+# Use Python3
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       python3-setuptools \
+       python3-pip \
+    && rm -Rf /var/lib/apt/lists/* \
+    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+    && apt-get clean
+
+# (re) Install Ansible via Pip(3).
+RUN pip install $pip_packages
+
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
 
