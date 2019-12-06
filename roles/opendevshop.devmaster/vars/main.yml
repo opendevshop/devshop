@@ -4,7 +4,7 @@
 supervisor_programs:
   - name: 'hosting-queue-runner'
     # The reason we source /etc/profile here is to ensure the environment in supervisor matches the environment when using a shell instance.
-    command: "/bin/bash -c 'source /etc/profile && {{ drush_bin_path }} cc drush && {{ hosting_queue_runner_bin_path }}'"
+    command: "/bin/bash -c 'source /etc/profile && {{ hosting_queue_runner_bin_path }}'"
     state: present
 
     # See https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf for options
