@@ -14,10 +14,17 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Cache composer cache directory
+      uses: actions/cache@v1
+      with:
+        path: .gh-actions-composer-cache
+        key: 'composer-cache'
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
     - name: Build the DevShop Server Docker image
-      run: docker build . --tag devshop/server:$GITHUB_SHA --add-host devshop.local.computer:127.0.0.1
+      run: bin/robo prepare:containers
 
     - name: Run DevShop Server and tests
-      run: |
-        docker run --name devshop --hostname devshop.local.computer --detach --env GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA
-        docker exec devshop /usr/share/devshop/tests/devshop-tests.sh
+      run: bin/robo up --test
