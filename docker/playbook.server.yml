@@ -33,3 +33,9 @@
   pre_tasks:
     - name: Set default python to python3
       shell: update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=3600
+
+    - name: Ensure python3-setuptools is installed.
+      apt: "name=python3-setuptools state=present"
