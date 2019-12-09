@@ -440,8 +440,8 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
 
-        $cmd[] = "docker-compose exec devshop devshop status";
-        $cmd[] = "docker-compose exec devshop devshop login";
+        $cmd[] = "docker-compose exec -T devshop devshop status";
+        $cmd[] = "docker-compose exec -T devshop devshop login";
 
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
@@ -456,6 +456,7 @@ class RoboFile extends \Robo\Tasks {
               'COMPOSE_FILE' => 'docker-compose-tests.yml'
             ]);
           }
+          $process->setTty(true);
           $process->setTimeout(NULL);
           $process->mustRun();
         }
