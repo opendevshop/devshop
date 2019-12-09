@@ -46,6 +46,10 @@ class RoboFile extends \Robo\Tasks {
   // Defines the URI we will use for the devmaster site.
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
+  // DevShop application user name.
+  protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
+  protected $devshopUsername = "aegir";
+
   use \Robo\Common\IO;
 
   /**
@@ -311,8 +315,6 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
-
   /**
    * Launch devshop in a variety of ways. Useful for local development and CI
    * testing.
@@ -373,6 +375,9 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE
   ]) {
 
+    // Tell Provision power process to print output directly.
+    putenv('PROVISION_PROCESS_OUTPUT=direct');
+
     // Check for tools
     $this->prepareHost();
 
@@ -419,13 +424,14 @@ class RoboFile extends \Robo\Tasks {
       # Run final playbook to install devshop.
       $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
 
+      // Test commands must be run as application user.
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd[]= "docker-compose exec -T devshop $command";
+        $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
       elseif ($opts['test-upgrade']) {
         $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
-        $cmd[]= "docker-compose exec -T devshop $command";
+        $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
       else {
 
