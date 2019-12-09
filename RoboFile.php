@@ -121,6 +121,7 @@ class RoboFile extends \Robo\Tasks {
    * Clone all needed source code and build devmaster from the makefile.
    *
    * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option devshop-version The directory to put the
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
@@ -365,7 +366,8 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
-    'build' => FALSE
+    'build' => FALSE,
+    'skip-source-prep' => FALSE
   ]) {
 
     // Check for tools
@@ -396,14 +398,14 @@ class RoboFile extends \Robo\Tasks {
       $this->prepareContainers($opts['user-uid']);
     }
 
-    if (!file_exists('aegir-home')){
+    if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
       $this->prepareSourcecode($opts);
     }
 
     if ($opts['mode'] == 'docker-compose') {
-      $env = "-e TERM=xterm";
-      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
-      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
+//      $env = "-e TERM=xterm";
+//      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
+//      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Launch all containers, detached
       $cmd[] = "docker-compose up -d";
@@ -416,27 +418,11 @@ class RoboFile extends \Robo\Tasks {
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd[]= "docker-compose exec -T $env devshop $command";
+        $cmd[]= "docker-compose exec -T devshop $command";
       }
       elseif ($opts['test-upgrade']) {
-        $version = self::UPGRADE_FROM_VERSION;
-        $provision_version = self::UPGRADE_FROM_PROVISION_VERSION;
         $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
-
-        // @TODO: Have this detect the branch and use that for the version.
-        $root_target = '/var/aegir/devmaster-' . $opts['devshop-version'];
-
-        // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-        $dev_makefile = $opts['no-dev']? '': '-dev';
-
-        $env .= " -e UPGRADE_FROM_VERSION={$version}";
-        $env .= " -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version}";
-        $env .= " -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target";
-        $env .= " -e AEGIR_VERSION={$version}";
-        $env .= " -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster{$dev_makefile}.make";
-        $env .= " -e PROVISION_VERSION={$provision_version}";
-
-        $cmd[]= "docker-compose exec -T $env devshop $command";
+        $cmd[]= "docker-compose exec -T devshop $command";
       }
       else {
 

@@ -11,26 +11,19 @@ services:
       - 80:80
     hostname: devshop.local.computer
     environment:
-      # Change to use a different database host.
-      DATABASE_HOST: localhost
-      MYSQL_ROOT_PASSWORD: strongpassword
-      AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
-      AEGIR_PROFILE: devmaster
-      AEGIR_VERSION: 1.x
-      PROVISION_VERSION: 7.x-3.x
-      AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
-      XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
-      PHP_IDE_CONFIG: "serverName=devshop.local.computer"
-      GITHUB_TOKEN: "${GITHUB_TOKEN}"
 
-      # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
-      HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
+      # When using the "devshop-test-upgrade.sh" script, installs this version first.
+      UPGRADE_FROM_VERSION: "1.0.0-rc4-testing"
+      UPGRADE_FROM_PROVISION_VERSION: "7.x-3.10"
 
       # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
       ANSIBLE_VERBOSITY: 0
 
       # Add additional files you would like to output in the container logs here, separated by a space.
       DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+
+      # Reads GITHUB TOKEN from the calling environment.
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
 
     privileged: true
     volumes:
