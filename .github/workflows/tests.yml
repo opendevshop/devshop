@@ -38,6 +38,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
 
+    - uses: actions/checkout@v1
     - name: Get Composer Cache Directory
       id: composer-cache
       run: |
