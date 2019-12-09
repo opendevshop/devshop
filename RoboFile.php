@@ -46,6 +46,8 @@ class RoboFile extends \Robo\Tasks {
   // Defines the URI we will use for the devmaster site.
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
+  use \Robo\Common\IO;
+
   /**
    * @var The path to devshop root. Used for upgrades.
    */
@@ -59,6 +61,7 @@ class RoboFile extends \Robo\Tasks {
       $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
     }
   }
+
 //
 //  /**
 //   * Launch devshop after running prep:host and prep:source. Use --build to
@@ -436,7 +439,7 @@ class RoboFile extends \Robo\Tasks {
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
-          $process = new \Symfony\Component\Process\Process($command);
+          $process = new \ProvisionOps\Tools\PowerProcess($command, $this->io());
           if ($opts['test'] || $opts['test-upgrade']) {
             $process->setEnv([
               'COMPOSE_FILE' => 'docker-compose-tests.yml'
