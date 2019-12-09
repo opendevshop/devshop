@@ -34,6 +34,9 @@ jobs:
       run: molecule lint
 
   build:
+    name: Build DevShop
+    runs-on: ubuntu-18.04
+    steps:
 
     - name: Get Composer Cache Directory
       id: composer-cache
