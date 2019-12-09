@@ -131,6 +131,12 @@
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
 
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
   tags: [install-devmaster]
