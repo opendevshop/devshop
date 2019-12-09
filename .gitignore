@@ -20,6 +20,7 @@ devmaster_id_rsa.pub
 bin/*
 ~bin/devshop
 !bin/hosting-queue-runner
+!bin/mysql-wait
 
 # Symfony code
 vendor
