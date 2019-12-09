@@ -1,0 +1,40 @@
+name: DevShop Tests
+
+on: [push]
+
+jobs:
+  molecule:
+    name: Ansible Molecule Lint
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+
+    # @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
+    #      - uses: actions/cache@v1
+    #        id: cache
+    #        with:
+    #          path: .cache/pip
+    #          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
+    #          restore-keys: |
+    #                ${{ runner.os }}-test
+
+    - name: Install Ansible Molecule
+      if: steps.cache.outputs.cache-hit != 'true'
+      working-directory: ./roles/opendevshop.devmaster/molecule
+      run: |
+        pwd
+        ls -la
+        python -m pip install --upgrade pip
+        pip install -r molecule-requirements.txt
+
+    - name: Run `molecule lint`
+      working-directory: ./roles/opendevshop.devmaster
+      run: molecule lint
+
+    - name: Build the DevShop Server Docker image
+      run: bin/robo prepare:containers
+
+    - name: Run DevShop Server and tests
+      run: bin/robo up --test
