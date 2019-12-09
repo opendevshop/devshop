@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d159bee842038da45c3c409144e82b09",
+    "content-hash": "3a4e26b1abc498b84020864ba2d84f51",
     "packages": [
         {
             "name": "asm/php-ansible",
@@ -976,6 +976,42 @@
                 "npm"
             ],
             "time": "2018-04-16T16:03:09+00:00"
+        },
+        {
+            "name": "provision-ops/power-process",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/provision-ops/power-process.git",
+                "reference": "5fba7c3f6dcda1e3410882148a5b6610a00bbde2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/5fba7c3f6dcda1e3410882148a5b6610a00bbde2",
+                "reference": "5fba7c3f6dcda1e3410882148a5b6610a00bbde2",
+                "shasum": ""
+            },
+            "require": {
+                "consolidation/robo": "^2.0@alpha"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ProvisionOps\\Tools\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                }
+            ],
+            "description": "A more powerful Process component.",
+            "time": "2019-12-09T20:48:13+00:00"
         },
         {
             "name": "psr/container",
