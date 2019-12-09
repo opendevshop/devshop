@@ -412,11 +412,11 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
 
       # Run final playbook to install devshop.
-      $cmd[]= " docker-compose exec -T devshop $this->devshopInstall";
+      $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
 
       if ($opts['test']) {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd[]= " docker-compose exec -T $env devshop $command";
+        $cmd[]= "docker-compose exec -T $env devshop $command";
       }
       elseif ($opts['test-upgrade']) {
         $version = self::UPGRADE_FROM_VERSION;
@@ -436,7 +436,7 @@ class RoboFile extends \Robo\Tasks {
         $env .= " -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster{$dev_makefile}.make";
         $env .= " -e PROVISION_VERSION={$provision_version}";
 
-        $cmd[]= " docker-compose exec -T $env devshop $command";
+        $cmd[]= "docker-compose exec -T $env devshop $command";
       }
       else {
 
