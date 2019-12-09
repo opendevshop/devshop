@@ -14,9 +14,15 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Build the DevShop Server Docker image
-      run: docker build . --tag devshop/server:$GITHUB_SHA --add-host devshop.local.computer:127.0.0.1
+    - name: Build the Docker Image
+      run: bin/robo prepare:containers
 
-    - name: Run DevShop Server and tests
-      if: false
-      run: docker run -e GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA devshop-tests.sh
+    - name: Test the Docker Image
+      run: bin/robo up --skip-source-prep --test --disable-xdebug -n
+
+#    - name: Build the DevShop Server Docker image
+#      run: docker build . --tag devshop/server:$GITHUB_SHA --add-host devshop.local.computer:127.0.0.1
+#
+#    - name: Run DevShop Server and tests
+#      if: false
+#      run: docker run -e GITHUB_TOKEN=$GITHUB_TOKEN devshop/server:$GITHUB_SHA devshop-tests.sh
