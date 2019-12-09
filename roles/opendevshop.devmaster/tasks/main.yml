@@ -32,19 +32,19 @@
 - name: Detect currently installed version of DevShop.
   shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
   register: __devshop_version_installed
-  ignore_errors: True
+  ignore_errors: true
 
 - name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
   shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
   register: __devshop_is_version_ancestor
-  ignore_errors: True
+  ignore_errors: true
   when:
     - __devshop_version_installed.failed == False
 
 - name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
   set_fact:
     devshop_cli_update: False
-    devmaster_skip_upgrade: True
+    devmaster_skip_upgrade: true
   when:
     # Only run when devshop is already installed and the ancestor check failed.
     - __devshop_version_installed.failed == False
@@ -71,7 +71,7 @@
     version: "{{ devshop_cli_version }}"
     update: "{{ devshop_cli_update }}"
     dest: "{{ devshop_cli_path }}"
-    force: True
+    force: true
   when: devshop_cli_update
 
 - name: Install DevShop CLI Dependencies

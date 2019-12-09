@@ -74,4 +74,3 @@
   debug:
   tags: [install-devmaster]
   notify: restart supervisor
-
