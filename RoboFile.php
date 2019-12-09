@@ -456,7 +456,8 @@ class RoboFile extends \Robo\Tasks {
               'COMPOSE_FILE' => 'docker-compose-tests.yml'
             ]);
           }
-          $process->setTty(true);
+          $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
+          $process->setTty($isTty);
           $process->setTimeout(NULL);
           $process->mustRun();
         }
