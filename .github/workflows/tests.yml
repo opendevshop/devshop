@@ -1,10 +1,10 @@
-name: DevShop Tests
+name: Tests
 
 on: [push]
 
 jobs:
   lint:
-    name: Ansible Molecule Lint
+    name: Ansible Lint
     runs-on: ubuntu-18.04
 
     steps:
