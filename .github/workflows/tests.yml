@@ -57,5 +57,8 @@ jobs:
     - name: Create DevShop Server Image
       run: bin/robo prepare:containers
 
-    - name: Run DevShop Server and tests
+    - name: Run DevShop Server Tests
       run: bin/robo up --test --skip-source-prep
+
+    - name: Run DevShop Server Upgrade Tests
+      run: bin/robo up --test-upgrade --skip-source-prep
