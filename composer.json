@@ -11,7 +11,6 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "symfony/process": "~3.0",
         "consolidation/robo": "^2.0@alpha"
     },
     "autoload": {
