@@ -3,7 +3,7 @@ name: DevShop Tests
 on: [push]
 
 jobs:
-  molecule:
+  lint:
     name: Ansible Molecule Lint
     runs-on: ubuntu-18.04
 
@@ -32,6 +32,23 @@ jobs:
     - name: Run `molecule lint`
       working-directory: ./roles/opendevshop.devmaster
       run: molecule lint
+
+  build:
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Build the DevShop Server Docker image
       run: bin/robo prepare:containers

@@ -2,9 +2,6 @@ name: Code Processes
 
 on: [push]
 
-env:
-  COMPOSER_HOME: .gh-actions-composer-cache
-
 jobs:
   composer-install:
     name: Composer Install
@@ -13,16 +10,19 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Cache composer cache directory
-      uses: actions/cache@v1
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
       with:
-        path: .gh-actions-composer-cache
-        key: 'composer-cache'
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Install dependencies
+    - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
   monorepo-split:
@@ -40,11 +40,17 @@ jobs:
           name: devshopbot
           email: jon@thinkdrop.net
 
-      - name: Cache composer cache directory
-        uses: actions/cache@v1
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
         with:
-          path: .gh-actions-composer-cache
-          key: 'composer-cache'
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Cache git split database file.
         uses: actions/cache@v1
@@ -52,7 +58,7 @@ jobs:
           path: $RUNNER_WORKSPACE/devshop/.git/splitsh.db
           key: 'splitsh-cache'
 
-      - name: Install dependencies
+      - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Create a branch for the monorepo-builder
