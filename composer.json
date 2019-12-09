@@ -11,7 +11,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "consolidation/robo": "^2.0@alpha"
+        "consolidation/robo": "^2.0@alpha",
+        "symfony/process": "^4"
     },
     "autoload": {
         "psr-4": {
@@ -21,7 +22,7 @@
     "config": {
         "bin-dir": "bin",
         "platform": {
-            "php":"7.0.8"
+            "php": "7.1.3"
         }
     }
 }
