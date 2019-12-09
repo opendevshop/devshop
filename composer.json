@@ -11,12 +11,6 @@
     },
     "require-dev": {
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jonpugh/MonorepoBuilder"
-        }
-    ],
     "authors": [
         {
             "name": "Jon Pugh",
