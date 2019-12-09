@@ -119,6 +119,7 @@ class RoboFile extends \Robo\Tasks {
    * Clone all needed source code and build devmaster from the makefile.
    *
    * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option devshop-version The directory to put the
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
@@ -341,7 +342,8 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
-    'build' => FALSE
+    'build' => FALSE,
+    'skip-source-prep' => FALSE
   ]) {
 
     // Check for tools
@@ -372,7 +374,7 @@ class RoboFile extends \Robo\Tasks {
       $this->prepareContainers($opts['user-uid']);
     }
 
-    if (!file_exists('aegir-home')) {
+    if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
         if ($this->prepareSourcecode($opts) == FALSE) {
           $this->say('Prepare source code failed.');
           exit(1);
