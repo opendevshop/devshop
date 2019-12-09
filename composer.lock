@@ -979,20 +979,21 @@
         },
         {
             "name": "provision-ops/power-process",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/provision-ops/power-process.git",
-                "reference": "5fba7c3f6dcda1e3410882148a5b6610a00bbde2"
+                "reference": "233a28a8bdf346bdb99c8f7bb97401a8ee6ce173"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/5fba7c3f6dcda1e3410882148a5b6610a00bbde2",
-                "reference": "5fba7c3f6dcda1e3410882148a5b6610a00bbde2",
+                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/233a28a8bdf346bdb99c8f7bb97401a8ee6ce173",
+                "reference": "233a28a8bdf346bdb99c8f7bb97401a8ee6ce173",
                 "shasum": ""
             },
             "require": {
-                "consolidation/robo": "^2.0@alpha"
+                "consolidation/robo": "^2.0@alpha",
+                "symfony/process": "^4"
             },
             "type": "library",
             "autoload": {
@@ -1011,7 +1012,7 @@
                 }
             ],
             "description": "A more powerful Process component.",
-            "time": "2019-12-09T20:48:13+00:00"
+            "time": "2019-12-09T21:33:37+00:00"
         },
         {
             "name": "psr/container",
