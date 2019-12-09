@@ -28,6 +28,8 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Test Power Process
-      run: ./run composer install --prefer-dist --no-progress --no-suggest
+      run: |
+        ./run composer install --prefer-dist --no-progress --no-suggest
+        ./demo.php
 
 
