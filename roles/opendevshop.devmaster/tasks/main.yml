@@ -39,15 +39,15 @@
   register: __devshop_is_version_ancestor
   ignore_errors: true
   when:
-    - __devshop_version_installed.failed == False
+    - __devshop_version_installed.failed == false
 
 - name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
   set_fact:
-    devshop_cli_update: False
+    devshop_cli_update: false
     devmaster_skip_upgrade: true
   when:
     # Only run when devshop is already installed and the ancestor check failed.
-    - __devshop_version_installed.failed == False
+    - __devshop_version_installed.failed == false
     - __devshop_is_version_ancestor is defined
     - __devshop_is_version_ancestor.failed
 
@@ -56,12 +56,12 @@
     devshop_cli_upgrade_or_install: "Upgrade"
     devshop_version_installed: "{{ __devshop_version_installed.stdout }}"
   when:
-    - __devshop_version_installed.failed == False
+    - __devshop_version_installed.failed == false
 
 - name: "Setting Variables for new DevShop install (Version {{ devshop_version }})"
   set_fact:
     devshop_cli_upgrade_or_install: "Install"
-    devshop_version_installed: False
+    devshop_version_installed: false
   when:
     - __devshop_version_installed.failed
 
