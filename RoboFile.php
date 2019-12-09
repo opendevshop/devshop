@@ -439,7 +439,8 @@ class RoboFile extends \Robo\Tasks {
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
-          $process = new \ProvisionOps\Tools\PowerProcess($command, $this->io());
+          $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
+          $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
           if ($opts['test'] || $opts['test-upgrade']) {
             $process->setEnv([
               'COMPOSE_FILE' => 'docker-compose-tests.yml'
