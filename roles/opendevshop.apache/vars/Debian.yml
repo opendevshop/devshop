@@ -1,26 +1,7 @@
 ---
-# vars file for aegir.apache on Debian
+# Used to set the devshop sudo configuration file and "aegir server restart command".
 apache_control: /usr/sbin/apache2ctl
 apache_user: www-data
 
-php_packages:
-  - libpcre3-dev
-  - php
-  - php-apcu
-  - php-common
-  - php-cli
-  - php-curl
-  - php-dev
-  - php-fpm
-  - php-gd
-  - php-imap
-  - php-json
-  - php-mbstring
-  - php-mysqlnd
-  - php-opcache
-  - php-pear
-  - php-sqlite3
-  - php-xml
+php_extra_packages:
   - libapache2-mod-php
-
-php_mysql_package: php-mysql

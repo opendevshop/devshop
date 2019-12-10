@@ -1,15 +1,3 @@
 ---
 apache_control: /usr/sbin/apachectl
 apache_user: apache
-
-php_packages:
-  - php
-  - php-apcu
-  - php-mysqlnd
-  - php-cli
-  - php-gd
-  - php-opcache
-  - php-process
-  - php-pear
-  - php-xml
-  - php-mbstring
