@@ -9,8 +9,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Move code to /usr/share/devshop
+      run: cp -rf $PWD /usr/share/devshop
+
     - name: Run install.sh Script
-      run: sudo -H bash install.sh --playbook=playbook.testing.yml --hostname=devshop.local.computer
+      run: sudo -H bash /usr/share/devshop/install.sh --playbook=playbook.testing.yml --hostname=devshop.local.computer
 
     - name: Run tests/devshop-tests.sh Script
-      run:  sudo su aegir -c "bash tests/devshop-tests.sh"
+      run:  sudo su aegir -c "bash  /usr/share/devshop/tests/devshop-tests.sh"
