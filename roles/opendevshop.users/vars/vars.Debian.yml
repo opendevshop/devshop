@@ -3,3 +3,5 @@
 devshop_prerequisite_packages:
   - openssh-client
   - dirmngr
+  - curl
+  - wget
