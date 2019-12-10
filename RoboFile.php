@@ -404,7 +404,9 @@ class RoboFile extends \Robo\Tasks {
 
     // Build the container if desired.
     if ($opts['build']) {
-      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts['test'] || $opts['test_upgrade']? 'playbook.testing.yml': 'playbook.yml');
+      $playbook = ($opts['test'] || $opts['test_upgrade'])? 'playbook.testing.yml': 'playbook.yml';
+      $this->say("Preparing containers with playbook: $playbook");
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
     }
 
     if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
