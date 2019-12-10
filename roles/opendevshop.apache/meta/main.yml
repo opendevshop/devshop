@@ -35,4 +35,4 @@ galaxy_info:
 dependencies:
   - opendevshop.users
   - geerlingguy.apache
-  - geerlingguy.php
+  - geerlingguy.php-versions
