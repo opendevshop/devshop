@@ -484,7 +484,7 @@ function devshop_projects_update_7009 () {
  *  Add the "project_environment" unique index to the hosting_devshop_project_environment table.
  */
 function devshop_projects_update_7010() {
-  db_query("ALTER TABLE {hosting_devshop_project_environment} DROP INDEX project_environment;")
+  db_query("ALTER TABLE {hosting_devshop_project_environment} DROP INDEX project_environment");
   db_query("CREATE UNIQUE INDEX project_nid_name ON {hosting_devshop_project_environment}(project_nid, name)")
     ->execute();
 }
