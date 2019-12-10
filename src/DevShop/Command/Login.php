@@ -34,7 +34,7 @@ class Login extends Command
     $output->writeln("<comment>Getting a login URL...  </comment>");
 
     // If current user is not "aegir" try to switch.
-    if ($_SERVER['USER'] != 'aegir') {
+    if ($this->user != 'aegir') {
       $output->writeln('Not running as "aegir" user. Switching to aegir user...');
       $process = $this->getProcess('sudo su - aegir -c "drush @hostmaster uli"');
       $process->run();

@@ -38,6 +38,10 @@
     msg: "{{ devmaster_install_command }}"
   tags: [install-devmaster]
 
+- name: Wait for MySQL Server to be ready.
+  command: mysql-wait
+  tags: [install-devmaster]
+
 - name: Install Devmaster
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -56,5 +60,17 @@
   command: "{{ devmaster_upgrade_command }}"
   when:
     - devmaster_site_uri != ""
-    - devmaster_skip_upgrade != false
+    - devmaster_skip_upgrade == false
   tags: [install-devmaster]
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: restart supervisor
+  debug:
+  tags: [install-devmaster]
+  notify: restart supervisor

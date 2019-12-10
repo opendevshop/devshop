@@ -1,13 +1,31 @@
+#
+# docker-compose-tests.yml
+#
+# Only used in CI.  See https://github.com/opendevshop/devshop/actions
+
 version: '2'
 services:
-  devmaster:
+  devshop:
     image: devshop/server:local
     ports:
       - 80:80
     hostname: devshop.local.computer
     environment:
+
+      # When using the "devshop-test-upgrade.sh" script, installs this version first.
+      UPGRADE_FROM_VERSION: "1.0.0-rc4-testing"
+      UPGRADE_FROM_PROVISION_VERSION: "7.x-3.10"
+
+      # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
+      ANSIBLE_VERBOSITY: 0
+
+      # Add additional files you would like to output in the container logs here, separated by a space.
+      DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+
+      # Reads GITHUB TOKEN from the calling environment.
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
 
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/mysql

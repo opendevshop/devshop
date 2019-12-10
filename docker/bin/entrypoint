@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 echo "   ____              ____  _                      "
@@ -13,15 +13,17 @@ echo "              Docker Entrypoint                   "
 echo "__________________________________________________"
 
 log() {
-  echo "DevShop | $@";
+  echo "DevShop | entrypoint | $@";
 }
 
-# Run Ansible playbook one more time.
-#log "Run-time Ansible Config: $EXTRA_VARS"
+if [ -z ${DEVSHOP_ENTRYPOINT_LOG_FILES+} ]; then
+  log "Tailing logs: $DEVSHOP_ENTRYPOINT_LOG_FILES"
+  tail -f $DEVSHOP_ENTRYPOINT_LOG_FILES &
+else
+  log 'No files being output. $DEVSHOP_ENTRYPOINT_LOG_FILES variable is empty.'
+fi
 
-log "Running Ansible Playbook: docker/playbook.server.yml --tags install-devmaster"
-ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+sleep 3
 
-# Run the Docker CMD
-log "DevShop | Running Docker Command '$@' ..."
+log "Running: $@"
 exec "$@"

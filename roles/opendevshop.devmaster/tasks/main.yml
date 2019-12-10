@@ -32,22 +32,22 @@
 - name: Detect currently installed version of DevShop.
   shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
   register: __devshop_version_installed
-  ignore_errors: True
+  ignore_errors: true
 
 - name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
   shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
   register: __devshop_is_version_ancestor
-  ignore_errors: True
+  ignore_errors: true
   when:
-    - __devshop_version_installed.failed == False
+    - __devshop_version_installed.failed == false
 
 - name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
   set_fact:
-    devshop_cli_update: False
-    devmaster_skip_upgrade: True
+    devshop_cli_update: false
+    devmaster_skip_upgrade: true
   when:
     # Only run when devshop is already installed and the ancestor check failed.
-    - __devshop_version_installed.failed == False
+    - __devshop_version_installed.failed == false
     - __devshop_is_version_ancestor is defined
     - __devshop_is_version_ancestor.failed
 
@@ -56,12 +56,12 @@
     devshop_cli_upgrade_or_install: "Upgrade"
     devshop_version_installed: "{{ __devshop_version_installed.stdout }}"
   when:
-    - __devshop_version_installed.failed == False
+    - __devshop_version_installed.failed == false
 
 - name: "Setting Variables for new DevShop install (Version {{ devshop_version }})"
   set_fact:
     devshop_cli_upgrade_or_install: "Install"
-    devshop_version_installed: False
+    devshop_version_installed: false
   when:
     - __devshop_version_installed.failed
 
@@ -71,7 +71,7 @@
     version: "{{ devshop_cli_version }}"
     update: "{{ devshop_cli_update }}"
     dest: "{{ devshop_cli_path }}"
-    force: True
+    force: true
   when: devshop_cli_update
 
 - name: Install DevShop CLI Dependencies
@@ -123,6 +123,14 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
+- name: "Prepare DevShop Web Interface Source Code"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_make_command }}"
+  args:
+    creates: "{{ devshop_devmaster_path }}/index.php"
+
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
   become: true
@@ -145,24 +153,6 @@
     - {path: '.ssh', mode: '0700'}
     - {path: '.ssh/id_rsa', mode: '600'}
     - {path: '.ssh/id_rsa.pub', mode: '644'}
-
-- name: Set git user name and email
-  shell: "git config --global user.email aegir@{{ server_hostname }}"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
-- name: Set git user name and email
-  shell: "git config --global user.name DevShop"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
-- name: Set git user name and email
-  shell: "git config --global push.default simple"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
 
 # CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
 # @TODO: Investigate php.ini for CLI on all OS
