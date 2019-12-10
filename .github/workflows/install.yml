@@ -1,13 +1,13 @@
 name: Install
 on: [push]
 
-# @TODO: Reconfigure the install script test to use a bare container. The GitHub Workflow images have many things pre-installed:
-#  https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners#ubuntu-1604-lts
-when: false
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   install:
+    # @TODO: Reconfigure the install script test to use a bare container. The GitHub Workflow images have many things pre-installed:
+    #  https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners#ubuntu-1604-lts
+    if: false
     name: Shell Script
     runs-on: ubuntu-18.04
     steps:
