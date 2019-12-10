@@ -48,6 +48,7 @@ RUN ls -la /usr/local/bin
 RUN echo $PATH
 
 # Provision DevShop inside Docker.
+RUN echo "Running ansible playbook: $DEVSHOP_PLAYBOOK_PATH"
 RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
 RUN ansible-playbook $DEVSHOP_PLAYBOOK_PATH -e aegir_user_uid=$DEVSHOP_USER_UID -e aegir_user_gid=$DEVSHOP_USER_UID --skip-tags install-devmaster
 
