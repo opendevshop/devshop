@@ -73,4 +73,5 @@
 - name: restart supervisor
   debug:
   tags: [install-devmaster]
+  when: supervisor_started
   notify: restart supervisor
