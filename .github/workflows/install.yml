@@ -1,27 +1,16 @@
-name: Install Script
+name: Install
 on: [push]
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
-  build:
+  install:
+    name: Shell Script
     runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        # @see https://hub.docker.com/u/geerlingguy/
-        # Pattern must match available image name "geerlingguy/docker-*-ansible".
-        # ie. https://hub.docker.com/r/geerlingguy/docker-ubuntu1804-ansible
-        distro:
-          # - centos7
-          # - ubuntu1604
-          - ubuntu1804
-
     steps:
-    - name: Prepare Code
-      uses: actions/checkout@v1
-
-    - name: Composer Install
-      run: composer install --prefer-dist --no-progress --no-suggest
+    - uses: actions/checkout@v1
 
     - name: Run install.sh Script
-      run: |
-        bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-${{matrix.distro}}-ansible --test --disable-xdebug --no-interaction
+      run: bash install.sh --hostname=devshop.local.computer
+
+    - name: Run tests/devshop-tests.sh Script
+      run: bash tests/devshop-tests.sh --hostname=devshop.local.computer
