@@ -278,7 +278,7 @@ class RoboFile extends \Robo\Tasks {
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer') {
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'playbook.yml') {
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -309,6 +309,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('--add-host', "{$hostname}:127.0.0.1")
       ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
       ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
+      ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
       ->run()
       ->wasSuccessful()) {
       throw new RuntimeException('Docker Build Failed.');
@@ -403,7 +404,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Build the container if desired.
     if ($opts['build']) {
-      $this->prepareContainers($opts['user-uid']);
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts['test'] || $opts['test_upgrade']? 'playbook.testing.yml': 'playbook.yml');
     }
 
     if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
