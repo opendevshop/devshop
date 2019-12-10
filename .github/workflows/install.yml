@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Run install.sh Script
-      run: bash install.sh --hostname=devshop.local.computer
+      run: sudo -H bash install.sh --hostname=devshop.local.computer
 
     - name: Run tests/devshop-tests.sh Script
-      run: bash tests/devshop-tests.sh --hostname=devshop.local.computer
+      run:  sudo su aegir -c "bash tests/devshop-tests.sh"
