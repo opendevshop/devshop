@@ -6,7 +6,7 @@
         "symfony/process": "^4.3",
         "knplabs/github-api": "^1.4",
         "symfony/filesystem": "^4.3",
-        "cpliakas/git-wrapper": "1.*",
+        "cpliakas/git-wrapper": "2.*",
         "asm/php-ansible": "^2.0",
         "consolidation/robo": "^2",
         "mouf/nodejs-installer": "^1.0",
