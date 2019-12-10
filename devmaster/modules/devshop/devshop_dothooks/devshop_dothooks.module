@@ -110,7 +110,14 @@ HTML;
  * @param $hook
  * @param $task
  */
-function devshop_dothooks_run_hook($hook, $environment) {
+function devshop_dothooks_run_hook($hook, $site) {
+
+  if (empty($site->environment)) {
+    return;
+  }
+  else {
+    $environment = $site->environment;
+  }
 
   // Reload the alter hook in case there are new hooks.
   $project_node = devshop_projects_load_by_name($environment->project_name);

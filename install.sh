@@ -417,7 +417,6 @@ ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
 ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
 ANSIBLE_EXTRA_VARS+=("devshop_github_token: ${GITHUB_TOKEN}")
-ANSIBLE_EXTRA_VARS+=("supervisor_running: true")
 
 # Lookup special variable overrides.
 if [ -n "$MAKEFILE_PATH" ]; then

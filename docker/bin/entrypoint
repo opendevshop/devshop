@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -e
+
+echo "   ____              ____  _                      "
+echo "  |  _ \  _____   __/ ___|| |__   ___  _ __       "
+echo "  | | | |/ _ \ \ / /\___ \| '_ \ / _ \| '_ \      "
+echo "  | |_| |  __/\ V /  ___) | | | | (_) | |_) |     "
+echo "  |____/ \___| \_/  |____/|_| |_|\___/| .__/      "
+echo "           http://getdevshop.com      |_|         "
+echo "__________________________________________________"
+echo ""
+echo "              Docker Entrypoint                   "
+echo "__________________________________________________"
+
+log() {
+  echo "DevShop | entrypoint | $@";
+}
+
+if [ -z ${DEVSHOP_ENTRYPOINT_LOG_FILES+} ]; then
+  log "Tailing logs: $DEVSHOP_ENTRYPOINT_LOG_FILES"
+  tail -f $DEVSHOP_ENTRYPOINT_LOG_FILES &
+else
+  log 'No files being output. $DEVSHOP_ENTRYPOINT_LOG_FILES variable is empty.'
+fi
+
+sleep 3
+
+log "Running: $@"
+exec "$@"

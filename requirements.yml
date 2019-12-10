@@ -21,3 +21,6 @@
 
 - name: geerlingguy.supervisor
   version: 2.0.2
+
+- name: geerlingguy.php-versions
+  version: 4.0.2

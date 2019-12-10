@@ -1,0 +1,76 @@
+---
+
+- name: Get Devmaster root
+  shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  register: devmaster_site_root
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: true
+  tags: [install-devmaster]
+
+- name: Get Devmaster URI
+  shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  register: devmaster_site_uri
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: true
+  tags: [install-devmaster]
+
+- set_fact:
+    devmaster_site_root: "{{ devmaster_site_root.stdout }}"
+    devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
+  tags: [install-devmaster]
+
+- name: Devmaster Root
+  debug:
+    msg: "{{ devmaster_site_root }}"
+  tags: [install-devmaster]
+
+- name: Devmaster URI
+  debug:
+    msg: "{{ devmaster_site_uri }}"
+  tags: [install-devmaster]
+
+- name: Devmaster Install Command
+  debug:
+    msg: "{{ devmaster_install_command }}"
+  tags: [install-devmaster]
+
+- name: Wait for MySQL Server to be ready.
+  command: mysql-wait
+  tags: [install-devmaster]
+
+- name: Install Devmaster
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_install_command }}"
+  when:
+    - devmaster_site_uri == ""
+  tags: [install-devmaster]
+
+- name: Devmaster Upgrade Command
+  debug:
+    msg: "{{ devmaster_upgrade_command }}"
+  tags: [install-devmaster]
+
+- name: "Upgrade Devmaster to {{ devshop_version }}"
+  command: "{{ devmaster_upgrade_command }}"
+  when:
+    - devmaster_site_uri != ""
+    - devmaster_skip_upgrade == false
+  tags: [install-devmaster]
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: restart supervisor
+  debug:
+  tags: [install-devmaster]
+  notify: restart supervisor
