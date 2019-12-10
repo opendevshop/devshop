@@ -3,5 +3,25 @@
 apache_control: /usr/sbin/apache2ctl
 apache_user: www-data
 
+php_versions_available:
+  - "7.1"
+  - "7.2"
+  - "7.3"
+  -
 php_packages_extra:
-  - libapache2-mod-php
+  - libapache2-mod-php7.1
+  - libapache2-mod-php7.2
+  - libapache2-mod-php7.3
+
+# opendevshop.apache/tasks/main.yml disables all the mods, then enables these.
+apache_mods_enabled:
+  - "php{{ php_version }}.conf"
+  - "php{{ php_version }}.load"
+
+apache_mods_disabled:
+  - "php7.1.conf"
+  - "php7.1.load"
+  - "php7.2.conf"
+  - "php7.2.load"
+  - "php7.3.conf"
+  - "php7.3.load"

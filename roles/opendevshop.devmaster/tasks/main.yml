@@ -29,10 +29,6 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Set version of PHP to {{ php_version }} [variable 'php_version']
-  command: "update-alternatives --set php /usr/bin/php{{ php_version }}"
-  when: ansible_os_family == "Debian"
-
 - name: Detect currently installed version of DevShop.
   shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
   register: __devshop_version_installed
@@ -79,7 +75,7 @@
   when: devshop_cli_update
 
 - name: Install DevShop CLI Dependencies
-  command: "{{ php_executable }} {{ composer_path }} install"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   args:
     chdir: "{{ devshop_cli_path }}"
 
