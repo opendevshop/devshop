@@ -3,5 +3,5 @@
 apache_control: /usr/sbin/apache2ctl
 apache_user: www-data
 
-php_extra_packages:
+php_packages_extra:
   - libapache2-mod-php
