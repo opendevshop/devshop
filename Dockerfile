@@ -36,6 +36,9 @@ RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 # (re) Install Ansible via Pip(3).
 RUN pip install $pip_packages
 
+# Copy Ansible.cfg to /etc/ansible
+COPY ./ansible.cfg /etc/ansible/ansible.cfg
+
 RUN ansible --version
 
 # Copy DevShop Core to /usr/share/devshop
