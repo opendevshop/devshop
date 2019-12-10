@@ -9,7 +9,7 @@
 
     # The geerlingguy.mysql and opendevshop.devmaster roles both use this
     # variable. Make sure it is set to a secure string.
-    mysql_root_password: root
+    mysql_root_password: devshopdatabase
 
     # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
     php_version: "7.2"
