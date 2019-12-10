@@ -68,11 +68,6 @@ function devshop_github_client($public = FALSE) {
 
   $github_token = devshop_github_token();
 
-  // Check for missing token. Set $public to TRUE.
-  if (empty($github_token)) {
-    $public = variable_get('devshop_github_use_public_api_if_no_token', TRUE);
-  }
-
   // If not public...
   if (!$public) {
 
