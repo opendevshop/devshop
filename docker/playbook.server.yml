@@ -28,6 +28,9 @@
 
     ansible_python_interpreter: python3
 
+    # Supervisor will start when the container and systemd start.
+    supervisor_started: false
+
   roles:
     - opendevshop.users
     - opendevshop.apache
