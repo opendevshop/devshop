@@ -17,6 +17,5 @@
 
     # Since we are running tests as a process, we don't want tasks to run in the background.
     supervisor_started: false
-    supervisor_enabled: false
 
     ansible_python_interpreter: python3
