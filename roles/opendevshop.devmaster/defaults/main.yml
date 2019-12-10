@@ -18,7 +18,13 @@ devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_update: true
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+
+devshop_cli_composer_install_command: "install"
+
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
+
+composer_project_path: {{ devshop_cli_path }}
+composer_add_project_to_path: true
 
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 

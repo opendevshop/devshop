@@ -74,11 +74,15 @@
     force: true
   when: devshop_cli_update
 
-- name: Install DevShop CLI Dependencies
-  command: "{{ composer_path }} install"
+- name: Install DevShop Composer Dependencies
+  command: >
+    {{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}
   args:
     chdir: "{{ devshop_cli_path }}"
+    register: composer_install
+  changed_when: "'Nothing to install or update' not in composer_install.stdout"
 
+# @TODO: Just set the geerlingguy.composer variables to do this. We will have to keep a step here to delete the file for upgrades.
 - name: Add DevShop bin directory to Path
   copy:
     dest: /etc/profile.d/devshop-cli-path.sh
