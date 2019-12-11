@@ -71,7 +71,7 @@ function devshop_github_client($must_authenticate = FALSE) {
 
   // If caller requires authentication, throw exception if token is missing.
   if ($must_authenticate && empty($github_token)) {
-    throw new \Exception(t('There is no GitHub Token set.'));
+    throw new \Exception(t('There is no GitHub Token set, but is required for this action.'));
   }
 
   // If a token is found, authenticate.
