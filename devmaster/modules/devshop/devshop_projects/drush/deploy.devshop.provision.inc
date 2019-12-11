@@ -45,6 +45,8 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
     // Checkout the chosen ref
     $git_checkout_output = provision_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy: Checkout Code'));
     $git_checkout_output_lines = explode("\n", $git_checkout_output);
+
+    // @TODO: Get the correct git ref type.
     $git_ref_type = devshop_environment_get_git_ref_type(d()->platform->repo_path);
 
     drush_log("[Git $git_ref_type to Deploy] $git_ref", 'p_log');

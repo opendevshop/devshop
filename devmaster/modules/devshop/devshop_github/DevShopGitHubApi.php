@@ -188,7 +188,7 @@ class DevShopGitHubApi {
       return $deployment_object;
     }
     catch (\Exception $e) {
-      watchdog('devshop_github', "Error sending Deploymen Status to GitHub: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url | {$e->getTraceAsString()}");
+      watchdog('devshop_github', "Error sending Deployment Status to GitHub: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url | {$e->getTraceAsString()}");
       return false;
     }
   }

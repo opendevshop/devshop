@@ -9,6 +9,8 @@ services:
     ports:
       - 80:80
     hostname: devshop.local.computer
+    extra_hosts:
+      - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     environment:
       # Change to use a different database host.
       DATABASE_HOST: localhost
@@ -51,9 +53,6 @@ services:
       - $HOME/.ssh:/var/aegir/.ssh
       # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
       # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
-
-    extra_hosts:
-      - "remote.devshop.local.computer:10.10.10.11"
 
 # Database container is now optional: for local development just use the devshop/server container.
 #  database:

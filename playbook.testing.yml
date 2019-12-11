@@ -14,4 +14,11 @@
     - geerlingguy.composer
     - opendevshop.devmaster
   vars:
+
     php_version: "7.1"
+    php_default_version_debian: "{{ php_version }}"
+
+    # Since we are running tests as a process, we don't want tasks to run in the background.
+    supervisor_started: false
+
+    ansible_python_interpreter: python3

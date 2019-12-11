@@ -8,11 +8,11 @@
     server_hostname_ignore_errors: true
 
     # The geerlingguy.mysql and opendevshop.devmaster roles both use this
-    # variable. Make sure it is set to a secure string.
     mysql_root_password: root
 
     # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
-    php_version: "7.2"
+    php_version: "7.1"
+
     php_default_version_debian: "{{ php_version }}"
 
     # Needs to be set to false when developing so your code doesn't get updated inside the container on build.
@@ -28,11 +28,14 @@
 
     ansible_python_interpreter: python3
 
+    # Supervisor will start when the container and systemd start.
+    supervisor_started: false
+
   roles:
     - opendevshop.users
     - opendevshop.apache
-    - geerlingguy.php
     - geerlingguy.php-versions
+    - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster

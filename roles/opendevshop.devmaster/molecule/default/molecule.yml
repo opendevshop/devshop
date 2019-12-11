@@ -1,52 +1,8 @@
 ---
-# Big thanks to @geerlingguy for his unending commitment to this stuff.
-# Introduction to molecule: https://www.jeffgeerling.com/blog/2018/testing-your-ansible-roles-molecule
-# This was copied from geerlingguy.apache: https://github.com/geerlingguy/ansible-role-apache/blob/master/molecule/default/molecule.yml
-
-# The main "molecule" command to run is "molecule test". That runs this "scenario".
-scenario:
-  name: default
-  test_sequence:
-    - lint
-    # Comment this out to not destroy a running container when you run 'molecule test' again.
-    - destroy
-
-    # Comment this out to speed up local development.
-    - dependency
-    - syntax
-    - create
-    - converge
-    # Idempotence might take to long on travis right now... Let's skip it until we get this thing passing.
-    # - idempotence
-    - verify
-
-    # Comment this out leave the container in place.
-    - destroy
-
-# Configure the "dependency" action: ansible-galaxy install.
 dependency:
   name: galaxy
-
-  # You can skip the ansible-galaxy install by setting enabled: false
-  # enabled: false
-
-  # Set 'ansible-galaxy install' command line options
-  options:
-
-    # Turn off '--force' option so 'ansible-galaxy' doesn't re-download the files every time you run 'molecule'.
-    force: false
-
-    # Make development of dependencies easier by keeping version data.
-    keep-scm-meta: true
-
-    # Put roles right to this one. Reduce possible role locations.
-    roles-path: ../
-
-    # The 'ansible-galaxy' command considers the pre-existence of a role's folder an "error".
-    # That command and 'molecule' will exit with failure if this flag and '--force' is not set.
-    # This setup sets 'ignore-errors' to 'false' when run in Travis to make sure that automated tests will catch problems,
-    # but it defaults to 'true' so it runs quickly for local developers.
-    ignore-errors: ${GALAXY_IGNORE_ERRORS:-true}
+  # Uncomment to avoid long galaxy install.
+  enabled: false
 
 driver:
   name: docker
@@ -55,10 +11,9 @@ lint:
   options:
     config-file: molecule/default/yaml-lint.yml
 platforms:
-  - name: instance-${MOLECULE_DISTRO:-ubuntu1804}
-    image: geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu1804}-ansible
-    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
-    hostname: devshop.local.computer
+  - name: instance
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu1804}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
@@ -72,9 +27,28 @@ provisioner:
     v: true
   lint:
     name: ansible-lint
-    enabled: false
+    # @TODO: This has very unpredictable behavior. It seems to ignore .ansible-lint file.
+    enabled: False
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+scenario:
+  name: default
+  test_sequence:
+    - lint
+    - destroy
+    - dependency
+    - syntax
+    - create
+    - converge
+    # - idempotence
+    - verify
+    - destroy
+  converge_sequence:
+    - dependency
+    - create
+    - prepare
+    - converge
+
 verifier:
   name: testinfra
   lint:
