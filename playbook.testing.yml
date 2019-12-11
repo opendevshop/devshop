@@ -22,3 +22,4 @@
     supervisor_started: false
 
     ansible_python_interpreter: python3
+    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
