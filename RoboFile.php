@@ -61,8 +61,8 @@ class RoboFile extends \Robo\Tasks {
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
-    if (empty($this->git_ref) && !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
-      $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+    if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
+      $this->git_ref = $_SERVER['GITHUB_REF'];
     }
   }
 
@@ -278,7 +278,7 @@ class RoboFile extends \Robo\Tasks {
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer') {
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml') {
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -309,6 +309,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('--add-host', "{$hostname}:127.0.0.1")
       ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
       ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
+      ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
       ->run()
       ->wasSuccessful()) {
       throw new RuntimeException('Docker Build Failed.');
@@ -403,7 +404,9 @@ class RoboFile extends \Robo\Tasks {
 
     // Build the container if desired.
     if ($opts['build']) {
-      $this->prepareContainers($opts['user-uid']);
+      $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
+      $this->say("Preparing containers with playbook: $playbook");
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
     }
 
     if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
@@ -421,15 +424,19 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
 
-      # Run final playbook to install devshop.
-      $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
-
+      // Run final playbook to install devshop.
       // Test commands must be run as application user.
       if ($opts['test']) {
+        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
+        $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
         $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
       elseif ($opts['test-upgrade']) {
+        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
+        $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+
         $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
         $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
@@ -496,10 +503,7 @@ class RoboFile extends \Robo\Tasks {
         ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
         ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
         ->env('TERM', 'xterm')
-        ->env('TRAVIS', TRUE)
-        ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
-        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
-        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
         ->env('AEGIR_USER_UID', $opts['user-uid'])
         ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
         ->exec('/usr/share/devshop/tests/run-tests.sh')
@@ -599,7 +603,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
-        $upgrade_to_branch = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $_SERVER['TRAVIS_BRANCH'];
+        $upgrade_to_branch = !empty($_SERVER['GITHUB_REF'])? $_SERVER['GITHUB_REF']: '1.x';
         $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
         if (!$this->taskDockerExec('devshop_container')
           ->exec($upgrade_command)
@@ -878,4 +882,16 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("bin/monorepo-builder split");
     }
   }
+
+  /**
+   * Run the molecule test command.
+   */
+  function moleculeTest() {
+    $this->_exec("cd roles/opendevshop.devmaster && molecule test");
+  }
+
+  function moleculeConverge() {
+    $this->_exec("cd roles/opendevshop.devmaster && molecule converge");
+  }
+
 }

@@ -12,7 +12,7 @@
   pre_tasks:
     - name: System Information
       debug:
-        msg: "Installing on ansible_os_family {{ansible_os_family}} ansible_distribution_major_version {{ansible_distribution_major_version}}"
+        msg: "Installing on ansible_os_family {{ ansible_os_family }} ansible_distribution_major_version {{ ansible_distribution_major_version }}"
 
   post_tasks:
     - name: Test Devmaster
@@ -22,4 +22,5 @@
       command: "{{ devmaster_test_command }}"
 
   roles:
+    - role: geerlingguy.mysql
     - role: opendevshop.devmaster

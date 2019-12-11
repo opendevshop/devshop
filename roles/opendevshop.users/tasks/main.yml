@@ -1,7 +1,7 @@
 ---
 - name: System Information
   debug:
-    msg: "Installing on ansible_os_family {{ansible_os_family}} ansible_distribution_major_version {{ansible_distribution_major_version}}"
+    msg: "Installing on ansible_os_family {{ ansible_os_family }} ansible_distribution_major_version {{ ansible_distribution_major_version }}"
 
 - name: Include global variables.
   include_vars: "vars.yml"
@@ -68,6 +68,7 @@
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
 
+# @TODO: Determine WHY centos needs this.
 # Aegir"s CentOS installation requires this.
 - name: Set appropriate permissions for Aegir"s home folder.
   command: chmod -R 755 {{ aegir_user_home }}

@@ -3,7 +3,7 @@
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
 server_hostname: devshop.local.computer
-server_hostname_ignore_errors: false
+server_hostname_ignore_errors: true
 devshop_devmaster_email: admin@devshop.local.computer
 
 # Get a GitHub Token from 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=devshop-ansible-token
@@ -18,6 +18,8 @@ devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_update: true
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+devshop_cli_composer_install_command: "install"
+
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"

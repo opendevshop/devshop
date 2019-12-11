@@ -75,7 +75,7 @@
   when: devshop_cli_update
 
 - name: Install DevShop CLI Dependencies
-  command: "{{ composer_path }} install"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   args:
     chdir: "{{ devshop_cli_path }}"
 
