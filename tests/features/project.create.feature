@@ -28,9 +28,6 @@ Feature: Create a project and check settings
     And I should see "DOCUMENT ROOT docroot"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
     And I reload the page
     And I reload the page
 
@@ -111,11 +108,6 @@ Feature: Create a project and check settings
     Then I should see "Environment testenv created in project drpl8."
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
 
     When I click "testenv" in the "main" region
     Then I should see "Environment Dashboard"
