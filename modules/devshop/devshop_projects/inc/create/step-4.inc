@@ -164,10 +164,6 @@ HTML;
     }
 
     // Add hosting task status.
-    $status = _hosting_parse_error_code($task->task_status);
-//    if ($status == 'Queued') {
-//      $status = '...';
-//    }
     $link_text = t('View Logs');
     $row['status'] = l("<span id='status-{$platform->nid}'>{$link_text}</span>", "node/{$task->nid}", array('html' => TRUE, 'attributes' => array('target' => '_blank')));
 
