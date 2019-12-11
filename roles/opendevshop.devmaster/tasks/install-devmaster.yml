@@ -42,15 +42,6 @@
   command: mysql-wait
   tags: [install-devmaster]
 
-- name: Update MySQL user to allow remote login.
-  shell: >
-    mysql -u root -NBe
-    'ALTER USER "{{ mysql_root_username }}"@"{{ item }}"
-    IDENTIFIED WITH mysql_native_password BY "{{ mysql_root_password }}";'
-  with_items:
-    - '%'
-  tags: [install-devmaster]
-
 - name: Install Devmaster
   become: true
   become_user: "{{ aegir_user_name }}"
