@@ -130,6 +130,7 @@
   command: "{{ devmaster_make_command }}"
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
+    chdir: "{{ devshop_cli_path }}"
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
