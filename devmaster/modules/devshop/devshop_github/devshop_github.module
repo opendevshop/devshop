@@ -69,20 +69,19 @@ function devshop_github_client($must_authenticate = FALSE) {
 
   $github_token = devshop_github_token();
 
-  // If caller requires authentication...
-  if (!$must_authenticate) {
+  // If caller requires authentication, throw exception if token is missing.
+  if ($must_authenticate && empty($github_token)) {
+    throw new \Exception(t('There is no GitHub Token set.'));
+  }
 
-    // Throw exception if token is missing.
-    if (empty($github_token)) {
-      throw new \Exception(t('There is no GitHub Token set.'));
-    }
+  // If a token is found, authenticate.
+  if (!empty($github_token)) {
 
     // Set token in client.
     $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
       $client->currentUser()->show();
-      return $client;
     }
     catch (Exception $e) {
       // If error, set_message and throw the exception upstream.
@@ -90,10 +89,8 @@ function devshop_github_client($must_authenticate = FALSE) {
       throw $e;
     }
   }
-  else {
-    // return an unauthenticated client, use for public requests.
-    return $client;
-  }
+
+  return $client;
 }
 
 
