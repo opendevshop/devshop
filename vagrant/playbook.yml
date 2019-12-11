@@ -8,8 +8,8 @@
   vars_files:
     - vars.vagrant.yml
   roles:
-    - opendevshop.aegir-user
-    - opendevshop.aegir-apache
+    - opendevshop.users
+    - opendevshop.apache
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer

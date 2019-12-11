@@ -10,8 +10,11 @@ hostmaster
 provision
 
 # @TODO: Now that devshop roles are in this repo, should we organize by core/contrib?
-roles
-!roles/opendevshop.*
+roles/geerlingguy.*
+roles/arknoll.selenium/
+roles/franklinkim.newrelic/
+roles/thom8.php-upload-progress/
+
 
 # Local config
 .vagrant
@@ -21,6 +24,7 @@ devmaster_id_rsa.pub
 bin/*
 ~bin/devshop
 !bin/hosting-queue-runner
+!bin/mysql-wait
 
 # Symfony code
 vendor

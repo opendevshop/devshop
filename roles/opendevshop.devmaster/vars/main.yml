@@ -3,15 +3,15 @@
 # Add hosting-queue-runner to supervisor programs.
 supervisor_programs:
   - name: 'hosting-queue-runner'
-    command: "/bin/bash -c 'source /etc/profile && env && {{ hosting_queue_runner_bin_path }}'"
+    # The reason we source /etc/profile here is to ensure the environment in supervisor matches the environment when using a shell instance.
+    command: "/bin/bash -c 'source /etc/profile && {{ hosting_queue_runner_bin_path }}'"
     state: present
 
     # See https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf for options
     configuration: |
       user={{ aegir_user_name }}
       numprocs=1
-      stdout_logfile=/var/log/hosting-queue-runner.log
-      stderr_logfile=/var/log/hosting-queue-runner.error.log
+      stdout_logfile={{ hosting_queue_runner_log_path }}
       redirect_stderr=true
       autostart=TRUE
       autorestart=TRUE

@@ -13,8 +13,8 @@ Requirements / Dependencies
 
 This role depends on the following addiitonal roles:
 
-- [opendevshop.aegir-user](https://galaxy.ansible.com/opendevshop/aegir-user)
-- [opendevshop.aegir-apache](https://galaxy.ansible.com/opendevshop/aegir-apache)
+- [opendevshop.users](https://galaxy.ansible.com/opendevshop/users)
+- [opendevshop.apache](https://galaxy.ansible.com/opendevshop/apache)
 - [geerlingguy.composer](https://galaxy.ansible.com/geerlingguy/composer)
 - [geerlingguy.php](https://galaxy.ansible.com/geerlingguy/php)
 - [geerlingguy.php-mysql](https://galaxy.ansible.com/geerlingguy/php-mysql)
@@ -75,8 +75,8 @@ The devshop install.sh script uses this [playbook.yml](https://github.com/opende
 - hosts: all
   user: root
   roles:
-    - opendevshop.aegir-user
-    - opendevshop.aegir-apache
+    - opendevshop.users
+    - opendevshop.apache
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer

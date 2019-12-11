@@ -129,8 +129,8 @@ EOT
       }
 
       // Checkout the desired version.
-      if (isset($_SERVER['TRAVIS_PULL_REQUEST_BRANCH']) && $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'] == $target_version) {
-        $output->writeln('<comment>Selected version is the current Travis PR Branch. Skipping git checkout.</comment>');
+      if (isset($_SERVER['GITHUB_HEAD_REF']) && $_SERVER['GITHUB_HEAD_REF'] == $target_version) {
+        $output->writeln('<comment>Target version is the same as PR Branch. Skipping git checkout.</comment>');
       }
       else {
         $git->fetchAll(array('tags' => true));

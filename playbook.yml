@@ -20,3 +20,5 @@
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster
+  vars:
+    php_version: "7.1"

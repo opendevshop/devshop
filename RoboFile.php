@@ -3,6 +3,8 @@
 require_once 'vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Exception\RuntimeException;
 
 /**
  * This file provides commands to the robo CLI for managing development and
@@ -44,6 +46,12 @@ class RoboFile extends \Robo\Tasks {
   // Defines the URI we will use for the devmaster site.
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
+  // DevShop application user name.
+  protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
+  protected $devshopUsername = "aegir";
+
+  use \Robo\Common\IO;
+
   /**
    * @var The path to devshop root. Used for upgrades.
    */
@@ -53,10 +61,11 @@ class RoboFile extends \Robo\Tasks {
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
-    if (empty($this->git_ref) && !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])) {
-      $this->git_ref = $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'];
+    if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
+      $this->git_ref = $_SERVER['GITHUB_REF'];
     }
   }
+
 //
 //  /**
 //   * Launch devshop after running prep:host and prep:source. Use --build to
@@ -91,7 +100,7 @@ class RoboFile extends \Robo\Tasks {
     }
     else {
       $this->say('Could not run docker command. Find instructons for installing at https://www.docker.com/products/docker');
-      exit(1);
+      throw new RuntimeException('Unable to continue.');
     }
 
     // Check for docker-compose
@@ -104,7 +113,7 @@ class RoboFile extends \Robo\Tasks {
       $this->say("Run the following command as root to install it or see https://docs.docker.com/compose/install/ for more information.");
 
       $this->say('curl -L "https://github.com/docker/compose/releases/download/' . self::DOCKER_COMPOSE_VERSION . '/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose');
-      exit(1);
+      throw new RuntimeException('Unable to continue.');
     }
   }
 
@@ -119,6 +128,7 @@ class RoboFile extends \Robo\Tasks {
    * Clone all needed source code and build devmaster from the makefile.
    *
    * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option devshop-version The directory to put the
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
@@ -158,6 +168,14 @@ class RoboFile extends \Robo\Tasks {
           ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
           ->run();
       }
+
+      // Checkout provision to the 7.x-3.x-devshop branch.
+      if ($path == 'provision') {
+        $this->taskGitStack()
+          ->dir($this->devshop_root_path . '/' . $path)
+          ->checkout('7.x-3.x-devshop')
+          ->run();
+      }
     }
 
     // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
@@ -169,9 +187,10 @@ class RoboFile extends \Robo\Tasks {
       'geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
       'geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
       'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
+      'geerlingguy.php-versions' => 'http://github.com/geerlingguy/ansible-role-php-versions.git',
       'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
       'geerlingguy.supervisor' => 'http://github.com/geerlingguy/ansible-role-supervisor.git',
-//      'opendevshop.aegir-apache' => 'http://github.com/opendevshop/ansible-role-aegir-apache',
+//      'opendevshop.apache' => 'http://github.com/opendevshop/ansible-role-apache',
 //      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
 //      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
 //      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
@@ -219,8 +238,7 @@ class RoboFile extends \Robo\Tasks {
 
       $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
       if (!$result->wasSuccessful()) {
-        $this->say("Drush make failed with the exit code " . $result->getExitCode());
-        return FALSE;
+        throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
       }
     }
 
@@ -237,7 +255,7 @@ class RoboFile extends \Robo\Tasks {
 
 //      if ($this->taskExec("cd {$make_destination}/profiles/devmaster && git remote set-url origin $devmaster_ssh_git_url && git remote set-url origin --add $devmaster_drupal_git_url")->run()->wasSuccessful()) {
 //        $this->yell("Set devmaster git remote 'origin' to $devmaster_ssh_git_url and added remote drupal!");
-//      }
+//      }RuntimeException
 //      else {
 //        $this->say("<comment>Unable to set devmaster git remote to $devmaster_ssh_git_url !</comment>");
 //      }
@@ -254,39 +272,47 @@ class RoboFile extends \Robo\Tasks {
 //        $this->say("<comment>Unable to add 'drupal' git remote and add git.drupal.org as a second push target on origin!</comment>");
 //      }
     }
-
-    return TRUE;
   }
 
   /**
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL) {
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml') {
 
+    // Determine current UID.
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
 
-    $this->say("Found UID $user_uid. Passing to docker build as a build-arg...");
+    // Pass robo -v to Ansible -v.
+    switch ($this->output->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $ansible_verbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $ansible_verbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $ansible_verbosity = 3;
+        break;
+      default:
+        $ansible_verbosity = 0;
+        break;
+    }
 
-    // aegir/hostmaster
-    $versions = array(
-      '7',
-      '71',
-      '72'
-    );
-    foreach ($versions as $version) {
-      $this->taskDockerBuild('aegir-dockerfiles')
-         ->option('file', "aegir-dockerfiles/Dockerfile-php{$version}")
-         ->option('build-arg', "AEGIR_UID=$user_uid")
-         ->tag("aegir/hostmaster:php{$version}")
-         ->run();
+    // Hostname should match server_hostname in playbook.server.yml
+    if (!$this->taskDockerBuild()
+      ->tag("devshop/server:local")
 
-      $this->taskDockerBuild('aegir-dockerfiles')
-         ->option('file', "aegir-dockerfiles/Dockerfile-xdebug-php{$version}")
-         ->tag("aegir/hostmaster:php{$version}-xdebug")
-         ->run();
+      // Hostname should match server_hostname in playbook.server.yml
+      ->option('--add-host', "{$hostname}:127.0.0.1")
+      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
+      ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
+      ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
+      ->run()
+      ->wasSuccessful()) {
+      throw new RuntimeException('Docker Build Failed.');
     }
   }
 
@@ -331,6 +357,7 @@ class RoboFile extends \Robo\Tasks {
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
    * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option $build Run `robo prepare:containers` to rebuild the container first.
    */
   public function up($opts = [
     'follow' => 1,
@@ -345,7 +372,12 @@ class RoboFile extends \Robo\Tasks {
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
+    'build' => FALSE,
+    'skip-source-prep' => FALSE
   ]) {
+
+    // Tell Provision power process to print output directly.
+    putenv('PROVISION_PROCESS_OUTPUT=direct');
 
     // Check for tools
     $this->prepareHost();
@@ -370,62 +402,69 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    if (!file_exists('aegir-home')) {
-        if ($this->prepareSourcecode($opts) == FALSE) {
-          $this->say('Prepare source code failed.');
-          exit(1);
-        }
+    // Build the container if desired.
+    if ($opts['build']) {
+      $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
+      $this->say("Preparing containers with playbook: $playbook");
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
+    }
+
+    if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
+      $this->prepareSourcecode($opts);
     }
 
     if ($opts['mode'] == 'docker-compose') {
-      $env = "-e TERM=xterm";
-      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
-      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
+//      $env = "-e TERM=xterm";
+//      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
+//      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
+      // Launch all containers, detached
+      $cmd[] = "docker-compose up -d";
+      $cmd[] = "sleep 1";
+      $cmd[] = "docker ps";
+      $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
+
+      // Run final playbook to install devshop.
+      // Test commands must be run as application user.
       if ($opts['test']) {
+        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
+        $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd = "docker-compose -f docker-compose-tests.yml run -T $env devmaster '$command'";
+        $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
       elseif ($opts['test-upgrade']) {
-        $version = self::UPGRADE_FROM_VERSION;
-        $provision_version = self::UPGRADE_FROM_PROVISION_VERSION;
+        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
+        $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+
         $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
-
-        // @TODO: Have this detect the branch and use that for the version.
-        $root_target = '/var/aegir/devmaster-' . $opts['devshop-version'];
-
-        //      $cmd = "docker-compose run -e UPGRADE_FROM_VERSION={$version} -e UPGRADE_TO_MAKEFILE= -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e TRAVIS_BRANCH={$_SERVER['TRAVIS_BRANCH']}  -e TRAVIS_REPO_SLUG={$_SERVER['TRAVIS_REPO_SLUG']} -e TRAVIS_PULL_REQUEST_BRANCH={$_SERVER['TRAVIS_PULL_REQUEST_BRANCH']} devmaster 'run-tests.sh' ";
-
-        // Launch a devmaster container as if it were the last release, then run hostmaster-migrate on it, then run the tests.
-        $cmd = "docker-compose -f {$this->devshop_root_path}/docker-compose-tests.yml run $env -e UPGRADE_FROM_VERSION={$version} -e AEGIR_HOSTMASTER_ROOT=/var/aegir/devmaster-{$version} -e AEGIR_HOSTMASTER_ROOT_TARGET=$root_target -e AEGIR_VERSION={$version} -e AEGIR_MAKEFILE=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/build-devmaster.make -e PROVISION_VERSION={$provision_version} devmaster '$command'";
+        $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
       else {
-        $cmd = "docker-compose up -d";
+
+        $cmd[] = "docker-compose exec -T devshop devshop status";
+        $cmd[] = "docker-compose exec -T devshop devshop login";
+
         if ($opts['follow']) {
-          $cmd .= "; docker-compose logs -f";
+          $cmd[] = "docker-compose logs -f";
         }
       }
 
-      // Build a local container.
-      if ($opts['user-uid'] != '1000') {
-        $dockerfile = $opts['disable-xdebug'] ? 'aegir-dockerfiles/Dockerfile-local' : 'aegir-dockerfiles/Dockerfile-local-xdebug';
-        $this->taskDockerBuild($this->devshop_root_path . '/aegir-dockerfiles')
-          ->option('file', $this->devshop_root_path . '/' . $dockerfile)
-          ->tag('aegir/hostmaster:local')
-          ->option('build-arg', "NEW_UID=" . $opts['user-uid'])
-          ->option('no-cache')
-          ->run();
-      }
-
-
-      if (isset($cmd)) {
-          // @TODO: Does _exec() inherit the $_SERVER environment? That must be why we have to pass to the docker compose calls...
-        if ($this->_exec($cmd)->wasSuccessful()) {
-          exit(0);
+      if (!empty($cmd)) {
+        foreach ($cmd as $command) {
+          $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
+          $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+          if ($opts['test'] || $opts['test-upgrade']) {
+            $process->setEnv([
+              'COMPOSE_FILE' => 'docker-compose-tests.yml'
+            ]);
+          }
+          $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
+          $process->setTty($isTty);
+          $process->setTimeout(NULL);
+          $process->mustRun();
         }
-        else {
-          exit(1);
-        }
+        return;
       }
     }
     elseif ($opts['mode'] == 'install.sh' || $opts['mode'] == 'manual') {
@@ -435,6 +474,7 @@ class RoboFile extends \Robo\Tasks {
         'ubuntu:14.04' => '/sbin/init',
         'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
         'geerlingguy/docker-ubuntu1604-ansible' => '/lib/systemd/systemd',
+        'geerlingguy/docker-ubuntu1804-ansible' => '/lib/systemd/systemd',
         'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
       ];
 
@@ -460,6 +500,7 @@ class RoboFile extends \Robo\Tasks {
         ->volume($this->devshop_root_path, '/usr/share/devshop')
         ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
         ->volume($this->devshop_root_path . '/roles', '/etc/ansible/roles')
+        ->volume($this->devshop_root_path . '/provision', '/var/aegir/.drush/commands/provision')
         ->option('--hostname', 'devshop.local.computer')
         ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
         ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
@@ -467,20 +508,17 @@ class RoboFile extends \Robo\Tasks {
         ->publish(80,80)
         ->detached()
         ->privileged()
+        ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
         ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
         ->env('TERM', 'xterm')
-        ->env('TRAVIS', TRUE)
-        ->env('TRAVIS_BRANCH', $_SERVER['TRAVIS_BRANCH'])
-        ->env('TRAVIS_REPO_SLUG', $_SERVER['TRAVIS_REPO_SLUG'])
-        ->env('TRAVIS_PULL_REQUEST_BRANCH', $_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])
+        ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
         ->env('AEGIR_USER_UID', $opts['user-uid'])
         ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
         ->exec('/usr/share/devshop/tests/run-tests.sh')
         ->exec($init)
         ->run()
         ->wasSuccessful()) {
-        $this->say('Docker Run failed.');
-        exit(1);
+        throw new RuntimeException('Docker Run failed.');
       }
 
       # Install mysql first to ensure it is started.
@@ -490,8 +528,7 @@ class RoboFile extends \Robo\Tasks {
           ->run()
           ->wasSuccessful()
         ) {
-          $this->say('Set init policy failed.');
-          exit(1);
+          throw new RuntimeException('Set init policy failed.');
         }
       }
       elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
@@ -567,27 +604,27 @@ class RoboFile extends \Robo\Tasks {
           ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Installation of devshop $version failed.");
+          throw new RunException("Installation of devshop $version failed.");
         };
 
         // Run devshop upgrade. This command runs:
         $this->yell("Running devshop upgrade...");
         //  - self-update, which checks out the branch being tested and installs the roles.
         //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
-        $upgrade_to_branch = !empty($_SERVER['TRAVIS_PULL_REQUEST_BRANCH'])? $_SERVER['TRAVIS_PULL_REQUEST_BRANCH']: $_SERVER['TRAVIS_BRANCH'];
+        $upgrade_to_branch = !empty($_SERVER['GITHUB_REF'])? $_SERVER['GITHUB_REF']: '1.x';
         $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
         if (!$this->taskDockerExec('devshop_container')
           ->exec($upgrade_command)
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Command $upgrade_command failed.");
+          throw new RuntimeException("Command $upgrade_command failed.");
         };
 
         if (!$this->taskDockerExec('devshop_container')
           ->exec('/usr/share/devshop/bin/devshop status')
           ->run()
           ->wasSuccessful()) {
-          throw new \Exception("Command 'devshop status' failed.");
+          throw new RuntimeException("Command 'devshop status' failed.");
         };
       }
       else {
@@ -600,36 +637,11 @@ class RoboFile extends \Robo\Tasks {
             //        ->option('tty')
             ->run()
             ->wasSuccessful()) {
-          $this->say('Docker Exec install.sh failed.');
-          exit(1);
+          throw new RuntimeException('Docker Exec install.sh failed.');
         }
       }
 
       if ($opts['test']) {
-
-// @TODO: This should not be needed anymore?
-//        # Disable supervisor
-//        if ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1404-ansible') {
-//          $service = 'supervisor';
-//        }
-//        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
-//          $service = FALSE;
-//        }
-//        elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1804-ansible') {
-//          $service = 'supervisor';
-//        }
-//        else {
-//          $service = 'supervisord';
-//        }
-//
-//        if ($service && !$this->taskDockerExec('devshop_container')
-//          ->exec("service $service stop")
-//          ->run()
-//          ->wasSuccessful()
-//        ) {
-//          $this->say('Unable to disable supervisor.');
-//          exit(1);
-//        }
 
         $this->yell("Running devshop-tests.sh ...");
 
@@ -639,8 +651,7 @@ class RoboFile extends \Robo\Tasks {
           ->run()
           ->wasSuccessful()
         ) {
-          $this->say('Docker Exec devshop-tests.sh failed.');
-          exit(1);
+          throw new RuntimeException('Docker Exec devshop-tests.sh failed.');
         }
       }
     }
@@ -712,7 +723,8 @@ class RoboFile extends \Robo\Tasks {
    * Stream watchdog logs from drupal
    */
   public function watchdog() {
-    $this->_exec('docker-compose exec -T devmaster drush @hostmaster wd-show --tail --extended');
+    $user = 'aegir';
+    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster wd-show --tail --extended");
   }
 
   /**
@@ -720,12 +732,13 @@ class RoboFile extends \Robo\Tasks {
    */
   public function restart() {
       $this->_exec('docker-compose restart');
+      $this->logs();
   }
 
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell($user = NULL) {
+  public function shell($user = 'aegir') {
 
     // Check if single container is running (as opposed to docker compose)
     $devshop_container_running = $this->taskExec('docker exec -ti devshop_container echo')
@@ -739,7 +752,7 @@ class RoboFile extends \Robo\Tasks {
         $process = new \Symfony\Component\Process\Process("docker exec --user $user -ti devshop_container bash");
       }
       else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devmaster bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash");
       }
     }
     else {
@@ -748,7 +761,7 @@ class RoboFile extends \Robo\Tasks {
         $process = new \Symfony\Component\Process\Process("docker exec -ti devshop_container bash");
       }
       else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
       }
     }
     $process->setTty(TRUE);
@@ -759,17 +772,18 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run all devshop tests on the containers.
    */
-  public function test() {
-    $process = new \Symfony\Component\Process\Process("docker-compose exec devmaster /usr/share/devshop/tests/devshop-tests.sh");
+  public function test($user = 'aegir') {
+    $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh");
     $process->setTty(TRUE);
+    $process->setTimeout(NULL);
     $process->run();
   }
 
   /**
    * Get a one-time login link to Devamster.
    */
-  public function login() {
-    $this->_exec('docker-compose exec -T devmaster drush @hostmaster uli');
+  public function login($user = 'aegir') {
+    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster uli");
   }
 
   /**
@@ -876,4 +890,16 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("bin/monorepo-builder split");
     }
   }
+
+  /**
+   * Run the molecule test command.
+   */
+  function moleculeTest() {
+    $this->_exec("cd roles/opendevshop.devmaster && molecule test");
+  }
+
+  function moleculeConverge() {
+    $this->_exec("cd roles/opendevshop.devmaster && molecule converge");
+  }
+
 }

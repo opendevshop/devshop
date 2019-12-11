@@ -8,9 +8,10 @@
         "symfony/filesystem": "^4.3",
         "cpliakas/git-wrapper": "1.*",
         "asm/php-ansible": "^2.0",
-        "consolidation/robo": "^1",
+        "consolidation/robo": "^2",
         "mouf/nodejs-installer": "^1.0",
-        "php": "^7.1"
+        "php": "^7.1",
+        "provision-ops/power-process": "^1.2"
     },
     "require-dev": {
         "symplify/monorepo-builder": "dev-devshop"

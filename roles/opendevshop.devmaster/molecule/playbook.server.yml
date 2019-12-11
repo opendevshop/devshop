@@ -5,6 +5,7 @@
 ---
 - hosts: all
   user: root
+  become: true
   roles:
     - opendevshop.users
     - opendevshop.apache

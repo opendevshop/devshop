@@ -1,0 +1,75 @@
+---
+- name: Devmaster | Save GitHub Token
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster vset devshop_github_token {{ devshop_github_token }}"
+  when: devshop_github_token != ""
+  # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
+  ignore_errors: true
+  tags: [install-devmaster]
+
+- name: Devmaster | Run all outstanding tasks
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-tasks"
+  tags: [install-devmaster]
+
+- name: DevShop.Support | Save License Key
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
+  when: devshop_support_license_key != ""
+  tags: [install-devmaster]
+
+- name: DevShop.Support | Validate License Key to setup support modules.
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support"
+  when: devshop_support_license_key != ""
+  tags: [install-devmaster]
+
+- name: Ensure hosting-dispatch crontab is setup
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
+  tags: [install-devmaster]
+
+- name: Save SSH key as variable
+  shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  become: true
+  become_user: aegir
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: Set git user name
+  shell: "git config --global user.email {{ devshop_devmaster_email }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: Set git user email
+  shell: "git config --global user.name {{ aegir_client_name }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
+
+- name: Set git config push.default simple
+  shell: "git config --global push.default simple"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]

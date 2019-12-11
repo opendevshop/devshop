@@ -6,52 +6,38 @@ defaults[projects][type] = "module"
 
 ; Update this with each new release of devshop
 projects[devshop_stats][version] = 1.x
-projects[devshop_stats][subdir] = "contrib"
 
 ; Aegir Modules
 ; For development, use latest branch.
 ; For release, use tagged version
-projects[hosting][subdir] = aegir
 projects[hosting][version] = "3.x"
 projects[hosting][download][type] = git
-projects[hosting][download][branch] = 7.x-3.x-devshop
+projects[hosting][download][branch] = 7.x-3.180-devshop
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
 projects[eldir][version] = "3.180"
 
-projects[hosting_git][subdir] = aegir
-projects[hosting_git][download][type] = git
-projects[hosting_git][download][branch] = 7.x-3.x
+projects[hosting_git][vesrion] = "3.181"
 
-projects[hosting_https][subdir] = aegir
 projects[hosting_https][version] = "3.182"
 
-projects[hosting_remote_import][subdir] = aegir
 projects[hosting_remote_import][version] = "3.180"
 
-projects[hosting_site_backup_manager][subdir] = aegir
 projects[hosting_site_backup_manager][version] = "3.180"
 
-projects[hosting_tasks_extra][subdir] = aegir
 projects[hosting_tasks_extra][version] = "3.180"
 
-projects[hosting_logs][subdir] = aegir
 projects[hosting_logs][version] = "3.181"
 
-projects[hosting_filemanager][subdir] = aegir
 projects[hosting_filemanager][version] = "1.x"
 
-projects[aegir_ssh][subdir] = aegir
-projects[aegir_ssh][version] = 1.0
+projects[aegir_ssh][version] = "1.0"
 
-projects[aegir_config][subdir] = aegir
-projects[aegir_config][version] = 1.x
+projects[aegir_config][version] = "1.x"
 
-projects[aegir_ansible][subdir] = aegir
 projects[aegir_ansible][version] = "1.x"
 
-projects[aegir_cloud][subdir] = aegir
 projects[aegir_cloud][version] = "1.x"
 
 ; Not working yet.

@@ -4,16 +4,16 @@ version: '2'
 
 services:
 
-  devmaster:
-    image: aegir/hostmaster:php72-xdebug
+  devshop:
+    image: devshop/server:local
     ports:
       - 80:80
     hostname: devshop.local.computer
-    links:
-      - database
-    depends_on:
-      - database
+    extra_hosts:
+      - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     environment:
+      # Change to use a different database host.
+      DATABASE_HOST: localhost
       MYSQL_ROOT_PASSWORD: strongpassword
       AEGIR_MAKEFILE: /usr/share/devshop/build-devmaster-dev.make.yml
       AEGIR_PROFILE: devmaster
@@ -22,7 +22,6 @@ services:
       AEGIR_HOSTMASTER_ROOT: /var/aegir/devmaster-1.x
       XDEBUG_CONFIG: "remote_host=172.17.0.1 idekey=PHPSTORM"
       PHP_IDE_CONFIG: "serverName=devshop.local.computer"
-      GITHUB_TOKEN: "${GITHUB_TOKEN}"
 
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       HOST_AEGIR_HOME: /home/jon/Projects/devshop/aegir-home
@@ -36,26 +35,37 @@ services:
       # This would work for changing to nginx, once the container supports that.
       # AEGIR_HTTP_SERVICE_TYPE: https_apache
 
+      # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
+      ANSIBLE_VERBOSITY: 0
+
+      # Add additional files you would like to output in the container logs here, separated by a space.
+      DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+
     privileged: true
     volumes:
       - ./aegir-home:/var/aegir:delegated
+      - ./devmaster:/var/aegir/devmaster  #-1.x/profiles/devmaster:delegated
       - ./:/usr/share/devshop:delegated
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/mysql
       - $HOME/.ssh:/var/aegir/.ssh
-    extra_hosts:
-      - "remote.devshop.local.computer:10.10.10.11"
-  database:
-    image: mariadb
-    logging:
-      driver: none
-    environment:
-      MYSQL_ROOT_PASSWORD: strongpassword
+      # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
+      # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
+
+# Database container is now optional: for local development just use the devshop/server container.
+#  database:
+#    image: mariadb
+#    logging:
+#      driver: none
+#    environment:
+#      MYSQL_ROOT_PASSWORD: strongpassword
 
   admin:
     image: phpmyadmin/phpmyadmin
     links:
-      - database:db
+      - devshop:db
     ports:
       - 8080:80
 

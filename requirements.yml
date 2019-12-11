@@ -20,10 +20,13 @@
   version: 1.7.3
 
 - name: geerlingguy.mysql
-  version: 2.9.4
+  version: 2.9.5
 
 - name: geerlingguy.apache
   version: 3.0.3
 
 - name: geerlingguy.supervisor
   version: 2.0.2
+
+- name: geerlingguy.php-versions
+  version: 4.0.2
