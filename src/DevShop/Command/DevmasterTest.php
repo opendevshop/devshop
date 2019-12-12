@@ -156,7 +156,7 @@ class DevmasterTest extends Command {
     $process->setEnv($env);
 
     $output->writeln(["Running $cmd with environment:"]);
-    $output->writeln($env);
+    $output->writeln(var_export($env));
 
     $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
