@@ -18,6 +18,7 @@ ENV DEVSHOP_PLAYBOOK ${DEVSHOP_PLAYBOOK:-docker/playbook.server.yml}
 ENV DEVSHOP_PLAYBOOK_PATH="/usr/share/devshop/$DEVSHOP_PLAYBOOK"
 
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
+ENV DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
 
 ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
     -e aegir_user_uid=$DEVSHOP_USER_UID \
@@ -47,16 +48,14 @@ RUN ansible --version
 
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
-
-# Copy docker shell scripts to /usr/local/bin
-COPY ./docker/bin/* /usr/local/bin/
-
-RUN ls -la /usr/local/bin
-RUN echo $PATH
+RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Provision DevShop inside Docker.
-RUN echo "Running ansible playbook: $DEVSHOP_PLAYBOOK_PATH"
+RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
 RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
+
+# Provision DevShop inside Docker.
+RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster ..."
 RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 
 EXPOSE 80 443 3306 8025
