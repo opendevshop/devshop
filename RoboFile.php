@@ -430,6 +430,8 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "sleep 1";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
+      $cmd[] = "docker-compose exec -T devshop chmod 766 {$_SERVER['DEVSHOP_TESTS_ASSETS_PATH']}";
+      $cmd[] = "docker-compose exec -T devshop ls -la {$_SERVER['DEVSHOP_TESTS_ASSETS_PATH']}";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
