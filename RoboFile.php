@@ -425,6 +425,7 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Launch all containers, detached
+      $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up -d";
       $cmd[] = "sleep 1";
       $cmd[] = "docker ps";
