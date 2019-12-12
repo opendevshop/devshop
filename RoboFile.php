@@ -424,6 +424,9 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
+      // Prepare test assets folder.
+      $cmd[] = "chmod 766 .github/test-assets";
+
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up -d";
