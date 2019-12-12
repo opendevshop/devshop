@@ -7,7 +7,8 @@ services:
   devshop:
     image: devshop/server:local
     ports:
-      - 80:80
+      - "80:80"
+      - "2222:22"
     hostname: devshop.local.computer
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
