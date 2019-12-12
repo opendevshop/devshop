@@ -373,7 +373,8 @@ class RoboFile extends \Robo\Tasks {
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'build' => FALSE,
-    'skip-source-prep' => FALSE
+    'skip-source-prep' => FALSE,
+    'skip-install' => FALSE
   ]) {
 
     // Tell Provision power process to print output directly.
@@ -443,6 +444,10 @@ class RoboFile extends \Robo\Tasks {
         $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
       else {
+
+        if (!$opts['skip-install']) {
+          $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+        }
 
         $cmd[] = "docker-compose exec -T devshop devshop status";
         $cmd[] = "docker-compose exec -T devshop devshop login";
