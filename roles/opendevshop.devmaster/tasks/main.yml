@@ -33,6 +33,8 @@
   shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
   register: __devshop_version_installed
   ignore_errors: true
+  args:
+    chdir: "{{ devshop_cli_path }}"
 
 - name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
   shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
