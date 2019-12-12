@@ -59,3 +59,8 @@ jobs:
 
     - name: Run DevShop Server and tests
       run: bin/robo up --test --skip-source-prep -v
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: test-assets
+        path: ./.github/test-assets
