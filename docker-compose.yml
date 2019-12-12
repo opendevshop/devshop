@@ -40,6 +40,7 @@ services:
 
       # Add additional files you would like to output in the container logs here, separated by a space.
       DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+      DEVSHOP_TESTS_ASSETS_PATH: "/usr/share/devshop/.github/test-assets"
 
     privileged: true
     volumes:
@@ -50,6 +51,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
+      - /var/logs/aegir
       - $HOME/.ssh:/var/aegir/.ssh
       # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
       # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
