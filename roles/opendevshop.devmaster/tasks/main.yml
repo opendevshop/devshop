@@ -123,7 +123,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
-- name: "Prepare DevShop Web Interface Source Code"
+- name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
