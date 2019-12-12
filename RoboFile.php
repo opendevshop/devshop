@@ -278,7 +278,9 @@ class RoboFile extends \Robo\Tasks {
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml') {
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
+      'file' => 'Dockerfile.fast'
+  ]) {
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -303,6 +305,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Hostname should match server_hostname in playbook.server.yml
     if (!$this->taskDockerBuild()
+      ->option("--file ${opts['file']}")
       ->tag("devshop/server:local")
 
       // Hostname should match server_hostname in playbook.server.yml
