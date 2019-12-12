@@ -310,7 +310,7 @@ class RoboFile extends \Robo\Tasks {
 
       // Hostname should match server_hostname in playbook.server.yml
       ->option('--add-host', "{$hostname}:127.0.0.1")
-      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
+      ->option('--build-arg', "DEVSHOP_USER_UID=$user_uid")
       ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
       ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
       ->run()
