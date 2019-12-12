@@ -79,13 +79,17 @@ class PowerProcess extends BaseProcess {
         $timer->stop();
         $this->duration = $timer->formatDuration($timer->elapsed());
 
+        // @TODO: Optionally print something helpful but hideable here.
+        // $suffix = "<fg=black>Output: /path/to/file</>";
+        $suffix = '';
+
         if ($exit == 0) {
             $this->io->newLine();
-            $this->io->writeln(" <info>✔</info> {$this->successMessage} in {$this->duration} <fg=black>Output: /path/to/file</>");
+            $this->io->writeln(" <info>✔</info> {$this->successMessage} in {$this->duration} $suffix");
         }
         else {
             $this->io->newLine();
-            $this->io->writeln(" <fg=red>✘</> {$this->failureMessage} in {$this->duration} <fg=black>Output: /path/to/file</>");
+            $this->io->writeln(" <fg=red>✘</> {$this->failureMessage} in {$this->duration} {$suffix}");
         }
 
         return $exit;
