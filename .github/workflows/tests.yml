@@ -61,6 +61,7 @@ jobs:
       run: bin/robo up --test --skip-source-prep -v
 
     - uses: actions/upload-artifact@v1
+      if: failure()
       with:
         name: test-assets
         path: ./.github/test-assets
