@@ -25,6 +25,7 @@ bin/*
 ~bin/devshop
 !bin/hosting-queue-runner
 !bin/mysql-wait
+!bin/docker-entrypoint
 
 # Symfony code
 vendor
