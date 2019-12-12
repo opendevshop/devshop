@@ -48,15 +48,12 @@ RUN ansible --version
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
 
-# Copy docker shell scripts to /usr/local/bin
-COPY ./docker/bin/* /usr/local/bin/
-
-RUN ls -la /usr/local/bin
-RUN echo $PATH
+# Provision DevShop inside Docker.
+RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
+RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
 
 # Provision DevShop inside Docker.
-RUN echo "Running ansible playbook: $DEVSHOP_PLAYBOOK_PATH"
-RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
+RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster ..."
 RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 
 EXPOSE 80 443 3306 8025
