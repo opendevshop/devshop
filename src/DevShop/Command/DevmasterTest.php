@@ -155,6 +155,9 @@ class DevmasterTest extends Command {
 
     $process->setEnv($env);
 
+    $this->output->writeln(["Running $cmd with environment:"]);
+    $this->output->writeln($env);
+
     $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {
         echo $buffer;
