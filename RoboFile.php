@@ -444,6 +444,8 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
       $cmd[] = "docker-compose exec -T devshop ls -la /usr/share/devshop/.github/test-assets";
 
+      $cmd[] = "docker-compose exec -T devshop service --status-all";
+
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
       if ($opts['test']) {
