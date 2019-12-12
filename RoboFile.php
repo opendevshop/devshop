@@ -420,6 +420,15 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($opts['mode'] == 'docker-compose') {
+
+      if ($opts['test'] || $opts['test-upgrade']) {
+        $compose_file = 'docker-compose-tests.yml';
+      }
+      else {
+        $compose_file = 'docker-compose.yml';
+      }
+
+
 //      $env = "-e TERM=xterm";
 //      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
@@ -433,8 +442,7 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "sleep 1";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
-      $cmd[] = "docker-compose exec -T devshop chmod 766 {$_SERVER['DEVSHOP_TESTS_ASSETS_PATH']}";
-      $cmd[] = "docker-compose exec -T devshop ls -la {$_SERVER['DEVSHOP_TESTS_ASSETS_PATH']}";
+      $cmd[] = "docker-compose exec -T devshop ls -la /usr/share/devshop/.github/test-assets}";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
@@ -470,11 +478,9 @@ class RoboFile extends \Robo\Tasks {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-          if ($opts['test'] || $opts['test-upgrade']) {
-            $process->setEnv([
-              'COMPOSE_FILE' => 'docker-compose-tests.yml'
-            ]);
-          }
+          $process->setEnv([
+            'COMPOSE_FILE' => $compose_file
+          ]);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
