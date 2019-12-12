@@ -955,6 +955,7 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
   $repo = $project->github_owner . '/' . $project->github_repo;
   $repo_url = "http://github.com/" . $repo;
 
+  // @TODO: Check that the API key has write access before offering to do this.
   $form['github_webhook'] = array(
     '#title' => t('Setup GitHub Webhook'),
     '#description' => t('Leave this box checked to automatically add a webhook to your GitHub Repository !link.', array(
