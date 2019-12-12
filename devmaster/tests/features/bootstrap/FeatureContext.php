@@ -93,7 +93,7 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $wrote = file_put_contents($output_path, $this->getSession()->getPage()->getContent());
 
 
-            if (isset($_SERVER['TRAVIS'])) {
+            if (isset($_SERVER['CI'])) {
                 echo "\nLasts Response:\n";
                 $this->minkContext->printLastResponse();
             }
