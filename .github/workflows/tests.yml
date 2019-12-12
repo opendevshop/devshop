@@ -2,6 +2,9 @@ name: Tests
 
 on: [push]
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   lint:
     name: Ansible Lint
