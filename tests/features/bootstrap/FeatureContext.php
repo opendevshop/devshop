@@ -56,9 +56,15 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $drush_config = $this->drupalContext->getDrupalParameter('drush');
             $alias = $drush_config['alias'];
 
-            // Lookup file_directory_path
-            $cmd = "drush @$alias vget file_public_path --format=string";
-            $files_path = trim(shell_exec($cmd));
+            // If standard folder exists, use that.
+            if (is_writable('/var/aegir/test-assets')) {
+              $files_path = '/var/aegir/test-assets';
+            }
+            else {
+              // Lookup file_directory_path
+              $cmd = "drush @$alias vget file_public_path --format=string";
+              $files_path = trim(shell_exec($cmd));
+            }
 
             // Check for various problems.
             if (empty($files_path)) {
