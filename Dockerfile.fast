@@ -1,6 +1,16 @@
 FROM devshop/server:latest
 LABEL maintainer="Jon Pugh"
 
+# Any Build args that are desired in this Dockerfile must exist here, even if they are in the main Dockerfile.
+ARG ANSIBLE_VERBOSITY=0
+ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
+
+ARG DEVSHOP_USER_UID=1000
+ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
+
+ARG DEVSHOP_PLAYBOOK=docker/playbook.server.yml
+ENV DEVSHOP_PLAYBOOK ${DEVSHOP_PLAYBOOK:-docker/playbook.server.yml}
+
 # Copy latest DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
 
