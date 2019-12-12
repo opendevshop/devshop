@@ -97,14 +97,13 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
                 echo "\nLasts Response:\n";
                 $this->minkContext->printLastResponse();
             }
-            else {
 
-                if ($wrote) {
-                    echo "Last Page Output: $logged_string \n";
-                }
-                else {
-                    throw new \Exception("Something failed when writing output to $files_path ... \n");
-                }
+            if ($wrote) {
+                echo "Last Page Output Saved to: $output_path \n";
+                echo "Last Page Output: $logged_string \n";
+            }
+            else {
+                throw new \Exception("Something failed when writing output to $files_path ... \n");
             }
 
             echo "\nWatchdog Errors:\n";
