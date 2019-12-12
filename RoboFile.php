@@ -478,6 +478,7 @@ class RoboFile extends \Robo\Tasks {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+          $process->disableOutput();
           $process->setEnv([
             'COMPOSE_FILE' => $compose_file
           ]);
