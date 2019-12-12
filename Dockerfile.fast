@@ -24,5 +24,6 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
     -e aegir_user_gid=$DEVSHOP_USER_UID"
 
 # Provision DevShop inside Docker.
+RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster"
 RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 
