@@ -41,7 +41,9 @@ services:
 
       # Add additional files you would like to output in the container logs here, separated by a space.
       DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
-      DEVSHOP_TESTS_ASSETS_PATH: "/var/aegir/.test-assets"
+
+      # Set to empty string to save to the Devmaster files directory. Good for local development.
+      DEVSHOP_TESTS_ASSETS_PATH: ""
 
     privileged: true
     volumes:
