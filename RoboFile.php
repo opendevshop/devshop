@@ -442,7 +442,11 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "sleep 1";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
-      $cmd[] = "docker-compose exec -T devshop ls -la /usr/share/devshop/.github/test-assets";
+      $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir/.test-assets";
+
+      $time = date('c');
+      $cmd[] = "echo '# Generated from RoboFile.php:447 at $time' > .github/test-assets/env.robo-up";
+      $cmd[] = "docker-compose exec -T devshop env >> .github/test-assets/env.robo-up";
 
       $cmd[] = "docker-compose exec -T devshop service --status-all";
 
