@@ -56,31 +56,39 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $drush_config = $this->drupalContext->getDrupalParameter('drush');
             $alias = $drush_config['alias'];
 
-            // Lookup file_directory_path
-            $cmd = "drush @$alias vget file_public_path --format=string";
-            $files_path = trim(shell_exec($cmd));
+            // If environment variable is set, save assets to that.
+            if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']) && is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+              $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
+              $logged_string = "$files_path";
+            }
+            // If not, load the public writable files folder for devshop, so the asset can be served over HTTP.
+            else {
+              // Lookup file_directory_path
+              $cmd = "drush @$alias vget file_public_path --format=string";
+              $files_path = trim(shell_exec($cmd));
+              $logged_string = "$base_url/$files_path/output.html";
+            }
 
             // Check for various problems.
             if (empty($files_path)) {
-                throw new \Exception("Results of command '$cmd' was empty. Check your settings and try again.'");
+                throw new \Exception("Unable to load files_public_path from devmaster: Results of command '$cmd' was empty.'");
             }
             elseif (!file_exists($files_path)) {
-                throw new \Exception("Unable to find directory at 'files_path' Drupal parameter '$files_path'");
+                throw new \Exception("Assets path not found: $files_path");
             }
             elseif (!is_writable($files_path)) {
-                throw new \Exception("Files path '$files_path' is not writable. Check permissions and try again.");
+                throw new \Exception("Assets path '$files_path' is not writable by the testing scipt and user.");
             }
 
-            $output_directory = $files_path .'/test_failures';
-            $output_path = $files_path .'/test_failures/failure-' . time() . '.html';
+            $output_path = $files_path .'/output.html';
 
             // Print Current URL and Last reponse after any step failure.
             echo "Step Failed. \n";
             echo "Site: $alias \n";
             echo "Current URL: " . $this->getSession()->getCurrentUrl() . "\n";
 
-            if (!file_exists($output_directory)) {
-                mkdir($output_directory);
+            if (!file_exists($files_path)) {
+                mkdir($files_path);
             }
             $wrote = file_put_contents($output_path, $this->getSession()->getPage()->getContent());
 
@@ -92,10 +100,10 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             else {
 
                 if ($wrote) {
-                    echo "Last Page Output: $base_url/$output_path \n";
+                    echo "Last Page Output: $logged_string \n";
                 }
                 else {
-                    throw new \Exception("Something failed when writing output to $base_url/$output_path ... \n");
+                    throw new \Exception("Something failed when writing output to $files_path ... \n");
                 }
             }
 
