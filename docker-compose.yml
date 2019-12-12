@@ -51,6 +51,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
+      - /var/logs/aegir
       - $HOME/.ssh:/var/aegir/.ssh
       # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
       # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
