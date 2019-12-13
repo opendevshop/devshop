@@ -443,7 +443,7 @@ class RoboFile extends \Robo\Tasks {
       // $cmd[] = "chmod 777 .github/test-assets";
 
       // @TODO: Remove once we know if 777 works or if we need chown.
-       $cmd[] = "chown 1000:1000 .github/test-assets";
+       $cmd[] = "sudo chown 1000:1000 .github/test-assets";
 
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
