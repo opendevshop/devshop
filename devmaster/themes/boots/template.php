@@ -638,7 +638,7 @@ function boots_preprocess_page(&$vars){
     }
 
     // Task nodes only have project nid and environment name.
-    if (!empty($vars['node']->project)) {
+    if (is_numeric($vars['node']->project)) {
       $project_node = node_load($vars['node']->project);
       $vars['node']->project = $project_node->project;
       $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
