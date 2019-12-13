@@ -1,0 +1,31 @@
+name: Git Split
+on: [push]
+jobs:
+  monorepo-split:
+    name: Split Git Repositories
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: fregante/setup-git-token@v1
+        with:
+          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
+          name: devshopbot
+          email: jon@thinkdrop.net
+
+      - name: Cache git split database file.
+        uses: actions/cache@v1
+        with:
+          path: $RUNNER_WORKSPACE/devshop/.git/splitsh.db
+          key: 'splitsh-cache'
+
+      - name: Create a branch for the splitsh
+        run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
+
+      - run: mkdir $HOME/.ssh
+      - name: Authorize GitHub.com as a known_host
+        run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
+      
+      - name: Split monorepo
+        run: composer split
