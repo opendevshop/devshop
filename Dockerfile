@@ -48,6 +48,7 @@ RUN ansible --version
 
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
+RUN mkdir -p $DEVSHOP_TESTS_ASSETS_PATH
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Provision DevShop inside Docker.

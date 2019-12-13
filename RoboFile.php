@@ -434,12 +434,12 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Prepare test assets folder.
-      $cmd[] = "chmod 766 .github/test-assets";
+      $cmd[] = "sudo chmod 766 .github/test-assets";
 
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up -d";
-      $cmd[] = "sleep 1";
+      $cmd[] = "sleep 3";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir/.test-assets";
