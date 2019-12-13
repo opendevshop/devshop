@@ -37,4 +37,4 @@ services:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
-      - ./.github/test-assets:/var/aegir/.test-assets
+      - /var/aegir
