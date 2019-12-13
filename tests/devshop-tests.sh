@@ -8,10 +8,6 @@ echo "Found DevShop CLI in $DEVSHOP_PATH"
 echo "DevShop | devshop-tests.sh | environment"
 env
 
-echo "DevShop | devshop-tests.sh | Writing environment vars to ${DEVSHOP_TESTS_ASSETS_PATH}/environment"
-echo '# Generated from devshop-tests.sh:12' > /var/aegir/.test-assets/env.robo-up
-env >> /var/aegir/.test-assets/env.devshop-tests-sh
-
 # Print the lines and exit if a failure happens.
 echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
 /usr/share/devshop/bin/devshop --version

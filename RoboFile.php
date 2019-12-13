@@ -310,7 +310,7 @@ class RoboFile extends \Robo\Tasks {
 
       // Hostname should match server_hostname in playbook.server.yml
       ->option('--add-host', "{$hostname}:127.0.0.1")
-      ->option('--build-arg', "DEVSHOP_USER_UID=$user_uid")
+      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
       ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
       ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
       ->run()
@@ -434,19 +434,6 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Prepare test assets folder.
-// <<<<<<< github-pr-fixes
-
-//       // @TODO: The build is now FROM devshop/server:latest, so it already has aegir user at UID 1000.
-//       // Until the playbooks change that, we have to keep it at 1000
-//       // to match ownership inside the container.
-
-//       // @TODO: Remove, this wasn't enough either.
-//       // $cmd[] = "chmod 777 .github/test-assets";
-
-//       // @TODO: Remove once we know if 777 works or if we need chown.
-//        $cmd[] = "sudo chown 1000:1000 .github/test-assets";
-
-      // HUH?? This worked in this pr: https://github.com/opendevshop/devshop/pull/444
       $cmd[] = "sudo chmod 766 .github/test-assets";
 
       // Launch all containers, detached
@@ -455,13 +442,7 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "sleep 3";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
-      $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir/.test-assets";
-
-      $time = date('c');
-      $cmd[] = "echo '# Generated from RoboFile.php:447 at $time' > .github/test-assets/env.robo-up";
-      $cmd[] = "docker-compose exec -T devshop env >> .github/test-assets/env.robo-up";
-
-      $cmd[] = "docker-compose exec -T devshop service --status-all";
+      $cmd[] = "docker-compose exec -T devshop ls -la /usr/share/devshop/.github/test-assets";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
