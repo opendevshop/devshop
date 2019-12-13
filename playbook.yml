@@ -8,7 +8,10 @@
   roles:
     - opendevshop.users
     - opendevshop.apache
+    - geerlingguy.php-versions
     - geerlingguy.php
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster
+  vars:
+    php_version: "7.1"

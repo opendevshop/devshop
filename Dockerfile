@@ -12,7 +12,17 @@ ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 ARG DEVSHOP_USER_UID=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
 
+ARG DEVSHOP_PLAYBOOK=docker/playbook.server.yml
+ENV DEVSHOP_PLAYBOOK ${DEVSHOP_PLAYBOOK:-docker/playbook.server.yml}
+
+ENV DEVSHOP_PLAYBOOK_PATH="/usr/share/devshop/$DEVSHOP_PLAYBOOK"
+
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
+ENV DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
+
+ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
+    -e aegir_user_uid=$DEVSHOP_USER_UID \
+    -e aegir_user_gid=$DEVSHOP_USER_UID"
 
 ENV pip_packages "ansible"
 
@@ -31,22 +41,24 @@ RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 # (re) Install Ansible via Pip(3).
 RUN pip install $pip_packages
 
+# Copy Ansible.cfg to /etc/ansible
+COPY ./ansible.cfg /etc/ansible/ansible.cfg
+
 RUN ansible --version
 
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
-
-# Copy docker shell scripts to /usr/local/bin
-COPY ./docker/bin/* /usr/local/bin/
-
-RUN ls -la /usr/local/bin
-RUN echo $PATH
+RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Provision DevShop inside Docker.
-RUN ansible-galaxy install -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
-RUN ansible-playbook /usr/share/devshop/docker/playbook.server.yml -e aegir_user_uid=$DEVSHOP_USER_UID -e aegir_user_gid=$DEVSHOP_USER_UID --skip-tags install-devmaster
+RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
+RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
+
+# Provision DevShop inside Docker.
+RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster ..."
+RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
+ENTRYPOINT ["docker-entrypoint"]
 CMD ["/lib/systemd/systemd"]

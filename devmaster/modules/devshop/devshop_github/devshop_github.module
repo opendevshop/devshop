@@ -53,40 +53,35 @@ function devshop_github_token_is_valid($token = NULL) {
 }
 
 /**
- * Grab an authenticated GitHub client.
+ * Get a GitHub client.
  *
  * If a devshop_github_token is not found, it will attempt to use the Public API.
  *
- * @param bool $public
- *   Set to TRUE to skip authentication.
+ * @param bool $must_authenticate
+ *   Set to TRUE if the client must authenticate with a token. If TRUE and token
+ *   is not present, an Exception will be thrown.
  *
  * @return \Github\Client
  * @throws Exception
  */
-function devshop_github_client($public = FALSE) {
+function devshop_github_client($must_authenticate = FALSE) {
   $client = new \Github\Client();
 
   $github_token = devshop_github_token();
 
-  // Check for missing token. Set $public to TRUE.
-  if (empty($github_token)) {
-    $public = variable_get('devshop_github_use_public_api_if_no_token', TRUE);
+  // If caller requires authentication, throw exception if token is missing.
+  if ($must_authenticate && empty($github_token)) {
+    throw new \Exception(t('There is no GitHub Token set, but is required for this action.'));
   }
 
-  // If not public...
-  if (!$public) {
-
-    // Throw exception if token is missing.
-    if (empty($github_token)) {
-      throw new \Exception(t('There is no GitHub Token set.'));
-    }
+  // If a token is found, authenticate.
+  if (!empty($github_token)) {
 
     // Set token in client.
     $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
       $client->currentUser()->show();
-      return $client;
     }
     catch (Exception $e) {
       // If error, set_message and throw the exception upstream.
@@ -94,10 +89,8 @@ function devshop_github_client($public = FALSE) {
       throw $e;
     }
   }
-  else {
-    // return an unauthenticated client, use for public requests.
-    return $client;
-  }
+
+  return $client;
 }
 
 
@@ -157,6 +150,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       '#weight' => -10,
   );
   $form['project']['settings']['deploy']['default_hooks']['#weight'] = -9;
+
 
   // If Pull Requests were found in the environment, enable PR environments by default.
   $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
@@ -961,6 +955,7 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
   $repo = $project->github_owner . '/' . $project->github_repo;
   $repo_url = "http://github.com/" . $repo;
 
+  // @TODO: Check that the API key has write access before offering to do this.
   $form['github_webhook'] = array(
     '#title' => t('Setup GitHub Webhook'),
     '#description' => t('Leave this box checked to automatically add a webhook to your GitHub Repository !link.', array(

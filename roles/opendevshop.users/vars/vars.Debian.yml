@@ -1,6 +1,8 @@
 ---
 
-php_mysql_package: php-mysql
-
 devshop_prerequisite_packages:
   - openssh-client
+  - openssh-server
+  - dirmngr
+  - curl
+  - wget

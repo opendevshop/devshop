@@ -7,8 +7,11 @@ services:
   devshop:
     image: devshop/server:local
     ports:
-      - 80:80
+      - "80:80"
+      - "2222:22"
     hostname: devshop.local.computer
+    extra_hosts:
+      - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     environment:
       # Change to use a different database host.
       DATABASE_HOST: localhost
@@ -38,6 +41,7 @@ services:
 
       # Add additional files you would like to output in the container logs here, separated by a space.
       DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+      DEVSHOP_TESTS_ASSETS_PATH: "/usr/share/devshop/.github/test-assets"
 
     privileged: true
     volumes:
@@ -48,12 +52,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
+      - /var/logs/aegir
       - $HOME/.ssh:/var/aegir/.ssh
       # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
       # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
-
-    extra_hosts:
-      - "remote.devshop.local.computer:10.10.10.11"
 
 # Database container is now optional: for local development just use the devshop/server container.
 #  database:
