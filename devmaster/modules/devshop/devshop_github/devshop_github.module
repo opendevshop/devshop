@@ -1856,7 +1856,7 @@ function devshop_github_create_all_pr_environments($project_node) {
     drush_log("Checking $environment->name... [$site_url]");
 
     // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
-    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request->pull_request_object->id) && empty($prs[$environment_pr_slug])) {
+    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request) && empty($prs[$environment_pr_slug])) {
       continue;
     }
     // If no PR data, but the environment name matches a PR's slug, update data.
