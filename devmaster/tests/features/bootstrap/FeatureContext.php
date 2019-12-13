@@ -59,14 +59,14 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             // If environment variable is set, save assets to that.
             if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']) && is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
               $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
-              $logged_string = "$files_path";
+              $output_notification_string =  $files_path .'/output.html';
             }
             // If not, load the public writable files folder for devshop, so the asset can be served over HTTP.
             else {
               // Lookup file_directory_path
               $cmd = "drush @$alias vget file_public_path --format=string";
               $files_path = trim(shell_exec($cmd));
-              $logged_string = "$base_url/$files_path/output.html";
+              $output_notification_string = "$base_url/$files_path/output.html";
             }
 
             // Check for various problems.
@@ -92,18 +92,16 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             }
             $wrote = file_put_contents($output_path, $this->getSession()->getPage()->getContent());
 
+            if ($wrote) {
+                echo "Last Page Output Saved to: $output_notification_string \n";
+            }
+            else {
+                throw new \Exception("Something failed when writing output to $output_path ... \n");
+            }
 
             if (isset($_SERVER['CI'])) {
                 echo "\nLasts Response:\n";
                 $this->minkContext->printLastResponse();
-            }
-
-            if ($wrote) {
-                echo "Last Page Output Saved to: $output_path \n";
-                echo "Last Page Output: $logged_string \n";
-            }
-            else {
-                throw new \Exception("Something failed when writing output to $files_path ... \n");
             }
 
             echo "\nWatchdog Errors:\n";

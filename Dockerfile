@@ -18,7 +18,7 @@ ENV DEVSHOP_PLAYBOOK ${DEVSHOP_PLAYBOOK:-docker/playbook.server.yml}
 ENV DEVSHOP_PLAYBOOK_PATH="/usr/share/devshop/$DEVSHOP_PLAYBOOK"
 
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
-ENV DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
+ENV DEVSHOP_TESTS_ASSETS_PATH="/var/aegir/.test-assets"
 
 ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
     -e aegir_user_uid=$DEVSHOP_USER_UID \
@@ -48,6 +48,7 @@ RUN ansible --version
 
 # Copy DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
+RUN mkdir -p $DEVSHOP_TESTS_ASSETS_PATH
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Provision DevShop inside Docker.
