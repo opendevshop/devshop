@@ -467,6 +467,7 @@ class RoboFile extends \Robo\Tasks {
       // Test commands must be run as application user.
       if ($opts['test']) {
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
+        $cmd[]= "docker-compose exec -T devshop service cron stop";
         $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
 
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
