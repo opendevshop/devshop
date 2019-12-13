@@ -15,7 +15,7 @@
 
 Version | Status | Aegir | Hosts      | Status
 --------|--------|-------|------------|----------
-1.x     | Stable | 3.x   | D6, D7, D8 | [![Test Status](https://github.com/opendevshop/devshop/workflows/Tests/badge.svg)
+1.x     | Stable | 3.x   | D6, D7, D8 | [![Test Status](https://github.com/opendevshop/devshop/workflows/Tests/badge.svg)](https://github.com/opendevshop/devshop/actions)
 
 
 [![Backers on Open Collective](https://opencollective.com/devshop/backers/badge.svg)](#backers)
