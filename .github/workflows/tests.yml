@@ -57,8 +57,18 @@ jobs:
     - name: Create DevShop Server Image
       run: bin/robo prepare:containers -v
 
-    - name: Run DevShop Server Tests
+    - name: Write GITHUB environment variables  to a file so the container inherits the GITHUB_ variables.
+      run: env | grep GITHUB_ > .ci.env
+
+    - name: Run DevShop Server and tests
       run: bin/robo up --test --skip-source-prep -v
 
+      
     - name: Run DevShop Server Upgrade Tests
-      run: bin/robo up --test-upgrade --skip-source-prep
+      run: bin/robo up --test-upgrade --skip-source-prep  
+
+    - uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: test-assets
+        path: ./.github/test-assets

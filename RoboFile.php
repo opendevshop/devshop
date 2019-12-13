@@ -278,7 +278,9 @@ class RoboFile extends \Robo\Tasks {
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml') {
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
+      'file' => 'Dockerfile.fast'
+  ]) {
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -303,6 +305,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Hostname should match server_hostname in playbook.server.yml
     if (!$this->taskDockerBuild()
+      ->option("--file ${opts['file']}")
       ->tag("devshop/server:local")
 
       // Hostname should match server_hostname in playbook.server.yml
@@ -373,7 +376,8 @@ class RoboFile extends \Robo\Tasks {
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'build' => FALSE,
-    'skip-source-prep' => FALSE
+    'skip-source-prep' => FALSE,
+    'skip-install' => FALSE
   ]) {
 
     // Tell Provision power process to print output directly.
@@ -404,7 +408,9 @@ class RoboFile extends \Robo\Tasks {
 
     // Build the container if desired.
     if ($opts['build']) {
-      $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
+      // @TODO: Make the playbook a CLI option and figure out a better way to do this.
+      // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
+      $playbook = 'docker/playbook.server.yml';
       $this->say("Preparing containers with playbook: $playbook");
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
     }
@@ -414,15 +420,29 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($opts['mode'] == 'docker-compose') {
+
+      if ($opts['test'] || $opts['test-upgrade']) {
+        $compose_file = 'docker-compose-tests.yml';
+      }
+      else {
+        $compose_file = 'docker-compose.yml';
+      }
+
+
 //      $env = "-e TERM=xterm";
 //      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
+      // Prepare test assets folder.
+      $cmd[] = "chmod 766 .github/test-assets";
+
       // Launch all containers, detached
+      $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up -d";
-      $cmd[] = "sleep 1";
+      $cmd[] = "sleep 3";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
+      $cmd[] = "docker-compose exec -T devshop ls -la /usr/share/devshop/.github/test-assets";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
@@ -442,6 +462,10 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
 
+        if (!$opts['skip-install']) {
+          $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+        }
+
         $cmd[] = "docker-compose exec -T devshop devshop status";
         $cmd[] = "docker-compose exec -T devshop devshop login";
 
@@ -454,11 +478,9 @@ class RoboFile extends \Robo\Tasks {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-          if ($opts['test'] || $opts['test-upgrade']) {
-            $process->setEnv([
-              'COMPOSE_FILE' => 'docker-compose-tests.yml'
-            ]);
-          }
+          $process->setEnv([
+            'COMPOSE_FILE' => $compose_file
+          ]);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
@@ -732,29 +754,11 @@ class RoboFile extends \Robo\Tasks {
    */
   public function shell($user = 'aegir') {
 
-    // Check if single container is running (as opposed to docker compose)
-    $devshop_container_running = $this->taskExec('docker exec -ti devshop_container echo')
-        ->silent(1)
-        ->run()
-        ->wasSuccessful();
-
     if ($user) {
-      // if devshop_container exists, shell into that.
-      if ($devshop_container_running) {
-        $process = new \Symfony\Component\Process\Process("docker exec --user $user -ti devshop_container bash");
-      }
-      else {
         $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash");
-      }
     }
     else {
-      // if devshop_container exists, shell into that.
-      if ($devshop_container_running) {
-        $process = new \Symfony\Component\Process\Process("docker exec -ti devshop_container bash");
-      }
-      else {
         $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
-      }
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);

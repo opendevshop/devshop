@@ -12,6 +12,9 @@ services:
     hostname: devshop.local.computer
     extra_hosts:
     - "drpl8.testenv.devshop.local.computer:127.0.0.1"
+    env_file:
+      - .github/.ci.env
+
     environment:
 
       # When using the "devshop-test-upgrade.sh" script, installs this version first.
@@ -21,8 +24,11 @@ services:
       # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
       ANSIBLE_VERBOSITY: 0
 
+      CI: "CI"
+
       # Add additional files you would like to output in the container logs here, separated by a space.
       DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
+      DEVSHOP_TESTS_ASSETS_PATH: "/usr/share/devshop/.github/test-assets"
 
       # Reads GITHUB TOKEN from the calling environment.
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
@@ -31,3 +37,4 @@ services:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
+      - ./.github/.test-assets:/usr/share/devshop/.github/test-assets
