@@ -434,7 +434,14 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Prepare test assets folder.
-      $cmd[] = "chmod 766 .github/test-assets";
+
+      // @TODO: The build is now FROM devshop/server:latest, so it already has aegir user at UID 1000.
+      // Until the playbooks change that, we have to keep it at 1000
+      // to match ownership inside the container.
+      $cmd[] = "chmod 777 .github/test-assets";
+
+      // @TODO: Remove once we know if 777 works or if we need chown.
+      // $cmd[] = "chown 1000:1000 .github/test-assets";
 
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
