@@ -439,7 +439,7 @@ class RoboFile extends \Robo\Tasks {
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up -d";
-      $cmd[] = "sleep 1";
+      $cmd[] = "sleep 3";
       $cmd[] = "docker ps";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
       $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir/.test-assets";
