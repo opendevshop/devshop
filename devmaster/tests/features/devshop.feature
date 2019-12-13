@@ -39,7 +39,8 @@ Feature: Anonymous Homepage
     Then I should see "License Status: Active"
     When I run drush "vset devshop_support_license_key_status none"
     When I run drush "vset devshop_support_license_key xxx"
-    Then I should see "Your DevShop server is currently unsupported."
+    Then I should see "License Status: None"
+#    Then I should see "Your DevShop server is currently unsupported."
 
     When I am logged in as a user with the "administrator" role
     Given I am at "admin/devshop/support"
