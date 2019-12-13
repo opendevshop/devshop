@@ -112,7 +112,7 @@ class DevmasterTest extends Command {
 //    $fs->dumpFile($settings_default_path, trim($output));
 
     // Run composer install
-    $process = new Process('composer install --no-progress --no-suggests --ansi');
+    $process = new Process('composer install --no-progress --no-suggest --ansi');
     $process->setTimeout(NULL);
     $process->setWorkingDirectory($input->getOption('behat-path'));
 
