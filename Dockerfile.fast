@@ -18,6 +18,8 @@ ENV DEVSHOP_PLAYBOOK ${DEVSHOP_PLAYBOOK:-docker/playbook.server.yml}
 #    -e aegir_user_uid=$DEVSHOP_USER_UID \
 #    -e aegir_user_gid=$DEVSHOP_USER_UID"
 
+RUN env
+
 # Copy latest DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
