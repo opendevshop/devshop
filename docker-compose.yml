@@ -56,7 +56,7 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
       - $HOME/.ssh:/var/aegir/.ssh
-      - ./.github/test-assets:/var/aegir/.test-assets
+
       # Uncomment when developing the the entrypoint script for rapid docker-compose up runs.
       # - ./docker/bin/entrypoint:/usr/local/bin/entrypoint:delegated
 
