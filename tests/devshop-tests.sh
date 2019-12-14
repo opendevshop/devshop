@@ -3,10 +3,13 @@ set -e
 
 # Use path relative to this script to find bin dir.
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
-echo "Found DevShop CLI in $DEVSHOP_PATH"
 
 echo "DevShop | devshop-tests.sh | environment"
 env
+
+echo "DevShop | devshop-tests.sh | Git Information"
+git show --shortstat
+git remote -v
 
 # Print the lines and exit if a failure happens.
 echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
