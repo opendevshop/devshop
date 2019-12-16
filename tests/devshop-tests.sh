@@ -7,7 +7,7 @@ DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
 echo "DevShop | devshop-tests.sh | environment"
 env
 
-echo "DevShop | devshop-tests.sh | Git Information"
+echo "DevShop | devshop-tests.sh | DevShop Version in: $DEVSHOP_PATH"
 cd $DEVSHOP_PATH
 git show --shortstat
 git remote -v
