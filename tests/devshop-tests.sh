@@ -8,8 +8,10 @@ echo "DevShop | devshop-tests.sh | environment"
 env
 
 echo "DevShop | devshop-tests.sh | Git Information"
+cd $DEVSHOP_PATH
 git show --shortstat
 git remote -v
+cd -
 
 # Print the lines and exit if a failure happens.
 echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
