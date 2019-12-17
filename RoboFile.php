@@ -307,7 +307,7 @@ class RoboFile extends \Robo\Tasks {
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
-    $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
+    $ansible_verbosity = $this->ansibleVerbosity;
 
     // Hostname should match server_hostname in playbook.server.yml
     if (!$this->taskDockerBuild()
