@@ -50,6 +50,11 @@ class RoboFile extends \Robo\Tasks {
   protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
   protected $devshopUsername = "aegir";
 
+  /**
+   * @var int Ansible verbosity. Passed from robo verbosity.
+   */
+  protected $ansibleVerbosity = 0;
+
   use \Robo\Common\IO;
 
   /**
@@ -63,6 +68,22 @@ class RoboFile extends \Robo\Tasks {
 
     if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
       $this->git_ref = $_SERVER['GITHUB_REF'];
+    }
+
+    // Pass robo -v to Ansible -v.
+    switch ($this->output()->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $this->ansibleVerbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $this->ansible_verbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $this->ansible_verbosity = 3;
+        break;
+      default:
+        $this->ansible_verbosity = 0;
+        break;
     }
   }
 
@@ -286,6 +307,7 @@ class RoboFile extends \Robo\Tasks {
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
+    $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
 
     // Pass robo -v to Ansible -v.
     switch ($this->output->getVerbosity()) {
