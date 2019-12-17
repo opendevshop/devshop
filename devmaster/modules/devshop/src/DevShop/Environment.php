@@ -5,11 +5,18 @@ namespace DevShop\Environment;
 /**
  * Class Environment
  *
+ * This is a temporary bridge to full OOP.
+ *
+ * I needed to centralize Git information and I just couldn't take it anymore.
+ *
  * @package DevShop\Environment
  */
 class Environment {
 
-  protected $environmentData;
+  /**
+   * @var \stdClass A legacy DevShop Environment stdClass.
+   */
+  protected $data;
 
   /**
    * @var \DevShop\Environment\EnvironmentGitInfo
@@ -19,22 +26,56 @@ class Environment {
   /**
    * Environment constructor.
    *
-   * @param $environment_data
+   * @param $data A legacy DevShop Environment stdClass.
    */
-  function __construct($environment_data) {
-    $this->environmentData = $environment_data;
+  function __construct($data) {
+    $this->data = $data;
     $this->git = new EnvironmentGitInfo($this);
   }
 
   /**
-   * Return properties from environmentData when requested from $this
+   * Return properties from $this->data->$name when requested from $this->$name
    *
    * @param $name
    *
    * @return mixed
    */
   function __get($name) {
-    return $this->environmentData->$name;
+    return $this->data->{$name};
   }
 
+  /**
+   * Set properties from $this->data->$name when requested from $this->$name
+   *
+   * @param $name
+   *
+   * @return mixed
+   */
+  function __set($name, $value) {
+    $this->data->{$name} = $value;
+  }
+
+  /**
+   * Check properties from $this->data->$name when requested from $this->$name
+   *
+   * @param $name
+   *
+   * @return bool
+   */
+  public function __isset($name)
+  {
+    return isset($this->data->{$name});
+  }
+
+  /**
+   * Unset properties from $this->data->$name when requested from $this->$name
+   *
+   * @param $name
+   *
+   * @return bool
+   */
+  public function __unset($name)
+  {
+    unset($this->data->{$name});
+  }
 }
