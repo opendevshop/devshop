@@ -309,22 +309,6 @@ class RoboFile extends \Robo\Tasks {
     }
     $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
 
-    // Pass robo -v to Ansible -v.
-    switch ($this->output->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $ansible_verbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $ansible_verbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $ansible_verbosity = 3;
-        break;
-      default:
-        $ansible_verbosity = 0;
-        break;
-    }
-
     // Hostname should match server_hostname in playbook.server.yml
     if (!$this->taskDockerBuild()
       ->option("--file ${opts['file']}")
