@@ -296,11 +296,37 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Build aegir and devshop containers from the Dockerfiles. Detects your UID
-   * or you can pass as an argument.
+   * Build a devshop/server container.
+   *
+   * By default, `robo prepare:containers` will build a new container image
+   * using the 'Dockerfile.fast' file. This file uses the 'latest' tag of the
+   * 'devshop/server' image on docker hub, which shortens build time.'
+   *
+   * To force a new local build of the 'devshop/server' container image from
+   * scratch, use the '--full' option.
+   *
+   * To create a local container
+   *
+   * @example bin/robo prepare:containers
+   *
+   * @option $full Build a new 'devshop/server:local' container image using 'Dockerfile' (FROM geerlingguy/docker-ubuntu1804-ansible). If used, --local option is enabled as well.
+   *
+   * @option $local Build a new 'devshop/server:local' container image using 'Dockerfile.fast' (FROM devshop/server:local).
+   *
+   *
+   * using 'Dockerfile' tagged "local", then finish building from the 'devshop/server:local' image. If not used, image is built from 'devshop/server:latest'
+   *
+   *
+   *   Command will fail if there is no 'docker/server:local' container image on
+   *   your system. Run 'robo p:c --full' to build a full local container first.
+   *
+   * Use the "--file" option to override the Dockerfile used. default: Dockerfile.fast
+   *
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-      'file' => 'Dockerfile.fast'
+    'full' => FALSE,
+    'local' => FALSE,
+    'dockerfile' => 'Dockerfile.fast',
   ]) {
 
     // Determine current UID.
@@ -309,32 +335,43 @@ class RoboFile extends \Robo\Tasks {
     }
     $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
 
-    // Pass robo -v to Ansible -v.
-    switch ($this->output->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $ansible_verbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $ansible_verbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $ansible_verbosity = 3;
-        break;
-      default:
-        $ansible_verbosity = 0;
-        break;
+    // Passing desired image and tag name to the Dockerfile FROM statement.
+    $image_from_name = 'devshop/server';
+    $image_from_tag = $opts['local']? 'local': 'latest';
+    $image_new_tag = 'devshop/server:local';
+
+    $docker_build_options = [];
+    $docker_build_options['--add-host']  = "{$hostname}:127.0.0.1";
+
+    $docker_build_options['--build-arg'] = "AEGIR_USER_UID=$user_uid";
+    $docker_build_options['--build-arg'] = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
+    $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
+    $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
+
+    // If --full option is specified, build the base Dockerfile.
+    if ($opts['full']) {
+      if (!$this->taskDockerBuild()
+        ->option("--file Dockerfile")
+        ->tag($image_new_tag)
+        ->options($docker_build_options)
+        ->run()
+        ->wasSuccessful()) {
+        throw new RuntimeException('Docker Build Failed.');
+      }
+
+      // At this point we have a new devshop/server:local image.
+
     }
 
-    // Hostname should match server_hostname in playbook.server.yml
-    if (!$this->taskDockerBuild()
-      ->option("--file ${opts['file']}")
-      ->tag("devshop/server:local")
+    // If --full is not set, rebuild the container FROM devshop/server:local.
+    elseif (!$this->taskDockerBuild()
+      ->option("--file Dockerfile.${opts['dockerfile']}")
+      ->tag($image_new_tag)
 
       // Hostname should match server_hostname in playbook.server.yml
-      ->option('--add-host', "{$hostname}:127.0.0.1")
-      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
-      ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
-      ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
+      ->options($docker_build_options)
+      ->option('--build-arg', "DEVSHOP_DOCKER_FROM_IMAGE_NAME=$image_from_name")
+      ->option('--build-arg', "DEVSHOP_DOCKER_FROM_IMAGE_TAG=$image_from_tag")
       ->run()
       ->wasSuccessful()) {
       throw new RuntimeException('Docker Build Failed.');

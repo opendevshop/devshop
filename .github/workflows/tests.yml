@@ -54,8 +54,8 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image
-      run: bin/robo prepare:containers -v
+    - name: Create local DevShop Server Image
+      run: bin/robo prepare:containers --local -v
 
     - name: Prepare Docker Environment with GitHub Variables
       run: env | grep GITHUB_ > .ci.env
