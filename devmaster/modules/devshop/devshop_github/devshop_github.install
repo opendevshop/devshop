@@ -90,7 +90,7 @@ function devshop_github_install() {
         ->execute();
 
     // Load the token from ENV variable if there is one.
-    if ($token = devshop_github_token()) {
+    if ($token == devshop_github_token()) {
 
       if (devshop_github_token_is_valid($token)) {
         variable_set('devshop_github_token', $token);
