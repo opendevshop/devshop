@@ -1,7 +1,11 @@
 name: Tests
 
-on: [push]
-
+on: 
+ push:
+   branches:
+     - "*"
+ schedule:
+  - cron: "* * * * *"
 jobs:
   lint:
     name: Ansible Lint
