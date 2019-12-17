@@ -23,6 +23,9 @@ COPY ./ /usr/share/devshop
 
 # Remove existing devmaster codebase so it will rebuild.
 RUN rm -rf /var/aegir
+RUN rm -rf /usr/share/devshop
+
+COPY ./ /usr/share/devshop
 
 # Provision DevShop inside Docker.
 RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster"
