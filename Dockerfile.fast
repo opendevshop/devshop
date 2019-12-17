@@ -18,14 +18,16 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
     -e aegir_user_uid=$DEVSHOP_USER_UID \
     -e aegir_user_gid=$DEVSHOP_USER_UID"
 
-# Copy latest DevShop Core to /usr/share/devshop
-COPY ./ /usr/share/devshop
-
 # Remove existing devmaster codebase so it will rebuild.
 RUN rm -rf /var/aegir
 RUN rm -rf /usr/share/devshop
 
+# Copy latest DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
+
+# Install galaxy roles.
+RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
+RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
 
 # Provision DevShop inside Docker.
 RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster"
