@@ -365,7 +365,7 @@ class RoboFile extends \Robo\Tasks {
 
     // If --full is not set, rebuild the container FROM devshop/server:local.
     elseif (!$this->taskDockerBuild()
-      ->option("--file Dockerfile.${opts['dockerfile']}")
+      ->option("--file ${opts['dockerfile']}")
       ->tag($image_new_tag)
 
       // Hostname should match server_hostname in playbook.server.yml
