@@ -142,7 +142,6 @@ class RoboFile extends \Robo\Tasks {
     'provision' => 'http://git.drupal.org/project/provision.git',
     'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
     'documentation' => 'http://github.com/opendevshop/documentation.git',
-    'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
   ];
 
   /**
@@ -333,7 +332,6 @@ class RoboFile extends \Robo\Tasks {
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
-    $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
 
     // Passing desired image and tag name to the Dockerfile FROM statement.
     $image_from_name = 'devshop/server';
@@ -345,7 +343,6 @@ class RoboFile extends \Robo\Tasks {
 
     $docker_build_options['--build-arg'] = "AEGIR_USER_UID=$user_uid";
     $docker_build_options['--build-arg'] = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
-    $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
     $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
 
     // If --full option is specified, build the base Dockerfile.
@@ -474,17 +471,31 @@ class RoboFile extends \Robo\Tasks {
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
     }
 
-    if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
-      $this->prepareSourcecode($opts);
-    }
-
     if ($opts['mode'] == 'docker-compose') {
 
       if ($opts['test'] || $opts['test-upgrade']) {
+        $this->yell("Test Environment Requested: Using docker-compose-tests.yml.");
+        $this->say("No docker volumes are enabled using this mode.");
+
+        if (!$opts['build']) {
+          $this->say("The --build option was not specified: The latest code may not be in the container.");
+        }
+
         $compose_file = 'docker-compose-tests.yml';
       }
       else {
+        $this->yell("Development Environment Requested: Using docker-compose.yml.");
+
         $compose_file = 'docker-compose.yml';
+
+        if (!file_exists('aegir-home')) {
+          if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
+            $this->prepareSourcecode($opts);
+          }
+        }
+        else {
+          $this->say("The aegir-home folder already exists.");
+        }
       }
 
 
@@ -493,7 +504,7 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Prepare test assets folder.
-      $cmd[] = "sudo chmod 766 .github/test-assets";
+      // $cmd[] = "sudo chmod 766 .github/test-assets";
 
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
