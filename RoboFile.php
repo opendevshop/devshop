@@ -306,7 +306,7 @@ class RoboFile extends \Robo\Tasks {
       'os-version' => 'ubuntu1804',
   ]) {
 
-    $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'yellow');
+    $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'blue');
 
     // Determine current UID.
     if (is_null($user_uid)) {
