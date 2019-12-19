@@ -55,4 +55,3 @@ RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["/lib/systemd/systemd"]
