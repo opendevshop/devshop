@@ -42,8 +42,8 @@ RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 RUN ansible --version
 
 # Install roles inside Docker.
-#RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
-#RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
+RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
+RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
 
 # Provision DevShop inside Docker.
 RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster"
