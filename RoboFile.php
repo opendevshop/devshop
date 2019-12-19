@@ -302,7 +302,7 @@ class RoboFile extends \Robo\Tasks {
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-      'file' => 'Dockerfile.base',
+      'file' => 'Dockerfile',
       'os-version' => 'ubuntu1804',
   ]) {
 
