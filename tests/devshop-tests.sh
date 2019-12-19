@@ -3,10 +3,15 @@ set -e
 
 # Use path relative to this script to find bin dir.
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
-echo "Found DevShop CLI in $DEVSHOP_PATH"
 
 echo "DevShop | devshop-tests.sh | environment"
 env
+
+echo "DevShop | devshop-tests.sh | DevShop Version in: $DEVSHOP_PATH"
+cd $DEVSHOP_PATH
+git show --shortstat
+git remote -v
+cd -
 
 # Print the lines and exit if a failure happens.
 echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
@@ -41,6 +46,9 @@ if [ -n "${GITHUB_TOKEN}" ]; then
 else
   echo ">> GITHUB_TOKEN environment variable not found."
 fi
+
+# Disable Support Queue testing.
+drush @hostmaster vset devshop_support_enabled 0
 
 # Run the test suite.
 devshop devmaster:test
