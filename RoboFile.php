@@ -303,10 +303,15 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Build aegir and devshop containers from the Dockerfiles. Detects your UID
    * or you can pass as an argument.
+   *
+   * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-      'file' => 'Dockerfile.fast'
+      'file' => 'Dockerfile',
+      'os-version' => 'ubuntu1804',
   ]) {
+
+    $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'blue');
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -325,8 +330,9 @@ class RoboFile extends \Robo\Tasks {
       // Hostname should match server_hostname in playbook.server.yml
       ->option('--add-host', "{$hostname}:127.0.0.1")
       ->option('--build-arg', "DEVSHOP_USER_UID_ARG=$user_uid")
-      ->option('--build-arg', "ANSIBLE_VERBOSITY_ARG=$this->ansibleVerbosity")
+      ->option('--build-arg', "ANSIBLE_VERBOSITY_ARG=$this->ansible_verbosity")
       ->option('--build-arg', "DEVSHOP_PLAYBOOK_ARG=$playbook")
+      ->option('--build-arg', "OS_VERSION={$opts['os-version']}")
       ->run()
       ->wasSuccessful()) {
       throw new RuntimeException('Docker Build Failed.');
@@ -375,6 +381,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $xdebug Set this option to launch with an xdebug container.
    * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option $build Run `robo prepare:containers` to rebuild the container first.
+   * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    */
   public function up($opts = [
     'follow' => 1,
@@ -391,7 +398,9 @@ class RoboFile extends \Robo\Tasks {
     'devshop-version' => '1.x',
     'build' => FALSE,
     'skip-source-prep' => FALSE,
-    'skip-install' => FALSE
+    'skip-install' => FALSE,
+    'os-version' => 'ubuntu1804',
+    'file' => 'Dockerfile.base',
   ]) {
 
     // Tell Provision power process to print output directly.
@@ -426,7 +435,7 @@ class RoboFile extends \Robo\Tasks {
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
       $playbook = 'docker/playbook.server.yml';
       $this->say("Preparing containers with playbook: $playbook");
-      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook, $opts);
     }
 
     if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
