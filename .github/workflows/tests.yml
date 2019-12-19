@@ -43,6 +43,8 @@ jobs:
       matrix:
         os_version:
           - 'ubuntu1804'
+          - 'centos7'
+
     runs-on: ubuntu-18.04
     steps:
 
