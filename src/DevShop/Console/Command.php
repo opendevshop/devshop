@@ -118,6 +118,7 @@ abstract class Command extends BaseCommand
         trim(`which ansible-playbook`),
         trim(`which ansible-galaxy`)
       );
+      $this->ansible->setTimeout(0);
     } catch (CommandException $exception) {
       if ($this->ansibleRequired) {
         $commandName = $this->getName();
