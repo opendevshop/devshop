@@ -329,6 +329,7 @@ class RoboFile extends \Robo\Tasks {
     'full' => FALSE,
     'local' => FALSE,
     'dockerfile' => 'Dockerfile.fast',
+    'os-version' => 'ubuntu1804',
   ]) {
 
     $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'blue');
