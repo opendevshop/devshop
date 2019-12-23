@@ -157,15 +157,6 @@
     - {path: '.ssh/id_rsa', mode: '600'}
     - {path: '.ssh/id_rsa.pub', mode: '644'}
 
-- name: Create aegir's logs files
-  file:
-    path: "{{ aegir_logs_path }}/{{ item }}"
-    owner: "{{ aegir_user_name }}"
-    group: "{{ aegir_user_name }}"
-    state: touch
-    mode: 0755
-  with_items: "{{ aegir_log_files_touch }}"
-
 # CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
 # @TODO: Investigate php.ini for CLI on all OS
 # - name: 'RedHat: Set timezone in PHP.ini for CLI.'

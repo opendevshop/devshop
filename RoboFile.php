@@ -50,6 +50,10 @@ class RoboFile extends \Robo\Tasks {
   protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
   protected $devshopUsername = "aegir";
 
+  /**
+   * @var int Ansible verbosity. Passed from robo verbosity.
+   */
+  protected $ansibleVerbosity = 0;
 
   use \Robo\Common\IO;
 
@@ -65,34 +69,25 @@ class RoboFile extends \Robo\Tasks {
     if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
       $this->git_ref = $_SERVER['GITHUB_REF'];
     }
+
+    // Pass robo -v to Ansible -v.
+    switch ($this->output()->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $this->ansibleVerbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $this->ansible_verbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $this->ansible_verbosity = 3;
+        break;
+      default:
+        $this->ansible_verbosity = 0;
+        break;
+    }
   }
 
-  /**
-   * @var int Ansible verbosity. Passed from robo verbosity to the containers as
-   * an environment
-   */
-  protected $ansibleVerbosity = 0;
-
-  /**
-   * @var array Mapping from Symfony Output Verbosity constants to
-   * ANSIBLE_VERBOSITY constants.
-   */
-  const SYMFONY_ANSIBLE_VERBOSITY_MAP = [
-    OutputInterface::VERBOSITY_QUIET => 0,
-    OutputInterface::VERBOSITY_NORMAL => 1,
-    OutputInterface::VERBOSITY_VERBOSE => 2,
-    OutputInterface::VERBOSITY_VERY_VERBOSE => 3,
-    OutputInterface::VERBOSITY_DEBUG => 3,
-  ];
-
-  /**
-   * Set the ansibleVerbosity()
-   */
-  protected function setAnsibleVerbosity() {
-    $verbosity = $this->output()->getVerbosity();
-    $this->ansibleVerbosity = self::SYMFONY_ANSIBLE_VERBOSITY_MAP[$verbosity]?: 0;
-  }
-
+//
 //  /**
 //   * Launch devshop after running prep:host and prep:source. Use --build to
 //   * build new local containers.
@@ -317,10 +312,23 @@ class RoboFile extends \Robo\Tasks {
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
+    $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
 
-    // Set the ANSIBLE_VERBOSITY environment variable.
-    // @TODO: Setting this in __construct wont work: verbosity level isn't known.
-    $this->setAnsibleVerbosity();
+    // Pass robo -v to Ansible -v.
+    switch ($this->output->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $ansible_verbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $ansible_verbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $ansible_verbosity = 3;
+        break;
+      default:
+        $ansible_verbosity = 0;
+        break;
+    }
 
     // Hostname should match server_hostname in playbook.server.yml
     if (!$this->taskDockerBuild()
@@ -329,9 +337,9 @@ class RoboFile extends \Robo\Tasks {
 
       // Hostname should match server_hostname in playbook.server.yml
       ->option('--add-host', "{$hostname}:127.0.0.1")
-      ->option('--build-arg', "DEVSHOP_USER_UID_ARG=$user_uid")
-      ->option('--build-arg', "ANSIBLE_VERBOSITY_ARG=$this->ansible_verbosity")
-      ->option('--build-arg', "DEVSHOP_PLAYBOOK_ARG=$playbook")
+      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
+      ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
+      ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
       ->option('--build-arg', "OS_VERSION={$opts['os-version']}")
       ->run()
       ->wasSuccessful()) {
@@ -400,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
     'os-version' => 'ubuntu1804',
-    'file' => 'Dockerfile.base',
+    'file' => 'Dockerfile',
   ]) {
 
     // Tell Provision power process to print output directly.
@@ -471,7 +479,6 @@ class RoboFile extends \Robo\Tasks {
       // Test commands must be run as application user.
       if ($opts['test']) {
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $cmd[]= "docker-compose exec -T devshop service cron stop";
         $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
 
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
@@ -502,7 +509,6 @@ class RoboFile extends \Robo\Tasks {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-          $process->disableOutput();
           $process->setEnv([
             'COMPOSE_FILE' => $compose_file
           ]);
