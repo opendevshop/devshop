@@ -14,10 +14,6 @@ function devshop_support_check_license() {
  */
 function devshop_support_network_client_post_data($license_key = NULL) {
 
-  if (!variable_get('devshop_support_enabled', false)) {
-    return;
-  }
-
   if (!$license_key) {
     $license_key = variable_get('devshop_support_license_key', NULL);
     if (!$license_key) {
@@ -121,18 +117,7 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     }
   }
 
-  variable_set('devshop_support_license_key', $license_key);
-
   // Disable all users not included in the license payload.
-  // If only 1 active UID, (admin) there is a problem.
-  if (count($active_local_uids) <= 1){
-    watchdog('devshop_support_api', 'Unable to set user accounts: Only !count active local user found: !users', array(
-      '!count' => count($active_local_uids),
-      '!users' => implode(' ', $mapped_account_names),
-    ));
-    return;
-  }
-
   db_update('users')
     ->fields(array(
       'status' => 0
@@ -147,6 +132,8 @@ function devshop_support_network_client_post_data($license_key = NULL) {
     ))
     ->condition('uid', $active_local_uids, 'IN')
     ->execute();
+
+  variable_set('devshop_support_license_key', $license_key);
 
   watchdog('devshop_support_api', 'Loaded !count devshop.support users: !users', array(
     '!count' => count($active_local_uids),

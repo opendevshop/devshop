@@ -36,11 +36,6 @@ aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
 
-aegir_log_files_touch:
-  - hosting-queue-runner.log
-  - hostmaster.error.log
-  - hostmaster.access.log
-
 drush_dl_method: wget
 
 devshop_drush_packages:

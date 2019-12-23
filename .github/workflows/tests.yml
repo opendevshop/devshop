@@ -1,15 +1,11 @@
 name: Tests
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 on: 
  push:
    branches:
      - "*"
  schedule:
   - cron: "10 * * * *"
-
 jobs:
   lint:
     name: Ansible Lint
