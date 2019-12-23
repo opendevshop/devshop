@@ -67,7 +67,9 @@ class Composer {
       $target = "refs/splits/$folder";
 
       // Split the commits into a different branch.
-      if (self::exec("splitsh-lite --progress --prefix={$folder}/ --target=$target") != 0) {
+      // @TODO: When this becomes a composer plugin, pass -v to --progress.
+      $progress = '';// '--progress';
+      if (self::exec("splitsh-lite {$progress} --prefix={$folder}/ --target=$target") != 0) {
         exit(1);
       }
 

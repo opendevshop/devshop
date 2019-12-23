@@ -3,7 +3,7 @@
     "description": "Command Line interface for DevShop",
     "require": {
         "knplabs/github-api": "^1.4",
-        "cpliakas/git-wrapper": "1.*",
+        "cpliakas/git-wrapper": "2.*",
         "asm/php-ansible": "^2.0",
         "consolidation/robo": "^2",
         "mouf/nodejs-installer": "^1.0",

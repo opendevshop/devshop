@@ -2,11 +2,11 @@ name: Tests
 
 on: 
  push:
-   branches:
-     - "*"
  schedule:
-  - cron: "10 * * * *"
+   - cron: "10 * * * *"
+
 jobs:
+
   lint:
     name: Ansible Lint
     runs-on: ubuntu-18.04
@@ -43,6 +43,10 @@ jobs:
       matrix:
         os_version:
           - 'ubuntu1804'
+          # @TODO: Open a new PR for one OS at a time.
+          # - 'centos6'
+          # - 'centos7'
+
     runs-on: ubuntu-18.04
     steps:
 
@@ -62,7 +66,7 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image
+    - name: Create DevShop Server Image FROM devshop/server:latest
       run: bin/robo prepare:containers -v --os-version=${{ matrix.os_version }}
 
     - name: Prepare Docker Environment with GitHub Variables
