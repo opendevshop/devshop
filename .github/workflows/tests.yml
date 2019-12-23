@@ -62,7 +62,7 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image
+    - name: Create DevShop Server Image FROM devshop/server:latest
       run: bin/robo prepare:containers -v --os-version=${{ matrix.os_version }}
 
     - name: Prepare Docker Environment with GitHub Variables
