@@ -5,4 +5,4 @@ mysql_supports_innodb_large_prefix: true
 
 devshop_prerequisite_packages:
   - openssh-clients
-  - python-pip
+  - pip
