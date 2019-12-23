@@ -142,7 +142,6 @@ class RoboFile extends \Robo\Tasks {
     'provision' => 'http://git.drupal.org/project/provision.git',
     'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
     'documentation' => 'http://github.com/opendevshop/documentation.git',
-    'aegir-dockerfiles' => 'http://github.com/aegir-project/dockerfiles.git',
   ];
 
   /**
@@ -296,14 +295,41 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Build aegir and devshop containers from the Dockerfiles. Detects your UID
-   * or you can pass as an argument.
+   * Build a devshop/server container.
+   *
+   * By default, `robo prepare:containers` will build a new container image
+   * using the 'Dockerfile.fast' file. This file uses the 'latest' tag of the
+   * 'devshop/server' image on docker hub, which shortens build time.'
+   *
+   * To force a new local build of the 'devshop/server' container image from
+   * scratch, use the '--full' option.
+   *
+   * To create a local container
+   *
+   * @example bin/robo prepare:containers
+   *
+   * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
+   *
+   * @option $full Build a new 'devshop/server:local' container image using 'Dockerfile' (FROM geerlingguy/docker-ubuntu1804-ansible). If used, --local option is enabled as well.
+   *
+   * @option $local Build a new 'devshop/server:local' container image using 'Dockerfile.fast' (FROM devshop/server:local).
    *
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   *
+   * using 'Dockerfile' tagged "local", then finish building from the 'devshop/server:local' image. If not used, image is built from 'devshop/server:latest'
+   *
+   *
+   *   Command will fail if there is no 'docker/server:local' container image on
+   *   your system. Run 'robo p:c --full' to build a full local container first.
+   *
+   * Use the "--file" option to override the Dockerfile used. default: Dockerfile.fast
+   *
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-      'file' => 'Dockerfile',
-      'os-version' => 'ubuntu1804',
+    'full' => FALSE,
+    'local' => FALSE,
+    'dockerfile' => 'Dockerfile.fast',
+    'os-version' => 'ubuntu1804',
   ]) {
 
     $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'blue');
@@ -312,35 +338,44 @@ class RoboFile extends \Robo\Tasks {
     if (is_null($user_uid)) {
       $user_uid = trim(shell_exec('id -u'));
     }
-    $ansible_verbosity = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
 
-    // Pass robo -v to Ansible -v.
-    switch ($this->output->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $ansible_verbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $ansible_verbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $ansible_verbosity = 3;
-        break;
-      default:
-        $ansible_verbosity = 0;
-        break;
+    // Passing desired image and tag name to the Dockerfile FROM statement.
+    $image_from_name = 'devshop/server';
+    $image_from_tag = $opts['local']? 'local': 'latest';
+    $image_new_tag = 'devshop/server:local';
+
+    $docker_build_options = [];
+    $docker_build_options['--add-host']  = "{$hostname}:127.0.0.1";
+
+    $docker_build_options['--build-arg'] = "AEGIR_USER_UID=$user_uid";
+    $docker_build_options['--build-arg'] = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
+    $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
+    $docker_build_options['--build-arg'] = "OS_VERSION={$opts['os-version']}";
+
+    // If --full option is specified, build the base Dockerfile.
+    if ($opts['full']) {
+      if (!$this->taskDockerBuild()
+        ->option("--file Dockerfile")
+        ->tag($image_new_tag)
+        ->options($docker_build_options)
+        ->run()
+        ->wasSuccessful()) {
+        throw new RuntimeException('Docker Build Failed.');
+      }
+
+      // At this point we have a new devshop/server:local image.
+
     }
 
-    // Hostname should match server_hostname in playbook.server.yml
-    if (!$this->taskDockerBuild()
-      ->option("--file ${opts['file']}")
-      ->tag("devshop/server:local")
+    // If --full is not set, rebuild the container FROM devshop/server:local.
+    elseif (!$this->taskDockerBuild()
+      ->option("--file ${opts['dockerfile']}")
+      ->tag($image_new_tag)
 
       // Hostname should match server_hostname in playbook.server.yml
-      ->option('--add-host', "{$hostname}:127.0.0.1")
-      ->option('--build-arg', "AEGIR_USER_UID=$user_uid")
-      ->option('--build-arg', "ANSIBLE_VERBOSITY=$ansible_verbosity")
-      ->option('--build-arg', "DEVSHOP_PLAYBOOK=$playbook")
-      ->option('--build-arg', "OS_VERSION={$opts['os-version']}")
+      ->options($docker_build_options)
+      ->option('--build-arg', "DEVSHOP_DOCKER_FROM_IMAGE_NAME=$image_from_name")
+      ->option('--build-arg', "DEVSHOP_DOCKER_FROM_IMAGE_TAG=$image_from_tag")
       ->run()
       ->wasSuccessful()) {
       throw new RuntimeException('Docker Build Failed.');
@@ -446,17 +481,31 @@ class RoboFile extends \Robo\Tasks {
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook, $opts);
     }
 
-    if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
-      $this->prepareSourcecode($opts);
-    }
-
     if ($opts['mode'] == 'docker-compose') {
 
       if ($opts['test'] || $opts['test-upgrade']) {
+        $this->yell("Test Environment Requested: Using docker-compose-tests.yml.");
+        $this->say("No docker volumes are enabled using this mode.");
+
+        if (!$opts['build']) {
+          $this->say("The --build option was not specified: The latest code may not be in the container.");
+        }
+
         $compose_file = 'docker-compose-tests.yml';
       }
       else {
+        $this->yell("Development Environment Requested: Using docker-compose.yml.");
+
         $compose_file = 'docker-compose.yml';
+
+        if (!file_exists('aegir-home')) {
+          if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
+            $this->prepareSourcecode($opts);
+          }
+        }
+        else {
+          $this->say("The aegir-home folder already exists.");
+        }
       }
 
 
@@ -465,7 +514,7 @@ class RoboFile extends \Robo\Tasks {
 //      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
 
       // Prepare test assets folder.
-      $cmd[] = "sudo chmod 766 .github/test-assets";
+      // $cmd[] = "sudo chmod 766 .github/test-assets";
 
       // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
